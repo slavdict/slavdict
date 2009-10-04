@@ -1,24 +1,14 @@
-# Rename this file to local_urls.py 
-# and use it if you want to add 
-# the url for media files (css, js, images, ...) 
-# for testing django without Apache web server
-# in the current test site repository
-# while still not having this url for the
-# working site repository with Apache support.
-# File local_urls.py will be ignored
+# Rename this file to local_settings.py 
+# and use it to override the settings from settings.py
+# in the current test site repository 
+# while keeping the original settings for the
+# working site repository.
+# File local_settings.py will be ignored
 # by current git repository.
 
-from django.conf.urls.defaults import *
-
-try:
-    from settings import MEDIA_ROOT
-except ImportError:
-    MEDIA_ROOT = ''
-
-urlpatterns = patterns('',
-        url(
-            r'^site-media/(?P<path>.*)$', 
-            'django.views.static.serve', 
-            {'document_root': MEDIA_ROOT}
-        ),
-    )
+DEBUG = True
+ROOT = 'D:/workplace/git_repositories/iasp'
+DATABASE_ENGINE = 'sqlite3'
+DATABASE_NAME = 'D:/workplace/sqlite-dbs/iasp-django.db'
+SITE_ID = 1
+MEDIA_URL = 'http://127.0.0.1:8000/'
