@@ -3,12 +3,21 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class Category(models.Model):
+    
+    supercategory = models.ForeignKey('self', null=True, blank=True, related_name='subcategories')
+    title         = models.CharField(max_length=100)
+    description   = models.CharField(max_length=100, blank=True)
+
+    def __unicode__(self):
+        return self.title
+
+
 class Topic(models.Model):
 
     title       = models.CharField(max_length=100)
-    forum       = models.ForeignKey(Forum, related_name='topics')
+    category    = models.ForeignKey(Category, related_name='topics')
     user        = models.ForeignKey(User, related_name='topics')
-    description = models.CharField(max_length=100, blank=True)
     started_at  = models.DateTimeField(editable=False)
 
     # Administration
@@ -16,18 +25,25 @@ class Topic(models.Model):
     locked = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
 
-    # Denormalised data
-    post_count     = models.PositiveIntegerField(default=0)
-    metapost_count = models.PositiveIntegerField(default=0)
-    view_count     = models.PositiveIntegerField(default=0)
-    last_post_at   = models.DateTimeField(null=True, blank=True)
-    last_user_id   = models.PositiveIntegerField(null=True, blank=True)
-    last_username  = models.CharField(max_length=30, blank=True)
-
-    objects = TopicManager()
+    @property
+    def post_count(self):
+        return self.posts.count()
+    
+    @property
+    def last_post(self):
+        return self.posts.order_by('-posted_at')[0]
+    
+    @property
+    def last_post_at(self):
+        return self.last_post.edited_at
+    
+    @property
+    def last_user_name(self):
+        return self.last_post.user
 
     def __unicode__(self):
         return self.title
+
 
 class Post(models.Model):
 
