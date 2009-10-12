@@ -2,6 +2,7 @@
 
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
+from django.shortcuts import redirect
 
 from django.contrib import admin
 admin.autodiscover()
@@ -9,8 +10,8 @@ admin.autodiscover()
 test = {
     'template': 'base.html',
     'extra_context': {
-        'title': u'Проверка',
-        'content': u'Тестовое содержимое страницы. Ура, сайт работает!'
+            'title': u'Проверка',
+            'content': u'Тестовое содержимое страницы. Ура, сайт работает!'
         }
     }
 
@@ -20,7 +21,8 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('',
-    url( r'^$',          direct_to_template,     test),
-    url( r'^forum/',    include('cslav_dict.forum.urls')),
+    url( r'^$',      direct_to_template,     test),
+    url( r'^forum/', include('cslav_dict.forum.urls')),
+    url( r'^wiki/',  redirect('http://slavonic.pbworks.com/')),
 )
 
