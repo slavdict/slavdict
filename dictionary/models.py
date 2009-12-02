@@ -14,14 +14,35 @@ class InflectionClass(models.Model):
 class DictEntry(models.Model):
     
     civil_equivalent = models.CharField(max_length=40)
-    # headwords
+    # orthographic_variants
     # part_of_speech
 
-class Headword(models.Model):
+class OrthographicVariant(models.Model):
     
-    dict_entry = models.ForeignKey(DictEntry)
-    headword = models.CharField(max_length=40)
-    frequency = models.PositiveInteger()
+    # словарная статья, к которой относиться данный орф. вариант
+    dict_entry          = models.ForeignKey(DictEntry)
+    
+    # сам орфографический вариант
+    word                = models.CharField(max_length=40)
+    
+    # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
+    is_reconstructed    = models.BooleanField()
+
+    # в связке с полем реконструкции (is_reconstructed)
+    # показывает, утверждена ли реконструкция или нет
+    is_approved         = models.BooleanField()
+
+    # является ли данный орфографический вариант основным
+    is_headword         = models.BooleanField()
+
+    # является ли орф. вариант только общей частью словоформ 
+    # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
+    # на конце автоматически добавляется дефис, заносить в базу без дефиса
+    is_factored_out     = models.BooleanField()
+
+    # частота встречаемости орфографического варианта
+    # ? для факторизантов не важна ?
+    frequency           = models.PositiveInteger()
 
 class Meaning(models.Model):
     
