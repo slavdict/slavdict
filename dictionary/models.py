@@ -23,7 +23,7 @@ class OrthographicVariant(models.Model):
     dict_entry          = models.ForeignKey(DictEntry)
     
     # сам орфографический вариант
-    word                = models.CharField(max_length=40)
+    idem                = models.CharField(max_length=40)
     
     # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
     is_reconstructed    = models.BooleanField()
