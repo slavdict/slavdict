@@ -2,47 +2,88 @@
 
 from django.db import models
 
-class PartOfSpeach(models.Model):
+
+class PartOfSpeech(models.Model):
     
-    name = models.CharField(max_length=20)
-    abbreviation = models.CharField(max_length=8)
+    name = models.CharField(
+        u'название',
+        max_length=20,
+        )
+
+    abbreviation = models.CharField(
+        u'сокращение',
+        max_length=8,
+        )
+
+    def __unicode__(self):
+        return self.abbreviation
+
+    class Meta:
+        verbose_name = u'часть речи'
+        verbose_name_plural = u'части речи'
 
 class InflectionClass(models.Model):
     
     pass
 
+
 class DictEntry(models.Model):
     
-    civil_equivalent = models.CharField(max_length=40)
+    civil_equivalent = models.CharField(
+        u'написание гражданским шрифтом',
+        max_length = 40,
+        )
     # orthographic_variants
     # part_of_speech
+
+    def __unicode__(self):
+        return self.civil_equivalent
+
+    class Meta:
+        verbose_name = u'словарная статья'
+        verbose_name_plural = u'словарные статьи'
+
 
 class OrthographicVariant(models.Model):
     
     # словарная статья, к которой относиться данный орф. вариант
-    dict_entry          = models.ForeignKey(DictEntry)
+    dict_entry          = models.ForeignKey(
+        DictEntry,
+        verbose_name = u'словарная статья',
+        )
     
     # сам орфографический вариант
-    idem                = models.CharField(max_length=40)
+    idem                = models.CharField(
+        u'орфографический вариант',
+        max_length=40,
+        )
     
     # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
-    is_reconstructed    = models.BooleanField()
+    is_reconstructed    = models.BooleanField(u'является реконструкцией')
 
     # в связке с полем реконструкции (is_reconstructed)
     # показывает, утверждена ли реконструкция или нет
-    is_approved         = models.BooleanField()
+    is_approved         = models.BooleanField(u'одобренная реконструкция')
 
     # является ли данный орфографический вариант основным
-    is_headword         = models.BooleanField()
+    is_headword         = models.BooleanField(u'основной орфографический вариант')
 
     # является ли орф. вариант только общей частью словоформ 
     # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
     # на конце автоматически добавляется дефис, заносить в базу без дефиса
-    is_factored_out     = models.BooleanField()
+    is_factored_out     = models.BooleanField(u'общая часть нескольких слов или словоформ')
 
     # частота встречаемости орфографического варианта
     # ? для факторизантов не важна ?
-    frequency           = models.PositiveInteger()
+    frequency           = models.PositiveIntegerField(u'частота')
+
+    def __unicode__(self):
+        return self.idem
+
+    class Meta:
+        verbose_name = u'орфографический вариант'
+        verbose_name_plural = u'орфографические варианты'
+
 
 class Meaning(models.Model):
     
