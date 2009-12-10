@@ -16,25 +16,33 @@ class PartOfSpeech(models.Model):
         )
 
     def __unicode__(self):
-        return self.abbreviation
+        return u'%s [%s]' % (self.name, self.abbreviation)
 
     class Meta:
         verbose_name = u'часть речи'
         verbose_name_plural = u'части речи'
+        ordering = ('name',)
 
 class InflectionClass(models.Model):
     
     pass
 
 
-class DictEntry(models.Model):
+class Entry(models.Model):
     
     civil_equivalent = models.CharField(
-        u'написание гражданским шрифтом',
+        u'гражданское написание',
         max_length = 40,
         )
+    
     # orthographic_variants
-    # part_of_speech
+    
+    part_of_speech = models.ForeignKey(
+        PartOfSpeech,
+        verbose_name = u'часть речи',
+        )
+
+    # particular part of speech
 
     def __unicode__(self):
         return self.civil_equivalent
@@ -47,14 +55,15 @@ class DictEntry(models.Model):
 class OrthographicVariant(models.Model):
     
     # словарная статья, к которой относиться данный орф. вариант
-    dict_entry          = models.ForeignKey(
-        DictEntry,
+    entry          = models.ForeignKey(
+        Entry,
         verbose_name = u'словарная статья',
+        related_name = 'orthographic_variants'
         )
     
     # сам орфографический вариант
     idem                = models.CharField(
-        u'орфографический вариант',
+        u'написание',
         max_length=40,
         )
     
@@ -75,7 +84,11 @@ class OrthographicVariant(models.Model):
 
     # частота встречаемости орфографического варианта
     # ? для факторизантов не важна ?
-    frequency           = models.PositiveIntegerField(u'частота')
+    frequency           = models.PositiveIntegerField(
+        u'частота',
+        blank = True,
+        null  = True,
+        )
 
     def __unicode__(self):
         return self.idem
