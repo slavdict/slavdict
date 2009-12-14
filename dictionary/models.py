@@ -2,8 +2,7 @@
 
 from django.db import models
 
-
-class PartOfSpeech(models.Model):
+class TermDirectory(models.Model):
     
     name = models.CharField(
         u'название',
@@ -19,14 +18,31 @@ class PartOfSpeech(models.Model):
         return u'%s [%s]' % (self.name, self.abbreviation)
 
     class Meta:
-        verbose_name = u'часть речи'
-        verbose_name_plural = u'части речи'
+        abstract = True
         ordering = ('name',)
 
-class InflectionClass(models.Model):
-    
-    pass
 
+class PartOfSpeech(TermDirectory):
+
+    class Meta(TermDirectory.Meta):
+        verbose_name = u'часть речи'
+        verbose_name_plural = u'список частей речи'
+
+
+class Gender(TermDirectory):
+
+        class Meta(TermDirectory.Meta):
+        verbose_name = u'грамматический род'
+        verbose_name_plural = u'cписок значений грамматического рода'
+
+
+class Tantum(TermDirectory):
+
+    class Meta(TermDirectory.Meta):
+        verbose_name = u'tantum'
+        verbose_name_plural = u'tantum'
+
+# #############################
 
 class Entry(models.Model):
     
@@ -36,13 +52,6 @@ class Entry(models.Model):
         )
     
     # orthographic_variants
-    
-    part_of_speech = models.ForeignKey(
-        PartOfSpeech,
-        verbose_name = u'часть речи',
-        )
-
-    # particular part of speech
 
     def __unicode__(self):
         return self.civil_equivalent
@@ -50,6 +59,23 @@ class Entry(models.Model):
     class Meta:
         verbose_name = u'словарная статья'
         verbose_name_plural = u'словарные статьи'
+
+
+class Lexeme(models.Model):
+
+    entry = models.OneToOneField(Entry)
+
+    part_of_speech = models.ForeignKey(
+        PartOfSpeech,
+        verbose_name = u'часть речи',
+        )
+
+    def __unicode__(self):
+        return u'<Lexeme %s>' % self.id
+
+    class Meta:
+        verbose_name = u'лексема'
+        verbose_name_plural = u'лексемы'
 
 
 class OrthographicVariant(models.Model):
@@ -98,6 +124,59 @@ class OrthographicVariant(models.Model):
         verbose_name_plural = u'орфографические варианты'
 
 
+class Noun(models.Model):
+    
+    lexeme = models.OneToOneField(
+        Lexeme,
+        u'лексема',
+        )
+
+    uninflected = models.BooleanField(
+        u'неизменяемое',
+        )
+    
+    plurale_tantum = models.BooleanField(
+        u'plurale tantum',
+        )
+
+    singulare_tantum = models.BooleanField(
+        u'singulare tantum',
+        )
+
+    gender = models.ForeignKey(
+        Gender,
+        verbose_name = u'грам. род',
+        )
+
+    genitive = models.CharField(
+        u'окончание Р.п.',
+        max_length = 3,
+        help_text = u'само окончание без дефиса в начале'
+    
+    def __unicode__(self):
+        return u'<Noun %s>' % self.id
+
+    class Meta:
+        verbose_name = u'существительное'
+
+
+class Onym(TermDirectory):
+    
+    class Meta(TermDirectory.Meta):
+        verbose_name = u'тип имени собственного'
+        verbose_name_plural = u'справочник типов имени собственного'
+
+
+class ProperNoun(Noun):
+
+    onym = models.ForeignKey(
+        Onym,
+        u'тип имени собственного',
+        )
+
+    # counterpart 
+        
+
 class Meaning(models.Model):
     
     meaning = models.TextField()
@@ -111,20 +190,4 @@ class Example(models.Model):
     meanings = models.ManyToManyField(Meaning)
 
 
-class Gender(models.Model):
-    
-    name = models.CharField(max_length=15)
-    abbreviation = models.CharField(max_length=4)
 
-class Tantum(models.Model):
-
-    name = models.CharField(max_length=20)
-    abbreviation = models.CharField(max_length=7)
-
-class Noun(InflectionClass):
-    
-    gender = models.ForeignKey(Gender)
-    tantum = models.ForeignKey(Tantum)
-    genitive = models.CharField(max_length=7, help_text=u'введите окончание без начального дефиса')
-
-    
