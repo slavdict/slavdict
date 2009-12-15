@@ -31,7 +31,7 @@ class PartOfSpeech(TermDirectory):
 
 class Gender(TermDirectory):
 
-        class Meta(TermDirectory.Meta):
+    class Meta(TermDirectory.Meta):
         verbose_name = u'грамматический род'
         verbose_name_plural = u'cписок значений грамматического рода'
 
@@ -128,7 +128,7 @@ class Noun(models.Model):
     
     lexeme = models.OneToOneField(
         Lexeme,
-        u'лексема',
+        verbose_name = u'лексема',
         )
 
     uninflected = models.BooleanField(
@@ -152,6 +152,7 @@ class Noun(models.Model):
         u'окончание Р.п.',
         max_length = 3,
         help_text = u'само окончание без дефиса в начале'
+        )
     
     def __unicode__(self):
         return u'<Noun %s>' % self.id
@@ -171,7 +172,7 @@ class ProperNoun(Noun):
 
     onym = models.ForeignKey(
         Onym,
-        u'тип имени собственного',
+        verbose_name = u'тип имени собственного',
         )
 
     # counterpart 
