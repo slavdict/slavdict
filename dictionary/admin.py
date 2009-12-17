@@ -16,6 +16,10 @@ from cslav_dict.dictionary.models import (
 
 )
 
+admin.site.register(PartOfSpeech)
+admin.site.register(Gender)
+admin.site.register(Tantum)
+admin.site.register(Onym)
 
 class Lexeme_Inline(admin.StackedInline):
     
@@ -49,32 +53,23 @@ entry_with_orth_variants.admin_order_field = 'civil_equivalent'
 entry_with_orth_variants.short_description = u'словарная статья'
 
 
-def parts_of_speech(obj):
-    return obj.lexeme.part_of_speech
-parts_of_speech.short_description = u'часть речи'
-
-
+admin.site.register(
+    Noun,
+    inlines = (
+        ProperNoun_Inline,
+    ),
+)
 admin.site.register(
     Entry,
     inlines = (
         OrthVar_InLine,
         Lexeme_Inline,
     ),
-    list_display = (
-        entry_with_orth_variants,
-        parts_of_speech,
-    ),
-    list_filter = (
-        parts_of_speech,
-    ),
-)
-admin.site.register(PartOfSpeech)
-admin.site.register(Gender)
-admin.site.register(Tantum)
-admin.site.register(Onym)
-admin.site.register(
-    Noun,
-    inlines = (
-        ProperNoun_Inline,
-    ),
+#    list_display = (
+#        entry_with_orth_variants,
+#        'part_of_speech',
+#    ),
+#    list_filter = (
+#        'part_of_speech',
+#    ),
 )

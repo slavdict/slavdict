@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-
 from django.db import models
 
 class TermDirectory(models.Model):
@@ -52,6 +51,10 @@ class Entry(models.Model):
         )
     
     # orthographic_variants
+
+    def part_of_speech(self):
+        return self.lexeme.part_of_speech
+    part_of_speech.short_description = u'часть речи'
 
     def __unicode__(self):
         return self.civil_equivalent
@@ -159,6 +162,7 @@ class Noun(models.Model):
 
     class Meta:
         verbose_name = u'существительное'
+        verbose_name_plural = u'существительные'
 
 
 class Onym(TermDirectory):
@@ -168,7 +172,9 @@ class Onym(TermDirectory):
         verbose_name_plural = u'справочник типов имени собственного'
 
 
-class ProperNoun(Noun):
+class ProperNoun(models.Model):
+
+    noun = models.OneToOneField(Noun)
 
     onym = models.ForeignKey(
         Onym,
@@ -176,6 +182,13 @@ class ProperNoun(Noun):
         )
 
     # counterpart 
+
+    def __unicode__(self):
+        return u'<Имя собственное %s>' % self.id
+
+    class Meta:
+        verbose_name = u'имя собственное'
+        verbose_name_plural = u'имена собственные'
         
 
 class Meaning(models.Model):
