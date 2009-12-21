@@ -84,6 +84,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 
     'cslav_dict.dictionary',
+    'cslav_dict.directory',
 )
 
 try:

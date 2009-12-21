@@ -6,13 +6,17 @@ from cslav_dict.dictionary.models import (
     Lexeme,
     OrthographicVariant,
 
+    Noun,
+    ProperNoun,
+
+)
+
+from cslav_dict.directory.models import (
+    
     PartOfSpeech,
     Gender,
     Tantum,
     Onym,
-
-    Noun,
-    ProperNoun,
 
 )
 
