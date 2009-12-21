@@ -11,20 +11,6 @@ from cslav_dict.dictionary.models import (
 
 )
 
-from cslav_dict.directory.models import (
-    
-    PartOfSpeech,
-    Gender,
-    Tantum,
-    Onym,
-
-)
-
-admin.site.register(PartOfSpeech)
-admin.site.register(Gender)
-admin.site.register(Tantum)
-admin.site.register(Onym)
-
 class Lexeme_Inline(admin.StackedInline):
     
     model = Lexeme
