@@ -149,17 +149,46 @@ class ProperNoun(models.Model):
         verbose_name_plural = u'имена собственные'
         
 
+class SubcategorizationFrame(models.Model):
+
+    
+
+
 class Meaning(models.Model):
     
-    meaning = models.TextField()
+    meaning = models.TextField(
+        u'значение',
+        )
+
+    metaphorical = models.BooleanField(
+        u'метафорическое',
+        )
+
     # greek_equivalent
+
+    gloss = models.TextField(
+        u'толкование',
+        )
+
+    # subcategorization_frames
+
+
    
 class Example(models.Model):
     
-    example = models.TextField()
+    example = models.TextField(
+        u'пример',
+        )
+
     # address # нужно учесть диапазоны вроде: 12-13 стихи
-    translation = models.TextField()
+
+    translation = models.TextField(
+        u'перевод',
+        )
+
     meanings = models.ManyToManyField(Meaning)
+
+    # greek_equivalent
 
 
 
