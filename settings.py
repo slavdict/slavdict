@@ -17,7 +17,9 @@ DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
-ROOT = '/var/www/c-slav-dict/'
+slash = '/'
+backslash = '\\'
+ROOT = os.path.abspath(os.path.dirname(__file__)).replace(backslash, slash) + slash # '/var/www/c-slav-dict/'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

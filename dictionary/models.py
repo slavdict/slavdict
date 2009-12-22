@@ -1,10 +1,13 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
 from cslav_dict.directory.models import (
+    
     PartOfSpeech,
     Gender,
     Tantum,
     Onym,
+    SubcatFrame,
+
     )
 
 
@@ -149,12 +152,11 @@ class ProperNoun(models.Model):
         verbose_name_plural = u'имена собственные'
         
 
-class SubcategorizationFrame(models.Model):
-
-    
-
-
 class Meaning(models.Model):
+    
+    order = models.IntegerField(
+        u'номер',
+        )
     
     meaning = models.TextField(
         u'значение',
@@ -170,7 +172,19 @@ class Meaning(models.Model):
         u'толкование',
         )
 
-    # subcategorization_frames
+    subcat_frames = models.ManyToManyField(
+        SubcatFrame,
+        verbose_name = u'модель управления',
+        )
+
+    def __unicode__(self):
+        
+        return self.meaning
+
+    class Meta:
+        
+        verbose_name = u'значение'
+        verbose_name_plural = u'значения'
 
 
    
@@ -190,5 +204,13 @@ class Example(models.Model):
 
     # greek_equivalent
 
+    def __unicode__(self):
+        
+        return self.example
+
+    class Meta:
+        
+        verbose_name = u'пример'
+        verbose_name_plural = u'примеры'
 
 
