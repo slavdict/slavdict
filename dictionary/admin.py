@@ -17,9 +17,22 @@ class Entry_Inline(admin.StackedInline):
     
 class OrthVar_InLine(admin.StackedInline):
     model = OrthographicVariant
-    extra = 2
+    extra = 1
     fieldsets = (
-        (None, { 'fields': ('idem', 'frequency', 'is_headword', ('is_reconstructed', 'is_approved'), 'is_factored_out') }),
+        (None, {
+            'fields': (
+                (
+                'idem',
+                'is_headword',
+                ),
+                (
+                'is_reconstructed',
+                'is_approved',
+                'frequency',
+                ),
+                #'is_factored_out'
+                ),
+            }),
         )
 
 admin.site.register(Etymology)
@@ -47,21 +60,56 @@ entry_with_orth_variants.short_description = u'словарная статья'
 
 admin.site.register(
     Lexeme,
+    fieldsets = (
+        (None, {
+            'fields': (
+                'uninflected',
+                ),
+            }),
+        (u'для существительных', {
+            'fields': (
+                'genitive',
+                'gender',
+                'tantum',
+                ),
+            'classes': (
+                'collapse',
+                ),
+            }),
+        (u'для прилагательных', {
+            'fields': (
+                'short_form',
+                ),
+            'classes': (
+                'collapse',
+                ),
+            }),
+        (u'для глаголов', {
+            'fields': (
+                'transitivity',
+                'sg1',
+                'sg2',
+                ),
+            'classes': (
+                'collapse',
+                ),
+            }),
+        ),
     inlines = (
         ProperNoun_Inline,
-    ),
+        ),
 )
 admin.site.register(
     Entry,
     inlines = (
         OrthVar_InLine,
-    ),
+        ),
     list_display = (
         entry_with_orth_variants,
         'part_of_speech',
-    ),
+        ),
     list_filter = (
         'part_of_speech',
-    ),
+        ),
 )
 
