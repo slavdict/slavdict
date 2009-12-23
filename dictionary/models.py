@@ -20,9 +20,10 @@ class Entry(models.Model):
     
     # orthographic_variants
 
-    def part_of_speech(self):
-        return self.lexeme.part_of_speech
-    part_of_speech.short_description = u'часть речи'
+    part_of_speech = models.ForeignKey(
+        PartOfSpeech,
+        verbose_name = u'часть речи',
+        )
 
     def __unicode__(self):
         return self.civil_equivalent
@@ -30,23 +31,6 @@ class Entry(models.Model):
     class Meta:
         verbose_name = u'словарная статья'
         verbose_name_plural = u'словарные статьи'
-
-
-class Lexeme(models.Model):
-
-    entry = models.OneToOneField(Entry)
-
-    part_of_speech = models.ForeignKey(
-        PartOfSpeech,
-        verbose_name = u'часть речи',
-        )
-
-    def __unicode__(self):
-        return u'<Lexeme %s>' % self.id
-
-    class Meta:
-        verbose_name = u'лексема'
-        verbose_name_plural = u'лексемы'
 
 
 class OrthographicVariant(models.Model):
@@ -97,9 +81,9 @@ class OrthographicVariant(models.Model):
 
 class Noun(models.Model):
     
-    lexeme = models.OneToOneField(
-        Lexeme,
-        verbose_name = u'лексема',
+    entry = models.OneToOneField(
+        Entry,
+        verbose_name = u'словарная статья',
         )
 
     uninflected = models.BooleanField(

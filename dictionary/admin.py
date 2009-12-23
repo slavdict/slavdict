@@ -3,7 +3,6 @@ from django.contrib import admin
 from cslav_dict.dictionary.models import (
     
     Entry,
-    Lexeme,
     OrthographicVariant,
 
     Noun,
@@ -11,29 +10,22 @@ from cslav_dict.dictionary.models import (
 
 )
 
-class Lexeme_Inline(admin.StackedInline):
-    
-    model = Lexeme
+class Entry_Inline(admin.StackedInline):
+    model = Entry
     max_num = 1
-
-
-class OrthVar_InLine(admin.StackedInline):
     
+class OrthVar_InLine(admin.StackedInline):
     model = OrthographicVariant
     extra = 2
     fieldsets = (
         (None, { 'fields': ('idem', 'frequency', 'is_headword', ('is_reconstructed', 'is_approved'), 'is_factored_out') }),
         )
 
-
 class ProperNoun_Inline(admin.StackedInline):
-    
     model = ProperNoun
     max_num = 1
 
-
 def entry_with_orth_variants(obj):
-
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('-is_headword','idem')]
     delimiter = u', '
     x = delimiter.join(orth_vars)
@@ -53,13 +45,12 @@ admin.site.register(
     Entry,
     inlines = (
         OrthVar_InLine,
-        Lexeme_Inline,
     ),
-#    list_display = (
-#        entry_with_orth_variants,
-#        'part_of_speech',
-#    ),
-#    list_filter = (
-#        'part_of_speech',
-#    ),
+    list_display = (
+        entry_with_orth_variants,
+        'part_of_speech',
+    ),
+    list_filter = (
+        'part_of_speech',
+    ),
 )
