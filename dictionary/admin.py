@@ -5,7 +5,7 @@ from cslav_dict.dictionary.models import (
     Entry,
     OrthographicVariant,
 
-    Noun,
+    Lexeme,
     ProperNoun,
 
 )
@@ -24,6 +24,12 @@ class OrthVar_InLine(admin.StackedInline):
 class ProperNoun_Inline(admin.StackedInline):
     model = ProperNoun
     max_num = 1
+#    fieldsets = (
+#        (None, {
+#            'fields':  ('onym',),
+#            'classes': ('collapse',),
+#            }),
+#        )
 
 def entry_with_orth_variants(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('-is_headword','idem')]
@@ -36,7 +42,7 @@ entry_with_orth_variants.short_description = u'словарная статья'
 
 
 admin.site.register(
-    Noun,
+    Lexeme,
     inlines = (
         ProperNoun_Inline,
     ),
@@ -54,3 +60,4 @@ admin.site.register(
         'part_of_speech',
     ),
 )
+

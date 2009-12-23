@@ -6,7 +6,8 @@ from cslav_dict.directory.models import (
     Gender,
     Tantum,
     Onym,
-    SyntActant,
+    Transitivity,
+    SyntArgument,
     SubcatFrame,
 
 )
@@ -15,5 +16,6 @@ admin.site.register(PartOfSpeech)
 admin.site.register(Gender)
 admin.site.register(Tantum)
 admin.site.register(Onym)
-admin.site.register(SyntActant)
+admin.site.register(Transitivity)
+admin.site.register(SyntArgument)
 admin.site.register(SubcatFrame)

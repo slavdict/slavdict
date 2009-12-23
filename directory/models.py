@@ -49,54 +49,60 @@ class Onym(TermDirectory):
         verbose_name_plural = u'типы имени собственного'
 
 
-class SyntActant(TermDirectory):
+class Transitivity(TermDirectory):
 
     class Meta(TermDirectory.Meta):
-        verbose_name = u'синтаксический актант'
-        verbose_name_plural = u'синтаксические актанты'
+        verbose_name = u'переходность глагола'
+        verbose_name_plural = u'переходность глагола'
+
+class SyntArgument(TermDirectory):
+
+    class Meta(TermDirectory.Meta):
+        verbose_name = u'синтаксический аргумент'
+        verbose_name_plural = u'синтаксические аргументы'
 
 
 class SubcatFrame(models.Model):
 
-    actant1 = models.ForeignKey(
-        SyntActant,
-        verbose_name = u'1-й актант',
-        related_name = 'actant1_set',
+    argument1 = models.ForeignKey(
+        SyntArgument,
+        verbose_name = u'1-й аргумент',
+        related_name = 'argument1_set',
         )
 
-    actant2 = models.ForeignKey(
-        SyntActant,
-        verbose_name = u'2-й актант',
-        related_name = 'actant2_set',
+    argument2 = models.ForeignKey(
+        SyntArgument,
+        verbose_name = u'2-й аргумент',
+        related_name = 'argument2_set',
         blank = True,
         null = True,
         )
 
-    actant3 = models.ForeignKey(
-        SyntActant,
-        verbose_name = u'3-й актант',
-        related_name = 'actant3_set',
+    argument3 = models.ForeignKey(
+        SyntArgument,
+        verbose_name = u'3-й аргумент',
+        related_name = 'argument3_set',
         blank = True,
         null = True,
         )
 
-    actant4 = models.ForeignKey(
-        SyntActant,
-        verbose_name = u'4-й актант',
-        related_name = 'actant4_set',
+    argument4 = models.ForeignKey(
+        SyntArgument,
+        verbose_name = u'4-й аргумент',
+        related_name = 'argument4_set',
         blank = True,
         null = True,
         )
 
     def __unicode__(self):
         
-        rtn = self.actant1.abbreviation
-        if self.actant2:
-            rtn = u'%s, %s' % (rtn, self.actant2.abbreviation)
-        if self.actant3:
-            rtn = u'%s, %s' % (rtn, self.actant3.abbreviation)
-        if self.actant4:
-            rtn = u'%s, %s' % (rtn, self.actant4.abbreviation)
+        rtn = self.argument1.abbreviation
+        if self.argument2:
+            rtn = u'%s, %s' % (rtn, self.argument2.abbreviation)
+        if self.argument3:
+            rtn = u'%s, %s' % (rtn, self.argument3.abbreviation)
+        if self.argument4:
+            rtn = u'%s, %s' % (rtn, self.argument4.abbreviation)
         return rtn
 
     class Meta:

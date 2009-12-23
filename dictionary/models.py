@@ -6,6 +6,7 @@ from cslav_dict.directory.models import (
     Gender,
     Tantum,
     Onym,
+    Transitivity,
     SubcatFrame,
 
     )
@@ -24,6 +25,8 @@ class Entry(models.Model):
         PartOfSpeech,
         verbose_name = u'часть речи',
         )
+
+    # lexeme (посредник к граматическим формам и свойствам)
 
     def __unicode__(self):
         return self.civil_equivalent
@@ -79,47 +82,78 @@ class OrthographicVariant(models.Model):
         verbose_name_plural = u'орфографические варианты'
 
 
-class Noun(models.Model):
+class Lexeme(models.Model):
     
     entry = models.OneToOneField(
         Entry,
         verbose_name = u'словарная статья',
         )
-
+    
+    # для существительных и прилагательных
     uninflected = models.BooleanField(
         u'неизменяемое',
         )
     
-    plurale_tantum = models.BooleanField(
-        u'plurale tantum',
-        )
-
-    singulare_tantum = models.BooleanField(
-        u'singulare tantum',
+    # только для существительных
+    tantum = models.ForeignKey(
+        Tantum,
+        blank = True,
+        null = True,
         )
 
     gender = models.ForeignKey(
         Gender,
         verbose_name = u'грам. род',
+        blank = True,
+        null = True,
         )
 
     genitive = models.CharField(
         u'окончание Р.п.',
         max_length = 3,
-        help_text = u'само окончание без дефиса в начале'
+        help_text = u'само окончание без дефиса в начале',
+        blank = True,
+        )
+    # proper_noun
+
+    # только для прилагательных
+    short_form = models.CharField(
+        u'краткая форма',
+        max_length = 20,
+        blank = True,
+        )
+
+    # только для глаголов
+    transitivity = models.ForeignKey(
+        Transitivity,
+        verbose_name = u'переходность',
+        blank = True,
+        null = True,
+        )
+
+    sg1 = models.CharField(
+        u'форма 1sg',
+        max_length = 20,
+        blank = True,
+        )
+    
+    sg2 = models.CharField(
+        u'форма 2sg',
+        max_length = 20,
+        blank = True,
         )
     
     def __unicode__(self):
-        return u'<Noun %s>' % self.id
+        return u'<lexeme %s>' % self.id
 
     class Meta:
-        verbose_name = u'существительное'
-        verbose_name_plural = u'существительные'
+        verbose_name = u'лексема'
+        verbose_name_plural = u'лексемы'
 
 
 class ProperNoun(models.Model):
 
-    noun = models.OneToOneField(Noun)
+    noun = models.OneToOneField(Lexeme)
 
     onym = models.ForeignKey(
         Onym,
