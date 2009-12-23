@@ -1,0 +1,1 @@
+[{"pk": 3, "model": "directory.tantum", "fields": {"abbreviation": "du.", "name": "duale tantum"}}, {"pk": 1, "model": "directory.tantum", "fields": {"abbreviation": "pl.", "name": "plurale tantum"}}, {"pk": 2, "model": "directory.tantum", "fields": {"abbreviation": "sg.", "name": "singulare tantum"}}]
