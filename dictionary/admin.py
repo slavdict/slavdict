@@ -47,14 +47,6 @@ class Example_Inline(admin.StackedInline):
     model = Example
     extra = 1
 
-from cslav_dict.dictionary.models import Meaning
-admin.site.register(
-    Meaning,
-    inlines = (
-        Example_Inline,
-        )
-    )
-
 def entry_with_orth_variants(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('-is_headword','idem')]
     delimiter = u', '
@@ -64,6 +56,26 @@ def entry_with_orth_variants(obj):
 entry_with_orth_variants.admin_order_field = 'civil_equivalent'
 entry_with_orth_variants.short_description = u'словарная статья'
 
+def meaning_with_entry(obj):
+    return u'%s %s. %s' % (
+        entry_with_orth_variants(obj.entry),
+        obj.order,
+        obj.meaning,
+        )
+
+meaning_with_entry.admin_order_field = 'entry'
+meaning_with_entry.short_description = u'значение'
+
+from cslav_dict.dictionary.models import Meaning
+admin.site.register(
+    Meaning,
+    inlines = (
+        Example_Inline,
+        ),
+    list_display = (
+        meaning_with_entry,
+        ),
+    )
 
 from cslav_dict.dictionary.models import Entry
 admin.site.register(
