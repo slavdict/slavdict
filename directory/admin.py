@@ -9,6 +9,7 @@ from cslav_dict.directory.models import (
     Transitivity,
     SyntArgument,
     SubcatFrame,
+    Language,
 
 )
 
@@ -19,3 +20,4 @@ admin.site.register(Onym)
 admin.site.register(Transitivity)
 admin.site.register(SyntArgument)
 admin.site.register(SubcatFrame)
+admin.site.register(Language)

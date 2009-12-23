@@ -7,6 +7,7 @@ from cslav_dict.dictionary.models import (
 
     Lexeme,
     ProperNoun,
+    Etymology,
 
 )
 
@@ -21,6 +22,8 @@ class OrthVar_InLine(admin.StackedInline):
         (None, { 'fields': ('idem', 'frequency', 'is_headword', ('is_reconstructed', 'is_approved'), 'is_factored_out') }),
         )
 
+admin.site.register(Etymology)
+
 class ProperNoun_Inline(admin.StackedInline):
     model = ProperNoun
     max_num = 1
@@ -30,6 +33,7 @@ class ProperNoun_Inline(admin.StackedInline):
 #            'classes': ('collapse',),
 #            }),
 #        )
+
 
 def entry_with_orth_variants(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('-is_headword','idem')]

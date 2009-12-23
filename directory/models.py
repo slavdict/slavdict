@@ -109,3 +109,9 @@ class SubcatFrame(models.Model):
         verbose_name = u'модель управления'
         verbose_name_plural = u'модели управления'
 
+
+class Language(TermDirectory):
+    
+    class Meta(TermDirectory.Meta):
+        verbose_name = u'язык'
+        verbose_name_plural = u'список языков'

@@ -8,6 +8,7 @@ from cslav_dict.directory.models import (
     Onym,
     Transitivity,
     SubcatFrame,
+    Language,
 
     )
 
@@ -149,6 +150,37 @@ class Lexeme(models.Model):
     class Meta:
         verbose_name = u'лексема'
         verbose_name_plural = u'лексемы'
+        
+
+class Etymology(models.Model):
+
+    language = models.ForeignKey(
+        Language,
+        verbose_name = u'язык',
+        )
+
+    text = models.CharField(
+        u'языковой эквивалент',
+        max_length = 40,
+        blank = True,
+        )
+
+    translit = models.CharField(
+        u'траслит.',
+        max_length = 40,
+        )
+
+    meaning = models.CharField(
+        u'перевод',
+        max_length = 70,
+        )
+
+    def __unicode__(self):
+        return self.translit
+
+    class Meta:
+        verbose_name = u'этимология слова'
+        verbose_name_plural = u'этимология слов'
 
 
 class ProperNoun(models.Model):
@@ -160,7 +192,16 @@ class ProperNoun(models.Model):
         verbose_name = u'тип имени собственного',
         )
 
-    # counterpart 
+    unclear_ethymology = models.BooleanField(
+        u'этимология неясна',
+        )
+    
+    etymology = models.ManyToManyField(
+        Etymology,
+        verbose_name = u'этимология',
+        blank = True,
+        null = True,
+        )
 
     def __unicode__(self):
         return u'<Имя собственное %s>' % self.id
@@ -168,7 +209,7 @@ class ProperNoun(models.Model):
     class Meta:
         verbose_name = u'имя собственное'
         verbose_name_plural = u'имена собственные'
-        
+
 
 class Meaning(models.Model):
     
