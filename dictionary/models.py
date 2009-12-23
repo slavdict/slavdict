@@ -12,85 +12,37 @@ from cslav_dict.directory.models import (
 
     )
 
+class CivilEquivalent(models.Model):
+    
+    text = models.CharField(
+        u'гражданское написание',
+        max_length = 40,
+        unique = True,
+        )
+
+    def __unicode__(self):
+        return self.text
+    
+    class Meta:
+        verbose_name = u'эквивалент в гражданском написании'
+        verbose_name_plural = u'слова в гражданском написании'
+
 
 class Entry(models.Model):
     
-    civil_equivalent = models.CharField(
-        u'гражданское написание',
-        max_length = 40,
+    civil_equivalent = models.ForeignKey(
+        CivilEquivalent,
+        verbose_name = u'гражданское написание',
         )
     
     # orthographic_variants
 
+    # lexeme (посредник к граматическим формам и свойствам)
     part_of_speech = models.ForeignKey(
         PartOfSpeech,
         verbose_name = u'часть речи',
         )
-
-    # lexeme (посредник к граматическим формам и свойствам)
-
-    def __unicode__(self):
-        return self.civil_equivalent
-
-    class Meta:
-        verbose_name = u'словарная статья'
-        verbose_name_plural = u'словарные статьи'
-
-
-class OrthographicVariant(models.Model):
     
-    # словарная статья, к которой относиться данный орф. вариант
-    entry          = models.ForeignKey(
-        Entry,
-        verbose_name = u'словарная статья',
-        related_name = 'orthographic_variants'
-        )
-    
-    # сам орфографический вариант
-    idem                = models.CharField(
-        u'написание',
-        max_length=40,
-        )
-    
-    # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
-    is_reconstructed    = models.BooleanField(u'является реконструкцией')
-
-    # в связке с полем реконструкции (is_reconstructed)
-    # показывает, утверждена ли реконструкция или нет
-    is_approved         = models.BooleanField(u'одобренная реконструкция')
-
-    # является ли данный орфографический вариант основным
-    is_headword         = models.BooleanField(u'основной орфографический вариант')
-
-    # является ли орф. вариант только общей частью словоформ 
-    # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
-    # на конце автоматически добавляется дефис, заносить в базу без дефиса
-    is_factored_out     = models.BooleanField(u'общая часть нескольких слов или словоформ')
-
-    # частота встречаемости орфографического варианта
-    # ? для факторизантов не важна ?
-    frequency           = models.PositiveIntegerField(
-        u'частота',
-        blank = True,
-        null  = True,
-        )
-
-    def __unicode__(self):
-        return self.idem
-
-    class Meta:
-        verbose_name = u'орфографический вариант'
-        verbose_name_plural = u'орфографические варианты'
-
-
-class Lexeme(models.Model):
-    
-    entry = models.OneToOneField(
-        Entry,
-        verbose_name = u'словарная статья',
-        )
-    
-    # для существительных и прилагательных
     uninflected = models.BooleanField(
         u'неизменяемое',
         )
@@ -143,13 +95,59 @@ class Lexeme(models.Model):
         max_length = 20,
         blank = True,
         )
-    
+
     def __unicode__(self):
-        return u'<lexeme %s>' % self.id
+        return self.civil_equivalent.text
 
     class Meta:
-        verbose_name = u'лексема'
-        verbose_name_plural = u'лексемы'
+        verbose_name = u'словарная статья'
+        verbose_name_plural = u'словарные статьи'
+
+
+class OrthographicVariant(models.Model):
+    
+    # словарная статья, к которой относиться данный орф. вариант
+    entry          = models.ForeignKey(
+        Entry,
+        verbose_name = u'словарная статья',
+        related_name = 'orthographic_variants'
+        )
+    
+    # сам орфографический вариант
+    idem                = models.CharField(
+        u'написание',
+        max_length=40,
+        )
+    
+    # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
+    is_reconstructed    = models.BooleanField(u'является реконструкцией')
+
+    # в связке с полем реконструкции (is_reconstructed)
+    # показывает, утверждена ли реконструкция или нет
+    is_approved         = models.BooleanField(u'одобренная реконструкция')
+
+    # является ли данный орфографический вариант основным
+    is_headword         = models.BooleanField(u'основной орфографический вариант')
+
+    # является ли орф. вариант только общей частью словоформ 
+    # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
+    # на конце автоматически добавляется дефис, заносить в базу без дефиса
+    is_factored_out     = models.BooleanField(u'общая часть нескольких слов или словоформ')
+
+    # частота встречаемости орфографического варианта
+    # ? для факторизантов не важна ?
+    frequency           = models.PositiveIntegerField(
+        u'частота',
+        blank = True,
+        null  = True,
+        )
+
+    def __unicode__(self):
+        return self.idem
+
+    class Meta:
+        verbose_name = u'орфографический вариант'
+        verbose_name_plural = u'орфографические варианты'
         
 
 class Etymology(models.Model):
@@ -185,7 +183,7 @@ class Etymology(models.Model):
 
 class ProperNoun(models.Model):
 
-    noun = models.OneToOneField(Lexeme)
+    entry = models.ForeignKey(Entry)
 
     onym = models.ForeignKey(
         Onym,
@@ -213,6 +211,8 @@ class ProperNoun(models.Model):
 
 class Meaning(models.Model):
     
+    entry = models.ForeignKey(Entry)
+
     order = models.IntegerField(
         u'номер',
         )
@@ -229,11 +229,14 @@ class Meaning(models.Model):
 
     gloss = models.TextField(
         u'толкование',
+        blank = True,
         )
 
     subcat_frames = models.ManyToManyField(
         SubcatFrame,
         verbose_name = u'модель управления',
+        blank = True,
+        null = True,
         )
 
     def __unicode__(self):
@@ -246,26 +249,47 @@ class Meaning(models.Model):
         verbose_name_plural = u'значения'
 
 
-   
+class Address(models.Model):
+    
+    address = models.CharField(
+        u'адрес',
+        max_length = 15,
+        )
+
+    def __unicode__(self):
+        return u'(%s)' % self.address
+
+    class Meta:
+        verbose_name = u'адрес'
+        verbose_name_plural = u'адреса'
+
+
 class Example(models.Model):
     
     example = models.TextField(
         u'пример',
         )
 
-    # address # нужно учесть диапазоны вроде: 12-13 стихи
+    address = models.ForeignKey( 
+        Address,
+        verbose_name = u'адрес',
+        )
 
     translation = models.TextField(
         u'перевод',
+        blank = True,
         )
 
-    meanings = models.ManyToManyField(Meaning)
+    meaning = models.ForeignKey(Meaning)
+    # TODO: это должно быть поле ManyToMany,
+    # а не FK. Соответственно, оно должно
+    # иметь название во мн.ч. (meaning*s*)
 
     # greek_equivalent
 
     def __unicode__(self):
         
-        return self.example
+        return u'%s %s' % (self.address, self.example)
 
     class Meta:
         

@@ -1,21 +1,11 @@
 # -*- coding: UTF-8 -*-
 from django.contrib import admin
-from cslav_dict.dictionary.models import (
-    
-    Entry,
-    OrthographicVariant,
 
-    Lexeme,
-    ProperNoun,
-    Etymology,
+from cslav_dict.dictionary.models import CivilEquivalent
+admin.site.register(CivilEquivalent)
 
-)
-
-class Entry_Inline(admin.StackedInline):
-    model = Entry
-    max_num = 1
-    
-class OrthVar_InLine(admin.StackedInline):
+from cslav_dict.dictionary.models import OrthographicVariant
+class OrthVar_Inline(admin.StackedInline):
     model = OrthographicVariant
     extra = 1
     fieldsets = (
@@ -35,8 +25,10 @@ class OrthVar_InLine(admin.StackedInline):
             }),
         )
 
+from cslav_dict.dictionary.models import Etymology 
 admin.site.register(Etymology)
-
+    
+from cslav_dict.dictionary.models import ProperNoun
 class ProperNoun_Inline(admin.StackedInline):
     model = ProperNoun
     max_num = 1
@@ -47,22 +39,40 @@ class ProperNoun_Inline(admin.StackedInline):
 #            }),
 #        )
 
+from cslav_dict.dictionary.models import Address
+admin.site.register(Address)
+
+from cslav_dict.dictionary.models import Example
+class Example_Inline(admin.StackedInline):
+    model = Example
+    extra = 1
+
+from cslav_dict.dictionary.models import Meaning
+admin.site.register(
+    Meaning,
+    inlines = (
+        Example_Inline,
+        )
+    )
 
 def entry_with_orth_variants(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('-is_headword','idem')]
     delimiter = u', '
     x = delimiter.join(orth_vars)
-    return u'%s (%s)' % (obj.civil_equivalent, x)
+    return u'%s (%s)' % (obj.civil_equivalent.text, x)
 
 entry_with_orth_variants.admin_order_field = 'civil_equivalent'
 entry_with_orth_variants.short_description = u'словарная статья'
 
 
+from cslav_dict.dictionary.models import Entry
 admin.site.register(
-    Lexeme,
+    Entry,
     fieldsets = (
         (None, {
             'fields': (
+                'civil_equivalent',
+                'part_of_speech',
                 'uninflected',
                 ),
             }),
@@ -96,13 +106,8 @@ admin.site.register(
             }),
         ),
     inlines = (
+        OrthVar_Inline,
         ProperNoun_Inline,
-        ),
-)
-admin.site.register(
-    Entry,
-    inlines = (
-        OrthVar_InLine,
         ),
     list_display = (
         entry_with_orth_variants,
@@ -110,6 +115,7 @@ admin.site.register(
         ),
     list_filter = (
         'part_of_speech',
+        #'editor',
+        #'status',
         ),
 )
-
