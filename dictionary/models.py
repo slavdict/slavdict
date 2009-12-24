@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
+from django.contrib.auth.models import User
 from cslav_dict.directory.models import (
     
     PartOfSpeech,
@@ -9,8 +10,33 @@ from cslav_dict.directory.models import (
     Transitivity,
     SubcatFrame,
     Language,
+    EntryStatus,
 
     )
+
+class MyUser(User):
+    
+    def __unicode__(self):
+        return u'%s %s' % (
+            self.last_name,
+            self.first_name,
+            )
+
+    class Meta:
+        proxy = True
+        ordering = ('last_name', 'first_name')
+
+class AdminInfo:
+    
+    add_datetime = models.DateTimeField(
+        editable = False,
+        auto_now_add = True,
+        )
+
+    change_datetime = models.DateTimeField(
+        editable = False,
+        auto_now = True,
+        )
 
 class CivilEquivalent(models.Model):
     
@@ -28,7 +54,7 @@ class CivilEquivalent(models.Model):
         verbose_name_plural = u'слова в гражданском написании'
 
 
-class Entry(models.Model):
+class Entry(models.Model, AdminInfo):
     
     civil_equivalent = models.ForeignKey(
         CivilEquivalent,
@@ -44,7 +70,7 @@ class Entry(models.Model):
         )
     
     uninflected = models.BooleanField(
-        u'неизменяемое',
+        u'неизменяемое (для сущ./прил.)',
         )
     
     # только для существительных
@@ -96,12 +122,26 @@ class Entry(models.Model):
         blank = True,
         )
 
+    # административная информация
+    status = models.ForeignKey(
+        EntryStatus,
+        default = 0,
+        )
+
+    editor = models.ForeignKey(
+        MyUser,
+        verbose_name = u'ответственный редактор',
+        blank = True,
+        null = True,
+        )
+
     def __unicode__(self):
         return self.civil_equivalent.text
 
     class Meta:
         verbose_name = u'словарная статья'
         verbose_name_plural = u'словарные статьи'
+        ordering = ('civil_equivalent__text',)
 
 
 class OrthographicVariant(models.Model):
@@ -209,7 +249,7 @@ class ProperNoun(models.Model):
         verbose_name_plural = u'имена собственные'
 
 
-class Meaning(models.Model):
+class Meaning(models.Model, AdminInfo):
     
     entry = models.ForeignKey(Entry)
 
@@ -247,7 +287,7 @@ class Meaning(models.Model):
         
         verbose_name = u'значение'
         verbose_name_plural = u'значения'
-
+        ordering = ('entry__civil_equivalent__text', 'order')
 
 class Address(models.Model):
     
@@ -264,7 +304,7 @@ class Address(models.Model):
         verbose_name_plural = u'адреса'
 
 
-class Example(models.Model):
+class Example(models.Model, AdminInfo):
     
     example = models.TextField(
         u'пример',
@@ -273,6 +313,10 @@ class Example(models.Model):
     address = models.ForeignKey( 
         Address,
         verbose_name = u'адрес',
+        )
+
+    hidden = models.BooleanField(
+        u'не показывать в словарной статье',
         )
 
     translation = models.TextField(

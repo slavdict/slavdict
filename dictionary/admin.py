@@ -85,7 +85,11 @@ admin.site.register(
             'fields': (
                 'civil_equivalent',
                 'part_of_speech',
-                'uninflected',
+                ),
+            }),
+        (u'административная инормация', {
+            'fields': (
+                ('status', 'editor'),
                 ),
             }),
         (u'для существительных', {
@@ -106,6 +110,11 @@ admin.site.register(
                 'collapse',
                 ),
             }),
+        (None, {
+            'fields': (
+                'uninflected',
+                ),
+            }),
         (u'для глаголов', {
             'fields': (
                 'transitivity',
@@ -124,10 +133,13 @@ admin.site.register(
     list_display = (
         entry_with_orth_variants,
         'part_of_speech',
+        'editor',
+        'status',
         ),
     list_filter = (
         'part_of_speech',
-        #'editor',
-        #'status',
+        'editor',
+        'status',
         ),
+    save_on_top = True,
 )

@@ -115,3 +115,22 @@ class Language(TermDirectory):
     class Meta(TermDirectory.Meta):
         verbose_name = u'язык'
         verbose_name_plural = u'список языков'
+
+class EntryStatus(models.Model):
+    
+    order = models.IntegerField(
+        u'порядковый номер',
+        )
+
+    status = models.CharField(
+        u'статус',
+        max_length = 30,
+        )
+
+    def __unicode__(self):
+        return self.status
+
+    class Meta:
+        verbose_name = u'статус словарной статьи'
+        verbose_name_plural = u'статусы словарной статьи'
+        ordering = ('order',)

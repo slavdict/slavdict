@@ -10,6 +10,7 @@ from cslav_dict.directory.models import (
     SyntArgument,
     SubcatFrame,
     Language,
+    EntryStatus,
 
 )
 
@@ -21,3 +22,4 @@ admin.site.register(Transitivity)
 admin.site.register(SyntArgument)
 admin.site.register(SubcatFrame)
 admin.site.register(Language)
+admin.site.register(EntryStatus)
