@@ -57,8 +57,9 @@ entry_with_orth_variants.admin_order_field = 'civil_equivalent'
 entry_with_orth_variants.short_description = u'словарная статья'
 
 def meaning_with_entry(obj):
+    ent = entry_with_orth_variants(obj.entry)
     return u'%s %s. %s' % (
-        entry_with_orth_variants(obj.entry),
+        ent,
         obj.order,
         obj.meaning,
         )
@@ -105,6 +106,7 @@ admin.site.register(
         (u'для прилагательных', {
             'fields': (
                 'short_form',
+                'possessive_prounoun_to',
                 ),
             'classes': (
                 'collapse',
@@ -143,3 +145,9 @@ admin.site.register(
         ),
     save_on_top = True,
 )
+
+from cslav_dict.dictionary.models import SynonymGroup 
+admin.site.register(SynonymGroup)
+
+from cslav_dict.dictionary.models import PhraseologicalUnit
+admin.site.register(PhraseologicalUnit)

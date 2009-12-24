@@ -7,11 +7,15 @@ from django.shortcuts import redirect
 from django.contrib import admin
 admin.autodiscover()
 
+from cslav_dict.dictionary.models import Entry
+entries = Entry.objects.select_related().filter(status__order__gt=0)
+
 test = {
-    'template': 'base.html',
+    'template': 'template1.django.html',
     'extra_context': {
-            'title': u'Проверка',
-            'content': u'Тестовое содержимое страницы. Ура, сайт работает!'
+            'title': u'Словарные статьи',
+            'content': u'Тестовое содержимое страницы. Ура, сайт работает!',
+            'entries': entries,
         }
     }
 
@@ -26,3 +30,8 @@ urlpatterns += patterns('',
     url( r'^wiki/$',  redirect('http://slavonic.pbworks.com/')),
 )
 
+try:
+    import local_urls
+    urlpatterns += local_urls.urlpatterns
+except ImportError, AttributeError:
+    pass

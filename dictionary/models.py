@@ -1,8 +1,19 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
+
+from hip2unicode.functions import hip2unicode as h2u
+from hip2unicode.functions import all_hip_conversions as ahc
+from hip2unicode.functions import make_conversion as mc
+from hip2unicode.conversions import cslav2ucs
+
+def ucs_convert(text):
+    return h2u(text, ahc(slav=mc(cslav2ucs.cslav2ucs))).encode('utf-8')
+
+
+
 from cslav_dict.directory.models import (
-    
+
     PartOfSpeech,
     Gender,
     Tantum,
@@ -62,6 +73,10 @@ class Entry(models.Model, AdminInfo):
         )
     
     # orthographic_variants
+    @property
+    def orth_vars(self):
+        return self.orthographic_variants.all()
+
 
     # lexeme (посредник к граматическим формам и свойствам)
     part_of_speech = models.ForeignKey(
@@ -93,6 +108,11 @@ class Entry(models.Model, AdminInfo):
         help_text = u'само окончание без дефиса в начале',
         blank = True,
         )
+    
+    @property
+    def genitive_ucs(self):
+        return ucs_convert(self.genitive)
+
     # proper_noun
 
     # только для прилагательных
@@ -100,6 +120,17 @@ class Entry(models.Model, AdminInfo):
         u'краткая форма',
         max_length = 20,
         blank = True,
+        )
+
+    @property
+    def short_form_ucs(self):
+        return ucs_convert(self.short_form)
+
+    possessive_prounoun_to = models.ForeignKey(
+        'self',
+        verbose_name = u'притяж. прилагательное от',
+        blank = True,
+        null = True,
         )
 
     # только для глаголов
@@ -115,12 +146,20 @@ class Entry(models.Model, AdminInfo):
         max_length = 20,
         blank = True,
         )
+
+    @property
+    def sg1_ucs(self):
+        return ucs_convert(self.sg1)
     
     sg2 = models.CharField(
         u'форма 2sg',
         max_length = 20,
         blank = True,
         )
+
+    @property
+    def sg2_ucs(self):
+        return ucs_convert(self.sg2)
 
     # административная информация
     status = models.ForeignKey(
@@ -158,6 +197,10 @@ class OrthographicVariant(models.Model):
         u'написание',
         max_length=40,
         )
+
+    @property
+    def idem_ucs(self):
+        return ucs_convert(self.idem)
     
     # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
     is_reconstructed    = models.BooleanField(u'является реконструкцией')
@@ -188,7 +231,7 @@ class OrthographicVariant(models.Model):
     class Meta:
         verbose_name = u'орфографический вариант'
         verbose_name_plural = u'орфографические варианты'
-        
+        ordering = ('-is_headword', 'idem')
 
 class Etymology(models.Model):
 
@@ -229,6 +272,10 @@ class ProperNoun(models.Model):
         Onym,
         verbose_name = u'тип имени собственного',
         )
+    
+    canonical_name = models.BooleanField(
+        u'каноническое',
+        )
 
     unclear_ethymology = models.BooleanField(
         u'этимология неясна',
@@ -251,14 +298,34 @@ class ProperNoun(models.Model):
 
 class Meaning(models.Model, AdminInfo):
     
-    entry = models.ForeignKey(Entry)
+    entry = models.ForeignKey(
+        Entry,
+        blank = True,
+        null = True,
+        verbose_name = u'лексема',
+        help_text = u'Лексема, к которой относится значение. Выберите, только если значение не относится к фразеологизму.',
+        )
+
+    phraseological_unit = models.ForeignKey(
+        'PhraseologicalUnit',
+        blank = True,
+        null = True,
+        verbose_name = u'фразеологизм',
+        help_text = u'Фразелогическое сочетание, к которому относится значение. Выберите, только если значение не относится к конкретной лексеме.',
+        )
 
     order = models.IntegerField(
         u'номер',
         )
+
+    link = models.BooleanField(
+        u'значение будет ссылкой на значение другого слова',
+        help_text = u'если данный флаг выставлен, содержимое поля «значение» отображаться в словарной статье не будет',
+        )
     
     meaning = models.TextField(
         u'значение',
+        blank = True,
         )
 
     metaphorical = models.BooleanField(
@@ -310,6 +377,10 @@ class Example(models.Model, AdminInfo):
         u'пример',
         )
 
+    @property
+    def example_ucs(self):
+        return ucs_convert(self.example)
+
     address = models.ForeignKey( 
         Address,
         verbose_name = u'адрес',
@@ -340,4 +411,54 @@ class Example(models.Model, AdminInfo):
         verbose_name = u'пример'
         verbose_name_plural = u'примеры'
 
+class SynonymGroup(models.Model):
+    
+    synonyms = models.ManyToManyField(
+        Meaning,
+        verbose_name = u'синонимы',
+        related_name = 'synonym_groups'
+        )
 
+    base = models.ForeignKey(
+        Meaning,
+        verbose_name = u'базовый синоним',
+        related_name = 'base_synonyms'
+        )
+
+    def __unicode__(self):
+        return self.base.entry.civil_equivalent.text
+
+    class Meta:
+        verbose_name = u'группа синонимов'
+        verbose_name_plural = u'группы синонимов'
+
+class PhraseologicalUnit(models.Model):
+    
+    text = models.CharField(
+        u'фразеологическое сочетание',
+        max_length = 50,
+        )
+
+    @property
+    def text_ucs(self):
+        return ucs_convert(self.text)
+    
+    constituents = models.ManyToManyField(
+        Entry,
+        verbose_name = u'словарные статьи',
+        help_text = u'словарные статьи, при которых необходимо разместить фразеологическую единицу или ссылку на её размещение',
+        related_name = 'phraseol_units',
+        )
+
+    base = models.ForeignKey(
+        Entry,
+        verbose_name = u'базовая словарная статья',
+        related_name = 'base_to_phraseol_units'
+        )
+    
+    def __unicode__(self):
+        return self.text
+
+    class Meta:
+        verbose_name = u'фразеологическое сочетание'
+        verbose_name_plural = u'фразеологические сочетания'
