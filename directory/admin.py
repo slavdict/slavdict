@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.contrib import admin
-from cslav_dict.directory.models import (
+from slavdict.directory.models import (
     
     PartOfSpeech,
     Gender,

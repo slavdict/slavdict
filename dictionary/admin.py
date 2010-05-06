@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
 from django.contrib import admin
 
-from cslav_dict.dictionary.models import CivilEquivalent
+from slavdict.dictionary.models import CivilEquivalent
 admin.site.register(CivilEquivalent)
 
-from cslav_dict.dictionary.models import OrthographicVariant
+from slavdict.dictionary.models import OrthographicVariant
 class OrthVar_Inline(admin.StackedInline):
     model = OrthographicVariant
     extra = 1
@@ -25,10 +25,10 @@ class OrthVar_Inline(admin.StackedInline):
             }),
         )
 
-from cslav_dict.dictionary.models import Etymology 
+from slavdict.dictionary.models import Etymology 
 admin.site.register(Etymology)
     
-from cslav_dict.dictionary.models import ProperNoun
+from slavdict.dictionary.models import ProperNoun
 class ProperNoun_Inline(admin.StackedInline):
     model = ProperNoun
     max_num = 1
@@ -39,10 +39,10 @@ class ProperNoun_Inline(admin.StackedInline):
 #            }),
 #        )
 
-from cslav_dict.dictionary.models import Address
+from slavdict.dictionary.models import Address
 admin.site.register(Address)
 
-from cslav_dict.dictionary.models import Example
+from slavdict.dictionary.models import Example
 class Example_Inline(admin.StackedInline):
     model = Example
     extra = 1
@@ -67,7 +67,7 @@ def meaning_with_entry(obj):
 meaning_with_entry.admin_order_field = 'entry'
 meaning_with_entry.short_description = u'значение'
 
-from cslav_dict.dictionary.models import Meaning
+from slavdict.dictionary.models import Meaning
 admin.site.register(
     Meaning,
     inlines = (
@@ -78,7 +78,7 @@ admin.site.register(
         ),
     )
 
-from cslav_dict.dictionary.models import Entry
+from slavdict.dictionary.models import Entry
 admin.site.register(
     Entry,
     fieldsets = (
@@ -146,8 +146,8 @@ admin.site.register(
     save_on_top = True,
 )
 
-from cslav_dict.dictionary.models import SynonymGroup 
+from slavdict.dictionary.models import SynonymGroup 
 admin.site.register(SynonymGroup)
 
-from cslav_dict.dictionary.models import PhraseologicalUnit
+from slavdict.dictionary.models import PhraseologicalUnit
 admin.site.register(PhraseologicalUnit)

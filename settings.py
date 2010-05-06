@@ -1,4 +1,4 @@
-# Django settings for cslav_dict project.
+# Django settings for slavdict project.
 import os
 
 DEBUG = True
@@ -68,7 +68,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-ROOT_URLCONF = 'cslav_dict.urls'
+ROOT_URLCONF = 'slavdict.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -85,8 +85,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
 
-    'cslav_dict.dictionary',
-    'cslav_dict.directory',
+    'slavdict.dictionary',
+    'slavdict.directory',
 )
 
 try:

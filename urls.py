@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.contrib import admin
 admin.autodiscover()
 
-from cslav_dict.dictionary.models import Entry
+from slavdict.dictionary.models import Entry
 entries = Entry.objects.select_related().filter(status__order__gt=0)
 
 test = {
@@ -26,7 +26,7 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('',
     url( r'^$',      direct_to_template,     test),
-    url( r'^forum/', include('cslav_dict.forum.urls')),
+    url( r'^forum/', include('slavdict.forum.urls')),
     url( r'^wiki/$',  redirect('http://slavonic.pbworks.com/')),
 )
 

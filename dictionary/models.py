@@ -12,7 +12,7 @@ def ucs_convert(text):
 
 
 
-from cslav_dict.directory.models import (
+from slavdict.directory.models import (
 
     PartOfSpeech,
     Gender,
