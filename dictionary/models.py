@@ -2,14 +2,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from hip2unicode.functions import hip2unicode
+from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
 from hip2unicode.conversions import antconc_ucs8
 
 compiled_conversion = compile_conversion(antconc_ucs8.conversion)
 
 def ucs_convert(text):
-    return hip2unicode(text, compiled_conversion)#.encode('utf-8')
+    return convert(text, compiled_conversion).encode('utf-8')
 
 
 
