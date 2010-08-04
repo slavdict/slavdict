@@ -78,6 +78,9 @@ class Entry(models.Model, AdminInfo):
     def orth_vars(self):
         return self.orthographic_variants.all()
 
+    @property
+    def meanings(self):
+        return self.meaning_set.all()
 
     # lexeme (посредник к граматическим формам и свойствам)
     part_of_speech = models.ForeignKey(
