@@ -187,14 +187,14 @@ class Entry(models.Model, AdminInfo):
 class OrthographicVariant(models.Model):
     
     # словарная статья, к которой относиться данный орф. вариант
-    entry          = models.ForeignKey(
+    entry = models.ForeignKey(
         Entry,
         verbose_name = u'словарная статья',
         related_name = 'orthographic_variants'
         )
     
     # сам орфографический вариант
-    idem                = models.CharField(
+    idem = models.CharField(
         u'написание',
         max_length=40,
         )
@@ -204,23 +204,23 @@ class OrthographicVariant(models.Model):
         return ucs_convert(self.idem)
     
     # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
-    is_reconstructed    = models.BooleanField(u'является реконструкцией')
+    is_reconstructed = models.BooleanField(u'является реконструкцией')
 
     # в связке с полем реконструкции (is_reconstructed)
     # показывает, утверждена ли реконструкция или нет
-    is_approved         = models.BooleanField(u'одобренная реконструкция')
+    is_approved = models.BooleanField(u'одобренная реконструкция')
 
     # является ли данный орфографический вариант основным
-    is_headword         = models.BooleanField(u'основной орфографический вариант')
+    is_headword = models.BooleanField(u'основной орфографический вариант')
 
     # является ли орф. вариант только общей частью словоформ 
     # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
     # на конце автоматически добавляется дефис, заносить в базу без дефиса
-    is_factored_out     = models.BooleanField(u'общая часть нескольких слов или словоформ')
+    is_factored_out = models.BooleanField(u'общая часть нескольких слов или словоформ')
 
     # частота встречаемости орфографического варианта
     # ? для факторизантов не важна ?
-    frequency           = models.PositiveIntegerField(
+    frequency = models.PositiveIntegerField(
         u'частота',
         blank = True,
         null  = True,
