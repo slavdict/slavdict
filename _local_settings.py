@@ -7,8 +7,12 @@
 # by current git repository.
 
 DEBUG = True
-ROOT = 'D:/workplace/git_repositories/iasp'
-DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = 'D:/workplace/sqlite-dbs/iasp-django.db'
+ROOT = 'D:/path/to/the/django/project/'
+DATABASES = {
+    'default': {
+        'ENGINE':   'django.db.backends.sqlite3',
+        'NAME':     ROOT + 'db/test.db',
+    }
+}
 SITE_ID = 1
 MEDIA_URL = 'http://127.0.0.1:8000/'

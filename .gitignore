@@ -4,3 +4,4 @@
 !.gitignore
 local_settings.py
 local_urls.py
+db/
