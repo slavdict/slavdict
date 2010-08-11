@@ -1,15 +1,17 @@
 @font-face {
-  font-family: "Triodion ieUcs";
-  src: url("/site-media/triieucs.eot");
-}
-
-@font-face {
-  font-family: "Triodion ieUcs";
-  src: url("/site-media/TriIEUcs.ttf") format("truetype");
+    font-family: 'Triodion';
+    src: url('/site-media/fonts/TriIEUcs.eot'); /* .eot */
+    src:
+        local('Triodion ieUcs'),
+        local('Triodion ieUcs Regular'),
+        local('Triodion-ieUcs'),
+        url('/site-media/fonts/TriIEUcs.woff') format('woff'),
+        url('/site-media/fonts/TriIEUcs.ttf') format('truetype'),
+        url('/site-media/fonts/TriIEUcs.svg#Triodion-ieUcs') format('svg');
 }
 
 .cslav {
-    font-family: "Triodion ieUcs";
+    font-family: Triodion;
     font-weight: normal;
     font-size: 110%;
 }
