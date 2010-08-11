@@ -96,7 +96,7 @@ class Tantum(TermDirectory):
 
 
 class Onym(TermDirectory):
-    
+
     class Meta(TermDirectory.Meta):
         verbose_name = u'тип имени собственного'
         verbose_name_plural = u'типы имени собственного'
@@ -148,7 +148,7 @@ class SubcatFrame(models.Model):
         )
 
     def __unicode__(self):
-        
+
         rtn = self.argument1.abbreviation
         if self.argument2:
             rtn = u'%s, %s' % (rtn, self.argument2.abbreviation)
@@ -164,13 +164,13 @@ class SubcatFrame(models.Model):
 
 
 class Language(TermDirectory):
-    
+
     class Meta(TermDirectory.Meta):
         verbose_name = u'язык'
         verbose_name_plural = u'список языков'
 
 class EntryStatus(models.Model):
-    
+
     order = models.IntegerField(
         u'порядковый номер',
         )

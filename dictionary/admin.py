@@ -25,9 +25,9 @@ class OrthVar_Inline(admin.StackedInline):
             }),
         )
 
-from slavdict.dictionary.models import Etymology 
+from slavdict.dictionary.models import Etymology
 admin.site.register(Etymology)
-    
+
 from slavdict.dictionary.models import ProperNoun
 class ProperNoun_Inline(admin.StackedInline):
     model = ProperNoun
@@ -146,7 +146,7 @@ admin.site.register(
     save_on_top = True,
 )
 
-from slavdict.dictionary.models import SynonymGroup 
+from slavdict.dictionary.models import SynonymGroup
 admin.site.register(SynonymGroup)
 
 from slavdict.dictionary.models import PhraseologicalUnit

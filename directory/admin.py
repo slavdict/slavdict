@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.contrib import admin
 from slavdict.directory.models import (
-    
+
     PartOfSpeech,
     Gender,
     Tantum,

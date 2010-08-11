@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Category(models.Model):
-    
+
     supercategory = models.ForeignKey('self', null=True, blank=True, related_name='subcategories')
     title         = models.CharField(max_length=100)
     description   = models.CharField(max_length=100, blank=True)
@@ -28,15 +28,15 @@ class Topic(models.Model):
     @property
     def post_count(self):
         return self.posts.count()
-    
+
     @property
     def last_post(self):
         return self.posts.order_by('-posted_at')[0]
-    
+
     @property
     def last_post_at(self):
         return self.last_post.edited_at
-    
+
     @property
     def last_user_name(self):
         return self.last_post.user

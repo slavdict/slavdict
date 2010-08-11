@@ -27,7 +27,7 @@ from slavdict.directory.models import (
     )
 
 class MyUser(User):
-    
+
     def __unicode__(self):
         return u'%s %s' % (
             self.last_name,
@@ -39,7 +39,7 @@ class MyUser(User):
         ordering = ('last_name', 'first_name')
 
 class AdminInfo:
-    
+
     add_datetime = models.DateTimeField(
         editable = False,
         auto_now_add = True,
@@ -51,7 +51,7 @@ class AdminInfo:
         )
 
 class CivilEquivalent(models.Model):
-    
+
     text = models.CharField(
         u'гражданское написание',
         max_length = 40,
@@ -60,19 +60,19 @@ class CivilEquivalent(models.Model):
 
     def __unicode__(self):
         return self.text
-    
+
     class Meta:
         verbose_name = u'эквивалент в гражданском написании'
         verbose_name_plural = u'слова в гражданском написании'
 
 
 class Entry(models.Model, AdminInfo):
-    
+
     civil_equivalent = models.ForeignKey(
         CivilEquivalent,
         verbose_name = u'гражданское написание',
         )
-    
+
     # orthographic_variants
     @property
     def orth_vars(self):
@@ -87,11 +87,11 @@ class Entry(models.Model, AdminInfo):
         PartOfSpeech,
         verbose_name = u'часть речи',
         )
-    
+
     uninflected = models.BooleanField(
         u'неизменяемое (для сущ./прил.)',
         )
-    
+
     # только для существительных
     tantum = models.ForeignKey(
         Tantum,
@@ -112,7 +112,7 @@ class Entry(models.Model, AdminInfo):
         help_text = u'само окончание без дефиса в начале',
         blank = True,
         )
-    
+
     @property
     def genitive_ucs(self):
         return ucs_convert(self.genitive)
@@ -154,7 +154,7 @@ class Entry(models.Model, AdminInfo):
     @property
     def sg1_ucs(self):
         return ucs_convert(self.sg1)
-    
+
     sg2 = models.CharField(
         u'форма 2sg',
         max_length = 20,
@@ -188,14 +188,14 @@ class Entry(models.Model, AdminInfo):
 
 
 class OrthographicVariant(models.Model):
-    
+
     # словарная статья, к которой относиться данный орф. вариант
     entry = models.ForeignKey(
         Entry,
         verbose_name = u'словарная статья',
         related_name = 'orthographic_variants'
         )
-    
+
     # сам орфографический вариант
     idem = models.CharField(
         u'написание',
@@ -205,7 +205,7 @@ class OrthographicVariant(models.Model):
     @property
     def idem_ucs(self):
         return ucs_convert(self.idem)
-    
+
     # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
     is_reconstructed = models.BooleanField(u'является реконструкцией')
 
@@ -216,7 +216,7 @@ class OrthographicVariant(models.Model):
     # является ли данный орфографический вариант основным
     is_headword = models.BooleanField(u'основной орфографический вариант')
 
-    # является ли орф. вариант только общей частью словоформ 
+    # является ли орф. вариант только общей частью словоформ
     # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
     # на конце автоматически добавляется дефис, заносить в базу без дефиса
     is_factored_out = models.BooleanField(u'общая часть нескольких слов или словоформ')
@@ -276,7 +276,7 @@ class ProperNoun(models.Model):
         Onym,
         verbose_name = u'тип имени собственного',
         )
-    
+
     canonical_name = models.BooleanField(
         u'каноническое',
         )
@@ -284,7 +284,7 @@ class ProperNoun(models.Model):
     unclear_ethymology = models.BooleanField(
         u'этимология неясна',
         )
-    
+
     etymology = models.ManyToManyField(
         Etymology,
         verbose_name = u'этимология',
@@ -301,7 +301,7 @@ class ProperNoun(models.Model):
 
 
 class Meaning(models.Model, AdminInfo):
-    
+
     entry = models.ForeignKey(
         Entry,
         blank = True,
@@ -326,7 +326,7 @@ class Meaning(models.Model, AdminInfo):
         u'значение будет ссылкой на значение другого слова',
         help_text = u'если данный флаг выставлен, содержимое поля «значение» отображаться в словарной статье не будет',
         )
-    
+
     meaning = models.TextField(
         u'значение',
         blank = True,
@@ -351,17 +351,17 @@ class Meaning(models.Model, AdminInfo):
         )
 
     def __unicode__(self):
-        
+
         return self.meaning
 
     class Meta:
-        
+
         verbose_name = u'значение'
         verbose_name_plural = u'значения'
         ordering = ('entry__civil_equivalent__text', 'order')
 
 class Address(models.Model):
-    
+
     address = models.CharField(
         u'адрес',
         max_length = 15,
@@ -376,7 +376,7 @@ class Address(models.Model):
 
 
 class Example(models.Model, AdminInfo):
-    
+
     example = models.TextField(
         u'пример',
         )
@@ -385,7 +385,7 @@ class Example(models.Model, AdminInfo):
     def example_ucs(self):
         return ucs_convert(self.example)
 
-    address = models.ForeignKey( 
+    address = models.ForeignKey(
         Address,
         verbose_name = u'адрес',
         )
@@ -407,16 +407,16 @@ class Example(models.Model, AdminInfo):
     # greek_equivalent
 
     def __unicode__(self):
-        
+
         return u'%s %s' % (self.address, self.example)
 
     class Meta:
-        
+
         verbose_name = u'пример'
         verbose_name_plural = u'примеры'
 
 class SynonymGroup(models.Model):
-    
+
     synonyms = models.ManyToManyField(
         Meaning,
         verbose_name = u'синонимы',
@@ -437,7 +437,7 @@ class SynonymGroup(models.Model):
         verbose_name_plural = u'группы синонимов'
 
 class PhraseologicalUnit(models.Model):
-    
+
     text = models.CharField(
         u'фразеологическое сочетание',
         max_length = 50,
@@ -446,7 +446,7 @@ class PhraseologicalUnit(models.Model):
     @property
     def text_ucs(self):
         return ucs_convert(self.text)
-    
+
     constituents = models.ManyToManyField(
         Entry,
         verbose_name = u'словарные статьи',
@@ -459,7 +459,7 @@ class PhraseologicalUnit(models.Model):
         verbose_name = u'базовая словарная статья',
         related_name = 'base_to_phraseol_units'
         )
-    
+
     def __unicode__(self):
         return self.text
 
