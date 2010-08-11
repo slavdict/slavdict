@@ -25,7 +25,9 @@
                     {{ entry.part_of_speech.abbreviation }}
 
                     {% for i in entry.meanings %}
-                        <b>{{ forloop.counter }}</b>. {{ i.meaning }}
+                        <b>{{ forloop.counter }}</b>.
+                        {% if i.meaning %} {{ i.meaning }} {% endif %}
+                        {% if i.gloss %}    {{ i.gloss }}  {% endif %}
                     {% endfor %}
                 </div>
             {% endfor %}
