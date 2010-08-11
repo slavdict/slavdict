@@ -1,8 +1,61 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
 
+class Category(models.Model):
+
+    slug = models.CharField(
+        u'условное название',
+        max_length = 15,
+        )
+
+    description = models.CharField(
+        u'описание',
+        max_length = 50,
+        )
+
+    tag = models.CharField(
+        u'ярлык по умолчанию',
+        max_length = 15,
+        )
+
+    def __unicode__(self):
+        return self.tag
+
+
+class CategoryValue(models.Model):
+
+    category = models.ForeignKey(
+        Category,
+        verbose_name = u'значение категории',
+        )
+
+    slug = models.CharField(
+        u'условное название',
+        max_length = 15,
+        )
+
+    tag = models.CharField(
+        u'ярлык по умолчанию',
+        max_length = 15,
+        )
+
+    order = models.PositiveSmallIntegerField(
+        u'порядок следования',
+        )
+
+    description = models.CharField(
+        u'описание',
+        max_length = 50,
+        )
+
+    def __unicode__(self):
+        return self.tag
+
+
+################################################
+
 class TermDirectory(models.Model):
-    
+
     name = models.CharField(
         u'название',
         max_length=20,
