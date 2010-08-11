@@ -27,7 +27,7 @@
                     {% for i in entry.meanings %}
                         <b>{{ forloop.counter }}</b>.
                         {% if i.meaning %} {{ i.meaning }} {% endif %}
-                        {% if i.gloss %}    {{ i.gloss }}  {% endif %}
+                        {% if i.gloss %}   <i>{{ i.gloss.capitalize }}</i>  {% endif %}
                     {% endfor %}
                 </div>
             {% endfor %}
