@@ -66,6 +66,18 @@ class CivilEquivalent(models.Model):
         verbose_name_plural = u'слова в гражданском написании'
 
 
+class WordForm(models.Model):
+
+    text = models.CharField(
+        u'словоформа',
+        max_length = 40,
+        unique = True,
+        )
+
+    def __unicode__(self):
+        return self.text
+
+
 class Entry(models.Model, AdminInfo):
 
     civil_equivalent = models.ForeignKey(
@@ -83,6 +95,11 @@ class Entry(models.Model, AdminInfo):
         return self.meaning_set.all()
 
     # lexeme (посредник к граматическим формам и свойствам)
+    word_forms = models.ManyToManyField(
+        WordForm,
+        verbose_name = u'словоформы'
+        )
+
     part_of_speech = models.ForeignKey(
         PartOfSpeech,
         verbose_name = u'часть речи',
