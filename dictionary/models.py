@@ -417,7 +417,7 @@ class Example(models.Model, AdminInfo):
         )
 
     meaning = models.ForeignKey(Meaning)
-    # TODO: это должно быть поле ManyToMany,
+    # TODO: это должно быть поле ManyToManyField,
     # а не FK. Соответственно, оно должно
     # иметь название во мн.ч. (meaning*s*)
 
