@@ -182,9 +182,19 @@ class Entry(models.Model, AdminInfo):
     def sg2_ucs(self):
         return ucs_convert(self.sg2)
 
+    additional_info = models.TextField(
+        u'любая дополнительная информация'
+        )
+
     # административная информация
     status = models.ForeignKey(
         EntryStatus,
+        verbose_name = u'статус статьи',
+        default = 0,
+        )
+
+    percent_status = models.PositiveSmallIntegerField(
+        u'статус готовности статьи в процентах',
         default = 0,
         )
 
@@ -193,6 +203,11 @@ class Entry(models.Model, AdminInfo):
         verbose_name = u'ответственный редактор',
         blank = True,
         null = True,
+        )
+
+    antconc_query = models.CharField(
+        u'Запрос для программы AntConc',
+        max_length = 500,
         )
 
     def __unicode__(self):
@@ -367,15 +382,18 @@ class Meaning(models.Model, AdminInfo):
         null = True,
         )
 
-    def __unicode__(self):
+    additional_info = models.TextField(
+        u'любая дополнительная информация'
+        )
 
+    def __unicode__(self):
         return self.meaning
 
     class Meta:
-
         verbose_name = u'значение'
         verbose_name_plural = u'значения'
         ordering = ('entry__civil_equivalent__text', 'order')
+
 
 class Address(models.Model):
 
