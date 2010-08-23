@@ -420,6 +420,38 @@ class Example(models.Model, AdminInfo):
     def example_ucs(self):
         return ucs_convert(self.example)
 
+    context = models.TextField(
+        u'контекст примера',
+        help_text = u'более широкий контекст для примера',
+        blank = True,
+        )
+
+    class SplitContext:
+        def __init__(self, left, middle, right, whole):
+            self.left = left
+            self.example = middle
+            self.right = right
+            self.whole = whole
+
+        def __unicode__(self):
+            return self.whole
+
+    @property
+    def context_ucs(self):
+        c = self.context
+        e = ucs_convert(self.example)
+        if c:
+            c = ucs_convert(c)
+            x, y, z = c.partition(e)
+            x = strip(x)
+            y = strip(y)
+            z = strip(z)
+            if y:
+                # Разбиение дало положительный результат,
+                # в "y" помещён сам пример.
+                return SplitContext(x, y, z, c)
+        return SplitContext(u'', e, u'', e)
+
     address = models.ForeignKey(
         Address,
         verbose_name = u'адрес',
