@@ -8,7 +8,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 from slavdict.dictionary.models import Entry
-entries = Entry.objects.select_related().filter(status__order__gt=0)
+entries = Entry.objects.all()
 
 test = {
     'template': 'template1.django.html',
