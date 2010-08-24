@@ -183,7 +183,8 @@ class Entry(models.Model, AdminInfo):
         return ucs_convert(self.sg2)
 
     additional_info = models.TextField(
-        u'любая дополнительная информация'
+        u'любая дополнительная информация',
+        blank = True,
         )
 
     # административная информация
@@ -383,7 +384,8 @@ class Meaning(models.Model, AdminInfo):
         )
 
     additional_info = models.TextField(
-        u'любая дополнительная информация'
+        u'любая дополнительная информация',
+        blank = True,
         )
 
     def __unicode__(self):
