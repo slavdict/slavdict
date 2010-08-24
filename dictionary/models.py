@@ -461,6 +461,7 @@ class Example(models.Model, AdminInfo):
 
     hidden = models.BooleanField(
         u'не показывать в словарной статье',
+        default = False,
         )
 
     translation = models.TextField(
