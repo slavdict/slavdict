@@ -541,11 +541,30 @@ class PhraseologicalUnit(models.Model):
     def text_ucs(self):
         return ucs_convert(self.text)
 
-    constituents = models.ManyToManyField(
+    meaning_constituents = models.ManyToManyField(
+        Meaning,
+        verbose_name = u'значения',
+        help_text = u'''значения (как элементы
+                        словарной статьи),
+                        при которых необходимо
+                        разместить фразеологическую
+                        единицу или ссылку
+                        на её размещение''',
+        blank = True,
+        null = True,
+        )
+
+    entry_constituents = models.ManyToManyField(
         Entry,
         verbose_name = u'словарные статьи',
-        help_text = u'словарные статьи, при которых необходимо разместить фразеологическую единицу или ссылку на её размещение',
+        help_text = u'''словарные статьи,
+                        при которых необходимо
+                        разместить фразеологическую
+                        единицу или ссылку
+                        на её размещение''',
         related_name = 'phraseol_units',
+        blank = True,
+        null = True,
         )
 
     base = models.ForeignKey(
