@@ -461,6 +461,19 @@ class Example(models.Model, AdminInfo):
     address = models.ForeignKey(
         Address,
         verbose_name = u'адрес',
+        # временно поле сделано необязательным
+        blank = True,
+        null = True,
+        )
+
+    # Временное поле для импорта вордовских статей.
+    address_text = models.CharField(
+        u'текст адреса',
+        max_length = 300,
+        help_text = u'''Временное поле для импорта
+                        вордовских статей. И заполнения
+                        адресов в неунифицированном
+                        текстовом виде'''
         )
 
     hidden = models.BooleanField(
