@@ -187,6 +187,14 @@ class Entry(models.Model, AdminInfo):
     def sg2_ucs(self):
         return ucs_convert(self.sg2)
 
+    # только для наречий
+    adjective_derived_adverb = models.ForeignKey(
+        'self',
+        verbose_name = u'наречие, образованное от прил.',
+        blank = True,
+        null = True,
+        )
+
     additional_info = models.TextField(
         u'любая дополнительная информация',
         blank = True,
