@@ -147,14 +147,6 @@ class Entry(models.Model, AdminInfo):
     def short_form_ucs(self):
         return ucs_convert(self.short_form)
 
-    noun_derived_adjective = models.ForeignKey(
-        'self',
-        verbose_name = u'прилаг., образованное от сущ.',
-        related_name = 'adjectives',
-        blank = True,
-        null = True,
-        )
-
     possessive = models.BooleanField(
         u'притяжательное прилагательное',
         default = False,
@@ -188,11 +180,16 @@ class Entry(models.Model, AdminInfo):
     def sg2_ucs(self):
         return ucs_convert(self.sg2)
 
-    # только для наречий
-    adjective_derived_adverb = models.ForeignKey(
+    derivation_entry = models.ForeignKey(
         'self',
-        verbose_name = u'наречие, образованное от прил.',
-        related_name = 'adverbs',
+        verbose_name = u'слово, от которого образовано данное слово',
+        blank = True,
+        null = True,
+        )
+
+    derivation_entry_meaning = models.ForeignKey(
+        'Meaning',
+        verbose_name = u'значение, от которого образовано слово',
         blank = True,
         null = True,
         )
