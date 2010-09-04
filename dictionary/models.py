@@ -150,6 +150,7 @@ class Entry(models.Model, AdminInfo):
     noun_derived_adjective = models.ForeignKey(
         'self',
         verbose_name = u'прилаг., образованное от сущ.',
+        related_name = 'adjectives',
         blank = True,
         null = True,
         )
@@ -191,6 +192,7 @@ class Entry(models.Model, AdminInfo):
     adjective_derived_adverb = models.ForeignKey(
         'self',
         verbose_name = u'наречие, образованное от прил.',
+        related_name = 'adverbs',
         blank = True,
         null = True,
         )
