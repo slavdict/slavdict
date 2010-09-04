@@ -513,6 +513,15 @@ class SynonymGroup(models.Model):
         Meaning,
         verbose_name = u'синонимы',
         related_name = 'synonym_groups'
+        blank = True,
+        null = True,
+        )
+
+    phraseological_unit_synonyms = models.ManyToManyField(
+        'PhraseologicalUnit',
+        verbose_name = u'синонимы-фразеологизмы',
+        blank = True,
+        null = True,
         )
 
     base = models.ForeignKey(
