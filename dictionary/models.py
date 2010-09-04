@@ -143,22 +143,20 @@ class Entry(models.Model, AdminInfo):
         blank = True,
         )
 
-    possessive_pronoun_to = models.ForeignKey(
-        'self',
-        verbose_name = u'притяж. прил. к',
-        blank = True,
-        null = True,
-        )
-
     @property
     def short_form_ucs(self):
         return ucs_convert(self.short_form)
 
-    possessive_prounoun_to = models.ForeignKey(
+    noun_derived_adjective = models.ForeignKey(
         'self',
-        verbose_name = u'притяж. прилагательное от',
+        verbose_name = u'прилаг., образованное от сущ.',
         blank = True,
         null = True,
+        )
+
+    possessive = models.BooleanField(
+        u'притяжательное прилагательное',
+        default = False,
         )
 
     # только для глаголов
