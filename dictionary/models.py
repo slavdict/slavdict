@@ -520,7 +520,7 @@ class SynonymGroup(models.Model):
     synonyms = models.ManyToManyField(
         Meaning,
         verbose_name = u'синонимы',
-        related_name = 'synonym_groups'
+        related_name = 'synonym_groups',
         blank = True,
         null = True,
         )
