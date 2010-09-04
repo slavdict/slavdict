@@ -388,6 +388,10 @@ class Meaning(models.Model, AdminInfo):
         blank = True,
         )
 
+    @property
+    def examples(self):
+        return self.example_set.all()
+
     def __unicode__(self):
         return self.meaning
 

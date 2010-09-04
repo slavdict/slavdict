@@ -19,16 +19,32 @@
                 <div class="entry">
 
                     {% for ovar in entry.orth_vars %}
-                            <span class="cslav{% if forloop.first %} headword{% endif %}">{{ ovar.idem_ucs }}</span>{% if not forloop.last %}, {% endif %}
+                            <span class="cslav{% if forloop.first %} headword{% endif %}">{{ ovar.idem_ucs }}</span
+                            >{% if not forloop.last %}, {% endif %}
                     {% endfor %}
 
                     {{ entry.part_of_speech.abbreviation }}
 
-                    {% for i in entry.meanings %}
-                        <b>{{ forloop.counter }}</b>.
-                        {% if i.meaning %} {{ i.meaning }} {% endif %}
-                        {% if i.gloss %}   <i>{{ i.gloss.capitalize }}</i>  {% endif %}
+                    {% for m in entry.meanings %}
+                        {% if not entry.meanings|length_is:"1" %}
+                            <b>{{ forloop.counter }}</b>.
+                        {% endif %}
+
+                        {% if m.meaning %}
+                            <span>{{ m.meaning.capitalize }}</span
+                        {% endif %}
+                        {% if m.gloss %}
+                            {% if m.meaning %}>;{% endif %}
+                            <i>{{ m.gloss.capitalize }}</i>
+                        {% endif %}
+                        {% if m.examples %}:
+                            {% for e in m.examples %}
+                                <span class="cslav">{{ e.example_ucs }}</span>
+                                ({{ e.address }})
+                            {% endfor %}
+                        {% endif %}
                     {% endfor %}
+
                 </div>
             {% endfor %}
         </div>
