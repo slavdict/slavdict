@@ -87,6 +87,8 @@ INSTALLED_APPS = (
 
     'slavdict.dictionary',
     'slavdict.directory',
+
+    'slavdict.django_template_spaces',
 )
 
 try:
