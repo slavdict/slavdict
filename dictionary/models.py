@@ -505,6 +505,11 @@ class Example(models.Model, AdminInfo):
 
     # greek_equivalent
 
+    additional_info = models.TextField(
+        u'любая дополнительная информация',
+        blank = True,
+        )
+
     def __unicode__(self):
 
         return u'%s %s' % (self.address, self.example)
