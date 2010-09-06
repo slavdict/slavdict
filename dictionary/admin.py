@@ -4,6 +4,11 @@ from django.contrib import admin
 from slavdict.dictionary.models import CivilEquivalent
 admin.site.register(CivilEquivalent)
 
+from slavdict.dictionary.models import WordForm
+class WordForm_Inline(admin.StackedInline):
+    model = WordForm
+    extra = 2
+
 from slavdict.dictionary.models import OrthographicVariant
 class OrthVar_Inline(admin.StackedInline):
     model = OrthographicVariant
@@ -106,7 +111,7 @@ admin.site.register(
         (u'для прилагательных', {
             'fields': (
                 'short_form',
-                'possessive_prounoun_to',
+                'possessive',
                 ),
             'classes': (
                 'collapse',
@@ -127,9 +132,19 @@ admin.site.register(
                 'collapse',
                 ),
             }),
+        (u'деривационный источник', {
+            'fields': (
+                'derivation_entry',
+                'derivation_entry_meaning',
+                ),
+            'classes': (
+                'collapse',
+                ),
+            }),
         ),
     inlines = (
         OrthVar_Inline,
+        WordForm_Inline,
         ProperNoun_Inline,
         ),
     list_display = (
