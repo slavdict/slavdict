@@ -183,6 +183,7 @@ class Entry(models.Model, AdminInfo):
     derivation_entry = models.ForeignKey(
         'self',
         verbose_name = u'слово, от которого образовано данное слово',
+        related_name = 'derived_entries',
         blank = True,
         null = True,
         )
@@ -190,6 +191,7 @@ class Entry(models.Model, AdminInfo):
     derivation_entry_meaning = models.ForeignKey(
         'Meaning',
         verbose_name = u'значение, от которого образовано слово',
+        related_name = 'derived_entries',
         blank = True,
         null = True,
         )
@@ -352,7 +354,9 @@ class Meaning(models.Model, AdminInfo):
         blank = True,
         null = True,
         verbose_name = u'лексема',
-        help_text = u'Лексема, к которой относится значение. Выберите, только если значение не относится к фразеологизму.',
+        help_text = u'''Лексема, к которой относится значение.
+                        Выберите, только если значение
+                        не относится к фразеологизму.''',
         )
 
     phraseological_unit = models.ForeignKey(
@@ -360,7 +364,10 @@ class Meaning(models.Model, AdminInfo):
         blank = True,
         null = True,
         verbose_name = u'фразеологизм',
-        help_text = u'Фразелогическое сочетание, к которому относится значение. Выберите, только если значение не относится к конкретной лексеме.',
+        help_text = u'''Фразелогическое сочетание,
+                        к которому относится значение.
+                        Выберите, только если значение
+                        не относится к конкретной лексеме.''',
         )
 
     order = models.IntegerField(
@@ -369,7 +376,10 @@ class Meaning(models.Model, AdminInfo):
 
     link = models.BooleanField(
         u'значение будет ссылкой на значение другого слова',
-        help_text = u'если данный флаг выставлен, содержимое поля «значение» отображаться в словарной статье не будет',
+        help_text = u'''если данный флаг выставлен,
+                        содержимое поля «значение»
+                        отображаться в словарной
+                        статье не будет''',
         )
 
     meaning = models.TextField(
