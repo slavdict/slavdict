@@ -196,6 +196,26 @@ class Entry(models.Model, AdminInfo):
         null = True,
         )
 
+    link_to_entry = models.ForeignKey(
+        'self',
+        verbose_name = u'ссылка на другую лексему',
+        help_text = u'''Если вместо значений словарная статья
+                        должна содержать только ссылку
+                        на другую словарную статью,
+                        укажите её в данном поле.''',
+        related_name = 'ref_entries'
+        )
+
+    link_to_phu = models.ForeignKey(
+        'PhraseologicalUnit',
+        verbose_name = u'ссылка на фразеологическое сочетание',
+        help_text = u'''Если вместо значений словарная статья
+                        должна содержать только ссылку
+                        на фразеологическое сочетание,
+                        укажите его в данном поле.''',
+        related_name = 'ref_entries'
+        )
+
     additional_info = models.TextField(
         u'любая дополнительная информация',
         blank = True,
@@ -374,14 +394,6 @@ class Meaning(models.Model, AdminInfo):
         u'номер',
         )
 
-    link = models.BooleanField(
-        u'значение будет ссылкой на значение другого слова',
-        help_text = u'''если данный флаг выставлен,
-                        содержимое поля «значение»
-                        отображаться в словарной
-                        статье не будет''',
-        )
-
     hidden = models.BooleanField(
         u'Скрыть значение',
         help_text = u'''Не отображать данное значение
@@ -389,6 +401,35 @@ class Meaning(models.Model, AdminInfo):
         default = False,
         )
 
+    link_to_meaning = models.ForeignKey(
+        'self',
+        verbose_name = u'ссылка на значение',
+        help_text = u'''Если значение должно вместо текста
+                        содержать только ссылку на другое
+                        значение некоторой лексемы или
+                        фразеологического сочетания,
+                        укажите её в данном поле.''',
+        related_name = 'ref_meanings'
+        )
+
+    link_to_entry = models.ForeignKey(
+        Entry,
+        verbose_name = u'ссылка на лексему',
+        help_text = u'''Если вместо значения
+                        должна быть только ссылка
+                        на другую словарную статью,
+                        укажите её в данном поле.''',
+        related_name = 'ref_meanings'
+        )
+
+    link_to_phu = models.ForeignKey(
+        'PhraseologicalUnit',
+        verbose_name = u'ссылка на фразеологическое сочетание',
+        help_text = u'''Если вместо значения должна быть только ссылка
+                        на целое фразеологическое сочетание, а не его
+                        отдельные значения, укажите его в данном поле.''',
+        related_name = 'ref_meanings'
+        )
 
     meaning = models.TextField(
         u'значение',
@@ -614,6 +655,26 @@ class PhraseologicalUnit(models.Model):
         Entry,
         verbose_name = u'базовая словарная статья',
         related_name = 'base_to_phraseol_units'
+        )
+
+    link_to_entry = models.ForeignKey(
+        Entry,
+        verbose_name = u'ссылка на лексему',
+        help_text = u'''Если вместо значений фразеологической
+                        единицы должна быть только ссылка
+                        на словарную статью, укажите её
+                        в данном поле.''',
+        related_name = 'ref_phus'
+        )
+
+    link_to_phu = models.ForeignKey(
+        'self',
+        verbose_name = u'ссылка на фразеологическое сочетание',
+        help_text = u'''Если вместо значений фразеологической
+                        единицы должна быть только ссылка
+                        на другое фразеологическое сочетание,
+                        укажите её в данном поле.''',
+        related_name = 'ref_phus'
         )
 
     def __unicode__(self):
