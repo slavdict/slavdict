@@ -382,6 +382,14 @@ class Meaning(models.Model, AdminInfo):
                         статье не будет''',
         )
 
+    hidden = models.BooleanField(
+        u'Скрыть значение',
+        help_text = u'''Не отображать данное значение
+                        при выводе словарной статьи.''',
+        default = False,
+        )
+
+
     meaning = models.TextField(
         u'значение',
         blank = True,
@@ -499,7 +507,9 @@ class Example(models.Model, AdminInfo):
         )
 
     hidden = models.BooleanField(
-        u'не показывать в словарной статье',
+        u'Скрыть пример',
+        help_text = u'''Не отображать данный пример
+                        при выводе словарной статьи.''',
         default = False,
         )
 
