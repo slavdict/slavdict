@@ -349,7 +349,7 @@ class ProperNoun(models.Model):
 
 class Meaning(models.Model, AdminInfo):
 
-    entry = models.ForeignKey(
+    entry_container = models.ForeignKey(
         Entry,
         blank = True,
         null = True,
@@ -359,7 +359,7 @@ class Meaning(models.Model, AdminInfo):
                         не относится к фразеологизму.''',
         )
 
-    phraseological_unit = models.ForeignKey(
+    phu_container = models.ForeignKey(
         'PhraseologicalUnit',
         blank = True,
         null = True,
