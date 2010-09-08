@@ -138,6 +138,8 @@ class Entry(models.Model, AdminInfo):
 
     # только для прилагательных
     short_form = models.CharField(
+        # Это поле, по идее, в последствии должно стать FK
+        # или даже MtM с приявязкой к WordForm.
         u'краткая форма',
         max_length = 20,
         blank = True,
@@ -594,7 +596,7 @@ class SynonymGroup(models.Model):
         null = True,
         )
 
-    phraseological_unit_synonyms = models.ManyToManyField(
+    phu_synonyms = models.ManyToManyField(
         'PhraseologicalUnit',
         verbose_name = u'синонимы-фразеологизмы',
         blank = True,
@@ -646,7 +648,6 @@ class PhraseologicalUnit(models.Model):
                         разместить фразеологическую
                         единицу или ссылку
                         на её размещение''',
-        related_name = 'phraseol_units',
         blank = True,
         null = True,
         )
@@ -654,7 +655,7 @@ class PhraseologicalUnit(models.Model):
     base = models.ForeignKey(
         Entry,
         verbose_name = u'базовая словарная статья',
-        related_name = 'base_to_phraseol_units'
+        related_name = 'based_phus'
         )
 
     link_to_entry = models.ForeignKey(
