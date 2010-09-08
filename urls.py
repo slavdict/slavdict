@@ -27,7 +27,7 @@ urlpatterns = patterns('',
 urlpatterns += patterns('',
     url( r'^$',      direct_to_template,     test),
     url( r'^forum/', include('slavdict.forum.urls')),
-    url( r'^wiki/$',  redirect('http://slavonic.pbworks.com/')),
+    url( r'^wiki/$', redirect('http://slavonic.pbworks.com/')),
 )
 
 try:
