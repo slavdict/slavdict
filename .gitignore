@@ -3,5 +3,5 @@
 .*
 !.gitignore
 local_settings.py
+local_base_settings.py
 local_urls.py
-db/

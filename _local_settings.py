@@ -6,13 +6,12 @@
 # File local_settings.py will be ignored
 # by current git repository.
 
-DEBUG = True
-ROOT = 'D:/path/to/the/django/project/'
 DATABASES = {
     'default': {
         'ENGINE':   'django.db.backends.sqlite3',
-        'NAME':     ROOT + 'db/test.db',
+        'NAME':     ROOT + '.temp.db',
     }
 }
+
 SITE_ID = 1
 MEDIA_URL = 'http://127.0.0.1:8000/'

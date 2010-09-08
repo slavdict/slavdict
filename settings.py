@@ -1,12 +1,25 @@
+# -*- coding: UTF-8 -*-
 # Django settings for slavdict project.
 import os
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
 slash = '/'
 backslash = '\\'
-ROOT = os.path.abspath(os.path.dirname(__file__)).replace(backslash, slash) + slash
+
+# Базовые настройки проекта,
+# от которых могут зависеть другие настройки
+DEBUG = False
+ROOT = os.path.abspath( os.path.dirname( __file__ ) ).replace( backslash, slash ) + slash
+
+# Локальное переопределение базовых настроек,
+# если оно имеется.
+try:
+    from local_base_settings import *
+except ImportError:
+    pass
+
+# Настройки, зависящие от базовых
+# либо от которых не зависят другие настройки.
+TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     ('', ''),
@@ -17,7 +30,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE':   'django.db.backends.sqlite3',
-        'NAME':     ROOT + 'db/test.db',
+        'NAME':     ROOT + '.test.db',
     }
 }
 
@@ -91,6 +104,14 @@ INSTALLED_APPS = (
     'slavdict.django_template_spaces',
 )
 
+
+######################################
+##  Настройки отдельных приложений  ##
+######################################
+
+
+
+# Локальное для компьютера переопределение настроек проекта
 try:
     from local_settings import *
 except ImportError:
