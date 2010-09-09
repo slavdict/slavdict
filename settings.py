@@ -101,14 +101,20 @@ INSTALLED_APPS = (
     'slavdict.dictionary',
     'slavdict.directory',
 
+    'slavdict.custom_user',
     'slavdict.django_template_spaces',
 )
-
 
 ######################################
 ##  Настройки отдельных приложений  ##
 ######################################
 
+# custom_user
+AUTHENTICATION_BACKENDS = (
+    'slavdict.auth_backends.CustomUserModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+CUSTOM_USER_MODEL = 'custom_user.CustomUser'
 
 
 # Локальное для компьютера переопределение настроек проекта
