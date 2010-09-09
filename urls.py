@@ -13,7 +13,7 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('',
-    url( r'^$',      'dictionary.all_entries'),
+    url( r'^$',      'dictionary.views.all_entries'),
     url( r'^forum/', include('slavdict.forum.urls')),
     url( r'^wiki/$', redirect('http://slavonic.pbworks.com/')),
 )
