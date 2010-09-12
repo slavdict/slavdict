@@ -9,7 +9,7 @@
 
 """
 from django import forms
-from slavdict.custom_user.models import CustomUser
+from models import CustomUser
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import ugettext_lazy as _
 

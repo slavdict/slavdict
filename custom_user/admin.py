@@ -2,8 +2,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from slavdict.custom_user.models import CustomUser
-from slavdict.custom_user.forms import CustomUserChangeForm, CustomUserCreationForm
+from models import CustomUser
+from forms import CustomUserChangeForm, CustomUserCreationForm
 
 class CustomUserAdmin(UserAdmin):
 
