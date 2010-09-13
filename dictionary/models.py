@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django.db import models
-from django.contrib.auth.models import User
+from custom_user.models import CustomUser
 
 from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
@@ -25,18 +25,6 @@ from slavdict.directory.models import (
     EntryStatus,
 
     )
-
-class MyUser(User):
-
-    def __unicode__(self):
-        return u'%s %s' % (
-            self.last_name,
-            self.first_name,
-            )
-
-    class Meta:
-        proxy = True
-        ordering = ('last_name', 'first_name')
 
 class AdminInfo:
 
@@ -236,7 +224,7 @@ class Entry(models.Model, AdminInfo):
         )
 
     editor = models.ForeignKey(
-        MyUser,
+        CustomUser,
         verbose_name = u'ответственный редактор',
         blank = True,
         null = True,
