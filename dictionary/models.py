@@ -1,7 +1,4 @@
 # -*- coding: UTF-8 -*-
-from django.db import models
-from custom_user.models import CustomUser
-
 from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
 from hip2unicode.conversions import antconc_ucs8
@@ -11,8 +8,8 @@ compiled_conversion = compile_conversion(antconc_ucs8.conversion)
 def ucs_convert(text):
     return convert(text, compiled_conversion).encode('utf-8')
 
-
-
+from django.db import models
+from custom_user.models import CustomUser
 from slavdict.directory.models import (
 
     PartOfSpeech,
