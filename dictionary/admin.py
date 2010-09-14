@@ -91,7 +91,7 @@ admin.site.register(
             }),
         (u'административная инормация', {
             'fields': (
-                ('status', 'editor'),
+                ('editor', 'status', 'percent_status',),
                 ),
             }),
         (u'для существительных', {
@@ -137,6 +137,11 @@ admin.site.register(
                 'collapse',
                 ),
             }),
+        (u'В качестве значений ссылка', {
+            'fields': ('link_to_entry', 'link_to_phu',),
+            'classes': ('collapse',) } ),
+        (None, {
+            'fields': ('additional_info', 'antconc_query',)}),
         ),
     inlines = (
         OrthVar_Inline,
