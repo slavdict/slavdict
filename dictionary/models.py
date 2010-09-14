@@ -53,6 +53,11 @@ class CivilEquivalent(models.Model):
 
 class WordForm(models.Model):
 
+    lexeme = models.ManyToManyField(
+        'Entry',
+        verbose_name = u'лексема',
+        )
+
     text = models.CharField(
         u'словоформа',
         max_length = 40,
@@ -80,10 +85,6 @@ class Entry(models.Model, AdminInfo):
         return self.meaning_set.all()
 
     # lexeme (посредник к граматическим формам и свойствам)
-    word_forms = models.ManyToManyField(
-        WordForm,
-        verbose_name = u'словоформы'
-        )
 
     part_of_speech = models.ForeignKey(
         PartOfSpeech,
@@ -92,6 +93,12 @@ class Entry(models.Model, AdminInfo):
 
     uninflected = models.BooleanField(
         u'неизменяемое (для сущ./прил.)',
+        )
+
+    word_forms_list = models.TextField(
+        u'список словоформ',
+        help_text = u'Список словоформ через запятую',
+        blank = True,
         )
 
     # только для существительных

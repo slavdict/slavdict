@@ -4,11 +4,6 @@ from django.contrib import admin
 from slavdict.dictionary.models import CivilEquivalent
 admin.site.register(CivilEquivalent)
 
-from slavdict.dictionary.models import WordForm
-class WordForm_Inline(admin.StackedInline):
-    model = WordForm
-    extra = 2
-
 from slavdict.dictionary.models import OrthographicVariant
 class OrthVar_Inline(admin.StackedInline):
     model = OrthographicVariant
@@ -91,6 +86,7 @@ admin.site.register(
             'fields': (
                 'civil_equivalent',
                 'part_of_speech',
+                'word_forms_list',
                 ),
             }),
         (u'административная инормация', {
@@ -144,7 +140,6 @@ admin.site.register(
         ),
     inlines = (
         OrthVar_Inline,
-        WordForm_Inline,
         ProperNoun_Inline,
         ),
     list_display = (
