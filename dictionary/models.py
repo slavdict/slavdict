@@ -460,7 +460,7 @@ class Meaning(models.Model, AdminInfo):
     class Meta:
         verbose_name = u'значение'
         verbose_name_plural = u'значения'
-        ordering = ('entry__civil_equivalent__text', 'order')
+        ordering = ('entry_container__civil_equivalent__text', 'order')
 
 
 class Address(models.Model):
@@ -595,7 +595,7 @@ class SynonymGroup(models.Model):
         )
 
     def __unicode__(self):
-        return self.base.entry.civil_equivalent.text
+        return self.base.entry_container.civil_equivalent.text
 
     class Meta:
         verbose_name = u'группа синонимов'

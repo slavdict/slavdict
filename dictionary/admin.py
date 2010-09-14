@@ -62,14 +62,14 @@ entry_with_orth_variants.admin_order_field = 'civil_equivalent'
 entry_with_orth_variants.short_description = u'словарная статья'
 
 def meaning_with_entry(obj):
-    ent = entry_with_orth_variants(obj.entry)
+    ent = entry_with_orth_variants(obj.entry_container)
     return u'%s %s. %s' % (
         ent,
         obj.order,
         obj.meaning,
         )
 
-meaning_with_entry.admin_order_field = 'entry'
+meaning_with_entry.admin_order_field = 'entry_container'
 meaning_with_entry.short_description = u'значение'
 
 from slavdict.dictionary.models import Meaning
