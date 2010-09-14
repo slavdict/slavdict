@@ -197,7 +197,9 @@ class Entry(models.Model, AdminInfo):
                         должна содержать только ссылку
                         на другую словарную статью,
                         укажите её в данном поле.''',
-        related_name = 'ref_entries'
+        related_name = 'ref_entries',
+        blank = True,
+        null = True,
         )
 
     link_to_phu = models.ForeignKey(
@@ -207,7 +209,9 @@ class Entry(models.Model, AdminInfo):
                         должна содержать только ссылку
                         на фразеологическое сочетание,
                         укажите его в данном поле.''',
-        related_name = 'ref_entries'
+        related_name = 'ref_entries',
+        blank = True,
+        null = True,
         )
 
     additional_info = models.TextField(
@@ -237,6 +241,7 @@ class Entry(models.Model, AdminInfo):
     antconc_query = models.CharField(
         u'Запрос для программы AntConc',
         max_length = 500,
+        blank = True,
         )
 
     def __unicode__(self):
@@ -403,7 +408,9 @@ class Meaning(models.Model, AdminInfo):
                         значение некоторой лексемы или
                         фразеологического сочетания,
                         укажите её в данном поле.''',
-        related_name = 'ref_meanings'
+        related_name = 'ref_meanings',
+        blank = True,
+        null = True,
         )
 
     link_to_entry = models.ForeignKey(
@@ -413,7 +420,9 @@ class Meaning(models.Model, AdminInfo):
                         должна быть только ссылка
                         на другую словарную статью,
                         укажите её в данном поле.''',
-        related_name = 'ref_meanings'
+        related_name = 'ref_meanings',
+        blank = True,
+        null = True,
         )
 
     link_to_phu = models.ForeignKey(
@@ -422,7 +431,9 @@ class Meaning(models.Model, AdminInfo):
         help_text = u'''Если вместо значения должна быть только ссылка
                         на целое фразеологическое сочетание, а не его
                         отдельные значения, укажите его в данном поле.''',
-        related_name = 'ref_meanings'
+        related_name = 'ref_meanings',
+        blank = True,
+        null = True,
         )
 
     meaning = models.TextField(
@@ -542,7 +553,8 @@ class Example(models.Model, AdminInfo):
         help_text = u'''Временное поле для импорта
                         вордовских статей. И заполнения
                         адресов в неунифицированном
-                        текстовом виде'''
+                        текстовом виде''',
+        blank = True,
         )
 
     hidden = models.BooleanField(
