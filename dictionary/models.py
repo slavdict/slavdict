@@ -222,7 +222,7 @@ class Entry(models.Model, AdminInfo):
 
     derivation_entry_meaning = models.ForeignKey(
         'Meaning',
-        verbose_name = u'значение, от которого образовано слово',
+        verbose_name = u'«Значение», от которого образовано слово',
         related_name = 'derived_entries',
         blank = True,
         null = True,
@@ -254,6 +254,11 @@ class Entry(models.Model, AdminInfo):
 
     additional_info = models.TextField(
         u'любая дополнительная информация',
+        help_text = u'''Любая дополнительная информация по данной ЛЕКСЕМЕ.
+                        Дополнительная информация по значению лексемы или
+                        примеру на значение указывается не здесь,
+                        а в аналогичных полях при значении и примере,
+                        соответственно.''',
         blank = True,
         )
 
@@ -271,14 +276,13 @@ class Entry(models.Model, AdminInfo):
 
     editor = models.ForeignKey(
         CustomUser,
-        verbose_name = u'ответственный редактор',
+        verbose_name = u'редактор статьи',
         blank = True,
         null = True,
         )
 
-    antconc_query = models.CharField(
+    antconc_query = models.TextField(
         u'Запрос для программы AntConc',
-        max_length = 500,
         blank = True,
         )
 
@@ -503,6 +507,11 @@ class Meaning(models.Model, AdminInfo):
 
     additional_info = models.TextField(
         u'любая дополнительная информация',
+        help_text = u'''Любая дополнительная информация по данному
+                        ЗНАЧЕНИЮ. Дополнительная информация по примеру
+                        на значение или лексеме указывается не здесь,
+                        а в аналогичных полях при примере и лексеме,
+                        соответственно.''',
         blank = True,
         )
 
@@ -546,7 +555,7 @@ class Example(models.Model, AdminInfo):
 
     context = models.TextField(
         u'контекст примера',
-        help_text = u'более широкий контекст для примера',
+        help_text = u'Более широкий контекст для примера',
         blank = True,
         )
 
@@ -616,6 +625,12 @@ class Example(models.Model, AdminInfo):
 
     additional_info = models.TextField(
         u'любая дополнительная информация',
+        help_text = u'''Любая дополнительная информация
+                        по данному ПРИМЕРУ. Дополнительная
+                        информация по значению или лексеме
+                        указывается не здесь, а в аналогичных
+                        полях при значении и лексеме,
+                        соответственно.''',
         blank = True,
         )
 
@@ -672,7 +687,7 @@ class PhraseologicalUnit(models.Model):
     meaning_constituents = models.ManyToManyField(
         Meaning,
         verbose_name = u'значения',
-        help_text = u'''значения (как элементы
+        help_text = u'''Значения (как элементы
                         словарной статьи),
                         при которых необходимо
                         разместить фразеологическую
@@ -685,7 +700,7 @@ class PhraseologicalUnit(models.Model):
     entry_constituents = models.ManyToManyField(
         Entry,
         verbose_name = u'словарные статьи',
-        help_text = u'''словарные статьи,
+        help_text = u'''Словарные статьи,
                         при которых необходимо
                         разместить фразеологическую
                         единицу или ссылку
