@@ -2,11 +2,44 @@
 from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
 from hip2unicode.conversions import antconc_ucs8
+from hip2unicode.conversions import antconc_ucs8_without_aspiration
 
-compiled_conversion = compile_conversion(antconc_ucs8.conversion)
+compiled_conversion_with_aspiration = compile_conversion(antconc_ucs8.conversion)
+compiled_conversion_without_aspiration = compile_conversion(antconc_ucs8_without_aspiration.conversion)
 
 def ucs_convert(text):
-    return convert(text, compiled_conversion).encode('utf-8')
+    return convert(text, compiled_conversion_with_aspiration).encode('utf-8')
+
+def ucs_convert_affix(text):
+    """
+    Функции передаётся строка, которая должна содержать строковую запись аффикса
+    в свободной форме -- не важно с дефисом или без. Если начальный дефис есть,
+    он отбрасывается. Всё оставшееся конвертируется из представления AntConc в UCS8
+    без расстановки придыханий перед начальными гласными.
+    """
+    if text:
+        if text[0] == u'-':
+            text = text[1:]
+        return convert(text, compiled_conversion_without_aspiration).encode('utf-8')
+    return text
+
+def ucs_affix_or_word(atr):
+    """
+    Функция предназначенная для конвертации значения атрибута модели из
+    представления AntConc в UCS8. Атрибут должен быть строкой. Если первым
+    символом строки является дефис, то сам дефис отбрасывается, а конвертация
+    производится без создания придыханий над начальными гласными из
+    предположения, что это аффикс. Если первый символ -- не дефис, конвертация
+    производится с созданием придыханий, подразумевается, что на вход подано
+    слово, а не аффикс.
+    """
+    if atr:
+        if atr[0] == u'-':
+            return ucs_convert_affix( atr[1:] )
+        else:
+            return ucs_convert(atr)
+    else:
+        return atr
 
 from django.db import models
 from custom_user.models import CustomUser
@@ -118,13 +151,12 @@ class Entry(models.Model, AdminInfo):
     genitive = models.CharField(
         u'окончание Р.п.',
         max_length = 3,
-        help_text = u'само окончание без дефиса в начале',
         blank = True,
         )
 
     @property
     def genitive_ucs(self):
-        return ucs_convert(self.genitive)
+        return ucs_convert_affix(self.genitive)
 
     # proper_noun
 
@@ -158,21 +190,27 @@ class Entry(models.Model, AdminInfo):
         u'форма 1sg',
         max_length = 20,
         blank = True,
+        help_text = u'''Целая словоформа или окончание.
+                        В случае окончания первым
+                        символом должен идти дефис.''',
         )
 
     @property
     def sg1_ucs(self):
-        return ucs_convert(self.sg1)
+        return ucs_affix_or_word(self.sg1)
 
     sg2 = models.CharField(
         u'форма 2sg',
         max_length = 20,
         blank = True,
+        help_text = u'''Целая словоформа или окончание.
+                        В случае окончания первым
+                        символом должен идти дефис.''',
         )
 
     @property
     def sg2_ucs(self):
-        return ucs_convert(self.sg2)
+        return ucs_affix_or_word(self.sg2)
 
     derivation_entry = models.ForeignKey(
         'self',
