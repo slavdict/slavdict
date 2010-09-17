@@ -165,6 +165,16 @@ class SubcatFrame(models.Model):
 
 class Language(TermDirectory):
 
+    css_class = models.CharField(
+        u'CSS-класс',
+        help_text = u'''Укажите CSS-класс, который необходимо
+                        использовать при отображении надписей
+                        на данном языке.''',
+        max_length = 8,
+        blank = True,
+        null = True,
+        )
+
     class Meta(TermDirectory.Meta):
         verbose_name = u'язык'
         verbose_name_plural = u'список языков'
