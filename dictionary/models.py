@@ -354,6 +354,11 @@ class OrthographicVariant(models.Model):
 
 class Etymology(models.Model):
 
+    order = models.IntegerField(
+        u'порядок следования',
+        help_text = u'Порядок следования при отображении в словарной статье.',
+        )
+
     language = models.ForeignKey(
         Language,
         verbose_name = u'язык',
@@ -443,7 +448,13 @@ class Meaning(models.Model, AdminInfo):
         )
 
     order = models.IntegerField(
-        u'номер',
+        u'порядок следования',
+        help_text = u'''Порядок следования при отображении в словарной статье.
+                        Используйте любые целые числа (отрицательные тоже
+                        допустимы). При расстановке номеров значений в
+                        словарных статьях вводимые вами числа использоваться не
+                        будут. Они служат только для указания относительного
+                        порядка.''',
         )
 
     hidden = models.BooleanField(
@@ -555,6 +566,11 @@ class Address(models.Model):
 
 
 class Example(models.Model, AdminInfo):
+
+    order = models.IntegerField(
+        u'порядок следования',
+        help_text = u'Порядок следования при отображении в словарной статье.',
+        )
 
     example = models.TextField(
         u'пример',
