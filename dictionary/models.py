@@ -228,6 +228,13 @@ class Entry(models.Model, AdminInfo):
         null = True,
         )
 
+    etymology = models.ManyToManyField(
+        Etymology,
+        verbose_name = u'этимология',
+        blank = True,
+        null = True,
+        )
+
     link_to_entry = models.ForeignKey(
         'self',
         verbose_name = u'ссылка на другую лексему',
@@ -368,6 +375,21 @@ class Etymology(models.Model):
         max_length = 70,
         )
 
+    unclear_ethymology = models.BooleanField(
+        u'этимология неясна',
+        default = False,
+        )
+
+    mark = models.CharField(
+        u'грамматическая помета',
+        max_length = 8,
+        )
+
+    additional_info = models.TextField(
+        u'любая дополнительная информация',
+        blank = True,
+        )
+
     def __unicode__(self):
         return self.translit
 
@@ -387,17 +409,6 @@ class ProperNoun(models.Model):
 
     canonical_name = models.BooleanField(
         u'каноническое',
-        )
-
-    unclear_ethymology = models.BooleanField(
-        u'этимология неясна',
-        )
-
-    etymology = models.ManyToManyField(
-        Etymology,
-        verbose_name = u'этимология',
-        blank = True,
-        null = True,
         )
 
     def __unicode__(self):
