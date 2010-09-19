@@ -228,13 +228,6 @@ class Entry(models.Model, AdminInfo):
         null = True,
         )
 
-    etymology = models.ManyToManyField(
-        Etymology,
-        verbose_name = u'этимология',
-        blank = True,
-        null = True,
-        )
-
     link_to_entry = models.ForeignKey(
         'self',
         verbose_name = u'ссылка на другую лексему',
@@ -353,6 +346,13 @@ class OrthographicVariant(models.Model):
         ordering = ('-is_headword', 'idem')
 
 class Etymology(models.Model):
+
+    entry = models.ManyToManyField(
+        Entry,
+        verbose_name = u'словарная статья',
+        help_text = u'''Словарная статья, к которой
+                        относится данная этимология.''',
+        )
 
     order = models.IntegerField(
         u'порядок следования',
