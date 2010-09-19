@@ -7,7 +7,7 @@ admin.site.register(CivilEquivalent)
 from slavdict.dictionary.models import OrthographicVariant
 class OrthVar_Inline(admin.StackedInline):
     model = OrthographicVariant
-    extra = 1
+    extra = 0
     fieldsets = (
         (None, {
             'fields': (
@@ -45,7 +45,7 @@ admin.site.register(Address)
 from slavdict.dictionary.models import Example
 class Example_Inline(admin.StackedInline):
     model = Example
-    extra = 1
+    extra = 0
 
 def entry_with_orth_variants(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('-is_headword','idem')]
