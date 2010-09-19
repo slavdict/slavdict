@@ -141,7 +141,7 @@ admin.site.register(
             'fields': ('link_to_entry', 'link_to_phu',),
             'classes': ('collapse',) } ),
         (None, {
-            'fields': ('additional_info', 'antconc_query',)}),
+            'fields': ('additional_info', 'antconc_query', 'grequiv_status')}),
         ),
     inlines = (
         OrthVar_Inline,

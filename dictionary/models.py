@@ -286,6 +286,20 @@ class Entry(models.Model, AdminInfo):
         blank = True,
         )
 
+    grequiv_status = models.CharField(
+        u'греческие параллели',
+        max_length = 1,
+        choices = (
+                ('1', u'следует найти параллели'),
+                ('2', u'параллели не нужны'),
+                ('3', u'идет поиск параллелей'),
+                ('4', u'параллели найдены'),
+                ('5', u'параллели найдены частично'),
+            ),
+        blank = True,
+        null = True,
+        )
+
     def __unicode__(self):
         return self.civil_equivalent.text
 
