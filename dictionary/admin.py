@@ -26,7 +26,9 @@ class OrthVar_Inline(admin.StackedInline):
         )
 
 from slavdict.dictionary.models import Etymology
-admin.site.register(Etymology)
+class Etymology_Inline(admin.StackedInline):
+    model = Etymology
+    extra = 0
 
 from slavdict.dictionary.models import ProperNoun
 class ProperNoun_Inline(admin.StackedInline):
@@ -45,6 +47,11 @@ admin.site.register(Address)
 from slavdict.dictionary.models import Example
 class Example_Inline(admin.StackedInline):
     model = Example
+    extra = 0
+
+from slavdict.dictionary.models import MeaningContext
+class MeaningContext_Inline(admin.StackedInline):
+    model = MeaningContext
     extra = 0
 
 def entry_with_orth_variants(obj):
@@ -71,6 +78,7 @@ from slavdict.dictionary.models import Meaning
 admin.site.register(
     Meaning,
     inlines = (
+        MeaningContext_Inline,
         Example_Inline,
         ),
     list_display = (
@@ -145,6 +153,7 @@ admin.site.register(
         ),
     inlines = (
         OrthVar_Inline,
+        Etymology_Inline,
         ProperNoun_Inline,
         ),
     list_display = (
@@ -152,11 +161,12 @@ admin.site.register(
         'part_of_speech',
         'editor',
         'status',
+        'grequiv_status',
         ),
     list_filter = (
-        'part_of_speech',
         'editor',
         'status',
+        'grequiv_status',
         ),
     save_on_top = True,
 )

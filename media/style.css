@@ -10,10 +10,79 @@
         url('/site-media/fonts/TriIEUcs.svg#Triodion-ieUcs') format('svg');
 }
 
+@font-face {
+	font-family: 'EstrangeloEdessaRegular';
+	src: url('/site-media/fonts/estre-webfont.eot');
+	src: local('☺'), url('/site-media/fonts/estre-webfont.woff') format('woff'), url('/site-media/fonts/estre-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'hebrewRegular';
+	src: url('/site-media/fonts/hebrew-webfont.eot');
+	src: local('☺'), url('/site-media/fonts/hebrew-webfont.woff') format('woff'), url('/site-media/fonts/hebrew-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'GEOLitNusxRegular';
+	src: url('/site-media/fonts/ltzura2-webfont.eot');
+	src: local('☺'), url('/site-media/fonts/ltzura2-webfont.woff') format('woff'), url('/site-media/fonts/ltzura2-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'SILUlyssesRegular';
+	src: url('/site-media/fonts/silur-webfont.eot');
+	src: local('☺'), url('/site-media/fonts/silur-webfont.woff') format('woff'), url('/site-media/fonts/silur-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'SPEdessaRegular';
+	src: url('/site-media/fonts/spedessa-webfont.eot');
+	src: local('☺'), url('/site-media/fonts/spedessa-webfont.woff') format('woff'), url('/site-media/fonts/spedessa-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'CopticNormal';
+	src: url('/site-media/fonts/coptic2-webfont.eot');
+	src: local('☺'), url('/site-media/fonts/coptic2-webfont.woff') format('woff'), url('/site-media/fonts/coptic2-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'HebrewRussianRegular';
+	src: url('/site-media/fonts/heb-rus-webfont.eot');
+	src: local('☺'), url('/site-media/fonts/heb-rus-webfont.woff') format('woff'), url('/site-media/fonts/heb-rus-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+
 .cslav {
     font-family: Triodion;
     font-weight: normal;
     font-size: 110%;
+}
+
+.grec {
+    font-family: SILUlyssesRegular;
+}
+
+.hebrew {
+    font-family: hebrewRegular;
+}
+
+.hebrew-translit {
+    font-family: HebrewRussianRegular;
 }
 
 body {
@@ -57,9 +126,13 @@ div#main {
 }
 
 div.entry {
-    margin-top: 2em;
+    margin-top: 4em;
 }
 
 .headword {
     font-size: 150% !important;
+}
+
+.orthvar {
+    font-size: 120% !important;
 }

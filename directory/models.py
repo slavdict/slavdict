@@ -170,7 +170,17 @@ class Language(TermDirectory):
         help_text = u'''Укажите CSS-класс, который необходимо
                         использовать при отображении надписей
                         на данном языке.''',
-        max_length = 8,
+        max_length = 30,
+        blank = True,
+        null = True,
+        )
+
+    translit_css_class = models.CharField(
+        u'CSS-класс транслита',
+        help_text = u'''Укажите CSS-класс, который необходимо
+                        использовать при отображении транслитераций
+                        с данного языка.''',
+        max_length = 30,
         blank = True,
         null = True,
         )

@@ -7,7 +7,6 @@
     </head>
     <body>
         <div id="header">
-            <span class="cslav" style=" font-size: 20pt; ">слова1рь</span>
         </div>
         <div id="menu">
             <div>
@@ -18,17 +17,113 @@
             {% for entry in entries %}
                 <div class="entry">
 
+                    <div style="line-height: 100%;">
                     {% for ovar in entry.orth_vars %}
-                            <span class="cslav{% if forloop.first %} headword{% endif %}">{{ ovar.idem_ucs }}</span
-                            >{% if not forloop.last %}, {% endif %}
+                            {% if forloop.counter == 2 %}({% endif %}<span
+                            class="cslav {% if forloop.first %}headword{% else %}orthvar{% endif %}"
+                            >{{ ovar.idem_ucs }}</span
+                            >{% if not forloop.last %},
+                            {% else %}{% if not forloop.first %}){% endif %}{% endif %}{% if forloop.first and forloop.last %}{% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %},{% endif %}{% endif %}
                     {% endfor %}
 
-                    <i>{{ entry.part_of_speech.abbreviation }}</i>
+                    {% if entry.short_form %}<span class="cslav">{{ entry.short_form_ucs }}</span
+                    >{% if entry.genitive %},{%endif %}{% endif %}
+                    {% if entry.genitive %}-<span class="cslav">{{ entry.genitive_ucs }}</span>{% endif %}
+                    {% if entry.sg1 %}<span class="cslav">{{ entry.sg1_ucs }}</span
+                    >{% if entry.sg2 %},{%endif %}{% endif %}
+                    {% if entry.sg2 %}<span class="cslav">{{ entry.sg2_ucs }}</span>{% endif %}
+
+
+                    {% if entry.uninflected %}<i>неизм.</i>{% endif %}
+                    {% if entry.possessive %}<i>притяж.</i>{% endif %}
+                    <i>{{ entry.part_of_speech.abbreviation }}</i
+                    >{% if entry.gender %}, <i>{{ entry.gender.abbreviation }}</i>{% endif %}
+                    {% if entry.derivation_entry %}<i>от</i> <span class="cslav">{{ entry.derivation_entry.orth_vars.0.idem_ucs }}</span>{% endif %}
+                    </div>
+
+
+                    {% if entry.etymologies %}<div style="color: #777; font-size: smaller;"
+                    >{% for etym in entry.etymologies %}<i
+                        >{{ etym.language.abbreviation }}</i>
+
+                        {% if etym.text %}<span class="{{ etym.language.css_class }}">{{ etym.text }}</span
+                        >{% if etym.translit or etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %}; {% endif %}{% endif %}{% endif %}{% if etym.translit %}<span
+
+                        class="{{ etym.language.translit_css_class }}">{{ etym.translit }}</span
+                        >{% if etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %}; {% endif %}{% endif %}{% endif %}{% if etym.meaning %}<span
+
+                        >‘{{ etym.meaning }}’</span
+                        >{% if etym.gloss %}{% else %}{% if not forloop.last %}; {% endif %}{% endif %}{% endif %}{% if etym.gloss %}<i
+
+                        >{{ etym.meaning }}</i
+                        >{% if not forloop.last %}; {% endif %}{% endif %}{% endfor %}</div>
+                    {% endif %}
+
+
+    {% if entry.base_syn_bool %}
+
+            <div>
+                <i>Тж.</i>
+                {% for s in entry.syns %}
+                    <span class="cslav">{{ s.orth_vars.0.idem_ucs }}</span>{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            </div>
+
+    {% endif %}
+
+
+    {% if not entry.syns or entry.base_syn_bool %}
+
+
+            {% if entry.link_to_entry %}
+
+                    <div style="margin-top: 0.7em; line-height: 140%;">
+                        <i>См.</i> <span class="cslav">{{ entry.link_to_entry.orth_vars.0.idem_ucs }}</span>
+                    </div>
+
+            {% else %}
 
                     {% for m in entry.meanings %}
+                    <div style="margin-top: 0.7em; line-height: 140%;">
                         {% if not entry.meanings|length_is:"1" %}
                             <b>{{ forloop.counter }}</b>.
                         {% endif %}
+
+                        {% if m.link_to_entry %}
+
+                            <i>см.</i> <span class="cslav">{{ m.link_to_entry.orth_vars.0.idem_ucs }}</span>
+
+                        {% else %}
+                            {% if m.contexts %}
+                                {% for mc in m.contexts %}
+                                    {% if forloop.first %}<span  style="color: #070;">[{% endif %}{% if mc.left_text %}<i
+                                    >{{ mc.left_text }}</i> {% endif %}<span
+                                    class="cslav">{{ mc.context }}</span
+                                    >{% if mc.right_text %} <i>{{ mc.right_text }}</i
+                                    >{% endif %}{% if not forloop.last %}, {% else %}]</span> {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            {% if m.meaning %}
+                                <span>{{ m.meaning.capitalize }}</span
+                            {% endif %}
+                            {% if m.gloss %}
+                                {% if m.meaning %}>;{% endif %}
+                                <i>{{ m.gloss.capitalize }}</i
+                            {% endif %}
+                            {% if m.examples %}>:
+                                {% for e in m.examples %}
+                                    <span class="cslav">{{ e.example_ucs }}</span>
+                                    ({{ e.address_text }})
+                                {% endfor %}
+                            {% endif %}
+
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    {% for m in entry.metaph_meanings %}
+                    <div style="margin-top: 0.7em; line-height: 140%;">
+                        <span style="color: #777;">►</span>
 
                         {% if m.meaning %}
                             <span>{{ m.meaning.capitalize }}</span
@@ -40,10 +135,24 @@
                         {% if m.examples %}>:
                             {% for e in m.examples %}
                                 <span class="cslav">{{ e.example_ucs }}</span>
-                                {{ e.address }}
+                                ({{ e.address_text }})
                             {% endfor %}
                         {% endif %}
+                    </div>
                     {% endfor %}
+
+            {% endif %}
+
+    {% endif %}
+
+    {% if entry.syns and not entry.base_syn_bool %}
+
+        <div style="margin-top: 0.7em; line-height: 140%;">
+            <i>См.</i> <span class="cslav">{{ entry.base_syn.orth_vars.0.idem_ucs }}</span>
+        </div>
+
+    {% endif %}
+
 
                 </div>
             {% endfor %}
