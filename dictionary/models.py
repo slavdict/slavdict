@@ -105,6 +105,8 @@ class Entry(models.Model, AdminInfo):
     civil_equivalent = models.ForeignKey(
         CivilEquivalent,
         verbose_name = u'гражданское написание',
+        blank = True,
+        null = True,
         )
 
     # orthographic_variants
@@ -147,6 +149,7 @@ class Entry(models.Model, AdminInfo):
 
     uninflected = models.BooleanField(
         u'неизменяемое (для сущ./прил.)',
+        default = False,
         )
 
     word_forms_list = models.TextField(
@@ -171,7 +174,7 @@ class Entry(models.Model, AdminInfo):
 
     genitive = models.CharField(
         u'окончание Р.п.',
-        max_length = 3,
+        max_length = 10,
         blank = True,
         )
 
@@ -236,14 +239,6 @@ class Entry(models.Model, AdminInfo):
     derivation_entry = models.ForeignKey(
         'self',
         verbose_name = u'слово, от которого образовано данное слово',
-        related_name = 'derived_entries',
-        blank = True,
-        null = True,
-        )
-
-    derivation_entry_meaning = models.ForeignKey(
-        'Meaning',
-        verbose_name = u'«Значение», от которого образовано слово',
         related_name = 'derived_entries',
         blank = True,
         null = True,
@@ -361,7 +356,10 @@ class OrthographicVariant(models.Model):
     is_approved = models.BooleanField(u'одобренная реконструкция')
 
     # является ли данный орфографический вариант основным
-    is_headword = models.BooleanField(u'основной орфографический вариант')
+    is_headword = models.BooleanField(
+        u'основной орфографический вариант',
+        default = True,
+        )
 
     # является ли орф. вариант только общей частью словоформ
     # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
@@ -392,22 +390,15 @@ class Etymology(models.Model):
         verbose_name = u'словарная статья',
         help_text = u'''Словарная статья, к которой
                         относится данная этимология.''',
-        blank = True,
-        null = True,
         )
 
-#    parent_etymology = models.ManyToManyField(
-#        'self',
-#        verbose_name = u'родительская этимология',
-#        help_text = u'''Этимология, для которой данная
-#                        этимология является этимологией.''',
-#        blank = True,
-#        null = True,
-#        )
-
-    order = models.IntegerField(
-        u'порядок следования',
-        help_text = u'Порядок следования при отображении в словарной статье.',
+    parent_etymology = models.ForeignKey(
+        'self',
+        verbose_name = u'родительская этимология',
+        help_text = u'''Этимология, для которой данная
+                        этимология является этимологией.''',
+        blank = True,
+        null = True,
         )
 
     language = models.ForeignKey(
@@ -461,7 +452,7 @@ class Etymology(models.Model):
     class Meta:
         verbose_name = u'этимология слова'
         verbose_name_plural = u'этимология слов'
-        ordering = ('order',)
+        ordering = ('id',)
 
 
 class ProperNoun(models.Model):
@@ -490,16 +481,6 @@ class MeaningContext(models.Model):
     meaning = models.ForeignKey(
         'Meaning',
         verbose_name = u'значение',
-        )
-
-    context_type = models.CharField(
-        u'тип контекста',
-        max_length = 1,
-        choices = (
-                ('r', u'ПРАВЫЙ КОНТЕКСТ без указания самого слова в контексте'),
-                ('a', u'САМО СЛОВО В КОНТЕКСТЕ'),
-                ('l', u'ЛЕВЫЙ КОНТЕКСТ без указания самого слова в контексте'),
-            ),
         )
 
     left_text = models.CharField(
@@ -534,14 +515,9 @@ class MeaningContext(models.Model):
         )
 
     def __unicode__(self):
-        ct = self.context_type
-        if ct=='r':
-            c = u'+ %s' % self.context
-        elif ct=='l':
-            c = u'%s +' % self.context
-        else:
-            c = self.context
-        return c
+        SPACE = u' '
+        _list = (self.left_text, self.context, self.right_text)
+        return SPACE.join(_list)
 
     class Meta:
         verbose_name = u'контекст значения'
@@ -577,16 +553,6 @@ class Meaning(models.Model, AdminInfo):
         related_name = 'child_meanings',
         blank = True,
         null = True,
-        )
-
-    order = models.IntegerField(
-        u'порядок следования',
-        help_text = u'''Порядок следования при отображении в словарной статье.
-                        Используйте любые целые числа (отрицательные тоже
-                        допустимы). При расстановке номеров значений в
-                        словарных статьях вводимые вами числа использоваться не
-                        будут. Они служат только для указания относительного
-                        порядка.''',
         )
 
     hidden = models.BooleanField(
@@ -644,7 +610,7 @@ class Meaning(models.Model, AdminInfo):
     # greek_equivalent
 
     gloss = models.TextField(
-        u'толкование',
+        u'пояснение',
         help_text = u'''Для неметафорических употреблений/прямых значений
                         здесь указывается энциклопедическая информация.
                         Для метафорических/переносных -- (?) разнообразная
@@ -676,30 +642,15 @@ class Meaning(models.Model, AdminInfo):
     class Meta:
         verbose_name = u'значение'
         verbose_name_plural = u'значения'
-        ordering = ('entry_container__civil_equivalent__text', 'order')
-
-
-class Address(models.Model):
-
-    address = models.CharField(
-        u'адрес',
-        max_length = 15,
-        )
-
-    def __unicode__(self):
-        return u'(%s)' % self.address
-
-    class Meta:
-        verbose_name = u'адрес'
-        verbose_name_plural = u'адреса'
+        ordering = ('entry_container__civil_equivalent__text', 'id')
 
 
 class Example(models.Model, AdminInfo):
 
-    order = models.IntegerField(
-        u'порядок следования',
-        help_text = u'Порядок следования при отображении в словарной статье.',
-        )
+    meaning = models.ForeignKey(Meaning)
+    # TODO: это должно быть поле ManyToManyField,
+    # а не FK. Соответственно, оно должно
+    # иметь название во мн.ч. (meaning*s*)
 
     hidden = models.BooleanField(
         u'Скрыть пример',
@@ -748,34 +699,12 @@ class Example(models.Model, AdminInfo):
                 return SplitContext(x, y, z, c)
         return SplitContext(u'', e, u'', e)
 
-    address = models.ForeignKey(
-        Address,
-        verbose_name = u'адрес',
-        # временно поле сделано необязательным
-        blank = True,
-        null = True,
-        )
-
     # Временное поле для импорта вордовских статей.
     address_text = models.CharField(
-        u'текст адреса',
+        u'адрес',
         max_length = 300,
-        help_text = u'''Временное поле для импорта
-                        вордовских статей. И заполнения
-                        адресов в неунифицированном
-                        текстовом виде''',
         blank = True,
         )
-
-    translation = models.TextField(
-        u'перевод',
-        blank = True,
-        )
-
-    meaning = models.ForeignKey(Meaning)
-    # TODO: это должно быть поле ManyToManyField,
-    # а не FK. Соответственно, оно должно
-    # иметь название во мн.ч. (meaning*s*)
 
     # greek_equivalent
 
@@ -791,11 +720,9 @@ class Example(models.Model, AdminInfo):
         )
 
     def __unicode__(self):
-
-        return u'%s %s' % (self.address, self.example)
+        return u'(%s) %s' % (self.address, self.example)
 
     class Meta:
-
         verbose_name = u'пример'
         verbose_name_plural = u'примеры'
 
@@ -811,19 +738,6 @@ class PhraseologicalUnit(models.Model):
     def text_ucs(self):
         return ucs_convert(self.text)
 
-    meaning_constituents = models.ManyToManyField(
-        Meaning,
-        verbose_name = u'значения',
-        help_text = u'''Значения (как элементы
-                        словарной статьи),
-                        при которых необходимо
-                        разместить фразеологическую
-                        единицу или ссылку
-                        на её размещение''',
-        blank = True,
-        null = True,
-        )
-
     entry_constituents = models.ManyToManyField(
         Entry,
         verbose_name = u'словарные статьи',
@@ -832,8 +746,6 @@ class PhraseologicalUnit(models.Model):
                         разместить фразеологическую
                         единицу или ссылку
                         на её размещение''',
-        blank = True,
-        null = True,
         )
 
     base = models.ForeignKey(
@@ -850,6 +762,8 @@ class PhraseologicalUnit(models.Model):
                         на словарную статью, укажите её
                         в данном поле.''',
         related_name = 'ref_phus'
+        blank = True,
+        null = True,
         )
 
     link_to_phu = models.ForeignKey(
@@ -860,6 +774,8 @@ class PhraseologicalUnit(models.Model):
                         на другое фразеологическое сочетание,
                         укажите её в данном поле.''',
         related_name = 'ref_phus'
+        blank = True,
+        null = True,
         )
 
     def __unicode__(self):
@@ -868,60 +784,6 @@ class PhraseologicalUnit(models.Model):
     class Meta:
         verbose_name = u'фразеологическое сочетание'
         verbose_name_plural = u'фразеологические сочетания'
-
-
-class SymRelation(models.Model):
-    """
-    Надо это всё как-то переделывать.
-    :(
-    """
-    rel_type = models.CharField(
-        u'тип симметричного отношения',
-        max_length = 8,
-        choices = (
-                ('syn', u'Синонимия'),
-                ('par', u'Паронимия'),
-            ),
-        )
-
-    meaning_elements = models.ManyToManyField(
-        Meaning,
-        verbose_name = u'значения',
-        related_name = 'sym_rel',
-        blank = True,
-        null = True,
-        )
-
-    entry_elements = models.ManyToManyField(
-        Entry,
-        verbose_name = u'лексемы',
-        blank = True,
-        null = True,
-        )
-
-    phu_elements = models.ManyToManyField(
-        PhraseologicalUnit,
-        verbose_name = u'фразеологизмы',
-        blank = True,
-        null = True,
-        )
-
-    base = models.ForeignKey(
-        Meaning,
-        verbose_name = u'базовая точка',
-        help_text = u'''Значение, при котором 
-                        ''',
-        related_name = 'base_for_rel',
-        blank = True,
-        null = True,
-        )
-
-    def __unicode__(self):
-        return self.base.entry_container.civil_equivalent.text
-
-    class Meta:
-        verbose_name = u'симметричное транзитивное отношение'
-        verbose_name_plural = u'группы по симметричным транзитивным отношениям'
 
 
 class SynonymGroup(models.Model):
@@ -951,11 +813,22 @@ class SynonymGroup(models.Model):
         related_name = 'base_synonym_in'
         )
 
-
-
     def __unicode__(self):
-        return self.base.civil_equivalent.text
+        syn_list = self.entry_synonyms + self.phu_synonyms
+        return unicode([syn.base.civil_equivalent.text for syn in syn_list])
 
     class Meta:
         verbose_name = u'группа синонимов'
         verbose_name_plural = u'группы синонимов'
+
+
+class Collocation(models.Model):
+
+    entry = models.ForeignKey(Entry)
+
+    idem = models.TextField(
+        u'словосочетание',
+        )
+
+    def __unicode__(self):
+        return self.idem
