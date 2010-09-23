@@ -2,6 +2,7 @@ import os
 import sys
 
 sys.path.append('/var/www/')
+sys.path.append('/var/www/slavdict/')
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'slavdict.settings'
 
