@@ -67,6 +67,26 @@ class AdminInfo:
         auto_now = True,
         )
 
+
+class Meaningfull:
+    """
+    У экземпляров класса должны иметься менеджеры запросов с названиями
+    orthographic_variants и meaning_set.
+    """
+
+    @property
+    def orth_vars(self):
+        return self.orthographic_variants.all()
+
+    @property
+    def meanings(self):
+        return self.meaning_set.filter(metaphorical=False)
+
+    @property
+    def metaph_meanings(self):
+        return self.meaning_set.filter(metaphorical=True)
+
+
 class CivilEquivalent(models.Model):
 
     text = models.CharField(
@@ -83,44 +103,14 @@ class CivilEquivalent(models.Model):
         verbose_name_plural = u'слова в гражданском написании'
 
 
-class WordForm(models.Model):
-
-    lexeme = models.ManyToManyField(
-        'Entry',
-        verbose_name = u'лексема',
-        )
-
-    text = models.CharField(
-        u'словоформа',
-        max_length = 40,
-        unique = True,
-        )
-
-    def __unicode__(self):
-        return self.text
-
-
-class Entry(models.Model, AdminInfo):
+class Entry(models.Model, Meaningfull, AdminInfo):
 
     civil_equivalent = models.ForeignKey(
-        CivilEquivalent,
+        'CivilEquivalent',
         verbose_name = u'гражданское написание',
         blank = True,
         null = True,
         )
-
-    # orthographic_variants
-    @property
-    def orth_vars(self):
-        return self.orthographic_variants.all()
-
-    @property
-    def meanings(self):
-        return self.meaning_set.filter(metaphorical=False)
-
-    @property
-    def metaph_meanings(self):
-        return self.meaning_set.filter(metaphorical=True)
 
     @property
     def syns(self):
@@ -239,7 +229,7 @@ class Entry(models.Model, AdminInfo):
     derivation_entry = models.ForeignKey(
         'self',
         verbose_name = u'слово, от которого образовано данное слово',
-        related_name = 'derived_entries',
+        related_name = 'derived_entry_set',
         blank = True,
         null = True,
         )
@@ -251,19 +241,19 @@ class Entry(models.Model, AdminInfo):
                         должна содержать только ссылку
                         на другую словарную статью,
                         укажите её в данном поле.''',
-        related_name = 'ref_entries',
+        related_name = 'ref_entry_set',
         blank = True,
         null = True,
         )
 
-    link_to_phu = models.ForeignKey(
-        'PhraseologicalUnit',
-        verbose_name = u'ссылка на фразеологическое сочетание',
+    link_to_collocation = models.ForeignKey(
+        'Collocation',
+        verbose_name = u'ссылка на словосочетание',
         help_text = u'''Если вместо значений словарная статья
                         должна содержать только ссылку
-                        на фразеологическое сочетание,
+                        на словосочетание,
                         укажите его в данном поле.''',
-        related_name = 'ref_entries',
+        related_name = 'ref_entry_set',
         blank = True,
         null = True,
         )
@@ -321,66 +311,12 @@ class Entry(models.Model, AdminInfo):
         )
 
     def __unicode__(self):
-        return self.civil_equivalent.text
+        return self.orth_vars[0].idem
 
     class Meta:
         verbose_name = u'словарная статья'
-        verbose_name_plural = u'словарные статьи'
-        ordering = ('civil_equivalent__text',)
+        verbose_name_plural = u'1) СЛОВАРНЫЕ СТАТЬИ'
 
-
-class OrthographicVariant(models.Model):
-
-    # словарная статья, к которой относиться данный орф. вариант
-    entry = models.ForeignKey(
-        Entry,
-        verbose_name = u'словарная статья',
-        related_name = 'orthographic_variants'
-        )
-
-    # сам орфографический вариант
-    idem = models.CharField(
-        u'написание',
-        max_length=40,
-        )
-
-    @property
-    def idem_ucs(self):
-        return ucs_convert(self.idem)
-
-    # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
-    is_reconstructed = models.BooleanField(u'является реконструкцией')
-
-    # в связке с полем реконструкции (is_reconstructed)
-    # показывает, утверждена ли реконструкция или нет
-    is_approved = models.BooleanField(u'одобренная реконструкция')
-
-    # является ли данный орфографический вариант основным
-    is_headword = models.BooleanField(
-        u'основной орфографический вариант',
-        default = True,
-        )
-
-    # является ли орф. вариант только общей частью словоформ
-    # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
-    # на конце автоматически добавляется дефис, заносить в базу без дефиса
-    is_factored_out = models.BooleanField(u'общая часть нескольких слов или словоформ')
-
-    # частота встречаемости орфографического варианта
-    # ? для факторизантов не важна ?
-    frequency = models.PositiveIntegerField(
-        u'частота',
-        blank = True,
-        null  = True,
-        )
-
-    def __unicode__(self):
-        return self.idem
-
-    class Meta:
-        verbose_name = u'орфографический вариант'
-        verbose_name_plural = u'орфографические варианты'
-        ordering = ('-is_headword', 'idem')
 
 class Etymology(models.Model):
 
@@ -466,6 +402,17 @@ class ProperNoun(models.Model):
 
     canonical_name = models.BooleanField(
         u'каноническое',
+        default = False,
+        )
+
+    nom_sg = models.CharField(
+        u'м.р. Им.п. ед.ч',
+        help_text = u'''Только для этнонимов
+                        (например, в словарной статье АГАРЯНЕ,
+                        здесь -- АГАРЯНИН).''',
+        max_length = 25,
+        blank = True,
+        null = True,
         )
 
     def __unicode__(self):
@@ -533,24 +480,40 @@ class Meaning(models.Model, AdminInfo):
         verbose_name = u'лексема',
         help_text = u'''Лексема, к которой относится значение.
                         Выберите, только если значение
-                        не относится к фразеологизму.''',
+                        не относится к словосочетанию.''',
+        related_name = 'meaning_set',
         )
 
-    phu_container = models.ForeignKey(
-        'PhraseologicalUnit',
+    collocation_container = models.ForeignKey(
+        'Collocation',
         blank = True,
         null = True,
-        verbose_name = u'фразеологизм',
-        help_text = u'''Фразелогическое сочетание,
+        verbose_name = u'словосочетание',
+        help_text = u'''Словосочетание,
                         к которому относится значение.
                         Выберите, только если значение
                         не относится к конкретной лексеме.''',
+        related_name = 'meaning_set',
         )
+
+    @property
+    def number(self):
+        """
+        Почему-то не работает, наверное потому что рекурсия:
+        класс используется внутри себя самого.
+        """
+        obj = self.entry_container
+        if not obj:
+            _list = Meaning.objects.filter(entry_container = obj).order_by('id')
+        else:
+            obj = self.collocation_container
+            _list = Meaning.objects.filter(collocation_container = obj).order_by('id')
+        return _list.index(self) + 1
 
     parent_meaning = models.ForeignKey(
         'self',
         verbose_name = u'родительское значение',
-        related_name = 'child_meanings',
+        related_name = 'child_meaning_set',
         blank = True,
         null = True,
         )
@@ -560,6 +523,7 @@ class Meaning(models.Model, AdminInfo):
         help_text = u'''Не отображать данное значение
                         при выводе словарной статьи.''',
         default = False,
+        editable = False,
         )
 
     link_to_meaning = models.ForeignKey(
@@ -568,9 +532,9 @@ class Meaning(models.Model, AdminInfo):
         help_text = u'''Если значение должно вместо текста
                         содержать только ссылку на другое
                         значение некоторой лексемы или
-                        фразеологического сочетания,
+                        словосочетания,
                         укажите её в данном поле.''',
-        related_name = 'ref_meanings',
+        related_name = 'ref_meaning_set',
         blank = True,
         null = True,
         )
@@ -582,32 +546,30 @@ class Meaning(models.Model, AdminInfo):
                         должна быть только ссылка
                         на другую словарную статью,
                         укажите её в данном поле.''',
-        related_name = 'ref_meanings',
+        related_name = 'ref_meaning_set',
         blank = True,
         null = True,
         )
 
-    link_to_phu = models.ForeignKey(
-        'PhraseologicalUnit',
-        verbose_name = u'ссылка на фразеологическое сочетание',
+    link_to_collocation = models.ForeignKey(
+        'Collocation',
+        verbose_name = u'ссылка на словосочетание',
         help_text = u'''Если вместо значения должна быть только ссылка
-                        на целое фразеологическое сочетание, а не его
-                        отдельные значения, укажите его в данном поле.''',
-        related_name = 'ref_meanings',
+                        на целое словосочетание.''',
+        related_name = 'ref_meaning_set',
         blank = True,
         null = True,
+        )
+
+    metaphorical = models.BooleanField(
+        u'метафорическое',
+        default = False,
         )
 
     meaning = models.TextField(
         u'значение',
         blank = True,
         )
-
-    metaphorical = models.BooleanField(
-        u'метафорическое',
-        )
-
-    # greek_equivalent
 
     gloss = models.TextField(
         u'пояснение',
@@ -641,13 +603,16 @@ class Meaning(models.Model, AdminInfo):
 
     class Meta:
         verbose_name = u'значение'
-        verbose_name_plural = u'значения'
-        ordering = ('entry_container__civil_equivalent__text', 'id')
+        verbose_name_plural = u'2) ЗНАЧЕНИЯ'
 
 
 class Example(models.Model, AdminInfo):
 
-    meaning = models.ForeignKey(Meaning)
+    meaning = models.ForeignKey(
+        Meaning,
+        verbose_name = u'значение',
+        help_text = u'Значение, к которому относится данный пример.',
+        )
     # TODO: это должно быть поле ManyToManyField,
     # а не FK. Соответственно, оно должно
     # иметь название во мн.ч. (meaning*s*)
@@ -657,6 +622,7 @@ class Example(models.Model, AdminInfo):
         help_text = u'''Не отображать данный пример
                         при выводе словарной статьи.''',
         default = False,
+        editable = False,
         )
 
     example = models.TextField(
@@ -671,6 +637,7 @@ class Example(models.Model, AdminInfo):
         u'контекст примера',
         help_text = u'Более широкий контекст для примера',
         blank = True,
+        editable = False,
         )
 
     class SplitContext:
@@ -699,7 +666,7 @@ class Example(models.Model, AdminInfo):
                 return SplitContext(x, y, z, c)
         return SplitContext(u'', e, u'', e)
 
-    # Временное поле для импорта вордовских статей.
+    # Времеis_headwordнное поле для импорта вордовских статей.
     address_text = models.CharField(
         u'адрес',
         max_length = 300,
@@ -720,70 +687,174 @@ class Example(models.Model, AdminInfo):
         )
 
     def __unicode__(self):
-        return u'(%s) %s' % (self.address, self.example)
+        return u'(%s) %s' % (self.address_text, self.example)
 
     class Meta:
         verbose_name = u'пример'
-        verbose_name_plural = u'примеры'
+        verbose_name_plural = u'3) ПРИМЕРЫ'
 
 
-class PhraseologicalUnit(models.Model):
+class Collocation(models.Model, Meaningfull, AdminInfo):
 
-    text = models.CharField(
-        u'фразеологическое сочетание',
-        max_length = 50,
+    base_meaning = models.ForeignKey(
+        Meaning,
+        verbose_name = u'значение',
+        help_text = u'''Значение, при котором будет стоять
+                        словосочетание.''',
         )
 
-    @property
-    def text_ucs(self):
-        return ucs_convert(self.text)
-
-    entry_constituents = models.ManyToManyField(
-        Entry,
-        verbose_name = u'словарные статьи',
-        help_text = u'''Словарные статьи,
-                        при которых необходимо
-                        разместить фразеологическую
-                        единицу или ссылку
-                        на её размещение''',
-        )
-
-    base = models.ForeignKey(
-        Entry,
-        verbose_name = u'базовая словарная статья',
-        related_name = 'based_phus'
+    civil_equivalent = models.ForeignKey(
+        'CivilEquivalent',
+        verbose_name = u'гражданское написание',
+        blank = True,
+        null = True,
         )
 
     link_to_entry = models.ForeignKey(
         Entry,
         verbose_name = u'ссылка на лексему',
-        help_text = u'''Если вместо значений фразеологической
-                        единицы должна быть только ссылка
+        help_text = u'''Если вместо значений словосочетания
+                        должна быть только ссылка
                         на словарную статью, укажите её
                         в данном поле.''',
-        related_name = 'ref_phus'
+        related_name = 'ref_collocation_set',
         blank = True,
         null = True,
+        db_index = True,
         )
 
-    link_to_phu = models.ForeignKey(
-        'self',
-        verbose_name = u'ссылка на фразеологическое сочетание',
-        help_text = u'''Если вместо значений фразеологической
-                        единицы должна быть только ссылка
-                        на другое фразеологическое сочетание,
-                        укажите её в данном поле.''',
-        related_name = 'ref_phus'
+    class Meta:
+        verbose_name = u'словосочетание'
+        verbose_name_plural = u'4) СЛОВОСОЧЕТАНИЯ'
+
+
+
+
+
+
+
+class GreekEquivalent(models.Model):
+
+    class Meta:
+        abstract = True
+
+    text = models.CharField(
+        u'греч. параллель',
+        max_length = 100,
+        )
+
+    mark = models.CharField(
+        u'грамматическая помета',
+        max_length = 20,
         blank = True,
-        null = True,
         )
 
     def __unicode__(self):
         return self.text
 
+
+class GreekEquivalentForMeaning(GreekEquivalent):
+
+    for_meaning = models.ForeignKey(Meaning)
+
     class Meta:
-        verbose_name = u'фразеологическое сочетание'
-        verbose_name_plural = u'фразеологические сочетания'
+        verbose_name = u'греческая параллель'
+        verbose_name_plural = u'греческие параллели'
+
+
+class GreekEquivalentForExample(GreekEquivalent):
+
+    for_example = models.ForeignKey(Example)
+
+    position = models.PositiveIntegerField(
+        verbose_name = u'позиция в примере',
+        help_text = u'Номер слова, после которого следует поставить параллель.',
+        blank = True,
+        null = True,
+        )
+
+    class Meta:
+        verbose_name = u'греческая параллель'
+        verbose_name_plural = u'греческие параллели'
+
+
+
+
+
+
+class OrthographicVariant(models.Model):
+
+    # сам орфографический вариант
+    idem = models.CharField(
+        u'написание',
+        max_length = 50,
+        )
+
+    @property
+    def idem_ucs(self):
+        return ucs_convert(self.idem)
+
+    # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
+    is_reconstructed = models.BooleanField(
+        u'является реконструкцией',
+        default = False,
+        )
+
+    # в связке с полем реконструкции (is_reconstructed)
+    # показывает, утверждена ли реконструкция или нет
+    is_approved = models.BooleanField(
+        u'одобренная реконструкция',
+        default = False,
+        )
+
+    # является ли данный орфографический вариант основным
+    is_main_variant = models.BooleanField(
+        u'основной орфографический вариант',
+        default = True,
+        )
+
+    # является ли орф. вариант только общей частью словоформ
+    # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
+    # на конце автоматически добавляется дефис, заносить в базу без дефиса
+    #is_factored_out = models.BooleanField(u'общая часть нескольких слов или словоформ')
+
+    # частота встречаемости орфографического варианта
+    # ? для факторизантов не важна ?
+    frequency = models.PositiveIntegerField(
+        u'частота',
+        blank = True,
+        null  = True,
+        )
+
+    def __unicode__(self):
+        return self.idem
+
+    class Meta:
+        verbose_name = u'орфографический вариант'
+        verbose_name_plural = u'орфографические варианты'
+        ordering = ('-is_main_variant', 'idem')
+
+    # словарная статья, к которой относится данный орф. вариант
+    entry = models.ForeignKey(
+        Entry,
+        related_name = 'orthographic_variants',
+        blank = True,
+        null = True,
+        db_index = True,
+        )
+
+    # словосочетание, к которому относится данный орф. вариант
+    collocation = models.ForeignKey(
+        Collocation,
+        related_name = 'orthographic_variants',
+        blank = True,
+        null = True,
+        db_index = True,
+        )
+
+
+
+
 
 
 class SynonymGroup(models.Model):
@@ -800,9 +871,9 @@ class SynonymGroup(models.Model):
     def synonyms(self):
         return self.entry_synonyms.all()
 
-    phu_synonyms = models.ManyToManyField(
-        PhraseologicalUnit,
-        verbose_name = u'синонимы-фразеологизмы',
+    collocation_synonyms = models.ManyToManyField(
+        Collocation,
+        verbose_name = u'синонимы-словосочетания',
         blank = True,
         null = True,
         )
@@ -814,21 +885,9 @@ class SynonymGroup(models.Model):
         )
 
     def __unicode__(self):
-        syn_list = self.entry_synonyms + self.phu_synonyms
-        return unicode([syn.base.civil_equivalent.text for syn in syn_list])
+        syn_list = self.entry_synonyms + self.collocation_synonyms
+        return unicode([syn.base.orth_vars[0].idem for syn in syn_list])
 
     class Meta:
         verbose_name = u'группа синонимов'
         verbose_name_plural = u'группы синонимов'
-
-
-class Collocation(models.Model):
-
-    entry = models.ForeignKey(Entry)
-
-    idem = models.TextField(
-        u'словосочетание',
-        )
-
-    def __unicode__(self):
-        return self.idem
