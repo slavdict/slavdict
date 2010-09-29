@@ -19,7 +19,10 @@ def meaning_with_entry(obj):
     container = obj.entry_container
     if not container:
         container = obj.collocation_container
-    ent = entry_with_orth_variants(container)
+    if container:
+        ent = entry_with_orth_variants(container)
+    else:
+        ent = u'(БЕСХОЗНОЕ ЗНАЧЕНИЕ)'
     return u'%s [%s] %s' % (ent, obj.id, obj.meaning)
 
 meaning_with_entry.admin_order_field = 'entry_container'
