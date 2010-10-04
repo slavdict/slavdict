@@ -165,7 +165,7 @@ Entry.__unicode__=lambda self: entry_with_orth_variants(self)
 class AdminEntry(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': (('civil_equivalent', 'part_of_speech', 'editor'),),
+            'fields': (('part_of_speech', 'editor'),),
             }),
         (u'Для сущ.', {
             'fields': (('genitive', 'gender', 'tantum'),),
@@ -226,7 +226,7 @@ admin.site.register(
     inlines = (CollocationVariant_Inline,),
     fieldsets = (
             (None,
-                {'fields': (('base_meaning', 'civil_equivalent'),)}),
+                {'fields': ('base_meaning',)}),
             (u'Если вместо значений ссылка',
                 {'fields': ('link_to_entry',),
                 'classes': ('collapse',)}),
