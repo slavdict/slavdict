@@ -318,6 +318,7 @@ class Entry(models.Model, Meaningfull, AdminInfo):
     class Meta:
         verbose_name = u'словарная статья'
         verbose_name_plural = u'1) СЛОВАРНЫЕ СТАТЬИ'
+        ordering = ('-id',)
 
 
 class Etymology(models.Model):
@@ -389,7 +390,7 @@ class Etymology(models.Model):
     class Meta:
         verbose_name = u'этимология слова'
         verbose_name_plural = u'этимология слов'
-        ordering = ('id',)
+        ordering = ('-id',)
 
 
 class ProperNoun(models.Model):
@@ -605,6 +606,7 @@ class Meaning(models.Model, AdminInfo):
     class Meta:
         verbose_name = u'значение'
         verbose_name_plural = u'2) ЗНАЧЕНИЯ'
+        ordering = ('-id',)
 
 
 class Example(models.Model, AdminInfo):
@@ -693,6 +695,7 @@ class Example(models.Model, AdminInfo):
     class Meta:
         verbose_name = u'пример'
         verbose_name_plural = u'3) ПРИМЕРЫ'
+        ordering = ('-id',)
 
 
 class Collocation(models.Model, Meaningfull, AdminInfo):
@@ -727,6 +730,7 @@ class Collocation(models.Model, Meaningfull, AdminInfo):
     class Meta:
         verbose_name = u'словосочетание'
         verbose_name_plural = u'4) СЛОВОСОЧЕТАНИЯ'
+        ordering = ('-id',)
 
 
 
@@ -833,7 +837,7 @@ class OrthographicVariant(models.Model):
     class Meta:
         verbose_name = u'орфографический вариант'
         verbose_name_plural = u'орфографические варианты'
-        ordering = ('-is_main_variant', 'idem')
+        ordering = ('-is_main_variant', '-id')
 
     # словарная статья, к которой относится данный орф. вариант
     entry = models.ForeignKey(

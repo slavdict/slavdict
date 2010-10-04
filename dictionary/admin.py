@@ -107,12 +107,12 @@ class Example_Inline(admin.StackedInline):
     model = Example
     extra = 1
     fieldsets = EXAMPLE_FIELDSETS
-    formfield_overrides = { models.TextField: {'widget': forms.TextInput}, }
+    formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
 
 class AdminExample(admin.ModelAdmin):
     inlines = (GreekEquivalentForExample_Inline,)
     fieldsets = ((None, {'fields': ('meaning',)}),) + EXAMPLE_FIELDSETS
-    formfield_overrides = { models.TextField: {'widget': forms.TextInput}, }
+    formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     ordering = ('-id',)
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
@@ -151,7 +151,7 @@ class AdminMeaning(admin.ModelAdmin):
                 'classes': ('collapse',)}),
         )
     save_on_top = True
-    formfield_overrides = { models.TextField: {'widget': forms.TextInput}, }
+    formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     ordering = ('-id',)
 
     class Media:
@@ -204,6 +204,7 @@ class AdminEntry(admin.ModelAdmin):
         )
     ordering = ('-id',)
     save_on_top = True
+    formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
 
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
