@@ -76,6 +76,9 @@ class TermDirectory(models.Model):
 
 class PartOfSpeech(TermDirectory):
 
+    def __unicode__(self):
+        return self.abbreviation
+
     class Meta(TermDirectory.Meta):
         verbose_name = u'часть речи'
         verbose_name_plural = u'части речи'

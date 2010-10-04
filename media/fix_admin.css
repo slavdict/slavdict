@@ -1,0 +1,3 @@
+label { width: 10em !important; text-align: right; }
+p.help { width: 300px !important; margin-left: 9em !important; }
+div > input[type="checkbox"] { margin-left: 12em !important; }

@@ -60,11 +60,13 @@ class AdminInfo:
     add_datetime = models.DateTimeField(
         editable = False,
         auto_now_add = True,
+        verbose_name = u'время создания',
         )
 
     change_datetime = models.DateTimeField(
         editable = False,
         auto_now = True,
+        verbose_name = u'время изменения',
         )
 
 
@@ -228,7 +230,7 @@ class Entry(models.Model, Meaningfull, AdminInfo):
 
     derivation_entry = models.ForeignKey(
         'self',
-        verbose_name = u'слово, от которого образовано данное слово',
+        verbose_name = u'образовано от',
         related_name = 'derived_entry_set',
         blank = True,
         null = True,
@@ -330,9 +332,8 @@ class Etymology(models.Model):
 
     parent_etymology = models.ForeignKey(
         'self',
-        verbose_name = u'родительская этимология',
-        help_text = u'''Этимология, для которой данная
-                        этимология является этимологией.''',
+        verbose_name = u'дочерняя этимология',
+        help_text = u'Возможный/несомненный предок для',
         blank = True,
         null = True,
         )
@@ -758,7 +759,7 @@ class GreekEquivalentForMeaning(GreekEquivalent):
     for_meaning = models.ForeignKey(Meaning)
 
     class Meta:
-        verbose_name = u'греческая параллель'
+        verbose_name = u'греческая параллель для значения'
         verbose_name_plural = u'греческие параллели'
 
 
@@ -774,7 +775,7 @@ class GreekEquivalentForExample(GreekEquivalent):
         )
 
     class Meta:
-        verbose_name = u'греческая параллель'
+        verbose_name = u'греческая параллель для примера'
         verbose_name_plural = u'греческие параллели'
 
 
@@ -810,7 +811,7 @@ class OrthographicVariant(models.Model):
     # является ли данный орфографический вариант основным
     is_main_variant = models.BooleanField(
         u'основной орфографический вариант',
-        default = True,
+        default = False,
         )
 
     # является ли орф. вариант только общей частью словоформ
