@@ -1,5 +1,5 @@
 @font-face {
-    font-family: 'Triodion';
+    font-family: 'Triodion Ucs';
     src: url('/site-media/fonts/TriIEUcs.eot'); /* .eot */
     src:
         local('Triodion ieUcs'),
@@ -11,7 +11,7 @@
 }
 
 @font-face {
-	font-family: 'EstrangeloEdessaRegular';
+	font-family: 'Estrangelo Edessa';
 	src: url('/site-media/fonts/estre-webfont.eot');
 	src: local('☺'), url('/site-media/fonts/estre-webfont.woff') format('woff'), url('/site-media/fonts/estre-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -19,7 +19,7 @@
 }
 
 @font-face {
-	font-family: 'hebrewRegular';
+	font-family: 'hebrew';
 	src: url('/site-media/fonts/hebrew-webfont.eot');
 	src: local('☺'), url('/site-media/fonts/hebrew-webfont.woff') format('woff'), url('/site-media/fonts/hebrew-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -27,7 +27,7 @@
 }
 
 @font-face {
-	font-family: 'GEOLitNusxRegular';
+	font-family: 'GEO-LitNusx';
 	src: url('/site-media/fonts/ltzura2-webfont.eot');
 	src: local('☺'), url('/site-media/fonts/ltzura2-webfont.woff') format('woff'), url('/site-media/fonts/ltzura2-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -35,7 +35,7 @@
 }
 
 @font-face {
-	font-family: 'SILUlyssesRegular';
+	font-family: 'SIL Ulysses';
 	src: url('/site-media/fonts/silur-webfont.eot');
 	src: local('☺'), url('/site-media/fonts/silur-webfont.woff') format('woff'), url('/site-media/fonts/silur-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -43,7 +43,7 @@
 }
 
 @font-face {
-	font-family: 'SPEdessaRegular';
+	font-family: 'SPEdessa';
 	src: url('/site-media/fonts/spedessa-webfont.eot');
 	src: local('☺'), url('/site-media/fonts/spedessa-webfont.woff') format('woff'), url('/site-media/fonts/spedessa-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -51,7 +51,7 @@
 }
 
 @font-face {
-	font-family: 'CopticNormal';
+	font-family: 'Coptic';
 	src: url('/site-media/fonts/coptic2-webfont.eot');
 	src: local('☺'), url('/site-media/fonts/coptic2-webfont.woff') format('woff'), url('/site-media/fonts/coptic2-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -59,7 +59,7 @@
 }
 
 @font-face {
-	font-family: 'HebrewRussianRegular';
+	font-family: 'Hebrew-Russian!';
 	src: url('/site-media/fonts/heb-rus-webfont.eot');
 	src: local('☺'), url('/site-media/fonts/heb-rus-webfont.woff') format('woff'), url('/site-media/fonts/heb-rus-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -68,21 +68,21 @@
 
 
 .cslav {
-    font-family: Triodion;
+    font-family: "Triodion Ucs";
     font-weight: normal;
     font-size: 110%;
 }
 
 .grec {
-    font-family: SILUlyssesRegular;
+    font-family: 'SIL Ulysses';
 }
 
 .hebrew {
-    font-family: hebrewRegular;
+    font-family: 'hebrew';
 }
 
 .hebrew-translit {
-    font-family: HebrewRussianRegular;
+    font-family: 'Hebrew-Russian!';
 }
 
 body {
