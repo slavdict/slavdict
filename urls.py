@@ -13,7 +13,9 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('',
-    url( r'^$',      redirect_to, {'url': '/admin/dictionary/'} ),
+    url( r'^$', 'slavdict.dictionary.views.last_entry' ),
+    url( r'^entries/$', 'slavdict.dictionary.views.all_entries', name='all_entries_url' ),
+    url( r'^entries/(\d+)/$', 'slavdict.dictionary.views.single_entry', name='single_entry_url' ),
     url( r'^forum/', include('slavdict.forum.urls') ),
     url( r'^wiki/$', redirect_to, {'url': 'http://slavonic.pbworks.com/'} ),
 )

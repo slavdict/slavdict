@@ -1,0 +1,97 @@
+                <div class="entry">
+
+                    <div style="line-height: 100%;">
+                    {% for ovar in entry.orth_vars %}
+                            {% if forloop.counter == 2 %}({% endif %}<span
+                            class="cslav {% if forloop.first %}headword{% else %}orthvar{% endif %}"
+                            >{{ ovar.idem_ucs }}</span
+                            >{% if not forloop.last and not forloop.first %},
+                            {% else %}{% if not forloop.first %}){% endif %}{% endif %}{% if forloop.first and forloop.last %}{% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %},{% endif %}{% endif %}
+                    {% endfor %}
+
+                    {% if entry.short_form %}<span class="cslav">{{ entry.short_form_ucs }}</span
+                    >{% if entry.genitive %},{%endif %}{% endif %}
+                    {% if entry.genitive %}-<span class="cslav">{{ entry.genitive_ucs }}</span>{% endif %}
+                    {% if entry.sg1 %}<span class="cslav">{{ entry.sg1_ucs }}</span
+                    >{% if entry.sg2 %},{%endif %}{% endif %}
+                    {% if entry.sg2 %}<span class="cslav">{{ entry.sg2_ucs }}</span>{% endif %}
+
+
+                    {% if entry.uninflected %}<i>неизм.</i>{% endif %}
+                    {% if entry.possessive %}<i>притяж.</i>{% endif %}
+                    <i>{{ entry.part_of_speech.abbreviation }}</i
+                    >{% if entry.gender %}, <i>{{ entry.gender.abbreviation }}</i>{% endif %}
+                    {% if entry.derivation_entry %}<i>от</i> <span class="cslav">{{ entry.derivation_entry.orth_vars.0.idem_ucs }}</span>{% endif %}
+                    </div>
+
+
+                    {% if entry.etymologies %}<div
+                    >{% for etym in entry.etymologies %}<i
+                        >{{ etym.language.abbreviation }}</i>
+
+                        {% if etym.text %}<span class="{{ etym.language.css_class }}">{{ etym.text }}</span
+                        >{% if etym.translit or etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %};
+                        {% endif %}{% endif %}{% endif %}
+
+                        {% if etym.translit %}{% if etym.text %} [{% endif %}<span
+                        class="{{ etym.language.translit_css_class }}">{{ etym.translit }}</span
+                        >{% if etym.text %}]{% endif %}{% if etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %};
+                        {% endif %}{% endif %}{% endif %}
+
+                        {% if etym.meaning %}<span
+                        >‘{{ etym.meaning }}’</span
+                        >{% if etym.gloss %}{% else %}{% if not forloop.last %}; {% endif %}{% endif %}{% endif %}
+
+                        {% if etym.gloss %}<i
+                        >{{ etym.gloss }}</i
+                        >{% if not forloop.last %}; {% endif %}{% endif %}{% endfor %}</div>
+                    {% endif %}
+
+
+                    {% for m in entry.meanings %}
+
+                        <div style="margin-top: 0.7em; line-height: 140%;">
+
+                            {% if not entry.meanings|length_is:"1" %}
+                                <b>{{ forloop.counter }}</b>.
+                            {% endif %}
+
+                            {% include '_meaning.html' %}
+
+                        </div>
+
+                        <div style="margin-top: 0.7em; line-height: 140%;">
+
+                            {% if m.collocations %}
+                                {% for c in m.collocations %}
+                                    {% include '_collocation.html' %}
+                                {% endfor %}
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+
+                    {% for m in entry.metaph_meanings %}
+
+                        <div style="margin-top: 0.7em; line-height: 140%;">
+
+                            <span style="color: #777;">►</span>
+                            {% include '_meaning.html' %}
+
+                        </div>
+
+                        <div style="margin-top: 0.7em; line-height: 140%;">
+
+                            {% if m.collocations %}
+                                {% for c in m.collocations %}
+                                    {% include '_collocation.html' %}
+                                {% endfor %}
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>

@@ -4,11 +4,13 @@ from django import forms
 from django.db import models
 from django.contrib import admin
 
-
-def entry_with_orth_variants(obj):
+def _orth_vars(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('-is_main_variant','idem')]
     delimiter = u', '
-    x = delimiter.join(orth_vars)
+    return delimiter.join(orth_vars)
+
+def entry_with_orth_variants(obj):
+    x = _orth_vars(obj)
     try:
         e = obj.civil_equivalent.text
     except:
@@ -114,6 +116,8 @@ class AdminExample(admin.ModelAdmin):
     fieldsets = ((None, {'fields': ('meaning',)}),) + EXAMPLE_FIELDSETS
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     ordering = ('-id',)
+    list_display = ('id', '__unicode__')
+    list_display_links = list_display
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
 
@@ -153,6 +157,8 @@ class AdminMeaning(admin.ModelAdmin):
     save_on_top = True
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     ordering = ('-id',)
+    list_display = ('id', '__unicode__')
+    list_display_links = list_display
 
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
@@ -193,11 +199,16 @@ class AdminEntry(admin.ModelAdmin):
         ProperNoun_Inline,
         )
     list_display = (
+        'id',
         'civil_equivalent',
-        entry_with_orth_variants,
+        '__unicode__',
         'part_of_speech',
         'editor',
+        )
+    list_display_links = (
         'id',
+        'civil_equivalent',
+        '__unicode__',
         )
     list_filter = (
         'editor',
@@ -220,16 +231,20 @@ CollocationVariant_Inline.verbose_name = u'словосочетание'
 CollocationVariant_Inline.verbose_name_plural = u'Группа словосочетаний'
 
 from slavdict.dictionary.models import Collocation
-Collocation.__unicode__=lambda self: entry_with_orth_variants(self)
-admin.site.register(
-    Collocation,
-    inlines = (CollocationVariant_Inline,),
+Collocation.__unicode__=lambda self: _orth_vars(self)
+class AdminCollocation(admin.ModelAdmin):
+    inlines = (CollocationVariant_Inline,)
     fieldsets = (
             (None,
                 {'fields': ('base_meaning',)}),
             (u'Если вместо значений ссылка',
                 {'fields': ('link_to_entry',),
                 'classes': ('collapse',)}),
-        ),
-    ordering = ('-id',),
-    )
+        )
+    ordering = ('-id',)
+    list_display = ('id', '__unicode__')
+    list_display_links = list_display
+    class Media:
+        css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
+
+admin.site.register(Collocation, AdminCollocation)

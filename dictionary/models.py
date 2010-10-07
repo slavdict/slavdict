@@ -82,11 +82,11 @@ class Meaningfull:
 
     @property
     def meanings(self):
-        return self.meaning_set.filter(metaphorical=False)
+        return self.meaning_set.filter(metaphorical=False).order_by('id')
 
     @property
     def metaph_meanings(self):
-        return self.meaning_set.filter(metaphorical=True)
+        return self.meaning_set.filter(metaphorical=True).order_by('id')
 
 
 class CivilEquivalent(models.Model):
@@ -112,6 +112,13 @@ class Entry(models.Model, Meaningfull, AdminInfo):
         verbose_name = u'гражданское написание',
         blank = True,
         null = True,
+        )
+
+    hidden = models.BooleanField(
+        u'Скрыть лексему',
+        help_text = u'Не отображать лексему в списке словарных статей.',
+        default = False,
+        editable = False,
         )
 
     @property
@@ -311,6 +318,10 @@ class Entry(models.Model, Meaningfull, AdminInfo):
         blank = True,
         null = True,
         )
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('single_entry_url', [str(self.id)])
 
     def __unicode__(self):
         return self.orth_vars[0].idem
@@ -600,6 +611,14 @@ class Meaning(models.Model, AdminInfo):
     def contexts(self):
         return self.meaningcontext_set.all()
 
+    @property
+    def greek_equivs(self):
+        return self.greekequivalentformeaning_set.all()
+
+    @property
+    def collocations(self):
+        return self.collocation_set.all()
+
     def __unicode__(self):
         return self.meaning
 
@@ -676,7 +695,9 @@ class Example(models.Model, AdminInfo):
         blank = True,
         )
 
-    # greek_equivalent
+    @property
+    def greek_equivs(self):
+        return self.greekequivalentforexample_set.all()
 
     additional_info = models.TextField(
         u'любая дополнительная информация',

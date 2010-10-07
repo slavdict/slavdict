@@ -1,12 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
     <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <title>{{ title }}</title>
         <link href="/site-media/style.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
-        <h1>{{ title }}</h1>
-        <div>
-        {{ content }}
+        <div id="header">
+            <div id="menu">
+                <a href="{% url admin:dictionary_entry_add %}">Добавить статью</a> |
+                <a href="{% url all_entries_url %}">Все статьи</a> |
+                <a href="/admin/dictionary/">Админка</a>
+            </div>
+        </div>
+        <div id="main">
+        {% block content %}{% endblock %}
         </div>
     </body>
 </html>

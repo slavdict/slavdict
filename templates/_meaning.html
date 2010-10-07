@@ -1,0 +1,46 @@
+{% if m.contexts %}
+    {% for mc in m.contexts %}
+        {% if forloop.first %}<span  style="color: #070;">[{% endif %}{% if mc.left_text %}<i
+        >{{ mc.left_text }}</i> {% endif %}<span
+        class="cslav">{{ mc.context }}</span
+        >{% if mc.right_text %} <i>{{ mc.right_text }}</i
+        >{% endif %}{% if not forloop.last %}, {% else %}]</span> {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% if m.link_to_entry or m.link_to_collocation %}
+    <i>см.</i>
+    {% if m.link_to_entry %}
+        <span class="cslav">{{ m.link_to_entry.orth_vars.0.idem_ucs }}</span
+    {% else %}
+        <span class="cslav">{{ m.link_to_collocation.orth_vars.0.idem_ucs }}</span
+    {% endif %}
+    >{% if m.meaning or m.gloss %};{% endif %}
+{% endif %}
+
+{% if m.meaning %}
+    <span>{{ m.meaning.capitalize }}</span
+{% endif %}
+
+{% if m.gloss %}
+    {% if m.meaning %}>;{% endif %}
+    <i>{{ m.gloss.capitalize }}</i
+{% endif %}
+
+{% if m.greek_equivs %}
+    {% if m.meaning or m.gloss %}>{% endif %}
+    {% for ge in m.greek_equivs %}
+        {% if forloop.first %}({% endif %}<span class="grec">{{ ge.text }}</span
+        >{%if ge.mark %} <i>{{ ge.mark }}</i>{% endif %}{% if forloop.last %}<span>)</span{% else %},{% endif %}
+    {% endfor %}
+{% endif %}
+
+{% if m.meaning or m.gloss %}>{% if m.examples %}:{% endif %}{% endif %}
+
+{% if m.examples %}
+    {% for e in m.examples %}
+        {% include '_example.html' %}
+    {% endfor %}
+{% endif %}
+
+

@@ -2,6 +2,7 @@
     font-family: 'Triodion Ucs';
     src: url('/site-media/fonts/TriIEUcs.eot'); /* .eot */
     src:
+        local('Triodion Ucs'),
         local('Triodion ieUcs'),
         local('Triodion ieUcs Regular'),
         local('Triodion-ieUcs'),
@@ -11,9 +12,13 @@
 }
 
 @font-face {
-	font-family: 'Estrangelo Edessa';
-	src: url('/site-media/fonts/estre-webfont.eot');
-	src: local('☺'), url('/site-media/fonts/estre-webfont.woff') format('woff'), url('/site-media/fonts/estre-webfont.ttf') format('truetype');
+	font-family: 'SIL Ulysses';
+	src: url('/site-media/fonts/silur-webfont.eot');
+	src:
+        local('SIL Ulysses'),
+        local('☺'),
+        url('/site-media/fonts/silur-webfont.woff') format('woff'),
+        url('/site-media/fonts/silur-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -21,39 +26,11 @@
 @font-face {
 	font-family: 'hebrew';
 	src: url('/site-media/fonts/hebrew-webfont.eot');
-	src: local('☺'), url('/site-media/fonts/hebrew-webfont.woff') format('woff'), url('/site-media/fonts/hebrew-webfont.ttf') format('truetype');
-	font-weight: normal;
-	font-style: normal;
-}
-
-@font-face {
-	font-family: 'GEO-LitNusx';
-	src: url('/site-media/fonts/ltzura2-webfont.eot');
-	src: local('☺'), url('/site-media/fonts/ltzura2-webfont.woff') format('woff'), url('/site-media/fonts/ltzura2-webfont.ttf') format('truetype');
-	font-weight: normal;
-	font-style: normal;
-}
-
-@font-face {
-	font-family: 'SIL Ulysses';
-	src: url('/site-media/fonts/silur-webfont.eot');
-	src: local('☺'), url('/site-media/fonts/silur-webfont.woff') format('woff'), url('/site-media/fonts/silur-webfont.ttf') format('truetype');
-	font-weight: normal;
-	font-style: normal;
-}
-
-@font-face {
-	font-family: 'SPEdessa';
-	src: url('/site-media/fonts/spedessa-webfont.eot');
-	src: local('☺'), url('/site-media/fonts/spedessa-webfont.woff') format('woff'), url('/site-media/fonts/spedessa-webfont.ttf') format('truetype');
-	font-weight: normal;
-	font-style: normal;
-}
-
-@font-face {
-	font-family: 'Coptic';
-	src: url('/site-media/fonts/coptic2-webfont.eot');
-	src: local('☺'), url('/site-media/fonts/coptic2-webfont.woff') format('woff'), url('/site-media/fonts/coptic2-webfont.ttf') format('truetype');
+	src:
+        local('hebrew'),
+        local('☺'),
+        url('/site-media/fonts/hebrew-webfont.woff') format('woff'),
+        url('/site-media/fonts/hebrew-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -61,7 +38,59 @@
 @font-face {
 	font-family: 'Hebrew-Russian!';
 	src: url('/site-media/fonts/heb-rus-webfont.eot');
-	src: local('☺'), url('/site-media/fonts/heb-rus-webfont.woff') format('woff'), url('/site-media/fonts/heb-rus-webfont.ttf') format('truetype');
+	src:
+        local('Hebrew-Russian!'),
+        local('☺'),
+        url('/site-media/fonts/heb-rus-webfont.woff') format('woff'),
+        url('/site-media/fonts/heb-rus-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Estrangelo Edessa';
+	src: url('/site-media/fonts/estre-webfont.eot');
+	src:
+        local('Estrangelo Edessa'),
+        local('☺'),
+        url('/site-media/fonts/estre-webfont.woff') format('woff'),
+        url('/site-media/fonts/estre-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'GEO-LitNusx';
+	src: url('/site-media/fonts/ltzura2-webfont.eot');
+	src:
+        local('GEO-LitNusx'),
+        local('☺'),
+        url('/site-media/fonts/ltzura2-webfont.woff') format('woff'),
+        url('/site-media/fonts/ltzura2-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'SPEdessa';
+	src: url('/site-media/fonts/spedessa-webfont.eot');
+	src:
+        local('SPEdessa'),
+        local('☺'),
+        url('/site-media/fonts/spedessa-webfont.woff') format('woff'),
+        url('/site-media/fonts/spedessa-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Coptic';
+	src: url('/site-media/fonts/coptic2-webfont.eot');
+	src:
+        local('Coptic'),
+        local('☺'),
+        url('/site-media/fonts/coptic2-webfont.woff') format('woff'),
+        url('/site-media/fonts/coptic2-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -94,30 +123,26 @@ body {
 div#header {
     background-color: #a00;
     color: white;
-    padding: 0.5em 1em;
+    height: 2em;
 }
 
 div#menu {
-    width: 10em;
     position: absolute;
+    text-align: center;
 }
 
-div#menu div {
-    padding: 1em 1em 0;
-}
-
-div#menu a,
-div#menu a:link {
+div#menu a {
+    font-family: Arial, sans-serif;
     text-decoration: none;
-    color: #369;
-    border-bottom: 1px dotted #369;
+    color: #ddd;
+    border-bottom: 1px dotted #ddd;
 }
 
 div#menu a:hover,
-div#menu a:active {
-    text-decoration: none;
-    color: #036;
-    border-bottom: 1px dotted #036;
+div#menu a:active,
+div#menu a:focus {
+    color: #fff;
+    border-bottom: 1px solid #fff;
 }
 
 div#main {
