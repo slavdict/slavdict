@@ -114,7 +114,8 @@
     font-family: 'Hebrew-Russian!';
 }
 
-body {
+body,
+div {
     margin: 0;
     padding: 0;
     font-size: 13pt;
@@ -123,31 +124,33 @@ body {
 div#header {
     background-color: #a00;
     color: white;
-    height: 2em;
+    height: 2.5em;
+    padding-top: 1em;
 }
 
 div#menu {
-    position: absolute;
-    text-align: center;
+    width: 40em;
+    margin: auto;
 }
 
 div#menu a {
     font-family: Arial, sans-serif;
+    font-style: italic;
     text-decoration: none;
-    color: #ddd;
-    border-bottom: 1px dotted #ddd;
+    color: #fff;
 }
 
 div#menu a:hover,
 div#menu a:active,
 div#menu a:focus {
-    color: #fff;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px dotted #fff;
 }
+
+span.divider { margin: 0 0.5em; }
 
 div#main {
     margin: 1em auto;
-    width: 750px;
+    width: 40em;
 }
 
 div.entry {

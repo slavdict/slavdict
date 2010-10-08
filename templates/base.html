@@ -8,9 +8,17 @@
     <body>
         <div id="header">
             <div id="menu">
-                <a href="{% url admin:dictionary_entry_add %}">Добавить статью</a> |
-                <a href="{% url all_entries_url %}">Все статьи</a> |
+
+                <a href="{% url admin:dictionary_entry_add %}">Добавить статью</a>
+
+                    <span class="divider">|</span>
+
+                <a href="{% url all_entries_url %}">Все статьи</a>
+
+                    <span class="divider">|</span>
+
                 <a href="/admin/dictionary/">Админка</a>
+
             </div>
         </div>
         <div id="main">
