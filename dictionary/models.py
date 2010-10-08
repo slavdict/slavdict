@@ -89,29 +89,12 @@ class Meaningfull:
         return self.meaning_set.filter(metaphorical=True).order_by('id')
 
 
-class CivilEquivalent(models.Model):
-
-    text = models.CharField(
-        u'гражданское написание',
-        max_length = 40,
-        unique = True,
-        )
-
-    def __unicode__(self):
-        return self.text
-
-    class Meta:
-        verbose_name = u'эквивалент в гражданском написании'
-        verbose_name_plural = u'слова в гражданском написании'
-
-
 class Entry(models.Model, Meaningfull, AdminInfo):
 
-    civil_equivalent = models.ForeignKey(
-        'CivilEquivalent',
-        verbose_name = u'гражданское написание',
+    civil_equivalent = models.CharField(
+        u'гражданское написание',
+        max_length = 40,
         blank = True,
-        null = True,
         )
 
     hidden = models.BooleanField(
@@ -119,6 +102,22 @@ class Entry(models.Model, Meaningfull, AdminInfo):
         help_text = u'Не отображать лексему в списке словарных статей.',
         default = False,
         editable = False,
+        )
+
+    homonym_order = models.SmallIntegerField(
+        u'номер в случае омонимов',
+        blank = True,
+        null = True,
+        )
+
+    homonym_gloss = models.CharField(
+        u'пояснение к омониму',
+        max_length = 40,
+        help_text = u'''Пояснение для различения омонимов, например:
+                        ВАРИТИ I (предварять), ВАРИТИ II (варить).
+                        Предполагается использовать только для служебных
+                        целей, а не для отображения при словарных статьях.''',
+        blank = True,
         )
 
     @property
