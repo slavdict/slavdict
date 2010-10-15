@@ -62,9 +62,9 @@
 
                         <div style="margin-top: 0.7em; line-height: 140%;">
 
-                            {% if m.collocations %}
-                                {% for c in m.collocations %}
-                                    {% include '_collocation.html' %}
+                            {% if m.collogroups %}
+                                {% for c in m.collogroups %}
+                                    {% include '_collogroup.html' %}
                                 {% endfor %}
                             {% endif %}
 

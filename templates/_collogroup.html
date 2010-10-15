@@ -1,16 +1,16 @@
             <div style="line-height: 140%;">
                 □<!-- &#x25A1; -->
-                {% for ovar in c.collocations %}
-                        <span class="cslav">{{ ovar.idem_ucs }}</span
+                {% for c in cg.collocations %}
+                        <span class="cslav">{{ c.collocation_ucs }}</span
                         >{% if not forloop.last %},{% endif %}
                 {% endfor %}
 
-                {% if c.meanings or c.metaph_meanings %}&mdash;{% endif %}
+                {% if cg.meanings or cg.metaph_meanings %}&mdash;{% endif %}
 
                 <span>
-                    {% for m in c.meanings %}
+                    {% for m in cg.meanings %}
 
-                        {% if not c.meanings|length_is:"1" %}
+                        {% if not cg.meanings|length_is:"1" %}
                             {{ forloop.counter }}.
                         {% endif %}
 
@@ -19,7 +19,7 @@
                     {% endfor %}
 
 
-                    {% for m in c.metaph_meanings %}
+                    {% for m in cg.metaph_meanings %}
 
                         <span style="color: #777;">►</span>
                         {% include '_meaning.html' %}

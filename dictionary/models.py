@@ -69,33 +69,31 @@ class AdminInfo:
         verbose_name = u'время изменения',
         )
 
-
 class Meaningfull:
     """
-    У экземпляров класса должны иметься менеджеры запросов с названиями
-    orthographic_variants и meaning_set.
+    У экземпляров класса должен иметься менеджер запросов
+    с названием meaning_set.
     """
-
-    @property
-    def orth_vars(self):
-        return self.orthographic_variants.all()
-
     @property
     def meanings(self):
-        return self.meaning_set.filter(metaphorical=False).order_by('id')
+        return self.meaning_set.filter(metaphorical=False).order_by('order', 'id')
 
     @property
     def metaph_meanings(self):
-        return self.meaning_set.filter(metaphorical=True).order_by('id')
+        return self.meaning_set.filter(metaphorical=True).order_by('order', 'id')
 
 
-class Entry(models.Model, Meaningfull, AdminInfo):
+class Entry(models.Model, Meaningfull):
 
     civil_equivalent = models.CharField(
         u'гражданское написание',
         max_length = 40,
         blank = True,
         )
+
+    @property
+    def orth_vars(self):
+        return self.orthographic_variants.all()
 
     hidden = models.BooleanField(
         u'Скрыть лексему',
@@ -254,13 +252,24 @@ class Entry(models.Model, Meaningfull, AdminInfo):
         null = True,
         )
 
-    link_to_collocation = models.ForeignKey(
-        'Collocation',
+    link_to_collogroup = models.ForeignKey(
+        'CollocationGroup',
         verbose_name = u'ссылка на словосочетание',
         help_text = u'''Если вместо значений словарная статья
                         должна содержать только ссылку
                         на словосочетание,
                         укажите его в данном поле.''',
+        related_name = 'ref_entry_set',
+        blank = True,
+        null = True,
+        )
+
+    link_to_meaning = models.ForeignKey(
+        'Meaning',
+        verbose_name = u'ссылка на значение',
+        help_text = u'''Если вместо значений словарная статья должна
+                        содержать только ссылку на опредленное значение лексемы
+                        или словосочетания, укажите его в данном поле.''',
         related_name = 'ref_entry_set',
         blank = True,
         null = True,
@@ -339,12 +348,29 @@ class Etymology(models.Model):
         verbose_name = u'словарная статья',
         help_text = u'''Словарная статья, к которой
                         относится данная этимология.''',
+        blank = True,
+        null = True,
         )
 
-    parent_etymology = models.ForeignKey(
+    collocation = models.ForeignKey(
+        'Collocation',
+        verbose_name = u'словосочетание',
+        help_text = u'''Словосочетание, к которому
+                        относится данная этимология.''',
+        blank = True,
+        null = True,
+        )
+
+    order = models.SmallIntegerField(
+        u'порядок следования',
+        blank = True,
+        null = True,
+        )
+
+    etymon_to = models.ForeignKey(
         'self',
-        verbose_name = u'дочерняя этимология',
-        help_text = u'Возможный/несомненный предок для',
+        verbose_name = u'этимон для',
+        help_text = u'Возможный/несомненный этимон для другого этимона, который и необходимо указать.',
         blank = True,
         null = True,
         )
@@ -398,8 +424,8 @@ class Etymology(models.Model):
         return u'%s %s %s' % (self.language.abbreviation, self.entry, self.translit)
 
     class Meta:
-        verbose_name = u'этимология слова'
-        verbose_name_plural = u'этимология слов'
+        verbose_name = u'этимон'
+        verbose_name_plural = u'этимология'
         ordering = ('-id',)
 
 
@@ -442,10 +468,19 @@ class MeaningContext(models.Model):
         verbose_name = u'значение',
         )
 
+    order = models.SmallIntegerField(
+        u'порядок следования',
+        blank = True,
+        null = True,
+        )
+
     left_text = models.CharField(
         u'дополнительный текст слева',
         max_length = 20,
-        help_text = u'Здесь указывается текст на русском языке.',
+        help_text = u'''Здесь указывается текст на <span class="green">русском</span> языке.
+                        Например, если необходим контекст «<span class="text">+</span
+                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="text">кому/чему</span>»,
+                        в данное поле добавляется текст&nbsp;«<span class="typing">+</span>».''',
         blank = True,
         # пока непонятно будет ли это поле использоваться, т.к.
         # для правых контекстов плюс слева будет добавляться автоматически.
@@ -454,9 +489,10 @@ class MeaningContext(models.Model):
     context = models.CharField(
         u'текст контекста',
         max_length = 40,
-        help_text = u'''Здесь указывается церковнославянский текст.
-                        Например, если необходим правый контекст «+ къ кому/чему»,
-                        в данное поле добавляется текст «къ».''',
+        help_text = u'''Здесь указывается <span class="green">церковнославянский</span> текст.
+                        Например, если необходим контекст «<span class="text">+</span
+                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="text">кому/чему</span>»,
+                        в данное поле добавляется текст&nbsp;«<span class="typing">къ</span>».''',
         blank = True,
         )
 
@@ -467,9 +503,10 @@ class MeaningContext(models.Model):
     right_text = models.CharField(
         u'дополнительный текст справа',
         max_length = 20,
-        help_text = u'''Здесь указывается текст на русском языке.
-                        Например, если необходим правый контекст «+ къ кому/чему»,
-                        в данное поле добавляется текст «кому/чему».''',
+        help_text = u'''Здесь указывается текст на <span class="green">русском</span> языке.
+                        Например, если необходим контекст «<span class="text">+</span
+                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="text">кому/чему</span>»,
+                        в данное поле добавляется текст&nbsp;«<span class="typing">кому/чему</span>».''',
         blank = True,
         )
 
@@ -483,7 +520,7 @@ class MeaningContext(models.Model):
         verbose_name_plural = u'контексты значения'
 
 
-class Meaning(models.Model, AdminInfo):
+class Meaning(models.Model):
 
     entry_container = models.ForeignKey(
         Entry,
@@ -496,8 +533,8 @@ class Meaning(models.Model, AdminInfo):
         related_name = 'meaning_set',
         )
 
-    collocation_container = models.ForeignKey(
-        'Collocation',
+    collogroup_container = models.ForeignKey(
+        'CollocationGroup',
         blank = True,
         null = True,
         verbose_name = u'словосочетание',
@@ -508,19 +545,11 @@ class Meaning(models.Model, AdminInfo):
         related_name = 'meaning_set',
         )
 
-    @property
-    def number(self):
-        """
-        Почему-то не работает, наверное потому что рекурсия:
-        класс используется внутри себя самого.
-        """
-        obj = self.entry_container
-        if not obj:
-            _list = Meaning.objects.filter(entry_container = obj).order_by('id')
-        else:
-            obj = self.collocation_container
-            _list = Meaning.objects.filter(collocation_container = obj).order_by('id')
-        return _list.index(self) + 1
+    order = models.SmallIntegerField(
+        u'порядок следования',
+        blank = True,
+        null = True,
+        )
 
     parent_meaning = models.ForeignKey(
         'self',
@@ -563,8 +592,8 @@ class Meaning(models.Model, AdminInfo):
         null = True,
         )
 
-    link_to_collocation = models.ForeignKey(
-        'Collocation',
+    link_to_collogroup = models.ForeignKey(
+        'CollocationGroup',
         verbose_name = u'ссылка на словосочетание',
         help_text = u'''Если вместо значения должна быть только ссылка
                         на целое словосочетание.''',
@@ -615,8 +644,8 @@ class Meaning(models.Model, AdminInfo):
         return self.greekequivalentformeaning_set.all()
 
     @property
-    def collocations(self):
-        return self.collocation_set.all()
+    def collogroups(self):
+        return self.collocationgroup_set.all()
 
     def __unicode__(self):
         return self.meaning
@@ -627,7 +656,7 @@ class Meaning(models.Model, AdminInfo):
         ordering = ('-id',)
 
 
-class Example(models.Model, AdminInfo):
+class Example(models.Model):
 
     meaning = models.ForeignKey(
         Meaning,
@@ -637,6 +666,12 @@ class Example(models.Model, AdminInfo):
     # TODO: это должно быть поле ManyToManyField,
     # а не FK. Соответственно, оно должно
     # иметь название во мн.ч. (meaning*s*)
+
+    order = models.SmallIntegerField(
+        u'порядок следования',
+        blank = True,
+        null = True,
+        )
 
     hidden = models.BooleanField(
         u'Скрыть пример',
@@ -718,18 +753,26 @@ class Example(models.Model, AdminInfo):
         ordering = ('-id',)
 
 
-class Collocation(models.Model, Meaningfull, AdminInfo):
+class CollocationGroup(models.Model, Meaningfull):
+
+    base_entry = models.ForeignKey(
+        Entry,
+        verbose_name = u'лексема',
+        help_text = u'''Лексема, при которой будет стоять
+                        словосочетание. Если есть возможность указать
+                        конкретное значение, лучше указать вместо лексемы
+                        её конкретное значение.''',
+        related_name = 'collocationgroup_set',
+        blank = True,
+        null = True,
+        )
 
     base_meaning = models.ForeignKey(
         Meaning,
         verbose_name = u'значение',
         help_text = u'''Значение, при котором будет стоять
                         словосочетание.''',
-        )
-
-    civil_equivalent = models.ForeignKey(
-        'CivilEquivalent',
-        verbose_name = u'гражданское написание',
+        related_name = 'collocationgroup_set',
         blank = True,
         null = True,
         )
@@ -741,19 +784,64 @@ class Collocation(models.Model, Meaningfull, AdminInfo):
                         должна быть только ссылка
                         на словарную статью, укажите её
                         в данном поле.''',
-        related_name = 'ref_collocation_set',
+        related_name = 'ref_collogroup_set',
         blank = True,
         null = True,
-        db_index = True,
+        )
+
+    link_to_meaning = models.ForeignKey(
+        'Meaning',
+        verbose_name = u'ссылка на значение',
+        help_text = u'''Если вместо значений словосочетания должна быть
+                        только ссылка на опредленное значение лексемы
+                        или словосочетания, укажите его в данном поле.''',
+        related_name = 'ref_collogroup_set',
+        blank = True,
+        null = True,
+        )
+
+    @property
+    def collocations(self):
+        return self.collocation_set.all().order_by('order', 'id')
+
+    class Meta:
+        verbose_name = u'группа словосочетаний'
+        verbose_name_plural = u'4) ГРУППЫ СЛОВОСОЧЕТАНИЙ'
+        ordering = ('-id',)
+
+
+class Collocation(models.Model):
+
+    collogroup = models.ForeignKey(
+        CollocationGroup,
+        verbose_name = u'группа словосочетаний',
+        )
+
+    collocation = models.CharField(
+        u'словосочетание',
+        max_length = 70,
+        )
+
+    @property
+    def collocation_ucs(self):
+        return ucs_convert(self.collocation)
+
+    civil_equivalent = models.CharField(
+        u'гражданское написание',
+        max_length = 40,
+        blank = True,
+        )
+
+    order = models.SmallIntegerField(
+        u'порядок следования',
+        blank = True,
+        null = True,
         )
 
     class Meta:
         verbose_name = u'словосочетание'
-        verbose_name_plural = u'4) СЛОВОСОЧЕТАНИЯ'
+        verbose_name_plural = u'5) ОТДЕЛЬНЫЕ СЛОВОСОЧЕТАНИЯ'
         ordering = ('-id',)
-
-
-
 
 
 
@@ -809,6 +897,14 @@ class GreekEquivalentForExample(GreekEquivalent):
 
 class OrthographicVariant(models.Model):
 
+    # словарная статья, к которой относится данный орф. вариант
+    entry = models.ForeignKey(
+        Entry,
+        related_name = 'orthographic_variants',
+        blank = True,
+        null = True,
+        )
+
     # сам орфографический вариант
     idem = models.CharField(
         u'написание',
@@ -818,6 +914,12 @@ class OrthographicVariant(models.Model):
     @property
     def idem_ucs(self):
         return ucs_convert(self.idem)
+
+    order = models.SmallIntegerField(
+        u'порядок следования',
+        blank = True,
+        null = True,
+        )
 
     # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
     is_reconstructed = models.BooleanField(
@@ -829,12 +931,6 @@ class OrthographicVariant(models.Model):
     # показывает, утверждена ли реконструкция или нет
     is_approved = models.BooleanField(
         u'одобренная реконструкция',
-        default = False,
-        )
-
-    # является ли данный орфографический вариант основным
-    is_main_variant = models.BooleanField(
-        u'основной орфографический вариант',
         default = False,
         )
 
@@ -857,25 +953,7 @@ class OrthographicVariant(models.Model):
     class Meta:
         verbose_name = u'орфографический вариант'
         verbose_name_plural = u'орфографические варианты'
-        ordering = ('-is_main_variant', '-id')
-
-    # словарная статья, к которой относится данный орф. вариант
-    entry = models.ForeignKey(
-        Entry,
-        related_name = 'orthographic_variants',
-        blank = True,
-        null = True,
-        db_index = True,
-        )
-
-    # словосочетание, к которому относится данный орф. вариант
-    collocation = models.ForeignKey(
-        Collocation,
-        related_name = 'orthographic_variants',
-        blank = True,
-        null = True,
-        db_index = True,
-        )
+        ordering = ('order','id')
 
 
 
@@ -896,8 +974,8 @@ class SynonymGroup(models.Model):
     def synonyms(self):
         return self.entry_synonyms.all()
 
-    collocation_synonyms = models.ManyToManyField(
-        Collocation,
+    collogroup_synonyms = models.ManyToManyField(
+        CollocationGroup,
         verbose_name = u'синонимы-словосочетания',
         blank = True,
         null = True,
@@ -910,8 +988,9 @@ class SynonymGroup(models.Model):
         )
 
     def __unicode__(self):
-        syn_list = self.entry_synonyms + self.collocation_synonyms
-        return unicode([syn.base.orth_vars[0].idem for syn in syn_list])
+        _output = [syn.orth_vars[0] for syn in self.entry_synonyms]
+        _collocations = [syn.collocation for syn in [collogroup.collocations for collogroup in self.collogroup_synonyms]]
+        return _output.extend(_collocations)
 
     class Meta:
         verbose_name = u'группа синонимов'

@@ -5,9 +5,14 @@ from django.db import models
 from django.contrib import admin
 
 def _orth_vars(obj):
-    orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('-is_main_variant','idem')]
+    orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('id')]
     delimiter = u', '
     return delimiter.join(orth_vars)
+
+def _collocations(obj):
+    collocations = [unicode(i) for i in obj.collocation_set.all().order_by('id')]
+    delimiter = u', '
+    return delimiter.join(collocations)
 
 def entry_with_orth_variants(obj):
     x = _orth_vars(obj)
@@ -23,7 +28,7 @@ entry_with_orth_variants.short_description = u'словарная статья'
 def meaning_with_entry(obj):
     container = obj.entry_container
     if not container:
-        container = obj.collocation_container
+        container = obj.collogroup_container
     if container:
         ent = entry_with_orth_variants(container)
     else:
@@ -37,9 +42,6 @@ def example_with_entry(obj):
     return u'%s [%s] %s' % (meaning_with_entry(obj.meaning), obj.id, obj.example)
 
 
-from slavdict.dictionary.models import CivilEquivalent
-admin.site.register(CivilEquivalent)
-
 from slavdict.dictionary.models import OrthographicVariant
 class OrthVar_Inline(admin.StackedInline):
     model = OrthographicVariant
@@ -51,22 +53,28 @@ class OrthVar_Inline(admin.StackedInline):
         )
 
 from slavdict.dictionary.models import Etymology
+ETYMOLOGY_FIELDSETS = (
+    (u'Является этимоном для др. этимона',
+        {'fields': ('etymon_to',),
+        'classes': ('collapse',)}
+        ),
+    (None,
+        {'fields': ('language', ('text', 'translit'), ('meaning', 'gloss'), ('unclear_etymology', 'mark'))}
+        ),
+    (u'Доп. инфо.',
+        {'fields': ('additional_info',),
+        'classes': ('collapse',)}
+        ),
+    )
 class Etymology_Inline(admin.StackedInline):
     model = Etymology
     extra = 0
-    fieldsets = (
-        (u'Дочерняя этимология',
-            {'fields': ('parent_etymology',),
-            'classes': ('collapse',)}
-            ),
-        (None,
-            {'fields': ('language', ('text', 'translit'), ('meaning', 'gloss'), ('unclear_etymology', 'mark'))}
-            ),
-        (u'Доп. инфо.',
-            {'fields': ('additional_info',),
-            'classes': ('collapse',)}
-            ),
-        )
+    fieldsets = ETYMOLOGY_FIELDSETS
+
+class EtymologyForCollocation_Inline(admin.StackedInline):
+    model = Etymology
+    extra = 1
+    fieldsets = ETYMOLOGY_FIELDSETS
 
 from slavdict.dictionary.models import GreekEquivalentForMeaning
 class GreekEquivalentForMeaning_Inline(admin.StackedInline):
@@ -130,6 +138,7 @@ from slavdict.dictionary.models import MeaningContext
 class MeaningContext_Inline(admin.StackedInline):
     model = MeaningContext
     extra = 0
+    fieldsets = ((None, {'fields': ('context', ('left_text', 'right_text'),)}),)
 
 from slavdict.dictionary.models import Meaning
 Meaning.__unicode__=lambda self:meaning_with_entry(self)
@@ -141,12 +150,12 @@ class AdminMeaning(admin.ModelAdmin):
         )
     fieldsets = (
             (u'То, к чему значение относится',
-                {'fields': (('entry_container', 'collocation_container'),)}),
+                {'fields': (('entry_container', 'collogroup_container'),)}),
             (u'Если является подзначением',
                 {'fields': ('parent_meaning',),
                 'classes': ('collapse',)}),
             (u'Если вместо значения ссылка',
-                {'fields': ('link_to_meaning', ('link_to_entry', 'link_to_collocation')),
+                {'fields': ('link_to_meaning', ('link_to_entry', 'link_to_collogroup')),
                 'classes': ('collapse',)}),
             (None,
                 {'fields': ('metaphorical', ('meaning', 'gloss'))}),
@@ -184,7 +193,7 @@ class AdminEntry(admin.ModelAdmin):
         (u'Для глаг.', { 'fields': (('sg1', 'sg2'),), 'classes': ('collapse',) } ),
         (u'Образовано от', { 'fields': ( 'derivation_entry',), 'classes': ( 'collapse',), }),
         (u'Вместо значений ссылка', {
-            'fields': (('link_to_entry', 'link_to_collocation'),),
+            'fields': (('link_to_entry', 'link_to_collogroup'), 'link_to_meaning'),
             'classes': ('collapse',) } ),
         (u'Доп. инфо.', {
             'fields':  ('additional_info',),
@@ -226,19 +235,33 @@ from slavdict.dictionary.models import SynonymGroup
 admin.site.register(SynonymGroup)
 
 
-CollocationVariant_Inline = OrthVar_Inline
-CollocationVariant_Inline.verbose_name = u'словосочетание'
-CollocationVariant_Inline.verbose_name_plural = u'Группа словосочетаний'
-
 from slavdict.dictionary.models import Collocation
-Collocation.__unicode__=lambda self: _orth_vars(self)
 class AdminCollocation(admin.ModelAdmin):
-    inlines = (CollocationVariant_Inline,)
+    inlines = (EtymologyForCollocation_Inline,)
+    fieldsets = (
+            (None, {'fields': (('collocation', 'civil_equivalent'),)}),
+        )
+    class Media:
+        css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
+
+admin.site.register(Collocation, AdminCollocation)
+
+class Collocation_Inline(admin.StackedInline):
+    model = Collocation
+    extra = 1
+    fieldsets = (
+            (None, {'fields': ('collocation',)}),
+        )
+
+from slavdict.dictionary.models import CollocationGroup
+CollocationGroup.__unicode__=lambda self: _collocations(self)
+class AdminCollocationGroup(admin.ModelAdmin):
+    inlines = (Collocation_Inline,)
     fieldsets = (
             (None,
-                {'fields': ('base_meaning',)}),
+                {'fields': (('base_meaning', 'base_entry'),)}),
             (u'Если вместо значений ссылка',
-                {'fields': ('link_to_entry',),
+                {'fields': ('link_to_entry', 'link_to_meaning'),
                 'classes': ('collapse',)}),
         )
     ordering = ('-id',)
@@ -247,4 +270,4 @@ class AdminCollocation(admin.ModelAdmin):
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
 
-admin.site.register(Collocation, AdminCollocation)
+admin.site.register(CollocationGroup, AdminCollocationGroup)

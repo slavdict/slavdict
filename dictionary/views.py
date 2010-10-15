@@ -17,7 +17,12 @@ def single_entry(request, entry_id):
                             RequestContext(request),)
 
 def last_entry(request):
-    entry = Entry.objects.all().order_by('-id')[0]
+    error = False
+    try:
+        entry = Entry.objects.all().order_by('-id')[0]
+    except IndexError:
+        entry = None
+        error = True
     return render_to_response('single_entry.html',
-                            { 'entry': entry, 'title': u'Последняя добавленная статья' },
+                            { 'entry': entry, 'title': u'Последняя добавленная статья', 'error': error },
                             RequestContext(request),)

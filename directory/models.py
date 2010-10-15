@@ -5,6 +5,9 @@ class Category(models.Model):
 
     slug = models.CharField(
         u'условное название',
+        help_text = u'''Для использования при формировании
+                        ручных запросов к БД, вроде «Выдай
+                        мне все значения категории slug».''',
         max_length = 15,
         )
 
@@ -20,6 +23,10 @@ class Category(models.Model):
 
     def __unicode__(self):
         return self.tag
+
+    class Meta:
+        verbose_name = u'категория'
+        verbose_name_plural = u'категории'
 
 
 class CategoryValue(models.Model):
@@ -31,6 +38,9 @@ class CategoryValue(models.Model):
 
     slug = models.CharField(
         u'условное название',
+        help_text = u'''Для использования при формировании
+                        ручных запросов к БД, вроде «Выдай
+                        мне все возможные ярлыки для значения slug».''',
         max_length = 15,
         )
 
@@ -41,6 +51,17 @@ class CategoryValue(models.Model):
 
     order = models.PositiveSmallIntegerField(
         u'порядок следования',
+        blank = True,
+        null = True,
+        )
+
+    pinned = models.BooleanField(
+        u'закрепить',
+        help_text = u'''Для возможности разбить все значения в данной категории
+                        на часто используемые, которые необходимо выдать
+                        группой в начале, и редкоиспользуемые, чтобы сделать,
+                        например, для них ссылку «другое», при нажатии на
+                        которую уже и будут они появляться для возможности выбора.''',
         )
 
     description = models.CharField(
@@ -50,6 +71,104 @@ class CategoryValue(models.Model):
 
     def __unicode__(self):
         return self.tag
+
+    class Meta:
+        verbose_name = u'значение категории'
+        verbose_name_plural = u'значения категорий'
+        ordering = ('category', 'order', 'id')
+
+
+class TagLibrary(models.Model):
+
+    slug = models.CharField(
+        u'условное название',
+        help_text = u'''Для использования при формировании
+                        ручных запросов к БД, вроде «Выдай
+                        мне все возможные ярлыки из библиотеки slug».''',
+        max_length = 15,
+        )
+
+    description = models.TextField(
+        u'Описание',
+        help_text = u'''Описание целей/вариантов использования
+                        данной библиотеки ярлыков.''',
+        )
+
+    def __unicode__(self):
+        return self.slug
+
+    class Meta:
+        verbose_name = u'библиотека ярлыков'
+        verbose_name_plural = u'библиотеки ярлыков'
+        ordering = ('slug',)
+
+
+class CategoryTag(models.Model):
+
+    taglib = models.ForeignKey(
+        TagLibrary,
+        verbose_name = u'библиотека ярлыков',
+        )
+
+    category = models.ForeignKey(
+        Category,
+        verbose_name = u'категория',
+        )
+
+    tag = models.CharField(
+        u'ярлык',
+        max_length = 60,
+        )
+
+    def __unicode__(self):
+        return self.tag
+
+    class Meta:
+        verbose_name = u'ярлык для категории'
+        verbose_name_plural = u'ярлыки для категорий'
+
+
+class ValueTag(models.Model):
+
+    taglib = models.ForeignKey(
+        TagLibrary,
+        verbose_name = u'библиотека ярлыков',
+        )
+
+    catvalue = models.ForeignKey(
+        CategoryValue,
+        verbose_name = u'значение категории',
+        )
+
+    tag = models.CharField(
+        u'ярлык',
+        max_length = 20,
+        )
+
+    # Для возможности поменять порядок следования значений категории.
+    # Если остается пустым, то порядок следования, как самих значений.
+    order = models.SmallIntegerField(
+        u'порядок следования',
+        blank = True,
+        null = True,
+        )
+
+    pinned = models.BooleanField(
+        u'закрепить',
+        help_text = u'''Для возможности разбить все ярлыки в данной категории
+                        значений на часто используемые, которые необходимо выдать
+                        группой в начале, и редкоиспользуемые, чтобы сделать, например,
+                        для них ссылку «другое», при нажатии на которую уже и будут
+                        они появляться для возможности выбора.''',
+        )
+
+    def __unicode__(self):
+        return self.tag
+
+    class Meta:
+        verbose_name = u'ярлык для значения'
+        verbose_name_plural = u'ярлыки для значений'
+        ordering = ('taglib', 'catvalue', 'catvalue__order')
 
 
 ################################################
