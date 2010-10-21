@@ -177,27 +177,6 @@ admin.site.register(Meaning, AdminMeaning)
 
 from slavdict.dictionary.models import Entry
 Entry.__unicode__=lambda self: entry_with_orth_variants(self)
-class EntryForm(forms.ModelForm):
-    """
-    http://groups.google.com/group/django-users/browse_thread/thread/b3d6b427a7ca816b
-    """
-    class Meta:
-        model = Entry
-
-    def __init__(self, *args, **kwargs):
-        super(EntryForm, self).__init__(*args, **kwargs)
-        if self.instance.id:
-            if self.instance.part_of_speech:
-                ps = CategoryValue.objects.filter(slug='partOfSpeech')
-                p_field = self.fields['part_of_speech'].widget
-                part_of_speech_choices = []
-                if parts_of_speech is None:
-                    part_of_speech_choices.append(('', '---------'))
-                for  in counties:
-                    county_choices.append((county.id, county.name))
-                county_field.choices = county_choices
-
-
 class AdminEntry(admin.ModelAdmin):
     fieldsets = (
         (None, {

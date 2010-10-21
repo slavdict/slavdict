@@ -131,7 +131,7 @@ class Entry(models.Model, Meaningfull):
     part_of_speech = models.ForeignKey(
         CategoryValue,
         verbose_name = u'часть речи',
-        limit_choices_to = {'slug': 'partOfSpeech'},
+        limit_choices_to = {'category__slug': 'partOfSpeech'},
         related_name = 'entries_of_pos',
         )
 
@@ -149,7 +149,7 @@ class Entry(models.Model, Meaningfull):
     # только для существительных
     tantum = models.ForeignKey(
         CategoryValue,
-        limit_choices_to = {'slug': 'tantum'},
+        limit_choices_to = {'category__slug': 'tantum'},
         related_name = 'entries_of_tantum',
         blank = True,
         null = True,
@@ -158,7 +158,7 @@ class Entry(models.Model, Meaningfull):
     gender = models.ForeignKey(
         CategoryValue,
         verbose_name = u'грам. род',
-        limit_choices_to = {'slug': 'gender'},
+        limit_choices_to = {'category__slug': 'gender'},
         related_name = 'entries_of_gender',
         blank = True,
         null = True,
@@ -198,7 +198,7 @@ class Entry(models.Model, Meaningfull):
     transitivity = models.ForeignKey(
         CategoryValue,
         verbose_name = u'переходность',
-        limit_choices_to = {'slug': 'transitivity'},
+        limit_choices_to = {'category__slug': 'transitivity'},
         related_name = 'entries_of_transitivity',
         blank = True,
         null = True,
@@ -291,7 +291,7 @@ class Entry(models.Model, Meaningfull):
     status = models.ForeignKey(
         CategoryValue,
         verbose_name = u'статус статьи',
-        limit_choices_to = {'slug': 'entryStatus'},
+        limit_choices_to = {'category__slug': 'entryStatus'},
         related_name = 'entries_of_status',
         default = 0,
         )
@@ -377,7 +377,7 @@ class Etymology(models.Model):
 
     language = models.ForeignKey(
         CategoryValue,
-        limit_choices_to = {'slug': 'language'},
+        limit_choices_to = {'category__slug': 'language'},
         verbose_name = u'язык',
         )
 
@@ -436,7 +436,7 @@ class ProperNoun(models.Model):
 
     onym = models.ForeignKey(
         CategoryValue,
-        limit_choices_to = {'slug': 'onym'},
+        limit_choices_to = {'category__slug': 'onym'},
         verbose_name = u'тип имени собственного',
         )
 

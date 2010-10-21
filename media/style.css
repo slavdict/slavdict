@@ -114,6 +114,13 @@
     font-family: 'Hebrew-Russian!';
 }
 
+.akkadian {}
+.arameic {}
+.armenian {}
+.georgian {}
+.coptic {}
+.syriac {}
+
 body,
 div {
     margin: 0;

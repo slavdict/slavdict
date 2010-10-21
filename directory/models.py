@@ -25,7 +25,6 @@ class Category(models.Model):
         return self.tag
 
     class Meta:
-        
         verbose_name = u'категория'
         verbose_name_plural = u'категории'
 
