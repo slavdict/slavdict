@@ -43,17 +43,7 @@ def ucs_affix_or_word(atr):
 
 from django.db import models
 from custom_user.models import CustomUser
-from slavdict.directory.models import (
-
-    PartOfSpeech,
-    Gender,
-    Tantum,
-    Onym,
-    Transitivity,
-    Language,
-    EntryStatus,
-
-    )
+from slavdict.directory.models import CategoryValue
 
 class AdminInfo:
 
@@ -139,8 +129,10 @@ class Entry(models.Model, Meaningfull):
     # lexeme (посредник к граматическим формам и свойствам)
 
     part_of_speech = models.ForeignKey(
-        PartOfSpeech,
+        CategoryValue,
         verbose_name = u'часть речи',
+        limit_choices_to = {'slug': 'partOfSpeech'},
+        related_name = 'entries_of_pos',
         )
 
     uninflected = models.BooleanField(
@@ -156,14 +148,18 @@ class Entry(models.Model, Meaningfull):
 
     # только для существительных
     tantum = models.ForeignKey(
-        Tantum,
+        CategoryValue,
+        limit_choices_to = {'slug': 'tantum'},
+        related_name = 'entries_of_tantum',
         blank = True,
         null = True,
         )
 
     gender = models.ForeignKey(
-        Gender,
+        CategoryValue,
         verbose_name = u'грам. род',
+        limit_choices_to = {'slug': 'gender'},
+        related_name = 'entries_of_gender',
         blank = True,
         null = True,
         )
@@ -200,8 +196,10 @@ class Entry(models.Model, Meaningfull):
 
     # только для глаголов
     transitivity = models.ForeignKey(
-        Transitivity,
+        CategoryValue,
         verbose_name = u'переходность',
+        limit_choices_to = {'slug': 'transitivity'},
+        related_name = 'entries_of_transitivity',
         blank = True,
         null = True,
         )
@@ -291,8 +289,10 @@ class Entry(models.Model, Meaningfull):
 
     # административная информация
     status = models.ForeignKey(
-        EntryStatus,
+        CategoryValue,
         verbose_name = u'статус статьи',
+        limit_choices_to = {'slug': 'entryStatus'},
+        related_name = 'entries_of_status',
         default = 0,
         )
 
@@ -376,7 +376,8 @@ class Etymology(models.Model):
         )
 
     language = models.ForeignKey(
-        Language,
+        CategoryValue,
+        limit_choices_to = {'slug': 'language'},
         verbose_name = u'язык',
         )
 
@@ -434,7 +435,8 @@ class ProperNoun(models.Model):
     entry = models.ForeignKey(Entry)
 
     onym = models.ForeignKey(
-        Onym,
+        CategoryValue,
+        limit_choices_to = {'slug': 'onym'},
         verbose_name = u'тип имени собственного',
         )
 
