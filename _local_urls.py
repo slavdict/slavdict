@@ -9,16 +9,12 @@
 # by current git repository.
 
 from django.conf.urls.defaults import *
-
-try:
-    from settings import MEDIA_ROOT
-except ImportError:
-    MEDIA_ROOT = ''
+from django.conf import settings
 
 urlpatterns = patterns('',
         url(
             r'^site-media/(?P<path>.*)$',
             'django.views.static.serve',
-            {'document_root': MEDIA_ROOT}
+            {'document_root': settings.MEDIA_ROOT}
         ),
     )
