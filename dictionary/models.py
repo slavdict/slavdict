@@ -337,7 +337,7 @@ class Entry(models.Model, Meaningfull):
     class Meta:
         verbose_name = u'словарная статья'
         verbose_name_plural = u'1) СЛОВАРНЫЕ СТАТЬИ'
-        ordering = ('-id',)
+        ordering = ('id',)
 
 
 class Etymology(models.Model):
@@ -422,12 +422,12 @@ class Etymology(models.Model):
         )
 
     def __unicode__(self):
-        return u'%s %s %s' % (self.language.abbreviation, self.entry, self.translit)
+        return u'%s %s %s' % (self.language.tag, self.entry, self.translit)
 
     class Meta:
         verbose_name = u'этимон'
         verbose_name_plural = u'этимология'
-        ordering = ('-id',)
+        ordering = ('id',)
 
 
 class ProperNoun(models.Model):
@@ -655,7 +655,7 @@ class Meaning(models.Model):
     class Meta:
         verbose_name = u'значение'
         verbose_name_plural = u'2) ЗНАЧЕНИЯ'
-        ordering = ('-id',)
+        ordering = ('id',)
 
 
 class Example(models.Model):
@@ -752,7 +752,7 @@ class Example(models.Model):
     class Meta:
         verbose_name = u'пример'
         verbose_name_plural = u'3) ПРИМЕРЫ'
-        ordering = ('-id',)
+        ordering = ('id',)
 
 
 class CollocationGroup(models.Model, Meaningfull):
@@ -843,7 +843,7 @@ class Collocation(models.Model):
     class Meta:
         verbose_name = u'словосочетание'
         verbose_name_plural = u'5) ОТДЕЛЬНЫЕ СЛОВОСОЧЕТАНИЯ'
-        ordering = ('-id',)
+        ordering = ('id',)
 
 
 

@@ -19,22 +19,22 @@
 
                     {% if entry.uninflected %}<i>неизм.</i>{% endif %}
                     {% if entry.possessive %}<i>притяж.</i>{% endif %}
-                    <i>{{ entry.part_of_speech.abbreviation }}</i
-                    >{% if entry.gender %}, <i>{{ entry.gender.abbreviation }}</i>{% endif %}
+                    <i>{{ entry.part_of_speech.tag }}</i
+                    >{% if entry.gender %}, <i>{{ entry.gender.tag }}</i>{% endif %}
                     {% if entry.derivation_entry %}<i>от</i> <span class="cslav">{{ entry.derivation_entry.orth_vars.0.idem_ucs }}</span>{% endif %}
                     </div>
 
 
                     {% if entry.etymologies %}<div
                     >{% for etym in entry.etymologies %}<i
-                        >{{ etym.language.abbreviation }}</i>
+                        >{{ etym.language.tag }}</i>
 
                         {% if etym.text %}<span class="{{ etym.language.css_class }}">{{ etym.text }}</span
                         >{% if etym.translit or etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %};
                         {% endif %}{% endif %}{% endif %}
 
                         {% if etym.translit %}{% if etym.text %} [{% endif %}<span
-                        class="{{ etym.language.translit_css_class }}">{{ etym.translit }}</span
+                        class="{{ etym.language.css_class2 }}">{{ etym.translit }}</span
                         >{% if etym.text %}]{% endif %}{% if etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %};
                         {% endif %}{% endif %}{% endif %}
 
@@ -84,9 +84,9 @@
 
                         <div style="margin-top: 0.7em; line-height: 140%;">
 
-                            {% if m.collocations %}
-                                {% for c in m.collocations %}
-                                    {% include '_collocation.html' %}
+                            {% if m.collogroups %}
+                                {% for c in m.collogroups %}
+                                    {% include '_collogroup.html' %}
                                 {% endfor %}
                             {% endif %}
 
