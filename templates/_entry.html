@@ -21,7 +21,8 @@
                     {% if entry.possessive %}<i>притяж.</i>{% endif %}
                     <i>{{ entry.part_of_speech.tag }}</i
                     >{% if entry.gender %}, <i>{{ entry.gender.tag }}</i>{% endif %}
-                    {% if entry.derivation_entry %}<i>от</i> <span class="cslav">{{ entry.derivation_entry.orth_vars.0.idem_ucs }}</span>{% endif %}
+                    {% if entry.derivation_entry %}<i>от</i> <a class="cslav"
+                    href="{{ entry.derivation_entry.get_absolute_url }}">{{ entry.derivation_entry.orth_vars.0.idem_ucs }}</a>{% endif %}
                     </div>
 
 

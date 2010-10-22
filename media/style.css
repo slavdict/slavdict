@@ -101,6 +101,9 @@
     font-weight: normal;
     font-size: 110%;
 }
+a.cslav {
+    color: #000;
+}
 
 .grec {
     font-family: 'SIL Ulysses';
