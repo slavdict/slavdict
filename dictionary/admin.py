@@ -180,7 +180,7 @@ Entry.__unicode__=lambda self: entry_with_orth_variants(self)
 class AdminEntry(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': (('part_of_speech', 'editor'),),
+            'fields': (('civil_equivalent', 'part_of_speech', 'editor'),),
             }),
         (u'Для сущ.', {
             'fields': (('genitive', 'gender', 'tantum'),),
