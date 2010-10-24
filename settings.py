@@ -103,6 +103,7 @@ INSTALLED_APPS = (
 
     'slavdict.custom_user',
     'slavdict.django_template_spaces',
+    'slavdict.comments',
 
     'south',
 )
