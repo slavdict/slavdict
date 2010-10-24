@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# encoding: UTF-8
 from django.conf import settings
 from django import forms
 from django.db import models
@@ -154,8 +154,11 @@ class AdminMeaning(admin.ModelAdmin):
             (u'Если является подзначением',
                 {'fields': ('parent_meaning',),
                 'classes': ('collapse',)}),
-            (u'Если вместо значения ссылка',
-                {'fields': ('link_to_meaning', ('link_to_entry', 'link_to_collogroup')),
+            (u'См.',
+                {'fields': (('link_to_entry', 'link_to_collogroup'), 'link_to_meaning'),
+                'classes': ('collapse',)}),
+            (u'Ср.',
+                {'fields': (('cf_entries', 'cf_collogroups'), 'cf_meanings'),
                 'classes': ('collapse',)}),
             (None,
                 {'fields': ('metaphorical', ('meaning', 'gloss'))}),
@@ -165,6 +168,7 @@ class AdminMeaning(admin.ModelAdmin):
         )
     save_on_top = True
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
+    filter_horizontal = ('cf_entries', 'cf_collogroups', 'cf_meanings')
     ordering = ('-id',)
     list_display = ('id', '__unicode__')
     list_display_links = list_display
@@ -192,9 +196,12 @@ class AdminEntry(admin.ModelAdmin):
             'fields': ('uninflected',),}),
         (u'Для глаг.', { 'fields': (('sg1', 'sg2'),), 'classes': ('collapse',) } ),
         (u'Образовано от', { 'fields': ( 'derivation_entry',), 'classes': ( 'collapse',), }),
-        (u'Вместо значений ссылка', {
-            'fields': (('link_to_entry', 'link_to_collogroup'), 'link_to_meaning'),
-            'classes': ('collapse',) } ),
+        (u'См.',
+            {'fields': (('link_to_entry', 'link_to_collogroup'), 'link_to_meaning'),
+            'classes': ('collapse',)}),
+        (u'Ср.',
+            {'fields': (('cf_entries', 'cf_collogroups'), 'cf_meanings'),
+            'classes': ('collapse',)}),
         (u'Доп. инфо.', {
             'fields':  ('additional_info',),
             'classes': ('collapse',) }),
@@ -222,6 +229,7 @@ class AdminEntry(admin.ModelAdmin):
     list_filter = (
         'editor',
         )
+    filter_horizontal = ('cf_entries', 'cf_collogroups', 'cf_meanings')
     ordering = ('-id',)
     save_on_top = True
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
@@ -260,11 +268,15 @@ class AdminCollocationGroup(admin.ModelAdmin):
     fieldsets = (
             (None,
                 {'fields': (('base_meaning', 'base_entry'),)}),
-            (u'Если вместо значений ссылка',
+            (u'См.',
                 {'fields': ('link_to_entry', 'link_to_meaning'),
+                'classes': ('collapse',)}),
+            (u'Ср.',
+                {'fields': ('cf_entries', 'cf_meanings'),
                 'classes': ('collapse',)}),
         )
     ordering = ('-id',)
+    filter_horizontal = ('cf_entries', 'cf_meanings')
     list_display = ('id', '__unicode__')
     list_display_links = list_display
     class Media:

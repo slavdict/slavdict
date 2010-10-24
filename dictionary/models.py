@@ -273,6 +273,30 @@ class Entry(models.Model, Meaningfull):
         null = True,
         )
 
+    cf_entries = models.ManyToManyField(
+        'self',
+        verbose_name = u'ср. (лексемы)',
+        related_name = 'cf_entry_set',
+        blank = True,
+        null = True,
+        )
+
+    cf_collogroups = models.ManyToManyField(
+        'CollocationGroup',
+        verbose_name = u'ср. (группы слововосочетаний)',
+        related_name = 'cf_entry_set',
+        blank = True,
+        null = True,
+        )
+
+    cf_meanings = models.ManyToManyField(
+        'Meaning',
+        verbose_name = u'ср. (значения)',
+        related_name = 'cf_entry_set',
+        blank = True,
+        null = True,
+        )
+
     additional_info = models.TextField(
         u'любая дополнительная информация',
         help_text = u'''Любая дополнительная информация по данной ЛЕКСЕМЕ.
@@ -604,6 +628,30 @@ class Meaning(models.Model):
         null = True,
         )
 
+    cf_entries = models.ManyToManyField(
+        Entry,
+        verbose_name = u'ср. (лексемы)',
+        related_name = 'cf_meaning_set',
+        blank = True,
+        null = True,
+        )
+
+    cf_collogroups = models.ManyToManyField(
+        'CollocationGroup',
+        verbose_name = u'ср. (группы слововосочетаний)',
+        related_name = 'cf_meaning_set',
+        blank = True,
+        null = True,
+        )
+
+    cf_meanings = models.ManyToManyField(
+        'self',
+        verbose_name = u'ср. (значения)',
+        related_name = 'cf_meaning_set',
+        blank = True,
+        null = True,
+        )
+
     metaphorical = models.BooleanField(
         u'метафорическое',
         default = False,
@@ -798,6 +846,22 @@ class CollocationGroup(models.Model, Meaningfull):
                         только ссылка на опредленное значение лексемы
                         или словосочетания, укажите его в данном поле.''',
         related_name = 'ref_collogroup_set',
+        blank = True,
+        null = True,
+        )
+
+    cf_entries = models.ManyToManyField(
+        Entry,
+        verbose_name = u'ср. (лексемы)',
+        related_name = 'cf_collogroup_set',
+        blank = True,
+        null = True,
+        )
+
+    cf_meanings = models.ManyToManyField(
+        'self',
+        verbose_name = u'ср. (значения)',
+        related_name = 'cf_collogroup_set',
         blank = True,
         null = True,
         )
