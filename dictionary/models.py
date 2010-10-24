@@ -671,6 +671,14 @@ class Meaning(models.Model):
         blank = True,
         )
 
+    substantivus = models.ForeignKey(
+        CategoryValue,
+        limit_choices_to = {'category__slug': 'substantivus'},
+        verbose_name = u'тип субстантива',
+        blank = True,
+        null = True,
+        )
+
     additional_info = models.TextField(
         u'любая дополнительная информация',
         help_text = u'''Любая дополнительная информация по данному
