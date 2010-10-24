@@ -671,7 +671,9 @@ class Meaning(models.Model):
         blank = True,
         )
 
-    substantivus = models.ForeignKey(
+    substantivus = models.BooleanField(u'в роли сущ.')
+
+    substantivus_type = models.ForeignKey(
         CategoryValue,
         limit_choices_to = {'category__slug': 'substantivus'},
         verbose_name = u'тип субстантива',
