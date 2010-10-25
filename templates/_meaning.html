@@ -8,12 +8,12 @@
     {% endfor %}
 {% endif %}
 
-{% if m.link_to_entry or m.link_to_collocation %}
+{% if m.link_to_entry or m.link_to_collogroup %}
     <i>см.</i>
     {% if m.link_to_entry %}
         <span class="cslav">{{ m.link_to_entry.orth_vars.0.idem_ucs }}</span
     {% else %}
-        <span class="cslav">{{ m.link_to_collocation.orth_vars.0.idem_ucs }}</span
+        <span class="cslav">{{ m.link_to_collogroup.collocations.0.collocation_ucs }}</span
     {% endif %}
     >{% if m.meaning or m.gloss %};{% endif %}
 {% endif %}
