@@ -6,4 +6,15 @@
         >{%if ge.mark %} <i>{{ ge.mark }}</i>{% endif %}{% if not forloop.last %},{% endif %}
     {% endfor %}
 {% endif %}
-({{ e.address_text }})
+
+{% if e.address_text %}
+    ({{ e.address_text }})
+{% else %}
+    {% if show_additional_info %}
+        <span class="noaddress">Нет адреса!</span>
+    {% endif %}
+{% endif %}
+
+{% if show_additional_info and e.additional_info %}
+    <span class="ai">{{ e.additional_info }}</span>
+{% endif %}

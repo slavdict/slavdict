@@ -54,6 +54,10 @@
                             <i>этимол. неясна</i>{% if not forloop.last %}; {% endif %}{% endif %}
 
                         {% endfor %}</div>
+
+                        {% if show_additional_info and etym.additional_info %}
+                            <span class="ai">{{ etym.additional_info }}</span>
+                        {% endif %}
                     {% endif %}
 
 
@@ -107,4 +111,7 @@
                         {% include '_collogroup.html' %}
                     {% endfor %}
 
+                    {% if show_additional_info and entry.additional_info %}
+                        <div class="ai">{{ entry.additional_info }}</div>
+                    {% endif %}
                 </div>

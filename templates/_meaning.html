@@ -56,3 +56,8 @@
         {% include '_example.html' %}
     {% endfor %}
 {% endif %}
+
+
+{% if show_additional_info and m.additional_info %}
+    <div class="ai" style="position: absolute; width: 10em; left: 80%;">{{ m.additional_info }}</div>
+{% endif %}
