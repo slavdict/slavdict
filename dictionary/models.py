@@ -922,6 +922,9 @@ class Collocation(models.Model):
         null = True,
         )
 
+    def __unicode__(self):
+        return self.collocation
+
     class Meta:
         verbose_name = u'словосочетание'
         verbose_name_plural = u'5) ОТДЕЛЬНЫЕ СЛОВОСОЧЕТАНИЯ'
