@@ -27,31 +27,31 @@
 
 
                     {% if entry.etymologies %}<div
-                    >{% for etym in entry.etymologies %}<i
-                        >{{ etym.language.tag }}</i>
+                        >{% for etym in entry.etymologies %}<i
+                            >{{ etym.language.tag }}</i>
 
-                        {% if etym.text %}<span class="{{ etym.language.css_class }}">{{ etym.text }}</span
-                        >{% if etym.translit or etym.mark or etym.unclear_etymology or etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %};
-                        {% endif %}{% endif %}{% endif %}
+                            {% if etym.text %}<span class="{{ etym.language.css_class }}">{{ etym.text }}</span
+                            >{% if etym.translit or etym.mark or etym.unclear_etymology or etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %};
+                            {% endif %}{% endif %}{% endif %}
 
-                        {% if etym.translit %}{% if etym.text %} [{% endif %}<span
-                        class="{{ etym.language.css_class2 }}">{{ etym.translit }}</span
-                        >{% if etym.text %}]{% endif %}{% if etym.mark or etym.unclear_etymology or etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %};
-                        {% endif %}{% endif %}{% endif %}
+                            {% if etym.translit %}{% if etym.text %} [{% endif %}<span
+                            class="{{ etym.language.css_class2 }}">{{ etym.translit }}</span
+                            >{% if etym.text %}]{% endif %}{% if etym.mark or etym.unclear_etymology or etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %};
+                            {% endif %}{% endif %}{% endif %}
 
-                        {% if etym.mark %}
-                        (<i>{{ etym.mark }}</i>){% if etym.unclear_etymology or etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %};
-                        {% endif %}{% endif %}{% endif %}
+                            {% if etym.mark %}
+                            (<i>{{ etym.mark }}</i>){% if etym.unclear_etymology or etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %};
+                            {% endif %}{% endif %}{% endif %}
 
-                        {% if etym.meaning %}<span
-                        >‘{{ etym.meaning }}’</span
-                        >{% if etym.gloss %}{% else %}{% if not forloop.last %}; {% endif %}{% endif %}{% endif %}
+                            {% if etym.meaning %}<span
+                            >‘{{ etym.meaning }}’</span
+                            >{% if etym.gloss %}{% else %}{% if not forloop.last %}; {% endif %}{% endif %}{% endif %}
 
-                        {% if etym.gloss %}<i
-                        >{{ etym.gloss }}</i
-                        >{% if etym.unclear_etymology %}{% else %}{% if not forloop.last %}; 
-                        {% endif %}{% endif %}{% endif %}{% if etym.unclear_etymology %}{% if etym.gloss %},{% endif %}
-                        <i>этимол. неясна</i>{% if not forloop.last %}; {% endif %}{% endif %}
+                            {% if etym.gloss %}<i
+                            >{{ etym.gloss }}</i
+                            >{% if etym.unclear_etymology %}{% else %}{% if not forloop.last %}; 
+                            {% endif %}{% endif %}{% endif %}{% if etym.unclear_etymology %}{% if etym.gloss %},{% endif %}
+                            <i>этимол. неясна</i>{% if not forloop.last %}; {% endif %}{% endif %}
 
                         {% endfor %}</div>
                     {% endif %}
