@@ -18,6 +18,7 @@ urlpatterns += patterns('',
     url( r'^entries/(\d+)/$', 'slavdict.dictionary.views.single_entry', name='single_entry_url' ),
     url( r'^forum/', include('slavdict.forum.urls') ),
     url( r'^wiki/$', redirect_to, {'url': 'http://slavonic.pbworks.com/'} ),
+    url( r'^switch/additional-info/', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
 )
 
 try:
