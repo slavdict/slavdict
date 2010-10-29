@@ -109,16 +109,17 @@ a.cslav {
     font-family: 'SIL Ulysses';
 }
 
-.hebrew {
+.hebrew,
+.aramaic {
     font-family: 'hebrew';
 }
 
-.hebrew-translit {
+.hebrew-translit,
+.aramaic-translit {
     font-family: 'Hebrew-Russian!';
 }
 
 .akkadian {}
-.arameic {}
 .armenian {}
 .georgian {}
 .coptic {}
