@@ -72,6 +72,10 @@ class Meaningfull:
     def metaph_meanings(self):
         return self.meaning_set.filter(metaphorical=True).order_by('order', 'id')
 
+    @property
+    def all_meanings(self):
+        return self.meaning_set.all().order_by('order', 'id')
+
 
 class Entry(models.Model, Meaningfull):
 
@@ -310,6 +314,10 @@ class Entry(models.Model, Meaningfull):
     @property
     def etymologies(self):
         return self.etymology_set.all()
+
+    @property
+    def collogroups(self):
+        return self.collocationgroup_set.all()
 
     # административная информация
     status = models.ForeignKey(
