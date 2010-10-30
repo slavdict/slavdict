@@ -55,11 +55,11 @@ class OrthVar_Inline(admin.StackedInline):
 from slavdict.dictionary.models import Etymology
 ETYMOLOGY_FIELDSETS = (
     (u'Является этимоном для др. этимона',
-        {'fields': ('etymon_to',),
+        {'fields': (('etymon_to', 'questionable'),),
         'classes': ('collapse',)}
         ),
     (None,
-        {'fields': ('language', ('text', 'translit'), ('meaning', 'gloss'), ('unclear_etymology', 'mark'))}
+        {'fields': ('language', ('text', 'translit'), ('meaning', 'gloss'), ('unclear', 'mark'))}
         ),
     (u'Доп. инфо.',
         {'fields': ('additional_info',),

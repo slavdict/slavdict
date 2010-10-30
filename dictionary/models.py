@@ -437,8 +437,13 @@ class Etymology(models.Model):
         blank = True,
         )
 
-    unclear_etymology = models.BooleanField(
+    unclear = models.BooleanField(
         u'этимология неясна',
+        default = False,
+        )
+
+    questionable = models.BooleanField(
+        u'этимология спорна',
         default = False,
         )
 
