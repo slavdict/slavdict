@@ -4,11 +4,11 @@ div > input[type="checkbox"] { margin-left: 12em !important; }
 
 @font-face {
     font-family: 'AntConSol';
-    src: url('/site-media/antconsol-webfont.eot');
+    src: url('/site-media/fonts/antconsol-webfont.eot');
     src:
         local('☺'),
-        url('/site-media/antconsol-webfont.woff') format('woff'),
-        url('/site-media/antconsol-webfont.ttf') format('truetype');
+        url('/site-media/fonts/antconsol-webfont.woff') format('woff'),
+        url('/site-media/fonts/antconsol-webfont.ttf') format('truetype');
 }
 
 @font-face {
