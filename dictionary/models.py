@@ -505,11 +505,11 @@ class ProperNoun(models.Model):
         default = False,
         )
 
-    nom_sg = models.CharField(
-        u'м.р. Им.п. ед.ч',
+    nom_pl = models.CharField(
+        u'Им.п. мн.ч',
         help_text = u'''Только для этнонимов
-                        (например, в словарной статье АГАРЯНЕ,
-                        здесь -- АГАРЯНИН).''',
+                        (например, в словарной статье АГАРЯНИН,
+                        здесь -- АГАРЯНЕ).''',
         max_length = 25,
         blank = True,
         null = True,
