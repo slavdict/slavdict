@@ -29,7 +29,7 @@
                     {% if entry.etymologies %}
                     {% spaceless %}
 
-                        <div>
+                        <div style="line-height: 100%;">
                         {% for etym in entry.etymologies %}
 
                             {% ifchanged etym.language.tag %}
@@ -39,7 +39,7 @@
                             {% endifchanged %}
 
                             {% ifchanged %}
-                                <i>{{ etym.language.tag }} </i>
+                                <i>{{ etym.language.tag }}&nbsp;</i>
                             {% endifchanged %}
 
                             {% if etym.text %}
@@ -67,6 +67,52 @@
                             {% if etym.unclear %}
                                 {% if etym.gloss %}<span>,</span>{% endif %}
                                 <i> этимол. неясна</i>
+                            {% else %}
+                                {% if etym.etymons %}
+                                    {% if etym.etymons.0.questionable %}
+                                        <span> этимол. спорна:</span>
+                                    {% else %}
+                                        <span> от </span>
+                                    {% endif %}
+
+                                    {% for etym2 in etym.etymons %}
+
+                                        {% if not forloop.first %}<span>; </span>{% endif %}
+
+                                        {% if etym.etymons|length > 1 %}
+                                            <span>{{ forloop.counter }})&nbsp;</span>
+                                        {% endif %}
+
+                                        <i>{{ etym2.language.tag }}&nbsp;</i>
+
+                                        {% if etym2.text %}
+                                            <span class="{{ etym2.language.css_class }}">{{ etym2.text }}</span>
+                                        {% endif %}
+
+                                        {% if etym2.translit %}
+                                            {% if etym2.text %}<span> [</span>{% endif %}
+                                            <span class="{{ etym2.language.css_class2 }}">{{ etym2.translit }}</span>
+                                            {% if etym2.text %}<span>]</span>{% endif %}
+                                        {% endif %}
+
+                                        {% if etym2.mark %}
+                                            (<i>{{ etym2.mark }}</i><span>)</span>
+                                        {% endif %}
+
+                                        {% if etym2.meaning %}
+                                            <span> ‘{{ etym2.meaning }}’</span>
+                                        {% endif %}
+
+                                        {% if etym2.gloss %}
+                                            <i> {{ etym2.gloss }}</i>
+                                        {% endif %}
+
+                                        {% if show_additional_info and etym2.additional_info %}
+                                            <span class="ai ai-etym"> {{ etym2.additional_info }}</span>
+                                        {% endif %}
+
+                                    {% endfor %}
+                                {% endif %}
                             {% endif %}
 
                             {% if show_additional_info and etym.additional_info %}
@@ -76,13 +122,82 @@
                         {% endfor %}
                         </div>
 
-                        {% if show_additional_info and etym.additional_info %}
-                            <span class="ai">{{ etym.additional_info }}</span>
-                        {% endif %}
-
                     {% endspaceless %}
                     {% endif %}
 
+
+                    {% with entry.proper_noun as pn %}
+                        {% if pn %}
+                        {% spaceless %}
+                            {% if pn.onym.slug == 'anthroponym' %}
+                                <i>имя собств.</i>
+                                {% if pn.canonical_name %}
+                                    <i>, канонич.</i>
+                                {% else %}
+                                    <i>, неканонич.</i>
+                                {% endif %}
+                            {% endif %}
+                            {% if pn.onym.slug == 'toponym' %}
+                                <i>геогр.</i>
+                            {% endif %}
+                        {% endspaceless %}
+                        {% endif %}
+                    {% endwith %}
+
+                    {% if entry.link_to_entry or entry.link_to_collogroup or entry.link_to_meaning %}
+                    <div>
+                        <i>см.</i>
+
+                        {% if entry.link_to_meaning %}
+                            {% if entry.link_to_meaning.entry_container %}
+                                <a class="cslav"
+                                href="{{ entry.link_to_meaning.entry_container.get_absolute_url }}">{{ entry.link_to_meaning.entry_container.orth_vars.0.idem_ucs }}</a
+                            {% endif %}
+                            {% if entry.link_to_meaning.collogroup_container %}
+                                <span class="cslav">{{ entry.link_to_meaning.collogroup_container.collocations.0.collocation_ucs }}</span
+                            {% endif %}
+                        {% endif %}
+
+                        {% if entry.link_to_entry %}
+                            <a class="cslav" href="{{ entry.link_to_entry.get_absolute_url }}">{{ entry.link_to_entry.orth_vars.0.idem_ucs }}</a
+                        {% endif %}
+
+                        {% if entry.link_to_collogroup %}
+                            <span class="cslav">{{ entry.link_to_collogroup.collocations.0.collocation_ucs }}</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% if entry.cfentries or entry.cfcollogroups or entry.cfmeanings %}
+                    <div>
+                        <i>ср.</i>
+
+                        {% spaceless %}
+
+                        {% for cfm in entry.cfmeanings %}
+                            {% if not forloop.first %}<span>, </span>{% endif %}
+                            {% if cfm.entry_container %}
+                                <a class="cslav"
+                                href="{{ cfm.entry_container.get_absolute_url }}">{{ cfm.entry_container.orth_vars.0.idem_ucs }}</a
+                            {% endif %}
+                            {% if cfm.collogroup_container %}
+                                <span class="cslav">{{ cfm.collogroup_container.collocations.0.collocation_ucs }}</span
+                            {% endif %}
+                        {% endfor %}
+
+                        {% for cfe in entry.cfentries %}
+                            {% if not forloop.first or entry.cfmeanings %}<span>, </span>{% endif %}
+                            <a class="cslav" href="{{ cfe.get_absolute_url }}">{{ cfe.orth_vars.0.idem_ucs }}</a
+                        {% endfor %}
+
+                        {% for cfcg in entry.cfcollogroups %}
+                            {% if not forloop.first or entry.cfmeanings or entry.cfentries %}<span>, </span>{% endif %}
+                            <span class="cslav"> {{ cfcg.collocations.0.collocation_ucs }}</span>
+                        {% endfor %}
+
+                        {% endspaceless %}
+                    </div>
+                    {% endif %}
 
                     {% for m in entry.meanings %}
 

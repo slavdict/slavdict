@@ -13,11 +13,11 @@
     <i>см.</i>
 
     {% if m.link_to_meaning %}
-        {% if m.entry_container %}
+        {% if m.link_to_meaning.entry_container %}
             <a class="cslav" href="{{ m.link_to_meaning.entry_container.get_absolute_url }}">{{ m.link_to_meaning.entry_container.orth_vars.0.idem_ucs }}</a
         {% endif %}
-        {% if m.collogroup_container %}
-            <span class="cslav">{{ m.collogroup_container.collocations.0.collocation_ucs }}</span
+        {% if m.link_to_meaning.collogroup_container %}
+            <span class="cslav">{{ m.link_to_meaning.collogroup_container.collocations.0.collocation_ucs }}</span
         {% endif %}
     {% endif %}
 
@@ -33,7 +33,15 @@
 
 
 {% if m.meaning %}
-    <span>{{ m.meaning }}</span
+    <span>{{ m.meaning|capfirst }}</span
+{% endif %}
+
+{% if m.greek_equivs %}
+    {% if m.meaning %}>{% endif %}
+    {% for ge in m.greek_equivs %}
+        {% if forloop.first %}({% endif %}<span class="grec">{{ ge.text }}</span
+        >{%if ge.mark %} <i>{{ ge.mark }}</i>{% endif %}{% if forloop.last %}<span>)</span{% else %},{% endif %}
+    {% endfor %}
 {% endif %}
 
 {% if m.gloss %}
@@ -41,13 +49,6 @@
     <i>{{ m.gloss }}</i
 {% endif %}
 
-{% if m.greek_equivs %}
-    {% if m.meaning or m.gloss %}>{% endif %}
-    {% for ge in m.greek_equivs %}
-        {% if forloop.first %}({% endif %}<span class="grec">{{ ge.text }}</span
-        >{%if ge.mark %} <i>{{ ge.mark }}</i>{% endif %}{% if forloop.last %}<span>)</span{% else %},{% endif %}
-    {% endfor %}
-{% endif %}
 
 {% if m.meaning or m.gloss %}>{% if m.examples %}:{% endif %}{% endif %}
 

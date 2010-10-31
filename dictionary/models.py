@@ -301,6 +301,18 @@ class Entry(models.Model, Meaningfull):
         null = True,
         )
 
+    @property
+    def cfmeanings(self):
+        return self.cf_meanings.all()
+
+    @property
+    def cfentries(self):
+        return self.cf_entries.all()
+
+    @property
+    def cfcollogroups(self):
+        return self.cf_collogroups.all()
+
     additional_info = models.TextField(
         u'любая дополнительная информация',
         help_text = u'''Любая дополнительная информация по данной ЛЕКСЕМЕ.
@@ -313,11 +325,16 @@ class Entry(models.Model, Meaningfull):
 
     @property
     def etymologies(self):
-        return self.etymology_set.all()
+        return self.etymology_set.filter(etymon_to__isnull=True)
 
     @property
     def collogroups(self):
         return self.collocationgroup_set.all()
+
+    @property
+    def proper_noun(self):
+        pn = self.propernoun_set.all()
+        return pn[0] if pn else None
 
     # административная информация
     status = models.ForeignKey(
@@ -369,7 +386,7 @@ class Entry(models.Model, Meaningfull):
     class Meta:
         verbose_name = u'словарная статья'
         verbose_name_plural = u'1) СЛОВАРНЫЕ СТАТЬИ'
-        ordering = ('id',)
+        ordering = ('-id',)
 
 
 class Etymology(models.Model):
@@ -403,9 +420,14 @@ class Etymology(models.Model):
         'self',
         verbose_name = u'этимон для',
         help_text = u'Возможный/несомненный этимон для другого этимона, который и необходимо указать.',
+        related_name = 'etymon_set',
         blank = True,
         null = True,
         )
+
+    @property
+    def etymons(self):
+        return self.etymon_set.filter(etymon_to=self.id).order_by('order', 'id')
 
     language = models.ForeignKey(
         CategoryValue,
@@ -714,7 +736,7 @@ class Meaning(models.Model):
 
     @property
     def greek_equivs(self):
-        return self.greekequivalentformeaning_set.all()
+        return self.greekequivalentformeaning_set.all().order_by('id')
 
     @property
     def collogroups(self):
@@ -804,7 +826,7 @@ class Example(models.Model):
 
     @property
     def greek_equivs(self):
-        return self.greekequivalentforexample_set.all()
+        return self.greekequivalentforexample_set.all().order_by('id')
 
     additional_info = models.TextField(
         u'любая дополнительная информация',

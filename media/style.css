@@ -140,6 +140,7 @@ a.cslav {
 .hebrew-translit,
 .aramaic-translit {
     font-family: 'Hebrew-Russian!';
+    font-size: 90%;
 }
 
 .akkadian {}
