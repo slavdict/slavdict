@@ -26,13 +26,15 @@ entry_with_orth_variants.admin_order_field = 'civil_equivalent'
 entry_with_orth_variants.short_description = u'словарная статья'
 
 def meaning_with_entry(obj):
-    container = obj.entry_container
-    if not container:
-        container = obj.collogroup_container
-    if container:
-        ent = entry_with_orth_variants(container)
+    econtainer = obj.entry_container
+    if econtainer:
+        ent = entry_with_orth_variants(econtainer)
     else:
-        ent = u'(БЕСХОЗНОЕ ЗНАЧЕНИЕ)'
+        cgcontainer = obj.collogroup_container
+        if cgcontainer:
+            ent = _collocations(cgcontainer)
+        else:
+            ent = u'(БЕСХОЗНОЕ ЗНАЧЕНИЕ)'
     return u'%s [%s] %s' % (ent, obj.id, obj.meaning)
 
 meaning_with_entry.admin_order_field = 'entry_container'
