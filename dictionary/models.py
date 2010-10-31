@@ -281,6 +281,7 @@ class Entry(models.Model, Meaningfull):
         'self',
         verbose_name = u'ср. (лексемы)',
         related_name = 'cf_entry_set',
+        symmetrical = False,
         blank = True,
         null = True,
         )
@@ -683,6 +684,7 @@ class Meaning(models.Model):
         'self',
         verbose_name = u'ср. (значения)',
         related_name = 'cf_meaning_set',
+        symmetrical = False,
         blank = True,
         null = True,
         )
@@ -903,13 +905,6 @@ class CollocationGroup(models.Model, Meaningfull):
         null = True,
         )
 
-    cf_meanings = models.ManyToManyField(
-        'self',
-        verbose_name = u'ср. (значения)',
-        related_name = 'cf_collogroup_set',
-        blank = True,
-        null = True,
-        )
 
     @property
     def collocations(self):
