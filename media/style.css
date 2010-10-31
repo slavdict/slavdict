@@ -200,16 +200,21 @@ div.entry {
     font-size: 120% !important;
 }
 
-.ai {
-    background-color: #fcf3d0;
-    font-size: smaller;
-}
+.ai { font-size: smaller; }
+.ai-etym    { background-color: #fcd5fc; }
+.ai-example { background-color: #d5dffc; }
+.ai-meaning { background-color: #eafcd5; border: 1px solid #b9d796; }
+.ai-entry   { background-color: #fcf3d0; border: 1px solid #f4c873; }
 
 div.ai {
-    border-top: 1px dotted #f4c873;
-    border-bottom: 1px dotted #f4c873;
-    padding: 10px 0px;
+    padding: 10px;
+    line-height: 150%;
+    -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
 }
+
+div.ai p { margin: 0 0 0.5em 0; }
 
 span.ai,
 span.noaddress {

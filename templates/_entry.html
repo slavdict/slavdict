@@ -69,6 +69,10 @@
                                 <i> этимол. неясна</i>
                             {% endif %}
 
+                            {% if show_additional_info and etym.additional_info %}
+                                <span class="ai ai-etym"> {{ etym.additional_info }}</span>
+                            {% endif %}
+
                         {% endfor %}
                         </div>
 
@@ -131,6 +135,6 @@
                     {% endfor %}
 
                     {% if show_additional_info and entry.additional_info %}
-                        <div class="ai">{{ entry.additional_info }}</div>
+                        <div class="ai ai-entry">{{ entry.additional_info|linebreaks }}</div>
                     {% endif %}
                 </div>
