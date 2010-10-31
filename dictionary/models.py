@@ -905,6 +905,13 @@ class CollocationGroup(models.Model, Meaningfull):
         null = True,
         )
 
+    cf_meanings = models.ManyToManyField(
+        Meaning,
+        verbose_name = u'ср. (значения)',
+        related_name = 'cf_collogroup_set',
+        blank = True,
+        null = True,
+        )
 
     @property
     def collocations(self):
