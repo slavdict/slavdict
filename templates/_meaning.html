@@ -14,7 +14,7 @@
 
     {% if m.link_to_meaning %}
         {% if m.link_to_meaning.entry_container %}
-            <a class="cslav" href="{{ m.link_to_meaning.entry_container.get_absolute_url }}">{{ m.link_to_meaning.entry_container.orth_vars.0.idem_ucs }}</a
+            <a href="{{ m.link_to_meaning.entry_container.get_absolute_url }}"><span class="cslav">{{ m.link_to_meaning.entry_container.orth_vars.0.idem_ucs }}</span>{% if m.link_to_meaning.entry_container.homonym_order %}&nbsp;{{ m.link_to_meaning.entry_container.homonym_order_roman }}{% endif %}</a
         {% endif %}
         {% if m.link_to_meaning.collogroup_container %}
             <span class="cslav">{{ m.link_to_meaning.collogroup_container.collocations.0.collocation_ucs }}</span
@@ -22,7 +22,7 @@
     {% endif %}
 
     {% if m.link_to_entry %}
-        <a class="cslav" href="{{ m.link_to_entry.get_absolute_url }}">{{ m.link_to_entry.orth_vars.0.idem_ucs }}</a
+        <a href="{{ m.link_to_entry.get_absolute_url }}"><span class="cslav">{{ m.link_to_entry.orth_vars.0.idem_ucs }}</span>{% if m.link_to_entry.homonym_order %}&nbsp;{{ m.link_to_entry.homonym_order_roman }}{% endif %}</a
     {% endif %}
 
     {% if m.link_to_collogroup %}
@@ -50,7 +50,36 @@
 {% endif %}
 
 
-{% if m.meaning or m.gloss %}>{% if m.examples %}:{% endif %}{% endif %}
+{% if m.cfentries or m.cfcollogroups or m.cfmeanings %}
+    >, <i>ср.</i>
+
+    {% spaceless %}
+
+    {% for cfm in m.cfmeanings %}
+        {% if not forloop.first %}><span>, </span>{% endif %}
+        {% if cfm.entry_container %}
+            <a href="{{ cfm.entry_container.get_absolute_url }}"><span class="cslav">{{ cfm.entry_container.orth_vars.0.idem_ucs }}</span>{% if cfm.entry_container.homonym_order %}&nbsp;{{ cfm.entry_container.homonym_order_roman }}{% endif %}</a
+        {% endif %}
+        {% if cfm.collogroup_container %}
+            <span class="cslav">{{ cfm.collogroup_container.collocations.0.collocation_ucs }}</span
+        {% endif %}
+    {% endfor %}
+
+    {% for cfe in m.cfentries %}
+        {% if not forloop.first or entry.cfmeanings %}<span>, </span>{% endif %}
+        <a href="{{ cfe.get_absolute_url }}"><span class="cslav">{{ cfe.orth_vars.0.idem_ucs }}</span>{% if cfe.homonym_order %}&nbsp;{{ cfe.homonym_order_roman }}{% endif %}</a
+    {% endfor %}
+
+    {% for cfcg in m.cfcollogroups %}
+        {% if not forloop.first or entry.cfmeanings or entry.cfentries %}<span>, </span>{% endif %}
+        <span class="cslav"> {{ cfcg.collocations.0.collocation_ucs }}</span
+    {% endfor %}
+
+    {% endspaceless %}
+{% endif %}
+
+
+{% if m.meaning or m.gloss or m.cfentries or m.cfcollogroups or m.cfmeanings %}>{% if m.examples %}:{% endif %}{% endif %}
 
 {% if m.examples %}
     {% for e in m.examples %}

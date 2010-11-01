@@ -15,12 +15,17 @@ def _collocations(obj):
     return delimiter.join(collocations)
 
 def entry_with_orth_variants(obj):
+    if obj.homonym_order:
+        h = u' %s' % unicode(obj.homonym_order)
+    else:
+        h = u''
     x = _orth_vars(obj)
-    try:
-        e = obj.civil_equivalent.text
-    except:
-        e = u''
-    return u'%s (%s)' % (e, x)
+    e = obj.civil_equivalent
+    if e:
+        result = u'%s%s (%s%s)' % (x, h, e, h)
+    else:
+        result = u'%s%s' % (x, h)
+    return result
 
 entry_with_orth_variants.admin_order_field = 'civil_equivalent'
 entry_with_orth_variants.short_description = u'словарная статья'
@@ -188,6 +193,9 @@ from slavdict.dictionary.models import Entry
 Entry.__unicode__=lambda self: entry_with_orth_variants(self)
 class AdminEntry(admin.ModelAdmin):
     fieldsets = (
+        (u'Омонимия', {
+            'fields': (('homonym_order', 'homonym_gloss'),),
+            'classes': ('collapse',) } ),
         (None, {
             'fields': (('civil_equivalent', 'part_of_speech', 'editor'),),
             }),

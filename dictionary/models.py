@@ -41,6 +41,19 @@ def ucs_affix_or_word(atr):
     else:
         return atr
 
+def arabic2roman(number):
+    numerals={  1:u"I", 4:u"IV",
+                # 5:u"V", 9:u"IX", 10:u"X", 40:u"XL", 50:u"L",
+                # 90:u"XC", 100:u"C", 400:u"CD", 500:u"D", 900:u"CM", 1000:u"M"
+              }
+    result = u""
+    for value, numeral in sorted(numerals.items(), reverse=True):
+        while number >= value:
+            result += numeral
+            number -= value
+    return result
+
+
 from django.db import models
 from custom_user.models import CustomUser
 from slavdict.directory.models import CategoryValue
@@ -101,6 +114,11 @@ class Entry(models.Model, Meaningfull):
         blank = True,
         null = True,
         )
+
+    @property
+    def homonym_order_roman(self):
+        ho = self.homonym_order
+        return arabic2roman(ho) if ho else None
 
     homonym_gloss = models.CharField(
         u'пояснение к омониму',
@@ -515,6 +533,10 @@ class ProperNoun(models.Model):
         null = True,
         )
 
+    @property
+    def nom_pl_ucs(self):
+        return ucs_affix_or_word(self.nom_pl)
+
     def __unicode__(self):
         return u'<Имя собственное %s>' % self.id
 
@@ -688,6 +710,18 @@ class Meaning(models.Model):
         blank = True,
         null = True,
         )
+
+    @property
+    def cfmeanings(self):
+        return self.cf_meanings.all()
+
+    @property
+    def cfentries(self):
+        return self.cf_entries.all()
+
+    @property
+    def cfcollogroups(self):
+        return self.cf_collogroups.all()
 
     metaphorical = models.BooleanField(
         u'метафорическое',
