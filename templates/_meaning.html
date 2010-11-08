@@ -37,10 +37,10 @@
 {% endif %}
 
 {% if m.greek_equivs %}
-    {% if m.meaning %}>{% endif %}
+    {% if m.meaning %}>,{% endif %}
     {% for ge in m.greek_equivs %}
-        {% if forloop.first %}({% endif %}<span class="grec">{{ ge.text }}</span
-        >{%if ge.mark %} <i>{{ ge.mark }}</i>{% endif %}{% if forloop.last %}<span>)</span{% else %},{% endif %}
+        <span class="grec">{{ ge.text }}</span
+        {% if ge.mark %}> (<i>{{ ge.mark }}</i><span>)<span{% endif %}{% if not forloop.last %}>, {% endif %}
     {% endfor %}
 {% endif %}
 
