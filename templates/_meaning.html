@@ -2,7 +2,7 @@
     {% for mc in m.contexts %}
         {% if forloop.first %}<span  style="color: #070;">[{% endif %}{% if mc.left_text %}<i
         >{{ mc.left_text }}</i> {% endif %}<span
-        class="cslav">{{ mc.context }}</span
+        class="cslav">{{ mc.context_ucs }}</span
         >{% if mc.right_text %} <i>{{ mc.right_text }}</i
         >{% endif %}{% if not forloop.last %}, {% else %}]</span> {% endif %}
     {% endfor %}
