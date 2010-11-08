@@ -7,7 +7,7 @@ from slavdict.dictionary.models import Entry
 import datetime
 
 def all_entries(request):
-    entries = Entry.objects.all().order_by('civil_equivalent')
+    entries = Entry.objects.all().order_by('civil_equivalent', 'homonym_order')
     return render_to_response('all_entries.html',
                             { 'entries': entries,
                               'title': u'Все статьи',
