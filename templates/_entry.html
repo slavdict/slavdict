@@ -26,6 +26,7 @@
                     {% if entry.possessive %}<i>притяж.</i>{% endif %}
                     <i>{{ entry.part_of_speech.tag }}</i
                     >{% if entry.gender %}, <i>{{ entry.gender.tag }}</i>{% endif %}
+                    {% if entry.tantum %}<i>только {{ entry.tantum.tag }}</i>{% endif %}
 
                     {% if entry.derivation_entry %}<i>от</i>
                         {% with entry.derivation_entry as de %}
