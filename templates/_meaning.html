@@ -79,7 +79,12 @@
 {% endif %}
 
 
-{% if m.meaning or m.gloss or m.cfentries or m.cfcollogroups or m.cfmeanings %}>{% if m.examples %}:{% endif %}{% endif %}
+{% if show_additional_info and m.additional_info %}
+    {% if m.meaning or m.gloss or m.greek_equivs or m.cfentries or m.cfcollogroups or m.cfmeanings %}>{% endif %}
+    <span class="ai ai-meaning">{{ m.additional_info }}</span
+{% endif %}
+
+{% if m.meaning or m.gloss or m.greek_equivs or m.cfentries or m.cfcollogroups or m.cfmeanings or show_additional_info and m.additional_info %}>{% if m.examples %}:{% endif %}{% endif %}
 
 {% if m.examples %}
     {% for e in m.examples %}
@@ -87,7 +92,3 @@
     {% endfor %}
 {% endif %}
 
-
-{% if show_additional_info and m.additional_info %}
-    <div class="ai ai-meaning">{{ m.additional_info|linebreaks }}</div>
-{% endif %}

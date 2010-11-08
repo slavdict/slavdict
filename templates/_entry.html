@@ -34,6 +34,10 @@
                         {% endwith %}
                     {% endif %}
 
+
+                    {% if show_additional_info and entry.additional_info %}
+                        <span class="ai ai-entry">{{ entry.additional_info }}</span>
+                    {% endif %}
                     </div>
 
 
@@ -173,8 +177,4 @@
                     {% for cg in entry.collogroups %}
                         {% include '_collogroup.html' %}
                     {% endfor %}
-
-                    {% if show_additional_info and entry.additional_info %}
-                        <div class="ai ai-entry">{{ entry.additional_info|linebreaks }}</div>
-                    {% endif %}
                 </div>
