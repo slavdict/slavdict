@@ -138,6 +138,7 @@ a.cslav {
 }
 
 .hebrew-translit,
+.syriac-translit,
 .aramaic-translit {
     font-family: 'Hebrew-Russian!';
     font-size: 90%;
@@ -145,9 +146,10 @@ a.cslav {
 
 .akkadian {}
 .armenian {}
-.georgian {}
-.coptic {}
-.syriac {}
+.georgian { font-family: 'GEO-LitNusx'; }
+.coptic { font-family: Coptic; }
+.syriac { font-family: 'SPEdessa'; }
+/* 'Estrangelo Edessa' */
 
 body,
 div {
