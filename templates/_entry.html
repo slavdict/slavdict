@@ -28,7 +28,12 @@
                     >{% if entry.gender %}, <i>{{ entry.gender.tag }}</i>{% endif %}
                     {% if entry.tantum %}<i>только {{ entry.tantum.tag }}</i>{% endif %}
 
-                    {% if entry.derivation_entry %}<i>от</i>
+                    {% if entry.derivation_entry %}
+                        {% if entry.possessive %}
+                            <i>к</i>
+                        {% else %}
+                            <i>от</i>
+                        {% endif %}
                         {% with entry.derivation_entry as de %}
                         <a href="{{ de.get_absolute_url }}"><span class="cslav">{{ de.orth_vars.0.idem_ucs }}</span>{% if de.homonym_order %}&nbsp;{{ de.homonym_order_roman }}{% endif %}</a>
                         {% endwith %}
