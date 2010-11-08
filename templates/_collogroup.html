@@ -1,8 +1,17 @@
             <div style="line-height: 140%;">
                 □<!-- &#x25A1; -->
                 {% for c in cg.collocations %}
-                        <span class="cslav">{{ c.collocation_ucs }}</span
-                        >{% if not forloop.last %},{% endif %}
+                    {% spaceless %}
+                        <span class="cslav">{{ c.collocation_ucs }}</span>
+                        {% if c.etymologies %}
+                            <span> (</span>
+                            {% for etym in c.etymologies %}
+                                {% include '_etymology.html' %}
+                            {% endfor %}
+                            <span>)</span>
+                        {% endif %}
+                        {% if not forloop.last %}<span>, </span>{% endif %}
+                    {% endspaceless %}
                 {% endfor %}
 
                 {% if cg.meanings or cg.metaph_meanings %}&mdash;{% endif %}

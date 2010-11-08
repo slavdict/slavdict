@@ -992,6 +992,10 @@ class Collocation(models.Model):
         null = True,
         )
 
+    @property
+    def etymologies(self):
+        return self.etymology_set.filter(etymon_to__isnull=True).order_by('id')
+
     def __unicode__(self):
         return self.collocation
 
