@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<!--[if lt IE 7 ]> <html lang="ru" class="ie6"> <![endif]-->
-<!--[if IE 7 ]>    <html lang="ru" class="ie7"> <![endif]-->
-<!--[if IE 8 ]>    <html lang="ru" class="ie8"> <![endif]-->
-<!--[if IE 9 ]>    <html lang="ru" class="ie9"> <![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--> <html lang="ru"> <!--<![endif]-->
+<!--[if lt IE 7 ]> <html lang="ru" class="ie6 no-js"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="ru" class="ie7 no-js"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="ru" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="ru" class="ie9 no-js"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="ru" class="no-js"> <!--<![endif]-->
 <head>
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -17,11 +17,11 @@
   <div id="container">
     <div id="main">
     <form action="" method="post">
-        <label for="entry_id">Лексема</label> <input type="text" value="" name="entry" id="entry_id" />
+        <label for="entry_id">Лексема</label> <input type="text" class="cslav-content" value="" name="entry" id="entry_id" />
         <input type="button" value="завершить" />
         <br />
         <br />
-        <textarea><div></div></textarea>
+        <textarea class="cslav-content" lang="zz"></textarea>
     </form>
     <a href="#">Ссылочка</a>
 
@@ -40,6 +40,23 @@
   </script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
   <script>!window.jQuery && document.write(unescape('%3Cscript src="js/libs/jquery-1.4.2.js"%3E%3C/script%3E'))</script>
+
+  <script src="js/mylibs/ac2ucs8.js"></script>
+  <script>
+        $(".cslav-content").attr('antconc', $(this).val());
+        $(".cslav-content").attr('lang', 'csl');
+        $(".cslav-content").addClass('cslav');
+        $(".cslav-content").val(antconc_ucs8($(this).val()));
+        $(".cslav-content").focus(function() {
+            $(this).val($(this).attr('antconc'));
+            $(this).removeClass('cslav').addClass('antconsol');
+            })
+        $(".cslav-content").blur(function() {
+            $(this).attr('antconc', $(this).val());
+            $(this).removeClass('antconsol').addClass('cslav');
+            $(this).val(antconc_ucs8($(this).val()));
+            })
+  </script>
 
   <!--[if lt IE 7 ]>
     <script src="js/libs/dd_belatedpng.js"></script>

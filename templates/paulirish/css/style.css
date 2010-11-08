@@ -269,7 +269,19 @@ input[type=button] {
     padding: 0;
 }
 
+.cslav {
+    font-family: 'Triodion ieUcs';
+    font-size: larger;
+    line-height: 10px;
+}
 
+.antconsol {
+    font-family: 'AntConSol';
+}
+
+.cslav-content {
+    width: 200px;
+}
 
 
 
