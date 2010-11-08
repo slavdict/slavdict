@@ -344,11 +344,11 @@ class Entry(models.Model, Meaningfull):
 
     @property
     def etymologies(self):
-        return self.etymology_set.filter(etymon_to__isnull=True)
+        return self.etymology_set.filter(etymon_to__isnull=True).order_by('id')
 
     @property
     def collogroups(self):
-        return self.collocationgroup_set.all()
+        return self.collocationgroup_set.all().order_by('id')
 
     @property
     def proper_noun(self):
@@ -783,7 +783,7 @@ class Meaning(models.Model):
 
     @property
     def collogroups(self):
-        return self.collocationgroup_set.all()
+        return self.collocationgroup_set.all().order_by('id')
 
     def __unicode__(self):
         return self.meaning
