@@ -478,6 +478,13 @@ class Etymology(models.Model):
         blank = True,
         )
 
+    source = models.CharField(
+        u'документальный источник',
+        help_text = u'например, Септуагинта',
+        max_length = 40,
+        blank = True,
+        )
+
     unclear = models.BooleanField(
         u'этимология неясна',
         default = False,
@@ -1009,6 +1016,15 @@ class GreekEquivalent(models.Model):
     mark = models.CharField(
         u'грамматическая помета',
         max_length = 20,
+        blank = True,
+        )
+
+    source = models.CharField(
+        u'документальный источник',
+        help_text = u'''Например, Септуагинта или,
+                        более узко, разные редакции
+                        одного текста.''',
+        max_length = 40,
         blank = True,
         )
 
