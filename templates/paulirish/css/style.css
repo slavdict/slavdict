@@ -260,7 +260,9 @@ textarea:focus
     color: #B86200;
 }
 
-input[type=button] {
+input[type=button],
+input[type=submit],
+input[type=reset] {
     width: 100px;
     height: 22px;
     font-size: 0.85em;
