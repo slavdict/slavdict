@@ -542,6 +542,16 @@ class ProperNoun(models.Model):
         default = False,
         )
 
+    nom_sg = models.CharField(
+        u'м.р. Им.п. ед.ч',
+        help_text = u'''Только для этнонимов
+                        (например, в словарной статье АГАРЯНЕ,
+                        здесь -- АГАРЯНИН).''',
+        max_length = 25,
+        blank = True,
+        null = True,
+        )
+
     nom_pl = models.CharField(
         u'Им.п. мн.ч',
         help_text = u'''Только для этнонимов
@@ -551,6 +561,10 @@ class ProperNoun(models.Model):
         blank = True,
         null = True,
         )
+
+    @property
+    def nom_sg_ucs_wax(self):
+        return ucs_affix_or_word(self.nom_sg)
 
     @property
     def nom_pl_ucs_wax(self):

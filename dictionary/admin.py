@@ -108,7 +108,11 @@ class ProperNoun_Inline(admin.StackedInline):
     model = ProperNoun
     extra = 0
     max_num = 1
-
+    fieldsets = (
+        (None, {
+            'fields': (('onym', 'canonical_name'), ('nom_sg', 'nom_pl')),
+            }),
+        )
 
 
 
