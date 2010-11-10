@@ -32,12 +32,24 @@ def ucs_affix_or_word(atr):
     предположения, что это аффикс. Если первый символ -- не дефис, конвертация
     производится с созданием придыханий, подразумевается, что на вход подано
     слово, а не аффикс.
+
+    Если входная строка пустая, то возвращается также пустая строка. Если
+    непустая, то возвращается кортеж, где второй элемент -- это
+    сконверированная строка, а первый -- булевская константа, указывающая,
+    является ли строка аффиксом (True) или словом (False).
+
+    Если данная функция используется в другой функции, то последней можно
+    давать название с использованием аббревиатуры wax (Word or AffiX).
+
+    Возможно, впоследствии лучше сделать, чтобы функция возвращала не кортеж, а
+    объект. В качестве __unicode__ будет возвращаться сконвертированная строка,
+    а информация о том, аффикс или нет, отдельным свойством.
     """
     if atr:
         if atr[0] == u'-':
-            return ucs_convert_affix( atr[1:] )
+            return ( True, ucs_convert_affix( atr[1:] ) )
         else:
-            return ucs_convert(atr)
+            return ( False, ucs_convert(atr) )
     else:
         return atr
 
@@ -236,7 +248,7 @@ class Entry(models.Model, Meaningfull):
         )
 
     @property
-    def sg1_ucs(self):
+    def sg1_ucs_wax(self):
         return ucs_affix_or_word(self.sg1)
 
     sg2 = models.CharField(
@@ -249,7 +261,7 @@ class Entry(models.Model, Meaningfull):
         )
 
     @property
-    def sg2_ucs(self):
+    def sg2_ucs_wax(self):
         return ucs_affix_or_word(self.sg2)
 
     derivation_entry = models.ForeignKey(
@@ -541,7 +553,7 @@ class ProperNoun(models.Model):
         )
 
     @property
-    def nom_pl_ucs(self):
+    def nom_pl_ucs_wax(self):
         return ucs_affix_or_word(self.nom_pl)
 
     def __unicode__(self):
