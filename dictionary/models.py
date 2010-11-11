@@ -215,13 +215,15 @@ class Entry(models.Model, Meaningfull):
         # Это поле, по идее, в последствии должно стать FK
         # или даже MtM с приявязкой к WordForm.
         u'краткая форма',
+        help_text = u'''Если Вы указываете не всё слово,
+                        а только его часть, предваряйте её дефисом.''',
         max_length = 20,
         blank = True,
         )
 
     @property
-    def short_form_ucs(self):
-        return ucs_convert(self.short_form)
+    def short_form_ucs_wax(self):
+        return ucs_affix_or_word(self.short_form)
 
     possessive = models.BooleanField(
         u'притяжательное прилагательное',

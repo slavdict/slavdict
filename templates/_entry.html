@@ -9,7 +9,8 @@
                             {% else %}{% if not forloop.first %}){% endif %}{% endif %}{% if forloop.first %}{% if entry.homonym_order %} {{ entry.homonym_order_roman }}{% endif %}{% endif %}{% if forloop.first and forloop.last %}{% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %},{% endif %}{% endif %}
                     {% endfor %}
 
-                    {% if entry.short_form %}<span class="cslav">{{ entry.short_form_ucs }}</span
+                    {% if entry.short_form %}
+                        {% if entry.short_form_ucs_wax.0 %}-{% endif %}<span class="cslav">{{ entry.short_form_ucs_wax.1 }}</span
                     >{% if entry.genitive %},{%endif %}{% endif %}
                     {% if entry.genitive %}-<span class="cslav">{{ entry.genitive_ucs }}</span>{% endif %}
 
