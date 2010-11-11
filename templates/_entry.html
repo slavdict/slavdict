@@ -15,9 +15,9 @@
                     {% if entry.genitive %}-<span class="cslav">{{ entry.genitive_ucs }}</span>{% endif %}
 
 
-                    {% if entry.sg1 %}{% if entry.sg1_ucs_wax.0 %}-{%endif %}<span class="cslav">{{ entry.sg1_ucs_wax.1 }}</span
+                    {% if entry.sg1 %}{% if entry.sg1_ucs_wax.0 %}-{% endif %}<span class="cslav">{{ entry.sg1_ucs_wax.1 }}</span
                     >{% if entry.sg2 %},{%endif %}{% endif %}
-                    {% if entry.sg2 %}{% if entry.sg2_ucs_wax.0 %}-{%endif %}<span class="cslav">{{ entry.sg2_ucs_wax.1 }}</span>{% endif %}
+                    {% if entry.sg2 %}{% if entry.sg2_ucs_wax.0 %}-{% endif %}<span class="cslav">{{ entry.sg2_ucs_wax.1 }}</span>{% endif %}
 
 
                     {% if entry.uninflected %}<i>неизм.</i>{% endif %}
