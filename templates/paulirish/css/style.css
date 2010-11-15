@@ -288,6 +288,9 @@ input[type=reset] {
     width: 200px;
 }
 
+.red {
+    background-color: red;
+    }
 
 
 /*

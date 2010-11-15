@@ -2,6 +2,8 @@
 $cn: 21     // Number of columns
 $cw: 21px   // Column width
 $gw: 13px   // Gutter width
+$rh: 13px   // Row height
+$hgh: 8px   // Horizontal gutter height
 
 .container
     width: ($cw * $cn) + ($gw * ($cn - 1))
@@ -39,22 +41,22 @@ div.append-bottom, .append-bottom
     // column + gutter + column
     $cgc: ($cw * $n) + ($gw * ($n - 1))
 
-    .span-#{$n}
+    .x#{$n}
         width: $cgc
         float: left
         margin-right: $gw
 
-    input.span-#{$n},
-    textarea.span-#{$n}
+    input.x#{$n},
+    textarea.x#{$n}
         width: $cgc - 12
         border-left-width: 1px
         border-right-width: 1px
         padding-left: 5px
         padding-right: 5px
 
-    input[type='button'].span-#{$n},
-    input[type='submit'].span-#{$n},
-    input[type='reset'].span-#{$n}
+    input[type='button'].x#{$n},
+    input[type='submit'].x#{$n},
+    input[type='reset'].x#{$n}
         width: $cgc
 
 
@@ -80,3 +82,11 @@ div.append-bottom, .append-bottom
 
     .prepend-#{$n}
         padding-left: $cg
+
+@for $n from 1 through 13
+    // row + horizontal gutter
+    $rg: ($rh * $n) + ($hgh * ($n - 1))
+
+    .y#{$n}
+        height: $rg
+        margin-bottom: $hgh
