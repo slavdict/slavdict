@@ -267,7 +267,6 @@ textarea:focus
 input[type=button],
 input[type=submit],
 input[type=reset] {
-    width: 100px;
     height: 22px;
     font-size: 0.85em;
     background: url(http://www.appcelerator.com/wp-content/plugins/cforms/images/button-bg.gif) repeat-x;

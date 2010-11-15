@@ -1,0 +1,82 @@
+// Grid System based on BluePrint
+$cn: 21     // Number of columns
+$cw: 21px   // Column width
+$gw: 13px   // Gutter width
+
+.container
+    width: ($cw * $cn) + ($gw * ($cn - 1))
+    margin: 0 auto
+
+.showgrid
+    background: url(grid.png)
+
+.column
+    float: left
+    margin-right: $gw
+
+.clearfix:after, .container:after
+    content: "\0020"
+    display: block
+    height: 0
+    clear: both
+    visibility: hidden
+    overflow: hidden
+
+.clearfix, .container
+    display: block
+
+.clear
+    clear:both
+
+div.prepend-top, .prepend-top
+    margin-top: 1.5em
+
+div.append-bottom, .append-bottom
+    margin-bottom: 1.5em
+
+@for $n from 1 through $cn
+
+    // column + gutter + column
+    $cgc: ($cw * $n) + ($gw * ($n - 1))
+
+    .span-#{$n}
+        width: $cgc
+        float: left
+        margin-right: $gw
+
+    input.span-#{$n},
+    textarea.span-#{$n}
+        width: $cgc - 12
+        border-left-width: 1px
+        border-right-width: 1px
+        padding-left: 5px
+        padding-right: 5px
+
+    input[type='button'].span-#{$n},
+    input[type='submit'].span-#{$n},
+    input[type='reset'].span-#{$n}
+        width: $cgc
+
+
+    .pull-#{$n}
+        margin-left: -$cgc
+        float: left
+        position: relative
+
+    .push-#{$n}
+        margin: 0 -$cgc 1.5em $cgc
+        float: left
+        position: relative
+
+@for $n from 1 to $cn
+    //  NB: it is eqivalent to "@for $n through ($cn - 1)"
+    //  But with "through ($cn - 1)" there is a parsing error.
+
+    // column + gutter
+    $cg: ($cw + $gw) * $n
+
+    .append-#{$n}
+        padding-right: $cg
+
+    .prepend-#{$n}
+        padding-left: $cg
