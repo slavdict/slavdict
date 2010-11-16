@@ -5,13 +5,13 @@ DECLARE @link_to_entry;
 SET @link_to_entry = INTEGER(1,3000,9);
 
 DECLARE @i, @ni;
-SET @i = 9640;
+SET @i = 29810;
 
-WHILE @i < 29810
+WHILE @i < 149807
 BEGIN
 
 	SET @ni = 0;
-	WHILE @ni < 4
+	WHILE @ni < 3
 	BEGIN
 		SET @ss = @s;
 		INSERT INTO dictionary_example(
