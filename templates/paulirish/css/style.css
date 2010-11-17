@@ -1031,6 +1031,9 @@ input, textarea {
     border-radius: 3px;
 }
 
+textarea {
+    padding: 2px;
+}
 
 input[type=text], textarea {
     background-color: #f9f9f9;
