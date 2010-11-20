@@ -31,7 +31,7 @@ div.append-bottom, .append-bottom {
   float: left;
   margin-right: 13px; }
 
-input.x1,
+input[type='text'].x1,
 textarea.x1 {
   width: 9px;
   border-left-width: 1px;
@@ -59,7 +59,7 @@ input[type='reset'].x1 {
   float: left;
   margin-right: 13px; }
 
-input.x2,
+input[type='text'].x2,
 textarea.x2 {
   width: 43px;
   border-left-width: 1px;
@@ -87,7 +87,7 @@ input[type='reset'].x2 {
   float: left;
   margin-right: 13px; }
 
-input.x3,
+input[type='text'].x3,
 textarea.x3 {
   width: 77px;
   border-left-width: 1px;
@@ -115,7 +115,7 @@ input[type='reset'].x3 {
   float: left;
   margin-right: 13px; }
 
-input.x4,
+input[type='text'].x4,
 textarea.x4 {
   width: 111px;
   border-left-width: 1px;
@@ -143,7 +143,7 @@ input[type='reset'].x4 {
   float: left;
   margin-right: 13px; }
 
-input.x5,
+input[type='text'].x5,
 textarea.x5 {
   width: 145px;
   border-left-width: 1px;
@@ -171,7 +171,7 @@ input[type='reset'].x5 {
   float: left;
   margin-right: 13px; }
 
-input.x6,
+input[type='text'].x6,
 textarea.x6 {
   width: 179px;
   border-left-width: 1px;
@@ -199,7 +199,7 @@ input[type='reset'].x6 {
   float: left;
   margin-right: 13px; }
 
-input.x7,
+input[type='text'].x7,
 textarea.x7 {
   width: 213px;
   border-left-width: 1px;
@@ -227,7 +227,7 @@ input[type='reset'].x7 {
   float: left;
   margin-right: 13px; }
 
-input.x8,
+input[type='text'].x8,
 textarea.x8 {
   width: 247px;
   border-left-width: 1px;
@@ -255,7 +255,7 @@ input[type='reset'].x8 {
   float: left;
   margin-right: 13px; }
 
-input.x9,
+input[type='text'].x9,
 textarea.x9 {
   width: 281px;
   border-left-width: 1px;
@@ -283,7 +283,7 @@ input[type='reset'].x9 {
   float: left;
   margin-right: 13px; }
 
-input.x10,
+input[type='text'].x10,
 textarea.x10 {
   width: 315px;
   border-left-width: 1px;
@@ -311,7 +311,7 @@ input[type='reset'].x10 {
   float: left;
   margin-right: 13px; }
 
-input.x11,
+input[type='text'].x11,
 textarea.x11 {
   width: 349px;
   border-left-width: 1px;
@@ -339,7 +339,7 @@ input[type='reset'].x11 {
   float: left;
   margin-right: 13px; }
 
-input.x12,
+input[type='text'].x12,
 textarea.x12 {
   width: 383px;
   border-left-width: 1px;
@@ -367,7 +367,7 @@ input[type='reset'].x12 {
   float: left;
   margin-right: 13px; }
 
-input.x13,
+input[type='text'].x13,
 textarea.x13 {
   width: 417px;
   border-left-width: 1px;
@@ -395,7 +395,7 @@ input[type='reset'].x13 {
   float: left;
   margin-right: 13px; }
 
-input.x14,
+input[type='text'].x14,
 textarea.x14 {
   width: 451px;
   border-left-width: 1px;
@@ -423,7 +423,7 @@ input[type='reset'].x14 {
   float: left;
   margin-right: 13px; }
 
-input.x15,
+input[type='text'].x15,
 textarea.x15 {
   width: 485px;
   border-left-width: 1px;
@@ -451,7 +451,7 @@ input[type='reset'].x15 {
   float: left;
   margin-right: 13px; }
 
-input.x16,
+input[type='text'].x16,
 textarea.x16 {
   width: 519px;
   border-left-width: 1px;
@@ -479,7 +479,7 @@ input[type='reset'].x16 {
   float: left;
   margin-right: 13px; }
 
-input.x17,
+input[type='text'].x17,
 textarea.x17 {
   width: 553px;
   border-left-width: 1px;
@@ -507,7 +507,7 @@ input[type='reset'].x17 {
   float: left;
   margin-right: 13px; }
 
-input.x18,
+input[type='text'].x18,
 textarea.x18 {
   width: 587px;
   border-left-width: 1px;
@@ -535,7 +535,7 @@ input[type='reset'].x18 {
   float: left;
   margin-right: 13px; }
 
-input.x19,
+input[type='text'].x19,
 textarea.x19 {
   width: 621px;
   border-left-width: 1px;
@@ -563,7 +563,7 @@ input[type='reset'].x19 {
   float: left;
   margin-right: 13px; }
 
-input.x20,
+input[type='text'].x20,
 textarea.x20 {
   width: 655px;
   border-left-width: 1px;
@@ -589,9 +589,9 @@ input[type='reset'].x20 {
 .x21 {
   width: 701px;
   float: left;
-  margin-right: 13px; }
+  margin-right: 0; }
 
-input.x21,
+input[type='text'].x21,
 textarea.x21 {
   width: 689px;
   border-left-width: 1px;
@@ -735,53 +735,52 @@ input[type='reset'].x21 {
   padding-left: 680px; }
 
 .y1 {
-  height: 13px;
-  margin-bottom: 8px; }
+  height: 21px; }
 
 .y2 {
-  height: 34px;
-  margin-bottom: 8px; }
+  height: 34px; }
 
 .y3 {
-  height: 55px;
-  margin-bottom: 8px; }
+  height: 55px; }
 
 .y4 {
-  height: 76px;
-  margin-bottom: 8px; }
+  height: 89px; }
 
 .y5 {
-  height: 97px;
+  height: 144px; }
+
+input[type='text'].y1 {
+  height: 17px; }
+
+textarea.y2 {
+  height: 28px; }
+
+textarea.y3 {
+  height: 49px; }
+
+textarea.y4 {
+  height: 83px; }
+
+textarea.y5 {
+  height: 138px; }
+
+.bottom1 {
   margin-bottom: 8px; }
 
-.y6 {
-  height: 118px;
-  margin-bottom: 8px; }
+.bottom2 {
+  margin-bottom: 13px; }
 
-.y7 {
-  height: 139px;
-  margin-bottom: 8px; }
+.bottom3 {
+  margin-bottom: 21px; }
 
-.y8 {
-  height: 160px;
-  margin-bottom: 8px; }
+.bottom4 {
+  margin-bottom: 34px; }
 
-.y9 {
-  height: 181px;
-  margin-bottom: 8px; }
+.bottom5 {
+  margin-bottom: 55px; }
 
-.y10 {
-  height: 202px;
-  margin-bottom: 8px; }
+.bottom6 {
+  margin-bottom: 89px; }
 
-.y11 {
-  height: 223px;
-  margin-bottom: 8px; }
-
-.y12 {
-  height: 244px;
-  margin-bottom: 8px; }
-
-.y13 {
-  height: 265px;
-  margin-bottom: 8px; }
+.bottom7 {
+  margin-bottom: 144px; }

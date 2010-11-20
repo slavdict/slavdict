@@ -1,25 +1,17 @@
-input, textarea {
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-}
-
 textarea {
-    padding: 2px;
-}
+  padding: 2px; }
 
-input[type=text],
+input[type="text"],
 textarea,
 select {
-    background-color: #f9f9f9;
-    border: 1px solid #adadad;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-}
+  background-color: #f9f9f9;
+  border: 1px solid #adadad;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px; }
 
-input:focus,
-input:hover,
+input[type="text"]:focus,
+input[type="text"]:hover,
 input[type="button"]:hover,
 input[type="button"]:focus,
 input[type="submit"]:hover,
@@ -30,48 +22,32 @@ select:focus,
 select:hover,
 textarea:focus,
 textarea:hover {
-    border: 1px solid #f7b84c;
-}
-
-input[type="checkbox"] {
-    height: 21px;
-    width: 21px;
-}
+  border: 1px solid #f7b84c; }
 
 input[type="text"]:active,
 input[type="text"]:focus,
 textarea:active,
 textarea:focus,
 select:active,
-select:focus
-{
-    background-color: #FFF2DB;
-    border: 1px solid #f7b84c;
-    color: #B86200;
-}
+select:focus {
+  background-color: #fff2db;
+  border: 1px solid #f7b84c;
+  color: #b86200; }
 
 input[type="button"],
 input[type="submit"],
 input[type="reset"] {
-    font-size: 11px;
-    background: #eee url(button-bg.png) repeat-x;
-    border: 1px solid #adadad;
-}
+  font-size: 11px;
+  background: #eeeeee url(button-bg.png) repeat-x;
+  border: 1px solid #f7b84c; }
 
 .cslav {
-    font-family: 'Triodion ieUcs';
-    font-size: larger;
-    line-height: 10px;
-}
+  font-family: 'Triodion ieUcs';
+  font-size: larger;
+  line-height: 10px; }
 
 .antconsol {
-    font-family: 'AntConSol';
-}
-
-.cslav-content {
-    width: 200px;
-}
+  font-family: 'AntConSol'; }
 
 .red {
-    background-color: red;
-    }
+  background-color: red; }
