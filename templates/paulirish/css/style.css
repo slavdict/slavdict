@@ -2,6 +2,9 @@ textarea {
   padding: 2px; }
 
 input[type="text"],
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
 textarea,
 select {
   background-color: #f9f9f9;
@@ -10,26 +13,12 @@ select {
   -moz-border-radius: 3px;
   border-radius: 3px; }
 
-input[type="text"]:focus,
-input[type="text"]:hover,
-input[type="button"]:hover,
-input[type="button"]:focus,
-input[type="submit"]:hover,
-input[type="submit"]:focus,
-input[type="reset"]:hover,
-input[type="reset"]:focus,
-select:focus,
-select:hover,
-textarea:focus,
-textarea:hover {
-  border: 1px solid #f7b84c; }
-
-input[type="text"]:active,
-input[type="text"]:focus,
-textarea:active,
-textarea:focus,
-select:active,
-select:focus {
+input[type="button"]:hover, input[type="button"]:focus,
+input[type="submit"]:hover, input[type="submit"]:focus,
+input[type="reset"]:hover, input[type="reset"]:focus,
+input[type="text"]:active, input[type="text"]:focus, input[type="text"]:hover,
+textarea:active, textarea:focus, textarea:hover,
+select:active, select:focus, select:hover {
   background-color: #fff2db;
   border: 1px solid #f7b84c;
   color: #b86200; }
@@ -39,15 +28,15 @@ input[type="submit"],
 input[type="reset"] {
   font-size: 11px;
   background: #eeeeee url(button-bg.png) repeat-x;
-  border: 1px solid #f7b84c; }
+  border: 1px solid #adadad; }
 
 .cslav {
-  font-family: 'Triodion ieUcs';
+  font-family: "Triodion ieUcs";
   font-size: larger;
   line-height: 10px; }
 
 .antconsol {
-  font-family: 'AntConSol'; }
+  font-family: "AntConSol"; }
 
 .red {
   background-color: red; }

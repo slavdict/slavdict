@@ -33,10 +33,7 @@ input[type="reset"]:focus,
 select:focus,
 select:hover,
 textarea:focus,
-textarea:hover {
-    border: 1px solid $activeBorderColor;
-}
-
+textarea:hover,
 input[type="text"]:active,
 input[type="text"]:focus,
 textarea:active,
@@ -54,7 +51,7 @@ input[type="submit"],
 input[type="reset"] {
     font-size: 11px;
     background: #eee url(button-bg.png) repeat-x;
-    border: 1px solid $activeBorderColor;
+    border: 1px solid $borderColor;
 }
 
 .cslav {
