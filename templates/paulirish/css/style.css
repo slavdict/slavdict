@@ -13,9 +13,6 @@ select {
   -moz-border-radius: 3px;
   border-radius: 3px; }
 
-input[type="button"]:hover, input[type="button"]:focus,
-input[type="submit"]:hover, input[type="submit"]:focus,
-input[type="reset"]:hover, input[type="reset"]:focus,
 input[type="text"]:active, input[type="text"]:focus, input[type="text"]:hover,
 textarea:active, textarea:focus, textarea:hover,
 select:active, select:focus, select:hover {
@@ -30,6 +27,17 @@ input[type="reset"] {
   background: #eeeeee url(button-bg.png) repeat-x;
   border: 1px solid #adadad; }
 
+input[type="button"]:active,
+input[type="submit"]:active,
+input[type="reset"]:active {
+  background-image: none; }
+
+input[type="button"]:hover, input[type="button"]:focus,
+input[type="submit"]:hover, input[type="submit"]:focus,
+input[type="reset"]:hover, input[type="reset"]:focus {
+  border: 1px solid #f7b84c;
+  color: #b86200; }
+
 .cslav {
   font-family: "Triodion ieUcs";
   font-size: larger;
@@ -40,3 +48,10 @@ input[type="reset"] {
 
 .red {
   background-color: red; }
+
+.right {
+  text-align: right; }
+
+.text {
+  padding-top: 2px;
+  font-style: italic; }

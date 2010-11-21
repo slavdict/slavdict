@@ -20,6 +20,9 @@
 .clearfix, .container {
   display: block; }
 
+.clear {
+  clear: both; }
+
 div.prepend-top, .prepend-top {
   margin-top: 1.5em; }
 
@@ -784,3 +787,6 @@ textarea.y5 {
 
 .bottom7 {
   margin-bottom: 144px; }
+
+.omega {
+  margin-right: 0 !important; }

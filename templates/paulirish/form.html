@@ -16,14 +16,14 @@
 
 <body>
     <div class="y4"></div>
-  <div class="container showgrid">
+  <div class="container" id="cont">
 
     <div class="x21 y3"></div>
 
     <form action="" method="post">
 
         <div class="x21 bottom3">
-            <div class="x3" style="text-align: right;">
+            <div class="x3 right text">
                 <label for="entry_id">Лексема</label>
             </div>
 
@@ -47,26 +47,70 @@
             <textarea class="cslav-content x5 y4"></textarea>
         </div>
 
-        <div class="bottom2">
+        <div class="x21 bottom2">
+
+            <div class="x3 right text">Часть речи</div>
+
             <select class="x3 y1">
                 <option value="1">сущ.</option>
                 <option value="2">прил.</option>
                 <option value="3">гл.</option>
             </select>
 
-            <input type="submit" value="сохранить" class="x3 y1" />
+            <div class="x1">&nbsp;</div>
+
+            <div class="x5">
+
+                <div class="x5 omega bottom1">
+                    <div class="x4 text right">Имя собственное</div>
+                    <input type="checkbox" />
+                </div>
+
+                <div class="x5 omega bottom1">
+                    <div class="x4 text right">Неизменяемое</div>
+                    <input type="checkbox" />
+                </div>
+
+                <div class="x5 omega bottom1">
+                    <div class="x4 text right">Скрыть</div>
+                    <input type="checkbox" />
+                </div>
+
+            </div>
+
+            <div class="x1">&nbsp;</div>
+
+            <div class="x5">
+
+                <div class="x5 omega bottom1">
+                    <div class="x4 text right">Имя собственное</div>
+                    <input type="radio" name="radio1" />
+                </div>
+
+                <div class="x5 omega bottom1">
+                    <div class="x4 text right">Неизменяемое</div>
+                    <input type="radio" name="radio1" />
+                </div>
+
+                <div class="x5 omega bottom1">
+                    <div class="x4 text right">Скрыть</div>
+                    <input type="radio" name="radio1" />
+                </div>
+
+            </div>
+
         </div>
 
-        <input type="checkbox" class="x1 y1" />
-        <label class="x2 y1">Скрыть</label>
+        <div class="x2">
+            <input id="showgrid" type="button" value="сохранить" class="x3 y1" />
+        </div>
 
     </form>
-    <a href="#">Ссылочка</a>
 
   </div> <!--! end of #container -->
 
 
-  <script src="js/libs/jquery-1.4.4.js"></script>
+  <script src="js/libs/jquery-1.4.4.min.js"></script>
 
   <script src="js/mylibs/ac2ucs8.js"></script>
   <script>
@@ -84,7 +128,9 @@
             $(this).removeClass('antconsol').addClass('cslav');
             $(this).val(antconc_ucs8($(this).val()));
             })
-        $('form').validate({ rules: { email_id: { email: true } }, success: function (label) { label.css('border-color', '#0a0'); } });
+        $('#showgrid').click(function(){
+            $('#cont').toggleClass('showgrid');
+            });
     });
   </script>
 
