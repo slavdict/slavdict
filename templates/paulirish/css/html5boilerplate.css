@@ -79,6 +79,7 @@ body, select, input, textarea {
   color: #444;
   /* set your base font here, to apply evenly */
   font-family: Arial, sans-serif;
+  font-size: 12px;
 }
 
 /* Headers (h1,h2,etc) have no default font-size or margin,
