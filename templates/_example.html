@@ -8,13 +8,11 @@
 {% endif %}
 
 {% if e.address_text %}
-    ({{ e.address_text }})
+    ({{ e.address_text }}{% if show_additional_info and e.additional_info %}
+    <span class="ai ai-example">{{ e.additional_info }}</span>{% endif %})
 {% else %}
     {% if show_additional_info %}
-        <span class="noaddress">Нет адреса!</span>
+        (<span class="noaddress">Нет адреса!</span>{% if show_additional_info and e.additional_info %}
+    <span class="ai ai-example">{{ e.additional_info }}</span>{% endif %})
     {% endif %}
-{% endif %}
-
-{% if show_additional_info and e.additional_info %}
-    <span class="ai ai-example">{{ e.additional_info }}</span>
 {% endif %}
