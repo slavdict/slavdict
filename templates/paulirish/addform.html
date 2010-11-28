@@ -24,17 +24,77 @@
 
         <div class="x21 bottom3">
 
-            <div class="x3 right text">
-                <label for="entry_id">Лексема</label>
+            <div class="x3 right text">Лексема</div>
+
+            <input type="text" class="x5 y1 antconsol" value="" name="entry" id="entry_id" />
+
+            <div id="display-entry" class="x6 prepend-1 text cslav"></div>
+
+            <div class="x6 text"></div>
+
+        </div>
+
+        <div class="x21 bottom3">
+
+            <div class="x3 right text">Часть речи</div>
+
+            <div class="x3">
+
+                <div class="x3 omega bottom0">
+                    <div class="x2 right text">сущ.</div>
+                    <input type="radio" value="noun" name="part_of_speech" />
+                </div>
+
+                <div class="x3 omega bottom0">
+                    <div class="x2 right text">гл.</div>
+                    <input type="radio" value="verb" name="part_of_speech" />
+                </div>
+
+                <div class="x3 omega bottom0">
+                    <div class="x2 right text">прил.</div>
+                    <input type="radio" value="adjective" name="part_of_speech" />
+                </div>
+
+                <div class="x3 omega bottom0">
+                    <div class="x2 right text">нар.</div>
+                    <input type="radio" value="adverb" name="part_of_speech" />
+                </div>
+
+                <div class="x3 omega bottom0">
+                    <div class="x2 right text control-text">другое</div>
+                    <input type="radio" value="" name="part_of_speech" id="pos_another" />
+                </div>
+
             </div>
 
-            <input type="text" class="cslav-content x5 y1" value="" name="entry" id="entry_id" />
+            <div class="x3" id="additional_pos">
 
-            <div class="x3 append-1 right text">
-                <label for="entry_id"></label>
+                <div class="x3 omega bottom0">
+                    <div class="x2 right text">предл.</div>
+                    <input type="radio" value="preposition" name="part_of_speech" />
+                </div>
+
+                <div class="x3 omega bottom0">
+                    <div class="x2 right text">мест.</div>
+                    <input type="radio" value="pronoun" name="part_of_speech" />
+                </div>
+
+                <div class="x3 omega bottom0">
+                    <div class="x2 right text">союз&nbsp;</div>
+                    <input type="radio" value="conjunction" name="part_of_speech" />
+                </div>
+
+                <div class="x3 omega bottom0">
+                    <div class="x2 right text">част.</div>
+                    <input type="radio" value="particle" name="part_of_speech" />
+                </div>
+
+                <div class="x3 omega bottom0">
+                    <div class="x2 right text">межд.</div>
+                    <input type="radio" value="interjection" name="part_of_speech" />
+                </div>
+
             </div>
-
-            <input type="text" class="cslav-content x5 y1" value="" name="entry" id="entry_id" />
 
         </div>
 
@@ -48,22 +108,18 @@
   <script src="js/mylibs/ac2ucs8.js"></script>
   <script>
      $(function(){
-        $(".cslav-content").attr('antconc', $(this).val());
-        $(".cslav-content").attr('lang', 'csl');
-        $(".cslav-content").addClass('cslav');
-        $(".cslav-content").val(antconc_ucs8($(this).val()));
-        $(".cslav-content").focus(function() {
-            $(this).val($(this).attr('antconc'));
-            $(this).removeClass('cslav').addClass('antconsol');
-            })
-        $(".cslav-content").blur(function() {
-            $(this).attr('antconc', $(this).val());
-            $(this).removeClass('antconsol').addClass('cslav');
-            $(this).val(antconc_ucs8($(this).val()));
-            })
-        $('#showgrid').click(function(){
-            $('#cont').toggleClass('showgrid');
+        $('#display-entry').html(antconc_ucs8($('#entry_id').val(), false));
+        $('#additional_pos').toggle();
+
+        $('#cont').dblclick(function(){
+            $(this).toggleClass('showgrid');
             });
+        $('#entry_id').keyup(function(){
+            $('#display-entry').html(antconc_ucs8($(this).val(), false));
+        });
+        $('#pos_another').change(function(){
+            $('#additional_pos').toggle();
+        });
     });
   </script>
 

@@ -39,8 +39,8 @@ input[type="reset"]:hover, input[type="reset"]:focus {
   color: #b86200; }
 
 .cslav {
-  font-family: "Triodion ieUcs";
-  font-size: larger;
+  font-family: "Triodion Ucs";
+  font-size: 20px;
   line-height: 10px; }
 
 .antconsol {
@@ -54,3 +54,9 @@ input[type="reset"]:hover, input[type="reset"]:focus {
 
 .text {
   padding-top: 2px; }
+
+.control-text {
+  color: #aaaaaa; }
+
+.hidden {
+  display: none; }
