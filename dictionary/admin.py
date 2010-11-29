@@ -212,6 +212,7 @@ class AdminEntry(admin.ModelAdmin):
         (None, {
             'fields': ('uninflected',),}),
         (u'Для глаг.', { 'fields': (('sg1', 'sg2'),), 'classes': ('collapse',) } ),
+        (u'Для прич.', { 'fields': ('participle_type',), 'classes': ('collapse',) } ),
         (u'Образовано от', { 'fields': ( 'derivation_entry',), 'classes': ( 'collapse',), }),
         (u'См.',
             {'fields': (('link_to_entry', 'link_to_collogroup'), 'link_to_meaning'),

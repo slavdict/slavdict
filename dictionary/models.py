@@ -266,6 +266,15 @@ class Entry(models.Model, Meaningfull):
     def sg2_ucs_wax(self):
         return ucs_affix_or_word(self.sg2)
 
+    participle_type = models.ForeignKey(
+        CategoryValue,
+        verbose_name = u'тип причастия',
+        limit_choices_to = {'category__slug': 'participle_type'},
+        related_name = 'entries_of_parttype',
+        blank = True,
+        null = True,
+        )
+
     derivation_entry = models.ForeignKey(
         'self',
         verbose_name = u'образовано от',
