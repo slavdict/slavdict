@@ -38,7 +38,7 @@
 
             <div class="x3 right text">Часть речи</div>
 
-            <div class="x3">
+            <div class="x3" id="main_pos">
 
                 <div class="x3 omega bottom0">
                     <div class="x2 right text">сущ.</div>
@@ -62,7 +62,7 @@
 
                 <div class="x3 omega bottom0">
                     <div class="x2 right text control-text">другое</div>
-                    <input type="radio" value="" name="part_of_speech" id="pos_another" />
+                    <input type="radio" value="" name="pos2" id="pos_another" />
                 </div>
 
             </div>
@@ -94,6 +94,11 @@
                     <input type="radio" value="interjection" name="part_of_speech" />
                 </div>
 
+                <div class="x3 omega bottom0">
+                    <div class="x2 right text">прич.</div>
+                    <input type="radio" value="participle" name="part_of_speech" />
+                </div>
+
             </div>
 
         </div>
@@ -109,7 +114,7 @@
   <script>
      $(function(){
         $('#display-entry').html(antconc_ucs8($('#entry_id').val(), false));
-        $('#additional_pos').toggle();
+        $('#additional_pos').hide();
 
         $('#cont').dblclick(function(){
             $(this).toggleClass('showgrid');
@@ -117,9 +122,19 @@
         $('#entry_id').keyup(function(){
             $('#display-entry').html(antconc_ucs8($(this).val(), false));
         });
-        $('#pos_another').change(function(){
-            $('#additional_pos').toggle();
-        });
+        $('#pos_another').click(
+            function(){
+                $('#additional_pos').show();
+                $('#pos_another').attr('checked', 'checked');
+                $('#pos_another').parent().hide();
+            }
+        );
+        $('#main_pos :radio[name="part_of_speech"]').click(
+            function(){
+                $('#pos_another').removeAttr('checked').parent().show();
+                $('#additional_pos').hide();
+            }
+        );
     });
   </script>
 
