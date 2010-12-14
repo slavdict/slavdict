@@ -30,6 +30,10 @@
     <i> {{ etym.gloss }}</i>
 {% endif %}
 
+{% if etym.source %}
+    <span>[{{ etym.source }}]</span>
+{% endif %}
+
 {% if etym.unclear %}
     {% if etym.gloss %}<span>,</span>{% endif %}
     <i> этимол. неясна</i>
@@ -71,6 +75,10 @@
 
             {% if etym2.gloss %}
                 <i> {{ etym2.gloss }}</i>
+            {% endif %}
+
+            {% if etym2.source %}
+                <span>[{{ etym2.source }}]</span>
             {% endif %}
 
             {% if show_additional_info and etym2.additional_info %}
