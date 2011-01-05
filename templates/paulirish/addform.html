@@ -30,7 +30,7 @@
 
             <div id="display-entry" class="x6 prepend-1 text cslav"></div>
 
-            <div class="x6 text"></div>
+            <div id="civil-entry" class="x6 omega text"></div>
 
         </div>
 
@@ -103,6 +103,15 @@
 
         </div>
 
+        <div id="nounSpec" class="x21 bottom3 hidden">
+
+            <div class="x8 bottom0">
+                <div class="x7 right text">неизменяемое</div>
+                <input type="checkbox" value="noun" name="uninflected" />
+            </div>
+
+        </div>
+
     </form>
 
   </div> <!--! end of #container -->
@@ -114,6 +123,7 @@
   <script>
      $(function(){
         $('#display-entry').html(antconc_ucs8($('#entry_id').val(), false));
+        $('#civil-entry').html(antconc_civilrus_word($('#entry_id').val(), false));
         $('#additional_pos').hide();
 
         $('#cont').dblclick(function(){
@@ -121,6 +131,7 @@
             });
         $('#entry_id').keyup(function(){
             $('#display-entry').html(antconc_ucs8($(this).val(), false));
+            $('#civil-entry').html(antconc_civilrus_word($(this).val(), false));
         });
         $('#pos_another').click(
             function(){
@@ -135,6 +146,10 @@
                 $('#additional_pos').hide();
             }
         );
+
+        /* >>>>>>>>>>>>>
+        $('#input[value="noun"]')
+        <<<<<<<<<<<<< */
     });
   </script>
 
