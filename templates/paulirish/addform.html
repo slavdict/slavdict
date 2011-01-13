@@ -149,9 +149,17 @@
             }
         );
 
-        /* >>>>>>>>>>>>>
-        $('#input[value="noun"]')
-        <<<<<<<<<<<<< */
+        var POSspec = function(){
+            var value = $(this).val();
+            if (value=="noun"){
+                $("#nounSpec").removeClass('hidden');
+            } else {
+                $("#nounSpec").addClass('hidden');
+            }
+        }
+
+        $('input[name="part_of_speech"]').click(POSspec).dblclick(POSspec);
+        $('input[name="part_of_speech"]:checked').each(POSspec);
     });
   </script>
 
