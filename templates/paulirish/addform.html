@@ -67,7 +67,7 @@
 
             </div>
 
-            <div class="x3" id="additional_pos">
+            <div class="x3 hidden" id="additional_pos">
 
                 <div class="x3 omega bottom0">
                     <div class="x2 right text">предл.</div>
@@ -124,26 +124,28 @@
      $(function(){
         $('#display-entry').html(antconc_ucs8($('#entry_id').val(), false));
         $('#civil-entry').html(antconc_civilrus_word($('#entry_id').val(), false));
-        $('#additional_pos').hide();
 
         $('#cont').dblclick(function(){
             $(this).toggleClass('showgrid');
             });
+
         $('#entry_id').keyup(function(){
             $('#display-entry').html(antconc_ucs8($(this).val(), false));
             $('#civil-entry').html(antconc_civilrus_word($(this).val(), false));
         });
+
         $('#pos_another').click(
             function(){
-                $('#additional_pos').show();
+                $('#additional_pos').removeClass('hidden');
                 $('#pos_another').attr('checked', 'checked');
                 $('#pos_another').parent().hide();
             }
         );
+
         $('#main_pos :radio[name="part_of_speech"]').click(
             function(){
                 $('#pos_another').removeAttr('checked').parent().show();
-                $('#additional_pos').hide();
+                $('#additional_pos').addClass('hidden');
             }
         );
 
