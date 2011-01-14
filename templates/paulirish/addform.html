@@ -105,9 +105,15 @@
 
         <div id="nounSpec" class="x21 bottom3 hidden">
 
-            <div class="x8 bottom0">
-                <div class="x7 right text">неизменяемое</div>
+            <div class="x21 bottom3">
+                <div class="x5 right text">неизменяемое</div>
                 <input type="checkbox" value="noun" name="uninflected" />
+            </div>
+
+            <div class="x21 bottom1">
+                <div class="x5 right text">окончание Р.п.</div>
+                <input type="text" class="x3 y1 antconsol" value="" name="genitive" id="genitive_id" />
+                <div class="x3 prepend-1 text"><span id="gen-hyphen" class="hidden">-</span><span id="display-genitive" class="cslav"></span></div>
             </div>
 
         </div>
@@ -124,15 +130,32 @@
      $(function(){
         $('#display-entry').html(antconc_ucs8($('#entry_id').val(), false));
         $('#civil-entry').html(antconc_civilrus_word($('#entry_id').val(), false));
+        $('#entry_id').keyup(function(){
+            $('#display-entry').html(antconc_ucs8($(this).val(), false));
+            $('#civil-entry').html(antconc_civilrus_word($(this).val(), false));
+        });
+
+        $('#display-genitive').html(antconc_ucs8($('#genitive_id').val(), true));
+        if ( $('#genitive_id').val() ) {
+            $('#gen-hyphen').removeClass('hidden');
+        }
+        $('#genitive_id').keyup(function(){
+            var x = $(this).val();
+            var y = $('#gen-hyphen');
+
+            if (x) {
+                y.removeClass('hidden');
+            } else {
+                y.addClass('hidden');
+            }
+
+            $('#display-genitive').html( antconc_ucs8(x, true) );
+        });
 
         $('#cont').dblclick(function(){
             $(this).toggleClass('showgrid');
             });
 
-        $('#entry_id').keyup(function(){
-            $('#display-entry').html(antconc_ucs8($(this).val(), false));
-            $('#civil-entry').html(antconc_civilrus_word($(this).val(), false));
-        });
 
         $('#pos_another').click(
             function(){
