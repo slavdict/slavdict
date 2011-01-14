@@ -103,14 +103,44 @@
 
         </div>
 
+        <div class="x21 bottom3">
+            <div class="x5 right text">неизменяемое</div>
+            <input type="checkbox" value="noun" name="uninflected" id="uninflected_id" />
+        </div>
+
         <div id="nounSpec" class="x21 bottom3 hidden">
 
-            <div class="x21 bottom3">
-                <div class="x5 right text">неизменяемое</div>
-                <input type="checkbox" value="noun" name="uninflected" />
+            <div class="x21 bottom1">
+                <div class="x3 right text">Род</div>
+                <div class="x3 bottom2">
+
+                    <div class="x3 omega bottom0">
+                        <div class="x2 right text">муж.</div>
+                        <input type="radio" value="masculine" name="gender" />
+                    </div>
+
+                    <div class="x3 omega bottom0">
+                        <div class="x2 right text">жен.</div>
+                        <input type="radio" value="femenine" name="gender" />
+                    </div>
+
+                    <div class="x3 omega">
+                        <div class="x2 right text">ср.</div>
+                        <input type="radio" value="neutral" name="gender" />
+                    </div>
+
+                </div>
+
+                <div class="x3 right text">Tantum</div>
+                <select name="tantum" id="tantum_id" class="x2">
+                    <option> * * * </option>
+                    <option value="pl.t.">pl.</option>
+                    <option value="du.t.">du.</option>
+                    <option value="sg.t.">sg.</option>
+                </select>
             </div>
 
-            <div class="x21 bottom1">
+            <div class="x21 bottom1" id="genitive-div">
                 <div class="x5 right text">окончание Р.п.</div>
                 <input type="text" class="x3 y1 antconsol" value="" name="genitive" id="genitive_id" />
                 <div class="x3 prepend-1 text"><span id="gen-hyphen" class="hidden">-</span><span id="display-genitive" class="cslav"></span></div>
@@ -150,6 +180,15 @@
             }
 
             $('#display-genitive').html( antconc_ucs8(x, true) );
+        });
+
+        $('#uninflected_id').click(function(){
+            var x = $('#genitive-div');
+            if ($(this).is(':checked')) {
+                x.addClass('hidden');
+            } else {
+                x.removeClass('hidden');
+            }
         });
 
         $('#cont').dblclick(function(){
