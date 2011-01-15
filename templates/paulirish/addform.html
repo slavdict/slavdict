@@ -110,9 +110,19 @@
 
         <div id="nounSpec" class="x21 bottom3 hidden">
 
-            <div class="x21 bottom1">
+            <div class="x21 bottom3">
+                <div class="x5 right text">Tantum</div>
+                <select name="tantum" id="tantum_id" class="x2">
+                    <option> * * * </option>
+                    <option value="pl.t.">pl.</option>
+                    <option value="du.t.">du.</option>
+                    <option value="sg.t.">sg.</option>
+                </select>
+            </div>
+
+            <div class="x21 bottom3">
                 <div class="x3 right text">Род</div>
-                <div class="x3 bottom2">
+                <div class="x3">
 
                     <div class="x3 omega bottom0">
                         <div class="x2 right text">муж.</div>
@@ -130,17 +140,9 @@
                     </div>
 
                 </div>
-
-                <div class="x3 right text">Tantum</div>
-                <select name="tantum" id="tantum_id" class="x2">
-                    <option> * * * </option>
-                    <option value="pl.t.">pl.</option>
-                    <option value="du.t.">du.</option>
-                    <option value="sg.t.">sg.</option>
-                </select>
             </div>
 
-            <div class="x21 bottom1" id="genitive-div">
+            <div class="x21" id="genitive-div">
                 <div class="x5 right text">окончание Р.п.</div>
                 <input type="text" class="x3 y1 antconsol" value="" name="genitive" id="genitive_id" />
                 <div class="x3 prepend-1 text"><span id="gen-hyphen" class="hidden">-</span><span id="display-genitive" class="cslav"></span></div>
