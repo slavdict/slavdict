@@ -103,7 +103,7 @@
 
         </div>
 
-        <div class="x21 bottom3">
+        <div id="uninflected-div" class="x21 bottom3 hidden">
             <div class="x5 right text">неизменяемое</div>
             <input type="checkbox" value="noun" name="uninflected" id="uninflected_id" />
         </div>
@@ -151,6 +151,12 @@
         </div>
 
         <div id="adjectiveSpec" class="x21 bottom3 hidden">
+
+            <div class="x21 bottom3">
+                <div class="x5 right text">Притяжательное</div>
+                <input type="checkbox" value="noun" name="possessive" id="possessive_id" />
+            </div>
+
         </div>
     </form>
 
@@ -217,10 +223,30 @@
 
         var POSspec = function(){
             var value = $(this).val();
-            if (value=="noun"){
-                $("#nounSpec").removeClass('hidden');
-            } else {
-                $("#nounSpec").addClass('hidden');
+            var nounSpec = $("#nounSpec");
+            var adjectiveSpec = $("#adjectiveSpec");
+            var uninflected = $("#uninflected-div");
+            var h = 'hidden';
+
+            switch(value){
+
+                case "noun":
+                    uninflected.removeClass(h);
+                    nounSpec.removeClass(h);
+                    adjectiveSpec.addClass(h);
+                    break;
+
+                case "adjective":
+                    uninflected.removeClass(h);
+                    adjectiveSpec.removeClass(h);
+                    nounSpec.addClass(h);
+                    break;
+
+                default:
+                    uninflected.addClass(h);
+                    nounSpec.addClass(h);
+                    adjectiveSpec.addClass(h);
+
             }
         }
 
