@@ -99,7 +99,7 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (None, {
-            'fields': (('text', 'mark', 'position'), 'source'),
+            'fields': (('text', 'mark'), 'source'),
             }),
         )
 
