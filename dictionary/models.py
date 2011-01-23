@@ -919,6 +919,21 @@ class Example(models.Model):
         blank = True,
         )
 
+    GREEK_EQ_STATUS = (
+        (u'L', u'следует найти'),   # look at
+        (u'S', u'не нужны'),        # stop
+        (u'C', u'уточнить адрес'),  # check the address
+        (u'N', u'найти не удалось'),# not found
+        (u'F', u'найдены'),         # found
+        )
+
+    greek_eq_status = models.CharField(
+        u'параллели',
+        max_length = 1,
+        choices = GREEK_EQ_STATUS,
+        default = u'L', # следует найти
+        )
+
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
 

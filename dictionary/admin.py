@@ -120,7 +120,7 @@ from slavdict.dictionary.models import Example
 Example.__unicode__=lambda self:example_with_entry(self)
 
 EXAMPLE_FIELDSETS = (
-        (None, {'fields': (('example', 'address_text'),)}),
+        (None, {'fields': (('example', 'address_text'), 'greek_eq_status')}),
         (u'Доп. инфо.', {'fields': ('additional_info',), 'classes': ('collapse',)}),
     )
 
