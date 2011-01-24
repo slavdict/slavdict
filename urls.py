@@ -20,6 +20,7 @@ urlpatterns += patterns('',
     url( r'^forum/', include('slavdict.forum.urls') ),
     url( r'^wiki/$', redirect_to, {'url': 'http://slavonic.pbworks.com/'} ),
     url( r'^switch/additional-info/', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
+    url( r'^greek-found/', 'slavdict.dictionary.views.make_greek_found' ), # Впоследствии необходимо будет удалить.
 )
 
 try:
