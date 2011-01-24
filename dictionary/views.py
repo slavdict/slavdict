@@ -6,6 +6,20 @@ from django.template import RequestContext
 from slavdict.dictionary.models import Entry
 import datetime
 
+def make_greek_found(request):
+    from slavdict.dictionary.models import GreekEquivalentForExample, Example
+    greqlist = GreekEquivalentForExample.objects.all() # Выбираем все греч. параллели для примеров.
+    exlist = [g.for_example for g in greqlist] # Создаём для них список примеров, к которым они относятся.
+    # Присваеваем полю статуса греч. параллелей для каждого примера значение "найдены".
+    # И сохраняем каждый пример из списка.
+    for ex in exlist:
+        ex.greek_eq_status = u'F'
+        ex.save()
+    # Перенаправляем на ту страницу, с которой пользователь пришёл, либо на заглавную страницу.
+    referer = request.META.get('HTTP_REFERER', '/')
+    response = redirect(referer)
+    return response
+
 def all_entries(request):
     entries = Entry.objects.all().order_by('civil_equivalent', 'homonym_order')
     return render_to_response('all_entries.html',
