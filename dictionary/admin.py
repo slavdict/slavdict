@@ -48,6 +48,25 @@ meaning_with_entry.short_description = u'значение'
 def example_with_entry(obj):
     return u'%s [%s] %s' % (meaning_with_entry(obj.meaning), obj.id, obj.example)
 
+def meaning_for_example(obj):
+    m = obj.meaning
+    return u'%s [%s]%s' % (m.meaning, m.id, u'*' if m.metaphorical else u'')
+
+def entry_for_example(obj):
+    m = obj.meaning
+    e = m.entry_container
+    if e:
+        r = entry_with_orth_variants(e)
+        i = u' [%s]' % e.id
+    else:
+        cg = m.collogroup_container
+        if cg:
+            r = _collocations(cg)
+        else:
+            r = u'(БЕСХОЗНОЕ ЗНАЧЕНИЕ)'
+        i = u''
+    return u'%s%s' % (r, i)
+
 
 from slavdict.dictionary.models import OrthographicVariant
 class OrthVar_Inline(admin.StackedInline):
@@ -117,7 +136,16 @@ class ProperNoun_Inline(admin.StackedInline):
 
 
 from slavdict.dictionary.models import Example
-Example.__unicode__=lambda self:example_with_entry(self)
+
+funcTemp = lambda self: meaning_for_example(self)
+funcTemp.admin_order_field = 'meaning'
+funcTemp.short_description = u'Значение'
+Example.meaning_for_example = funcTemp
+
+funcTemp = lambda self: entry_for_example(self)
+funcTemp.admin_order_field = 'meaning'
+funcTemp.short_description = u'Лексема / Словосоч.'
+Example.entry_for_example = funcTemp
 
 EXAMPLE_FIELDSETS = (
         (None, {'fields': (('example', 'address_text'), 'greek_eq_status')}),
@@ -135,8 +163,10 @@ class AdminExample(admin.ModelAdmin):
     fieldsets = ((None, {'fields': ('meaning',)}),) + EXAMPLE_FIELDSETS
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     ordering = ('-id',)
-    list_display = ('id', '__unicode__')
-    list_display_links = list_display
+    list_display = ('entry_for_example', 'meaning_for_example', 'id', 'example', 'address_text', 'greek_eq_status')
+    list_display_links = ('id', 'example')
+    list_editable = ('greek_eq_status',)
+    list_filter = ('greek_eq_status',)
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
 
