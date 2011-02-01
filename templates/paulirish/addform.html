@@ -104,7 +104,7 @@
         </div>
 
         <div id="uninflected-div" class="x21 bottom3 hidden">
-            <div class="x5 right text">неизменяемое</div>
+            <div class="x5 right text">Неизменяемое</div>
             <input type="checkbox" value="noun" name="uninflected" id="uninflected_id" />
         </div>
 
@@ -143,7 +143,7 @@
             </div>
 
             <div class="x21" id="genitive-div">
-                <div class="x5 right text">окончание Р.п.</div>
+                <div class="x5 right text">Окончание Р.п.</div>
                 <input type="text" class="x3 y1 antconsol" value="" name="genitive" id="genitive_id" />
                 <div class="x3 prepend-1 text"><span id="gen-hyphen" class="hidden">-</span><span id="display-genitive" class="cslav"></span></div>
             </div>
@@ -155,6 +155,12 @@
             <div class="x21 bottom3">
                 <div class="x5 right text">Притяжательное</div>
                 <input type="checkbox" value="noun" name="possessive" id="possessive_id" />
+            </div>
+
+            <div class="x21 bottom3">
+                <div class="x5 right text">Краткая форма</div>
+                <input type="text" class="x3 y1 antconsol" value="" name="short_form" id="short_form_id" />
+                <div class="x3 prepend-1 text"><span id="short-form-hyphen" class="hidden">-</span><span id="display-short-form" class="cslav"></span></div>
             </div>
 
         </div>
@@ -205,8 +211,8 @@
             $(this).toggleClass('showgrid');
             });
 
-
-        $('#pos_another').click(
+        var posAnother = $('#pos_another');
+        posAnother.click(
             function(){
                 $('#additional_pos').removeClass('hidden');
                 $('#pos_another').attr('checked', 'checked');
