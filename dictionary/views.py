@@ -58,12 +58,15 @@ def change_entry(request, entry_id):
     entry = Entry.objects.get(pk=entry_id)
     MeaningInlineFormSet = inlineformset_factory(Entry, Meaning, fk_name='entry_container')
     if request.method == "POST":
-        formset = MeaningInlineFormSet(request.POST, request.FILES, instance=entry)
-        if formset.is_valid():
+        entry_form = EntryForm(request.POST, request.FILES, instance=entry)
+        meaning_formset = MeaningInlineFormSet(request.POST, request.FILES, instance=entry)
+        if entry_form.is_valid() and meaning_formset.is_valid():
+            entry_form.save()
             formset.save()
-            # Do something.
     else:
+        entry_form = EntryForm(instance=entry)
         formset = MeaningInlineFormSet(instance=entry)
     return render_to_response("change_form.html", {
+        "entry_form": entry_form,
         "formset": formset,
     })
