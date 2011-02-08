@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import RequestContext
-from slavdict.dictionary.models import Entry
+from slavdict.dictionary.models import Entry, Meaning, Example
 import datetime
 
 def all_entries(request):
@@ -48,3 +48,22 @@ def switch_additional_info(request):
         date_expired = datetime.datetime.now() + datetime.timedelta(days=90)
         response.set_cookie('ai', max_age=7776000, expires=date_expired)
     return response
+
+
+
+from django.forms.models import inlineformset_factory
+from slavdict.dictionary.forms import EntryForm
+
+def change_entry(request, entry_id):
+    entry = Entry.objects.get(pk=entry_id)
+    MeaningInlineFormSet = inlineformset_factory(Entry, Meaning, fk_name='entry_container')
+    if request.method == "POST":
+        formset = MeaningInlineFormSet(request.POST, request.FILES, instance=entry)
+        if formset.is_valid():
+            formset.save()
+            # Do something.
+    else:
+        formset = MeaningInlineFormSet(instance=entry)
+    return render_to_response("change_form.html", {
+        "formset": formset,
+    })
