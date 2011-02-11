@@ -53,7 +53,7 @@ def switch_additional_info(request):
 
 
 from django.forms.models import modelformset_factory
-from slavdict.dictionary.forms import EntryForm
+from slavdict.dictionary.forms import EntryForm, MeaningForm, ExampleForm, OrthVarForm
 
 def change_entry(request, entry_id):
 
@@ -70,9 +70,9 @@ def change_entry(request, entry_id):
     # относящиеся к одному значению.
     example_groups = [Example.objects.filter(meaning=m) for m in meanings]
 
-    MeaningFormSet = modelformset_factory(Meaning)
-    ExampleFormSet = modelformset_factory(Example)
-    OrthVarFormSet = modelformset_factory(OrthographicVariant)
+    MeaningFormSet = modelformset_factory(Meaning, form=MeaningForm)
+    ExampleFormSet = modelformset_factory(Example, form=ExampleForm)
+    OrthVarFormSet = modelformset_factory(OrthographicVariant, form=OrthVarForm)
 
     if request.method == "POST":
         entry_form = EntryForm(request.POST, instance=entry)
