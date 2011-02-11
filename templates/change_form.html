@@ -8,6 +8,13 @@
             table { margin-top: 55px; }
         </style>
 
+        {{ orth_var_formset.management_form }}
+        {% for orth_var_form in orth_var_formset.forms %}
+            <table>
+                {{ orth_var_form }}
+            </table>
+        {% endfor %}
+
         <table>
             {{ entry_form }}
         </table>
