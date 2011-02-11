@@ -1,6 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
     <form method="post" action="">
-        {{ formset }}
+        <style>
+            th, td { font-family: Verdana, sans-serif; font-size: 10px;
+            padding-bottom: 15px; vertical-align: top; }
+            th { text-align: right; padding-right: 7px; }
+            table { margin-top: 55px; }
+        </style>
+
+        <table>
+            {{ entry_form }}
+        </table>
+
+        {{ meaning_formset.management_form }}
+        {% for meaning_form, example_formset in meaning_formset.with_examples %}
+
+            <table>
+                {{ meaning_form }}
+            </table>
+
+            {{ example_formset.management_form }}
+            {% for example_form in example_formset.forms %}
+                <table>
+                    {{ example_form }}
+                </table>
+            {% endfor %}
+
+        {% endfor %}
+
     </form>
 {% endblock %}

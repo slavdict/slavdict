@@ -51,22 +51,37 @@ def switch_additional_info(request):
 
 
 
-from django.forms.models import inlineformset_factory
+from django.forms.models import modelformset_factory
 from slavdict.dictionary.forms import EntryForm
 
 def change_entry(request, entry_id):
+
     entry = Entry.objects.get(pk=entry_id)
-    MeaningInlineFormSet = inlineformset_factory(Entry, Meaning, fk_name='entry_container')
+
+    # Значения данной словарной статьи.
+    meanings = Meaning.objects.filter(entry_container=entry)
+    l = range(len(meanings))
+
+    # Список, содержащий в качестве элементов группы примеров,
+    # относящиеся к одному значению.
+    example_groups = [Example.objects.filter(meaning=m) for m in meanings]
+
+    MeaningFormSet = modelformset_factory(Meaning)
+    ExampleFormSet = modelformset_factory(Example)
+
     if request.method == "POST":
-        entry_form = EntryForm(request.POST, request.FILES, instance=entry)
-        meaning_formset = MeaningInlineFormSet(request.POST, request.FILES, instance=entry)
-        if entry_form.is_valid() and meaning_formset.is_valid():
-            entry_form.save()
-            formset.save()
+        entry_form = EntryForm(request.POST, instance=entry)
+        meaning_formset = MeaningFormSet(request.POST,
+            queryset=meanings, prefix='meaning')
+        example_formset_groups = [ExampleFormSet(request.POST, queryset=eg) for eg in example_groups]
     else:
         entry_form = EntryForm(instance=entry)
-        formset = MeaningInlineFormSet(instance=entry)
+        meaning_formset = MeaningFormSet(queryset=meanings, prefix='meaning')
+        example_formset_groups = [ExampleFormSet(queryset=eg) for eg in example_groups]
+
+    meaning_formset.with_examples = [(meaning_formset.forms[i], example_formset_groups[i]) for i in l]
+
     return render_to_response("change_form.html", {
-        "entry_form": entry_form,
-        "formset": formset,
+        'entry_form': entry_form,
+        'meaning_formset': meaning_formset,
     })
