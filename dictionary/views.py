@@ -70,20 +70,28 @@ def change_entry(request, entry_id):
     # относящиеся к одному значению.
     example_groups = [Example.objects.filter(meaning=m) for m in meanings]
 
-    MeaningFormSet = modelformset_factory(Meaning, form=MeaningForm)
-    ExampleFormSet = modelformset_factory(Example, form=ExampleForm)
-    OrthVarFormSet = modelformset_factory(OrthographicVariant, form=OrthVarForm)
+    MeaningFormSet = modelformset_factory(Meaning, form=MeaningForm, extra=0)
+    ExampleFormSet = modelformset_factory(Example, form=ExampleForm, extra=0)
+    OrthVarFormSet = modelformset_factory(OrthographicVariant, form=OrthVarForm, extra=0)
 
     if request.method == "POST":
-        entry_form = EntryForm(request.POST, instance=entry)
-        meaning_formset = MeaningFormSet(request.POST,
+        POST = {}
+        # TODO: раскидать request.POST по группам
+        entry_form = EntryForm(POST['entry'], instance=entry)
+        meaning_formset = MeaningFormSet(POST['meanings'],
             queryset=meanings, prefix='meaning')
-        example_formset_groups = [ExampleFormSet(request.POST, queryset=eg) for eg in example_groups]
-        orth_var_formset = OrthVarFormSet(request.POST, queryset=orth_vars, prefix='orthvar')
+        example_formset_groups = [
+            ExampleFormSet(POST['examples_%s' % i], queryset=eg, prefix='example-%s' % i)
+            for i, eg in enumerate(example_groups)
+        ]
+        orth_var_formset = OrthVarFormSet(POST['orthvars'], queryset=orth_vars, prefix='orthvar')
     else:
-        entry_form = EntryForm(instance=entry)
+        entry_form = EntryForm(instance=entry, prefix='entry')
         meaning_formset = MeaningFormSet(queryset=meanings, prefix='meaning')
-        example_formset_groups = [ExampleFormSet(queryset=eg) for eg in example_groups]
+        example_formset_groups = [
+            ExampleFormSet(queryset=eg, prefix='example-%s' % i)
+            for i, eg in enumerate(example_groups)
+        ]
         orth_var_formset = OrthVarFormSet(queryset=orth_vars, prefix='orthvar')
 
     meaning_formset.with_examples = [(meaning_formset.forms[i], example_formset_groups[i]) for i in l]
