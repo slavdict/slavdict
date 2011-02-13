@@ -62,9 +62,9 @@ def change_entry(request, entry_id):
     # Орфографические варианты.
     orth_vars = entry.orth_vars
 
-    # Значения данной словарной статьи.
     meanings = Meaning.objects.filter(entry_container=entry)
-    l = range(len(meanings))
+    # Список с тех. номерами значений
+    L = range(len(meanings))
 
     # Список, содержащий в качестве элементов группы примеров,
     # относящиеся к одному значению.
@@ -75,26 +75,118 @@ def change_entry(request, entry_id):
     OrthVarFormSet = modelformset_factory(OrthographicVariant, form=OrthVarForm, extra=0)
 
     if request.method == "POST":
-        POST = {}
-        # TODO: раскидать request.POST по группам
-        entry_form = EntryForm(POST['entry'], instance=entry)
-        meaning_formset = MeaningFormSet(POST['meanings'],
-            queryset=meanings, prefix='meaning')
-        example_formset_groups = [
-            ExampleFormSet(POST['examples_%s' % i], queryset=eg, prefix='example-%s' % i)
-            for i, eg in enumerate(example_groups)
-        ]
-        orth_var_formset = OrthVarFormSet(POST['orthvars'], queryset=orth_vars, prefix='orthvar')
-    else:
-        entry_form = EntryForm(instance=entry, prefix='entry')
-        meaning_formset = MeaningFormSet(queryset=meanings, prefix='meaning')
-        example_formset_groups = [
-            ExampleFormSet(queryset=eg, prefix='example-%s' % i)
-            for i, eg in enumerate(example_groups)
-        ]
-        orth_var_formset = OrthVarFormSet(queryset=orth_vars, prefix='orthvar')
 
-    meaning_formset.with_examples = [(meaning_formset.forms[i], example_formset_groups[i]) for i in l]
+        # Создаём локальную переменную POST для нужд разсортировки данных из
+        # request.POST.
+        POST = {
+            'entry': {},
+            'orthvars': {},
+            'meanings': {},
+            'example_groups': {},
+        }
+
+        # Рассортировываем данные из request.POST по различным словарям нового
+        # локального словаря POST.
+        for key in request.POST.keys():
+
+            if key.startswith('en'): # entry
+                POST['entry'][key] = request.POST[key]
+
+            elif key.startswith('o'): # orthvar
+                POST['orthvars'][key] = request.POST[key]
+
+            elif key.startswith('m'): # meaning
+                POST['meanings'][key] = request.POST[key]
+
+            elif key.startswith('ex'): # example
+
+                # Получаем строку с номером группы примеров, т.е. номером
+                # значения, к которому они относятся.
+                s = key.split('-', 2)[1] # 'example-12-0-field' --> '12'
+
+                # Добавляем ключ с пустым словарём, если ключа ещё нет.
+                if s not in POST['example_groups']:
+                    POST['example_groups'][s] = {}
+
+                POST['example_groups'][s][key] = request.POST[key]
+
+
+        # Создаём формы на основе POST-данных
+        entry_form = EntryForm(
+
+            POST['entry'],
+            instance=entry,
+            prefix="entry"
+
+            )
+
+        orth_var_formset = OrthVarFormSet(
+
+            POST['orthvars'],
+            queryset=orth_vars,
+            prefix='orthvar'
+
+            )
+
+        meaning_formset = MeaningFormSet(
+
+            POST['meanings'],
+            queryset=meanings,
+            prefix='meaning'
+
+            )
+
+        example_formset_groups = [ # list comprehension
+
+            ExampleFormSet(
+
+                POST['example_groups'][str(i)],
+                queryset=eg,
+                prefix='example-%s' % i
+
+                )
+
+            for i, eg in enumerate(example_groups)
+
+        ]
+
+    else:
+        entry_form = EntryForm(
+
+            instance=entry,
+            prefix='entry'
+
+            )
+
+        orth_var_formset = OrthVarFormSet(
+
+            queryset=orth_vars,
+            prefix='orthvar'
+
+            )
+
+        meaning_formset = MeaningFormSet(
+
+            queryset=meanings,
+            prefix='meaning'
+
+            )
+
+        example_formset_groups = [ # list comprehension
+
+            ExampleFormSet(
+
+                queryset=eg,
+                prefix='example-%s' % i
+
+                )
+
+            for i, eg in enumerate(example_groups)
+        ]
+
+    # Добавляется свойство, возвращающее список пар вида
+    # "Форма для значения"-"Набор форм примеров значения".
+    meaning_formset.with_examples = [(meaning_formset.forms[i], example_formset_groups[i]) for i in L]
 
     return render_to_response("change_form.html", {
         'entry_form': entry_form,
