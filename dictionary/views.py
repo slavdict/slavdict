@@ -174,6 +174,26 @@ def change_entry(request, entry_id):
 
         ]
 
+
+        # Создаём список всех форм и формсетов.
+        _forms = [entry_form, orth_var_formset, meaning_formset]
+        # Расширяем список за счёт example_formset_groups, т.к. эта переменная
+        # содержит не формсет или форму, а целый список формсетов
+        _forms.extend( example_formset_groups )
+
+
+        # Список правильности заполнения форм.
+        # NB: необходимо, чтобы метод is_valid() был вызван для каждого
+        # элемента списка, иначе не все формы будут проверены. Поэтому,
+        # например, в силу лени операции конкатенации, ``if ...and ...and...``
+        # не подойдёт.
+        forms_validity = [x.is_valid() for x in _forms]
+
+        if all(forms_validity):
+            for x in _forms:
+                x.save()
+            return redirect( entry.get_absolute_url() )
+
     else:
         entry_form = EntryForm(
 
