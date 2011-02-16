@@ -9,21 +9,37 @@ import datetime
 
 def all_entries(request):
     entries = Entry.objects.all().order_by('civil_equivalent', 'homonym_order')
-    return render_to_response('all_entries.html',
-                            { 'entries': entries,
-                              'title': u'Все статьи',
-                              'show_additional_info': 'ai' in request.COOKIES,
-                              'user': request.user },
-                            RequestContext(request),)
+    return render_to_response(
+
+        'all_entries.html',
+
+        {
+            'entries': entries,
+            'title': u'Все статьи',
+            'show_additional_info': 'ai' in request.COOKIES,
+            'user': request.user,
+        },
+
+        RequestContext(request),
+        )
+
 
 def single_entry(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
-    return render_to_response('single_entry.html',
-                            { 'entry': entry,
-                              'title': u'Статья «%s»' % entry.civil_equivalent,
-                              'show_additional_info': 'ai' in request.COOKIES,
-                              'user': request.user },
-                            RequestContext(request),)
+    return render_to_response(
+
+        'single_entry.html',
+
+        {
+            'entry': entry,
+            'title': u'Статья «%s»' % entry.civil_equivalent,
+            'show_additional_info': 'ai' in request.COOKIES,
+            'user': request.user,
+        },
+
+        RequestContext(request),
+        )
+
 
 def last_entry(request):
     error = False
@@ -32,13 +48,21 @@ def last_entry(request):
     except IndexError:
         entry = None
         error = True
-    return render_to_response('single_entry.html',
-                            { 'entry': entry,
-                              'title': u'Последняя добавленная статья',
-                              'show_additional_info': 'ai' in request.COOKIES,
-                              'error': error,
-                              'user': request.user },
-                            RequestContext(request),)
+    return render_to_response(
+
+        'single_entry.html',
+
+        {
+            'entry': entry,
+            'title': u'Последняя добавленная статья',
+            'show_additional_info': 'ai' in request.COOKIES,
+            'error': error,
+            'user': request.user,
+        },
+
+        RequestContext(request),
+        )
+
 
 def switch_additional_info(request):
     referer = request.META.get('HTTP_REFERER', '/')
@@ -137,7 +161,7 @@ def change_entry(request, entry_id):
             )
 
         example_formset_groups = [ # list comprehension
-
+                                   # variables: i, eg
             ExampleFormSet(
 
                 POST['example_groups'][str(i)],
@@ -173,7 +197,7 @@ def change_entry(request, entry_id):
             )
 
         example_formset_groups = [ # list comprehension
-
+                                   # variables: i, eg
             ExampleFormSet(
 
                 queryset=eg,
@@ -188,8 +212,13 @@ def change_entry(request, entry_id):
     # "Форма для значения"-"Набор форм примеров значения".
     meaning_formset.with_examples = [(meaning_formset.forms[i], example_formset_groups[i]) for i in L]
 
-    return render_to_response("change_form.html", {
-        'entry_form': entry_form,
-        'meaning_formset': meaning_formset,
-        'orth_var_formset': orth_var_formset,
-    })
+    return render_to_response(
+
+        "change_form.html",
+
+        {
+            'entry_form': entry_form,
+            'meaning_formset': meaning_formset,
+            'orth_var_formset': orth_var_formset,
+        },
+        )
