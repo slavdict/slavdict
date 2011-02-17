@@ -95,8 +95,11 @@ def change_entry(request, entry_id):
     L = range(len(meanings))
 
     # Список, содержащий в качестве элементов группы примеров,
-    # относящиеся к одному значению.
+    # относящиеся к одному значению. TODO: возможно, этот список лучше делать
+    # по-другому для лучшей производительности.
     example_groups = [Example.objects.filter(meaning=m) for m in meanings]
+    # То же для контекстов значений.
+    mnng_cntxt_groups = [MeaningContext.objects.filter(meaning=m) for m in meanings]
 
     OrthVarFormSet = modelformset_factory(OrthographicVariant, form=OrthVarForm, extra=0)
     EtymologyFormSet = modelformset_factory(Etymology, form=EtymologyForm, extra=0)
@@ -134,6 +137,9 @@ def change_entry(request, entry_id):
 
             elif key.startswith('o'): # orthvar
                 POST['orthvars'][key] = request.POST[key]
+
+            elif key.startswith('et'): # etym
+                POST['etymons'][key] = request.POST[key]
 
             elif key.startswith('m'): # meaning
                 POST['meanings'][key] = request.POST[key]
@@ -197,7 +203,7 @@ def change_entry(request, entry_id):
             for i, eg in enumerate(example_groups)
 
         ]
-        #TODO
+
         mnng_cntxt_formset_groups = [ # list comprehension
                                       # variables: i, mc
             ExampleFormSet(
@@ -207,8 +213,8 @@ def change_entry(request, entry_id):
                 prefix='mnng_cntxt-%s' % i
 
                 )
-            #TODO
-            for i, eg in enumerate(example_groups)
+
+            for i, mc in enumerate(mnng_cntxt_groups)
 
         ]
 
@@ -271,6 +277,19 @@ def change_entry(request, entry_id):
                 )
 
             for i, eg in enumerate(example_groups)
+        ]
+
+        mnng_cntxt_formset_groups = [ # list comprehension
+                                      # variables: i, mc
+            ExampleFormSet(
+
+                queryset=mc,
+                prefix='mnng_cntxt-%s' % i
+
+                )
+
+            for i, mc in enumerate(mnng_cntxt_groups)
+
         ]
 
     # Добавляется свойство, возвращающее список пар вида
