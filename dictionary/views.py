@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+import datetime
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import RequestContext
 from slavdict.dictionary.models import Entry, \
-    Meaning, Example, OrthographicVariant, Etymology
-import datetime
+    Meaning, Example, OrthographicVariant, Etymology, \
+    MeaningContext, GreekEquivalentForMeaning, \
+    GreekEquivalentForExample
 
 def all_entries(request):
     entries = Entry.objects.all().order_by('civil_equivalent', 'homonym_order')
@@ -77,7 +79,9 @@ def switch_additional_info(request):
 
 
 from django.forms.models import modelformset_factory
-from slavdict.dictionary.forms import EntryForm, MeaningForm, ExampleForm, OrthVarForm
+from slavdict.dictionary.forms import EntryForm, \
+    MeaningForm, ExampleForm, OrthVarForm, EtymologyForm, \
+    MnngCntxtForm, GrEqForMnngForm, GrEqForExForm
 
 def change_entry(request, entry_id):
 
@@ -94,19 +98,31 @@ def change_entry(request, entry_id):
     # относящиеся к одному значению.
     example_groups = [Example.objects.filter(meaning=m) for m in meanings]
 
+    OrthVarFormSet = modelformset_factory(OrthographicVariant, form=OrthVarForm, extra=0)
+    EtymologyFormSet = modelformset_factory(Etymology, form=EtymologyForm, extra=0)
     MeaningFormSet = modelformset_factory(Meaning, form=MeaningForm, extra=0)
     ExampleFormSet = modelformset_factory(Example, form=ExampleForm, extra=0)
-    OrthVarFormSet = modelformset_factory(OrthographicVariant, form=OrthVarForm, extra=0)
+    MnngCntxtFormSet = modelformset_factory(MeaningContext, form=MnngCntxtForm, extra=0)
+    GrEqForMnng = modelformset_factory(GreekEquivalentForMeaning, form=GrEqForMnngForm, extra=0)
+    GrEqForEx = modelformset_factory(GreekEquivalentForExample, form=GrEqForExForm, extra=0)
 
     if request.method == "POST":
 
         # Создаём локальную переменную POST для нужд разсортировки данных из
         # request.POST.
         POST = {
+
             'entry': {},
+
             'orthvars': {},
+            'etymons': {},
             'meanings': {},
+
+            'mnng_cntxt_groups': {},
             'example_groups': {},
+            'greq_mnng_groups': {},
+            'greq_ex_groups': {},
+
         }
 
         # Рассортировываем данные из request.POST по различным словарям нового
@@ -152,6 +168,14 @@ def change_entry(request, entry_id):
 
             )
 
+        etymology_formset = EtymologyFormSet(
+
+            POST['etymons'],
+            queryset=etymons,
+            prefix='etym'
+
+            )
+
         meaning_formset = MeaningFormSet(
 
             POST['meanings'],
@@ -170,6 +194,20 @@ def change_entry(request, entry_id):
 
                 )
 
+            for i, eg in enumerate(example_groups)
+
+        ]
+        #TODO
+        mnng_cntxt_formset_groups = [ # list comprehension
+                                      # variables: i, mc
+            ExampleFormSet(
+
+                POST['mnng_cntxt_groups'][str(i)],
+                queryset=mc,
+                prefix='mnng_cntxt-%s' % i
+
+                )
+            #TODO
             for i, eg in enumerate(example_groups)
 
         ]
@@ -206,6 +244,13 @@ def change_entry(request, entry_id):
 
             queryset=orth_vars,
             prefix='orthvar'
+
+            )
+
+        etymology_formset = EtymologyFormSet(
+
+            queryset=etymons,
+            prefix='etym'
 
             )
 

@@ -2,7 +2,9 @@
 from django.forms import ModelForm, HiddenInput
 from django.forms.models import inlineformset_factory
 
-from dictionary.models import Entry, Meaning, Example
+from dictionary.models import Entry, Meaning, Example, \
+    Etymology, MeaningContext, GreekEquivalentForMeaning, \
+    GreekEquivalentForExample
 
 class EntryForm(ModelForm):
     class Meta:
@@ -32,4 +34,35 @@ class OrthVarForm(ModelForm):
         widgets = {
             'entry': HiddenInput,
             'order': HiddenInput,
+        }
+
+class EtymologyForm(ModelForm):
+    class Meta:
+        model = Etymology
+        widgets = {
+            'entry': HiddenInput,
+            'collocation': HiddenInput,
+            'order': HiddenInput,
+        }
+
+class MnngCntxtForm(ModelForm):
+    class Meta:
+        model = MeaningContext
+        widgets = {
+            'meaning': HiddenInput,
+            'order': HiddenInput,
+        }
+
+class GrEqForMnngForm(ModelForm):
+    class Meta:
+        model = GreekEquivalentForMeaning
+        widgets = {
+            'for_meaning': HiddenInput,
+        }
+
+class GrEqForExForm(ModelForm):
+    class Meta:
+        model = GreekEquivalentForExample
+        widgets = {
+            'for_example': HiddenInput,
         }
