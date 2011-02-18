@@ -367,7 +367,7 @@ class Entry(models.Model, Meaningfull):
 
     @property
     def etymologies(self):
-        return self.etymology_set.filter(etymon_to__isnull=True).order_by('id')
+        return self.etymology_set.filter(etymon_to__isnull=True).order_by('order', 'id')
 
     @property
     def collogroups(self):
@@ -1031,7 +1031,7 @@ class Collocation(models.Model):
 
     @property
     def etymologies(self):
-        return self.etymology_set.filter(etymon_to__isnull=True).order_by('id')
+        return self.etymology_set.filter(etymon_to__isnull=True).order_by('order', 'id')
 
     def __unicode__(self):
         return self.collocation

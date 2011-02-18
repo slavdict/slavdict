@@ -93,7 +93,7 @@ def change_entry(request, entry_id):
     # Все этимоны для словарной статьи (в том числе вложенные). NB:
     # ``Entry.etimologies`` возвращает все этимоны, для которых нет других
     # этимонов. Поэтому здесь это не используется.
-    etymons = Etymology.objects.filter(entry=entry)
+    etymons = Etymology.objects.filter(entry=entry).order_by('order', 'id')
 
     meanings = Meaning.objects.filter(entry_container=entry)
     # Список с тех. номерами значений
@@ -237,7 +237,6 @@ def change_entry(request, entry_id):
 
         ]
 
-
         # Создаём список всех форм и формсетов, добавляя туда сначала сами
         # формы и формсеты.
         _forms = [
@@ -265,6 +264,9 @@ def change_entry(request, entry_id):
 
         if all(forms_validity):
             for x in _forms:
+                # TODO: здесь должен быть учёт зависимостей, чтобы не пытаться
+                # сохранить раньше времени те объекты, которые зависят от
+                # других ещё не существующих.
                 x.save()
             return redirect( entry.get_absolute_url() )
 
@@ -326,6 +328,52 @@ def change_entry(request, entry_id):
     # значения"--"Набор форм контекстов значения"--"Набор форм примеров
     # значения".
     meaning_formset.mnng_cntxt_ex = [(meaning_formset.forms[i], mnng_cntxt_formset_groups[i], example_formset_groups[i]) for i in L]
+
+    # Создаем из списка форм с этимонами доп. свойство ``.forms_tree``:
+    # В списке остаются только те формы, для которых соответствующие объекты
+    # этимонов имеют свойство ``.etymon_to`` пустым. Остальные добавляются в
+    # соответствии с уровнем вложенности в объекты форм через создаваемое
+    # свойство ``.infraforms``.
+
+    # Делим все формы на те, этимоны которых являются этимонами для других
+    # этимонов, и те, для которых это неверно. Параллельно создаем два
+    # аналогичных списка, но уже не самими формами, а ID соответствующих им
+    # этимонов.
+    NON_BASE_ETYMON_forms = []
+    UNBOUND_BASE_ETYMON_forms = []
+    BOUND_BASE_ETYMON_forms = []
+
+    NON_BASE_ETYMON_ids = []
+    UNBOUND_BASE_ETYMON_ids = []
+    BOUND_BASE_ETYMON_ids = []
+
+    for form in etymology_formset.forms:
+
+        etymon = form.instance
+        etymon_id = etymon.id
+
+        if etymon.etymon_to:
+            UNBOUND_BASE_ETYMON_forms.append(form)
+            UNBOUND_BASE_ETYMON_ids.append(etymon_id)
+        else:
+            NON_BASE_ETYMON_forms.append(form)
+            NON_BASE_ETYMON_ids.append(etymon_id)
+
+
+    while unbound_base_etymon_forms:
+        for i, form in enumerate(unbound_base_etymon_forms):
+
+            derivative_etymon = form.instance.etymon_to
+            did = derivative_etymon.id
+
+            if did in UNBOUND_BASE_ETYMON_ids:
+                j = UNBOUND_BASE_ETYMON_ids.index(did)
+
+                # Находим все base_etymon с одним и тем же derivative_etymon и
+                # записываем их индексы в списке в новый список.
+                PEER_BASE_ETYMON_ins = [i,]
+
+
 
     return render_to_response(
 
