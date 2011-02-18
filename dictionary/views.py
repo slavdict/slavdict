@@ -322,11 +322,10 @@ def change_entry(request, entry_id):
 
         ]
 
-    # Добавляется свойство, возвращающее список пар вида
-    # "Форма для значения"-"Набор форм примеров значения".
-    meaning_formset.with_examples = [(meaning_formset.forms[i], example_formset_groups[i]) for i in L]
-
-    #TODO: meaning_formset.
+    # Добавляется свойство, возвращающее список троек вида "Форма для
+    # значения"--"Набор форм контекстов значения"--"Набор форм примеров
+    # значения".
+    meaning_formset.mnng_cntxt_ex = [(meaning_formset.forms[i], mnng_cntxt_formset_groups[i], example_formset_groups[i]) for i in L]
 
     return render_to_response(
 

@@ -19,12 +19,26 @@
             {{ entry_form }}
         </table>
 
+        {{ etymology_formset.management_form }}
+        {% for etymology_form in etymology_formset.forms %}
+            <table>
+                {{ etymology_form }}
+            </table>
+        {% endfor %}
+
         {{ meaning_formset.management_form }}
-        {% for meaning_form, example_formset in meaning_formset.with_examples %}
+        {% for meaning_form, mnng_cntxt_formset, example_formset in meaning_formset.mnng_cntxt_ex %}
 
             <table>
                 {{ meaning_form }}
             </table>
+
+            {{ mnng_cntxt_formset.management_form }}
+            {% for mnng_cntxt_form in mnng_cntxt_formset.forms %}
+                <table>
+                    {{ mnng_cntxt_form }}
+                </table>
+            {% endfor %}
 
             {{ example_formset.management_form }}
             {% for example_form in example_formset.forms %}
