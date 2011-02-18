@@ -90,6 +90,11 @@ def change_entry(request, entry_id):
     # Орфографические варианты.
     orth_vars = entry.orth_vars
 
+    # Все этимоны для словарной статьи (в том числе вложенные). NB:
+    # ``Entry.etimologies`` возвращает все этимоны, для которых нет других
+    # этимонов. Поэтому здесь это не используется.
+    etymons = Etymology.objects.filter(entry=entry)
+
     meanings = Meaning.objects.filter(entry_container=entry)
     # Список с тех. номерами значений
     L = range(len(meanings))
@@ -130,6 +135,21 @@ def change_entry(request, entry_id):
 
         # Рассортировываем данные из request.POST по различным словарям нового
         # локального словаря POST.
+
+        # Вспомогательная функция.
+        def _populate_groups(group_list, key, value):
+
+            # Получаем строку с номером группы примеров, т.е. номером
+            # значения, к которому они относятся.
+            group_number = key.split('-', 2)[1] # 'example-12-0-field' --> '12'
+
+            # Добавляем ключ с пустым словарём, если ключа ещё нет.
+            if s not in group_list:
+                group_list[group_number] = {}
+
+            group_list[group_number][key] = value
+
+
         for key in request.POST.keys():
 
             if key.startswith('en'): # entry
@@ -141,21 +161,20 @@ def change_entry(request, entry_id):
             elif key.startswith('et'): # etym
                 POST['etymons'][key] = request.POST[key]
 
-            elif key.startswith('m'): # meaning
+            elif key.startswith('me'): # meaning
                 POST['meanings'][key] = request.POST[key]
 
             elif key.startswith('ex'): # example
+                _populate_groups(
+                    POST['example_groups'],
+                    key, request.POST[key]
+                    )
 
-                # Получаем строку с номером группы примеров, т.е. номером
-                # значения, к которому они относятся.
-                s = key.split('-', 2)[1] # 'example-12-0-field' --> '12'
-
-                # Добавляем ключ с пустым словарём, если ключа ещё нет.
-                if s not in POST['example_groups']:
-                    POST['example_groups'][s] = {}
-
-                POST['example_groups'][s][key] = request.POST[key]
-
+            elif key.startswith('mn'): # mnng_cntxt
+                _populate_groups(
+                    POST['mnng_cntxt_groups'],
+                    key, request.POST[key]
+                    )
 
         # Создаём формы на основе POST-данных
         entry_form = EntryForm(
@@ -206,7 +225,7 @@ def change_entry(request, entry_id):
 
         mnng_cntxt_formset_groups = [ # list comprehension
                                       # variables: i, mc
-            ExampleFormSet(
+            MnngCntxtFormSet(
 
                 POST['mnng_cntxt_groups'][str(i)],
                 queryset=mc,
@@ -219,11 +238,22 @@ def change_entry(request, entry_id):
         ]
 
 
-        # Создаём список всех форм и формсетов.
-        _forms = [entry_form, orth_var_formset, meaning_formset]
+        # Создаём список всех форм и формсетов, добавляя туда сначала сами
+        # формы и формсеты.
+        _forms = [
+
+            entry_form,
+            orth_var_formset,
+            etymology_formset,
+            meaning_formset,
+
+            ]
+
         # Расширяем список за счёт example_formset_groups, т.к. эта переменная
         # содержит не формсет или форму, а целый список формсетов
         _forms.extend( example_formset_groups )
+        # Аналогично.
+        _forms.extend( mnng_cntxt_formset_groups )
 
 
         # Список правильности заполнения форм.
@@ -281,7 +311,7 @@ def change_entry(request, entry_id):
 
         mnng_cntxt_formset_groups = [ # list comprehension
                                       # variables: i, mc
-            ExampleFormSet(
+            MnngCntxtFormSet(
 
                 queryset=mc,
                 prefix='mnng_cntxt-%s' % i
@@ -296,13 +326,16 @@ def change_entry(request, entry_id):
     # "Форма для значения"-"Набор форм примеров значения".
     meaning_formset.with_examples = [(meaning_formset.forms[i], example_formset_groups[i]) for i in L]
 
+    #TODO: meaning_formset.
+
     return render_to_response(
 
         "change_form.html",
 
         {
             'entry_form': entry_form,
-            'meaning_formset': meaning_formset,
             'orth_var_formset': orth_var_formset,
+            'etymology_formset': etymology_formset,
+            'meaning_formset': meaning_formset,
         },
         )
