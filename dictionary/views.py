@@ -116,70 +116,10 @@ def change_entry(request, entry_id):
 
     if request.method == "POST":
 
-        # Создаём локальную переменную POST для нужд разсортировки данных из
-        # request.POST.
-        POST = {
-
-            'entry': {},
-
-            'orthvars': {},
-            'etymons': {},
-            'meanings': {},
-
-            'mnng_cntxt_groups': {},
-            'example_groups': {},
-            'greq_mnng_groups': {},
-            'greq_ex_groups': {},
-
-        }
-
-        # Рассортировываем данные из request.POST по различным словарям нового
-        # локального словаря POST.
-
-        # Вспомогательная функция.
-        def _populate_groups(group_list, key, value):
-
-            # Получаем строку с номером группы примеров, т.е. номером
-            # значения, к которому они относятся.
-            group_number = key.split('-', 2)[1] # 'example-12-0-field' --> '12'
-
-            # Добавляем ключ с пустым словарём, если ключа ещё нет.
-            if s not in group_list:
-                group_list[group_number] = {}
-
-            group_list[group_number][key] = value
-
-
-        for key in request.POST.keys():
-
-            if key.startswith('en'): # entry
-                POST['entry'][key] = request.POST[key]
-
-            elif key.startswith('o'): # orthvar
-                POST['orthvars'][key] = request.POST[key]
-
-            elif key.startswith('et'): # etym
-                POST['etymons'][key] = request.POST[key]
-
-            elif key.startswith('me'): # meaning
-                POST['meanings'][key] = request.POST[key]
-
-            elif key.startswith('ex'): # example
-                _populate_groups(
-                    POST['example_groups'],
-                    key, request.POST[key]
-                    )
-
-            elif key.startswith('mn'): # mnng_cntxt
-                _populate_groups(
-                    POST['mnng_cntxt_groups'],
-                    key, request.POST[key]
-                    )
-
         # Создаём формы на основе POST-данных
         entry_form = EntryForm(
 
-            POST['entry'],
+            request.POST,
             instance=entry,
             prefix="entry"
 
@@ -187,7 +127,7 @@ def change_entry(request, entry_id):
 
         orth_var_formset = OrthVarFormSet(
 
-            POST['orthvars'],
+            request.POST,
             queryset=orth_vars,
             prefix='orthvar'
 
@@ -195,7 +135,7 @@ def change_entry(request, entry_id):
 
         etymology_formset = EtymologyFormSet(
 
-            POST['etymons'],
+            request.POST,
             queryset=etymons,
             prefix='etym'
 
@@ -203,7 +143,7 @@ def change_entry(request, entry_id):
 
         meaning_formset = MeaningFormSet(
 
-            POST['meanings'],
+            request.POST,
             queryset=meanings,
             prefix='meaning'
 
@@ -213,7 +153,7 @@ def change_entry(request, entry_id):
                                    # variables: i, eg
             ExampleFormSet(
 
-                POST['example_groups'][str(i)],
+                request.POST,
                 queryset=eg,
                 prefix='example-%s' % i
 
@@ -227,7 +167,7 @@ def change_entry(request, entry_id):
                                       # variables: i, mc
             MnngCntxtFormSet(
 
-                POST['mnng_cntxt_groups'][str(i)],
+                request.POST,
                 queryset=mc,
                 prefix='mnng_cntxt-%s' % i
 
