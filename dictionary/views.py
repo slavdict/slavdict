@@ -264,9 +264,13 @@ def change_entry(request, entry_id):
     meaning_ids = [meaning.id for meaning in meanings]
 
     for example_form in example_formset.forms:
-        # TODO: здесь должен быть `try...catch`, так как `.instance` будет не у
-        # всех форм.
-        mID = example_form.instance.meaning.id
+        try:
+            mID = example_form.instance.meaning.id
+        except DoesNotExist:
+            mID = example_form['meaning']#TODO
+
+
+
         i = meaning_ids.index(mID)
         x = meaning_formset.forms[i]
         if hasattr(x, 'example_forms'):
@@ -275,7 +279,6 @@ def change_entry(request, entry_id):
             x.example_forms = [example_form,]
 
     for cntxt_form in cntxt_formset.forms:
-        # TODO: аналогично.
         mID = cntxt_form.instance.meaning.id
         i = meaning_ids.index(mID)
         x = meaning_formset.forms[i]
@@ -285,7 +288,6 @@ def change_entry(request, entry_id):
             x.cntxt_forms = [cntxt_form,]
 
     for grfmnng_form in grfmnng_formset.forms:
-        # TODO: аналогично.
         mID = grfmnng_form.instance.for_meaning.id
         i = meaning_ids.index(mID)
         x = meaning_formset.forms[i]
