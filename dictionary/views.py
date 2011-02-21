@@ -85,34 +85,26 @@ from slavdict.dictionary.forms import EntryForm, \
 
 def change_entry(request, entry_id):
 
-    entry = Entry.objects.get(pk=entry_id)
+    entry = get_object_or_404(Entry, pk=entry_id)
 
-    # Орфографические варианты.
-    orth_vars = entry.orth_vars
-
+    orthvars = OrthographicVariant.objects.filter(entry=entry).order_by('order','id')
     # Все этимоны для словарной статьи (в том числе вложенные). NB:
-    # ``Entry.etimologies`` возвращает все этимоны, для которых нет других
+    # ``entry.etimologies`` возвращает все этимоны, для которых нет других
     # этимонов. Поэтому здесь это не используется.
     etymons = Etymology.objects.filter(entry=entry).order_by('order', 'id')
-
-    meanings = Meaning.objects.filter(entry_container=entry)
-    # Список с тех. номерами значений
-    L = range(len(meanings))
-
-    # Список, содержащий в качестве элементов группы примеров,
-    # относящиеся к одному значению. TODO: возможно, этот список лучше делать
-    # по-другому для лучшей производительности.
-    example_groups = [Example.objects.filter(meaning=m) for m in meanings]
-    # То же для контекстов значений.
-    mnng_cntxt_groups = [MeaningContext.objects.filter(meaning=m) for m in meanings]
+    meanings = Meaning.objects.filter(entry_container=entry).order_by('order','id')
+    examples = Example.objects.filter(meaning__in=meanings).order_by('meaning','order','id')
+    cntxts = MeaningContext.objects.filter(meaning__in=meanings).order_by('meaning','order','id')
+    grfmnngs = GreekEquivalentForMeaning.objects.filter(for_meaning__in=meanings).order_by('for_meaning','id')
+    grfexs = GreekEquivalentForExample.objects.filter(for_example__in=examples).order_by('for_example','id')
 
     OrthVarFormSet = modelformset_factory(OrthographicVariant, form=OrthVarForm, extra=0)
     EtymologyFormSet = modelformset_factory(Etymology, form=EtymologyForm, extra=0)
     MeaningFormSet = modelformset_factory(Meaning, form=MeaningForm, extra=0)
     ExampleFormSet = modelformset_factory(Example, form=ExampleForm, extra=0)
     MnngCntxtFormSet = modelformset_factory(MeaningContext, form=MnngCntxtForm, extra=0)
-    GrEqForMnng = modelformset_factory(GreekEquivalentForMeaning, form=GrEqForMnngForm, extra=0)
-    GrEqForEx = modelformset_factory(GreekEquivalentForExample, form=GrEqForExForm, extra=0)
+    GrEqForMnngFormSet = modelformset_factory(GreekEquivalentForMeaning, form=GrEqForMnngForm, extra=0)
+    GrEqForExFormSet = modelformset_factory(GreekEquivalentForExample, form=GrEqForExForm, extra=0)
 
     if request.method == "POST":
 
@@ -125,10 +117,10 @@ def change_entry(request, entry_id):
 
             )
 
-        orth_var_formset = OrthVarFormSet(
+        orthvar_formset = OrthVarFormSet(
 
             request.POST,
-            queryset=orth_vars,
+            queryset=orthvars,
             prefix='orthvar'
 
             )
@@ -149,51 +141,52 @@ def change_entry(request, entry_id):
 
             )
 
-        example_formset_groups = [ # list comprehension
-                                   # variables: i, eg
-            ExampleFormSet(
+        example_formset = ExampleFormSet(
 
-                request.POST,
-                queryset=eg,
-                prefix='example-%s' % i
+            request.POST,
+            queryset=examples,
+            prefix='example'
 
-                )
+            )
 
-            for i, eg in enumerate(example_groups)
+        cntxt_formset = MnngCntxtFormSet(
 
-        ]
+            request.POST,
+            queryset=cntxts,
+            prefix='cntxt'
 
-        mnng_cntxt_formset_groups = [ # list comprehension
-                                      # variables: i, mc
-            MnngCntxtFormSet(
+            )
 
-                request.POST,
-                queryset=mc,
-                prefix='mnng_cntxt-%s' % i
+        grfmnng_formset = GrEqForMnngFormSet(
 
-                )
+            request.POST,
+            queryset=grfmnngs,
+            prefix='grfmnng'
 
-            for i, mc in enumerate(mnng_cntxt_groups)
+            )
 
-        ]
+        grfex_formset = GrEqForExFormSet(
+
+            request.POST,
+            queryset=grfexs,
+            prefix='grfex'
+
+            )
 
         # Создаём список всех форм и формсетов, добавляя туда сначала сами
         # формы и формсеты.
         _forms = [
 
             entry_form,
-            orth_var_formset,
+            orthvar_formset,
             etymology_formset,
             meaning_formset,
+            example_formset,
+            cntxt_formset,
+            grfmnng_formset,
+            grfex_formset,
 
             ]
-
-        # Расширяем список за счёт example_formset_groups, т.к. эта переменная
-        # содержит не формсет или форму, а целый список формсетов
-        _forms.extend( example_formset_groups )
-        # Аналогично.
-        _forms.extend( mnng_cntxt_formset_groups )
-
 
         # Список правильности заполнения форм.
         # NB: необходимо, чтобы метод is_valid() был вызван для каждого
@@ -218,9 +211,9 @@ def change_entry(request, entry_id):
 
             )
 
-        orth_var_formset = OrthVarFormSet(
+        orthvar_formset = OrthVarFormSet(
 
-            queryset=orth_vars,
+            queryset=orthvars,
             prefix='orthvar'
 
             )
@@ -239,35 +232,80 @@ def change_entry(request, entry_id):
 
             )
 
-        example_formset_groups = [ # list comprehension
-                                   # variables: i, eg
-            ExampleFormSet(
+        example_formset = ExampleFormSet(
 
-                queryset=eg,
-                prefix='example-%s' % i
+            queryset=examples,
+            prefix='example'
 
-                )
+            )
 
-            for i, eg in enumerate(example_groups)
-        ]
+        cntxt_formset = MnngCntxtFormSet(
 
-        mnng_cntxt_formset_groups = [ # list comprehension
-                                      # variables: i, mc
-            MnngCntxtFormSet(
+            queryset=cntxts,
+            prefix='cntxt'
 
-                queryset=mc,
-                prefix='mnng_cntxt-%s' % i
+            )
 
-                )
+        grfmnng_formset = GrEqForMnngFormSet(
 
-            for i, mc in enumerate(mnng_cntxt_groups)
+            queryset=grfmnngs,
+            prefix='grfmnng'
 
-        ]
+            )
 
-    # Добавляется свойство, возвращающее список троек вида "Форма для
-    # значения"--"Набор форм контекстов значения"--"Набор форм примеров
-    # значения".
-    meaning_formset.mnng_cntxt_ex = [(meaning_formset.forms[i], mnng_cntxt_formset_groups[i], example_formset_groups[i]) for i in L]
+        grfex_formset = GrEqForExFormSet(
+
+            queryset=grfexs,
+            prefix='grfex'
+
+            )
+
+
+    meaning_ids = [meaning.id for meaning in meanings]
+
+    for example_form in example_formset.forms:
+        # TODO: здесь должен быть `try...catch`, так как `.instance` будет не у
+        # всех форм.
+        mID = example_form.instance.meaning.id
+        i = meaning_ids.index(mID)
+        x = meaning_formset.forms[i]
+        if hasattr(x, 'example_forms'):
+            x.example_forms.append(example_form)
+        else:
+            x.example_forms = [example_form,]
+
+    for cntxt_form in cntxt_formset.forms:
+        # TODO: аналогично.
+        mID = cntxt_form.instance.meaning.id
+        i = meaning_ids.index(mID)
+        x = meaning_formset.forms[i]
+        if hasattr(x, 'cntxt_forms'):
+            x.cntxt_forms.append(cntxt_form)
+        else:
+            x.cntxt_forms = [cntxt_form,]
+
+    for grfmnng_form in grfmnng_formset.forms:
+        # TODO: аналогично.
+        mID = grfmnng_form.instance.for_meaning.id
+        i = meaning_ids.index(mID)
+        x = meaning_formset.forms[i]
+        if hasattr(x, 'grfmnng_forms'):
+            x.grfmnng_forms.append(grfmnng_form)
+        else:
+            x.grfmnng_forms = [grfmnng_form,]
+
+    example_ids = [example.id for example in examples]
+
+    for grfex_form in grfex_formset.forms:
+        # TODO: аналогично.
+        mID = grfex_form.instance.for_example.id
+        i = example_ids.index(mID)
+        x = example_formset.forms[i]
+        if hasattr(x, 'grfex_forms'):
+            x.grfex_forms.append(grfex_form)
+        else:
+            x.grfex_forms = [grfex_form,]
+
 
     return render_to_response(
 
@@ -275,8 +313,13 @@ def change_entry(request, entry_id):
 
         {
             'entry_form': entry_form,
-            'orth_var_formset': orth_var_formset,
+            'orthvar_formset': orthvar_formset,
             'etymology_formset': etymology_formset,
             'meaning_formset': meaning_formset,
+
+            'example_management_form': example_formset.management_form,
+            'cntxt_management_form': cntxt_formset.management_form,
+            'grfmnng_management_form': grfmnng_formset.management_form,
+            'grfex_management_form': grfex_formset.management_form,
         },
         )

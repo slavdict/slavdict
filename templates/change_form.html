@@ -8,10 +8,10 @@
             table { margin-top: 55px; }
         </style>
 
-        {{ orth_var_formset.management_form }}
-        {% for orth_var_form in orth_var_formset.forms %}
+        {{ orthvar_formset.management_form }}
+        {% for orthvar_form in orthvar_formset.forms %}
             <table>
-                {{ orth_var_form }}
+                {{ orthvar_form }}
             </table>
         {% endfor %}
 
@@ -26,25 +26,42 @@
             </table>
         {% endfor %}
 
+
         {{ meaning_formset.management_form }}
-        {% for meaning_form, mnng_cntxt_formset, example_formset in meaning_formset.mnng_cntxt_ex %}
+        {{ example_management_form }}
+        {{ cntxt_management_form }}
+        {{ grfmnng_management_form }}
+        {{ grfex_management_form }}
+
+        {% for meaning_form in meaning_formset.forms %}
 
             <table>
                 {{ meaning_form }}
             </table>
 
-            {{ mnng_cntxt_formset.management_form }}
-            {% for mnng_cntxt_form in mnng_cntxt_formset.forms %}
+            {% for cntxt_form in meaning_form.cntxt_forms %}
                 <table>
-                    {{ mnng_cntxt_form }}
+                    {{ cntxt_form }}
                 </table>
             {% endfor %}
 
-            {{ example_formset.management_form }}
-            {% for example_form in example_formset.forms %}
+            {% for grfmnng_form in meaning_form.grfmnng_forms %}
+                <table>
+                    {{ grfmnng_form }}
+                <table>
+            {% endfor %}
+
+            {% for example_form in meaning_form.example_forms %}
                 <table>
                     {{ example_form }}
                 </table>
+
+                {% for grfex_form in example_form.grfex_forms %}
+                    <table>
+                        {{ grfex_form }}
+                    </table>
+                {% endfor %}
+
             {% endfor %}
 
         {% endfor %}
