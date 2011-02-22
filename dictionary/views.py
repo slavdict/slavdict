@@ -9,6 +9,8 @@ from slavdict.dictionary.models import Entry, \
     MeaningContext, GreekEquivalentForMeaning, \
     GreekEquivalentForExample
 
+from dictionary.forms import RawValueWidget
+
 def all_entries(request):
     entries = Entry.objects.all().order_by('civil_equivalent', 'homonym_order')
     return render_to_response(
@@ -262,14 +264,17 @@ def change_entry(request, entry_id):
 
 
     meaning_ids = [meaning.id for meaning in meanings]
+    raw_widget = RawValueWidget()
 
     for example_form in example_formset.forms:
-        try:
-            mID = example_form.instance.meaning.id
-        except DoesNotExist:
-            mID = example_form['meaning']#TODO
+        #try: mID = example_form.instance.meaning.id
+        #except DoesNotExist:
 
-
+        #mID = example_form.instance.meaning.id
+        mID = int(example_form['meaning'].as_widget(widget=raw_widget))
+        # Если выдаваемая строка будет содержать нецифровые символы или вообще
+        # не содрежать символов будет вызвано исключение ValueError. Его пока
+        # решено не обрабатывать.
 
         i = meaning_ids.index(mID)
         x = meaning_formset.forms[i]
@@ -279,7 +284,8 @@ def change_entry(request, entry_id):
             x.example_forms = [example_form,]
 
     for cntxt_form in cntxt_formset.forms:
-        mID = cntxt_form.instance.meaning.id
+        #mID = cntxt_form.instance.meaning.id
+        mID = int(cntxt_form['meaning'].as_widget(widget=raw_widget))
         i = meaning_ids.index(mID)
         x = meaning_formset.forms[i]
         if hasattr(x, 'cntxt_forms'):
@@ -288,7 +294,8 @@ def change_entry(request, entry_id):
             x.cntxt_forms = [cntxt_form,]
 
     for grfmnng_form in grfmnng_formset.forms:
-        mID = grfmnng_form.instance.for_meaning.id
+        #mID = grfmnng_form.instance.for_meaning.id
+        mID = int(grfmnng_form['for_meaning'].as_widget(widget=raw_widget))
         i = meaning_ids.index(mID)
         x = meaning_formset.forms[i]
         if hasattr(x, 'grfmnng_forms'):
@@ -299,8 +306,8 @@ def change_entry(request, entry_id):
     example_ids = [example.id for example in examples]
 
     for grfex_form in grfex_formset.forms:
-        # TODO: аналогично.
-        mID = grfex_form.instance.for_example.id
+        #mID = grfex_form.instance.for_example.id
+        mID = int(grfex_form['for_example'].as_widget(widget=raw_widget))
         i = example_ids.index(mID)
         x = example_formset.forms[i]
         if hasattr(x, 'grfex_forms'):

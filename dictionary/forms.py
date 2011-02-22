@@ -66,3 +66,13 @@ class GrEqForExForm(ModelForm):
         widgets = {
             'for_example': HiddenInput,
         }
+
+
+from django.forms.widgets import Widget
+from django.utils.safestring import mark_safe
+
+class RawValueWidget(Widget):
+    def render(self, name, value, attrs=None):
+        if value is None:
+            value = u''
+        return mark_safe(unicode(value))
