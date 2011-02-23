@@ -579,57 +579,6 @@ class Etymology(models.Model):
         ordering = ('id',)
 
 
-class ProperNoun(models.Model):
-
-    entry = models.ForeignKey(Entry)
-
-    onym = models.ForeignKey(
-        CategoryValue,
-        limit_choices_to = {'category__slug': 'onym'},
-        verbose_name = u'тип имени собственного',
-        )
-
-    canonical_name = models.BooleanField(
-        u'каноническое',
-        default = False,
-        )
-
-    nom_sg = models.CharField(
-        u'м.р. Им.п. ед.ч',
-        help_text = u'''Только для этнонимов
-                        (например, в словарной статье АГАРЯНЕ,
-                        здесь -- АГАРЯНИН).''',
-        max_length = 25,
-        blank = True,
-        null = True,
-        )
-
-    nom_pl = models.CharField(
-        u'Им.п. мн.ч',
-        help_text = u'''Только для этнонимов
-                        (например, в словарной статье АГАРЯНИН,
-                        здесь -- АГАРЯНЕ).''',
-        max_length = 25,
-        blank = True,
-        null = True,
-        )
-
-    @property
-    def nom_sg_ucs_wax(self):
-        return ucs_affix_or_word(self.nom_sg)
-
-    @property
-    def nom_pl_ucs_wax(self):
-        return ucs_affix_or_word(self.nom_pl)
-
-    def __unicode__(self):
-        return u'<Имя собственное %s>' % self.id
-
-    class Meta:
-        verbose_name = u'имя собственное'
-        verbose_name_plural = u'имена собственные'
-
-
 class MeaningContext(models.Model):
 
     meaning = models.ForeignKey(
