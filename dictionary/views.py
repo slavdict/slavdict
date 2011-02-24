@@ -344,5 +344,10 @@ def change_entry(request, entry_id):
             'cntxt_management_form': cntxt_formset.management_form,
             'grfmnng_management_form': grfmnng_formset.management_form,
             'grfex_management_form': grfex_formset.management_form,
+
+            'example_empty_form': example_formset.empty_form,
+            'cntxt_empty_form': cntxt_formset.empty_form,
+            'grfmnng_empty_form': grfmnng_formset.empty_form,
+            'grfex_empty_form': grfex_formset.empty_form,
         },
         )
