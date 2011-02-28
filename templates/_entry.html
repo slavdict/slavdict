@@ -44,17 +44,17 @@
                     </div>
 
 
-                    {% if entry.proper_noun.onym.slug == 'ethnonym' %}
-                        {% if entry.proper_noun.nom_pl_ucs_wax %}
+                    {% if entry.onym.slug == 'ethnonym' %}
+                        {% if entry.nom_pl_ucs_wax %}
                         <div>
                             <i>И.п. мн.</i>
-                            {% if entry.proper_noun.nom_pl_ucs_wax.0 %}-{%endif %}<span class="cslav">{{ entry.proper_noun.nom_pl_ucs_wax.1 }}</span>
+                            {% if entry.nom_pl_ucs_wax.0 %}-{% endif %}<span class="cslav">{{ entry.nom_pl_ucs_wax.1 }}</span>
                         </div>
                         {% endif %}
-                        {% if entry.proper_noun.nom_sg_ucs_wax %}
+                        {% if entry.nom_sg_ucs_wax %}
                         <div>
                             <i>м.р. И.п. ед.</i>
-                            {% if entry.proper_noun.nom_sg_ucs_wax.0 %}-{%endif %}<span class="cslav">{{ entry.proper_noun.nom_sg_ucs_wax.1 }}</span>
+                            {% if entry.nom_sg_ucs_wax.0 %}-{%endif %}<span class="cslav">{{ entry.nom_sg_ucs_wax.1 }}</span>
 
                         </div>
                         {% endif %}
@@ -74,23 +74,19 @@
                     {% endif %}
 
 
-                    {% with entry.proper_noun as pn %}
-                        {% if pn %}
-                        {% spaceless %}
-                            {% if pn.onym.slug == 'anthroponym' %}
-                                <i>имя собств.</i>
-                                {% if pn.canonical_name %}
-                                    <i>, канонич.</i>
-                                {% else %}
-                                    <i>, неканонич.</i>
-                                {% endif %}
+                    {% spaceless %}
+                        {% if entry.onym.slug == 'anthroponym' %}
+                            <i>имя собств.</i>
+                            {% if entry.canonical_name %}
+                                <i>, канонич.</i>
+                            {% else %}
+                                <i>, неканонич.</i>
                             {% endif %}
-                            {% if pn.onym.slug == 'toponym' %}
-                                <i>геогр.</i>
-                            {% endif %}
-                        {% endspaceless %}
                         {% endif %}
-                    {% endwith %}
+                        {% if entry.onym.slug == 'toponym' %}
+                            <i>геогр.</i>
+                        {% endif %}
+                    {% endspaceless %}
 
                     {% if entry.link_to_entry or entry.link_to_collogroup or entry.link_to_meaning %}
                     <div>

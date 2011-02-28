@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="post" action="">
+        <style>
+            th, td { font-family: Verdana, sans-serif; font-size: 10px;
+            padding-bottom: 15px; vertical-align: top; }
+            th { text-align: right; padding-right: 7px; }
+            table { margin-top: 55px; }
+        </style>
+
+        {{ orthvar_formset.management_form }}
+        {% for orthvar_form in orthvar_formset.forms %}
+            <table>
+                {{ orthvar_form }}
+            </table>
+        {% endfor %}
+
+        <table>
+            {{ entry_form }}
+        </table>
+
+        {{ etymology_formset.management_form }}
+        {% for etymology_form in etymology_formset.forms %}
+            <table>
+                {{ etymology_form }}
+            </table>
+        {% endfor %}
+
+
+        {{ meaning_formset.management_form }}
+        {{ example_management_form }}
+        {{ cntxt_management_form }}
+        {{ grfmnng_management_form }}
+        {{ grfex_management_form }}
+
+        {% for meaning_form in meaning_formset.forms %}
+
+            <table>
+                {{ meaning_form }}
+            </table>
+
+            {% for cntxt_form in meaning_form.cntxt_forms %}
+                <table>
+                    {{ cntxt_form }}
+                </table>
+            {% endfor %}
+
+            {% for grfmnng_form in meaning_form.grfmnng_forms %}
+                <table>
+                    {{ grfmnng_form }}
+                <table>
+            {% endfor %}
+
+            {% for example_form in meaning_form.example_forms %}
+                <table>
+                    {{ example_form }}
+                </table>
+
+                {% for grfex_form in example_form.grfex_forms %}
+                    <table>
+                        {{ grfex_form }}
+                    </table>
+                {% endfor %}
+
+            {% endfor %}
+
+        {% endfor %}
+        <input type="submit" value="Сохранить" />
+    </form>
+    <script>
+        var example_empty_form = "{{ example_empty_form|escapejs }}"
+    </script>
+{% endblock %}

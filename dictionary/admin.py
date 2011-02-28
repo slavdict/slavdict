@@ -122,17 +122,6 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
             }),
         )
 
-from slavdict.dictionary.models import ProperNoun
-class ProperNoun_Inline(admin.StackedInline):
-    model = ProperNoun
-    extra = 0
-    max_num = 1
-    fieldsets = (
-        (None, {
-            'fields': (('onym', 'canonical_name'), ('nom_sg', 'nom_pl')),
-            }),
-        )
-
 
 
 from slavdict.dictionary.models import Example
@@ -233,14 +222,17 @@ class AdminEntry(admin.ModelAdmin):
         (None, {
             'fields': (('civil_equivalent', 'part_of_speech', 'editor'),),
             }),
+        (None, {
+            'fields': ('uninflected',),}),
         (u'Для сущ.', {
             'fields': (('genitive', 'gender', 'tantum'),),
+            'classes': ('collapse',) } ),
+        (u'Имя собств.', {
+            'fields': (('onym', 'canonical_name'), ('nom_sg', 'nom_pl')),
             'classes': ('collapse',) } ),
         (u'Для прил.', {
             'fields': (('short_form', 'possessive'),),
             'classes': ('collapse',) } ),
-        (None, {
-            'fields': ('uninflected',),}),
         (u'Для глаг.', { 'fields': (('sg1', 'sg2'),), 'classes': ('collapse',) } ),
         (u'Для прич.', { 'fields': ('participle_type',), 'classes': ('collapse',) } ),
         (u'Образовано от', { 'fields': ( 'derivation_entry',), 'classes': ( 'collapse',), }),
@@ -260,7 +252,6 @@ class AdminEntry(admin.ModelAdmin):
     inlines = (
         OrthVar_Inline,
         Etymology_Inline,
-        ProperNoun_Inline,
         )
     list_display = (
         'id',

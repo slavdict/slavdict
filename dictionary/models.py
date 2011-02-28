@@ -208,7 +208,46 @@ class Entry(models.Model, Meaningfull):
     def genitive_ucs(self):
         return ucs_convert_affix(self.genitive)
 
-    # proper_noun
+    onym = models.ForeignKey(
+        CategoryValue,
+        limit_choices_to = {'category__slug': 'onym'},
+        verbose_name = u'тип имени собственного',
+        blank = True,
+        null = True,
+        )
+
+    canonical_name = models.BooleanField(
+        u'каноническое',
+        default = False,
+        )
+
+    nom_sg = models.CharField(
+        u'м.р. Им.п. ед.ч',
+        help_text = u'''Только для этнонимов
+                        (например, в словарной статье АГАРЯНЕ,
+                        здесь -- АГАРЯНИН).''',
+        max_length = 25,
+        blank = True,
+        null = True,
+        )
+
+    nom_pl = models.CharField(
+        u'Им.п. мн.ч',
+        help_text = u'''Только для этнонимов
+                        (например, в словарной статье АГАРЯНИН,
+                        здесь -- АГАРЯНЕ).''',
+        max_length = 25,
+        blank = True,
+        null = True,
+        )
+
+    @property
+    def nom_sg_ucs_wax(self):
+        return ucs_affix_or_word(self.nom_sg)
+
+    @property
+    def nom_pl_ucs_wax(self):
+        return ucs_affix_or_word(self.nom_pl)
 
     # только для прилагательных
     short_form = models.CharField(
@@ -367,16 +406,11 @@ class Entry(models.Model, Meaningfull):
 
     @property
     def etymologies(self):
-        return self.etymology_set.filter(etymon_to__isnull=True).order_by('id')
+        return self.etymology_set.filter(etymon_to__isnull=True).order_by('order', 'id')
 
     @property
     def collogroups(self):
         return self.collocationgroup_set.all().order_by('id')
-
-    @property
-    def proper_noun(self):
-        pn = self.propernoun_set.all()
-        return pn[0] if pn else None
 
     # административная информация
     status = models.ForeignKey(
@@ -536,57 +570,6 @@ class Etymology(models.Model):
         verbose_name = u'этимон'
         verbose_name_plural = u'этимология'
         ordering = ('id',)
-
-
-class ProperNoun(models.Model):
-
-    entry = models.ForeignKey(Entry)
-
-    onym = models.ForeignKey(
-        CategoryValue,
-        limit_choices_to = {'category__slug': 'onym'},
-        verbose_name = u'тип имени собственного',
-        )
-
-    canonical_name = models.BooleanField(
-        u'каноническое',
-        default = False,
-        )
-
-    nom_sg = models.CharField(
-        u'м.р. Им.п. ед.ч',
-        help_text = u'''Только для этнонимов
-                        (например, в словарной статье АГАРЯНЕ,
-                        здесь -- АГАРЯНИН).''',
-        max_length = 25,
-        blank = True,
-        null = True,
-        )
-
-    nom_pl = models.CharField(
-        u'Им.п. мн.ч',
-        help_text = u'''Только для этнонимов
-                        (например, в словарной статье АГАРЯНИН,
-                        здесь -- АГАРЯНЕ).''',
-        max_length = 25,
-        blank = True,
-        null = True,
-        )
-
-    @property
-    def nom_sg_ucs_wax(self):
-        return ucs_affix_or_word(self.nom_sg)
-
-    @property
-    def nom_pl_ucs_wax(self):
-        return ucs_affix_or_word(self.nom_pl)
-
-    def __unicode__(self):
-        return u'<Имя собственное %s>' % self.id
-
-    class Meta:
-        verbose_name = u'имя собственное'
-        verbose_name_plural = u'имена собственные'
 
 
 class MeaningContext(models.Model):
@@ -1046,7 +1029,7 @@ class Collocation(models.Model):
 
     @property
     def etymologies(self):
-        return self.etymology_set.filter(etymon_to__isnull=True).order_by('id')
+        return self.etymology_set.filter(etymon_to__isnull=True).order_by('order', 'id')
 
     def __unicode__(self):
         return self.collocation
