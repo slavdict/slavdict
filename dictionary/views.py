@@ -10,6 +10,7 @@ from slavdict.dictionary.models import Entry, \
     GreekEquivalentForExample
 
 from dictionary.forms import RawValueWidget
+from django.db.models import Q
 
 def make_greek_found(request):
     from slavdict.dictionary.models import GreekEquivalentForExample, Example
@@ -48,6 +49,25 @@ def all_entries(request):
         {
             'entries': entries,
             'title': u'Все статьи',
+            'show_additional_info': 'ai' in request.COOKIES,
+            'user': request.user,
+        },
+
+        RequestContext(request),
+        )
+
+
+def test_entries(request):
+    grfexs = GreekEquivalentForExample.objects.filter(~Q(mark=u''))
+    entry_id_list = [grfex.for_example.meaning.entry_container.id for grfex in grfexs]
+    entries = Entry.objects.filter(id__in=entry_id_list).order_by('civil_equivalent', 'homonym_order')
+    return render_to_response(
+
+        'all_entries.html',
+
+        {
+            'entries': entries,
+            'title': u'Избранные статьи',
             'show_additional_info': 'ai' in request.COOKIES,
             'user': request.user,
         },
