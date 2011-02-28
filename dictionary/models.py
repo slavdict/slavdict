@@ -395,7 +395,7 @@ class Entry(models.Model, Meaningfull):
         return self.cf_collogroups.all()
 
     additional_info = models.TextField(
-        u'любая дополнительная информация',
+        u'примечание',
         help_text = u'''Любая дополнительная информация по данной ЛЕКСЕМЕ.
                         Дополнительная информация по значению лексемы или
                         примеру на значение указывается не здесь,
@@ -559,7 +559,7 @@ class Etymology(models.Model):
         )
 
     additional_info = models.TextField(
-        u'любая дополнительная информация',
+        u'примечание',
         blank = True,
         )
 
@@ -780,7 +780,7 @@ class Meaning(models.Model):
         )
 
     additional_info = models.TextField(
-        u'любая дополнительная информация',
+        u'примечание',
         help_text = u'''Любая дополнительная информация по данному
                         ЗНАЧЕНИЮ. Дополнительная информация по примеру
                         на значение или лексеме указывается не здесь,
@@ -892,7 +892,7 @@ class Example(models.Model):
         return self.greekequivalentforexample_set.all().order_by('id')
 
     additional_info = models.TextField(
-        u'любая дополнительная информация',
+        u'примечание',
         help_text = u'''Любая дополнительная информация
                         по данному ПРИМЕРУ. Дополнительная
                         информация по значению или лексеме
@@ -1065,6 +1065,13 @@ class GreekEquivalent(models.Model):
                         более узко, разные редакции
                         одного текста.''',
         max_length = 40,
+        blank = True,
+        )
+
+    additional_info = models.TextField(
+        u'примечание',
+        help_text = u'Любая дополнительная информация ' \
+                    u'по данному греческому эквиваленту.',
         blank = True,
         )
 

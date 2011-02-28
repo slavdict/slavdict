@@ -87,7 +87,7 @@ ETYMOLOGY_FIELDSETS = (
     (None,
         {'fields': ('language', ('text', 'translit'), ('meaning', 'gloss'), ('unclear', 'mark', 'source'))}
         ),
-    (u'Доп. инфо.',
+    (u'Примечание',
         {'fields': ('additional_info',),
         'classes': ('collapse',)}
         ),
@@ -110,6 +110,10 @@ class GreekEquivalentForMeaning_Inline(admin.StackedInline):
         (None, {
             'fields': (('text', 'mark', 'source'),),
             }),
+        (u'Примечание',
+            {'fields': ('additional_info',),
+            'classes': ('collapse',)}
+            ),
         )
 
 from slavdict.dictionary.models import GreekEquivalentForExample
@@ -120,6 +124,10 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
         (None, {
             'fields': (('text', 'mark'), 'source'),
             }),
+        (u'Примечание',
+            {'fields': ('additional_info',),
+            'classes': ('collapse',)}
+            ),
         )
 
 
@@ -138,7 +146,7 @@ Example.entry_for_example = funcTemp
 
 EXAMPLE_FIELDSETS = (
         (None, {'fields': (('example', 'address_text'), 'greek_eq_status')}),
-        (u'Доп. инфо.', {'fields': ('additional_info',), 'classes': ('collapse',)}),
+        (u'Примечание', {'fields': ('additional_info',), 'classes': ('collapse',)}),
     )
 
 class Example_Inline(admin.StackedInline):
@@ -195,7 +203,7 @@ class AdminMeaning(admin.ModelAdmin):
                 'classes': ('collapse',)}),
             (None,
                 {'fields': ('metaphorical', ('meaning', 'gloss'))}),
-            (u'Доп. инфо.',
+            (u'Примечание',
                 {'fields': ('additional_info',),
                 'classes': ('collapse',)}),
         )
@@ -242,7 +250,7 @@ class AdminEntry(admin.ModelAdmin):
         (u'Ср.',
             {'fields': (('cf_entries', 'cf_collogroups'), 'cf_meanings'),
             'classes': ('collapse',)}),
-        (u'Доп. инфо.', {
+        (u'Примечание', {
             'fields':  ('additional_info',),
             'classes': ('collapse',) }),
         (u'Адм. инфо.', {

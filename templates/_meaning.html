@@ -40,7 +40,13 @@
     {% if m.meaning %}>,{% endif %}
     {% for ge in m.greek_equivs %}
         <span class="grec">{{ ge.text }}</span
-        {% if ge.mark %}> (<i>{{ ge.mark }}</i><span>)<span{% endif %}{% if not forloop.last %}>, {% endif %}
+        {% if ge.mark %}> (<i>{{ ge.mark }}</i><span>)<span{% endif %}{% if not forloop.last %}>{% if show_additional_info and ge.additional_info %}
+            <span class="ai ai-grfmnng">{{ ge.additional_info }}</span>{% endif %}, {% else %}
+            {% if show_additional_info and ge.additional_info %}
+            >
+                        <span class="ai ai-grfmnng">{{ ge.additional_info }}</span
+            {% endif %}
+        {% endif %}
     {% endfor %}
 {% endif %}
 

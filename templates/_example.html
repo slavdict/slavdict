@@ -3,7 +3,9 @@
     &mdash;
     {% for ge in e.greek_equivs %}
         <span class="grec">{{ ge.text }}</span
-        >{%if ge.mark %} <i>{{ ge.mark }}</i>{% endif %}{% if not forloop.last %},{% endif %}
+        >{%if ge.mark %} <i>{{ ge.mark }}</i>{% endif %}{% if show_additional_info and ge.additional_info %}
+            <span class="ai ai-grfex">{{ ge.additional_info }}</span>
+        {% endif %}{% if not forloop.last %},{% endif %}
     {% endfor %}
 {% endif %}
 
