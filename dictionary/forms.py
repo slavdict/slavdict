@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
-from django.forms import ModelForm, HiddenInput
+from django.forms import ModelForm, \
+    HiddenInput, TextInput
 from django.forms.models import inlineformset_factory
 
 from dictionary.models import Entry, Meaning, Example, \
@@ -66,6 +67,8 @@ class OrthVarForm(ModelForm):
         widgets = {
             'entry': HiddenInput,
             'order': HiddenInput,
+
+            'idem': TextInput(attrs={'class':'x5 y1 antconsol'}),
         }
 
 class EtymologyForm(ModelForm):
