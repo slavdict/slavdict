@@ -24,7 +24,7 @@
                     {% if entry.possessive %}<i>притяж.</i>{% endif %}
                     {% if entry.participle_type %}<i>{{ entry.participle_type.tag }}</i>{% else %}<i>{{ entry.part_of_speech.tag }}</i
                     >{% endif %}{% if entry.gender %}, <i>{{ entry.gender.tag }}</i>{% endif %}
-                    {% if entry.tantum %}<i>только {{ entry.tantum.tag }}</i>{% endif %}
+                    {% if entry.tantum %}<i>{{ entry.tantum.tag }}</i>{% endif %}
 
                     {% if entry.derivation_entry %}
                         {% if entry.possessive %}
@@ -84,7 +84,7 @@
                             {% endif %}
                         {% endif %}
                         {% if entry.onym.slug == 'toponym' %}
-                            <i>геогр.</i>
+                            <i>топоним</i>
                         {% endif %}
                     {% endspaceless %}
 
