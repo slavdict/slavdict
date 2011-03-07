@@ -11,7 +11,9 @@ from slavdict.dictionary.models import Entry, \
 
 from dictionary.forms import RawValueWidget
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def make_greek_found(request):
     from slavdict.dictionary.models import GreekEquivalentForExample, Example
     greqlist = GreekEquivalentForExample.objects.all() # Выбираем все греч. параллели для примеров.
@@ -28,6 +30,7 @@ def make_greek_found(request):
     return response
 
 
+@login_required
 def all_entries(request):
     entries = Entry.objects.all().order_by('civil_equivalent', 'homonym_order')
     return render_to_response(
@@ -45,6 +48,7 @@ def all_entries(request):
         )
 
 
+@login_required
 def test_entries(request):
     grfexs = GreekEquivalentForExample.objects.filter(~Q(mark=u''))
     entry_id_list = [grfex.for_example.meaning.entry_container.id for grfex in grfexs]
@@ -64,6 +68,7 @@ def test_entries(request):
         )
 
 
+@login_required
 def greek_to_find(request):
     # Обеспечиваем то, чтобы поля статуса параллей у примеров с параллелями
     # были отличны от u'L' (статус "необходимо найти параллели")
@@ -107,6 +112,7 @@ def greek_to_find(request):
         )
 
 
+@login_required
 def single_entry(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
     return render_to_response(
@@ -124,6 +130,7 @@ def single_entry(request, entry_id):
         )
 
 
+@login_required
 def last_entry(request):
     error = False
     try:
@@ -147,6 +154,7 @@ def last_entry(request):
         )
 
 
+@login_required
 def switch_additional_info(request):
     referer = request.META.get('HTTP_REFERER', '/')
     response = redirect(referer)
@@ -164,6 +172,7 @@ from slavdict.dictionary.forms import EntryForm, \
     MeaningForm, ExampleForm, OrthVarForm, EtymologyForm, \
     MnngCntxtForm, GrEqForMnngForm, GrEqForExForm
 
+@login_required
 def change_entry(request, entry_id):
 
     entry = get_object_or_404(Entry, pk=entry_id)

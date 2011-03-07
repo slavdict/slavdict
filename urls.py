@@ -14,6 +14,7 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('',
     url( r'^$', 'slavdict.dictionary.views.last_entry', name='last_entry' ),
+    url( r'^accounts/login/$', 'django.contrib.auth.views.login'),
     url( r'^entries/$', 'slavdict.dictionary.views.all_entries', name='all_entries_url' ),
     url( r'^entries/test/$', 'slavdict.dictionary.views.test_entries' ),
     url( r'^entries/greek-to-find/$', 'slavdict.dictionary.views.greek_to_find' ),
