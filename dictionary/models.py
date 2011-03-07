@@ -903,7 +903,7 @@ class Example(models.Model):
         )
 
     GREEK_EQ_STATUS = (
-        (u'L', u'следует найти'),   # look at
+        (u'L', u'следует найти'),   # look for
         (u'S', u'не нужны'),        # stop
         (u'A', u'проверить'),       # audit
         (u'C', u'уточнить адрес'),  # check the address

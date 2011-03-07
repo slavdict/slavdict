@@ -19,26 +19,14 @@ def make_greek_found(request):
     # Присваеваем полю статуса греч. параллелей для каждого примера значение "найдены".
     # И сохраняем каждый пример из списка.
     for ex in exlist:
-        ex.greek_eq_status = u'F'
-        ex.save()
+        if ex.greek_eq_status == u'L':
+            ex.greek_eq_status = u'F'
+            ex.save()
     # Перенаправляем на ту страницу, с которой пользователь пришёл, либо на заглавную страницу.
     referer = request.META.get('HTTP_REFERER', '/')
     response = redirect(referer)
     return response
 
-def make_greek_found(request):
-    from slavdict.dictionary.models import GreekEquivalentForExample, Example
-    greqlist = GreekEquivalentForExample.objects.all() # Выбираем все греч. параллели для примеров.
-    exlist = [g.for_example for g in greqlist] # Создаём для них список примеров, к которым они относятся.
-    # Присваеваем полю статуса греч. параллелей для каждого примера значение "найдены".
-    # И сохраняем каждый пример из списка.
-    for ex in exlist:
-        ex.greek_eq_status = u'F'
-        ex.save()
-    # Перенаправляем на ту страницу, с которой пользователь пришёл, либо на заглавную страницу.
-    referer = request.META.get('HTTP_REFERER', '/')
-    response = redirect(referer)
-    return response
 
 def all_entries(request):
     entries = Entry.objects.all().order_by('civil_equivalent', 'homonym_order')
@@ -68,6 +56,49 @@ def test_entries(request):
         {
             'entries': entries,
             'title': u'Избранные статьи',
+            'show_additional_info': 'ai' in request.COOKIES,
+            'user': request.user,
+        },
+
+        RequestContext(request),
+        )
+
+
+def greek_to_find(request):
+    # Обеспечиваем то, чтобы поля статуса параллей у примеров с параллелями
+    # были отличны от u'L' (статус "необходимо найти параллели")
+    from slavdict.dictionary.models import GreekEquivalentForExample, Example
+    greqlist = GreekEquivalentForExample.objects.all() # Выбираем все греч. параллели для примеров.
+    ex_list = [g.for_example for g in greqlist] # Создаём для них список примеров, к которым они относятся.
+    # Присваеваем полю статуса греч. параллелей для каждого примера значение "найдены".
+    # И сохраняем каждый пример из списка.
+    for ex in ex_list:
+        if ex.greek_eq_status == u'L':
+            ex.greek_eq_status = u'F'
+            ex.save()
+
+    # Выдаём все словарные статьи, для примеров которых найти греч. параллели
+    # необходимо.
+    status_list = (u'L',)
+    #status_list = (u'L', u'A', u'C', u'N')
+    ex_list = Example.objects.filter(greek_eq_status__in=status_list)
+
+    entry_list = [
+        ex.meaning.entry_container or \
+        ex.meaning.collogroup_container.base_entry or \
+        ex.meaning.collogroup_container.base_meaning.entry_container
+        for ex in ex_list
+        ]
+    entry_id_list = [e.id for e in entry_list]
+
+    entries = Entry.objects.filter(id__in=entry_id_list).order_by('civil_equivalent', 'homonym_order')
+    return render_to_response(
+
+        'all_entries.html',
+
+        {
+            'entries': entries,
+            'title': u'Статьи, для примров которых необходимо найти греческие параллели',
             'show_additional_info': 'ai' in request.COOKIES,
             'user': request.user,
         },
