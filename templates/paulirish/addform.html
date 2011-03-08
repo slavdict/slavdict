@@ -164,6 +164,15 @@
             </div>
 
         </div>
+
+
+
+        <div class="x21">
+            <textarea class="x10 y4 antconsol" id="x-antconsol"></textarea>
+            <textarea class="x10 y4 prepend-1 cslav" id="x-cslav" style="line-height: 20px;"></textarea>
+        </div>
+
+
     </form>
 
   </div> <!--! end of #container -->
@@ -258,6 +267,11 @@
 
         $('input[name="part_of_speech"]').click(POSspec).dblclick(POSspec);
         $('input[name="part_of_speech"]:checked').each(POSspec);
+
+
+        $('#x-antconsol').keyup(function(){
+            $('#x-cslav').html(antconc_ucs8($(this).val(), false));
+        });
     });
   </script>
 
