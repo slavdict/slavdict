@@ -1,0 +1,6 @@
+<uwsgi>
+    <socket>127.0.0.1:3031</socket>
+    <pythonpath>/var/www/slavdict/</pythonpath>
+    <pythonpath>/var/www/</pythonpath>
+    <module>wsgi.django_wsgi</module>
+</uwsgi>
