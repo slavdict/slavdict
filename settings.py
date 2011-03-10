@@ -49,6 +49,10 @@ LANGUAGE_CODE = 'ru'
 # to load the internationalization machinery.
 USE_I18N = True
 
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_URL = '/logout/'
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = ROOT + 'media/'

@@ -164,6 +164,16 @@ class AdminExample(admin.ModelAdmin):
     list_display_links = ('id', 'example')
     list_editable = ('greek_eq_status',)
     list_filter = ('greek_eq_status',)
+    search_fields = (
+        'example',
+        'address_text',
+        'meaning__meaning',
+        'meaning__gloss',
+        'meaning__entry_container__civil_equivalent',
+        'meaning__entry_container__orthographic_variants__idem',
+        'meaning__collogroup_container__collocation__civil_equivalent',
+        'meaning__collogroup_container__collocation__collocation',
+        )
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
 
@@ -213,6 +223,14 @@ class AdminMeaning(admin.ModelAdmin):
     ordering = ('-id',)
     list_display = ('id', '__unicode__')
     list_display_links = list_display
+    search_fields = (
+        'entry_container__civil_equivalent',
+        'entry_container__orthographic_variants__idem',
+        'collogroup_container__collocation__civil_equivalent',
+        'collogroup_container__collocation__collocation',
+        'meaning',
+        'gloss',
+        )
 
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
@@ -276,6 +294,8 @@ class AdminEntry(admin.ModelAdmin):
     list_filter = (
         'editor',
         )
+    list_editable = ('editor',)
+    search_fields = ('civil_equivalent', 'orthographic_variants__idem')
     filter_horizontal = ('cf_entries', 'cf_collogroups', 'cf_meanings')
     ordering = ('-id',)
     save_on_top = True
