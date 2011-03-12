@@ -36,3 +36,5 @@ table#result_list th,
 .text,
 .cslav
 { color: #0a0; }
+
+.blank { height: 1em; border: 0 solid #fff; }

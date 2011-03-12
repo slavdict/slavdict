@@ -74,20 +74,20 @@ class OrthVar_Inline(admin.StackedInline):
     extra = 1
     fieldsets = (
         (None, {
-            'fields': (('idem', 'is_reconstructed'),),
+            'fields': ('idem',),
             }),
         )
 
 from slavdict.dictionary.models import Etymology
 ETYMOLOGY_FIELDSETS = (
     (u'Является этимоном для др. этимона',
-        {'fields': (('etymon_to', 'questionable'),),
+        {'fields': ('etymon_to', 'questionable'),
         'classes': ('collapse',)}
         ),
     (None,
-        {'fields': ('language', ('text', 'translit'), ('meaning', 'gloss'), ('unclear', 'mark', 'source'))}
+        {'fields': ('language', 'text', 'translit', 'meaning', 'gloss', 'unclear', 'mark', 'source')}
         ),
-    (u'Примечание',
+    (u'Примечание к этимологии',
         {'fields': ('additional_info',),
         'classes': ('collapse',)}
         ),
@@ -108,9 +108,9 @@ class GreekEquivalentForMeaning_Inline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (None, {
-            'fields': (('text', 'mark', 'source'),),
+            'fields': ('text', 'mark', 'source'),
             }),
-        (u'Примечание',
+        (u'Примечание к параллели',
             {'fields': ('additional_info',),
             'classes': ('collapse',)}
             ),
@@ -122,9 +122,9 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (None, {
-            'fields': (('text', 'mark'), 'source'),
+            'fields': ('text', 'mark', 'source'),
             }),
-        (u'Примечание',
+        (u'Примечание к параллели',
             {'fields': ('additional_info',),
             'classes': ('collapse',)}
             ),
@@ -145,8 +145,8 @@ funcTemp.short_description = u'Лексема / Словосоч.'
 Example.entry_for_example = funcTemp
 
 EXAMPLE_FIELDSETS = (
-        (None, {'fields': (('example', 'address_text'), 'greek_eq_status')}),
-        (u'Примечание', {'fields': ('additional_info',), 'classes': ('collapse',)}),
+        (None, {'fields': ('example', 'address_text', 'greek_eq_status')}),
+        (u'Примечание к примеру', {'fields': ('additional_info',), 'classes': ('collapse',)}),
     )
 
 class Example_Inline(admin.StackedInline):
@@ -192,16 +192,13 @@ from slavdict.dictionary.models import Meaning
 Meaning.__unicode__=lambda self:meaning_with_entry(self)
 class AdminMeaning(admin.ModelAdmin):
     inlines = (
-        Example_Inline,
-        GreekEquivalentForMeaning_Inline,
         MeaningContext_Inline,
+        Example_Inline,
+        #GreekEquivalentForMeaning_Inline,
         )
     fieldsets = (
             (u'То, к чему значение относится',
                 {'fields': (('entry_container', 'collogroup_container'),)}),
-            (u'Если является подзначением',
-                {'fields': ('parent_meaning',),
-                'classes': ('collapse',)}),
             (u'См.',
                 {'fields': (('link_to_entry', 'link_to_collogroup'), 'link_to_meaning'),
                 'classes': ('collapse',)}),
@@ -209,10 +206,10 @@ class AdminMeaning(admin.ModelAdmin):
                 {'fields': (('cf_entries', 'cf_collogroups'), 'cf_meanings'),
                 'classes': ('collapse',)}),
             (u'В роли сущ.',
-                {'fields': (('substantivus', 'substantivus_type'),),
+                {'fields': ('substantivus', 'substantivus_type'),
                 'classes': ('collapse',)}),
             (None,
-                {'fields': ('metaphorical', ('meaning', 'gloss'))}),
+                {'fields': ('metaphorical', 'meaning', 'gloss')}),
             (u'Примечание',
                 {'fields': ('additional_info',),
                 'classes': ('collapse',)}),
@@ -242,38 +239,43 @@ from slavdict.dictionary.models import Entry
 Entry.__unicode__=lambda self: entry_with_orth_variants(self)
 class AdminEntry(admin.ModelAdmin):
     fieldsets = (
-        (u'Омонимия', {
-            'fields': (('homonym_order', 'homonym_gloss'),),
-            'classes': ('collapse',) } ),
         (None, {
-            'fields': (('civil_equivalent', 'part_of_speech', 'editor'),),
+            'fields': ('civil_equivalent',),
             }),
+        (None, {
+            'fields': ('part_of_speech',),
+            }),
+        (u'Омонимия', {
+            'fields': ('homonym_order', 'homonym_gloss'),
+            'classes': ('collapse',) } ),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
         (None, {
             'fields': ('uninflected',),}),
         (u'Для сущ.', {
-            'fields': (('genitive', 'gender', 'tantum'),),
+            'fields': ('genitive', 'gender', 'tantum'),
             'classes': ('collapse',) } ),
-        (u'Имя собств.', {
-            'fields': (('onym', 'canonical_name'), ('nom_sg', 'nom_pl')),
+        (u'Для имён собств.', {
+            'fields': ('onym', 'canonical_name', ('nom_sg', 'nom_pl')),
             'classes': ('collapse',) } ),
         (u'Для прил.', {
-            'fields': (('short_form', 'possessive'),),
+            'fields': ('short_form', 'possessive'),
             'classes': ('collapse',) } ),
-        (u'Для глаг.', { 'fields': (('sg1', 'sg2'),), 'classes': ('collapse',) } ),
+        (u'Для глаг.', { 'fields': ('sg1', 'sg2'), 'classes': ('collapse',) } ),
         (u'Для прич.', { 'fields': ('participle_type',), 'classes': ('collapse',) } ),
-        (u'Образовано от', { 'fields': ( 'derivation_entry',), 'classes': ( 'collapse',), }),
+        (None, { 'fields': ('derivation_entry',) }),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
         (u'См.',
-            {'fields': (('link_to_entry', 'link_to_collogroup'), 'link_to_meaning'),
+            {'fields': ('link_to_entry', 'link_to_collogroup', 'link_to_meaning'),
             'classes': ('collapse',)}),
         (u'Ср.',
-            {'fields': (('cf_entries', 'cf_collogroups'), 'cf_meanings'),
+            {'fields': ('cf_entries', 'cf_collogroups', 'cf_meanings'),
             'classes': ('collapse',)}),
-        (u'Примечание', {
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (u'Примечание к статье', {
             'fields':  ('additional_info',),
             'classes': ('collapse',) }),
-        (u'Адм. инфо.', {
-            'fields': (('status', 'percent_status', 'grequiv_status'),),
-            'classes': ('collapse',) }),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (None, { 'fields': ('editor', 'status') }),
         )
     inlines = (
         OrthVar_Inline,
@@ -314,7 +316,7 @@ from slavdict.dictionary.models import Collocation
 class AdminCollocation(admin.ModelAdmin):
     inlines = (EtymologyForCollocation_Inline,)
     fieldsets = (
-            (None, {'fields': (('collocation', 'civil_equivalent'),)}),
+            (None, {'fields': ('collocation', 'civil_equivalent')}),
         )
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}

@@ -107,7 +107,6 @@ class Entry(models.Model, Meaningfull):
     civil_equivalent = models.CharField(
         u'гражданское написание',
         max_length = 40,
-        blank = True,
         )
 
     @property
@@ -122,7 +121,10 @@ class Entry(models.Model, Meaningfull):
         )
 
     homonym_order = models.SmallIntegerField(
-        u'номер в случае омонимов',
+        u'номер омонима',
+        help_text = u'''Арабская цифра, например, 1, 2, 3...
+                        Поле заполняется только при наличии
+                        нескольких омонимов.''',
         blank = True,
         null = True,
         )
@@ -133,10 +135,10 @@ class Entry(models.Model, Meaningfull):
         return arabic2roman(ho) if ho else None
 
     homonym_gloss = models.CharField(
-        u'пояснение к омониму',
+        u'подсказка',
         max_length = 40,
         help_text = u'''Пояснение для различения омонимов, например:
-                        ВАРИТИ I (предварять), ВАРИТИ II (варить).
+                        «предварять» для ВАРИТИ I или «варить» для ВАРИТИ II.
                         Предполагается использовать только для служебных
                         целей, а не для отображения при словарных статьях.''',
         blank = True,
@@ -170,7 +172,7 @@ class Entry(models.Model, Meaningfull):
         )
 
     uninflected = models.BooleanField(
-        u'неизменяемое (для сущ./прил.)',
+        u'неизменяемое (для сущ. и прил.)',
         default = False,
         )
 
@@ -183,6 +185,7 @@ class Entry(models.Model, Meaningfull):
     # только для существительных
     tantum = models.ForeignKey(
         CategoryValue,
+        verbose_name = u'число',
         limit_choices_to = {'category__slug': 'tantum'},
         related_name = 'entries_of_tantum',
         blank = True,
@@ -191,7 +194,7 @@ class Entry(models.Model, Meaningfull):
 
     gender = models.ForeignKey(
         CategoryValue,
-        verbose_name = u'грам. род',
+        verbose_name = u'род',
         limit_choices_to = {'category__slug': 'gender'},
         related_name = 'entries_of_gender',
         blank = True,
@@ -199,7 +202,7 @@ class Entry(models.Model, Meaningfull):
         )
 
     genitive = models.CharField(
-        u'окончание Р.п.',
+        u'окончание Р. падежа',
         max_length = 10,
         blank = True,
         )
@@ -222,7 +225,7 @@ class Entry(models.Model, Meaningfull):
         )
 
     nom_sg = models.CharField(
-        u'м.р. Им.п. ед.ч',
+        u'И.ед.м.',
         help_text = u'''Только для этнонимов
                         (например, в словарной статье АГАРЯНЕ,
                         здесь -- АГАРЯНИН).''',
@@ -232,7 +235,7 @@ class Entry(models.Model, Meaningfull):
         )
 
     nom_pl = models.CharField(
-        u'Им.п. мн.ч',
+        u'И.мн.',
         help_text = u'''Только для этнонимов
                         (например, в словарной статье АГАРЯНИН,
                         здесь -- АГАРЯНЕ).''',
@@ -280,7 +283,7 @@ class Entry(models.Model, Meaningfull):
         )
 
     sg1 = models.CharField(
-        u'форма 1sg',
+        u'форма 1 ед.',
         max_length = 20,
         blank = True,
         help_text = u'''Целая словоформа или окончание.
@@ -293,7 +296,7 @@ class Entry(models.Model, Meaningfull):
         return ucs_affix_or_word(self.sg1)
 
     sg2 = models.CharField(
-        u'форма 2sg',
+        u'форма 2 ед.',
         max_length = 20,
         blank = True,
         help_text = u'''Целая словоформа или окончание.
@@ -395,7 +398,7 @@ class Entry(models.Model, Meaningfull):
         return self.cf_collogroups.all()
 
     additional_info = models.TextField(
-        u'примечание',
+        u'примечание к статье',
         help_text = u'''Любая дополнительная информация по данной ЛЕКСЕМЕ.
                         Дополнительная информация по значению лексемы или
                         примеру на значение указывается не здесь,
@@ -428,7 +431,7 @@ class Entry(models.Model, Meaningfull):
 
     editor = models.ForeignKey(
         CustomUser,
-        verbose_name = u'редактор статьи',
+        verbose_name = u'автор статьи',
         blank = True,
         null = True,
         )
@@ -461,7 +464,7 @@ class Entry(models.Model, Meaningfull):
 
     class Meta:
         verbose_name = u'словарная статья'
-        verbose_name_plural = u'1) СЛОВАРНЫЕ СТАТЬИ'
+        verbose_name_plural = u'СЛОВАРНЫЕ СТАТЬИ'
         ordering = ('-id',)
 
 
@@ -518,7 +521,7 @@ class Etymology(models.Model):
         )
 
     translit = models.CharField(
-        u'траслит.',
+        u'траслитерация',
         max_length = 40,
         blank = True,
         )
@@ -765,7 +768,7 @@ class Meaning(models.Model):
         help_text = u'''Для неметафорических употреблений/прямых значений
                         здесь указывается энциклопедическая информация.
                         Для метафорических/переносных -- (?) разнообразная
-                        дополнительная информация, коментарии к употреблению.''',
+                        дополнительная информация, комментарии к употреблению.''',
         blank = True,
         )
 
@@ -774,7 +777,7 @@ class Meaning(models.Model):
     substantivus_type = models.ForeignKey(
         CategoryValue,
         limit_choices_to = {'category__slug': 'substantivus'},
-        verbose_name = u'тип субстантива',
+        verbose_name = u'форма субстантива',
         blank = True,
         null = True,
         )
@@ -810,7 +813,7 @@ class Meaning(models.Model):
 
     class Meta:
         verbose_name = u'значение'
-        verbose_name_plural = u'2) ЗНАЧЕНИЯ'
+        verbose_name_plural = u'ЗНАЧЕНИЯ'
         ordering = ('id',)
 
 
@@ -923,7 +926,7 @@ class Example(models.Model):
 
     class Meta:
         verbose_name = u'пример'
-        verbose_name_plural = u'3) ПРИМЕРЫ'
+        verbose_name_plural = u'ПРИМЕРЫ'
         ordering = ('id',)
 
 
@@ -996,7 +999,7 @@ class CollocationGroup(models.Model, Meaningfull):
 
     class Meta:
         verbose_name = u'группа словосочетаний'
-        verbose_name_plural = u'4) ГРУППЫ СЛОВОСОЧЕТАНИЙ'
+        verbose_name_plural = u'ГРУППЫ СЛОВОСОЧЕТАНИЙ'
         ordering = ('-id',)
 
 
@@ -1037,7 +1040,7 @@ class Collocation(models.Model):
 
     class Meta:
         verbose_name = u'словосочетание'
-        verbose_name_plural = u'5) ОТДЕЛЬНЫЕ СЛОВОСОЧЕТАНИЯ'
+        verbose_name_plural = u'ОТДЕЛЬНЫЕ СЛОВОСОЧЕТАНИЯ'
         ordering = ('id',)
 
 
