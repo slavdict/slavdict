@@ -1,12 +1,18 @@
-{% extends "admin/base_site.html" %}
-{% load i18n %}
+{% extends "error.html" %}
+{% block title %}Страница не найдена{% endblock %}
+{% block main %}
+    <div class="message">
+        К сожалению, запрошенная Вами страница не найдена.
+    </div>
 
-{% block title %}{% trans 'Page not found' %}{% endblock %}
+    <p>Проверьте написание адреса страницы. Возможно, в него закралась ошибка
+    или опечатка, например, <b>ww</b>.example.org/about/ вместо
+    <b>www</b>.example.org/about/.</p>
 
-{% block content %}
+    <p>Вероятно также, что страница никогда не существовала или была перемещена
+    администратором и теперь доступна по другому адресу.</p>
 
-<h2>{% trans 'Page not found' %}</h2>
+    <p>Можете вернуться на <a href="javascript:history.back();">предыдущую страницу</a>.</p>
 
-<p>{% trans "We're sorry, but the requested page could not be found." %}</p>
-
-{% endblock %}
+    <p>Или перейти на <a href="/">начальную страницу сайта</a>.</p>
+{% endblock main %}
