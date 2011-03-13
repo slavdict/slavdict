@@ -71,7 +71,7 @@ def entry_for_example(obj):
 from slavdict.dictionary.models import OrthographicVariant
 class OrthVar_Inline(admin.StackedInline):
     model = OrthographicVariant
-    extra = 1
+    extra = 0
     fieldsets = (
         (None, {
             'fields': ('idem',),
@@ -162,7 +162,7 @@ class AdminExample(admin.ModelAdmin):
     ordering = ('-id',)
     list_display = ('entry_for_example', 'meaning_for_example', 'id', 'example', 'address_text', 'greek_eq_status')
     list_display_links = ('id', 'example')
-    list_editable = ('greek_eq_status',)
+    list_editable = ('greek_eq_status', 'address_text')
     list_filter = ('greek_eq_status',)
     search_fields = (
         'example',
@@ -176,6 +176,7 @@ class AdminExample(admin.ModelAdmin):
         )
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
+        js = (settings.MEDIA_URL + "fix_admin.js",)
 
 admin.site.register(Example, AdminExample)
 
@@ -210,7 +211,8 @@ class AdminMeaning(admin.ModelAdmin):
                 'classes': ('collapse',)}),
             (None,
                 {'fields': ('metaphorical', 'meaning', 'gloss')}),
-            (u'Примечание',
+            (None, { 'fields': tuple(), 'classes': ('blank',) }),
+            (u'Примечание к значению',
                 {'fields': ('additional_info',),
                 'classes': ('collapse',)}),
         )
@@ -231,6 +233,7 @@ class AdminMeaning(admin.ModelAdmin):
 
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
+        js = (settings.MEDIA_URL + "fix_admin.js",)
 
 admin.site.register(Meaning, AdminMeaning)
 
@@ -255,13 +258,14 @@ class AdminEntry(admin.ModelAdmin):
             'fields': ('genitive', 'gender', 'tantum'),
             'classes': ('collapse',) } ),
         (u'Для имён собств.', {
-            'fields': ('onym', 'canonical_name', ('nom_sg', 'nom_pl')),
+            'fields': ('onym', 'canonical_name', 'nom_sg'),
             'classes': ('collapse',) } ),
         (u'Для прил.', {
             'fields': ('short_form', 'possessive'),
             'classes': ('collapse',) } ),
         (u'Для глаг.', { 'fields': ('sg1', 'sg2'), 'classes': ('collapse',) } ),
         (u'Для прич.', { 'fields': ('participle_type',), 'classes': ('collapse',) } ),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
         (None, { 'fields': ('derivation_entry',) }),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
         (u'См.',
@@ -295,6 +299,7 @@ class AdminEntry(admin.ModelAdmin):
         )
     list_filter = (
         'editor',
+        'status',
         )
     list_editable = ('editor',)
     search_fields = ('civil_equivalent', 'orthographic_variants__idem')
@@ -305,6 +310,7 @@ class AdminEntry(admin.ModelAdmin):
 
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
+        js = (settings.MEDIA_URL + "fix_admin.js",)
 
 admin.site.register(Entry, AdminEntry)
 
@@ -320,6 +326,7 @@ class AdminCollocation(admin.ModelAdmin):
         )
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
+        js = (settings.MEDIA_URL + "fix_admin.js",)
 
 admin.site.register(Collocation, AdminCollocation)
 
@@ -350,5 +357,6 @@ class AdminCollocationGroup(admin.ModelAdmin):
     list_display_links = list_display
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
+        js = (settings.MEDIA_URL + "fix_admin.js",)
 
 admin.site.register(CollocationGroup, AdminCollocationGroup)

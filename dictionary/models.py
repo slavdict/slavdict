@@ -268,8 +268,9 @@ class Entry(models.Model, Meaningfull):
         return ucs_affix_or_word(self.short_form)
 
     possessive = models.BooleanField(
-        u'притяжательное прилагательное',
+        u'притяжательное',
         default = False,
+        help_text = u'Притяжательное прилагательное.',
         )
 
     # только для глаголов
@@ -592,8 +593,8 @@ class MeaningContext(models.Model):
         u'дополнительный текст слева',
         max_length = 20,
         help_text = u'''Здесь указывается текст на <span class="green">русском</span> языке.
-                        Например, если необходим контекст «<span class="text">+</span
-                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="text">кому/чему</span>»,
+                        Например, если необходим контекст «<span class="civil">+</span
+                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
                         в данное поле добавляется текст&nbsp;«<span class="typing">+</span>».''',
         blank = True,
         # пока непонятно будет ли это поле использоваться, т.к.
@@ -604,8 +605,8 @@ class MeaningContext(models.Model):
         u'текст контекста',
         max_length = 40,
         help_text = u'''Здесь указывается <span class="green">церковнославянский</span> текст.
-                        Например, если необходим контекст «<span class="text">+</span
-                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="text">кому/чему</span>»,
+                        Например, если необходим контекст «<span class="civil">+</span
+                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
                         в данное поле добавляется текст&nbsp;«<span class="typing">къ</span>».''',
         blank = True,
         )
@@ -618,8 +619,8 @@ class MeaningContext(models.Model):
         u'дополнительный текст справа',
         max_length = 20,
         help_text = u'''Здесь указывается текст на <span class="green">русском</span> языке.
-                        Например, если необходим контекст «<span class="text">+</span
-                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="text">кому/чему</span>»,
+                        Например, если необходим контекст «<span class="civil">+</span
+                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
                         в данное поле добавляется текст&nbsp;«<span class="typing">кому/чему</span>».''',
         blank = True,
         )
