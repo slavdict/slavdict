@@ -2,6 +2,41 @@ label { width: 10em !important; text-align: right; }
 p.help { width: 300px !important; margin-left: 9em !important; }
 /* div > input[type="checkbox"] { margin-left: 12em !important; } */
 
+table#result_list td,
+table#result_list th,
+.antconsol { font-family: AntConSol; }
+.typing { font-family: AntConSol; font-size: larger; }
+.civil { font-family: "Times New Roman", serif; font-size: 10pt; font-style: italic;}
+.cslav { font-family: "Triodion Ucs"; font-size: 14pt; }
+
+.green,
+.typing,
+.civil,
+.cslav
+{ color: #0a0; }
+
+.blank { height: 1em; border: 0 solid #fff; }
+.help { display: none; }
+label.required { font-weight: normal !important; }
+label.required:after { content: "*"; }
+body { font-family: Vardana, Arial, sans-serif; }
+
+#greekequivalentforexample_set-group .inline-related .inline_label,
+#greekequivalentforexample_set-group .inline-related .text input {
+    font-family: 'SIL Ulysses';
+    font-size: larger;
+}
+
+textarea#id_example,
+#example_set-group .example textarea {
+    font-family: AntConSol;
+}
+
+
+
+
+
+
 @font-face {
     font-family: 'AntConSol';
     src: url('/site-media/fonts/antconsol-webfont.eot');
@@ -141,34 +176,3 @@ p.help { width: 300px !important; margin-left: 9em !important; }
 }
 /* 'Estrangelo Edessa' */
 
-
-table#result_list td,
-table#result_list th,
-.antconsol { font-family: AntConSol; }
-.typing { font-family: AntConSol; font-size: larger; }
-.civil { font-family: "Times New Roman", serif; font-size: 10pt; font-style: italic;}
-.cslav { font-family: "Triodion Ucs"; font-size: 14pt; }
-
-.green,
-.typing,
-.civil,
-.cslav
-{ color: #0a0; }
-
-.blank { height: 1em; border: 0 solid #fff; }
-.help { display: none; }
-label.required { font-weight: normal !important; }
-label.required:after { content: "*"; }
-body { font-family: Vardana, Arial, sans-serif; }
-
-
-#greekequivalentforexample_set-group .inline-related .inline_label,
-#greekequivalentforexample_set-group .inline-related .text input {
-    font-family: 'SIL Ulysses';
-    font-size: larger;
-}
-
-textarea#id_example,
-#example_set-group .example textarea {
-    font-family: AntConSol;
-}
