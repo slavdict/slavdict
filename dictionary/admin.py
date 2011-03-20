@@ -296,6 +296,7 @@ class AdminEntry(admin.ModelAdmin):
         '__unicode__',
         'editor',
         'status',
+        'part_of_speech',
         )
     list_display_links = (
         'id',
@@ -305,6 +306,7 @@ class AdminEntry(admin.ModelAdmin):
     list_filter = (
         'editor',
         'status',
+        'part_of_speech',
         )
     list_editable = (
         'editor',
