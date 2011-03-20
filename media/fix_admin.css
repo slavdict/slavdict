@@ -17,6 +17,7 @@ table#result_list th,
 
 .blank { height: 1em; border: 0 solid #fff; }
 .help { display: none; }
+.hidden { display: none; }
 label.required { font-weight: normal !important; }
 label.required:after { content: "*"; }
 body { font-family: Vardana, Arial, sans-serif; }
@@ -28,10 +29,21 @@ body { font-family: Vardana, Arial, sans-serif; }
 }
 
 textarea#id_example,
-#example_set-group .example textarea {
+#example_set-group .example textarea,
+#orthographic_variants-group .idem input,
+input#id_nom_sg,
+input#id_genitive,
+input#id_short_form,
+input#id_sg1,
+input#id_sg2
+{
     font-family: AntConSol;
 }
 
+.canonical_name,
+.nom_sg {
+    display: none;
+}
 
 
 

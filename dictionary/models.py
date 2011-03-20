@@ -172,7 +172,7 @@ class Entry(models.Model, Meaningfull):
         )
 
     uninflected = models.BooleanField(
-        u'неизменяемое (для сущ. и прил.)',
+        u'неизменяемое', # Для сущ. и прил.
         default = False,
         )
 

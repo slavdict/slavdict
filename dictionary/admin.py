@@ -252,19 +252,24 @@ class AdminEntry(admin.ModelAdmin):
             'fields': ('part_of_speech',),
             }),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (None, {
-            'fields': ('uninflected',),}),
-        (u'Для сущ.', {
+        (None, { # Для сущ. и прил.
+            'fields': ('uninflected',),
+            'classes': ('hidden noun adjective',) } ),
+        (None, { # Для сущ.
             'fields': ('genitive', 'gender', 'tantum'),
-            'classes': ('collapse',) } ),
-        (u'Для имен собств.', {
+            'classes': ('hidden noun',) } ),
+        (None, { # Для имен собств.
             'fields': ('onym', 'canonical_name', 'nom_sg'),
-            'classes': ('collapse',) } ),
-        (u'Для прил.', {
+            'classes': ('hidden noun',) } ),
+        (None, { # Для прил.
             'fields': ('short_form', 'possessive'),
-            'classes': ('collapse',) } ),
-        (u'Для глаг.', { 'fields': ('sg1', 'sg2'), 'classes': ('collapse',) } ),
-        (u'Для прич.', { 'fields': ('participle_type',), 'classes': ('collapse',) } ),
+            'classes': ('hidden adjective',) } ),
+        (None, { # Для глаг.
+            'fields': ('sg1', 'sg2'),
+            'classes': ('hidden verb',) } ),
+        (None, { # Для прич.
+            'fields': ('participle_type',),
+            'classes': ('hidden participle',) } ),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
         (None, { 'fields': ('derivation_entry',) }),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),

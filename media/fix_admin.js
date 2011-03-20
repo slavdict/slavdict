@@ -1,6 +1,7 @@
 (function($) {
     $(document).ready(function() {
 
+        /* Убираем у всех label двоеточия */
         $('label').each(function(){
             var x = $(this);
             var t = x.html();
@@ -8,6 +9,8 @@
             x.html(t);
         });
 
+        /* Для всех полей с галочками переносим ярлыки из расположения после
+         * галочки в расположение перед галочкой. */
         $('.vCheckboxLabel')
             .removeClass('vCheckboxLabel')
             .each(function(){
@@ -17,19 +20,29 @@
                 x.insertBefore(y);
         });
 
-
+        /* Переносим всю группу полей орфографических вариантов в расположение
+         * перед полем гражданского написания. */
         var x = $('#orthographic_variants-group').detach();
         var y = $('.civil_equivalent').parent('fieldset');
         x.insertBefore(y);
 
+        /* Переносим группу полей с этимологиями в расположение после поля
+         * "образовано от" (морфолгическая деривация). */
         x = $('#etymology_set-group').detach();
         y = $('.derivation_entry').parent('fieldset');
         x.insertAfter(y);
 
+        /* Переносим группу полей контекстов значения в расположение
+         * непосредственно перед полем значения. */
         x = $('#meaningcontext_set-group').detach();
         y = $('#id_meaning').closest('fieldset');
         x.insertAfter(y);
 
+
+        /* Для текста этимологии и для транслита устанавливаем нужные
+         * CSS-классы в зависимости от конкретного языка. Такая установка
+         * проводится и при загрузке страницы и вешается на событие изменения
+         * значения поля языка конкретной этимологии. */
         lang2cssclass = {
             '10': 'grec',
             '11': 'hebrew',
@@ -69,8 +82,62 @@
             changeLangCSSClass(x, v);
         });
 
-        function updateAddAnother(){
 
+        /* Скрываем и отображаем поля в зависимости от выбранной части речи. */
+        partsOfSpeech = {
+            "1": 'noun',
+            "2": 'verb',
+            "3": 'adjective',
+            "4": 'adverb',
+            "5": 'preposition',
+            "6": 'pronoun',
+            "7": 'conjunction',
+            "8": 'particle',
+            "9": 'interjection',
+            "40":'participle'
+        }
+
+        var v = $('select#id_part_of_speech').val();
+        if (v) {
+            $('.' + partsOfSpeech[v]).show();
+        }
+
+        $('select#id_part_of_speech').change(function(){
+            var v = $(this).val();
+            $('.noun, .verb, .adjective, .adverb, .preposition, .pronoun, .conjunction, .particle, .interjection, .participle').hide();
+            if (v) {
+                $('.' + partsOfSpeech[v]).show();
+            }
+        });
+
+
+        /* Скрываем или отображаем поля для выбранного типа имени собственного.
+         * */
+        onyms = {
+            "35": 'canonical_name', // имя
+            "36": '',               // топоним
+            "37": 'nom_sg',         // народ
+            "38": ''                // другое
+        }
+
+        v = $('select#id_onym').val();
+        if (v) {
+            $('.' + onyms[v]).show();
+        }
+
+        $('select#id_onym').change(function(){
+            var v = $(this).val();
+            $('.canonical_name, .nom_sg').hide();
+            if (v) {
+                $('.' + onyms[v]).show();
+            }
+        });
+
+        /* Действия, которые необходимо отложить хотя бы на секунду, чтобы они
+         * были успешно выполнены. */
+        function returnToPostponed(){
+
+            /* Заменяем все надписи "Добавить ещё один" на просто "Добавить". */
             $('div.add-row').each(function(){
                 var x = $(this).children('a');
                 var t = x.html();
@@ -78,13 +145,16 @@
                 x.html(t);
             });
 
+            /* Для орфографических вариантов если не добавлено ещё ни одного,
+             * то добавляем пустое поле. Если же уже есть один или более, то
+             * пустого поля не добавляем. */
             var c = $('#id_orthographic_variants-TOTAL_FORMS');
             if (c.val()==0){
                 $('#orthographic_variants-group').find('div.add-row a').click();
             }
 
         }
-        setTimeout(updateAddAnother, 1000);
+        setTimeout(returnToPostponed, 1000);
     });
 })(django.jQuery);
 
