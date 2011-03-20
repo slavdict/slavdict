@@ -245,19 +245,19 @@ class AdminEntry(admin.ModelAdmin):
         (None, {
             'fields': ('civil_equivalent',),
             }),
-        (None, {
-            'fields': ('part_of_speech',),
-            }),
         (u'Омонимия', {
             'fields': ('homonym_order', 'homonym_gloss'),
             'classes': ('collapse',) } ),
+        (None, {
+            'fields': ('part_of_speech',),
+            }),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
         (None, {
             'fields': ('uninflected',),}),
         (u'Для сущ.', {
             'fields': ('genitive', 'gender', 'tantum'),
             'classes': ('collapse',) } ),
-        (u'Для имён собств.', {
+        (u'Для имен собств.', {
             'fields': ('onym', 'canonical_name', 'nom_sg'),
             'classes': ('collapse',) } ),
         (u'Для прил.', {
@@ -289,8 +289,8 @@ class AdminEntry(admin.ModelAdmin):
         'id',
         'civil_equivalent',
         '__unicode__',
-        'part_of_speech',
         'editor',
+        'status',
         )
     list_display_links = (
         'id',
@@ -301,7 +301,10 @@ class AdminEntry(admin.ModelAdmin):
         'editor',
         'status',
         )
-    list_editable = ('editor',)
+    list_editable = (
+        'editor',
+        'status',
+        )
     search_fields = ('civil_equivalent', 'orthographic_variants__idem')
     filter_horizontal = ('cf_entries', 'cf_collogroups', 'cf_meanings')
     ordering = ('-id',)

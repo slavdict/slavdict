@@ -24,6 +24,124 @@ p.help { width: 300px !important; margin-left: 9em !important; }
         url('/site-media/fonts/TriIEUcs.svg#Triodion-ieUcs') format('svg');
 }
 
+@font-face {
+	font-family: 'SIL Ulysses';
+	src: url('/site-media/fonts/silur-webfont.eot');
+	src:
+        local('SIL Ulysses'),
+        local('☺'),
+        url('/site-media/fonts/silur-webfont.woff') format('woff'),
+        url('/site-media/fonts/silur-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'hebrew';
+	src: url('/site-media/fonts/hebrew-webfont.eot');
+	src:
+        local('hebrew'),
+        local('☺'),
+        url('/site-media/fonts/hebrew-webfont.woff') format('woff'),
+        url('/site-media/fonts/hebrew-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Hebrew-Russian!';
+	src: url('/site-media/fonts/heb-rus-webfont.eot');
+	src:
+        local('Hebrew-Russian!'),
+        local('☺'),
+        url('/site-media/fonts/heb-rus-webfont.woff') format('woff'),
+        url('/site-media/fonts/heb-rus-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Estrangelo Edessa';
+	src: url('/site-media/fonts/estre-webfont.eot');
+	src:
+        local('Estrangelo Edessa'),
+        local('☺'),
+        url('/site-media/fonts/estre-webfont.woff') format('woff'),
+        url('/site-media/fonts/estre-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'GEO-LitNusx';
+	src: url('/site-media/fonts/ltzura2-webfont.eot');
+	src:
+        local('GEO-LitNusx'),
+        local('☺'),
+        url('/site-media/fonts/ltzura2-webfont.woff') format('woff'),
+        url('/site-media/fonts/ltzura2-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'SPEdessa';
+	src: url('/site-media/fonts/spedessa-webfont.eot');
+	src:
+        local('SPEdessa'),
+        local('☺'),
+        url('/site-media/fonts/spedessa-webfont.woff') format('woff'),
+        url('/site-media/fonts/spedessa-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Coptic';
+	src: url('/site-media/fonts/coptic2-webfont.eot');
+	src:
+        local('Coptic'),
+        local('☺'),
+        url('/site-media/fonts/coptic2-webfont.woff') format('woff'),
+        url('/site-media/fonts/coptic2-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+.grec {
+    font-family: 'SIL Ulysses';
+    font-size: larger;
+}
+
+.hebrew,
+.aramaic {
+    font-family: 'hebrew';
+    font-size: larger;
+}
+
+.hebrew-translit,
+.syriac-translit,
+.aramaic-translit {
+    font-family: 'Hebrew-Russian!';
+}
+
+.akkadian {}
+.armenian {}
+.georgian {
+    font-family: 'GEO-LitNusx';
+    font-size: larger;
+}
+.coptic {
+    font-family: Coptic;
+    font-size: larger;
+}
+.syriac {
+    font-family: 'SPEdessa';
+    font-size: larger;
+}
+/* 'Estrangelo Edessa' */
+
+
 table#result_list td,
 table#result_list th,
 .antconsol { font-family: AntConSol; }

@@ -22,9 +22,58 @@
         var y = $('.civil_equivalent').parent('fieldset');
         x.insertBefore(y);
 
+        x = $('#etymology_set-group').detach();
+        y = $('.derivation_entry').parent('fieldset');
+        x.insertAfter(y);
+
         x = $('#meaningcontext_set-group').detach();
         y = $('#id_meaning').closest('fieldset');
         x.insertAfter(y);
+
+        lang2cssclass = {
+            '10': 'grec',
+            '11': 'hebrew',
+            '16': 'akkadian',
+            '17': 'aramaic',
+            '18': 'armenian',
+            '19': 'georgian',
+            '20': 'coptic',
+            '21': 'latin',
+            '22': 'syriac'
+        }
+        langclsss1 = 'grec hebrew akkadian aramaic armenian georgian coptic latin syriac'
+        langclsss2 = 'grec-translit hebrew-translit akkadian-translit aramaic-translit armenian-translit georgian-translit coptic-translit latin-translit syriac-translit'
+
+        function changeLangCSSClass(x, v){
+            if (v){
+                var c1 = lang2cssclass[v];
+                var c2 = c1 + '-translit';
+                x.nextAll('.text').find('input')
+                    .removeClass( langclsss1 )
+                    .addClass( c1 );
+                x.nextAll('.translit').find('input')
+                    .removeClass( langclsss2 )
+                    .addClass( c2 );
+            }
+        }
+
+        $('#etymology_set-group .form-row.language').each(function(){
+            var x = $(this);
+            var v = x.find('select').val();
+            changeLangCSSClass(x, v);
+        });
+        $('#etymology_set-group .form-row.language select').change(function(){
+            var i = $(this);
+            var x = i.closest('.form-row.language');
+            var v = i.val();
+            changeLangCSSClass(x, v);
+        });
+
+        $('#greekequivalentforexample_set-group .inline-related .inline_label').addClass('grec');
+        $('#greekequivalentforexample_set-group .inline-related .text input').addClass('grec');
+
+        $('textarea#id_example').addClass('antconsol');
+        $('#example_set-group .example textarea').addClass('antconsol');
 
         function updateAddAnother(){
 
