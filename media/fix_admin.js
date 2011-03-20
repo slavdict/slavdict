@@ -69,12 +69,6 @@
             changeLangCSSClass(x, v);
         });
 
-        $('#greekequivalentforexample_set-group .inline-related .inline_label').addClass('grec');
-        $('#greekequivalentforexample_set-group .inline-related .text input').addClass('grec');
-
-        $('textarea#id_example').addClass('antconsol');
-        $('#example_set-group .example textarea').addClass('antconsol');
-
         function updateAddAnother(){
 
             $('div.add-row').each(function(){

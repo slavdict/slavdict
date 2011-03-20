@@ -160,3 +160,15 @@ table#result_list th,
 label.required { font-weight: normal !important; }
 label.required:after { content: "*"; }
 body { font-family: Vardana, Arial, sans-serif; }
+
+
+#greekequivalentforexample_set-group .inline-related .inline_label,
+#greekequivalentforexample_set-group .inline-related .text input {
+    font-family: 'SIL Ulysses';
+    font-size: larger;
+}
+
+textarea#id_example,
+#example_set-group .example textarea {
+    font-family: AntConSol;
+}
