@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from django import forms
 from django.forms import ModelForm, \
     HiddenInput, TextInput
 from django.forms.models import inlineformset_factory
@@ -113,3 +114,7 @@ class RawValueWidget(Widget):
         if value is None:
             value = u''
         return mark_safe(unicode(value))
+
+
+class BilletImportForm(forms.Form):
+    csvfile = forms.FileField()
