@@ -45,6 +45,13 @@
                 border: 1px solid #fa9d8f;
                 color: #ea361c;
                 }
+            .form-error div { border-top: 1px solid #fa9d8f; }
+            .form-error div.first { border-top-width: 0; }
+
+            input[type="file"],
+            input[type="submit"] {
+                    margin-top: 10px;
+                }
         </style>
         <div class="main">
             {% block main %}{% endblock %}

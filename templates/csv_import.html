@@ -1,0 +1,29 @@
+{% extends "error.html" %}
+{% block title %}Импорт заготовок словарных статей{% endblock %}
+{% block main %}
+    {% if form.errors %}
+    <div class="form-error">
+        {% for error in form.non_field_errors %}
+            <div{% ifequal forloop.counter 1 %} class="first" {% endifequal %}>
+                {{ error }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post"
+        enctype="multipart/form-data"
+        action="" class="form">
+
+            {% csrf_token %}
+
+            Вы собираетесь создать в базе заготовки словарных статей на основе
+            информации из CSV-файла.
+
+            {{ form.csvfile.errors }}
+            {{ form.csvfile }}
+
+            <input type="submit" value="Импортировать" />
+
+    </form>
+{% endblock main %}

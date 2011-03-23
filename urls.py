@@ -25,6 +25,7 @@ urlpatterns += patterns('',
     url( r'^wiki/$', redirect_to, {'url': 'http://slavonic.pbworks.com/'} ),
     url( r'^switch/additional-info/', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
     url( r'^greek-found/', 'slavdict.dictionary.views.make_greek_found' ), # Впоследствии необходимо будет удалить.
+    url( r'^csv-import/', 'slavdict.dictionary.views.import_csv_billet' ),
 )
 
 try:

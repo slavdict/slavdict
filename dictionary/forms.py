@@ -118,3 +118,9 @@ class RawValueWidget(Widget):
 
 class BilletImportForm(forms.Form):
     csvfile = forms.FileField()
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        uploaded_file = cleaned_data.get('csvfile')
+        if not uploaded_file.name.upper().endswith('.CSV'):
+            raise forms.ValidationError(u'Выбранный вами файл «%s», похоже, не является CSV-файлом.' % uploaded_file.name)
+        return cleaned_data

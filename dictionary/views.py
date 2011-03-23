@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import RequestContext
-from slavdict.dictionary.models import Entry, \
+from dictionary.models import Entry, \
     Meaning, Example, OrthographicVariant, Etymology, \
     MeaningContext, GreekEquivalentForMeaning, \
     GreekEquivalentForExample
@@ -425,3 +425,26 @@ def change_entry(request, entry_id):
             'grfex_empty_form': grfex_formset.empty_form,
         },
         )
+
+
+
+from dictionary.forms import BilletImportForm
+from django.http import HttpResponseRedirect
+import csv
+sniffer = csv.Sniffer()
+
+@login_required
+def import_csv_billet(request):
+    if request.method == 'POST':
+        form = BilletImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            csvfile = request.FILES['csvfile']
+            dialect = sniffer.sniff(csvfile.read(65535))
+            csv_reader = csv.reader(csvfile, dialect)
+            lines = csv_reader
+            csvfile.close()
+            return render_to_response('csv_import_conflicts.html', {'lines': lines})
+            #return HttpResponseRedirect('/')
+    else:
+        form = BilletImportForm()
+    return render_to_response('csv_import.html', {'form': form})
