@@ -435,13 +435,45 @@ sniffer = csv.Sniffer()
 
 @login_required
 def import_csv_billet(request):
+
     if request.method == 'POST':
         form = BilletImportForm(request.POST, request.FILES)
         if form.is_valid():
+
             csvfile = request.FILES['csvfile']
             dialect = sniffer.sniff(csvfile.read(65535))
             csv_reader = csv.reader(csvfile, dialect)
-            lines = csv_reader
+
+            orthvars = OrthographicVariant.objects.all()
+            idems = [orthvar.idem for orthvar in orthvars]
+
+            authors = User.objects.all()
+
+            collision_orthvars = []
+            collision_csv_rows = []
+
+            # Пропускаем 1-ю строку CSV-файла, поскольку там должны быть
+            # заголовки столбцов
+            csv_reader.next()
+
+            for n, row in enumerate(csv_reader):
+                orthvar, word_form_list, antconc_query, author, additional_info = row
+                if orthvar in idems:
+                    collision_orthvars.append(idems.index(orthvar))
+                    collision_csv_rows.append(n)
+                else:
+                    author_id = None
+                    for au in authors:
+                        if author.startswith(au.last_name):
+                            author_id = au.id
+                            break
+
+                    entry = Entry( word_form_list=word_form_list,
+                        antconc_query=antconc_query, editor=author_id,
+                        additional_info=additional_info )
+                    entry.orthographic_variants.add(idem=orthvar)
+                    entry.save()
+
             csvfile.close()
             return render_to_response('csv_import_conflicts.html', {'lines': lines})
             #return HttpResponseRedirect('/')
