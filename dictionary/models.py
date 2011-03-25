@@ -522,7 +522,7 @@ class Etymology(models.Model):
         )
 
     translit = models.CharField(
-        u'траслитерация',
+        u'транслитерация',
         max_length = 40,
         blank = True,
         )

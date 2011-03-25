@@ -111,6 +111,22 @@
         });
 
 
+        /* Скрываем или отображаем поля в зависимости от
+         * изменяемости/неизменяемости существительного или прилагательного. */
+        function checkUninflected() {
+            if ( $('#id_uninflected').is(':checked') ) {
+                $('.genitive').hide();
+                $('.tantum').hide();
+                $('.short_form').hide();
+            } else {
+                $('.genitive').show();
+                $('.tantum').show();
+                $('.short_form').show();
+            }
+        }
+        checkUninflected();
+        $('#id_uninflected').click(checkUninflected);
+
         /* Скрываем или отображаем поля для выбранного типа имени собственного.
          * */
         onyms = {
