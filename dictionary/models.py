@@ -422,7 +422,8 @@ class Entry(models.Model, Meaningfull):
         verbose_name = u'статус статьи',
         limit_choices_to = {'category__slug': 'entryStatus'},
         related_name = 'entries_of_status',
-        default = 0,
+        blank = True,
+        null = True,
         )
 
     percent_status = models.PositiveSmallIntegerField(

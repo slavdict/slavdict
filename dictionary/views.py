@@ -430,8 +430,79 @@ def change_entry(request, entry_id):
 
 from dictionary.forms import BilletImportForm
 from django.http import HttpResponseRedirect
-import csv
+from custom_user.models import CustomUser
+
+# Взято полностью с
+# http://docs.python.org/library/csv.html#examples
+import csv, codecs, cStringIO
+
+class UTF8Recoder:
+    """
+    Iterator that reads an encoded stream and reencodes the input to UTF-8
+    """
+    def __init__(self, f, encoding):
+        self.reader = codecs.getreader(encoding)(f)
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        return self.reader.next().encode("utf-8")
+
+class UnicodeReader:
+    """
+    A CSV reader which will iterate over lines in the CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        f = UTF8Recoder(f, encoding)
+        self.reader = csv.reader(f, dialect=dialect, **kwds)
+
+    def next(self):
+        row = self.reader.next()
+        return [unicode(s, "utf-8") for s in row]
+
+    def __iter__(self):
+        return self
+
+class UnicodeWriter:
+    """
+    A CSV writer which will write rows to CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        # Redirect output to a queue
+        self.queue = cStringIO.StringIO()
+        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
+        self.stream = f
+        self.encoder = codecs.getincrementalencoder(encoding)()
+
+    def writerow(self, row):
+        self.writer.writerow([s.encode("utf-8") for s in row])
+        # Fetch UTF-8 output from the queue ...
+        data = self.queue.getvalue()
+        data = data.decode("utf-8")
+        # ... and reencode it into the target encoding
+        data = self.encoder.encode(data)
+        # write to the target stream
+        self.stream.write(data)
+        # empty queue
+        self.queue.truncate(0)
+
+    def writerows(self, rows):
+        for row in rows:
+            self.writerow(row)
+
+#
+# конец вырезки из документации по Питону
+#
+
 sniffer = csv.Sniffer()
+
+from slavdict.directory.models import CategoryValue
+ccc = CategoryValue.objects.get(pk=26) # Создана
 
 @login_required
 def import_csv_billet(request):
@@ -442,41 +513,41 @@ def import_csv_billet(request):
 
             csvfile = request.FILES['csvfile']
             dialect = sniffer.sniff(csvfile.read(65535))
-            csv_reader = csv.reader(csvfile, dialect)
+            csvfile.seek(0)
+            csv_reader = UnicodeReader(csvfile, dialect, encoding='utf-8')
 
             orthvars = OrthographicVariant.objects.all()
             idems = [orthvar.idem for orthvar in orthvars]
 
-            authors = User.objects.all()
+            authors = CustomUser.objects.all()
 
             collision_orthvars = []
             collision_csv_rows = []
 
-            # Пропускаем 1-ю строку CSV-файла, поскольку там должны быть
-            # заголовки столбцов
-            csv_reader.next()
-
             for n, row in enumerate(csv_reader):
-                orthvar, word_form_list, antconc_query, author, additional_info = row
+                orthvar, word_forms_list, antconc_query, author, additional_info = row
                 if orthvar in idems:
                     collision_orthvars.append(idems.index(orthvar))
                     collision_csv_rows.append(n)
                 else:
-                    author_id = None
                     for au in authors:
                         if author.startswith(au.last_name):
-                            author_id = au.id
+                            author = au
                             break
 
-                    entry = Entry( word_form_list=word_form_list,
-                        antconc_query=antconc_query, editor=author_id,
-                        additional_info=additional_info )
-                    entry.orthographic_variants.add(idem=orthvar)
+                    entry = Entry.objects.create( word_forms_list=word_forms_list,
+                        antconc_query=antconc_query, editor=author,
+                        additional_info=additional_info,
+
+                        hidden=False, uninflected=False, canonical_name=False, possessive=False, status=ccc)
+
                     entry.save()
+                    ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar)
+                    ov.save()
 
             csvfile.close()
-            return render_to_response('csv_import_conflicts.html', {'lines': lines})
-            #return HttpResponseRedirect('/')
+            #return render_to_response('csv_import_conflicts.html', )
+            return HttpResponseRedirect('/')
     else:
         form = BilletImportForm()
     return render_to_response('csv_import.html', {'form': form})
