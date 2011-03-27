@@ -516,9 +516,7 @@ def import_csv_billet(request):
             csvfile.seek(0)
             csv_reader = UnicodeReader(csvfile, dialect, encoding='utf-8')
 
-            orthvars = OrthographicVariant.objects.all()
-            idems = [orthvar.idem for orthvar in orthvars]
-
+            idems = OrthographicVariant.objects.all().values_list('idem')
             authors = CustomUser.objects.all()
 
             collision_orthvars = []

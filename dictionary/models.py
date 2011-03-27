@@ -876,9 +876,9 @@ class Example(models.Model):
         if c:
             c = ucs_convert(c)
             x, y, z = c.partition(e)
-            x = strip(x)
-            y = strip(y)
-            z = strip(z)
+            x = x.strip()
+            y = y.strip()
+            z = z.strip()
             if y:
                 # Разбиение дало положительный результат,
                 # в "y" помещён сам пример.
