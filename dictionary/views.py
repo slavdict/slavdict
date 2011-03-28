@@ -15,7 +15,8 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def make_greek_found(request):
-    from slavdict.dictionary.models import GreekEquivalentForExample, Example
+    from slavdict.dictionary.models import GreekEquivalentForExample
+
     greqlist = GreekEquivalentForExample.objects.all() # Выбираем все греч. параллели для примеров.
     exlist = [g.for_example for g in greqlist] # Создаём для них список примеров, к которым они относятся.
     # Присваеваем полю статуса греч. параллелей для каждого примера значение "найдены".
@@ -549,3 +550,41 @@ def import_csv_billet(request):
     else:
         form = BilletImportForm()
     return render_to_response('csv_import.html', {'form': form})
+
+from django import http
+from django.template.loader import get_template
+from django.template import Context
+import ho.pisa as pisa
+import cStringIO as StringIO
+def write_pdf(template_src, context_dict):
+    template = get_template(template_src)
+    context = Context(context_dict)
+    html  = template.render(context)
+    result = StringIO.StringIO()
+    pdf = pisa.pisaDocument(StringIO.StringIO(
+        html.encode("UTF-8")), result)
+    if not pdf.err:
+        response = http.HttpResponse(result.getvalue(),
+             mimetype='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename=%s' % context_dict['filename']
+        return response
+    return http.HttpResponseRedirect('/')
+
+
+@login_required
+def pdf_for_single_entry(request, entry_id):
+    entry = get_object_or_404(Entry, id=entry_id)
+    
+    return write_pdf(
+
+        'pdf_for_single_entry.html',
+
+        {
+            'entry': entry,
+            'title': u'Статья «%s»' % entry.civil_equivalent,
+            'show_additional_info': 'ai' in request.COOKIES,
+            'user': request.user,
+            'filename': 'entry%s.pdf' % entry_id,
+        },
+
+        )
