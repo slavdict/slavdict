@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div style="float: right; width: 3em;"><a href="pdf/">[PDF]</a></div>
+    <div style="float: right; width: 3em;"><a href="{{ entry.get_absolute_url }}pdf/">[PDF]</a></div>
     {% if entry %}
         {% include '_entry.html' %}
     {% else %}
