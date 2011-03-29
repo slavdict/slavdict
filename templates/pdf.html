@@ -4,8 +4,6 @@
         <meta charset="utf-8">
         <title>{{ title }}</title>
         <style>
-
-
             @page {
                 margin: 2cm 2cm 3.5cm;
                 @frame footer {
@@ -18,154 +16,9 @@
 
             #footerContent{
                 border-top: 2pt solid #000;
-                padding-top: 0.3cm;
             }
-            
-            @font-face {
-                font-family: 'Triodion Ucs';
-                src: url('http://localhost:8000/site-media/fonts/TriIEUcs.ttf'),
-            }
-
-            @font-face {
-                font-family: 'SIL Ulysses';
-                src: url('/site-media/fonts/silur-webfont.ttf');
-            }
-
-            @font-face {
-                font-family: 'hebrew';
-                src: url('/site-media/fonts/hebrew-webfont.ttf');
-            }
-
-            @font-face {
-                font-family: 'Hebrew-Russian!';
-                src: url('/site-media/fonts/heb-rus-webfont.ttf');
-            }
-
-            @font-face {
-                font-family: 'Estrangelo Edessa';
-                src: url('/site-media/fonts/estre-webfont.ttf');
-            }
-
-            @font-face {
-                font-family: 'GEO-LitNusx';
-                src: url('/site-media/fonts/ltzura2-webfont.ttf');
-              }
-
-            @font-face {
-                font-family: 'SPEdessa';
-                src: url('/site-media/fonts/spedessa-webfont.ttf');
-            }
-
-            @font-face {
-                font-family: 'Coptic';
-                src: url('/site-media/fonts/coptic2-webfont.ttf');
-            }
-
-            @font-face {
-                font-family: 'Old Standard TT';
-                src: url('/site-media/fonts/oldstandard-regular-webfont.ttf');
-            }
-
-            @font-face {
-                font-family: 'Old Standard TT';
-                src: url('/site-media/fonts/oldstandard-italic-webfont.ttf');
-                font-style: italic;
-            }
-
-            @font-face {
-                font-family: 'Old Standard TT';
-                src: url('/site-media/fonts/oldstandard-bold-webfont.ttf');
-                font-weight: bold;
-            }
-
-            .cslav {
-                font-family: "Triodion Ucs";
-                font-weight: normal;
-                font-size: 110%;
-            }
-            a.cslav {
-                color: #000;
-            }
-
-            .grec {
-                font-family: 'SIL Ulysses';
-            }
-
-            .hebrew,
-            .aramaic {
-                font-family: 'hebrew';
-            }
-
-            .hebrew-translit,
-            .syriac-translit,
-            .aramaic-translit {
-                font-family: 'Hebrew-Russian!';
-                font-size: 90%;
-            }
-
-            .akkadian {}
-            .armenian {}
-            .georgian { font-family: 'GEO-LitNusx'; }
-            .coptic { font-family: Coptic; }
-            .syriac { font-family: 'SPEdessa'; }
-            /* 'Estrangelo Edessa' */
-
-            body,
-            div {
-                margin: 0;
-                padding: 0;
-                font-size: 13pt;
-                font-family: 'Old Standard TT', serif;
-            }
-
-            div.entry {
-                margin-top: 4em;
-            }
-
-            .headword {
-                font-size: 150% !important;
-            }
-
-            .orthvar {
-                font-size: 120% !important;
-            }
-
-            .ai { font-size: smaller; }
-            .ai-etym    { background-color: #fcd5fc; border: 1px solid #dbb5db; }
-            .ai-example { background-color: #d5dffc; border: 1px solid #bbc4df; }
-            .ai-meaning { background-color: #eafcd5; border: 1px solid #b9d796; }
-            .ai-entry   { background-color: #fcf3d0; border: 1px solid #f4c873; }
-            .ai-grfmnng,
-            .ai-grfex   { background-color: #c3ffff; border: 1px solid #93d5dd; }
-
-            div.ai {
-                padding: 10px;
-                line-height: 150%;
-                -webkit-border-radius: 0.5em;
-                -moz-border-radius: 0.5em;
-                border-radius: 0.5em;
-            }
-
-            div.ai p { margin: 0 0 0.5em 0; }
-
-            span.ai,
-            span.noaddress {
-                padding: 0.1em 0.4em;
-                -webkit-border-radius: 0.3em;
-                -moz-border-radius: 0.3em;
-                border-radius: 0.3em;
-            }
-
-            span.noaddress {
-                padding: 0.15em 0.4em;
-                background-color: #a00;
-                color: #fff;
-                font-family: Arial, sans-serif;
-                font-style: italic;
-                font-size: smaller;
-            }
-
         </style>
+        <link href="/site-media/pdf_style.css" media="all" rel="stylesheet" type="text/css" />
     </head>
     <body>
         {% block content %}{% endblock %}

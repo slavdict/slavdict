@@ -552,20 +552,16 @@ def import_csv_billet(request):
     return render_to_response('csv_import.html', {'form': form})
 
 from django import http
-from django.template.loader import get_template
-from django.template import Context
+from django.template.loader import render_to_string
 import ho.pisa as pisa
 import cStringIO as StringIO
-def write_pdf(template_src, context_dict):
-    template = get_template(template_src)
-    context = Context(context_dict)
-    html  = template.render(context)
+
+def write_pdf(request, template_src, context_dict):
+    html  = render_to_string(template_src, context_dict, RequestContext(request))
     result = StringIO.StringIO()
-    pdf = pisa.pisaDocument(StringIO.StringIO(
-        html.encode("UTF-8")), result)
+    pdf = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), result)
     if not pdf.err:
-        response = http.HttpResponse(result.getvalue(),
-             mimetype='application/pdf')
+        response = http.HttpResponse(result.getvalue(), mimetype='application/pdf')
         response['Content-Disposition'] = 'attachment; filename=%s' % context_dict['filename']
         return response
     return http.HttpResponseRedirect('/')
@@ -577,6 +573,7 @@ def pdf_for_single_entry(request, entry_id):
     
     return write_pdf(
 
+        request,
         'pdf_for_single_entry.html',
 
         {
