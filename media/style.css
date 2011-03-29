@@ -16,7 +16,6 @@
 	src: url('/site-media/fonts/silur-webfont.eot');
 	src:
         local('SIL Ulysses'),
-        local('☺'),
         url('/site-media/fonts/silur-webfont.woff') format('woff'),
         url('/site-media/fonts/silur-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -28,7 +27,6 @@
 	src: url('/site-media/fonts/hebrew-webfont.eot');
 	src:
         local('hebrew'),
-        local('☺'),
         url('/site-media/fonts/hebrew-webfont.woff') format('woff'),
         url('/site-media/fonts/hebrew-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -40,7 +38,6 @@
 	src: url('/site-media/fonts/heb-rus-webfont.eot');
 	src:
         local('Hebrew-Russian!'),
-        local('☺'),
         url('/site-media/fonts/heb-rus-webfont.woff') format('woff'),
         url('/site-media/fonts/heb-rus-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -52,7 +49,6 @@
 	src: url('/site-media/fonts/estre-webfont.eot');
 	src:
         local('Estrangelo Edessa'),
-        local('☺'),
         url('/site-media/fonts/estre-webfont.woff') format('woff'),
         url('/site-media/fonts/estre-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -64,7 +60,6 @@
 	src: url('/site-media/fonts/ltzura2-webfont.eot');
 	src:
         local('GEO-LitNusx'),
-        local('☺'),
         url('/site-media/fonts/ltzura2-webfont.woff') format('woff'),
         url('/site-media/fonts/ltzura2-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -76,7 +71,6 @@
 	src: url('/site-media/fonts/spedessa-webfont.eot');
 	src:
         local('SPEdessa'),
-        local('☺'),
         url('/site-media/fonts/spedessa-webfont.woff') format('woff'),
         url('/site-media/fonts/spedessa-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -88,7 +82,6 @@
 	src: url('/site-media/fonts/coptic2-webfont.eot');
 	src:
         local('Coptic'),
-        local('☺'),
         url('/site-media/fonts/coptic2-webfont.woff') format('woff'),
         url('/site-media/fonts/coptic2-webfont.ttf') format('truetype');
 	font-weight: normal;
@@ -98,7 +91,7 @@
 @font-face {
 	font-family: 'Old Standard TT';
 	src: url('/site-media/fonts/oldstandard-regular-webfont.eot');
-	src: local('☺'), url('/site-media/fonts/oldstandard-regular-webfont.woff') format('woff'), url('/site-media/fonts/oldstandard-regular-webfont.ttf') format('truetype');
+	src: url('/site-media/fonts/oldstandard-regular-webfont.woff') format('woff'), url('/site-media/fonts/oldstandard-regular-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -106,7 +99,7 @@
 @font-face {
 	font-family: 'Old Standard TT';
 	src: url('/site-media/fonts/oldstandard-italic-webfont.eot');
-	src: local('☺'), url('/site-media/fonts/oldstandard-italic-webfont.woff') format('woff'), url('/site-media/fonts/oldstandard-italic-webfont.ttf') format('truetype');
+	src: url('/site-media/fonts/oldstandard-italic-webfont.woff') format('woff'), url('/site-media/fonts/oldstandard-italic-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: italic;
 }
@@ -114,7 +107,7 @@
 @font-face {
 	font-family: 'Old Standard TT';
 	src: url('/site-media/fonts/oldstandard-bold-webfont.eot');
-	src: local('☺'), url('/site-media/fonts/oldstandard-bold-webfont.woff') format('woff'), url('/site-media/fonts/oldstandard-bold-webfont.ttf') format('truetype');
+	src: url('/site-media/fonts/oldstandard-bold-webfont.woff') format('woff'), url('/site-media/fonts/oldstandard-bold-webfont.ttf') format('truetype');
 	font-weight: bold;
 	font-style: normal;
 }

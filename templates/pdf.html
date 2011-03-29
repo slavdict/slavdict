@@ -5,23 +5,28 @@
         <title>{{ title }}</title>
         <style>
             @page {
-                margin: 2cm 2cm 3.5cm;
-                @frame footer {
-                        -pdf-frame-content: footerContent;
-                        bottom: 2.5cm;
-                        margin: 0 2cm;
-                        height: 1cm;
+                size: a4 portrait;
+                margin: 2.5cm 2cm 3.5cm;
+                @frame pdfHeader {
+                    -pdf-frame-content: pdfHeaderContent;
+                    top: 1cm;
+                    margin: 0 2cm;
+                    height: 0.5cm;
                 }
             }
 
-            #footerContent{
-                border-top: 2pt solid #000;
+            #pdfHeaderContent {
+                border-bottom: 0.5pt solid #000;
             }
         </style>
-        <link href="/site-media/pdf_style.css" media="all" rel="stylesheet" type="text/css" />
+        <link href="style.css" media="all" rel="stylesheet" type="text/css" />
+        <link href="pdf_style.css" media="all" rel="stylesheet" type="text/css" />
     </head>
     <body>
+        <div id="pdfHeaderContent">
+            {{ date|date:"d.m.Y" }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {% block header %}{% endblock %}
+        </div>
         {% block content %}{% endblock %}
-        <div id="footerContent">{% block footer %}{% endblock %}</div>
     </body>
 </html>
