@@ -3,6 +3,7 @@
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template, redirect_to
 from django.shortcuts import redirect
+from slavdict.admin import ui
 
 from django.contrib import admin
 admin.autodiscover()
@@ -10,6 +11,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url( r'^admin/',     include(admin.site.urls) ),
     url( r'^admin/doc/', include('django.contrib.admindocs.urls') ),
+    url( r'^ui/',        include(ui.urls) ),
 )
 
 urlpatterns += patterns('',

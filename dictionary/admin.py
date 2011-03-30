@@ -3,6 +3,7 @@ from django.conf import settings
 from django import forms
 from django.db import models
 from django.contrib import admin
+from slavdict.admin import ui
 
 def _orth_vars(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('id')]
@@ -179,7 +180,7 @@ class AdminExample(admin.ModelAdmin):
         js = (settings.MEDIA_URL + "fix_admin.js",)
 
 admin.site.register(Example, AdminExample)
-
+ui.register(Example, AdminExample)
 
 
 
@@ -195,8 +196,10 @@ class AdminMeaning(admin.ModelAdmin):
     inlines = (
         MeaningContext_Inline,
         Example_Inline,
-        #GreekEquivalentForMeaning_Inline,
         )
+    inlines_MAIN = (
+        GreekEquivalentForMeaning_Inline,
+    )
     fieldsets = (
             (u'То, к чему значение относится',
                 {'fields': (('entry_container', 'collogroup_container'),)}),
@@ -235,7 +238,12 @@ class AdminMeaning(admin.ModelAdmin):
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
 
-admin.site.register(Meaning, AdminMeaning)
+
+class AdminMeaning_MAIN(AdminMeaning):
+    inlines = AdminMeaning.inlines + AdminMeaning.inlines_MAIN
+
+admin.site.register(Meaning, AdminMeaning_MAIN)
+ui.register(Meaning, AdminMeaning)
 
 
 from slavdict.dictionary.models import Entry
@@ -323,6 +331,8 @@ class AdminEntry(admin.ModelAdmin):
         js = (settings.MEDIA_URL + "fix_admin.js",)
 
 admin.site.register(Entry, AdminEntry)
+ui.register(Entry, AdminEntry)
+
 
 from slavdict.dictionary.models import SynonymGroup
 admin.site.register(SynonymGroup)
@@ -339,12 +349,13 @@ class AdminCollocation(admin.ModelAdmin):
         js = (settings.MEDIA_URL + "fix_admin.js",)
 
 admin.site.register(Collocation, AdminCollocation)
+ui.register(Collocation, AdminCollocation)
 
 class Collocation_Inline(admin.StackedInline):
     model = Collocation
     extra = 1
     fieldsets = (
-            (None, {'fields': ('collocation',)}),
+            (None, {'fields': ('collocation', 'civil_equivalent')}),
         )
 
 from slavdict.dictionary.models import CollocationGroup
@@ -370,3 +381,4 @@ class AdminCollocationGroup(admin.ModelAdmin):
         js = (settings.MEDIA_URL + "fix_admin.js",)
 
 admin.site.register(CollocationGroup, AdminCollocationGroup)
+ui.register(CollocationGroup, AdminCollocationGroup)
