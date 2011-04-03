@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls.defaults import *
-from django.views.generic.simple import direct_to_template, redirect_to
-from django.shortcuts import redirect
-from slavdict.admin import ui
+from django.views.generic.simple import redirect_to
 
+from slavdict.admin import ui
 from django.contrib import admin
 admin.autodiscover()
 

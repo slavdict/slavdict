@@ -505,6 +505,14 @@ sniffer = csv.Sniffer()
 from slavdict.directory.models import CategoryValue
 ccc = CategoryValue.objects.get(pk=26) # Создана
 
+entry_dict = {
+    'additional_info': None,
+    'antconc_query': None,
+    'canonical_name': None,
+    'additional_info': None,
+
+}
+
 @login_required
 def import_csv_billet(request):
 
@@ -550,6 +558,7 @@ def import_csv_billet(request):
     else:
         form = BilletImportForm()
     return render_to_response('csv_import.html', {'form': form})
+
 
 from django import http
 from django.template.loader import render_to_string
