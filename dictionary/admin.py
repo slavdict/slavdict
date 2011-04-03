@@ -314,7 +314,14 @@ class AdminEntry(admin.ModelAdmin):
     list_filter = (
         'editor',
         'status',
-        'part_of_speech',
+        'uninflected',
+        'gender',
+        'tantum',
+        'onym',
+        'canonical_name',
+        'possessive',
+        'transitivity',
+        'participle_type',
         )
     list_editable = (
         'editor',
