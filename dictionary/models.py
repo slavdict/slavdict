@@ -102,7 +102,28 @@ class Meaningfull:
         return self.meaning_set.all().order_by('order', 'id')
 
 
-class Entry(models.Model, Meaningfull):
+class MTimable:
+    """
+    У экземпляров этого класса должен быть атрибут mtime, регистрирующий
+    время изменения объекта.
+    """
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+    )
+
+class CMTimable(MTimable):
+    """
+    У экземпляров этого класса должны быть атрибуты ctime и mtime,
+    регистрирующие время создания и изменения объекта.
+    """
+    ctime = models.DateTimeField(
+        editable=False,
+        auto_now_add=True,
+    )
+
+
+class Entry(models.Model, Meaningfull, CMTimable):
 
     civil_equivalent = models.CharField(
         u'гражданское написание',
@@ -470,7 +491,7 @@ class Entry(models.Model, Meaningfull):
         ordering = ('-id',)
 
 
-class Etymology(models.Model):
+class Etymology(models.Model, MTimable):
 
     entry = models.ForeignKey(
         # может MtM
@@ -577,7 +598,7 @@ class Etymology(models.Model):
         ordering = ('id',)
 
 
-class MeaningContext(models.Model):
+class MeaningContext(models.Model, MTimable):
 
     meaning = models.ForeignKey(
         'Meaning',
@@ -636,7 +657,7 @@ class MeaningContext(models.Model):
         verbose_name_plural = u'контексты значения'
 
 
-class Meaning(models.Model):
+class Meaning(models.Model, CMTimable):
 
     entry_container = models.ForeignKey(
         Entry,
@@ -819,7 +840,7 @@ class Meaning(models.Model):
         ordering = ('id',)
 
 
-class Example(models.Model):
+class Example(models.Model, MTimable):
 
     meaning = models.ForeignKey(
         Meaning,
@@ -932,7 +953,7 @@ class Example(models.Model):
         ordering = ('id',)
 
 
-class CollocationGroup(models.Model, Meaningfull):
+class CollocationGroup(models.Model, Meaningfull, CMTimable):
 
     base_entry = models.ForeignKey(
         Entry,
@@ -1005,7 +1026,7 @@ class CollocationGroup(models.Model, Meaningfull):
         ordering = ('-id',)
 
 
-class Collocation(models.Model):
+class Collocation(models.Model, MTimable):
 
     collogroup = models.ForeignKey(
         CollocationGroup,
@@ -1048,7 +1069,7 @@ class Collocation(models.Model):
 
 
 
-class GreekEquivalent(models.Model):
+class GreekEquivalent(models.Model, MTimable):
 
     class Meta:
         abstract = True
@@ -1113,7 +1134,7 @@ class GreekEquivalentForExample(GreekEquivalent):
 
 
 
-class OrthographicVariant(models.Model):
+class OrthographicVariant(models.Model, MTimable):
 
     # словарная статья, к которой относится данный орф. вариант
     entry = models.ForeignKey(
