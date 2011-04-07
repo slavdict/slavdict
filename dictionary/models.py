@@ -112,16 +112,32 @@ class MTimable:
         auto_now=True,
     )
 
+    muser = models.ForeignKey(
+        CustomUser,
+    )
+
 class CMTimable(MTimable):
     """
     У экземпляров этого класса должны быть атрибуты ctime и mtime,
     регистрирующие время создания и изменения объекта.
     """
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+    )
+
+    muser = models.ForeignKey(
+        CustomUser,
+    )
+
     ctime = models.DateTimeField(
         editable=False,
         auto_now_add=True,
     )
 
+    cuser = models.ForeignKey(
+        CustomUser,
+    )
 
 class Entry(models.Model, Meaningfull, CMTimable):
 
@@ -477,6 +493,24 @@ class Entry(models.Model, Meaningfull, CMTimable):
         blank = True,
         null = True,
         )
+    
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+    )
+
+    muser = models.ForeignKey(
+        CustomUser,
+    )
+
+    ctime = models.DateTimeField(
+        editable=False,
+        auto_now_add=True,
+    )
+
+    cuser = models.ForeignKey(
+        CustomUser,
+    )
 
     @models.permalink
     def get_absolute_url(self):
@@ -588,6 +622,15 @@ class Etymology(models.Model, MTimable):
         u'примечание',
         blank = True,
         )
+
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+    )
+
+    muser = models.ForeignKey(
+        CustomUser,
+    )
 
     def __unicode__(self):
         return u'%s %s %s' % (self.language.tag, self.entry, self.translit)
