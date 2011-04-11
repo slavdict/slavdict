@@ -3,7 +3,6 @@ from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
 from hip2unicode.conversions import antconc_ucs8
 from hip2unicode.conversions import antconc_ucs8_without_aspiration
-import datetime
 
 compiled_conversion_with_aspiration = compile_conversion(antconc_ucs8.conversion)
 compiled_conversion_without_aspiration = compile_conversion(antconc_ucs8_without_aspiration.conversion)
@@ -477,7 +476,6 @@ class Entry(models.Model, Meaningfull):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-        default=datetime.datetime.now,
     )
 
     muser = models.ForeignKey(
@@ -488,7 +486,6 @@ class Entry(models.Model, Meaningfull):
     ctime = models.DateTimeField(
         editable=False,
         auto_now_add=True,
-        default=datetime.datetime.now,
     )
 
     cuser = models.ForeignKey(
@@ -610,7 +607,6 @@ class Etymology(models.Model):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-        default=datetime.datetime.now,
     )
 
     muser = models.ForeignKey(
@@ -678,7 +674,6 @@ class MeaningContext(models.Model):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-        default=datetime.datetime.now,
     )
 
     muser = models.ForeignKey(
@@ -872,7 +867,6 @@ class Meaning(models.Model):
     ctime = models.DateTimeField(
         editable=False,
         auto_now_add=True,
-        default=datetime.datetime.now,
     )
 
     cuser = models.ForeignKey(
@@ -883,7 +877,6 @@ class Meaning(models.Model):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-        default=datetime.datetime.now,
     )
 
     muser = models.ForeignKey(
@@ -1006,7 +999,6 @@ class Example(models.Model):
 
     mtime = models.DateTimeField(
         editable=False,
-        default=datetime.datetime.now,
         auto_now=True,
     )
 
@@ -1089,7 +1081,6 @@ class CollocationGroup(models.Model, Meaningfull):
     ctime = models.DateTimeField(
         editable=False,
         auto_now_add=True,
-        default=datetime.datetime.now,
     )
 
     cuser = models.ForeignKey(
@@ -1100,7 +1091,6 @@ class CollocationGroup(models.Model, Meaningfull):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-        default=datetime.datetime.now,
     )
 
     muser = models.ForeignKey(
@@ -1153,7 +1143,6 @@ class Collocation(models.Model):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-        default=datetime.datetime.now,
     )
 
     muser = models.ForeignKey(
@@ -1206,7 +1195,6 @@ class GreekEquivalent(models.Model):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-        default=datetime.datetime.now,
     )
 
     muser = models.ForeignKey(
@@ -1301,7 +1289,6 @@ class OrthographicVariant(models.Model):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-        default=datetime.datetime.now,
     )
 
     muser = models.ForeignKey(
@@ -1351,7 +1338,6 @@ class SynonymGroup(models.Model):
     ctime = models.DateTimeField(
         editable=False,
         auto_now_add=True,
-        default=datetime.datetime.now,
     )
 
     cuser = models.ForeignKey(
@@ -1362,7 +1348,6 @@ class SynonymGroup(models.Model):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-        default=datetime.datetime.now,
     )
 
     muser = models.ForeignKey(
