@@ -12,61 +12,61 @@ class Migration(SchemaMigration):
         db.add_column('dictionary_example', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
         # Adding field 'Example.muser'
-        db.add_column('dictionary_example', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_example', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'GreekEquivalentForMeaning.mtime'
         db.add_column('dictionary_greekequivalentformeaning', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
         # Adding field 'GreekEquivalentForMeaning.muser'
-        db.add_column('dictionary_greekequivalentformeaning', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_greekequivalentformeaning', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'Etymology.mtime'
         db.add_column('dictionary_etymology', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
         # Adding field 'Etymology.muser'
-        db.add_column('dictionary_etymology', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_etymology', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'MeaningContext.mtime'
         db.add_column('dictionary_meaningcontext', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
         # Adding field 'MeaningContext.muser'
-        db.add_column('dictionary_meaningcontext', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_meaningcontext', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'CollocationGroup.ctime'
         db.add_column('dictionary_collocationgroup', 'ctime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True), keep_default=False)
 
         # Adding field 'CollocationGroup.cuser'
-        db.add_column('dictionary_collocationgroup', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(related_name='cuser_collocationgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_collocationgroup', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='cuser_collocationgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'CollocationGroup.mtime'
         db.add_column('dictionary_collocationgroup', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
         # Adding field 'CollocationGroup.muser'
-        db.add_column('dictionary_collocationgroup', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(related_name='muser_collocationgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_collocationgroup', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='muser_collocationgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'SynonymGroup.ctime'
         db.add_column('dictionary_synonymgroup', 'ctime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True), keep_default=False)
 
         # Adding field 'SynonymGroup.cuser'
-        db.add_column('dictionary_synonymgroup', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(related_name='cuser_synonymgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_synonymgroup', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='cuser_synonymgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'SynonymGroup.mtime'
         db.add_column('dictionary_synonymgroup', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
         # Adding field 'SynonymGroup.muser'
-        db.add_column('dictionary_synonymgroup', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(related_name='muser_synonymgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_synonymgroup', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='muser_synonymgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'Entry.mtime'
         db.add_column('dictionary_entry', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
         # Adding field 'Entry.muser'
-        db.add_column('dictionary_entry', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(related_name='muser_entry_set', to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_entry', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='muser_entry_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'Entry.ctime'
         db.add_column('dictionary_entry', 'ctime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True), keep_default=False)
 
         # Adding field 'Entry.cuser'
-        db.add_column('dictionary_entry', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(related_name='cuser_entry_set', to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_entry', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='cuser_entry_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Changing field 'Entry.status'
         db.alter_column('dictionary_entry', 'status_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['directory.CategoryValue']))
@@ -75,31 +75,31 @@ class Migration(SchemaMigration):
         db.add_column('dictionary_greekequivalentforexample', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
         # Adding field 'GreekEquivalentForExample.muser'
-        db.add_column('dictionary_greekequivalentforexample', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_greekequivalentforexample', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'Meaning.ctime'
         db.add_column('dictionary_meaning', 'ctime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True), keep_default=False)
 
         # Adding field 'Meaning.cuser'
-        db.add_column('dictionary_meaning', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(related_name='cuser_meaning_set', to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_meaning', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='cuser_meaning_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'Meaning.mtime'
         db.add_column('dictionary_meaning', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
         # Adding field 'Meaning.muser'
-        db.add_column('dictionary_meaning', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(related_name='muser_meaning_set', to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_meaning', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='muser_meaning_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'OrthographicVariant.mtime'
         db.add_column('dictionary_orthographicvariant', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
         # Adding field 'OrthographicVariant.muser'
-        db.add_column('dictionary_orthographicvariant', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_orthographicvariant', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'Collocation.mtime'
         db.add_column('dictionary_collocation', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
         # Adding field 'Collocation.muser'
-        db.add_column('dictionary_collocation', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['custom_user.CustomUser']), keep_default=False)
+        db.add_column('dictionary_collocation', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
 
 
     def backwards(self, orm):

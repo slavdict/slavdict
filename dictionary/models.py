@@ -5,9 +5,6 @@ from hip2unicode.conversions import antconc_ucs8
 from hip2unicode.conversions import antconc_ucs8_without_aspiration
 import datetime
 
-from slavdict.custom_user.models import CustomUser
-DEFAULT_USER = CustomUser.objects.get(id=1)
-
 compiled_conversion_with_aspiration = compile_conversion(antconc_ucs8.conversion)
 compiled_conversion_without_aspiration = compile_conversion(antconc_ucs8_without_aspiration.conversion)
 
@@ -486,7 +483,6 @@ class Entry(models.Model, Meaningfull):
     muser = models.ForeignKey(
         CustomUser,
         related_name = 'muser_entry_set',
-        default=DEFAULT_USER,
     )
 
     ctime = models.DateTimeField(
@@ -498,7 +494,6 @@ class Entry(models.Model, Meaningfull):
     cuser = models.ForeignKey(
         CustomUser,
         related_name = 'cuser_entry_set',
-        default=DEFAULT_USER,
     )
 
     @models.permalink
@@ -620,7 +615,6 @@ class Etymology(models.Model):
 
     muser = models.ForeignKey(
         CustomUser,
-        default=DEFAULT_USER,
     )
 
     def __unicode__(self):
@@ -689,7 +683,6 @@ class MeaningContext(models.Model):
 
     muser = models.ForeignKey(
         CustomUser,
-        default=DEFAULT_USER,
     )
 
     def __unicode__(self):
@@ -885,7 +878,6 @@ class Meaning(models.Model):
     cuser = models.ForeignKey(
         CustomUser,
         related_name = 'cuser_meaning_set',
-        default=DEFAULT_USER,
     )
 
     mtime = models.DateTimeField(
@@ -897,7 +889,6 @@ class Meaning(models.Model):
     muser = models.ForeignKey(
         CustomUser,
         related_name = 'muser_meaning_set',
-        default=DEFAULT_USER,
     )
     
     def __unicode__(self):
@@ -1021,7 +1012,6 @@ class Example(models.Model):
 
     muser = models.ForeignKey(
         CustomUser,
-        default=DEFAULT_USER,
     )
 
     def __unicode__(self):
@@ -1105,7 +1095,6 @@ class CollocationGroup(models.Model, Meaningfull):
     cuser = models.ForeignKey(
         CustomUser,
         related_name = 'cuser_collocationgroup_set',
-        default=DEFAULT_USER,
     )
 
     mtime = models.DateTimeField(
@@ -1117,7 +1106,6 @@ class CollocationGroup(models.Model, Meaningfull):
     muser = models.ForeignKey(
         CustomUser,
         related_name = 'muser_collocationgroup_set',
-        default=DEFAULT_USER,
     )
     
     @property
@@ -1170,7 +1158,6 @@ class Collocation(models.Model):
 
     muser = models.ForeignKey(
         CustomUser,
-        default=DEFAULT_USER,
     )
     
     def __unicode__(self):
@@ -1224,7 +1211,6 @@ class GreekEquivalent(models.Model):
 
     muser = models.ForeignKey(
         CustomUser,
-        default=DEFAULT_USER,
     )
 
     def __unicode__(self):
@@ -1320,7 +1306,6 @@ class OrthographicVariant(models.Model):
 
     muser = models.ForeignKey(
         CustomUser,
-        default=DEFAULT_USER,
     )
     
     def __unicode__(self):
@@ -1372,7 +1357,6 @@ class SynonymGroup(models.Model):
     cuser = models.ForeignKey(
         CustomUser,
         related_name = 'cuser_synonymgroup_set',
-        default=DEFAULT_USER,
     )
 
     mtime = models.DateTimeField(
@@ -1384,7 +1368,6 @@ class SynonymGroup(models.Model):
     muser = models.ForeignKey(
         CustomUser,
         related_name = 'muser_synonymgroup_set',
-        default=DEFAULT_USER,
     )
 
     def __unicode__(self):
