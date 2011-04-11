@@ -3,6 +3,10 @@ from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
 from hip2unicode.conversions import antconc_ucs8
 from hip2unicode.conversions import antconc_ucs8_without_aspiration
+import datetime
+
+from slavdict.custom_user.models import CustomUser
+DEFAULT_USER = CustomUser.objects.get(id=1)
 
 compiled_conversion_with_aspiration = compile_conversion(antconc_ucs8.conversion)
 compiled_conversion_without_aspiration = compile_conversion(antconc_ucs8_without_aspiration.conversion)
@@ -70,20 +74,6 @@ from django.db import models
 from custom_user.models import CustomUser
 from slavdict.directory.models import CategoryValue
 
-class AdminInfo:
-
-    add_datetime = models.DateTimeField(
-        editable = False,
-        auto_now_add = True,
-        verbose_name = u'время создания',
-        )
-
-    change_datetime = models.DateTimeField(
-        editable = False,
-        auto_now = True,
-        verbose_name = u'время изменения',
-        )
-
 class Meaningfull:
     """
     У экземпляров класса должен иметься менеджер запросов
@@ -102,44 +92,37 @@ class Meaningfull:
         return self.meaning_set.all().order_by('order', 'id')
 
 
-class MTimable:
-    """
-    У экземпляров этого класса должен быть атрибут mtime, регистрирующий
-    время изменения объекта.
-    """
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
+#class MTimable:
+#    """
+#    У экземпляров этого класса должен быть атрибут mtime, регистрирующий
+#    время изменения объекта.
+#    """
+#    mtime = models.DateTimeField(
+#        editable=False,
+#        auto_now=True,
+#    )
+#
+#    muser = models.ForeignKey(
+#        CustomUser,
+#    )
 
-    muser = models.ForeignKey(
-        CustomUser,
-    )
+#class CMTimable(MTimable):
+#    """
+#    У экземпляров этого класса должны быть атрибуты ctime и mtime,
+#    регистрирующие время создания и изменения объекта.
+#    """
+#
+#    ctime = models.DateTimeField(
+#        editable=False,
+#        auto_now_add=True,
+#    )
+#
+#    cuser = models.ForeignKey(
+#        CustomUser,
+#    )
 
-class CMTimable(MTimable):
-    """
-    У экземпляров этого класса должны быть атрибуты ctime и mtime,
-    регистрирующие время создания и изменения объекта.
-    """
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
 
-    muser = models.ForeignKey(
-        CustomUser,
-    )
-
-    ctime = models.DateTimeField(
-        editable=False,
-        auto_now_add=True,
-    )
-
-    cuser = models.ForeignKey(
-        CustomUser,
-    )
-
-class Entry(models.Model, Meaningfull, CMTimable):
+class Entry(models.Model, Meaningfull):
 
     civil_equivalent = models.CharField(
         u'гражданское написание',
@@ -497,19 +480,25 @@ class Entry(models.Model, Meaningfull, CMTimable):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
+        default=datetime.datetime.now,
     )
 
     muser = models.ForeignKey(
         CustomUser,
+        related_name = 'muser_entry_set',
+        default=DEFAULT_USER,
     )
 
     ctime = models.DateTimeField(
         editable=False,
         auto_now_add=True,
+        default=datetime.datetime.now,
     )
 
     cuser = models.ForeignKey(
         CustomUser,
+        related_name = 'cuser_entry_set',
+        default=DEFAULT_USER,
     )
 
     @models.permalink
@@ -525,7 +514,7 @@ class Entry(models.Model, Meaningfull, CMTimable):
         ordering = ('-id',)
 
 
-class Etymology(models.Model, MTimable):
+class Etymology(models.Model):
 
     entry = models.ForeignKey(
         # может MtM
@@ -626,10 +615,12 @@ class Etymology(models.Model, MTimable):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
+        default=datetime.datetime.now,
     )
 
     muser = models.ForeignKey(
         CustomUser,
+        default=DEFAULT_USER,
     )
 
     def __unicode__(self):
@@ -641,7 +632,7 @@ class Etymology(models.Model, MTimable):
         ordering = ('id',)
 
 
-class MeaningContext(models.Model, MTimable):
+class MeaningContext(models.Model):
 
     meaning = models.ForeignKey(
         'Meaning',
@@ -690,6 +681,17 @@ class MeaningContext(models.Model, MTimable):
         blank = True,
         )
 
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+        default=datetime.datetime.now,
+    )
+
+    muser = models.ForeignKey(
+        CustomUser,
+        default=DEFAULT_USER,
+    )
+
     def __unicode__(self):
         SPACE = u' '
         _list = (self.left_text, self.context, self.right_text)
@@ -700,7 +702,7 @@ class MeaningContext(models.Model, MTimable):
         verbose_name_plural = u'контексты значения'
 
 
-class Meaning(models.Model, CMTimable):
+class Meaning(models.Model):
 
     entry_container = models.ForeignKey(
         Entry,
@@ -874,6 +876,30 @@ class Meaning(models.Model, CMTimable):
     def collogroups(self):
         return self.collocationgroup_set.all().order_by('id')
 
+    ctime = models.DateTimeField(
+        editable=False,
+        auto_now_add=True,
+        default=datetime.datetime.now,
+    )
+
+    cuser = models.ForeignKey(
+        CustomUser,
+        related_name = 'cuser_meaning_set',
+        default=DEFAULT_USER,
+    )
+
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+        default=datetime.datetime.now,
+    )
+
+    muser = models.ForeignKey(
+        CustomUser,
+        related_name = 'muser_meaning_set',
+        default=DEFAULT_USER,
+    )
+    
     def __unicode__(self):
         return self.meaning
 
@@ -883,7 +909,7 @@ class Meaning(models.Model, CMTimable):
         ordering = ('id',)
 
 
-class Example(models.Model, MTimable):
+class Example(models.Model):
 
     meaning = models.ForeignKey(
         Meaning,
@@ -987,6 +1013,17 @@ class Example(models.Model, MTimable):
         default = u'L', # следует найти
         )
 
+    mtime = models.DateTimeField(
+        editable=False,
+        default=datetime.datetime.now,
+        auto_now=True,
+    )
+
+    muser = models.ForeignKey(
+        CustomUser,
+        default=DEFAULT_USER,
+    )
+
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
 
@@ -996,7 +1033,7 @@ class Example(models.Model, MTimable):
         ordering = ('id',)
 
 
-class CollocationGroup(models.Model, Meaningfull, CMTimable):
+class CollocationGroup(models.Model, Meaningfull):
 
     base_entry = models.ForeignKey(
         Entry,
@@ -1059,6 +1096,30 @@ class CollocationGroup(models.Model, Meaningfull, CMTimable):
         null = True,
         )
 
+    ctime = models.DateTimeField(
+        editable=False,
+        auto_now_add=True,
+        default=datetime.datetime.now,
+    )
+
+    cuser = models.ForeignKey(
+        CustomUser,
+        related_name = 'cuser_collocationgroup_set',
+        default=DEFAULT_USER,
+    )
+
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+        default=datetime.datetime.now,
+    )
+
+    muser = models.ForeignKey(
+        CustomUser,
+        related_name = 'muser_collocationgroup_set',
+        default=DEFAULT_USER,
+    )
+    
     @property
     def collocations(self):
         return self.collocation_set.all().order_by('order', 'id')
@@ -1069,7 +1130,7 @@ class CollocationGroup(models.Model, Meaningfull, CMTimable):
         ordering = ('-id',)
 
 
-class Collocation(models.Model, MTimable):
+class Collocation(models.Model):
 
     collogroup = models.ForeignKey(
         CollocationGroup,
@@ -1101,6 +1162,17 @@ class Collocation(models.Model, MTimable):
     def etymologies(self):
         return self.etymology_set.filter(etymon_to__isnull=True).order_by('order', 'id')
 
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+        default=datetime.datetime.now,
+    )
+
+    muser = models.ForeignKey(
+        CustomUser,
+        default=DEFAULT_USER,
+    )
+    
     def __unicode__(self):
         return self.collocation
 
@@ -1112,7 +1184,7 @@ class Collocation(models.Model, MTimable):
 
 
 
-class GreekEquivalent(models.Model, MTimable):
+class GreekEquivalent(models.Model):
 
     class Meta:
         abstract = True
@@ -1143,6 +1215,17 @@ class GreekEquivalent(models.Model, MTimable):
                     u'по данному греческому эквиваленту.',
         blank = True,
         )
+
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+        default=datetime.datetime.now,
+    )
+
+    muser = models.ForeignKey(
+        CustomUser,
+        default=DEFAULT_USER,
+    )
 
     def __unicode__(self):
         return self.text
@@ -1177,7 +1260,7 @@ class GreekEquivalentForExample(GreekEquivalent):
 
 
 
-class OrthographicVariant(models.Model, MTimable):
+class OrthographicVariant(models.Model):
 
     # словарная статья, к которой относится данный орф. вариант
     entry = models.ForeignKey(
@@ -1229,6 +1312,17 @@ class OrthographicVariant(models.Model, MTimable):
         null  = True,
         )
 
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+        default=datetime.datetime.now,
+    )
+
+    muser = models.ForeignKey(
+        CustomUser,
+        default=DEFAULT_USER,
+    )
+    
     def __unicode__(self):
         return self.idem
 
@@ -1268,6 +1362,30 @@ class SynonymGroup(models.Model):
         verbose_name = u'базовый синоним',
         related_name = 'base_synonym_in'
         )
+    
+    ctime = models.DateTimeField(
+        editable=False,
+        auto_now_add=True,
+        default=datetime.datetime.now,
+    )
+
+    cuser = models.ForeignKey(
+        CustomUser,
+        related_name = 'cuser_synonymgroup_set',
+        default=DEFAULT_USER,
+    )
+
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+        default=datetime.datetime.now,
+    )
+
+    muser = models.ForeignKey(
+        CustomUser,
+        related_name = 'muser_synonymgroup_set',
+        default=DEFAULT_USER,
+    )
 
     def __unicode__(self):
         _output = [syn.orth_vars[0] for syn in self.entry_synonyms]
