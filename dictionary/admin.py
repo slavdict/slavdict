@@ -78,6 +78,9 @@ class OrthVar_Inline(admin.StackedInline):
             'fields': ('idem',),
             }),
         )
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        obj.save()
 
 from slavdict.dictionary.models import Etymology
 ETYMOLOGY_FIELDSETS = (
@@ -97,11 +100,17 @@ class Etymology_Inline(admin.StackedInline):
     model = Etymology
     extra = 0
     fieldsets = ETYMOLOGY_FIELDSETS
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        obj.save()
 
 class EtymologyForCollocation_Inline(admin.StackedInline):
     model = Etymology
     extra = 1
     fieldsets = ETYMOLOGY_FIELDSETS
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        obj.save()
 
 from slavdict.dictionary.models import GreekEquivalentForMeaning
 class GreekEquivalentForMeaning_Inline(admin.StackedInline):
@@ -116,6 +125,9 @@ class GreekEquivalentForMeaning_Inline(admin.StackedInline):
             'classes': ('collapse',)}
             ),
         )
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        obj.save()
 
 from slavdict.dictionary.models import GreekEquivalentForExample
 class GreekEquivalentForExample_Inline(admin.StackedInline):
@@ -130,7 +142,9 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
             'classes': ('collapse',)}
             ),
         )
-
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        obj.save()
 
 
 from slavdict.dictionary.models import Example
@@ -155,6 +169,9 @@ class Example_Inline(admin.StackedInline):
     extra = 1
     fieldsets = EXAMPLE_FIELDSETS
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        obj.save()
 
 class AdminExample(admin.ModelAdmin):
     inlines = (GreekEquivalentForExample_Inline,)
@@ -175,6 +192,9 @@ class AdminExample(admin.ModelAdmin):
         'meaning__collogroup_container__collocation__civil_equivalent',
         'meaning__collogroup_container__collocation__collocation',
         )
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        obj.save()
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
@@ -189,6 +209,9 @@ class MeaningContext_Inline(admin.StackedInline):
     model = MeaningContext
     extra = 0
     fieldsets = ((None, {'fields': ('context', ('left_text', 'right_text'),)}),)
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        obj.save()
 
 from slavdict.dictionary.models import Meaning
 Meaning.__unicode__=lambda self:meaning_with_entry(self)
@@ -233,7 +256,10 @@ class AdminMeaning(admin.ModelAdmin):
         'meaning',
         'gloss',
         )
-
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        if not obj.cuser: obj.cuser = request.user
+        obj.save()
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
@@ -332,7 +358,10 @@ class AdminEntry(admin.ModelAdmin):
     ordering = ('-id',)
     save_on_top = True
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
-
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        if not obj.cuser: obj.cuser = request.user
+        obj.save()
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
@@ -341,9 +370,6 @@ admin.site.register(Entry, AdminEntry)
 ui.register(Entry, AdminEntry)
 
 
-from slavdict.dictionary.models import SynonymGroup
-admin.site.register(SynonymGroup)
-
 
 from slavdict.dictionary.models import Collocation
 class AdminCollocation(admin.ModelAdmin):
@@ -351,6 +377,9 @@ class AdminCollocation(admin.ModelAdmin):
     fieldsets = (
             (None, {'fields': ('collocation', 'civil_equivalent')}),
         )
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        obj.save()
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
@@ -364,6 +393,9 @@ class Collocation_Inline(admin.StackedInline):
     fieldsets = (
             (None, {'fields': ('collocation', 'civil_equivalent')}),
         )
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        obj.save()
 
 from slavdict.dictionary.models import CollocationGroup
 CollocationGroup.__unicode__=lambda self: _collocations(self)
@@ -383,6 +415,10 @@ class AdminCollocationGroup(admin.ModelAdmin):
     filter_horizontal = ('cf_entries', 'cf_meanings')
     list_display = ('id', '__unicode__')
     list_display_links = list_display
+    def save_model(self, request, obj, form, change):
+        obj.muser = request.user
+        if not obj.cuser: obj.cuser = request.user
+        obj.save()
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
