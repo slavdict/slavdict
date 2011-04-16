@@ -258,7 +258,7 @@ class AdminMeaning(admin.ModelAdmin):
         )
     def save_model(self, request, obj, form, change):
         obj.muser = request.user
-        if not obj.cuser: obj.cuser = request.user
+        if not obj.pk: obj.cuser = request.user
         obj.save()
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
@@ -361,7 +361,7 @@ class AdminEntry(admin.ModelAdmin):
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     def save_model(self, request, obj, form, change):
         obj.muser = request.user
-        if not obj.cuser: obj.cuser = request.user
+        if not obj.pk: obj.cuser = request.user
         obj.save()
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
@@ -418,7 +418,7 @@ class AdminCollocationGroup(admin.ModelAdmin):
     list_display_links = list_display
     def save_model(self, request, obj, form, change):
         obj.muser = request.user
-        if not obj.cuser: obj.cuser = request.user
+        if not obj.pk: obj.cuser = request.user
         obj.save()
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
