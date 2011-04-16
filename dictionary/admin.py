@@ -354,7 +354,11 @@ class AdminEntry(admin.ModelAdmin):
         'editor',
         'status',
         )
-    search_fields = ('civil_equivalent', 'orthographic_variants__idem')
+    search_fields = ('civil_equivalent',)# 'orthographic_variants__idem')
+    # При переходе к моделям, соотносящимся с основной как "много к одному"
+    # в результатах поиска возможны дубликаты.
+    # См. http://code.djangoproject.com/ticket/15839
+
     filter_horizontal = ('cf_entries', 'cf_collogroups', 'cf_meanings')
     ordering = ('-id',)
     save_on_top = True
