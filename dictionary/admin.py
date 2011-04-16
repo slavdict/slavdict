@@ -340,6 +340,7 @@ class AdminEntry(admin.ModelAdmin):
     list_filter = (
         'editor',
         'status',
+        'part_of_speech',
         'uninflected',
         'gender',
         'tantum',
