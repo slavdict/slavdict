@@ -11,95 +11,52 @@ class Migration(SchemaMigration):
         # Adding field 'Example.mtime'
         db.add_column('dictionary_example', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
-        # Adding field 'Example.muser'
-        db.add_column('dictionary_example', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
-
         # Adding field 'GreekEquivalentForMeaning.mtime'
         db.add_column('dictionary_greekequivalentformeaning', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
-
-        # Adding field 'GreekEquivalentForMeaning.muser'
-        db.add_column('dictionary_greekequivalentformeaning', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'Etymology.mtime'
         db.add_column('dictionary_etymology', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
-        # Adding field 'Etymology.muser'
-        db.add_column('dictionary_etymology', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
-
         # Adding field 'MeaningContext.mtime'
         db.add_column('dictionary_meaningcontext', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
-
-        # Adding field 'MeaningContext.muser'
-        db.add_column('dictionary_meaningcontext', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'CollocationGroup.ctime'
         db.add_column('dictionary_collocationgroup', 'ctime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True), keep_default=False)
 
-        # Adding field 'CollocationGroup.cuser'
-        db.add_column('dictionary_collocationgroup', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='cuser_collocationgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
-
         # Adding field 'CollocationGroup.mtime'
         db.add_column('dictionary_collocationgroup', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
-
-        # Adding field 'CollocationGroup.muser'
-        db.add_column('dictionary_collocationgroup', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='muser_collocationgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'SynonymGroup.ctime'
         db.add_column('dictionary_synonymgroup', 'ctime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True), keep_default=False)
 
-        # Adding field 'SynonymGroup.cuser'
-        db.add_column('dictionary_synonymgroup', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='cuser_synonymgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
-
         # Adding field 'SynonymGroup.mtime'
         db.add_column('dictionary_synonymgroup', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
-
-        # Adding field 'SynonymGroup.muser'
-        db.add_column('dictionary_synonymgroup', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='muser_synonymgroup_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'Entry.mtime'
         db.add_column('dictionary_entry', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
-        # Adding field 'Entry.muser'
-        db.add_column('dictionary_entry', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='muser_entry_set', to=orm['custom_user.CustomUser']), keep_default=False)
-
         # Adding field 'Entry.ctime'
         db.add_column('dictionary_entry', 'ctime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True), keep_default=False)
 
-        # Adding field 'Entry.cuser'
-        db.add_column('dictionary_entry', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='cuser_entry_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Changing field 'Entry.status'
         db.alter_column('dictionary_entry', 'status_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['directory.CategoryValue']))
 
+
         # Adding field 'GreekEquivalentForExample.mtime'
         db.add_column('dictionary_greekequivalentforexample', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
-
-        # Adding field 'GreekEquivalentForExample.muser'
-        db.add_column('dictionary_greekequivalentforexample', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'Meaning.ctime'
         db.add_column('dictionary_meaning', 'ctime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True), keep_default=False)
 
-        # Adding field 'Meaning.cuser'
-        db.add_column('dictionary_meaning', 'cuser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='cuser_meaning_set', to=orm['custom_user.CustomUser']), keep_default=False)
-
         # Adding field 'Meaning.mtime'
         db.add_column('dictionary_meaning', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
-
-        # Adding field 'Meaning.muser'
-        db.add_column('dictionary_meaning', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='muser_meaning_set', to=orm['custom_user.CustomUser']), keep_default=False)
 
         # Adding field 'OrthographicVariant.mtime'
         db.add_column('dictionary_orthographicvariant', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
 
-        # Adding field 'OrthographicVariant.muser'
-        db.add_column('dictionary_orthographicvariant', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
-
         # Adding field 'Collocation.mtime'
         db.add_column('dictionary_collocation', 'mtime', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True), keep_default=False)
-
-        # Adding field 'Collocation.muser'
-        db.add_column('dictionary_collocation', 'muser', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['custom_user.CustomUser']), keep_default=False)
 
 
     def backwards(self, orm):
@@ -107,95 +64,52 @@ class Migration(SchemaMigration):
         # Deleting field 'Example.mtime'
         db.delete_column('dictionary_example', 'mtime')
 
-        # Deleting field 'Example.muser'
-        db.delete_column('dictionary_example', 'muser_id')
-
         # Deleting field 'GreekEquivalentForMeaning.mtime'
         db.delete_column('dictionary_greekequivalentformeaning', 'mtime')
-
-        # Deleting field 'GreekEquivalentForMeaning.muser'
-        db.delete_column('dictionary_greekequivalentformeaning', 'muser_id')
 
         # Deleting field 'Etymology.mtime'
         db.delete_column('dictionary_etymology', 'mtime')
 
-        # Deleting field 'Etymology.muser'
-        db.delete_column('dictionary_etymology', 'muser_id')
-
         # Deleting field 'MeaningContext.mtime'
         db.delete_column('dictionary_meaningcontext', 'mtime')
-
-        # Deleting field 'MeaningContext.muser'
-        db.delete_column('dictionary_meaningcontext', 'muser_id')
 
         # Deleting field 'CollocationGroup.ctime'
         db.delete_column('dictionary_collocationgroup', 'ctime')
 
-        # Deleting field 'CollocationGroup.cuser'
-        db.delete_column('dictionary_collocationgroup', 'cuser_id')
-
         # Deleting field 'CollocationGroup.mtime'
         db.delete_column('dictionary_collocationgroup', 'mtime')
-
-        # Deleting field 'CollocationGroup.muser'
-        db.delete_column('dictionary_collocationgroup', 'muser_id')
 
         # Deleting field 'SynonymGroup.ctime'
         db.delete_column('dictionary_synonymgroup', 'ctime')
 
-        # Deleting field 'SynonymGroup.cuser'
-        db.delete_column('dictionary_synonymgroup', 'cuser_id')
-
         # Deleting field 'SynonymGroup.mtime'
         db.delete_column('dictionary_synonymgroup', 'mtime')
-
-        # Deleting field 'SynonymGroup.muser'
-        db.delete_column('dictionary_synonymgroup', 'muser_id')
 
         # Deleting field 'Entry.mtime'
         db.delete_column('dictionary_entry', 'mtime')
 
-        # Deleting field 'Entry.muser'
-        db.delete_column('dictionary_entry', 'muser_id')
-
         # Deleting field 'Entry.ctime'
         db.delete_column('dictionary_entry', 'ctime')
 
-        # Deleting field 'Entry.cuser'
-        db.delete_column('dictionary_entry', 'cuser_id')
 
         # Changing field 'Entry.status'
         db.alter_column('dictionary_entry', 'status_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['directory.CategoryValue']))
 
+
         # Deleting field 'GreekEquivalentForExample.mtime'
         db.delete_column('dictionary_greekequivalentforexample', 'mtime')
-
-        # Deleting field 'GreekEquivalentForExample.muser'
-        db.delete_column('dictionary_greekequivalentforexample', 'muser_id')
 
         # Deleting field 'Meaning.ctime'
         db.delete_column('dictionary_meaning', 'ctime')
 
-        # Deleting field 'Meaning.cuser'
-        db.delete_column('dictionary_meaning', 'cuser_id')
-
         # Deleting field 'Meaning.mtime'
         db.delete_column('dictionary_meaning', 'mtime')
-
-        # Deleting field 'Meaning.muser'
-        db.delete_column('dictionary_meaning', 'muser_id')
 
         # Deleting field 'OrthographicVariant.mtime'
         db.delete_column('dictionary_orthographicvariant', 'mtime')
 
-        # Deleting field 'OrthographicVariant.muser'
-        db.delete_column('dictionary_orthographicvariant', 'muser_id')
-
         # Deleting field 'Collocation.mtime'
         db.delete_column('dictionary_collocation', 'mtime')
-
-        # Deleting field 'Collocation.muser'
-        db.delete_column('dictionary_collocation', 'muser_id')
 
 
     models = {
@@ -247,7 +161,6 @@ class Migration(SchemaMigration):
             'collogroup': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['dictionary.CollocationGroup']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'muser': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['custom_user.CustomUser']"}),
             'order': ('django.db.models.fields.SmallIntegerField', [], {'null': 'True', 'blank': 'True'})
         },
         'dictionary.collocationgroup': {
@@ -257,12 +170,10 @@ class Migration(SchemaMigration):
             'cf_entries': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'cf_collogroup_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['dictionary.Entry']"}),
             'cf_meanings': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'cf_collogroup_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['dictionary.Meaning']"}),
             'ctime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'cuser': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'cuser_collocationgroup_set'", 'to': "orm['custom_user.CustomUser']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'link_to_entry': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'ref_collogroup_set'", 'null': 'True', 'to': "orm['dictionary.Entry']"}),
             'link_to_meaning': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'ref_collogroup_set'", 'null': 'True', 'to': "orm['dictionary.Meaning']"}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'muser': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'muser_collocationgroup_set'", 'to': "orm['custom_user.CustomUser']"})
         },
         'dictionary.entry': {
             'Meta': {'ordering': "('-id',)", 'object_name': 'Entry'},
@@ -274,7 +185,6 @@ class Migration(SchemaMigration):
             'cf_meanings': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'cf_entry_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['dictionary.Meaning']"}),
             'civil_equivalent': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'ctime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'cuser': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'cuser_entry_set'", 'to': "orm['custom_user.CustomUser']"}),
             'derivation_entry': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'derived_entry_set'", 'null': 'True', 'to': "orm['dictionary.Entry']"}),
             'editor': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['custom_user.CustomUser']", 'null': 'True', 'blank': 'True'}),
             'gender': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'entries_of_gender'", 'null': 'True', 'to': "orm['directory.CategoryValue']"}),
@@ -288,7 +198,6 @@ class Migration(SchemaMigration):
             'link_to_entry': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'ref_entry_set'", 'null': 'True', 'to': "orm['dictionary.Entry']"}),
             'link_to_meaning': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'ref_entry_set'", 'null': 'True', 'to': "orm['dictionary.Meaning']"}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'muser': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'muser_entry_set'", 'to': "orm['custom_user.CustomUser']"}),
             'nom_pl': ('django.db.models.fields.CharField', [], {'max_length': '25', 'null': 'True', 'blank': 'True'}),
             'nom_sg': ('django.db.models.fields.CharField', [], {'max_length': '25', 'null': 'True', 'blank': 'True'}),
             'onym': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['directory.CategoryValue']", 'null': 'True', 'blank': 'True'}),
@@ -317,7 +226,6 @@ class Migration(SchemaMigration):
             'mark': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'}),
             'meaning': ('django.db.models.fields.CharField', [], {'max_length': '70', 'blank': 'True'}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'muser': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['custom_user.CustomUser']"}),
             'order': ('django.db.models.fields.SmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'questionable': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'source': ('django.db.models.fields.CharField', [], {'max_length': '40', 'blank': 'True'}),
@@ -336,7 +244,6 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'meaning': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['dictionary.Meaning']"}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'muser': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['custom_user.CustomUser']"}),
             'order': ('django.db.models.fields.SmallIntegerField', [], {'null': 'True', 'blank': 'True'})
         },
         'dictionary.greekequivalentforexample': {
@@ -346,7 +253,6 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mark': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'muser': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['custom_user.CustomUser']"}),
             'position': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'source': ('django.db.models.fields.CharField', [], {'max_length': '40', 'blank': 'True'}),
             'text': ('django.db.models.fields.CharField', [], {'max_length': '100'})
@@ -358,7 +264,6 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mark': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'muser': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['custom_user.CustomUser']"}),
             'source': ('django.db.models.fields.CharField', [], {'max_length': '40', 'blank': 'True'}),
             'text': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
@@ -370,7 +275,6 @@ class Migration(SchemaMigration):
             'cf_meanings': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'cf_meaning_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['dictionary.Meaning']"}),
             'collogroup_container': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'meaning_set'", 'null': 'True', 'to': "orm['dictionary.CollocationGroup']"}),
             'ctime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'cuser': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'cuser_meaning_set'", 'to': "orm['custom_user.CustomUser']"}),
             'entry_container': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'meaning_set'", 'null': 'True', 'to': "orm['dictionary.Entry']"}),
             'gloss': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'hidden': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -381,7 +285,6 @@ class Migration(SchemaMigration):
             'meaning': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'metaphorical': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'muser': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'muser_meaning_set'", 'to': "orm['custom_user.CustomUser']"}),
             'order': ('django.db.models.fields.SmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'parent_meaning': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'child_meaning_set'", 'null': 'True', 'to': "orm['dictionary.Meaning']"}),
             'substantivus': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -394,7 +297,6 @@ class Migration(SchemaMigration):
             'left_text': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'}),
             'meaning': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['dictionary.Meaning']"}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'muser': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['custom_user.CustomUser']"}),
             'order': ('django.db.models.fields.SmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'right_text': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'})
         },
@@ -407,7 +309,6 @@ class Migration(SchemaMigration):
             'is_approved': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_reconstructed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'muser': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['custom_user.CustomUser']"}),
             'order': ('django.db.models.fields.SmallIntegerField', [], {'null': 'True', 'blank': 'True'})
         },
         'dictionary.synonymgroup': {
@@ -415,11 +316,9 @@ class Migration(SchemaMigration):
             'base': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'base_synonym_in'", 'to': "orm['dictionary.Entry']"}),
             'collogroup_synonyms': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['dictionary.CollocationGroup']", 'null': 'True', 'blank': 'True'}),
             'ctime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'cuser': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'cuser_synonymgroup_set'", 'to': "orm['custom_user.CustomUser']"}),
             'entry_synonyms': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'synonym_in'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['dictionary.Entry']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'muser': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'muser_synonymgroup_set'", 'to': "orm['custom_user.CustomUser']"})
         },
         'directory.category': {
             'Meta': {'object_name': 'Category'},

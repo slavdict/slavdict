@@ -100,6 +100,7 @@ class Meaningfull:
 #
 #    muser = models.ForeignKey(
 #        CustomUser,
+#        editable=False,
 #    )
 
 #class CMTimable(MTimable):
@@ -115,6 +116,7 @@ class Meaningfull:
 #
 #    cuser = models.ForeignKey(
 #        CustomUser,
+#        editable=False,
 #    )
 
 
@@ -478,19 +480,9 @@ class Entry(models.Model, Meaningfull):
         auto_now=True,
     )
 
-    muser = models.ForeignKey(
-        CustomUser,
-        related_name = 'muser_entry_set',
-    )
-
     ctime = models.DateTimeField(
         editable=False,
         auto_now_add=True,
-    )
-
-    cuser = models.ForeignKey(
-        CustomUser,
-        related_name = 'cuser_entry_set',
     )
 
     @models.permalink
@@ -609,10 +601,6 @@ class Etymology(models.Model):
         auto_now=True,
     )
 
-    muser = models.ForeignKey(
-        CustomUser,
-    )
-
     def __unicode__(self):
         return u'%s %s %s' % (self.language.tag, self.entry, self.translit)
 
@@ -674,10 +662,6 @@ class MeaningContext(models.Model):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-    )
-
-    muser = models.ForeignKey(
-        CustomUser,
     )
 
     def __unicode__(self):
@@ -869,21 +853,11 @@ class Meaning(models.Model):
         auto_now_add=True,
     )
 
-    cuser = models.ForeignKey(
-        CustomUser,
-        related_name = 'cuser_meaning_set',
-    )
-
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
     )
 
-    muser = models.ForeignKey(
-        CustomUser,
-        related_name = 'muser_meaning_set',
-    )
-    
     def __unicode__(self):
         return self.meaning
 
@@ -1002,10 +976,6 @@ class Example(models.Model):
         auto_now=True,
     )
 
-    muser = models.ForeignKey(
-        CustomUser,
-    )
-
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
 
@@ -1083,21 +1053,11 @@ class CollocationGroup(models.Model, Meaningfull):
         auto_now_add=True,
     )
 
-    cuser = models.ForeignKey(
-        CustomUser,
-        related_name = 'cuser_collocationgroup_set',
-    )
-
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
     )
 
-    muser = models.ForeignKey(
-        CustomUser,
-        related_name = 'muser_collocationgroup_set',
-    )
-    
     @property
     def collocations(self):
         return self.collocation_set.all().order_by('order', 'id')
@@ -1145,10 +1105,6 @@ class Collocation(models.Model):
         auto_now=True,
     )
 
-    muser = models.ForeignKey(
-        CustomUser,
-    )
-    
     def __unicode__(self):
         return self.collocation
 
@@ -1195,10 +1151,6 @@ class GreekEquivalent(models.Model):
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-    )
-
-    muser = models.ForeignKey(
-        CustomUser,
     )
 
     def __unicode__(self):
@@ -1291,10 +1243,6 @@ class OrthographicVariant(models.Model):
         auto_now=True,
     )
 
-    muser = models.ForeignKey(
-        CustomUser,
-    )
-    
     def __unicode__(self):
         return self.idem
 
@@ -1340,19 +1288,9 @@ class SynonymGroup(models.Model):
         auto_now_add=True,
     )
 
-    cuser = models.ForeignKey(
-        CustomUser,
-        related_name = 'cuser_synonymgroup_set',
-    )
-
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
-    )
-
-    muser = models.ForeignKey(
-        CustomUser,
-        related_name = 'muser_synonymgroup_set',
     )
 
     def __unicode__(self):
