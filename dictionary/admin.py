@@ -385,8 +385,8 @@ class AdminCollocation(admin.ModelAdmin):
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
 
-admin.site.register(Collocation, AdminCollocation)
-ui.register(Collocation, AdminCollocation)
+#admin.site.register(Collocation, AdminCollocation)
+#ui.register(Collocation, AdminCollocation)
 
 class Collocation_Inline(admin.StackedInline):
     model = Collocation
