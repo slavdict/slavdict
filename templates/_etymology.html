@@ -1,84 +1,114 @@
+{% load trim_spaces %}
+
 {% ifchanged etym.language.tag %}
-    {% if not forloop.first %}<span>; </span>{% endif %}
+    {% if not forloop.first %}
+        {% backspace %};{% space %}
+    {% endif %}
 {% else %}
-    {% if not forloop.first %}<span>, </span>{% endif %}
+    {% if not forloop.first %}
+        {% backspace %},{% space %}
+    {% endif %}
 {% endifchanged %}
 
 {% ifchanged %}
-    <i>{{ etym.language.tag }}&nbsp;</i>
+    <i>{{ etym.language.tag }}</i>&nbsp;
 {% endifchanged %}
 
 {% if etym.text %}
     <span class="{{ etym.language.css_class }}">{{ etym.text }}</span>
+    {% space %}
 {% endif %}
 
 {% if etym.translit %}
-    {% if etym.text %}<span> [</span>{% endif %}
-    <span class="{{ etym.language.css_class2 }}">{{ etym.translit }}</span>
-    {% if etym.text %}<span>]</span>{% endif %}
+    {% if etym.text %}
+        {% space %}[
+        <span class="{{ etym.language.css_class2 }}">{{ etym.translit }}</span>
+        ]{% space %}
+    {% else %}
+        <span class="{{ etym.language.css_class2 }}">{{ etym.translit }}</span>
+        {% space %}
+    {% endif %}
 {% endif %}
 
 {% if etym.mark %}
-    (<i>{{ etym.mark }}</i><span>)</span>
+    (<i>{{ etym.mark }}</i>){% space %}
 {% endif %}
 
 {% if etym.meaning %}
-    <span> ‘{{ etym.meaning }}’</span>
+    <span>‘{{ etym.meaning }}’</span>
+    {% space %}
 {% endif %}
 
 {% if etym.gloss %}
-    <i> {{ etym.gloss }}</i>
+    <i>{{ etym.gloss }}</i>
+    {% space %}
 {% endif %}
 
 {% if etym.source %}
     <span>[{{ etym.source }}]</span>
+    {% space %}
 {% endif %}
 
 {% if etym.unclear %}
-    {% if etym.gloss %}<span>,</span>{% endif %}
-    <i> этимол. неясна</i>
+    {% if etym.gloss %}
+        {% backspace %},{% space %}
+    {% endif %}
+    <i>этимол. неясна</i>
 {% else %}
     {% if etym.etymons %}
         {% if etym.etymons.0.questionable %}
-            <span> этимол. спорна:</span>
+            <span>этимол. спорна:</span>
+            {% space %}
         {% else %}
-            <span> от </span>
+            <span>от</span>
+            {% space %}
         {% endif %}
 
         {% for etym2 in etym.etymons %}
 
-            {% if not forloop.first %}<span>; </span>{% endif %}
-
-            {% if etym.etymons|length > 1 %}
-                <span>{{ forloop.counter }})&nbsp;</span>
+            {% if not forloop.first %}
+                {% backspace %};{% space %}
             {% endif %}
 
-            <i>{{ etym2.language.tag }}&nbsp;</i>
+            {% if etym.etymons|length > 1 %}
+                <span>{{ forloop.counter }})</span>&nbsp;
+            {% endif %}
+
+            <i>{{ etym2.language.tag }}</i>&nbsp;
 
             {% if etym2.text %}
                 <span class="{{ etym2.language.css_class }}">{{ etym2.text }}</span>
+                {% space %}
             {% endif %}
 
             {% if etym2.translit %}
-                {% if etym2.text %}<span> [</span>{% endif %}
-                <span class="{{ etym2.language.css_class2 }}">{{ etym2.translit }}</span>
-                {% if etym2.text %}<span>]</span>{% endif %}
+                {% if etym2.text %}
+                    {% space %}[
+                    <span class="{{ etym2.language.css_class2 }}">{{ etym2.translit }}</span>
+                    ]{% space %}
+                {% else %}
+                    <span class="{{ etym2.language.css_class2 }}">{{ etym2.translit }}</span>
+                    {% space %}
+                {% endif %}
             {% endif %}
 
             {% if etym2.mark %}
-                (<i>{{ etym2.mark }}</i><span>)</span>
+                (<i>{{ etym2.mark }}</i>){% space %}
             {% endif %}
 
             {% if etym2.meaning %}
-                <span> ‘{{ etym2.meaning }}’</span>
+                <span>‘{{ etym2.meaning }}’</span>
+                {% space %}
             {% endif %}
 
             {% if etym2.gloss %}
-                <i> {{ etym2.gloss }}</i>
+                <i>{{ etym2.gloss }}</i>
+                {% space %}
             {% endif %}
 
             {% if etym2.source %}
                 <span>[{{ etym2.source }}]</span>
+                {% space %}
             {% endif %}
 
             {% if show_additional_info and etym2.additional_info %}

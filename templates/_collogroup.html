@@ -1,38 +1,48 @@
-            <div style="line-height: 140%;">
-                □<!-- &#x25A1; -->
-                {% for c in cg.collocations %}
-                    {% spaceless %}
-                        <span class="cslav">{{ c.collocation_ucs }}</span>
-                        {% if c.etymologies %}
-                            <span> (</span>
-                            {% for etym in c.etymologies %}
-                                {% include '_etymology.html' %}
-                            {% endfor %}
-                            <span>)</span>
-                        {% endif %}
-                        {% if not forloop.last %}<span>, </span>{% endif %}
-                    {% endspaceless %}
+{% load trim_spaces %}
+
+<div style="line-height: 140%;">
+    □<!-- &#x25A1; -->&nbsp;
+
+    {% for c in cg.collocations %}
+
+            <span class="cslav">{{ c.collocation_ucs }}</span>
+            {% space %}
+
+            {% if c.etymologies %}
+                <span>(</span>
+                {% for etym in c.etymologies %}
+                    {% include '_etymology.html' %}
                 {% endfor %}
+                <span>)</span>
+            {% endif %}
 
-                {% if cg.meanings or cg.metaph_meanings %}&mdash;{% endif %}
+            {% if not forloop.last %}
+                {% backspace %},{% space %}
+            {% endif %}
 
-                <span>
-                    {% for m in cg.meanings %}
+    {% endfor %}
 
-                        {% if not cg.meanings|length_is:"1" %}
-                            {{ forloop.counter }}.
-                        {% endif %}
+    {% if cg.meanings or cg.metaph_meanings %}
+        {% backspace %}&nbsp;&mdash;{% space %}
+    {% endif %}
 
-                        {% include '_meaning.html' %}
+    <span>
+        {% for m in cg.meanings %}
 
-                    {% endfor %}
+            {% if not cg.meanings|length_is:"1" %}
+                {{ forloop.counter }}.{% space %}
+            {% endif %}
+
+            {% include '_meaning.html' %}
+
+        {% endfor %}
 
 
-                    {% for m in cg.metaph_meanings %}
+        {% for m in cg.metaph_meanings %}
 
-                        <span style="color: #777;">►</span>
-                        {% include '_meaning.html' %}
+            <span style="color: #777;">►</span>
+            {% include '_meaning.html' %}
 
-                    {% endfor %}
-                </span>
-            </div>
+        {% endfor %}
+    </span>
+</div>

@@ -1,29 +1,34 @@
-            <div style="line-height: 140%;">
-                □<!-- &#x25A1; -->
-                {% for ovar in c.collocations %}
-                        <span class="cslav">{{ ovar.idem_ucs }}</span
-                        >{% if not forloop.last %},{% endif %}
-                {% endfor %}
+{% load trim_spaces %}
 
-                {% if c.meanings or c.metaph_meanings %}&mdash;{% endif %}
+<div style="line-height: 140%;">
+    □<!-- &#x25A1; -->&nbsp;
 
-                <span>
-                    {% for m in c.meanings %}
+    {% for ovar in c.collocations %}
+            <span class="cslav">{{ ovar.idem_ucs }}</span>
+            {% if not forloop.last %},{% endif %}
+    {% endfor %}
 
-                        {% if not c.meanings|length_is:"1" %}
-                            {{ forloop.counter }}.
-                        {% endif %}
+    {% if c.meanings or c.metaph_meanings %}
+        {% backspace %}&nbsp;&mdash;{% space %}
+    {% endif %}
 
-                        {% include '_meaning.html' %}
+    <span>
+        {% for m in c.meanings %}
 
-                    {% endfor %}
+            {% if not c.meanings|length_is:"1" %}
+                {{ forloop.counter }}.&nbsp;
+            {% endif %}
+
+            {% include '_meaning.html' %}
+
+        {% endfor %}
 
 
-                    {% for m in c.metaph_meanings %}
+        {% for m in c.metaph_meanings %}
 
-                        <span style="color: #777;">►</span>
-                        {% include '_meaning.html' %}
+            <span style="color: #777;">►</span>
+            {% include '_meaning.html' %}
 
-                    {% endfor %}
-                </span>
-            </div>
+        {% endfor %}
+    </span>
+</div>
