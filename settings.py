@@ -25,6 +25,7 @@ ADMINS = (
     ('khitrov', 'a.n.khitrov@gmail.com'),
 )
 MANAGERS = ADMINS
+INTERNAL_IPS = ('127.0.0.1',)
 
 DATABASES = {
     'default': {
