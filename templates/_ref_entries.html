@@ -1,0 +1,61 @@
+{% load trim_spaces %}
+{% trim %}
+
+{% if entry.orth_vars|slice:"1:" or entry.nom_pl_ucs_wax or entry.nom_sg_ucs_wax %}
+
+    <div class="refheader">Отсылочные статьи</div>
+
+    {% for e in entry.orth_vars|slice:"1:" %}
+
+        <div class="entry ref">
+
+            <span class="cslav headword">{{ e.idem_ucs }}</span>
+            {% space %}
+
+            <i>см.&nbsp;</i>
+            <a href="{{ entry.get_absolute_url }}">
+                <span class="cslav">
+                    {{ entry.orth_vars.0.idem_ucs }}
+                </span>
+            </a>
+        </div>
+
+    {% endfor %}
+
+    {% if entry.nom_pl_ucs_wax %}
+
+        <div class="entry ref">
+
+            <span class="cslav headword">{{ entry.nom_pl_ucs_wax.1 }}</span>
+            {% space %}
+
+            <i>см.&nbsp;</i>
+            <a href="{{ entry.get_absolute_url }}">
+                <span class="cslav">
+                    {{ entry.orth_vars.0.idem_ucs }}
+                </span>
+            </a>
+        </div>
+
+    {% endif %}
+
+
+    {% if entry.nom_sg_ucs_wax %}
+
+        <div class="entry ref">
+
+            <span class="cslav headword">{{ entry.nom_sg_ucs_wax.1 }}</span>
+            {% space %}
+
+            <i>см.&nbsp;</i>
+            <a href="{{ entry.get_absolute_url }}">
+                <span class="cslav">
+                    {{ entry.orth_vars.0.idem_ucs }}
+                </span>
+            </a>
+        </div>
+
+    {% endif %}
+{% endif %}
+
+{% endtrim %}
