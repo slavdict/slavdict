@@ -434,6 +434,10 @@ class Entry(models.Model, Meaningfull):
     def collogroups(self):
         return self.collocationgroup_set.all().order_by('id')
 
+    @property
+    def wordforms(self):
+        return self.wordform_set.all().order_by('order', 'id')
+
     # административная информация
     status = models.ForeignKey(
         CategoryValue,
@@ -1253,6 +1257,56 @@ class OrthographicVariant(models.Model):
 
 
 
+class WordForm(models.Model):
+
+    # словарная статья, к которой относится данная словоформа
+    entry = models.ForeignKey(
+        Entry,
+        blank = True,
+        null = True,
+        )
+
+    PARTICIPLE_CHOICES = (
+        ('1', u'действ. прич. наст. вр.'),
+        ('2', u'действ. прич. прош. вр.'),
+        ('3', u'страд. прич. наст. вр.'),
+        ('4', u'страд. прич. прош. вр.'),
+    )
+
+    tp = models.CharField(
+        u'тип причастия',
+        max_length=2,
+        choices=PARTICIPLE_CHOICES,
+    )
+
+    # сама словоформа
+    idem = models.CharField(
+        u'словоформа',
+        max_length = 50,
+        )
+
+    @property
+    def idem_ucs(self):
+        return ucs_convert(self.idem)
+
+    order = models.SmallIntegerField(
+        u'порядок следования',
+        blank = True,
+        null = True,
+        )
+    
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+    )
+
+    def __unicode__(self):
+        return self.idem
+
+    class Meta:
+        verbose_name = u'причастие'
+        verbose_name_plural = u'причастия'
+        ordering = ('order','id')
 
 
 

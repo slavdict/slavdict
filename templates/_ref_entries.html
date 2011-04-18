@@ -1,7 +1,7 @@
 {% load trim_spaces %}
 {% trim %}
 
-{% if entry.orth_vars|slice:"1:" or entry.nom_pl_ucs_wax or entry.nom_sg_ucs_wax %}
+{% if entry.orth_vars|slice:"1:" or entry.nom_pl_ucs_wax or entry.nom_sg_ucs_wax or entry.wordforms %}
 
     <div class="refheader">Отсылочные статьи</div>
 
@@ -56,6 +56,33 @@
         </div>
 
     {% endif %}
+
+
+    {% if entry.wordforms %}
+
+        {% for wf in entry.wordforms %}
+
+            <div class="entry ref">
+
+                <span class="cslav headword">{{ wf.idem_ucs }}</span>
+                {% space %}
+
+                <i>{{ wf.get_tp_display }} к</i>&nbsp;
+
+                <a href="{{ entry.get_absolute_url }}">
+                    <span class="cslav">
+                        {{ entry.orth_vars.0.idem_ucs }}
+                    </span>
+                </a>
+
+                &nbsp;(<i>см.</i>)
+            
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
 {% endif %}
 
 {% endtrim %}

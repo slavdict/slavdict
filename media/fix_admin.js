@@ -26,6 +26,13 @@
         var y = $('.civil_equivalent').parent('fieldset');
         x.insertBefore(y);
 
+        /* Переносим группу полей словоформ (пока в списке типов только
+         * причастия) в расположение после полей форм глагола. */
+        x = $('#wordforms-group').detach();
+        x.addClass('hidden verb');
+        y = $('#id_sg1').closest('fieldset');
+        x.insertAfter(y);
+
         /* Переносим группу полей с этимологиями в расположение после поля
          * "образовано от" (морфолгическая деривация). */
         x = $('#etymology_set-group').detach();
@@ -91,7 +98,8 @@
 
         /* Скрываем и отображаем поля в зависимости от выбранной части речи. */
         partsOfSpeech = {
-            "1": 'noun',
+            "1": 'noun', // отображение id в справочнике значений категорий
+                         // на названия категорий на английском.
             "2": 'verb',
             "3": 'adjective',
             "4": 'adverb',
@@ -101,7 +109,7 @@
             "8": 'particle',
             "9": 'interjection',
             "40":'participle'
-        }
+        };
 
         var v = $('select#id_part_of_speech').val();
         if (v) {

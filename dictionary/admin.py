@@ -245,6 +245,13 @@ admin.site.register(Meaning, AdminMeaning_MAIN)
 ui.register(Meaning, AdminMeaning)
 
 
+from slavdict.dictionary.models import WordForm
+class WordForm_Inline(admin.StackedInline):
+    model = WordForm
+    extra = 1
+    fieldsets = ((None, { 'fields': ('tp', 'idem') }),)
+
+
 from slavdict.dictionary.models import Entry
 Entry.__unicode__=lambda self: entry_with_orth_variants(self)
 class AdminEntry(admin.ModelAdmin):
@@ -295,6 +302,7 @@ class AdminEntry(admin.ModelAdmin):
         )
     inlines = (
         OrthVar_Inline,
+        WordForm_Inline,
         Etymology_Inline,
         )
     list_display = (
