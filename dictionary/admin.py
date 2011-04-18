@@ -3,6 +3,7 @@ from django.conf import settings
 from django import forms
 from django.db import models
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 from slavdict.admin import ui
 
 
@@ -192,6 +193,12 @@ class AdminExample(admin.ModelAdmin):
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
+    def response_add(self, request, obj, post_url_continue='/'):
+        post_url_continue = obj.host_entry.get_absolute_url()
+        return HttpResponseRedirect(post_url_continue)
+    def response_change(self, request, obj):
+        post_url_continue = obj.host_entry.get_absolute_url()
+        return HttpResponseRedirect(post_url_continue)
 
 AdminExample.has_add_permission = staff_has_add_permission
 AdminExample.has_change_permission = staff_has_change_permission
@@ -254,6 +261,12 @@ class AdminMeaning(admin.ModelAdmin):
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
+    def response_add(self, request, obj, post_url_continue='/'):
+        post_url_continue = obj.host_entry.get_absolute_url()
+        return HttpResponseRedirect(post_url_continue)
+    def response_change(self, request, obj):
+        post_url_continue = obj.host_entry.get_absolute_url()
+        return HttpResponseRedirect(post_url_continue)
 
 AdminMeaning.has_add_permission = staff_has_add_permission
 AdminMeaning.has_change_permission = staff_has_change_permission
@@ -368,6 +381,12 @@ class AdminEntry(admin.ModelAdmin):
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
+    def response_add(self, request, obj, post_url_continue='/'):
+        post_url_continue = obj.get_absolute_url()
+        return HttpResponseRedirect(post_url_continue)
+    def response_change(self, request, obj):
+        post_url_continue = obj.get_absolute_url()
+        return HttpResponseRedirect(post_url_continue)
 
 AdminEntry.has_add_permission = staff_has_add_permission
 AdminEntry.has_change_permission = staff_has_change_permission
@@ -387,6 +406,12 @@ from slavdict.dictionary.models import Collocation
 #    class Media:
 #        css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
 #        js = (settings.MEDIA_URL + "fix_admin.js",)
+#    def response_add(self, request, obj, post_url_continue='/'):
+#        post_url_continue = obj.host_entry.get_absolute_url()
+#        return HttpResponseRedirect(post_url_continue)
+#    def response_change(self, request, obj):
+#        post_url_continue = obj.host_entry.get_absolute_url()
+#        return HttpResponseRedirect(post_url_continue)
 #
 #AdminCollocation.has_add_permission = staff_has_add_permission
 #AdminCollocation.has_change_permission = staff_has_change_permission
@@ -423,6 +448,12 @@ class AdminCollocationGroup(admin.ModelAdmin):
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
+    def response_add(self, request, obj, post_url_continue='/'):
+        post_url_continue = obj.host_entry.get_absolute_url()
+        return HttpResponseRedirect(post_url_continue)
+    def response_change(self, request, obj):
+        post_url_continue = obj.host_entry.get_absolute_url()
+        return HttpResponseRedirect(post_url_continue)
 
 AdminCollocationGroup.has_add_permission = staff_has_add_permission
 AdminCollocationGroup.has_change_permission = staff_has_change_permission

@@ -862,6 +862,13 @@ class Meaning(models.Model):
         auto_now=True,
     )
 
+    @property
+    def host_entry(self):
+        if self.entry_container:
+            return self.entry_container
+        else:
+            return self.collogroup_container.host_entry
+
     def __unicode__(self):
         return self.meaning
 
@@ -980,6 +987,10 @@ class Example(models.Model):
         auto_now=True,
     )
 
+    @property
+    def host_entry(self):
+        return self.meaning.host_entry
+
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
 
@@ -1065,6 +1076,13 @@ class CollocationGroup(models.Model, Meaningfull):
     @property
     def collocations(self):
         return self.collocation_set.all().order_by('order', 'id')
+
+    @property
+    def host_entry(self):
+        if self.base_entry:
+            return self.base_entry
+        else:
+            return self.base_meaning.host_entry
 
     class Meta:
         verbose_name = u'группа словосочетаний'
