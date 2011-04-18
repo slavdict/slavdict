@@ -5,6 +5,20 @@ from django.db import models
 from django.contrib import admin
 from slavdict.admin import ui
 
+
+def staff_has_add_permission(self, request):
+    return request.user.is_staff
+
+def staff_has_change_permission(self, request, obj=None):
+    return request.user.is_staff
+
+def superuser_has_delete_permission(self, request, obj=None):
+    return request.user.is_superuser
+
+def staff_has_delete_permission(self, request, obj=None):
+    return request.user.is_staff
+
+
 def _orth_vars(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('id')]
     delimiter = u', '
@@ -155,7 +169,7 @@ class Example_Inline(admin.StackedInline):
     fieldsets = EXAMPLE_FIELDSETS
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
 
-    
+
 class AdminExample(admin.ModelAdmin):
     inlines = (GreekEquivalentForExample_Inline,)
     fieldsets = ((None, {'fields': ('meaning',)}),) + EXAMPLE_FIELDSETS
@@ -178,6 +192,10 @@ class AdminExample(admin.ModelAdmin):
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
+
+AdminExample.has_add_permission = staff_has_add_permission
+AdminExample.has_change_permission = staff_has_change_permission
+AdminExample.has_delete_permission = staff_has_delete_permission
 
 admin.site.register(Example, AdminExample)
 ui.register(Example, AdminExample)
@@ -237,6 +255,9 @@ class AdminMeaning(admin.ModelAdmin):
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
 
+AdminMeaning.has_add_permission = staff_has_add_permission
+AdminMeaning.has_change_permission = staff_has_change_permission
+AdminMeaning.has_delete_permission = staff_has_delete_permission
 
 class AdminMeaning_MAIN(AdminMeaning):
     inlines = AdminMeaning.inlines + AdminMeaning.inlines_MAIN
@@ -348,21 +369,29 @@ class AdminEntry(admin.ModelAdmin):
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
 
+AdminEntry.has_add_permission = staff_has_add_permission
+AdminEntry.has_change_permission = staff_has_change_permission
+AdminEntry.has_delete_permission = superuser_has_delete_permission
+
 admin.site.register(Entry, AdminEntry)
 ui.register(Entry, AdminEntry)
 
 
 
 from slavdict.dictionary.models import Collocation
-class AdminCollocation(admin.ModelAdmin):
-    inlines = (EtymologyForCollocation_Inline,)
-    fieldsets = (
-            (None, {'fields': ('collocation', 'civil_equivalent')}),
-        )
-    class Media:
-        css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
-        js = (settings.MEDIA_URL + "fix_admin.js",)
-
+#class AdminCollocation(admin.ModelAdmin):
+#    inlines = (EtymologyForCollocation_Inline,)
+#    fieldsets = (
+#            (None, {'fields': ('collocation', 'civil_equivalent')}),
+#        )
+#    class Media:
+#        css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
+#        js = (settings.MEDIA_URL + "fix_admin.js",)
+#
+#AdminCollocation.has_add_permission = staff_has_add_permission
+#AdminCollocation.has_change_permission = staff_has_change_permission
+#AdminCollocation.has_delete_permission = staff_has_delete_permission
+#
 #admin.site.register(Collocation, AdminCollocation)
 #ui.register(Collocation, AdminCollocation)
 
@@ -394,6 +423,10 @@ class AdminCollocationGroup(admin.ModelAdmin):
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
+
+AdminCollocationGroup.has_add_permission = staff_has_add_permission
+AdminCollocationGroup.has_change_permission = staff_has_change_permission
+AdminCollocationGroup.has_delete_permission = staff_has_delete_permission
 
 admin.site.register(CollocationGroup, AdminCollocationGroup)
 ui.register(CollocationGroup, AdminCollocationGroup)
