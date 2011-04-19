@@ -114,11 +114,11 @@ def greek_to_find(request):
 
 
 @login_required
-def single_entry(request, entry_id):
+def single_entry(request, entry_id, template='single_entry.html'):
     entry = get_object_or_404(Entry, id=entry_id)
     return render_to_response(
 
-        'single_entry.html',
+        template,
 
         {
             'entry': entry,

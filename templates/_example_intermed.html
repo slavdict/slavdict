@@ -1,0 +1,57 @@
+{% load trim_spaces %}
+
+<span class="cslav">{{ e.example_ucs }}</span>
+{% space %}
+
+
+{% if e.greek_equivs %}
+
+    {% backspace %}&nbsp;&mdash;{% space %}
+
+    {% for ge in e.greek_equivs %}
+
+        <span class="grec">{{ ge.text }}</span>
+        {% space %}
+
+        {%if ge.mark %}
+            <i>{{ ge.mark }}</i>
+            {% space %}
+        {% endif %}
+
+        {% if show_additional_info and ge.additional_info %}
+            <span class="ai ai-grfex">{{ ge.additional_info }}</span>
+        {% endif %}
+
+        {% if not forloop.last %}
+            {% backspace %},
+        {% endif %}
+
+    {% endfor %}
+
+{% endif %}
+
+
+{% if e.address_text %}
+    ({{ e.address_text }}
+    {% if show_additional_info and e.additional_info %}
+        {% space %}<span class="ai ai-example">{{ e.additional_info }}</span>
+    {% endif %}
+    {% backspace %}){% space %}
+{% else %}
+    {% if show_additional_info %}
+        (
+        <span class="noaddress">Нет адреса!</span>
+        {% if show_additional_info and e.additional_info %}
+            <span class="ai ai-example">{{ e.additional_info }}</span>
+        {% endif %}
+        ){% space %}
+    {% endif %}
+{% endif %}
+
+
+<span class="edit-controls">
+    <a href="{% url UI:dictionary_example_change e.id %}">
+        <img src="/site-media/pen.png" alt="" />
+        <br />
+    </a>
+</span>

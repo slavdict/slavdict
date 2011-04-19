@@ -46,7 +46,13 @@ input#id_sg2
     display: none;
 }
 
-
+/* Скрываем шапку в админке */
+#header,
+.breadcrumbs,
+#content h1,
+#content .object-tools {
+    display: none;
+}
 
 
 

@@ -182,9 +182,33 @@
     {% endif %}
 {% endif %}
 
+
+
+<div class="edit-controls">
+
+    <div>
+        <a href="{% url UI:dictionary_meaning_change m.pk %}">
+            <img src="/site-media/pen.png" alt="" />
+            {% space %}
+            Редактировать значение
+        </a>
+    </div>
+
+    <div>
+        <a href="{% url UI:dictionary_example_add %}?meaning={{ m.id }}">
+            <img src="/site-media/plus.png" alt="" />
+            {% space %}
+            Добавить пример
+        </a>
+    </div>
+
+</div>
+
+
+
 {% if m.examples %}
     {% for e in m.examples %}
-        {% include '_example.html' %}
+        {% include '_example_intermed.html' %}
     {% endfor %}
 {% endif %}
 

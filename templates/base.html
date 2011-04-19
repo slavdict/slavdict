@@ -6,24 +6,8 @@
         <link href="/site-media/style.css" rel="stylesheet" type="text/css">
     </head>
     <body>
-        <div id="header">
-            <div id="menu">
-
-                <a href="{% url last_entry %}">Последняя статья</a>
-
-                    <span class="divider">|</span>
-
-                <a href="{% url all_entries_url %}">Все статьи</a>
-
-                    <span class="divider">|</span>
-
-                <a href="{% url admin:dictionary_entry_add %}">Добавить статью</a>
-
-                    <span class="divider">|</span>
-
-                <a href="{% url admin:index %}dictionary/">Админка</a>
-
-            </div>
+        <div>
+            <a href="{% url UI:dictionary_entry_add %}"><img src="/site-media/plus.png" alt="" /></a>
         </div>
         <div id="main">
             {% if user.is_authenticated %}
@@ -33,5 +17,6 @@
             {% endif %}
         {% block content %}{% endblock %}
         </div>
+    
     </body>
 </html>

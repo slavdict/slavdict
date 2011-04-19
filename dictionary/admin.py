@@ -173,7 +173,8 @@ class Example_Inline(admin.StackedInline):
 
 class AdminExample(admin.ModelAdmin):
     inlines = (GreekEquivalentForExample_Inline,)
-    fieldsets = ((None, {'fields': ('meaning',)}),) + EXAMPLE_FIELDSETS
+    raw_id_fields = ('meaning',)
+    fieldsets = ((None, {'fields': ('meaning',), 'classes': ('hidden',)}),) + EXAMPLE_FIELDSETS
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     ordering = ('-id',)
     list_display = ('entry_for_example', 'meaning_for_example', 'id', 'example', 'address_text', 'greek_eq_status')
@@ -187,18 +188,18 @@ class AdminExample(admin.ModelAdmin):
         'meaning__gloss',
         'meaning__entry_container__civil_equivalent',
         'meaning__entry_container__orthographic_variants__idem',
-        'meaning__collogroup_container__collocation__civil_equivalent',
-        'meaning__collogroup_container__collocation__collocation',
+        'meaning__collogroup_container__collocation_set__civil_equivalent',
+        'meaning__collogroup_container__collocation_set__collocation',
         )
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
-        return HttpResponseRedirect(post_url_continue)
+        return HttpResponseRedirect(post_url_continue + 'intermed/')
     def response_change(self, request, obj):
         post_url_continue = obj.host_entry.get_absolute_url()
-        return HttpResponseRedirect(post_url_continue)
+        return HttpResponseRedirect(post_url_continue + 'intermed/')
 
 AdminExample.has_add_permission = staff_has_add_permission
 AdminExample.has_change_permission = staff_has_change_permission
@@ -225,9 +226,20 @@ class AdminMeaning(admin.ModelAdmin):
     inlines_MAIN = (
         GreekEquivalentForMeaning_Inline,
     )
+    raw_id_fields = (
+        'entry_container',
+        'collogroup_container',
+        'link_to_entry',
+        'link_to_collogroup',
+        'link_to_meaning',
+        'cf_entries',
+        'cf_collogroups',
+        'cf_meanings'
+    )
     fieldsets = (
             (u'То, к чему значение относится',
-                {'fields': (('entry_container', 'collogroup_container'),)}),
+                {'fields': (('entry_container', 'collogroup_container'),),
+                 'classes': ('hidden',)}),
             (u'См.',
                 {'fields': (('link_to_entry', 'link_to_collogroup'), 'link_to_meaning'),
                 'classes': ('collapse',)}),
@@ -244,8 +256,10 @@ class AdminMeaning(admin.ModelAdmin):
                 {'fields': ('additional_info',),
                 'classes': ('collapse',)}),
         )
-    save_on_top = True
-    formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
+    save_on_top = False
+    formfield_overrides = {
+        models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})},
+        }
     filter_horizontal = ('cf_entries', 'cf_collogroups', 'cf_meanings')
     ordering = ('-id',)
     list_display = ('id', '__unicode__')
@@ -253,8 +267,8 @@ class AdminMeaning(admin.ModelAdmin):
     search_fields = (
         'entry_container__civil_equivalent',
         'entry_container__orthographic_variants__idem',
-        'collogroup_container__collocation__civil_equivalent',
-        'collogroup_container__collocation__collocation',
+        'collogroup_container__collocation_set__civil_equivalent',
+        'collogroup_container__collocation_set__collocation',
         'meaning',
         'gloss',
         )
@@ -263,10 +277,10 @@ class AdminMeaning(admin.ModelAdmin):
         js = (settings.MEDIA_URL + "fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
-        return HttpResponseRedirect(post_url_continue)
+        return HttpResponseRedirect(post_url_continue + 'intermed/')
     def response_change(self, request, obj):
         post_url_continue = obj.host_entry.get_absolute_url()
-        return HttpResponseRedirect(post_url_continue)
+        return HttpResponseRedirect(post_url_continue + 'intermed/')
 
 AdminMeaning.has_add_permission = staff_has_add_permission
 AdminMeaning.has_change_permission = staff_has_change_permission
@@ -274,6 +288,7 @@ AdminMeaning.has_delete_permission = staff_has_delete_permission
 
 class AdminMeaning_MAIN(AdminMeaning):
     inlines = AdminMeaning.inlines + AdminMeaning.inlines_MAIN
+    save_on_top = True
 
 admin.site.register(Meaning, AdminMeaning_MAIN)
 ui.register(Meaning, AdminMeaning)
@@ -289,6 +304,15 @@ class WordForm_Inline(admin.StackedInline):
 from slavdict.dictionary.models import Entry
 Entry.__unicode__=lambda self: entry_with_orth_variants(self)
 class AdminEntry(admin.ModelAdmin):
+    raw_id_fields = (
+        'derivation_entry',
+        'link_to_entry',
+        'link_to_collogroup',
+        'link_to_meaning',
+        'cf_entries',
+        'cf_collogroups',
+        'cf_meanings',
+    )
     fieldsets = (
         (None, {
             'fields': ('civil_equivalent',),
@@ -383,17 +407,20 @@ class AdminEntry(admin.ModelAdmin):
         js = (settings.MEDIA_URL + "fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.get_absolute_url()
-        return HttpResponseRedirect(post_url_continue)
+        return HttpResponseRedirect(post_url_continue + 'intermed/')
     def response_change(self, request, obj):
         post_url_continue = obj.get_absolute_url()
-        return HttpResponseRedirect(post_url_continue)
+        return HttpResponseRedirect(post_url_continue + 'intermed/')
 
 AdminEntry.has_add_permission = staff_has_add_permission
 AdminEntry.has_change_permission = staff_has_change_permission
 AdminEntry.has_delete_permission = superuser_has_delete_permission
 
+class AdminEntry_UI(AdminEntry):
+    save_on_top = False
+
 admin.site.register(Entry, AdminEntry)
-ui.register(Entry, AdminEntry)
+ui.register(Entry, AdminEntry_UI)
 
 
 
@@ -408,10 +435,10 @@ from slavdict.dictionary.models import Collocation
 #        js = (settings.MEDIA_URL + "fix_admin.js",)
 #    def response_add(self, request, obj, post_url_continue='/'):
 #        post_url_continue = obj.host_entry.get_absolute_url()
-#        return HttpResponseRedirect(post_url_continue)
+#        return HttpResponseRedirect(post_url_continue + 'intermed/')
 #    def response_change(self, request, obj):
 #        post_url_continue = obj.host_entry.get_absolute_url()
-#        return HttpResponseRedirect(post_url_continue)
+#        return HttpResponseRedirect(post_url_continue + 'intermed/')
 #
 #AdminCollocation.has_add_permission = staff_has_add_permission
 #AdminCollocation.has_change_permission = staff_has_change_permission
@@ -431,9 +458,18 @@ from slavdict.dictionary.models import CollocationGroup
 CollocationGroup.__unicode__=lambda self: _collocations(self)
 class AdminCollocationGroup(admin.ModelAdmin):
     inlines = (Collocation_Inline,)
+    raw_id_fields = (
+        'base_meaning',
+        'base_entry',
+        'link_to_entry',
+        'link_to_meaning',
+        'cf_entries',
+        'cf_meanings',
+    )
     fieldsets = (
             (None,
-                {'fields': (('base_meaning', 'base_entry'),)}),
+                {'fields': (('base_meaning', 'base_entry'),),
+                'classes': ('hidden',)}),
             (u'См.',
                 {'fields': ('link_to_entry', 'link_to_meaning'),
                 'classes': ('collapse',)}),
@@ -445,15 +481,16 @@ class AdminCollocationGroup(admin.ModelAdmin):
     filter_horizontal = ('cf_entries', 'cf_meanings')
     list_display = ('id', '__unicode__')
     list_display_links = list_display
+    search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')
     class Media:
         css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
         js = (settings.MEDIA_URL + "fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
-        return HttpResponseRedirect(post_url_continue)
+        return HttpResponseRedirect(post_url_continue + 'intermed/')
     def response_change(self, request, obj):
         post_url_continue = obj.host_entry.get_absolute_url()
-        return HttpResponseRedirect(post_url_continue)
+        return HttpResponseRedirect(post_url_continue + 'intermed/')
 
 AdminCollocationGroup.has_add_permission = staff_has_add_permission
 AdminCollocationGroup.has_change_permission = staff_has_change_permission

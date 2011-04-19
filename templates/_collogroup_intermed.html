@@ -1,0 +1,74 @@
+{% load trim_spaces %}
+
+<div style="line-height: 140%;">
+    □<!-- &#x25A1; -->&nbsp;
+
+    {% for c in cg.collocations %}
+
+            <span class="cslav">{{ c.collocation_ucs }}</span>
+            {% space %}
+
+            {% if c.etymologies %}
+                <span>(</span>
+                {% for etym in c.etymologies %}
+                    {% include '_etymology.html' %}
+                {% endfor %}
+                <span>)</span>
+            {% endif %}
+
+            {% if not forloop.last %}
+                {% backspace %},{% space %}
+            {% endif %}
+
+    {% endfor %}
+
+    {% if cg.meanings or cg.metaph_meanings %}
+        {% backspace %}&nbsp;&mdash;{% space %}
+    {% endif %}
+
+
+
+
+    <div class="edit-controls">
+
+        <div>
+            <a href="{% url UI:dictionary_collocationgroup_change cg.id %}">
+                <img src="/site-media/pen.png" alt="" />
+                {% space %}
+                Редактировать словосочетания
+            </a>
+        </div>
+
+        <div>
+            <a href="{% url UI:dictionary_meaning_add %}?collogroup={{ cg.id }}">
+                <img src="/site-media/plus.png" alt="" />
+                {% space %}
+                Добавить значение
+            </a>
+        </div>
+
+    </div>
+
+
+
+
+    <span>
+        {% for m in cg.meanings %}
+
+            {% if not cg.meanings|length_is:"1" %}
+                {{ forloop.counter }}.{% space %}
+            {% endif %}
+
+            {% include '_meaning_intermed.html' %}
+
+        {% endfor %}
+
+
+        {% for m in cg.metaph_meanings %}
+
+            <span style="color: #777;">►</span>
+            {% include '_meaning_intermed.html' %}
+
+        {% endfor %}
+    </span>
+</div>

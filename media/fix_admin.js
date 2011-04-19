@@ -1,6 +1,28 @@
 (function($) {
     $(document).ready(function() {
 
+        var qs = location.search;
+        if (qs) {
+            qs = qs.substring(1, qs.length);
+            var qskv = qs.split("=");
+            var qkey = qskv[0];
+            var qvalue = qskv[1];
+            switch (qkey) {
+                case 'entry':
+                    $('#id_entry_container').val(qvalue);
+                    $('#id_base_entry').val(qvalue);
+                    break;
+                case 'collogroup':
+                    $('#id_collogroup_container').val(qvalue);
+                    break;
+                case 'meaning':
+                    $('#id_meaning').val(qvalue);
+                    $('#id_base_meaning').val(qvalue);
+                    break;
+            };
+            qskv[1];
+        }
+
         /* Убираем у всех label двоеточия */
         $('label').each(function(){
             var x = $(this);

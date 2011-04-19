@@ -182,6 +182,7 @@ span.divider { margin: 0 0.5em; }
 div#main {
     margin: 1em auto;
     width: 40em;
+    position: relative;
 }
 
 div.entry,
@@ -238,4 +239,16 @@ span.noaddress {
     font-family: Arial, sans-serif;
     font-style: italic;
     font-size: smaller;
+}
+
+div.edit-controls {
+    margin: 1em auto 1em 1.5em;
+}
+.edit-controls a {
+    text-decoration: none;
+    color: #369;
+    border-bottom: 1px dotted #369;
+}
+span.edit-controls a {
+    border-bottom-width: 0;
 }

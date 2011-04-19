@@ -1095,6 +1095,7 @@ class Collocation(models.Model):
     collogroup = models.ForeignKey(
         CollocationGroup,
         verbose_name = u'группа словосочетаний',
+        related_name='collocation_set',
         )
 
     collocation = models.CharField(
