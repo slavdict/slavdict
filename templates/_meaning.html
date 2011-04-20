@@ -29,6 +29,13 @@
     {% endfor %}
 {% endif %}
 
+{% if m.substantivus %}
+    <i>в&nbsp;роли сущ.</i>
+    {% space %}
+    {% if m.substantivus_type %}
+        {% space %}({{ m.substantivus_type.tag }}){% space %}
+    {% endif %}
+{% endif %}
 
 {% if m.link_to_entry or m.link_to_collogroup or m.link_to_meaning %}
     <i>см.</i>
