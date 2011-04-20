@@ -256,7 +256,7 @@ class AdminMeaning(admin.ModelAdmin):
                 {'fields': ('additional_info',),
                 'classes': ('collapse',)}),
         )
-    save_on_top = False
+    save_on_top = True
     formfield_overrides = {
         models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})},
         }
@@ -288,7 +288,6 @@ AdminMeaning.has_delete_permission = staff_has_delete_permission
 
 class AdminMeaning_MAIN(AdminMeaning):
     inlines = AdminMeaning.inlines + AdminMeaning.inlines_MAIN
-    save_on_top = True
 
 admin.site.register(Meaning, AdminMeaning_MAIN)
 ui.register(Meaning, AdminMeaning)
@@ -416,11 +415,8 @@ AdminEntry.has_add_permission = staff_has_add_permission
 AdminEntry.has_change_permission = staff_has_change_permission
 AdminEntry.has_delete_permission = superuser_has_delete_permission
 
-class AdminEntry_UI(AdminEntry):
-    save_on_top = False
-
 admin.site.register(Entry, AdminEntry)
-ui.register(Entry, AdminEntry_UI)
+ui.register(Entry, AdminEntry)
 
 
 
