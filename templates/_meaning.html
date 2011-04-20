@@ -108,6 +108,7 @@
 
         {% if not forloop.last %}
             {% if show_additional_info and ge.additional_info %}
+                {% space %}
                 <span class="ai ai-grfmnng">{{ ge.additional_info }}</span>
             {% endif %}
             {% backspace %},{% space %}
@@ -180,6 +181,7 @@
 
 
 {% if show_additional_info and m.additional_info %}
+    {% space %}
     <span class="ai ai-meaning">{{ m.additional_info }}</span>
 {% endif %}
 
