@@ -13,8 +13,10 @@
             {% space %}
         {% endif %}
 
-        <span class="cslav">{{ mc.context_ucs }}</span>
-        {% space %}
+        {% if mc.context %}
+            <span class="cslav">{{ mc.context_ucs }}</span>
+            {% space %}
+        {% endif %}
 
         {% if mc.right_text %}
             <i>{{ mc.right_text }}</i>
