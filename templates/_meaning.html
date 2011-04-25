@@ -193,9 +193,11 @@
     {% endif %}
 {% endif %}
 
+
+{% block meaning_controls %}{% endblock %}
+
 {% if m.examples %}
     {% for e in m.examples %}
-        {% include '_example.html' %}
+        {% block meaning_example %}{% include '_example.html' %}{% endblock %}
     {% endfor %}
 {% endif %}
-

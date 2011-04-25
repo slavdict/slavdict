@@ -254,6 +254,8 @@
     </div>
     {% endif %}
 
+    {% block entry_controls %}{% endblock %}
+
     {% for m in entry.meanings %}
 
         <div style="margin-top: 0.7em; line-height: 140%;">
@@ -262,7 +264,9 @@
                 <b>{{ forloop.counter }}</b>.{% space %}
             {% endif %}
 
-            {% include '_meaning.html' %}
+            {% block entry_meaning %}
+                {% include '_meaning.html' %}
+            {% endblock %}
 
         </div>
 
@@ -270,7 +274,9 @@
 
             {% if m.collogroups %}
                 {% for cg in m.collogroups %}
-                    {% include '_collogroup.html' %}
+                    {% block meaning_collogroup %}
+                        {% include '_collogroup.html' %}
+                    {% endblock %}
                 {% endfor %}
             {% endif %}
 
@@ -285,7 +291,9 @@
 
             <span style="color: #777;">►</span>
             {% space %}
-            {% include '_meaning.html' %}
+            {% block entry_metaph_meaning %}
+                {% include '_meaning.html' %}
+            {% endblock %}
 
         </div>
 
@@ -293,7 +301,9 @@
 
             {% if m.collogroups %}
                 {% for cg in m.collogroups %}
-                    {% include '_collogroup.html' %}
+                    {% block metaph_meaning_collogroup %}
+                        {% include '_collogroup.html' %}
+                    {% endblock %}
                 {% endfor %}
             {% endif %}
 
@@ -302,8 +312,13 @@
     {% endfor %}
 
     {% for cg in entry.collogroups %}
-        {% include '_collogroup.html' %}
+        {% block entry_collogroup %}
+            {% include '_collogroup.html' %}
+        {% endblock %}
     {% endfor %}
 
 </div>
+
+{% block entry_view_control %}{% endblock %}
+    
 {% endtrim %}

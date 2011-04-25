@@ -26,6 +26,8 @@
         {% backspace %}&nbsp;&mdash;{% space %}
     {% endif %}
 
+    {% block collogroup_controls %}{% endblock %}
+
     <span>
         {% for m in cg.meanings %}
 
@@ -33,7 +35,9 @@
                 {{ forloop.counter }}.{% space %}
             {% endif %}
 
-            {% include '_meaning.html' %}
+            {% block collogroup_meaning %}
+                {% include '_meaning.html' %}
+            {% endblock %}
 
         {% endfor %}
 
@@ -41,7 +45,9 @@
         {% for m in cg.metaph_meanings %}
 
             <span style="color: #777;">►</span>
-            {% include '_meaning.html' %}
+            {% block collogroup_metaph_meaning %}
+                {% include '_meaning.html' %}
+            {% endblock %}
 
         {% endfor %}
     </span>

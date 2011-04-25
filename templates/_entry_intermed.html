@@ -1,260 +1,8 @@
+{% extends '_entry.html' %}
 {% load trim_spaces %}
-{% trim %}
-    
-<div class="entry">
-
-    <div style="line-height: 100%;">
-
-        <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
-        {% space %}
-
-        {% if entry.homonym_order %}
-            {{ entry.homonym_order_roman }}
-            {% space %}
-        {% endif %}
-
-        {% for ovar in entry.orth_vars|slice:"1:" %}
-
-            {% if forloop.first %}
-                {% space %}(
-            {% endif %}
-
-            <span class="cslav orthvar">{{ ovar.idem_ucs }}</span>
-
-            {% if forloop.last %}
-                {% backspace %}){% space %}
-            {% else %}
-                {% backspace %},{% space %}
-            {% endif %}
-
-        {% empty %}
-
-            {% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %}
-                {% backspace %},{% space %}
-            {% endif %}
-
-        {% endfor %}
 
 
-        {% if entry.short_form %}
-            {% if entry.short_form_ucs_wax.0 %}-{% endif %}
-            <span class="cslav">{{ entry.short_form_ucs_wax.1 }}</span>
-            {% space %}
-        {% endif %}
-
-        {% if entry.genitive %}
-            -<span class="cslav">{{ entry.genitive_ucs }}</span>
-            {% space %}
-        {% endif %}
-
-        {% if entry.sg1 %}
-            {% if entry.sg1_ucs_wax.0 %}-{% endif %}
-            <span class="cslav">{{ entry.sg1_ucs_wax.1 }}</span>
-            {% if entry.sg2 %},{%endif %}
-            {% space %}
-        {% endif %}
-
-        {% if entry.sg2 %}
-            {% if entry.sg2_ucs_wax.0 %}-{% endif %}
-            <span class="cslav">{{ entry.sg2_ucs_wax.1 }}</span>
-            {% space %}
-        {% endif %}
-
-        {% if entry.uninflected %}
-            <i>неизм.</i>
-            {% space %}
-        {% endif %}
-
-        {% if entry.possessive %}
-            <i>притяж.</i>
-            {% space %}
-        {% endif %}
-
-
-        {% if entry.participle_type %}
-            <i>{{ entry.participle_type.tag }}</i>
-            {% space %}
-        {% else %}
-            <i>{{ entry.part_of_speech.tag }}</i>
-            {% space %}
-            {% if entry.gender %}
-                {% backspace %},{% space %}
-                <i>{{ entry.gender.tag }}</i>
-                {% space %}
-            {% endif %}
-        {% endif %}
-
-
-        {% if entry.tantum %}
-            <i>{{ entry.tantum.tag }}</i>
-            {% space %}
-        {% endif %}
-
-    
-        {% if entry.derivation_entry %}
-
-            {% if entry.possessive %}
-                <i>к</i>&nbsp;
-            {% else %}
-                <i>от</i>&nbsp;
-            {% endif %}
-
-            {% with entry.derivation_entry as de %}
-                <a href="{{ de.get_absolute_url }}">
-                    <span class="cslav">{{ de.orth_vars.0.idem_ucs }}</span>
-                    {% if de.homonym_order %}&nbsp;{{ de.homonym_order_roman }}{% endif %}
-                </a>
-                {% space %}
-            {% endwith %}
-
-        {% endif %}
-
-
-        {% if show_additional_info and entry.additional_info %}
-            <span class="ai ai-entry">{{ entry.additional_info }}</span>
-        {% endif %}
-    </div>
-
-
-    {% if entry.onym.slug == 'ethnonym' %}
-        {% if entry.nom_pl_ucs_wax %}
-            <div>
-                <i>И.п. мн.</i>
-                {% space %}
-                {% if entry.nom_pl_ucs_wax.0 %}-{% endif %}
-                <span class="cslav">{{ entry.nom_pl_ucs_wax.1 }}</span>
-            </div>
-        {% endif %}
-        {% if entry.nom_sg_ucs_wax %}
-            <div>
-                <i>м.р. И.п. ед.</i>
-                {% space %}
-                {% if entry.nom_sg_ucs_wax.0 %}-{%endif %}
-                <span class="cslav">{{ entry.nom_sg_ucs_wax.1 }}</span>
-            </div>
-        {% endif %}
-    {% endif %}
-
-
-    {% if entry.etymologies %}
-        <div style="line-height: 100%;">
-            {% for etym in entry.etymologies %}
-                {% include '_etymology.html' %}
-            {% endfor %}
-        </div>
-    {% endif %}
-
-
-    {% if entry.onym.slug == 'anthroponym' %}
-        <i>имя собств.</i>
-        {% if entry.canonical_name %}
-            ,{% space %}
-            <i>канонич.</i>
-        {% endif %}
-    {% endif %}
-
-    {% if entry.onym.slug == 'toponym' %}
-        <i>топоним</i>
-    {% endif %}
-
-
-    {% if entry.link_to_entry or entry.link_to_collogroup or entry.link_to_meaning %}
-    <div>
-        <i>см.</i>
-        {% space %}
-
-        {% if entry.link_to_meaning %}
-            {% with entry.link_to_meaning as eltm %}
-                {% if eltm.entry_container %}
-                    <a href="{{ eltm.entry_container.get_absolute_url }}">
-                        <span class="cslav">
-                            {{ eltm.entry_container.orth_vars.0.idem_ucs }}
-                        </span>
-                        {% if eltm.entry_container.homonym_order %}
-                            &nbsp;{{ eltm.entry_container.homonym_order_roman }}
-                        {% endif %}
-                    </a>
-                {% endif %}
-                {% if entry.link_to_meaning.collogroup_container %}
-                    <span class="cslav">
-                        {{ eltm.collogroup_container.collocations.0.collocation_ucs }}
-                    </span>
-                {% endif %}
-            {% endwith %}
-        {% endif %}
-
-        {% if entry.link_to_entry %}
-            <a href="{{ entry.link_to_entry.get_absolute_url }}">
-                <span class="cslav">
-                    {{ entry.link_to_entry.orth_vars.0.idem_ucs }}
-                </span>
-                {% if entry.link_to_entry.homonym_order %}
-                    &nbsp;{{ entry.link_to_entry.homonym_order_roman }}
-                {% endif %}
-            </a>
-        {% endif %}
-
-        {% if entry.link_to_collogroup %}
-            <span class="cslav">
-                {{ entry.link_to_collogroup.collocations.0.collocation_ucs }}
-            </span>
-        {% endif %}
-    </div>
-    {% endif %}
-
-
-    {% if entry.cfentries or entry.cfcollogroups or entry.cfmeanings %}
-    <div>
-        <i>ср.&nbsp;</i>
-
-        {% for cfm in entry.cfmeanings %}
-            {% if not forloop.first %}
-                {% backspace %},{% space %}
-            {% endif %}
-            {% if cfm.entry_container %}
-                <a href="{{ cfm.entry_container.get_absolute_url }}">
-                    <span class="cslav">
-                        {{ cfm.entry_container.orth_vars.0.idem_ucs }}
-                    </span>
-                    {% if cfm.entry_container.homonym_order %}
-                        &nbsp;{{ cfm.entry_container.homonym_order_roman }}
-                    {% endif %}
-                </a>
-            {% endif %}
-            {% if cfm.collogroup_container %}
-                <span class="cslav">
-                    {{ cfm.collogroup_container.collocations.0.collocation_ucs }}
-                </span>
-            {% endif %}
-        {% endfor %}
-
-        {% for cfe in entry.cfentries %}
-            {% if not forloop.first or entry.cfmeanings %}
-                ,{% space %}
-            {% endif %}
-            <a href="{{ cfe.get_absolute_url }}">
-                <span class="cslav">
-                    {{ cfe.orth_vars.0.idem_ucs }}
-                </span>
-                {% if cfe.homonym_order %}
-                    &nbsp;{{ cfe.homonym_order_roman }}
-                {% endif %}
-            </a>
-        {% endfor %}
-
-        {% for cfcg in entry.cfcollogroups %}
-            {% if not forloop.first or entry.cfmeanings or entry.cfentries %}
-                ,{% space %}
-            {% endif %}
-            <span class="cslav">
-                {{ cfcg.collocations.0.collocation_ucs }}
-            </span>
-        {% endfor %}
-
-    </div>
-    {% endif %}
-
-
+{% block entry_controls %}
 
     <div class="edit-controls">
 
@@ -284,68 +32,40 @@
 
     </div>
 
-
-    {% for m in entry.meanings %}
-
-        <div style="margin-top: 0.7em; line-height: 140%;">
-
-            {% if not entry.meanings|length_is:"1" %}
-                <b>{{ forloop.counter }}</b>.{% space %}
-            {% endif %}
-
-            {% include '_meaning_intermed.html' %}
-
-        </div>
-
-        <div style="margin-top: 0.7em; line-height: 140%;">
-
-            {% if m.collogroups %}
-                {% for cg in m.collogroups %}
-                    {% include '_collogroup_intermed.html' %}
-                {% endfor %}
-            {% endif %}
-
-        </div>
-
-    {% endfor %}
+{% endblock %}
 
 
-    {% for m in entry.metaph_meanings %}
+{% block entry_meaning %}
+    {% include '_meaning_intermed.html' %}
+{% endblock %}
 
-        <div style="margin-top: 0.7em; line-height: 140%;">
+{% block meaning_collogroup %}
+    {% include '_collogroup_intermed.html' %}
+{% endblock %}
 
-            <span style="color: #777;">►</span>
+{% block entry_metaph_meaning %}
+    {% include '_meaning_intermed.html' %}
+{% endblock %}
+
+{% block metaph_meaning_collogroup %}
+    {% include '_collogroup_intermed.html' %}
+{% endblock %}
+
+{% block entry_collogroup %}
+    {% include '_collogroup_intermed.html' %}
+{% endblock %}
+
+
+{% block entry_view_control %}
+
+    <div class="edit-controls" style="margin-bottom: 7em;">
+
+        <a href="{{ entry.get_absolute_url }}" style="color: #070;">
+            <img src="/site-media/check.png" alt="" />
             {% space %}
-            {% include '_meaning_intermed.html' %}
+            Закончить редактирование
+        </a>
 
-        </div>
+    </div>
 
-        <div style="margin-top: 0.7em; line-height: 140%;">
-
-            {% if m.collogroups %}
-                {% for cg in m.collogroups %}
-                    {% include '_collogroup_intermed.html' %}
-                {% endfor %}
-            {% endif %}
-
-        </div>
-
-    {% endfor %}
-
-    {% for cg in entry.collogroups %}
-        {% include '_collogroup_intermed.html' %}
-    {% endfor %}
-
-</div>
-
-<div class="edit-controls" style="margin-bottom: 7em;">
-
-    <a href="{{ entry.get_absolute_url }}" style="color: #070;">
-        <img src="/site-media/check.png" alt="" />
-        {% space %}
-        Закончить редактирование
-    </a>
-
-</div>
-
-{% endtrim %}
+{% endblock %}
