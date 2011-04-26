@@ -1,0 +1,14 @@
+{% extends '_meaning.html' %}
+{% load trim_spaces %}
+
+{% block child_meanings %}
+
+    {% with child_meanings=m.child_meanings %}
+        {% if child_meanings %}
+            {% for m in child_meanings %}
+                {% include '_meaning_intermed.html' %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}

@@ -77,11 +77,17 @@ class Meaningfull:
     """
     @property
     def meanings(self):
-        return self.meaning_set.filter(metaphorical=False).order_by('order', 'id')
+        return self.meaning_set.filter(
+            metaphorical=False,
+            parent_meaning__isnull=True
+        ).order_by('order', 'id')
 
     @property
     def metaph_meanings(self):
-        return self.meaning_set.filter(metaphorical=True).order_by('order', 'id')
+        return self.meaning_set.filter(
+            metaphorical=True,
+            parent_meaning__isnull=True,
+        ).order_by('order', 'id')
 
     @property
     def all_meanings(self):
@@ -851,6 +857,11 @@ class Meaning(models.Model):
     @property
     def collogroups(self):
         return self.collocationgroup_set.all().order_by('id')
+
+    @property
+    def child_meanings(self):
+        return self.child_meaning_set \
+            .filter(parent_meaning=self).order_by('order', 'id')
 
     ctime = models.DateTimeField(
         editable=False,
