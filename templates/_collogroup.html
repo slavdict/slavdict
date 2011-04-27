@@ -26,7 +26,33 @@
         {% backspace %}&nbsp;&mdash;{% space %}
     {% endif %}
 
-    {% block collogroup_controls %}{% endblock %}
+
+
+    {% if intermed %}
+
+        <div class="edit-controls">
+
+            <div>
+                <a href="{% url UI:dictionary_collocationgroup_change cg.id %}">
+                    <img src="/site-media/pen.png" alt="" />
+                    {% space %}
+                    Редактировать словосочетания
+                </a>
+            </div>
+
+            <div>
+                <a href="{% url UI:dictionary_meaning_add %}?collogroup={{ cg.id }}">
+                    <img src="/site-media/plus.png" alt="" />
+                    {% space %}
+                    Добавить значение
+                </a>
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
 
     <span>
         {% for m in cg.meanings %}
@@ -35,9 +61,7 @@
                 {{ forloop.counter }}.{% space %}
             {% endif %}
 
-            {% block collogroup_meaning %}
-                {% include '_meaning.html' %}
-            {% endblock %}
+            {% include '_meaning_with_children.html' %}
 
         {% endfor %}
 
@@ -45,9 +69,7 @@
         {% for m in cg.metaph_meanings %}
 
             <span style="color: #777;">►</span>
-            {% block collogroup_metaph_meaning %}
-                {% include '_meaning.html' %}
-            {% endblock %}
+            {% include '_meaning_without_children.html' %}
 
         {% endfor %}
     </span>

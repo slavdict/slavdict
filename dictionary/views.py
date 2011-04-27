@@ -114,7 +114,10 @@ def greek_to_find(request):
 
 
 @login_required
-def single_entry(request, entry_id, template='single_entry.html'):
+def single_entry(request, entry_id, extra_context=None, template='single_entry.html'):
+    if not extra_context:
+        extra_context = {}
+
     entry = get_object_or_404(Entry, id=entry_id)
     return render_to_response(
 
@@ -125,7 +128,7 @@ def single_entry(request, entry_id, template='single_entry.html'):
             'title': u'Статья «%s»' % entry.civil_equivalent,
             'show_additional_info': 'ai' in request.COOKIES,
             'user': request.user,
-        },
+        }.update(extra_context),
 
         RequestContext(request),
         )

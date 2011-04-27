@@ -1,14 +1,15 @@
-{% extends '_meaning.html' %}
 {% load trim_spaces %}
 
-{% block child_meanings %}
+{% include '_meaning_without_children.html' %}
 
-    {% with child_meanings=m.child_meanings %}
-        {% if child_meanings %}
-            {% for m in child_meanings %}
-                {% include '_meaning.html' %}
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-{% endblock %}
+{% with child_meanings=m.child_meanings %}
+    {% if child_meanings %}
+        {% for m in child_meanings %}
+            {% if m.metaphorical %}
+                <span style="color: #777;">►</span>
+                {% space %}
+            {% endif %}
+            {% include '_meaning_without_children.html' %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}

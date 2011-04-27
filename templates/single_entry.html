@@ -1,19 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
 
-    <div style="float: right; width: 3em;"><a href="{% url entry_pdf_url entry.pk %}">[PDF]</a></div>
-
-    {% if not entry.editor or user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" or user == entry.editor %}
-    {# user.groups.all|stringformat:"s" преобразует сам список объектов Group в текстовое представление. #}
-    {# В результате получается строка вроде "[<Group: authors>, <Group: editors>]". #}
-        <div style="position: absolute; top: 5.5em; left: -40px;">
-            <a href="{% url intermediary_change_form_url entry.pk %}"
-            style="opacity: 0.5;"
-            onmouseover="javascript:this.style.opacity=1;"
-            onmouseout="javascript:this.style.opacity=0.5;" >
-                <img src="/site-media/pen.png" alt="изменить" />
+    {% if not intermed %}
+        {% if user.is_authenticated %}
+            <a href="{% url switch_info_url %}">
+                {% if show_additional_info %}Скрыть доп. инфо{% else %}Отображать доп. инфо{% endif %}
             </a>
-        </div>
+        {% endif %}
+
+        <div style="float: right; width: 3em;"><a href="{% url entry_pdf_url entry.id %}">[PDF]</a></div>
+
+        {% if not entry.editor or user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" or user == entry.editor %}
+        {# user.groups.all|stringformat:"s" преобразует сам список объектов Group в текстовое представление. #}
+        {# В результате получается строка вроде "[<Group: authors>, <Group: editors>]". #}
+            <div style="position: absolute; top: 5.5em; left: -40px;">
+                <a href="{% url intermediary_change_form_url entry.id %}"
+                style="opacity: 0.5;"
+                onmouseover="javascript:this.style.opacity=1;"
+                onmouseout="javascript:this.style.opacity=0.5;" >
+                    <img src="/site-media/pen.png" alt="изменить" />
+                </a>
+            </div>
+        {% endif %}
     {% endif %}
 
     {% include '_entry.html' %}

@@ -254,8 +254,40 @@
     </div>
     {% endif %}
 
-    {% block entry_controls %}{% endblock %}
 
+    {% if intermed %}
+
+        <div class="edit-controls">
+
+            <div>
+                <a href="{% url UI:dictionary_entry_change entry.pk %}">
+                    <img src="/site-media/pen.png" alt="" />
+                    {% space %}
+                    Редактировать информацию о лексеме
+                </a>
+            </div>
+
+            <div>
+                <a href="{% url UI:dictionary_meaning_add %}?entry={{ entry.id }}">
+                    <img src="/site-media/plus.png" alt="" />
+                    {% space %}
+                    Добавить значение
+                </a>
+            </div>
+
+            <div>
+                <a href="{% url UI:dictionary_collocationgroup_add %}?entry={{ entry.id }}">
+                    <img src="/site-media/plus.png" alt="" />
+                    {% space %}
+                    Добавить словосочетание
+                </a>
+            </div>
+
+        </div>
+
+    {% endif %}
+
+    
     {% for m in entry.meanings %}
 
         <div style="margin-top: 0.7em; line-height: 140%;">
@@ -264,9 +296,7 @@
                 <b>{{ forloop.counter }}</b>.{% space %}
             {% endif %}
 
-            {% block entry_meaning %}
-                {% include '_meaning_with_children.html' %}
-            {% endblock %}
+            {% include '_meaning_with_children.html' %}
 
         </div>
 
@@ -274,9 +304,7 @@
 
             {% if m.collogroups %}
                 {% for cg in m.collogroups %}
-                    {% block meaning_collogroup %}
-                        {% include '_collogroup.html' %}
-                    {% endblock %}
+                    {% include '_collogroup.html' %}
                 {% endfor %}
             {% endif %}
 
@@ -291,9 +319,7 @@
 
             <span style="color: #777;">►</span>
             {% space %}
-            {% block entry_metaph_meaning %}
-                {% include '_meaning.html' %}
-            {% endblock %}
+            {% include '_meaning_without_children.html' %}
 
         </div>
 
@@ -301,9 +327,7 @@
 
             {% if m.collogroups %}
                 {% for cg in m.collogroups %}
-                    {% block metaph_meaning_collogroup %}
-                        {% include '_collogroup.html' %}
-                    {% endblock %}
+                    {% include '_collogroup.html' %}
                 {% endfor %}
             {% endif %}
 
@@ -312,13 +336,25 @@
     {% endfor %}
 
     {% for cg in entry.collogroups %}
-        {% block entry_collogroup %}
-            {% include '_collogroup.html' %}
-        {% endblock %}
+        {% include '_collogroup.html' %}
     {% endfor %}
 
 </div>
 
-{% block entry_view_control %}{% endblock %}
+
+{% if intermed %}
+
+    <div class="edit-controls" style="margin-bottom: 7em;">
+
+        <a href="{{ entry.get_absolute_url }}" style="color: #070;">
+            <img src="/site-media/check.png" alt="" />
+            {% space %}
+            Закончить редактирование
+        </a>
+
+    </div>
     
+{% endif %}
+
+
 {% endtrim %}

@@ -49,4 +49,13 @@
 {% endif %}
 
 
-{% block example_controls %}{% endblock %}
+{% if intermed %}
+
+    <span class="edit-controls">
+        <a href="{% url UI:dictionary_example_change e.id %}">
+            <img src="/site-media/pen.png" alt="" />
+            <br />
+        </a>
+    </span>
+
+{% endif %}
