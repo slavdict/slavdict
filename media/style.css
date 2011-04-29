@@ -1,113 +1,113 @@
 @font-face {
     font-family: 'Triodion Ucs';
-    src: url('/site-media/fonts/TriIEUcs.eot'); /* .eot */
+    src: url('fonts/TriIEUcs.eot'); /* .eot */
     src:
         local('Triodion Ucs'),
         local('Triodion ieUcs'),
         local('Triodion ieUcs Regular'),
         local('Triodion-ieUcs'),
-        url('/site-media/fonts/TriIEUcs.woff') format('woff'),
-        url('/site-media/fonts/TriIEUcs.ttf') format('truetype'),
-        url('/site-media/fonts/TriIEUcs.svg#Triodion-ieUcs') format('svg');
+        url('fonts/TriIEUcs.woff') format('woff'),
+        url('fonts/TriIEUcs.ttf') format('truetype'),
+        url('fonts/TriIEUcs.svg#Triodion-ieUcs') format('svg');
 }
 
 @font-face {
 	font-family: 'SIL Ulysses';
-	src: url('/site-media/fonts/silur-webfont.eot');
+	src: url('fonts/silur-webfont.eot');
 	src:
         local('SIL Ulysses'),
-        url('/site-media/fonts/silur-webfont.woff') format('woff'),
-        url('/site-media/fonts/silur-webfont.ttf') format('truetype');
+        url('fonts/silur-webfont.woff') format('woff'),
+        url('fonts/silur-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'hebrew';
-	src: url('/site-media/fonts/hebrew-webfont.eot');
+	src: url('fonts/hebrew-webfont.eot');
 	src:
         local('hebrew'),
-        url('/site-media/fonts/hebrew-webfont.woff') format('woff'),
-        url('/site-media/fonts/hebrew-webfont.ttf') format('truetype');
+        url('fonts/hebrew-webfont.woff') format('woff'),
+        url('fonts/hebrew-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Hebrew-Russian!';
-	src: url('/site-media/fonts/heb-rus-webfont.eot');
+	src: url('fonts/heb-rus-webfont.eot');
 	src:
         local('Hebrew-Russian!'),
-        url('/site-media/fonts/heb-rus-webfont.woff') format('woff'),
-        url('/site-media/fonts/heb-rus-webfont.ttf') format('truetype');
+        url('fonts/heb-rus-webfont.woff') format('woff'),
+        url('fonts/heb-rus-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Estrangelo Edessa';
-	src: url('/site-media/fonts/estre-webfont.eot');
+	src: url('fonts/estre-webfont.eot');
 	src:
         local('Estrangelo Edessa'),
-        url('/site-media/fonts/estre-webfont.woff') format('woff'),
-        url('/site-media/fonts/estre-webfont.ttf') format('truetype');
+        url('fonts/estre-webfont.woff') format('woff'),
+        url('fonts/estre-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'GEO-LitNusx';
-	src: url('/site-media/fonts/ltzura2-webfont.eot');
+	src: url('fonts/ltzura2-webfont.eot');
 	src:
         local('GEO-LitNusx'),
-        url('/site-media/fonts/ltzura2-webfont.woff') format('woff'),
-        url('/site-media/fonts/ltzura2-webfont.ttf') format('truetype');
+        url('fonts/ltzura2-webfont.woff') format('woff'),
+        url('fonts/ltzura2-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'SPEdessa';
-	src: url('/site-media/fonts/spedessa-webfont.eot');
+	src: url('fonts/spedessa-webfont.eot');
 	src:
         local('SPEdessa'),
-        url('/site-media/fonts/spedessa-webfont.woff') format('woff'),
-        url('/site-media/fonts/spedessa-webfont.ttf') format('truetype');
+        url('fonts/spedessa-webfont.woff') format('woff'),
+        url('fonts/spedessa-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Coptic';
-	src: url('/site-media/fonts/coptic2-webfont.eot');
+	src: url('fonts/coptic2-webfont.eot');
 	src:
         local('Coptic'),
-        url('/site-media/fonts/coptic2-webfont.woff') format('woff'),
-        url('/site-media/fonts/coptic2-webfont.ttf') format('truetype');
+        url('fonts/coptic2-webfont.woff') format('woff'),
+        url('fonts/coptic2-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Old Standard TT';
-	src: url('/site-media/fonts/oldstandard-regular-webfont.eot');
-	src: url('/site-media/fonts/oldstandard-regular-webfont.woff') format('woff'), url('/site-media/fonts/oldstandard-regular-webfont.ttf') format('truetype');
+	src: url('fonts/oldstandard-regular-webfont.eot');
+	src: url('fonts/oldstandard-regular-webfont.woff') format('woff'), url('fonts/oldstandard-regular-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Old Standard TT';
-	src: url('/site-media/fonts/oldstandard-italic-webfont.eot');
-	src: url('/site-media/fonts/oldstandard-italic-webfont.woff') format('woff'), url('/site-media/fonts/oldstandard-italic-webfont.ttf') format('truetype');
+	src: url('fonts/oldstandard-italic-webfont.eot');
+	src: url('fonts/oldstandard-italic-webfont.woff') format('woff'), url('fonts/oldstandard-italic-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: italic;
 }
 
 @font-face {
 	font-family: 'Old Standard TT';
-	src: url('/site-media/fonts/oldstandard-bold-webfont.eot');
-	src: url('/site-media/fonts/oldstandard-bold-webfont.woff') format('woff'), url('/site-media/fonts/oldstandard-bold-webfont.ttf') format('truetype');
+	src: url('fonts/oldstandard-bold-webfont.eot');
+	src: url('fonts/oldstandard-bold-webfont.woff') format('woff'), url('fonts/oldstandard-bold-webfont.ttf') format('truetype');
 	font-weight: bold;
 	font-style: normal;
 }

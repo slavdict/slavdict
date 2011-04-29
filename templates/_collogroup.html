@@ -34,7 +34,7 @@
 
             <div>
                 <a href="{% url UI:dictionary_collocationgroup_change cg.id %}">
-                    <img src="/site-media/pen.png" alt="" />
+                    <img src="{{ STATIC_URL }}pen.png" alt="" />
                     {% space %}
                     Редактировать словосочетания
                 </a>
@@ -42,7 +42,7 @@
 
             <div>
                 <a href="{% url UI:dictionary_meaning_add %}?collogroup={{ cg.id }}">
-                    <img src="/site-media/plus.png" alt="" />
+                    <img src="{{ STATIC_URL }}plus.png" alt="" />
                     {% space %}
                     Добавить значение
                 </a>

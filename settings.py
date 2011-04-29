@@ -8,7 +8,7 @@ backslash = '\\'
 # Базовые настройки проекта,
 # от которых могут зависеть другие настройки
 DEBUG = False
-ROOT = os.path.abspath( os.path.dirname( __file__ ) ).replace( backslash, slash ) + slash
+ROOT = os.path.normpath( os.path.abspath( os.path.dirname( __file__ ) ) ).replace( backslash, slash ) + slash
 
 # Локальное переопределение базовых настроек,
 # если оно имеется.
@@ -62,6 +62,9 @@ MEDIA_ROOT = ROOT + 'media/'
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/site-media/'
 
+STATIC_ROOT = ROOT + '.static/'
+STATIC_URL = '/static/'
+
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
@@ -94,12 +97,26 @@ TEMPLATE_DIRS = (
     ROOT + 'templates/',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
+)
+
+STATICFILES_DIRS = (
+    ROOT + 'static/',
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'django.contrib.staticfiles',
 
     'slavdict.dictionary',
     'slavdict.directory',

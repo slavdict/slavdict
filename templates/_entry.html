@@ -261,7 +261,7 @@
 
             <div>
                 <a href="{% url UI:dictionary_entry_change entry.pk %}">
-                    <img src="/site-media/pen.png" alt="" />
+                    <img src="{{ STATIC_URL }}pen.png" alt="" />
                     {% space %}
                     Редактировать информацию о лексеме
                 </a>
@@ -269,7 +269,7 @@
 
             <div>
                 <a href="{% url UI:dictionary_meaning_add %}?entry={{ entry.id }}">
-                    <img src="/site-media/plus.png" alt="" />
+                    <img src="{{ STATIC_URL }}plus.png" alt="" />
                     {% space %}
                     Добавить значение
                 </a>
@@ -277,7 +277,7 @@
 
             <div>
                 <a href="{% url UI:dictionary_collocationgroup_add %}?entry={{ entry.id }}">
-                    <img src="/site-media/plus.png" alt="" />
+                    <img src="{{ STATIC_URL }}plus.png" alt="" />
                     {% space %}
                     Добавить словосочетание
                 </a>
@@ -347,7 +347,7 @@
     <div class="edit-controls" style="margin-bottom: 7em;">
 
         <a href="{{ entry.get_absolute_url }}" style="color: #070;">
-            <img src="/site-media/check.png" alt="" />
+            <img src="{{ STATIC_URL }}check.png" alt="" />
             {% space %}
             Закончить редактирование
         </a>

@@ -3,11 +3,11 @@
     <head>
         <meta charset="utf-8">
         <title>{{ title }}</title>
-        <link href="/site-media/style.css" rel="stylesheet" type="text/css">
+        <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
     </head>
     <body>
         <div>
-            <a href="{% url UI:dictionary_entry_add %}"><img src="/site-media/plus.png" alt="" /></a>
+            <a href="{% url UI:dictionary_entry_add %}"><img src="{{ STATIC_URL }}plus.png" alt="" /></a>
         </div>
         <div id="main">
 

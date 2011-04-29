@@ -4,24 +4,24 @@ div > input[type="checkbox"] { margin-left: 12em !important; }
 
 @font-face {
     font-family: 'AntConSol';
-    src: url('/site-media/antconsol-webfont.eot');
+    src: url('{{ STATIC_URL }}antconsol-webfont.eot');
     src:
         local('☺'),
-        url('/site-media/antconsol-webfont.woff') format('woff'),
-        url('/site-media/antconsol-webfont.ttf') format('truetype');
+        url('{{ STATIC_URL }}antconsol-webfont.woff') format('woff'),
+        url('{{ STATIC_URL }}antconsol-webfont.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'Triodion Ucs';
-    src: url('/site-media/fonts/TriIEUcs.eot'); /* .eot */
+    src: url('{{ STATIC_URL }}fonts/TriIEUcs.eot'); /* .eot */
     src:
         local('Triodion Ucs'),
         local('Triodion ieUcs'),
         local('Triodion ieUcs Regular'),
         local('Triodion-ieUcs'),
-        url('/site-media/fonts/TriIEUcs.woff') format('woff'),
-        url('/site-media/fonts/TriIEUcs.ttf') format('truetype'),
-        url('/site-media/fonts/TriIEUcs.svg#Triodion-ieUcs') format('svg');
+        url('{{ STATIC_URL }}fonts/TriIEUcs.woff') format('woff'),
+        url('{{ STATIC_URL }}fonts/TriIEUcs.ttf') format('truetype'),
+        url('{{ STATIC_URL }}fonts/TriIEUcs.svg#Triodion-ieUcs') format('svg');
 }
 
 .antconsol { font-family: AntConSol; }
