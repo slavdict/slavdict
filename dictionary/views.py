@@ -100,11 +100,22 @@ def single_entry(request, entry_id, extra_context=None, template='single_entry.h
     if not extra_context:
         extra_context = {}
     entry = get_object_or_404(Entry, id=entry_id)
+    user = request.user
+
+    if request.path.endswith('intermed/'):
+        user_groups = [t[0] for t in user.groups.values_list('name')]
+        if not entry.editor or user.is_superuser \
+        or 'editors' in user_groups or 'admins' in user_groups \
+        or user == entry.editor:
+            pass
+        else:
+            return redirect(entry.get_absolute_url())
+        
     context = {
         'entry': entry,
         'title': u'Статья «%s»' % entry.civil_equivalent,
         'show_additional_info': 'ai' in request.COOKIES,
-        'user': request.user,
+        'user': user,
     }
     context.update(extra_context)
     return render_to_response(template, context, RequestContext(request))
