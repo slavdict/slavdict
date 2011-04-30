@@ -34,19 +34,13 @@ def make_greek_found(request):
 @login_required
 def all_entries(request):
     entries = Entry.objects.all().order_by('civil_equivalent', 'homonym_order')
-    return render_to_response(
-
-        'all_entries.html',
-
-        {
-            'entries': entries,
-            'title': u'Все статьи',
-            'show_additional_info': 'ai' in request.COOKIES,
-            'user': request.user,
-        },
-
-        RequestContext(request),
-        )
+    context = {
+        'entries': entries,
+        'title': u'Все статьи',
+        'show_additional_info': 'ai' in request.COOKIES,
+        'user': request.user,
+        }
+    return render_to_response('all_entries.html', context, RequestContext(request))
 
 
 @login_required
@@ -54,19 +48,13 @@ def test_entries(request):
     grfexs = GreekEquivalentForExample.objects.filter(~Q(mark=u''))
     entry_id_list = [grfex.for_example.meaning.entry_container.id for grfex in grfexs]
     entries = Entry.objects.filter(id__in=entry_id_list).order_by('civil_equivalent', 'homonym_order')
-    return render_to_response(
-
-        'all_entries.html',
-
-        {
-            'entries': entries,
-            'title': u'Избранные статьи',
-            'show_additional_info': 'ai' in request.COOKIES,
-            'user': request.user,
-        },
-
-        RequestContext(request),
-        )
+    context = {
+        'entries': entries,
+        'title': u'Избранные статьи',
+        'show_additional_info': 'ai' in request.COOKIES,
+        'user': request.user,
+        }
+    return render_to_response('all_entries.html', context, RequestContext(request))
 
 
 @login_required
@@ -98,40 +86,28 @@ def greek_to_find(request):
     entry_id_list = [e.id for e in entry_list]
 
     entries = Entry.objects.filter(id__in=entry_id_list).order_by('civil_equivalent', 'homonym_order')
-    return render_to_response(
-
-        'all_entries.html',
-
-        {
-            'entries': entries,
-            'title': u'Статьи, для примров которых необходимо найти греческие параллели',
-            'show_additional_info': 'ai' in request.COOKIES,
-            'user': request.user,
-        },
-
-        RequestContext(request),
-        )
+    context = {
+        'entries': entries,
+        'title': u'Статьи, для примров которых необходимо найти греческие параллели',
+        'show_additional_info': 'ai' in request.COOKIES,
+        'user': request.user,
+        }
+    return render_to_response('all_entries.html', context, RequestContext(request))
 
 
 @login_required
 def single_entry(request, entry_id, extra_context=None, template='single_entry.html'):
     if not extra_context:
         extra_context = {}
-
     entry = get_object_or_404(Entry, id=entry_id)
-    return render_to_response(
+    context = {
+        'entry': entry,
+        'title': u'Статья «%s»' % entry.civil_equivalent,
+        'show_additional_info': 'ai' in request.COOKIES,
+        'user': request.user,
+    }.update(extra_context)
 
-        template,
-
-        {
-            'entry': entry,
-            'title': u'Статья «%s»' % entry.civil_equivalent,
-            'show_additional_info': 'ai' in request.COOKIES,
-            'user': request.user,
-        }.update(extra_context),
-
-        RequestContext(request),
-        )
+    return render_to_response(template, context, RequestContext(request))
 
 
 @login_required
@@ -142,20 +118,14 @@ def last_entry(request):
     except IndexError:
         entry = None
         error = True
-    return render_to_response(
-
-        'single_entry.html',
-
-        {
-            'entry': entry,
-            'title': u'Последняя добавленная статья',
-            'show_additional_info': 'ai' in request.COOKIES,
-            'error': error,
-            'user': request.user,
-        },
-
-        RequestContext(request),
-        )
+    context = {
+        'entry': entry,
+        'title': u'Последняя добавленная статья',
+        'show_additional_info': 'ai' in request.COOKIES,
+        'error': error,
+        'user': request.user,
+        }
+    return render_to_response('single_entry.html', context, RequestContext(request))
 
 
 @login_required
@@ -407,28 +377,23 @@ def change_entry(request, entry_id):
         else:
             x.grfex_forms = [grfex_form,]
 
+    context = {
+        'entry_form': entry_form,
+        'orthvar_formset': orthvar_formset,
+        'etymology_formset': etymology_formset,
+        'meaning_formset': meaning_formset,
 
-    return render_to_response(
+        'example_management_form': example_formset.management_form,
+        'cntxt_management_form': cntxt_formset.management_form,
+        'grfmnng_management_form': grfmnng_formset.management_form,
+        'grfex_management_form': grfex_formset.management_form,
 
-        "change_form.html",
-
-        {
-            'entry_form': entry_form,
-            'orthvar_formset': orthvar_formset,
-            'etymology_formset': etymology_formset,
-            'meaning_formset': meaning_formset,
-
-            'example_management_form': example_formset.management_form,
-            'cntxt_management_form': cntxt_formset.management_form,
-            'grfmnng_management_form': grfmnng_formset.management_form,
-            'grfex_management_form': grfex_formset.management_form,
-
-            'example_empty_form': example_formset.empty_form,
-            'cntxt_empty_form': cntxt_formset.empty_form,
-            'grfmnng_empty_form': grfmnng_formset.empty_form,
-            'grfex_empty_form': grfex_formset.empty_form,
-        },
-        )
+        'example_empty_form': example_formset.empty_form,
+        'cntxt_empty_form': cntxt_formset.empty_form,
+        'grfmnng_empty_form': grfmnng_formset.empty_form,
+        'grfex_empty_form': grfex_formset.empty_form,
+        }
+    return render_to_response("change_form.html", context, RequestContext(request))
 
 
 
@@ -622,19 +587,12 @@ def write_pdf(request, template_src, context_dict):
 @login_required
 def pdf_for_single_entry(request, entry_id):
     entry = get_object_or_404(Entry, id=entry_id)
-    
-    return write_pdf(
-
-        request,
-        'pdf_for_single_entry.html',
-
-        {
-            'entry': entry,
-            'title': u'Статья «%s»' % entry.civil_equivalent,
-            'show_additional_info': 'ai' in request.COOKIES,
-            'user': request.user,
-            'date': datetime.datetime.now(),
-            'filename': 'entry%s.pdf' % entry_id,
-        },
-
-        )
+    context = {
+        'entry': entry,
+        'title': u'Статья «%s»' % entry.civil_equivalent,
+        'show_additional_info': 'ai' in request.COOKIES,
+        'user': request.user,
+        'date': datetime.datetime.now(),
+        'filename': 'entry%s.pdf' % entry_id,
+        }
+    return write_pdf(request, 'pdf_for_single_entry.html', context)
