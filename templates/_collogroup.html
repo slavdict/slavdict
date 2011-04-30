@@ -1,7 +1,11 @@
 {% load trim_spaces %}
 
 <div style="line-height: 140%;">
-    □<!-- &#x25A1; -->&nbsp;
+    {% if cg.host_entry.has_meanings %}
+        □<!-- &#x25A1; -->&nbsp;
+    {% else %}
+        ■<!-- &#x25A0; -->&nbsp;
+    {% endif %}
 
     {% for c in cg.collocations %}
 

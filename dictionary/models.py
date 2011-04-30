@@ -93,6 +93,10 @@ class Meaningfull:
     def all_meanings(self):
         return self.meaning_set.all().order_by('order', 'id')
 
+    @property
+    def has_meanings(self):
+        return self.meaning_set.exists()
+
 
 #class MTimable:
 #    """
