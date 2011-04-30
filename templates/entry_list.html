@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load trim_spaces %}
+{% block content %}
+    {% trim %}
+    {% if entries %}
+    <table>
+        <tr>
+            <th>Лексема</th>
+            <th>Автор</th>
+            <th>Дата изменения</th>
+        </tr>
+
+        {% for entry in entries %}
+            <tr>
+                <td>
+                    <a href="{{ entry.get_absolute_url }}">
+                        <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
+                    </a>
+
+                    {% if entry.homonym_order %}
+
+                        &nbsp;{{ entry.homonym_order_roman }}
+
+                        {% space %}<i>{{ entry.part_of_speech.tag }}</i>
+
+                        {% if entry.homonym_gloss %}
+                            {% space %}‘{{ entry.homonym_gloss }}’
+                        {% endif %}
+                        
+                    {% endif %}
+                </td>
+                <td>
+                    {% if entry.editor %}
+                        {{ entry.editor }}
+                    {% else %}
+                        &#151;
+                    {% endif %}
+                </td>
+                <td>{{ entry.mtime|date:"d.m.Y H:i" }}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+    {% endif %}
+    {% endtrim %}
+{% endblock %}

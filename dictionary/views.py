@@ -607,3 +607,10 @@ def pdf_for_single_entry(request, entry_id):
         'filename': 'entry%s.pdf' % entry_id,
         }
     return write_pdf(request, 'pdf_for_single_entry.html', context)
+
+@login_required
+def entry_list(request):
+    context = {
+        'entries': Entry.objects.filter(editor=request.user).order_by('-mtime')
+        }
+    return render_to_response('entry_list.html', context, RequestContext(request))

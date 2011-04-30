@@ -24,7 +24,7 @@
     </head>
     <body>
         <div id="pdfHeaderContent">
-            {{ date|date:"d.m.Y" }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {{ entry.mtime|date:"d.m.Y" }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             {% block header %}{% endblock %}
         </div>
         {% block content %}{% endblock %}
