@@ -603,15 +603,15 @@ def write_pdf(request, template_src, context_dict):
     pdf = pisa.pisaDocument(
         StringIO.StringIO(html.encode('UTF-8')),
         result,
-        path=settings.MEDIA_ROOT + 'stub')
+        path=settings.STATIC_ROOT + 'stub')
         # Аргумент path внутренне используется следующим образом.
         # pisaDocument преполагает, что это тот путь, по которому должен был
         # быть расположен наш html-файл. На основе этого пути вычисляется
         # путь объемлющей директории. И он принимается за отправную точку
         # для вычисления относительных ссылок в файле. В данном случае
-        # строчка 'stub' в `path = settings.MEDIA_ROOT + 'stub'` используется
+        # строчка 'stub' в `path = settings.STATIC_ROOT + 'stub'` используется
         # только для того, чтобы она была отсечена и чтобы в качестве отправной
-        # директории использовался путь settings.MEDIA_ROOT.
+        # директории использовался путь settings.STATIC_ROOT.
     if not pdf.err:
         response = http.HttpResponse(result.getvalue(), mimetype='application/pdf')
         response['Content-Disposition'] = 'attachment; filename=%s' % context_dict['filename']

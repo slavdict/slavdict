@@ -1,5 +1,4 @@
 # encoding: UTF-8
-from django.conf import settings
 from django import forms
 from django.db import models
 from django.contrib import admin
@@ -192,8 +191,8 @@ class AdminExample(admin.ModelAdmin):
         'meaning__collogroup_container__collocation_set__collocation',
         )
     class Media:
-        css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
-        js = (settings.MEDIA_URL + "fix_admin.js",)
+        css = {"all": ("fix_admin.css",)}
+        js = ("fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -273,8 +272,8 @@ class AdminMeaning(admin.ModelAdmin):
         'gloss',
         )
     class Media:
-        css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
-        js = (settings.MEDIA_URL + "fix_admin.js",)
+        css = {"all": ("fix_admin.css",)}
+        js = ("fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -402,8 +401,8 @@ class AdminEntry(admin.ModelAdmin):
     save_on_top = True
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     class Media:
-        css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
-        js = (settings.MEDIA_URL + "fix_admin.js",)
+        css = {"all": ("fix_admin.css",)}
+        js = ("fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -427,8 +426,8 @@ from slavdict.dictionary.models import Collocation
 #            (None, {'fields': ('collocation', 'civil_equivalent')}),
 #        )
 #    class Media:
-#        css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
-#        js = (settings.MEDIA_URL + "fix_admin.js",)
+#        css = {"all": ("fix_admin.css",)}
+#        js = ("fix_admin.js",)
 #    def response_add(self, request, obj, post_url_continue='/'):
 #        post_url_continue = obj.host_entry.get_absolute_url()
 #        return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -479,8 +478,8 @@ class AdminCollocationGroup(admin.ModelAdmin):
     list_display_links = list_display
     search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')
     class Media:
-        css = {"all": (settings.MEDIA_URL + "fix_admin.css",)}
-        js = (settings.MEDIA_URL + "fix_admin.js",)
+        css = {"all": ("fix_admin.css",)}
+        js = ("fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')

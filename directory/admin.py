@@ -11,7 +11,7 @@ from slavdict.directory.models import TagLibrary
 class AdminTagLibrary(admin.ModelAdmin):
     inlines = (ValueTag_Inline,)
     class Media:
-        css = {"all": (settings.MEDIA_URL + "fix_admin2.css",)}
+        css = {"all": ("fix_admin2.css",)}
 
 admin.site.register(TagLibrary, AdminTagLibrary)
 
@@ -24,7 +24,7 @@ class AdminCategoryValue(admin.ModelAdmin):
     list_display = ('category', 'order', 'tag', 'slug')
     list_display_links = list_display
     class Media:
-        css = {"all": (settings.MEDIA_URL + "fix_admin2.css",)}
+        css = {"all": ("fix_admin2.css",)}
 
 admin.site.register(CategoryValue, AdminCategoryValue)
 
@@ -34,6 +34,6 @@ class AdminCategory(admin.ModelAdmin):
     list_display = ('tag', 'slug')
     list_display_links = list_display
     class Media:
-        css = {"all": (settings.MEDIA_URL + "fix_admin2.css",)}
+        css = {"all": ("fix_admin2.css",)}
 
 admin.site.register(Category, AdminCategory)

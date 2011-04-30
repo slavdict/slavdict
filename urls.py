@@ -2,6 +2,7 @@
 
 from django.conf.urls.defaults import *
 from django.views.generic.simple import redirect_to
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from slavdict.admin import ui
 from django.contrib import admin
@@ -33,6 +34,8 @@ urlpatterns += patterns('',
     url( r'^greek-found/', 'slavdict.dictionary.views.make_greek_found' ), # Впоследствии необходимо будет удалить.
     url( r'^csv-import/', 'slavdict.dictionary.views.import_csv_billet' ),
 )
+
+urlpatterns += staticfiles_urlpatterns()
 
 try:
     import local_urls
