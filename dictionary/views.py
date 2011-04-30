@@ -105,8 +105,8 @@ def single_entry(request, entry_id, extra_context=None, template='single_entry.h
         'title': u'Статья «%s»' % entry.civil_equivalent,
         'show_additional_info': 'ai' in request.COOKIES,
         'user': request.user,
-    }.update(extra_context)
-
+    }
+    context.update(extra_context)
     return render_to_response(template, context, RequestContext(request))
 
 
