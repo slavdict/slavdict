@@ -256,6 +256,7 @@ span.edit-controls a {
 table {
     table-layout: fixed;
     border-collapse: collapse;
+    width: 100%;
 }
 
 th, td {
