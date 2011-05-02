@@ -3,68 +3,121 @@
 {% block content %}
     {% trim %}
     {% if entries %}
-    <table>
-        <col style="width: 40px;"></col>
-        <col></col>
-        <col style="width: 100px;"></col>
-        <col style="width: 140px;"></col>
-        <col style="width: 125px;"></col>
+        <table>
+            <col class="eli-controls"></col>
+            <col class="eli-entry"></col>
+            <col class="eli-author"></col>
+            <col class="eli-mtime"></col>
+            <col class="eli-status"></col>
 
         {% for entry in entries %}
-            <tr>
-                <td class="first">
+            <tr class="entry-list-item">
+
+                <td class="eli-controls">
+                    <div>
                     {% if not entry.editor or user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" or user == entry.editor %}
                         <a href="{% url intermediary_change_form_url entry.pk %}">
                             <img src="{{ STATIC_URL }}pen.png" alt="изменить" />
                         </a>
                     {% endif %}
+                    </div>
                 </td>
-                <td>
-                    <a href="{{ entry.get_absolute_url }}" class="entry-list-manual">
+
+                <td class="eli-entry">
+                    <div class="shade"> {# div.shade должен быть обязательно в данной ячейке таблицы. #}
+                        <div class="center"></div>
+                        <div class="left"></div>
+                        <div class="right"></div>
+                    </div>
+
+                    <a href="{{ entry.get_absolute_url }}" class="manual-entry">
                         <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
                     </a>
-
                     {% if entry.homonym_order %}
-
                         &nbsp;{{ entry.homonym_order_roman }}
-
-                        {% space %}<i>{{ entry.part_of_speech.tag }}</i>
-
-                        {% if entry.homonym_gloss %}
-                            {% space %}‘{{ entry.homonym_gloss }}’
-                        {% endif %}
-
+                        <span class="ss">
+                            &nbsp;&nbsp;&nbsp;
+                            <i>{{ entry.part_of_speech.tag }}</i>
+                            {% if entry.homonym_gloss %}
+                                {% space %}‘{{ entry.homonym_gloss }}’
+                            {% endif %}
+                        </span>
                     {% endif %}
                 </td>
-                <td>
-                    <span class="ss">{{ entry.status.tag }}</span>
-                </td>
-                <td>
+
+                <td class="eli-author">
                     {% if entry.editor %}
                         <span class="ss">{{ entry.editor }}</span>
                     {% else %}
                         <span class="ssn">&lt; Автор не назначен &gt;</span>
                     {% endif %}
                 </td>
-                <td>
+
+                <td class="eli-mtime">
                     <span class="ss">
                         {{ entry.mtime|date:"d.m.Y, H:i" }}
                     </span>
                 </td>
+
+                <td class="eli-status">
+                    <span class="ss">{{ entry.status.tag }}</span>
+                </td>
+
             </tr>
         {% endfor %}
-    </table>
+        </table>
     {% endif %}
 
     <div class="pagination">
-        {% for p in page.paginator.page_range %}
-            {% ifnotequal page.number p %}
-                <a href="?page={{ p }}">{{ p }}</a>
+
+        {% if page.has_previous %}
+            {% if page.number > 4 %}
+                <a href="?page=1">1</a>
+                {% space %}...{% space %}
             {% else %}
-                <a class="current-page">{{ page.number }}</a>
-            {% endifnotequal %}
+                {% if page.number > 2 %}
+                    <a href="?page=1">1</a>
+                    {% space %}
+                    {% ifequal page.number 4 %}
+                        <a href="?page=2">2</a>
+                        {% space %}
+                    {% endifequal %}
+                {% endif %}
+            {% endif %}
+            <a href="?page={{ page.previous_page_number }}">
+                {{ page.previous_page_number }}
+            </a>
             {% space %}
-        {% endfor %}
+        {% endif %}
+
+        <a class="current-page">{{ page.number }}</a>
+
+        {% if page.has_next %}
+            {% space %}
+            <a href="?page={{ page.next_page_number }}">
+                {{ page.next_page_number }}
+            </a>
+            {% if page.number < page.paginator.num_pages|add:"-3" %}
+                {% space %}...{% space %}
+                <a href="?page={{ page.paginator.num_pages }}">
+                    {{ page.paginator.num_pages }}
+                </a>
+            {% else %}
+                {% if page.number < page.paginator.num_pages|add:"-1" %}
+                    {% ifequal page.number page.paginator.num_pages|add:"-3" %}
+                        {% space %}
+                        <a href="?page={{ page.paginator.num_pages|add:"-2" }}">
+                            {{ page.paginator.num_pages|add:"-2" }}
+                        </a>
+                    {% endifequal %}
+                    {% space %}
+                    <a href="?page={{ page.paginator.num_pages|add:"-1" }}">
+                        {{ page.paginator.num_pages|add:"-1" }}
+                    </a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
     </div>
     {% endtrim %}
 {% endblock %}
