@@ -4,16 +4,23 @@
     {% trim %}
     {% if entries %}
     <table>
-        <tr>
-            <th>Лексема</th>
-            <th>Автор</th>
-            <th>Последнее изменение</th>
-        </tr>
+        <col style="width: 40px;"></col>
+        <col></col>
+        <col style="width: 100px;"></col>
+        <col style="width: 140px;"></col>
+        <col style="width: 125px;"></col>
 
         {% for entry in entries %}
             <tr>
+                <td class="first">
+                    {% if not entry.editor or user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" or user == entry.editor %}
+                        <a href="{% url intermediary_change_form_url entry.pk %}">
+                            <img src="{{ STATIC_URL }}pen.png" alt="изменить" />
+                        </a>
+                    {% endif %}
+                </td>
                 <td>
-                    <a href="{{ entry.get_absolute_url }}">
+                    <a href="{{ entry.get_absolute_url }}" class="entry-list-manual">
                         <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
                     </a>
 
@@ -26,21 +33,47 @@
                         {% if entry.homonym_gloss %}
                             {% space %}‘{{ entry.homonym_gloss }}’
                         {% endif %}
-                        
+
                     {% endif %}
                 </td>
                 <td>
+                    <span class="ss">{{ entry.status.tag }}</span>
+                </td>
+                <td>
                     {% if entry.editor %}
-                        {{ entry.editor }}
+                        <span class="ss">{{ entry.editor }}</span>
                     {% else %}
-                        &#151;
+                        <span class="ssn">&lt; Автор не назначен &gt;</span>
                     {% endif %}
                 </td>
-                <td>{{ entry.mtime|date:"d.m.Y H:i" }}</td>
+                <td>
+                    <span class="ss">
+                        {{ entry.mtime|date:"d.m.Y, H:i" }}
+                    </span>
+                </td>
             </tr>
         {% endfor %}
-
     </table>
     {% endif %}
+
+    <div class="pagination">
+        {% for p in page.paginator.page_range %}
+            {% ifnotequal page.number p %}
+                <a href="?page={{ p }}">{{ p }}</a>
+            {% else %}
+                <a class="current-page">{{ page.number }}</a>
+            {% endifnotequal %}
+            {% space %}
+        {% endfor %}
+    </div>
     {% endtrim %}
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript">
+        $('tr').mouseover(function(){
+            $(this).addClass('hover');
+        }).mouseout(function(){
+            $(this).removeClass('hover');
+        });
+    </script>
 {% endblock %}

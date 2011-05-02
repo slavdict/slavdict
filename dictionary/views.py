@@ -608,9 +608,23 @@ def pdf_for_single_entry(request, entry_id):
         }
     return write_pdf(request, 'pdf_for_single_entry.html', context)
 
+
+from django.core.paginator import Paginator, EmptyPage, InvalidPage
+
 @login_required
 def entry_list(request):
+    entry_list = Entry.objects.all().order_by('-mtime') #filter(editor=request.user)
+    paginator = Paginator(entry_list, per_page=15, orphans=2)
+    try:
+        pagenum = int(request.GET.get('page', 1))
+    except ValueError:
+        pagenum = 1
+    try:
+        page = paginator.page(pagenum)
+    except (EmptyPage, InvalidPage):
+        page = paginator.page(paginator.num_pages)
     context = {
-        'entries': Entry.objects.filter(editor=request.user).order_by('-mtime')
+        'entries': page.object_list,
+        'page': page,
         }
     return render_to_response('entry_list.html', context, RequestContext(request))
