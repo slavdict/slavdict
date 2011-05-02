@@ -313,3 +313,6 @@ tr.hover .entry-list-manual { color: #fff; border-bottom: 1px solid #fff; }
     color: #fff;
     background-color: #555;
 }
+.pagination a:hover.current-page {
+    background-color: #a00;
+}
