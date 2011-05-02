@@ -1,3 +1,6 @@
+noscript { display: block; padding: 1em; color: white; background-color: #a00;
+    text-align: center; font-family: Arial, sans-serif; }
+
 @font-face {
     font-family: 'Triodion Ucs';
     src: url('fonts/TriIEUcs.eot'); /* .eot */
@@ -241,59 +244,72 @@ span.noaddress {
     font-size: smaller;
 }
 
-div.edit-controls {
-    margin: 1em auto 1em 1.5em;
-}
-.edit-controls a {
-    text-decoration: none;
-    color: #369;
-    border-bottom: 1px dotted #369;
-}
-span.edit-controls a {
-    border-bottom-width: 0;
-}
+div.edit-controls { margin: 1em auto 1em 1.5em; }
+.edit-controls a { text-decoration: none;
+    color: #369; border-bottom: 1px dotted #369; }
+span.edit-controls a { border-bottom-width: 0; }
 
-
+/* Список словарных статей */
 table { table-layout: fixed; width: 100%; border-collapse: collapse; }
-tr.entry-list-item td { padding: 0.1em 0.7em 0.1em 0; }
+tr.entry-list-item td { padding: 0.5% 2% 0.5% 0; }
+tr.entry-list-item td.first { padding-left: 2%; }
 tr.entry-list-item.hover { background-color: #069; color: #fff; }
 tr.entry-list-item.hover div.shade { display: none; }
-tr.entry-list-item td.eli-controls { width: 40px; padding-left: 0.7em; }
-tr.entry-list-item td.eli-status { width: 80px; }
-tr.entry-list-item td.eli-author { width: 140px; }
-tr.entry-list-item td.eli-mtime { width: 120px; }
+tr.entry-list-item td.eli-control { width: 5%; }
+tr.entry-list-item td.eli-status { width: 15%; }
+tr.entry-list-item td.eli-author { width: 20%; }
+tr.entry-list-item td.eli-mtime { width: 20%; }
 
+/* разделительная тень в списке статей */
 div.shade { position: relative; height: 0; }
-div.shade div { position: absolute; top: -2px; height: 3px; }
-div.shade div.left { width: 80px; left: -40px;
+div.shade div { position: absolute; top: -3px; height: 3px; }
+div.shade div.left { width: 80px; left: -60px;
     background: url(fadeBarLeft.gif) no-repeat top left; }
-div.shade div.center { width: 580px;
+div.shade div.center { width: 550px;
     background: url(fadeBarCenter.gif) repeat-x top left; }
-div.shade div.right { width: 80px; left: 580px;
+div.shade div.right { width: 80px; left: 550px;
     background: url(fadeBarRight.gif) no-repeat top left; }
 
-
+/* Выделения текста в списке статей */
 .ss /* Sans-Serif */, .ssn /* Sans-Serif Note */ {
-    font-family: Arial, sans-serif;
-    font-size: 12px; color: gray;
-    }
+    font-family: Arial, sans-serif; font-size: 12px;
+    line-height: 12px; color: gray; }
 .ssn { font-size: 10px; font-style: italic; }
 tr.hover .ss, tr.hover .ssn { color: #fff; }
-span.space { width: 10px; }
 
-
-
-.manual-entry {
-    color: black;
-    text-decoration: none;
-    border-bottom-width: 0;
-}
+/* Ссылки для лексем в списке */
+.manual-entry { color: black; text-decoration: none; border-bottom-width: 0; }
 tr.hover .manual-entry { color: #fff; border-bottom: 1px solid #fff; }
 
+a.icon img { width: 22px; height: 22px; vertical-align: middle; padding: 0; margin: 0;}
+a.icon.edit { background: url(edit-gray-faded.png) no-repeat 50% 50%; }
+a:hover.icon.edit { background: url(edit-gray.png) no-repeat 50% 50%; }
+tr.entry-list-item.hover a.icon.edit { background: url(edit-white.png) no-repeat 50% 50%; }
+a.icon.view { background: url(eye-gray-faded.png) no-repeat 50% 50%; }
+a:hover.icon.view { background: url(eye-gray.png) no-repeat 50% 50%; }
+tr.entry-list-item.hover a.icon.view { background: url(eye-white.png) no-repeat 50% 50%; }
 
+span.hint-container { position: relative; display: none; }
+div.hint {
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    line-height: 10px;
+    position: absolute;
+    padding: 1ex 1em;
+    -webkit-border-radius: 0.3em;
+    -moz-border-radius: 0.3em;
+    border-radius: 0.3em;
+    color: white;
+    background-color: #484848;
+    left: -130px;
+    top: -28px;
+}
 
+/* Блок пагинации */
 .pagination {
-    padding: 0.5em 0.7em;
+    width: 300px;
+    margin: 40px auto;
+    text-align: center;
 }
 
 .pagination a {

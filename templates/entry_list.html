@@ -4,7 +4,7 @@
     {% trim %}
     {% if entries %}
         <table>
-            <col class="eli-controls"></col>
+            <col class="eli-control"></col>
             <col class="eli-entry"></col>
             <col class="eli-author"></col>
             <col class="eli-mtime"></col>
@@ -13,14 +13,24 @@
         {% for entry in entries %}
             <tr class="entry-list-item">
 
-                <td class="eli-controls">
-                    <div>
+                <td class="eli-control first">
                     {% if not entry.editor or user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" or user == entry.editor %}
-                        <a href="{% url intermediary_change_form_url entry.pk %}">
-                            <img src="{{ STATIC_URL }}pen.png" alt="изменить" />
+                        <a href="{% url intermediary_change_form_url entry.pk %}" class="icon edit">
+                            <img src="{{ STATIC_URL }}transparent.png" alt="e" />
                         </a>
+                        <span class="hint-container">
+                            <div class="hint">Редактировать<br/>статью</div>
+                        </span>
                     {% endif %}
-                    </div>
+                </td>
+
+                <td class="eli-control">
+                    <a href="{{ entry.get_absolute_url }}" class="icon view">
+                        <img src="{{ STATIC_URL }}transparent.png" alt="v" />
+                    </a>
+                    <span class="hint-container">
+                        <div class="hint">Просмотреть<br/>статью</div>
+                    </span>
                 </td>
 
                 <td class="eli-entry">
@@ -128,5 +138,11 @@
         }).mouseout(function(){
             $(this).removeClass('hover');
         });
+        $('.icon').mouseover(function(){
+            $(this).next('.hint-container').show();
+        }).mouseout(function(){
+            $(this).next('.hint-container').hide();
+        });
+
     </script>
 {% endblock %}
