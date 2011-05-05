@@ -258,10 +258,14 @@ tr.entry-list-item td.first { padding-left: 2%; }
 tr.entry-list-item.hover { background-color: #069; color: #fff; }
 tr.entry-list-item.hover div.shade { display: none; }
 tr.entry-list-item td.eli-control { width: 5%; }
-tr.entry-list-item td.eli-entry { overflow: hidden; }
+tr.entry-list-item td.eli-entry { overflow: hidden; padding-right: 0;
+    padding-left: 0.7%; white-space: nowrap; }
 tr.entry-list-item td.eli-status { width: 15%; }
 tr.entry-list-item td.eli-author { width: 20%; }
 tr.entry-list-item td.eli-mtime { width: 20%; }
+
+tr.entry-list-item.hover td.eli-entry .cslav {
+    text-shadow: 0 0 5px #023; }
 
 /* разделительная тень в списке статей */
 div.shade, div.fade { position: relative; height: 0; }
@@ -272,10 +276,13 @@ div.shade div.center { width: 550px; left: 40px;
     background: url(fadeBarCenter.gif) repeat-x top left; }
 div.shade div.right { width: 80px; left: 590px;
     background: url(fadeBarRight.gif) no-repeat top left; }
-div.fade div { position: absolute; height: 100px; width: 40px;
-    background: url(fade-from-right.png) repeat-y right top;
-    top: -20px; left: -20px;
-    }
+div.fade div { position: absolute; height: 60px; width: 100%;
+    background: url("fade-right-white.png") repeat-y right top; }
+    /* fade-right-white: 100px заготовкав в ширину в фотошопе, цвет белый,
+    градиентная заливка из белого в прозрачный/бесцветный цвет,
+    начало на 90-м пикселе, конец на 40-м. Получается около 10px справа
+    заполнены непрозрачным белым, а далее влево он выцветает. */
+tr.entry-list-item.hover div.fade div { background-image: url("fade-right-blue.png")}
 
 /* Выделения текста в списке статей */
 .ss /* Sans-Serif */, .ssn /* Sans-Serif Note */ {
@@ -291,7 +298,7 @@ div.fade div { position: absolute; height: 100px; width: 40px;
     padding: 0 0.5em 0.2em;
 }
 tr.hover .ss, tr.hover .ssn { color: #fff; }
-tr.hover .caps { color: #484848; background-color: white; }
+tr.hover .caps { color: white; background-color: #069; }
 
 /* Ссылки для лексем в списке */
 .manual-entry { color: black; text-decoration: none; border-bottom-width: 0; }
