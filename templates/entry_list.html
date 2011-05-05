@@ -14,6 +14,13 @@
             <tr class="entry-list-item">
 
                 <td class="eli-control first">
+                
+                    <div class="shade"> {# div.shade должен быть обязательно в такой ячейке, где с гарантией буде #}
+                        <div class="center"></div>
+                        <div class="left"></div>
+                        <div class="right"></div>
+                    </div>
+
                     {% if not entry.editor or user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" or user == entry.editor %}
                         <a href="{% url intermediary_change_form_url entry.pk %}" class="icon edit">
                             <img src="{{ STATIC_URL }}transparent.png" alt="e" />
@@ -21,6 +28,8 @@
                         <span class="hint-container">
                             <div class="hint">Редактировать<br/>статью</div>
                         </span>
+                    {% else %}
+                        &nbsp;
                     {% endif %}
                 </td>
 
@@ -34,28 +43,28 @@
                 </td>
 
                 <td class="eli-entry">
-                    <div class="shade"> {# div.shade должен быть обязательно в данной ячейке таблицы. #}
-                        <div class="center"></div>
-                        <div class="left"></div>
-                        <div class="right"></div>
-                    </div>
-
-                    <a href="{{ entry.get_absolute_url }}" class="manual-entry">
-                        <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
-                    </a>
-                    {% if entry.homonym_order %}
-                        &nbsp;{{ entry.homonym_order_roman }}
-                        <span class="ss">
-                            &nbsp;&nbsp;&nbsp;
-                            <i>{{ entry.part_of_speech.tag }}</i>
-                            {% if entry.homonym_gloss %}
-                                {% space %}‘{{ entry.homonym_gloss }}’
-                            {% endif %}
-                        </span>
-                    {% endif %}
+                    <nobr>
+                        <a href="{{ entry.get_absolute_url }}" class="manual-entry">
+                            <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
+                        </a>
+                        {% if entry.homonym_order %}
+                            &nbsp;{{ entry.homonym_order_roman }}
+                            <span class="ss">
+                                &nbsp;&nbsp;&nbsp;
+                                <i>{{ entry.part_of_speech.tag }}</i>
+                                {% if entry.homonym_gloss %}
+                                    {% space %}
+                                    <span class="caps">{{ entry.homonym_gloss }}</span>
+                                {% endif %}
+                            </span>
+                        {% endif %}
+                    </nobr>
                 </td>
 
                 <td class="eli-author">
+                
+                    <div class="fade"><div></div></div>
+
                     {% if entry.editor %}
                         <span class="ss">{{ entry.editor }}</span>
                     {% else %}
