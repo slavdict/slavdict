@@ -270,11 +270,11 @@ tr.entry-list-item.hover td.eli-entry .cslav {
 /* разделительная тень в списке статей */
 div.shade, div.fade { position: relative; height: 0; }
 div.shade div { position: absolute; top: -7px; height: 3px; }
-div.shade div.left { width: 80px; left: -20px;
+div.shade div.left { width: 80px; left: -16px;
     background: url(fadeBarLeft.gif) no-repeat top left; }
-div.shade div.center { width: 550px; left: 40px;
+div.shade div.center { width: 556px; left: 44px;
     background: url(fadeBarCenter.gif) repeat-x top left; }
-div.shade div.right { width: 80px; left: 590px;
+div.shade div.right { width: 80px; left: 600px;
     background: url(fadeBarRight.gif) no-repeat top left; }
 div.fade div { position: absolute; height: 60px; width: 100%;
     background: url("fade-right-white.png") repeat-y right top; }
