@@ -3,9 +3,31 @@ noscript { display: block; padding: 1em; color: white; background-color: #a00;
 
 a img { border-width: 0; }
 
+/* Меню сверху */
+#header { padding: 0.3em 1em; text-align: center; background-color: #484848; color: white; }
+#header a {
+    background-color: #484848;
+    padding: 0.25em 0.7em;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    text-decoration: none;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+#header a.on, #header a:hover.on {
+    background-color: white;
+    color: #484848;
+}
+#header a:hover {
+    color: white;
+    background-color: #069;
+}
+
 @font-face {
     font-family: 'Triodion Ucs';
-    src: url('fonts/TriIEUcs.eot'); /* .eot */
+    src: url('fonts/TriIEUcs.eot');
     src:
         local('Triodion Ucs'),
         local('Triodion ieUcs'),
@@ -157,33 +179,6 @@ div {
     font-family: 'Old Standard TT', serif;
 }
 
-div#header {
-    background-color: #a00;
-    color: white;
-    height: 2.5em;
-    padding-top: 1em;
-}
-
-div#menu {
-    width: 40em;
-    margin: auto;
-}
-
-div#menu a {
-    font-family: Arial, sans-serif;
-    font-style: italic;
-    text-decoration: none;
-    color: #fff;
-}
-
-div#menu a:hover,
-div#menu a:active,
-div#menu a:focus {
-    border-bottom: 1px dotted #fff;
-}
-
-span.divider { margin: 0 0.5em; }
-
 div#main {
     margin: 1em auto;
     width: 40em;
@@ -250,6 +245,7 @@ div.edit-controls { margin: 1em auto 1em 1.5em; }
 .edit-controls a { text-decoration: none;
     color: #369; border-bottom: 1px dotted #369; }
 span.edit-controls a { border-bottom-width: 0; }
+/* Конец стилей словaрных статей */
 
 /* Список словарных статей */
 table { table-layout: fixed; width: 100%; border-collapse: collapse; }

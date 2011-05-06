@@ -7,14 +7,20 @@
     </head>
     <body>
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
-        <div>
-            <a href="{% url UI:dictionary_entry_add %}"><img src="{{ STATIC_URL }}plus.png" alt="" /></a>
-        </div>
-        <div id="main">
 
-        {% block content %}{% endblock %}
+        <div id="header">
+            {% block header %}
+                <a href="/">ПУ</a>
+                <a href="{% url UI:dictionary_entry_add %}">+</a>
+            {% endblock %}
         </div>
+
+        <div id="main">
+            {% block content %}{% endblock %}
+        </div>
+
         <script type="text/javascript" src="{{ STATIC_URL }}jquery-1.5.2_min.js"></script>
         {% block javascript %}{% endblock %}
+
     </body>
 </html>

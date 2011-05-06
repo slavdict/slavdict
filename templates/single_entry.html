@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
+
+{% block header %}
+
+    {{ block.super }}
+    {% if not intermed %}
+        <a href="{% url switch_info_url %}"{% if show_additional_info %} class="on"{% endif %}>инфо</a>
+        <a href="{% url entry_pdf_url entry.pk %}">PDF</a>
+    {% endif %}
+
+{% endblock %}
+
 {% block content %}
 
     {% if not intermed %}
-        {% if user.is_authenticated %}
-            <a href="{% url switch_info_url %}">
-                {% if show_additional_info %}Скрыть доп. инфо{% else %}Отображать доп. инфо{% endif %}
-            </a>
-        {% endif %}
-
-        <div style="float: right; width: 3em;"><a href="{% url entry_pdf_url entry.pk %}">[PDF]</a></div>
-
         {% if not entry.editor or user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" or user == entry.editor %}
         {# user.groups.all|stringformat:"s" преобразует сам список объектов Group в текстовое представление. #}
         {# В результате получается строка вроде "[<Group: authors>, <Group: editors>]". #}
