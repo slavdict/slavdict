@@ -4,9 +4,10 @@ noscript { display: block; padding: 1em; color: white; background-color: #a00;
 a img { border-width: 0; }
 
 /* Меню сверху */
-#header { padding: 0.3em 1em; text-align: center; background-color: #484848; color: white; }
+#header { padding: 0.5em 1em; text-align: center; background-color: #484848;
+    color: white; }
 #header a {
-    background-color: #484848;
+    background-color: #5f5f5f;
     padding: 0.25em 0.7em;
     color: white;
     font-family: Arial, sans-serif;
@@ -249,19 +250,19 @@ span.edit-controls a { border-bottom-width: 0; }
 
 /* Список словарных статей */
 table { table-layout: fixed; width: 100%; border-collapse: collapse; }
-tr.entry-list-item td { padding: 0.5% 2% 0.5% 0; }
-tr.entry-list-item td.first { padding-left: 2%; }
-tr.entry-list-item.hover { background-color: #069; color: #fff; }
-tr.entry-list-item.hover div.shade { display: none; }
-tr.entry-list-item td.eli-control { width: 5%; }
-tr.entry-list-item td.eli-entry { overflow: hidden; padding-right: 0;
+table.entry-list { margin-top: 2em; }
+table.entry-list tr td { padding: 0.5% 2% 0.5% 0; }
+table.entry-list tr td.first { padding-left: 2%; }
+table.entry-list tr.hover { background-color: #069; color: #fff; }
+table.entry-list tr.hover div.shade { display: none; }
+table.entry-list tr td.eli-control { width: 5%; }
+table.entry-list tr td.eli-entry { overflow: hidden; padding-right: 0;
     padding-left: 0.7%; white-space: nowrap; }
-tr.entry-list-item td.eli-status { width: 15%; }
-tr.entry-list-item td.eli-author { width: 20%; }
-tr.entry-list-item td.eli-mtime { width: 20%; }
+table.entry-list tr td.eli-status { width: 15%; }
+table.entry-list tr td.eli-author { width: 20%; }
+table.entry-list tr td.eli-mtime { width: 20%; }
 
-tr.entry-list-item.hover td.eli-entry .cslav {
-    text-shadow: 0 0 5px #023; }
+table.entry-list tr.hover td.eli-entry .cslav { text-shadow: 0 0 5px #023; }
 
 /* разделительная тень в списке статей */
 div.shade, div.fade { position: relative; height: 0; }
@@ -278,13 +279,14 @@ div.fade div { position: absolute; height: 60px; width: 100%;
     градиентная заливка из белого в прозрачный/бесцветный цвет,
     начало на 90-м пикселе, конец на 40-м. Получается около 10px справа
     заполнены непрозрачным белым, а далее влево он выцветает. */
-tr.entry-list-item.hover div.fade div { background-image: url("fade-right-blue.png")}
+tr.hover div.fade div { background-image: url("fade-right-blue.png")}
 
 /* Выделения текста в списке статей */
 .ss /* Sans-Serif */, .ssn /* Sans-Serif Note */ {
     font-family: Arial, sans-serif; font-size: 12px;
     line-height: 12px; color: gray; }
 .ssn { font-size: 10px; font-style: italic; }
+.ssn.white { color: white; }
 .caps { font-variant: small-caps; font-size: 13px; letter-spacing: 0.02em;
     /*font-family: "Arial Black";*/ 
     -webkit-border-radius: 0.3em;
@@ -293,8 +295,8 @@ tr.entry-list-item.hover div.fade div { background-image: url("fade-right-blue.p
     background-color: #eee;
     padding: 0 0.5em 0.2em;
 }
-tr.hover .ss, tr.hover .ssn { color: #fff; }
-tr.hover .caps { color: white; background-color: #069; }
+tr.entry-list-item.hover .ss, tr.hover .ssn { color: white; }
+tr.entry-list-item.hover .caps { color: white; background-color: #069; }
 
 /* Ссылки для лексем в списке */
 .manual-entry { color: black; text-decoration: none; border-bottom-width: 0; }
@@ -307,6 +309,27 @@ tr.entry-list-item.hover a.icon.edit { background: url(edit-white.png) no-repeat
 a.icon.view { background: url(eye-gray-faded.png) no-repeat 50% 50%; }
 a:hover.icon.view { background: url(eye-gray.png) no-repeat 50% 50%; }
 tr.entry-list-item.hover a.icon.view { background: url(eye-white.png) no-repeat 50% 50%; }
+
+table.entry-list tr.control-row td { padding-bottom: 6px; }
+table.entry-list tr.control-row.hover td { background-color: #bbb; }
+
+.anchor {
+    padding: 0 4px 3px;
+    color: #ccc;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+.anchor.on {
+    background-color: #eee;
+    color: #777;
+}
+table.entry-list tr.control-row.hover td .anchor:hover,
+table.entry-list tr.control-row.hover td .anchor.on {
+    background-color: white;
+    color: #484848;
+    cursor: pointer;
+}
 
 span.hint-container { position: relative; display: none; }
 div.hint {

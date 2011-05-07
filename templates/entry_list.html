@@ -3,12 +3,33 @@
 {% block content %}
     {% trim %}
     {% if entries %}
-        <table>
+        <table class="entry-list">
             <col class="eli-control"></col>
             <col class="eli-entry"></col>
             <col class="eli-author"></col>
             <col class="eli-mtime"></col>
             <col class="eli-status"></col>
+
+            <tr class="control-row">
+                <td class="eli-control first"></td>
+                <td class="eli-control"></td>
+                <td class="eli-entry">
+                    <span class="ssn anchor" value="alph"
+                          title="Упорядочить по возрастанию">↓</span>
+                    <span class="ssn anchor" value="-alph"
+                          title="Упорядочить по убыванию">↑</span>
+                    <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по алфавиту</span>
+                </td>
+                <td class="eli-author"></td>
+                <td class="eli-mtime">
+                    <span class="ssn anchor" value="t"
+                          title="Упорядочить по возрастанию">↓</span>
+                    <span class="ssn anchor on" value="-t"
+                          title="Упорядочить по убыванию">↑</span>
+                    <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по вр. изм.</span>
+                </td>
+                <td class="eli-status"></td>
+            </tr>
 
         {% for entry in entries %}
             <tr class="entry-list-item">
@@ -141,6 +162,20 @@
 {% endblock %}
 {% block javascript %}
     <script type="text/javascript">
+        function getDictFromURIQS(){
+            var qs = window.location.search;
+            qs = qs.slice(1);
+            var qsDict = {};
+            if (qs) {
+                var params = qs.split("&");
+                for (var i=0; i < params.length; i++){
+                    var keyvalue = params[i].split("=");
+                    qsDict[keyvalue[0]] = keyvalue[1];
+                }
+            }
+            return qsDict;
+        }
+        var QUERY_STRING = getDictFromURIQS();
         $('tr').mouseover(function(){
             $(this).addClass('hover');
         }).mouseout(function(){
@@ -151,6 +186,12 @@
         }).mouseout(function(){
             $(this).next('.hint-container').hide();
         });
-
+        $(".anchor").click(function(){
+            var x = $(this);
+            if ( ! (x.hasClass('on')) ) {
+                QUERY_STRING['sort'] = x.attr('value');
+                window.location = "?" + $.param(QUERY_STRING);
+            }
+        });
     </script>
 {% endblock %}
