@@ -25,6 +25,8 @@ a img { border-width: 0; }
     color: white;
     background-color: #069;
 }
+#header form { display: inline; }
+
 
 @font-face {
     font-family: 'Triodion Ucs';

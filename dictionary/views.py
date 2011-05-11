@@ -622,15 +622,29 @@ def entry_list(request):
     DEFAULT_SORT = '-t'
     VALID_SORT_PARAMS = set(SORT_MAPPING)
     GET_SORT = request.GET.get('sort')
+    GET_FIND = request.GET.get('find')
+
     if GET_SORT:
-        response = HttpResponseRedirect("?")
+        redirect_path = "./"
+        if GET_FIND:
+            redirect_path = "?find=%s" % GET_FIND 
+        response = HttpResponseRedirect(redirect_path)
         if GET_SORT in VALID_SORT_PARAMS:
             response.set_cookie('sort', GET_SORT)
         return response
 
     COOKIES_SORT = request.COOKIES.get('sort', DEFAULT_SORT)
     SORT_PARAMS = SORT_MAPPING[COOKIES_SORT]
-    entry_list = Entry.objects.all().order_by(*SORT_PARAMS) #filter(editor=request.user)
+
+    if GET_FIND is None:
+        GET_FIND = u''
+        entry_list = Entry.objects.all().order_by(*SORT_PARAMS) #filter(editor=request.user)
+    else:
+        if GET_FIND:
+            entry_list = Entry.objects.filter(civil_equivalent__istartswith=GET_FIND).order_by(*SORT_PARAMS) #filter(editor=request.user)
+        else:
+            return HttpResponseRedirect("./")
+
     paginator = Paginator(entry_list, per_page=15, orphans=2)
     try:
         pagenum = int(request.GET.get('page', 1))
@@ -644,5 +658,6 @@ def entry_list(request):
         'entries': page.object_list,
         'page': page,
         'sort': COOKIES_SORT,
+        'find_prefix': GET_FIND,
         }
     return render_to_response('entry_list.html', context, RequestContext(request))
