@@ -123,19 +123,19 @@
 
         {% if page.has_previous %}
             {% if page.number > 4 %}
-                <a href="?page=1">1</a>
+                <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page=1">1</a>
                 {% space %}...{% space %}
             {% else %}
                 {% if page.number > 2 %}
-                    <a href="?page=1">1</a>
+                    <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page=1">1</a>
                     {% space %}
                     {% ifequal page.number 4 %}
-                        <a href="?page=2">2</a>
+                        <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page=2">2</a>
                         {% space %}
                     {% endifequal %}
                 {% endif %}
             {% endif %}
-            <a href="?page={{ page.previous_page_number }}">
+            <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.previous_page_number }}">
                 {{ page.previous_page_number }}
             </a>
             {% space %}
@@ -145,24 +145,24 @@
 
         {% if page.has_next %}
             {% space %}
-            <a href="?page={{ page.next_page_number }}">
+            <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.next_page_number }}">
                 {{ page.next_page_number }}
             </a>
             {% if page.number < page.paginator.num_pages|add:"-3" %}
                 {% space %}...{% space %}
-                <a href="?page={{ page.paginator.num_pages }}">
+                <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.paginator.num_pages }}">
                     {{ page.paginator.num_pages }}
                 </a>
             {% else %}
                 {% if page.number < page.paginator.num_pages|add:"-1" %}
                     {% ifequal page.number page.paginator.num_pages|add:"-3" %}
                         {% space %}
-                        <a href="?page={{ page.paginator.num_pages|add:"-2" }}">
+                        <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.paginator.num_pages|add:"-2" }}">
                             {{ page.paginator.num_pages|add:"-2" }}
                         </a>
                     {% endifequal %}
                     {% space %}
-                    <a href="?page={{ page.paginator.num_pages|add:"-1" }}">
+                    <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.paginator.num_pages|add:"-1" }}">
                         {{ page.paginator.num_pages|add:"-1" }}
                     </a>
                 {% endif %}
