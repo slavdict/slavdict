@@ -155,15 +155,15 @@
                 </a>
             {% else %}
                 {% if page.number < page.paginator.num_pages|add:"-1" %}
-                    {% ifequal page.number page.paginator.num_pages|add:"-3" %}
+                    {% if page.number < page.paginator.num_pages|add:"-2" %}
                         {% space %}
-                        <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.paginator.num_pages|add:"-2" }}">
-                            {{ page.paginator.num_pages|add:"-2" }}
+                        <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.paginator.num_pages|add:"-1" }}">
+                            {{ page.paginator.num_pages|add:"-1" }}
                         </a>
-                    {% endifequal %}
+                    {% endif %}
                     {% space %}
-                    <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.paginator.num_pages|add:"-1" }}">
-                        {{ page.paginator.num_pages|add:"-1" }}
+                    <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.paginator.num_pages }}">
+                        {{ page.paginator.num_pages }}
                     </a>
                 {% endif %}
             {% endif %}
