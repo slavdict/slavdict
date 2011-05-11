@@ -19,6 +19,7 @@
             <col class="eli-mtime" />
             <col class="eli-status" />
 
+            {% if entries|length > 1 %}
             <tr class="control-row">
                 <td class="eli-control first"></td>
                 <td class="eli-control"></td>
@@ -39,6 +40,7 @@
                 </td>
                 <td class="eli-status"></td>
             </tr>
+            {% endif %}
 
         {% for entry in entries %}
             <tr class="entry-list-item">
