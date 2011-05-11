@@ -14,17 +14,17 @@
                 <td class="eli-control first"></td>
                 <td class="eli-control"></td>
                 <td class="eli-entry">
-                    <span class="ssn anchor" value="alph"
+                    <span class="ssn anchor{% ifequal sort 'alph' %} on{% endifequal %}" value="alph"
                           title="Упорядочить по возрастанию">↓</span>
-                    <span class="ssn anchor" value="-alph"
+                    <span class="ssn anchor{% ifequal sort '-alph' %} on{% endifequal %}" value="-alph"
                           title="Упорядочить по убыванию">↑</span>
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по алфавиту</span>
                 </td>
                 <td class="eli-author"></td>
                 <td class="eli-mtime">
-                    <span class="ssn anchor" value="t"
+                    <span class="ssn anchor{% ifequal sort 't' %} on{% endifequal %}" value="t"
                           title="Упорядочить по возрастанию">↓</span>
-                    <span class="ssn anchor on" value="-t"
+                    <span class="ssn anchor{% ifequal sort '-t' %} on{% endifequal %}" value="-t"
                           title="Упорядочить по убыванию">↑</span>
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по вр. изм.</span>
                 </td>

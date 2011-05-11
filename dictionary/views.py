@@ -409,7 +409,7 @@ def change_entry(request, entry_id):
 
 
 from dictionary.forms import BilletImportForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from custom_user.models import CustomUser
 
 # Взято полностью с
@@ -613,7 +613,24 @@ from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 @login_required
 def entry_list(request):
-    entry_list = Entry.objects.all().order_by('-mtime') #filter(editor=request.user)
+    SORT_MAPPING = {
+        'alph': ('civil_equivalent', 'homonym_order'),
+        '-alph': ('-civil_equivalent', '-homonym_order'),
+        't': ('mtime',),
+        '-t': ('-mtime',),
+        }
+    DEFAULT_SORT = '-t'
+    VALID_SORT_PARAMS = set(SORT_MAPPING)
+    GET_SORT = request.GET.get('sort')
+    if GET_SORT:
+        response = HttpResponseRedirect("?")
+        if GET_SORT in VALID_SORT_PARAMS:
+            response.set_cookie('sort', GET_SORT)
+        return response
+
+    COOKIES_SORT = request.COOKIES.get('sort', DEFAULT_SORT)
+    SORT_PARAMS = SORT_MAPPING[COOKIES_SORT]
+    entry_list = Entry.objects.all().order_by(*SORT_PARAMS) #filter(editor=request.user)
     paginator = Paginator(entry_list, per_page=15, orphans=2)
     try:
         pagenum = int(request.GET.get('page', 1))
@@ -626,5 +643,6 @@ def entry_list(request):
     context = {
         'entries': page.object_list,
         'page': page,
+        'sort': COOKIES_SORT,
         }
     return render_to_response('entry_list.html', context, RequestContext(request))
