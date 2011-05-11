@@ -616,8 +616,8 @@ def entry_list(request):
     SORT_MAPPING = {
         'alph': ('civil_equivalent', 'homonym_order'),
         '-alph': ('-civil_equivalent', '-homonym_order'),
-        't': ('mtime',),
-        '-t': ('-mtime',),
+        't': ('mtime', 'id'),
+        '-t': ('-mtime', '-id'),
         }
     DEFAULT_SORT = '-t'
     VALID_SORT_PARAMS = set(SORT_MAPPING)
