@@ -116,6 +116,7 @@
         </table>
     {% endif %}
 
+    {% if page.paginator.num_pages > 1 %}
     <div class="pagination">
 
         {% if page.has_previous %}
@@ -167,6 +168,7 @@
         {% endif %}
 
     </div>
+    {% endif %}
     {% endtrim %}
 {% endblock %}
 {% block javascript %}
