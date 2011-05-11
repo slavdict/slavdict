@@ -27,6 +27,25 @@ a img { border-width: 0; }
 }
 #header form { display: inline; }
 
+.message {
+    font-size: 12px;
+    -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    padding: 0.5em 0.7em;
+    margin: 0em auto 0.5em auto;
+    width: 25em;
+    font-family: Arial, sans-serif;
+    background-color: #fcf3d0;
+    border: 1px solid #f4c873;
+    color: #d29216;
+    }
+
+.nowrap { white-space: nowrap; }
+.message .red.caps {
+    background-color: #fcd5d0;
+    color: #ea361c;
+}
 
 @font-face {
     font-family: 'Triodion Ucs';

@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 {% load trim_spaces %}
 {% block content %}
+    {% if not entries and find_prefix %}
+        <div class="message">
+            Не найдено ни одной словарной статьи, начинающейся <span
+            class="nowrap">с <b class="red caps">{{ find_prefix.lower }}...</b>.</span>
+            Пожалуйста, проверьте Ваш запрос на наличие опечаток или измените его, чтобы
+            найти какое-нибудь другое слово. Поиск производился без учёта регистра символов.
+        </div>
+    {% endif %}
+
     {% trim %}
     {% if entries %}
         <table class="entry-list">
