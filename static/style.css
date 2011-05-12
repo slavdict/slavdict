@@ -275,7 +275,9 @@ table.entry-list { margin-top: 2em; }
 table.entry-list tr td { padding: 0.5% 2% 0.5% 0; }
 table.entry-list tr td.first { padding-left: 2%; }
 table.entry-list tr.hover { background-color: #069; color: #fff; }
+table.entry-list tr.last.hover { background-color: white; color: white; }
 table.entry-list tr.hover div.shade { display: none; }
+table.entry-list tr.last.hover div.shade { display: block; }
 table.entry-list tr td.eli-control { width: 5%; }
 table.entry-list tr td.eli-entry { overflow: hidden; padding-right: 0;
     padding-left: 0.7%; white-space: nowrap; }
@@ -288,6 +290,7 @@ table.entry-list tr.hover td.eli-entry .cslav { text-shadow: 0 0 5px #023; }
 /* разделительная тень в списке статей */
 div.shade, div.fade { position: relative; height: 0; }
 div.shade div { position: absolute; top: -7px; height: 3px; }
+table.entry-list tr.last div.shade { top: 3px; }
 div.shade div.left { width: 80px; left: -16px;
     background: url(fadeBarLeft.gif) no-repeat top left; }
 div.shade div.center { width: 556px; left: 44px;
