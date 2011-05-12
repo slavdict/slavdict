@@ -16,7 +16,7 @@
         {% if not entry.editor or user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" or user == entry.editor %}
         {# user.groups.all|stringformat:"s" преобразует сам список объектов Group в текстовое представление. #}
         {# В результате получается строка вроде "[<Group: authors>, <Group: editors>]". #}
-            <div style="position: absolute; top: 5.5em; left: -40px;">
+            <div style="position: absolute; top: -3px; left: -40px;">
                 <a href="{% url intermediary_change_form_url entry.pk %}" class="icon edit">
                     <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
                 </a>
