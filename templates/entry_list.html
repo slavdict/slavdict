@@ -5,8 +5,8 @@
         <div class="message">
             Не найдено ни одной словарной статьи, начинающейся <span
             class="nowrap">с <b class="red caps">{{ find_prefix.lower }}...</b>.</span>
-            Пожалуйста, проверьте Ваш запрос на наличие опечаток или измените его, чтобы
-            найти какое-нибудь другое слово. Поиск производился без учёта регистра символов.
+            Пожалуйста, проверьте Ваш запрос на наличие опечаток или измените его
+            для поиска какого-нибудь другого слова. Поиск производится без учёта регистра символов.
         </div>
     {% endif %}
 
@@ -115,6 +115,25 @@
 
             </tr>
         {% endfor %}
+
+            <tr class="entry-list-item">
+
+                <td class="eli-control first">
+                    <div class="shade">
+                        <div class="center"></div>
+                        <div class="left"></div>
+                        <div class="right"></div>
+                    </div>
+                </td>
+
+                <td class="eli-control" />
+                <td class="eli-entry" />
+                <td class="eli-author" />
+                <td class="eli-mtime" />
+                <td class="eli-status" />
+
+            </tr>
+
         </table>
     {% endif %}
 
