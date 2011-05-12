@@ -47,6 +47,8 @@ a img { border-width: 0; }
     color: #ea361c;
 }
 
+.invisible { visibility: hidden; }
+
 @font-face {
     font-family: 'Triodion Ucs';
     src: url('fonts/TriIEUcs.eot');

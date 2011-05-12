@@ -76,13 +76,22 @@
 
                 <td class="eli-entry">
                 
-                    <div class="fade"><div></div></div>
+                    <div class="fade">
+                        <div>
+                            <a href="{{ entry.get_absolute_url }}" class="manual-entry">
+                                 <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
+                                 {% if entry.homonym_order %}
+                                     &nbsp;{{ entry.homonym_order_roman }}
+                                 {% endif %}
+                            </a>
+                        </div>
+                    </div>
 
-                    <a href="{{ entry.get_absolute_url }}" class="manual-entry">
+                    <a href="{{ entry.get_absolute_url }}" class="manual-entry invisible">
                         <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
-                    </a>
-                    {% if entry.homonym_order %}
+                {% if entry.homonym_order %}
                         &nbsp;{{ entry.homonym_order_roman }}
+                    </a>
                         <span class="ss">
                             &nbsp;&nbsp;&nbsp;
                             <i>{{ entry.part_of_speech.tag }}</i>
@@ -91,7 +100,9 @@
                                 <span class="caps">{{ entry.homonym_gloss }}</span>
                             {% endif %}
                         </span>
-                    {% endif %}
+                {% else %}
+                    </a>
+                {% endif %}
                 </td>
 
                 <td class="eli-author">
