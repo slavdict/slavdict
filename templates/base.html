@@ -12,7 +12,7 @@
             {% block header %}
                 <a href="/">ПУ</a>
                 <a href="{% url UI:dictionary_entry_add %}">+</a>
-                <form enctype="application/x-www-form-urlencoded" action="">
+                <form enctype="application/x-www-form-urlencoded" action="{% url entry_list %}">
                     <input type="text" name="find" value="{{ find_prefix }}" />
                     <input type="submit" value="найти" />
                 </form>
