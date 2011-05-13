@@ -17,7 +17,7 @@
                 {% for etym in c.etymologies %}
                     {% include '_etymology.html' %}
                 {% endfor %}
-                <span>)</span>
+                {% backspace %}){% space %}
             {% endif %}
 
             {% if not forloop.last %}

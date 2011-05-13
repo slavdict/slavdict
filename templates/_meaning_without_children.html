@@ -122,7 +122,7 @@
 {% endif %}
 
 {% if m.gloss %}
-    {% if m.meaning %}
+    {% if m.meaning or m.greek_equivs %}
         {% backspace %};{% space %}
     {% endif %}
     <i>{{ m.gloss }}</i>
@@ -189,7 +189,7 @@
     <span class="ai ai-meaning">{{ m.additional_info }}</span>
 {% endif %}
 
-{% if m.meaning or m.gloss or m.greek_equivs or m.cfentries or m.cfcollogroups or m.cfmeanings or show_additional_info and m.additional_info %}
+{% if m.meaning or m.gloss or m.greek_equivs or m.link_to_entry or m.link_to_collogroup or m.link_to_meaning or m.cfentries or m.cfcollogroups or m.cfmeanings or show_additional_info and m.additional_info %}
     {% if m.examples %}
         {% backspace %}:{% space %}
     {% endif %}
