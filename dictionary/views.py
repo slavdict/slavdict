@@ -13,6 +13,11 @@ from dictionary.forms import RawValueWidget
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 
+# Вспомогательная функция
+# для сортировки списка словарных статей.
+def entry_key(entry):
+    return u'%s %s' % ( entry.civil_equivalent.lower(), entry.homonym_order )
+
 @login_required
 def make_greek_found(request):
     from slavdict.dictionary.models import GreekEquivalentForExample
@@ -34,6 +39,7 @@ def make_greek_found(request):
 @login_required
 def all_entries(request):
     entries = Entry.objects.all().order_by('civil_equivalent', 'homonym_order')
+    entries = sorted(entries, key=entry_key)
     context = {
         'entries': entries,
         'title': u'Все статьи',
@@ -641,9 +647,22 @@ def entry_list(request):
         entry_list = Entry.objects.all().order_by(*SORT_PARAMS) #filter(editor=request.user)
     else:
         if GET_FIND:
-            entry_list = Entry.objects.filter(civil_equivalent__istartswith=GET_FIND).order_by(*SORT_PARAMS) #filter(editor=request.user)
+            # Ищем все лексемы, удовлетворяющие запросу в независимости от регистра начальной буквы запроса.
+            # Код писался из расчёта, что на БД полагаться нельзя, поскольку у меня не получается правильно
+            # настроить COLLATION в Postgres. Когда это сделать удастся, надо будет в .filter использовать
+            # `civil_equivalent__istartswith=GET_FIND`.
+            FIND_LOWER = GET_FIND.lower()
+            FIND_UPPER = GET_FIND.capitalize()
+            entry_list = Entry.objects.filter(
+                    Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_UPPER)
+                ).order_by(*SORT_PARAMS) #filter(editor=request.user)
         else:
             return HttpResponseRedirect("./")
+
+    if COOKIES_SORT=='alph':
+        entry_list = sorted(entry_list, key=entry_key, reverse=False)
+    elif COOKIES_SORT=='-alph':
+        entry_list = sorted(entry_list, key=entry_key, reverse=True)
 
     paginator = Paginator(entry_list, per_page=15, orphans=2)
     try:
