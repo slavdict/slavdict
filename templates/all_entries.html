@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
+
+{% block header_0 %}{% endblock %}
+
 {% block content %}
     {% for entry in entries %}
         {% include '_entry.html' %}
+        {% include '_ref_entries.html' %}
     {% endfor %}
 {% endblock %}

@@ -8,6 +8,7 @@
     <body>
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
+        {% block header_0 %}
         <div id="header">
             {% block header %}
                 <a href="/">ПУ</a>
@@ -18,6 +19,7 @@
                 </form>
             {% endblock %}
         </div>
+        {% endblock %}
 
         <div id="main">
             {% block content %}{% endblock %}

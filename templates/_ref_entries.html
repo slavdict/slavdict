@@ -3,7 +3,7 @@
 
 {% if entry.orth_vars|slice:"1:" or entry.nom_pl_ucs_wax or entry.nom_sg_ucs_wax or entry.wordforms %}
 
-    <div class="refheader">Отсылочные статьи</div>
+    {% block refheader %}↑↑{% endblock %}
 
     {% for e in entry.orth_vars|slice:"1:" %}
 
