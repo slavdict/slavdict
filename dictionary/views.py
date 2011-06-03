@@ -488,7 +488,7 @@ class UnicodeWriter:
 sniffer = csv.Sniffer()
 
 from slavdict.directory.models import CategoryValue
-ccc = CategoryValue.objects.get(pk=26) # Создана
+ccc = CategoryValue.objects.get(pk=26) # Создана (Статус статьи "Статья создана")
 
 entry_dict = {
     'additional_info': u'',
@@ -545,7 +545,9 @@ def import_csv_billet(request):
             collision_csv_rows = []
 
             for n, row in enumerate(csv_reader):
+                # Столбцы в CSV-файле
                 orthvar, word_forms_list, antconc_query, author, additional_info = row
+
                 if orthvar in idems:
                     collision_orthvars.append(idems.index(orthvar))
                     collision_csv_rows.append(n)
@@ -555,13 +557,21 @@ def import_csv_billet(request):
                             author = au
                             break
 
-                    entry = Entry.objects.create( word_forms_list=word_forms_list,
-                        antconc_query=antconc_query, editor=author,
-                        additional_info=additional_info,
+                    entry_args = entry_dict.copy() # Поверхностная (!) копия словаря.
+                    entry_args['status'] = ccc
+                    # Все булевские переменные уже выставлены по умолчанию в False в entry_dict
 
-                        hidden=False, uninflected=False, canonical_name=False, possessive=False, status=ccc)
+                    from_csv = {
+                        'word_forms_list': word_forms_list,
+                        'antconc_query': antconc_query,
+                        'editor': author,
+                        'additional_info': additional_info,
+                    }
+                    entry_args.update(from_csv)
 
+                    entry = Entry.objects.create(**entry_args)
                     entry.save()
+
                     ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar)
                     ov.save()
 
