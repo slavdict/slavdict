@@ -6,10 +6,11 @@
 # File local_settings.py will be ignored
 # by current git repository.
 
+from django.conf import settings
 DATABASES = {
     'default': {
         'ENGINE':   'django.db.backends.sqlite3',
-        'NAME':     ROOT + '.temp.db',
+        'NAME':     settings.ROOT + '.temp.db',
     }
 }
 
