@@ -82,23 +82,17 @@ def greek_to_find(request):
     status_list = (u'L',)
     #status_list = (u'L', u'A', u'C', u'N')
     ex_list = Example.objects.filter(greek_eq_status__in=status_list)
+    examples_with_hosts = [(ex.host_entry, ex.host, ex) for ex in ex_list]
+    examples_with_hosts = sorted(examples_with_hosts, key=lambda x: entry_key(x[0]))
+    examples_with_hosts = [(n + 1, e[1], e[2]) for n, e in enumerate(examples_with_hosts)]
 
-    entry_list = [
-        ex.meaning.entry_container or \
-        ex.meaning.collogroup_container.base_entry or \
-        ex.meaning.collogroup_container.base_meaning.entry_container
-        for ex in ex_list
-        ]
-    entry_id_list = [e.id for e in entry_list]
-
-    entries = Entry.objects.filter(id__in=entry_id_list).order_by('civil_equivalent', 'homonym_order')
     context = {
-        'entries': entries,
-        'title': u'Статьи, для примров которых необходимо найти греческие параллели',
+        'examples_with_hosts': examples_with_hosts,
+        'title': u'Примеры, для которых необходимо найти греческие параллели',
         'show_additional_info': 'ai' in request.COOKIES,
         'user': request.user,
         }
-    return render_to_response('all_entries.html', context, RequestContext(request))
+    return render_to_response('greek_to_find.html', context, RequestContext(request))
 
 
 @login_required

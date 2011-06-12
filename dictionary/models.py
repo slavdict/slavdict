@@ -884,6 +884,13 @@ class Meaning(models.Model):
         else:
             return self.collogroup_container.host_entry
 
+    @property
+    def host(self):
+        if self.entry_container:
+            return self.entry_container
+        else:
+            return self.collogroup_container
+
     def __unicode__(self):
         return self.meaning
 
@@ -1005,6 +1012,10 @@ class Example(models.Model):
     @property
     def host_entry(self):
         return self.meaning.host_entry
+
+    @property
+    def host(self):
+        return self.meaning.host
 
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
