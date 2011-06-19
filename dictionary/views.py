@@ -569,7 +569,17 @@ def import_csv_billet(request):
                     ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar)
                     ov.save()
 
+            import StringIO
+            output = StringIO.StringIO()
+
+            for row_num in collision_csv_rows:
+                csvfile.seek(row_num)
+                output.write(csv_reader)
+
             csvfile.close()
+
+            # TODO: записать output в объект HttpResponse и возвратить его.
+            
             #return render_to_response('csv_import_conflicts.html', )
             return HttpResponseRedirect('/')
     else:
