@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from slavdict.admin import ui
-
+admin.site.login_template = ui.login_template
 
 def staff_has_add_permission(self, request):
     return request.user.is_staff
