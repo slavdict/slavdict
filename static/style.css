@@ -25,6 +25,16 @@ a img { border-width: 0; }
     color: white;
     background-color: #069;
 }
+#header a.permanent { background-color: transparent; }
+#header a:hover.permanent { background-color: #069; }
+
+#header a.home {
+    background-image: url(home-white.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    margin-right: 7px;
+}
+
 #header form { display: inline; }
 
 .message {
