@@ -84,6 +84,14 @@
                                      &nbsp;{{ entry.homonym_order_roman }}
                                  {% endif %}
                             </a>
+                            <span class="ss transparent">
+                                &nbsp;&nbsp;&nbsp;
+                                <i>{{ entry.part_of_speech.tag }}</i>
+                                {% if entry.homonym_gloss %}
+                                    {% space %}
+                                    <span class="caps" title="{{ entry.homonym_gloss }}">{{ entry.homonym_gloss }}</span>
+                                {% endif %}
+                            </span>
                         </div>
                     </div>
 
