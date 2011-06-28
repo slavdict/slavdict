@@ -479,7 +479,12 @@ class UnicodeWriter:
 # конец вырезки из документации по Питону
 #
 
-sniffer = csv.Sniffer()
+class calc_csv_dialect(csv.excel):
+    # Диалект-наследник csv.excel. Но поля помещаются в кавычки во всех случаях кроме числовых и пустых (!) полей.
+    # Окончание строки как в UNIX.
+    # TODO: Может это только под Linux так, а под Windows по-другому?
+    quoting = csv.QUOTE_NONNUMERIC
+    lineterminator = '\n'
 
 from slavdict.directory.models import CategoryValue
 ccc = CategoryValue.objects.get(pk=26) # Создана (Статус статьи "Статья создана")
@@ -528,9 +533,7 @@ def import_csv_billet(request):
         if form.is_valid():
 
             csvfile = request.FILES['csvfile']
-            dialect = sniffer.sniff(csvfile.read(65535))
-            csvfile.seek(0)
-            csv_reader = UnicodeReader(csvfile, dialect, encoding='utf-8')
+            csv_reader = UnicodeReader(csvfile, dialect=calc_csv_dialect, encoding='utf-8')
 
             idems = OrthographicVariant.objects.all().values_list('idem')
             authors = CustomUser.objects.all()
