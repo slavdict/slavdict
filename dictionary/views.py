@@ -493,9 +493,9 @@ entry_dict = {
     'additional_info': u'',
     'antconc_query': u'',
     'canonical_name': False,
-    'cf_collogroups': None,
-    'cf_entries': None,
-    'cf_meanings': None,
+#    'cf_collogroups': None,
+#    'cf_entries': None,
+#    'cf_meanings': None,
     'civil_equivalent': u'',
     'derivation_entry': None,
     'editor': None,
@@ -534,25 +534,33 @@ def import_csv_billet(request):
 
             csvfile = request.FILES['csvfile']
             csv_reader = UnicodeReader(csvfile, dialect=calc_csv_dialect, encoding='utf-8')
+            csv_reader.next() # Пропускаем первую строку, в ней обязаны быть заголовки.
 
             idems = OrthographicVariant.objects.all().values_list('idem')
             authors = CustomUser.objects.all()
 
             collision_orthvars = []
             collision_csv_rows = []
+            csv_authors = {}
 
             for n, row in enumerate(csv_reader):
                 # Столбцы в CSV-файле
-                orthvar, word_forms_list, antconc_query, author, additional_info = row
+                orthvar, word_forms_list, antconc_query, author_in_csv, additional_info = row
 
                 if orthvar in idems:
                     collision_orthvars.append(idems.index(orthvar))
                     collision_csv_rows.append(n)
                 else:
-                    for au in authors:
-                        if author.startswith(au.last_name):
-                            author = au
-                            break
+                    if author_in_csv in csv_authors:
+                        author = csv_authors[author_in_csv]
+                    else:
+                        for au in authors:
+                            if author_in_csv.startswith(au.last_name):
+                                author = au
+                                csv_authors[author_in_csv] = au
+                                break
+                        else:
+                            raise NameError(u"Автор, указанный в CSV-файле, не найден среди участников работы над словарём.")
 
                     entry_args = entry_dict.copy() # Поверхностная (!) копия словаря.
                     entry_args['status'] = ccc
@@ -580,11 +588,12 @@ def import_csv_billet(request):
                 output.write(csv_reader)
 
             csvfile.close()
+            output.close()
 
-            # TODO: записать output в объект HttpResponse и возвратить его.
-            
+            response = HttpResponseRedirect('/', content=output, mimetype="text/csv")
+            response['Content-Disposition'] = 'attachment; filename=%s--не.импортированное.csv' % csvfile.name
             #return render_to_response('csv_import_conflicts.html', )
-            return HttpResponseRedirect('/')
+            return response
     else:
         form = BilletImportForm()
     return render_to_response('csv_import.html', {'form': form})
