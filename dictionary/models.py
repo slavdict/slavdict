@@ -197,6 +197,7 @@ class Entry(models.Model, Meaningfull):
         verbose_name = u'часть речи',
         limit_choices_to = {'category__slug': 'partOfSpeech'},
         related_name = 'entries_of_pos',
+        null = True,
         )
 
     uninflected = models.BooleanField(
