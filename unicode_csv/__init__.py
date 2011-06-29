@@ -26,9 +26,12 @@ class UnicodeReader:
         f = UTF8Recoder(f, encoding)
         self.reader = csv.reader(f, dialect=dialect, **kwds)
 
+    def str_or_buffer(self, x):
+        return (type(x) is str) or (type(x) is buffer)
+
     def next(self):
         row = self.reader.next()
-        return [unicode(s, "utf-8") for s in row]
+        return [unicode(i, 'utf-8') if self.str_or_buffer(i) else unicode(i) for i in row]
 
     def __iter__(self):
         return self
