@@ -522,7 +522,7 @@ def import_csv_billet(request):
                 output = StringIO.StringIO()
                 csv_writer = unicode_csv.UnicodeWriter(output, dialect=unicode_csv.calc, encoding='utf-8')
 
-                # Записываем заголовоки
+                # Записываем заголовки
                 csvfile.seek(0)
                 csv_writer.writerow(csv_reader.next())
 
