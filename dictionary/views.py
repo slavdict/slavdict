@@ -413,6 +413,8 @@ def change_entry(request, entry_id):
 from dictionary.forms import BilletImportForm
 from django.http import HttpResponse, HttpResponseRedirect
 import slavdict.unicode_csv as unicode_csv
+import StringIO
+
 from custom_user.models import CustomUser
 from slavdict.directory.models import CategoryValue
 ccc = CategoryValue.objects.get(pk=26) # Создана (Статус статьи "Статья создана")
@@ -462,28 +464,27 @@ def import_csv_billet(request):
 
             csvfile = request.FILES['csvfile']
             csv_reader = unicode_csv.UnicodeReader(csvfile, dialect=unicode_csv.calc, encoding='utf-8')
-            csv_reader.next() # Пропускаем первую строку, в ней обязаны быть заголовки.
+
+            output = StringIO.StringIO()
+            csv_writer = unicode_csv.UnicodeWriter(output, dialect=unicode_csv.calc, encoding='utf-8')
+
+            csv_writer.writerow(csv_reader.next()) # Первую строку, в ней обязаны быть заголовки,
+            # упреждающе записываем в возможный файл возврата конфликтующих csv-записей.
 
             idems = OrthographicVariant.objects.all().values_list('idem') # Список списков, каждый из которых содержит один элемент.
             idems = [x[0] for x in idems] # Переходим от списка списков к списку самих элементов (орфографических вариантов).
             authors = CustomUser.objects.all()
 
             collision_orthvars = []
-            collision_row_fpos = []
             csv_authors = {}
 
-            current_row_fpos = csvfile.tell()
-            print current_row_fpos
-
             for row in csv_reader:
-                next_row_fpos = csvfile.tell()
-
                 # Столбцы в CSV-файле
                 orthvar, word_forms_list, antconc_query, author_in_csv, additional_info = row
 
                 if orthvar in idems:
                     collision_orthvars.append(idems.index(orthvar))
-                    collision_row_fpos.append(current_row_fpos)
+                    csv_writer.writerow(row)
                 else:
                     if author_in_csv in csv_authors:
                         author = csv_authors[author_in_csv]
@@ -514,29 +515,13 @@ def import_csv_billet(request):
                     ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar)
                     ov.save()
 
-                current_row_fpos = next_row_fpos
-                print current_row_fpos
-
             if collision_orthvars:
-                import StringIO
-                output = StringIO.StringIO()
-                csv_writer = unicode_csv.UnicodeWriter(output, dialect=unicode_csv.calc, encoding='utf-8')
-
-                # Записываем заголовки
-                csvfile.seek(0)
-                csv_writer.writerow(csv_reader.next())
-
-                for fpos in collision_row_fpos:
-                    csvfile.seek(fpos)
-                    csv_writer.writerow(csv_reader.next())
-
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
-                output.close()
-
                 response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % datetime.datetime.now()
             else:
                 response = HttpResponseRedirect('/')
 
+            output.close()
             csvfile.close()
             return response
     else:
