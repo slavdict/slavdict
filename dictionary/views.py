@@ -443,7 +443,7 @@ entry_dict = {
     'onym': None,
     'part_of_speech': None,
     'participle_type': None,
-    'percent_status': None,
+    'percent_status': 0,
     'possessive': False,
     'sg1': u'',
     'sg2': u'',
