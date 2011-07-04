@@ -490,7 +490,7 @@ def import_csv_billet(request):
                         author = csv_authors[author_in_csv]
                     else:
                         for au in authors:
-                            if author_in_csv.startswith(au.last_name):
+                            if au.last_name and author_in_csv.startswith(au.last_name):
                                 author = au
                                 csv_authors[author_in_csv] = au
                                 break
