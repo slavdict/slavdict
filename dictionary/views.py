@@ -518,7 +518,7 @@ def import_csv_billet(request):
 
             if collision_orthvars:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
-                response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % datetime.datetime.now()
+                response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M.%S')
             else:
                 response = HttpResponseRedirect('/')
 
