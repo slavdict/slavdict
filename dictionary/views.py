@@ -419,41 +419,7 @@ from custom_user.models import CustomUser
 from slavdict.directory.models import CategoryValue
 ccc = CategoryValue.objects.get(pk=26) # Создана (Статус статьи "Статья создана")
 
-entry_dict = {
-    'additional_info': u'',
-    'antconc_query': u'',
-    'canonical_name': False,
-#    'cf_collogroups': None,
-#    'cf_entries': None,
-#    'cf_meanings': None,
-    'civil_equivalent': u'',
-    'derivation_entry': None,
-    'editor': None,
-    'gender': None,
-    'genitive': u'',
-    'grequiv_status': None,
-    'hidden': False,
-    'homonym_gloss': u'',
-    'homonym_order': None,
-    'link_to_collogroup': None,
-    'link_to_entry': None,
-    'link_to_meaning': None,
-    'nom_pl': u'',
-    'nom_sg': u'',
-    'onym': None,
-    'part_of_speech': None,
-    'participle_type': None,
-    'percent_status': 0,
-    'possessive': False,
-    'sg1': u'',
-    'sg2': u'',
-    'short_form': u'',
-    'status': None,
-    'tantum': None,
-    'transitivity': None,
-    'uninflected': False,
-    'word_forms_list': u'',
-}
+from slavdict.dictionary.models import entry_dict
 
 @login_required
 def import_csv_billet(request):
