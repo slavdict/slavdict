@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 {% load trim_spaces %}
 {% block content %}
-    {% if not entries and find_prefix %}
+    {% if not entries %}
         <div class="message">
-            Не найдено ни одной словарной статьи, начинающейся <span
-            class="nowrap">с <b class="red caps">{{ find_prefix.lower }}...</b>.</span>
+        {% if find_prefix %}
+            К сожалению, ни одной словарной статьи, начинающейся <span
+            class="nowrap">с <b class="red caps">{{ find_prefix.lower }}...</b>, не найдено.</span>
             Пожалуйста, проверьте Ваш запрос на наличие опечаток или измените его
             в целях поиска другого слова. Поиск производится без учёта регистра символов.
+        {% else %}{% if mine %}
+            К сожалению, в базе данных пока не содержится ни одной вашей статьи.
+        {% else %}
+            К сожалению, ни одной словарной статьи, удовлетворяющей Вашему запросу, не найдено.
+        {% endif %}{% endif %}
         </div>
     {% endif %}
 

@@ -549,7 +549,7 @@ def pdf_for_single_entry(request, entry_id):
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 @login_required
-def entry_list(request, my=False):
+def entry_list(request, mine=False):
     SORT_MAPPING = {
         'alph': ('civil_equivalent', 'homonym_order'),
         '-alph': ('-civil_equivalent', '-homonym_order'),
@@ -573,7 +573,7 @@ def entry_list(request, my=False):
     COOKIES_SORT = request.COOKIES.get('sort', DEFAULT_SORT)
     SORT_PARAMS = SORT_MAPPING[COOKIES_SORT]
 
-    if GET_FIND is None and not my:
+    if GET_FIND is None and not mine:
         GET_FIND = u''
         entry_list = Entry.objects.all().order_by(*SORT_PARAMS) #filter(editor=request.user)
     else:
@@ -588,7 +588,7 @@ def entry_list(request, my=False):
                     Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_UPPER)
                 ).order_by(*SORT_PARAMS) #filter(editor=request.user)
         else:
-            if my:
+            if mine:
                 entry_list = Entry.objects.filter(editor=request.user).order_by(*SORT_PARAMS)
             else:
                 return HttpResponseRedirect("./")
@@ -612,5 +612,6 @@ def entry_list(request, my=False):
         'page': page,
         'sort': COOKIES_SORT,
         'find_prefix': GET_FIND,
+        'mine': mine,
         }
     return render_to_response('entry_list.html', context, RequestContext(request))
