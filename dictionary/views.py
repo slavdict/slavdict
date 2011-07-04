@@ -480,7 +480,7 @@ def import_csv_billet(request):
 
             for row in csv_reader:
                 # Столбцы в CSV-файле
-                orthvar, word_forms_list, antconc_query, author_in_csv, additional_info = row
+                orthvar, civil_equivalent, word_forms_list, antconc_query, author_in_csv, additional_info = row
 
                 if orthvar in idems:
                     collision_orthvars.append(idems.index(orthvar))
@@ -503,6 +503,7 @@ def import_csv_billet(request):
 
                     from_csv = {
                         'word_forms_list': word_forms_list,
+                        'civil_equivalent': civil_equivalent,
                         'antconc_query': antconc_query,
                         'editor': author,
                         'additional_info': additional_info,
