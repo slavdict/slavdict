@@ -1,6 +1,7 @@
 {% load trim_spaces %}
 {% trim %}
-    
+
+{% if intermed and entry.antconc_query %}<div class="message">{{ entry.antconc_query }}</div>{% endif %}
 <div class="entry">
 
     <div style="line-height: 100%;">
