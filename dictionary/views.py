@@ -441,7 +441,7 @@ def import_csv_billet(request):
             idems = [x[0] for x in idems] # Переходим от списка списков к списку самих элементов (орфографических вариантов).
             authors = CustomUser.objects.all()
 
-            collision_orthvars = []
+            orthvar_collisions = False
             csv_authors = {}
 
             for row in csv_reader:
@@ -449,7 +449,7 @@ def import_csv_billet(request):
                 orthvar, civil_equivalent, word_forms_list, antconc_query, author_in_csv, additional_info = row
 
                 if orthvar in idems:
-                    collision_orthvars.append(idems.index(orthvar))
+                    orthvar_collisions = True
                     csv_writer.writerow(row)
                 else:
                     if author_in_csv in csv_authors:
@@ -482,7 +482,7 @@ def import_csv_billet(request):
                     ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar)
                     ov.save()
 
-            if collision_orthvars:
+            if orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
                 response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M.%S')
             else:
