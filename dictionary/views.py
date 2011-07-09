@@ -582,3 +582,13 @@ def entry_list(request, mine=False):
         'mine': mine,
         }
     return render_to_response('entry_list.html', context, RequestContext(request))
+
+@login_required
+def antconc2ucs8_converter(request):
+    import random
+    random.seed()
+    examples = (
+        u"Дрꙋ'гъ дрꙋ'га тѧготы^ носи'те, и та'кѡ испо'лните зако'нъ хрСто'въ.",
+    )
+    context = { 'convertee': random.choice(examples) }
+    return render_to_response('converter.html', context, RequestContext(request))

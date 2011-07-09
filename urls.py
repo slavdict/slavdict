@@ -35,6 +35,7 @@ urlpatterns += patterns('',
     url( r'^switch/additional-info/', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
     url( r'^greek-found/', 'slavdict.dictionary.views.make_greek_found' ), # Впоследствии необходимо будет удалить.
     url( r'^csv-import/', 'slavdict.dictionary.views.import_csv_billet' ),
+    url( r'^converter/', 'slavdict.dictionary.views.antconc2ucs8_converter', name='converter' ),
 )
 
 urlpatterns += staticfiles_urlpatterns()
