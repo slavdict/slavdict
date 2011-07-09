@@ -3,6 +3,8 @@ noscript { display: block; padding: 1em; color: white; background-color: #a00;
 
 a img { border-width: 0; }
 
+.nobr { white-space: nowrap; }
+
 /* Меню сверху */
 #header { padding: 0.5em 1em; text-align: center; background-color: #484848;
     color: white; }
@@ -176,19 +178,23 @@ a img { border-width: 0; }
 	font-weight: bold;
 	font-style: normal;
 }
+@font-face {
+    font-family: 'AntConSol';
+    src: url('fonts/antconsol-webfont.eot');
+    src:
+        url('fonts/antconsol-webfont.woff') format('woff'),
+        url('fonts/antconsol-webfont.ttf') format('truetype');
+}
 
 .cslav {
     font-family: "Triodion Ucs";
     font-weight: normal;
     font-size: 110%;
 }
-a.cslav {
-    color: #000;
-}
+a.cslav { color: #000; }
+.antconsol { font-family: AntConSol; }
 
-.grec {
-    font-family: 'SIL Ulysses';
-}
+.grec { font-family: 'SIL Ulysses'; }
 
 .hebrew,
 .aramaic {

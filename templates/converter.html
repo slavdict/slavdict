@@ -1,10 +1,66 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <style>
+        #window-container { position: relative; }
+        #antconc-convertee, #ucs8-raw, #ucs8,
+            #step1, #step2, #step3 { position: absolute; }
 
-    <textarea id="antconc-convertee" class="antconsol">{{ convertee }}</textarea>
-    <textarea id="ucs8-raw" class="antconsol"></textarea>
-    <div id="ucs8" class="cslav"></div>
+        #step1 { top: 25px; }
+        #step1, #step2, #step3 { width: 30%; height: 100px; }
+        #step1 .main, #step2 .main, #step3 .main { width: 80%; float: right; display: block; }
+        #antconc-convertee { width: 64%; height: 100px; top: 25px; left: 35%; }
+
+        #step2 { top: 165px; }
+        #ucs8-raw { top: 165px; left: 35%; width: 64%; height: 100px; }
+
+        #step3 { top: 305px; }
+        #ucs8 { left: 35%; top: 300px; width: 64%; }
+
+        textarea {
+            padding: 7px;
+            background-color: #f9f9f9;
+            color: #5d5d5d;
+            border: 1px solid #adadad;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px; }
+
+        textarea:active, textarea:focus, textarea:hover {
+            background-color: #eafcd5;
+            border: 1px solid #b9d796;
+            color: #648044;
+            outline: none; }
+    </style>
+
+    <div id="window-container">
+
+        <div class="message" id="step1">
+            <u>Шаг 1</u>.
+            <span class="main">Поместите в это окошко ▶ текст из АнтКонка</span>
+        </div>
+
+        <textarea id="antconc-convertee" class="antconsol">{{ convertee }}</textarea>
+
+        <div class="message" id="step2">
+            <u>Шаг 2</u>.
+            <span class="main">Скопируйте из этого окошка получившийся текст
+            <span class="nobr">в текстовый</span> редактор.</span>
+        </div>
+        
+        <textarea id="ucs8-raw" class="antconsol"></textarea>
+
+        <div class="message" id="step3">
+            <u>Шаг 3</u>.
+            <span class="main">Чтобы текст принял вид церковнослав. графики,
+            назначьте ему <span class="nobr">в редакторе</span> один
+            <span class="nobr">из UCS-шрифтов,</span> например,
+            Irmologion UCS. Здесь использован шрифт Triodion UCS.</span>
+        </div>
+
+        <div id="ucs8" class="cslav"></div>
+
+    </div>
 
     <script src="{{ STATIC_URL }}js/libs/jquery-1.4.4.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/ac2ucs8.js"></script>
