@@ -446,7 +446,7 @@ def import_csv_billet(request):
 
             for row in csv_reader:
                 # Столбцы в CSV-файле
-                orthvar, civil_equivalent, word_forms_list, antconc_query, author_in_csv, additional_info = row
+                orthvar, orthvar_is_reconstructed, civil_equivalent, word_forms_list, antconc_query, author_in_csv, additional_info = row
 
                 if orthvar in idems:
                     orthvar_collisions = True
@@ -479,7 +479,15 @@ def import_csv_billet(request):
                     entry = Entry.objects.create(**entry_args)
                     entry.save()
 
-                    ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar)
+                    x = orthvar_is_reconstructed.strip()
+                    if x==u'да':
+                        orthvar_is_reconstructed = True
+                    elif x==u'нет':
+                        orthvar_is_reconstructed = False
+                    else:
+                        raise NameError(u"Поле реконструкции заполнено неправильно")
+                    ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar,
+                                                            is_reconstructed=orthvar_is_reconstructed)
                     ov.save()
 
             if orthvar_collisions:
