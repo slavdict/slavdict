@@ -469,7 +469,7 @@ def import_csv_billet(request):
 
                     from_csv = {
                         'word_forms_list': word_forms_list,
-                        'civil_equivalent': civil_equivalent,
+                        'civil_equivalent': civil_equivalent, # TODO: civilrus_convert если пусто, в противном случае брать civil_equivalent
                         'antconc_query': antconc_query,
                         'editor': author,
                         'additional_info': additional_info,

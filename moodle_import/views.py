@@ -9,7 +9,7 @@ from custom_user.models import CustomUser
 from slavdict.directory.models import CategoryValue
 ccc = CategoryValue.objects.get(pk=46) # Импортирована (Статус статьи "Статья импортирована из Moodle")
 
-from slavdict.dictionary.models import entry_dict
+from slavdict.dictionary.models import entry_dict, civilrus_convert
 
 
 orthvars = []
@@ -438,6 +438,7 @@ def import_moodle_base(request):
             headers = csv_reader.next()
             csv_writer.writerow(headers)
             for n, column_name in enumerate(headers):
+                column_name = column_name.strip()
                 if column_name not in csv_columns:
                     raise NameError(u'Не учтённое название столбца в CSV-файле.')
                 csv_columns[column_name] = n
@@ -460,8 +461,10 @@ def import_moodle_base(request):
                         csv_writer.writerow(row)
                 else:
                     author_in_csv = row[g('author')]
+                    # Проверяем нет ли автора в кэше, т.е. не находили ли мы его уже раньше
                     if author_in_csv in csv_authors:
                         author = csv_authors[author_in_csv]
+                    # если мы его раньше не находили, то находим
                     else:
                         for au in authors:
                             if au.last_name and author_in_csv.startswith(au.last_name):
@@ -476,11 +479,11 @@ def import_moodle_base(request):
                     # Все булевские переменные уже выставлены по умолчанию в False в entry_dict
 
                     from_csv = {
-                        'word_forms_list': word_forms_list,
-                        'civil_equivalent': civil_equivalent,
-                        'antconc_query': antconc_query,
+                        'word_forms_list': row[g('wordforms')],
+                        'civil_equivalent': civilrus_convert(ENTRY.orthvars[0]),
+                        'antconc_query': row[g('antconc')],
                         'editor': author,
-                        'additional_info': additional_info,
+                        'additional_info': row[g('free')],
                     }
                     entry_args.update(from_csv)
 

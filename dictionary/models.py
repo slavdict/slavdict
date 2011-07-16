@@ -3,9 +3,11 @@ from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
 from hip2unicode.conversions import antconc_ucs8
 from hip2unicode.conversions import antconc_ucs8_without_aspiration
+from hip2unicode.conversions import antconc_civilrus
 
 compiled_conversion_with_aspiration = compile_conversion(antconc_ucs8.conversion)
 compiled_conversion_without_aspiration = compile_conversion(antconc_ucs8_without_aspiration.conversion)
+compiled_conversion_civil = compile_conversion(antconc_civilrus.conversion)
 
 def ucs_convert(text):
     return convert(text, compiled_conversion_with_aspiration).encode('utf-8')
@@ -22,6 +24,9 @@ def ucs_convert_affix(text):
             text = text[1:]
         return convert(text, compiled_conversion_without_aspiration).encode('utf-8')
     return text
+
+def civilrus_convert(word):
+    return convert(word, compiled_conversion_civil.encode('utf-8'))
 
 def ucs_affix_or_word(atr):
     """
