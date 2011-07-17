@@ -10,6 +10,7 @@ from slavdict.directory.models import CategoryValue
 ccc = CategoryValue.objects.get(pk=46) # Импортирована (Статус статьи "Статья импортирована из Moodle")
 
 from slavdict.dictionary.models import entry_dict, civilrus_convert
+from slavdict.dictionary.models import Entry, OrthographicVariant, Meaning, Example, CollocationGroup
 
 
 orthvars = []
@@ -212,9 +213,6 @@ csv_translate = {
     'hom_num': u'Номер для словарных статей омонимов',
     'hom_gloss': u'Пояснение для словарных статей омонимов',
 
-    'etym': u'Греч. параллель',
-    'etym0': u'Греч. параллель для слав. слов',
-
     'antconc': u'Запрос для AntConc',
     'antconc_bool': u'Наличие запроса для AntConc',
     'wordforms': u'Словоформы',
@@ -229,7 +227,7 @@ csv_translate = {
 
     'free': u'Свободное поле',
 
-    'entry_sr': u'Отсылка',
+    'entry_sr': u'Отсылка', # TODO: sr или sm?
 
 
 
@@ -246,6 +244,10 @@ csv_translate = {
     'proper_name': u'Имя собственное',
 
 
+    'etym': u'Греч. параллель',
+    'etym0': u'Греч. параллель для слав. слов',
+
+    
 
     'm1': u'Значение слова (1)',
     'm2': u'Значение слова (2)',
@@ -420,7 +422,7 @@ def g(column_name):
 class MoodleEntry:
     def __init__(self):
         self.orthvars = []
-        
+
 
 @login_required
 def import_moodle_base(request):
@@ -450,15 +452,27 @@ def import_moodle_base(request):
             orthvar_collisions = False
             csv_authors = {}
 
+            def orthvar_bool(x):
+                if x==u'да':
+                    return True
+                elif x==u'нет' or not x:
+                    return False
+                else:
+                    raise NameError(u"Поле реконструкции заполнено неправильно")
+
             for row in csv_reader:
                 ENTRY = MoodleEntry()
-                L = ('headword', 'orthvar1', 'orthvar2', 'orthvar3', 'orthvar4')
-                ENTRY.orthvars = [row[g(i)].strip() for i in L if row[g(i)].strip()]
+                L1 = ('headword', 'orthvar1', 'orthvar2', 'orthvar3', 'orthvar4')
+                L1 = [row[g(i)].strip() for i in L1]
+                L2 = ('reconstr', 'reconstr_ov1', 'reconstr_ov2', 'reconstr_ov3', 'reconstr_ov4')
+                L2 = [orthvar_bool(row[g(i)].strip()) for i in L2]
+                ENTRY.orthvars = [OrthographicVariant(idem=i, is_reconstructed=j) for i, j in zip(L1, L2) if i]
 
                 for orthvar in ENTRY.orthvars:
-                    if orthvar in idems:
+                    if orthvar.idem in idems:
                         orthvar_collisions = True
                         csv_writer.writerow(row)
+                        break
                 else:
                     author_in_csv = row[g('author')]
                     # Проверяем нет ли автора в кэше, т.е. не находили ли мы его уже раньше
@@ -475,23 +489,31 @@ def import_moodle_base(request):
                             raise NameError(u"Автор, указанный в CSV-файле, не найден среди участников работы над словарём.")
 
                     entry_args = entry_dict.copy() # Поверхностная (!) копия словаря.
-                    entry_args['status'] = ccc
-                    # Все булевские переменные уже выставлены по умолчанию в False в entry_dict
 
+                    hom_num = row[g('hom_num')]
+                    if hom_num:
+                        hom_num = int(hom_num)
+                    else:
+                        hom_num = None
+                        
                     from_csv = {
                         'word_forms_list': row[g('wordforms')],
-                        'civil_equivalent': civilrus_convert(ENTRY.orthvars[0]),
+                        'civil_equivalent': civilrus_convert(ENTRY.orthvars[0].idem),
                         'antconc_query': row[g('antconc')],
                         'editor': author,
                         'additional_info': row[g('free')],
+                        'homonym_gloss': row[g('hom_gloss').strip()],
+                        'homonym_order': hom_num,
+                        'status': ccc,
                     }
                     entry_args.update(from_csv)
 
                     entry = Entry.objects.create(**entry_args)
                     entry.save()
 
-                    ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar)
-                    ov.save()
+                    for ov in ENTRY.orthvars:
+                        ov.entry=entry
+                        ov.save()
 
             if orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")

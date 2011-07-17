@@ -490,7 +490,7 @@ def import_csv_billet(request):
                     x = orthvar_is_reconstructed.strip()
                     if x==u'да':
                         orthvar_is_reconstructed = True
-                    elif x==u'нет':
+                    elif x==u'нет' or not x:
                         orthvar_is_reconstructed = False
                     else:
                         raise NameError(u"Поле реконструкции заполнено неправильно")
