@@ -419,7 +419,7 @@ from custom_user.models import CustomUser
 from slavdict.directory.models import CategoryValue
 ccc = CategoryValue.objects.get(pk=26) # Создана (Статус статьи "Статья создана")
 
-from slavdict.dictionary.models import entry_dict
+from slavdict.dictionary.models import entry_dict, civilrus_convert
 
 @login_required
 def import_csv_billet(request):
@@ -467,9 +467,17 @@ def import_csv_billet(request):
                     entry_args['status'] = ccc
                     # Все булевские переменные уже выставлены по умолчанию в False в entry_dict
 
+                    # Если поле с гражданским эквивалентом пусто, то берем конвертацию в гражданку заглавного слова.
+                    # Если же это поле заполнено, то берём его без изменений. С практической точки зрения это значит,
+                    # что в CSV-файле можно не указывать гражданку для слов без титл, они автоматом должны хорошо
+                    # преобразовываться. А для слов с титлами или буквотитлами гражданку лучше указывать, чтобы
+                    # впоследствии не надо было её уточнять из форм вроде "бл*годетель".
+                    if not civil_equivalent.strip():
+                        civil_equivalent = civilrus_convert(orthvar)
+
                     from_csv = {
                         'word_forms_list': word_forms_list,
-                        'civil_equivalent': civil_equivalent, # TODO: civilrus_convert если пусто, в противном случае брать civil_equivalent
+                        'civil_equivalent': civil_equivalent,
                         'antconc_query': antconc_query,
                         'editor': author,
                         'additional_info': additional_info,
