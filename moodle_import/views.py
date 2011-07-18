@@ -238,10 +238,10 @@ csv_translate = {
     'NomSg': u'И.ед. для ‘тот или иной народ’',
     'gender': u'Род',
     'number': u'Число',
-    'proper_name_type': u'Разряд по значению', # TODO: отсюда
+    'proper_name_type': u'Разряд по значению', # TODO
     'uninflected': u'Неизменяемость',
     'short_form': u'Краткая форма',
-    'proper_name': u'Имя собственное',
+    'proper_name': u'Имя собственное', # TODO
 
 
     'etym': u'Греч. параллель',
@@ -423,13 +423,13 @@ class MoodleEntry:
     def __init__(self):
         self.orthvars = []
 
-def orthvar_bool(x):
+def get_bool(x):
     if x==u'да':
         return True
     elif x==u'нет' or not x:
         return False
     else:
-        raise NameError(u"Поле реконструкции заполнено неправильно")
+        raise NameError(u"Булевское поле заполнено неправильно.")
 
 # Основная view-функция
 @login_required
@@ -465,7 +465,7 @@ def import_moodle_base(request):
                 L1 = ('headword', 'orthvar1', 'orthvar2', 'orthvar3', 'orthvar4')
                 L1 = [row[g(i)].strip() for i in L1]
                 L2 = ('reconstr', 'reconstr_ov1', 'reconstr_ov2', 'reconstr_ov3', 'reconstr_ov4')
-                L2 = [orthvar_bool(row[g(i)].strip()) for i in L2]
+                L2 = [get_bool(row[g(i)].strip()) for i in L2]
                 ENTRY.orthvars = [OrthographicVariant(idem=i, is_reconstructed=j) for i, j in zip(L1, L2) if i]
 
                 for orthvar in ENTRY.orthvars:
@@ -558,6 +558,8 @@ def import_moodle_base(request):
                         'nom_sg': row[g('NomSg')].strip(),
                         'gender': gender,
                         'tantum': tantum,
+                        'short_form': row[g('short_form')],
+                        'uninflected': get_bool(row[g('uninflected')]),
                     }
                     entry_args.update(from_csv)
 
