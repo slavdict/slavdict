@@ -227,7 +227,7 @@ csv_translate = {
 
     'free': u'Свободное поле',
 
-    'entry_sr': u'Отсылка', # TODO: sr или sm?
+    'entry_sm': u'Отсылка',
 
 
 
@@ -238,7 +238,7 @@ csv_translate = {
     'NomSg': u'И.ед. для ‘тот или иной народ’',
     'gender': u'Род',
     'number': u'Число',
-    'proper_name_type': u'Разряд по значению',
+    'proper_name_type': u'Разряд по значению', # TODO: отсюда
     'uninflected': u'Неизменяемость',
     'short_form': u'Краткая форма',
     'proper_name': u'Имя собственное',
@@ -415,7 +415,7 @@ csv_translate = {
     'cg3': u'Устойчивое сочетание (2)',
 }
 
-
+# Вспомогательные функции и классы
 def g(column_name):
     return csv_columns[csv_translate[column_name]]
 
@@ -423,7 +423,15 @@ class MoodleEntry:
     def __init__(self):
         self.orthvars = []
 
+def orthvar_bool(x):
+    if x==u'да':
+        return True
+    elif x==u'нет' or not x:
+        return False
+    else:
+        raise NameError(u"Поле реконструкции заполнено неправильно")
 
+# Основная view-функция
 @login_required
 def import_moodle_base(request):
 
@@ -451,14 +459,6 @@ def import_moodle_base(request):
 
             orthvar_collisions = False
             csv_authors = {}
-
-            def orthvar_bool(x):
-                if x==u'да':
-                    return True
-                elif x==u'нет' or not x:
-                    return False
-                else:
-                    raise NameError(u"Поле реконструкции заполнено неправильно")
 
             for row in csv_reader:
                 ENTRY = MoodleEntry()
@@ -490,21 +490,74 @@ def import_moodle_base(request):
 
                     entry_args = entry_dict.copy() # Поверхностная (!) копия словаря.
 
+                    # Номер омонима
                     hom_num = row[g('hom_num')]
                     if hom_num:
                         hom_num = int(hom_num)
                     else:
                         hom_num = None
-                        
+
+                    # Свободное поле и поле ссылки
+                    additional_info = row[g('free')]
+                    entry_sm = row[g('entry_sm')]
+                    if entry_sm:
+                        additional_info = u'%s || см. %s' % (additional_info, entry_sm) if additional_info else u'см. %s' % entry_sm
+
+                    #Часть речи
+                    pos = row[g('pos')].strip()
+                    posL = CategoryValue.objects.filter(category__slug='partOfSpeech')
+                    if pos:
+                        for p in posL:
+                            if pos==p.tag:
+                                pos = p
+                                break
+                        else:
+                            raise NameError(u'Ярлык части речи не опознан.')
+                    else:
+                        pos = None
+
+                    # Грамматический род
+                    gender = row[g('gender')].strip()
+                    genderL = CategoryValue.objects.filter(category__slug='gender')
+                    if gender:
+                        for g in genderL:
+                            if gender==g.tag:
+                                gender = g
+                                break
+                        else:
+                            raise NameError(u'Ярлык грамматического рода не опознан.')
+                    else:
+                        gender = None
+
+                    # Число (tantum)
+                    tantum = row[g('number')].strip()
+                    tantumL = CategoryValue.objects.filter(category__slug='tantum')
+                    if tantum:
+                        for t in tantumL:
+                            if tantum==t.tag:
+                                tantum = t
+                                break
+                        else:
+                            raise NameError(u'Ярлык числа не опознан.')
+                    else:
+                        tantum = None
+
                     from_csv = {
                         'word_forms_list': row[g('wordforms')],
                         'civil_equivalent': civilrus_convert(ENTRY.orthvars[0].idem),
                         'antconc_query': row[g('antconc')],
                         'editor': author,
-                        'additional_info': row[g('free')],
+                        'additional_info': additional_info,
                         'homonym_gloss': row[g('hom_gloss').strip()],
                         'homonym_order': hom_num,
                         'status': ccc,
+                        'pos': pos,
+                        'sg1': row[g('1sg')].strip(),
+                        'sg2': row[g('2sg')].strip(),
+                        'genitive': row[g('Gen')].strip(),
+                        'nom_sg': row[g('NomSg')].strip(),
+                        'gender': gender,
+                        'tantum': tantum,
                     }
                     entry_args.update(from_csv)
 
