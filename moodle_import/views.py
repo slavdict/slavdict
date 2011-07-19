@@ -238,10 +238,10 @@ csv_translate = {
     'NomSg': u'И.ед. для ‘тот или иной народ’',
     'gender': u'Род',
     'number': u'Число',
-    'proper_name_type': u'Разряд по значению', # TODO
+    'proper_name_type': u'Разряд по значению',
     'uninflected': u'Неизменяемость',
     'short_form': u'Краткая форма',
-    'proper_name': u'Имя собственное', # TODO
+    'proper_name': u'Имя собственное',
 
 
     'etym': u'Греч. параллель',
@@ -542,6 +542,24 @@ def import_moodle_base(request):
                     else:
                         tantum = None
 
+                    # Имя собственное
+                    onymB = get_bool(row[g('proper_name')]).strip()
+                    onym = row[g('proper_name_type')].strip()
+                    onymL = CategoryValue.objects.filter(category__slug='onym')
+                    onymOTH = onymL.get(tag=u'другое')
+                    if onym:
+                        for o in onymL:
+                            if onym==o.tag:
+                                onym = o
+                                break
+                        else:
+                            onym = onymOTH
+                    else:
+                        if onymB:
+                            onym = onymOTH
+                        else:
+                            onym = None
+
                     from_csv = {
                         'word_forms_list': row[g('wordforms')],
                         'civil_equivalent': civilrus_convert(ENTRY.orthvars[0].idem),
@@ -560,6 +578,7 @@ def import_moodle_base(request):
                         'tantum': tantum,
                         'short_form': row[g('short_form')],
                         'uninflected': get_bool(row[g('uninflected')]),
+                        'onym': onym,
                     }
                     entry_args.update(from_csv)
 
