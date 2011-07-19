@@ -409,10 +409,9 @@ csv_translate = {
     'mm3gr3': u'Греч. параллель для метафоры 3.3',
 
 
-
-    'cg1': u'Устойчивое сочетание (3)',
-    'cg2': u'Устойчивое сочетание (1)',
-    'cg3': u'Устойчивое сочетание (2)',
+    'cg1': u'Устойчивое сочетание (1)',
+    'cg2': u'Устойчивое сочетание (2)',
+    'cg3': u'Устойчивое сочетание (3)',
 }
 
 # Вспомогательные функции и классы
@@ -585,10 +584,12 @@ def import_moodle_base(request):
                     entry = Entry.objects.create(**entry_args)
                     entry.save()
 
+                    # Сохраняем орф.варианты
                     for ov in ENTRY.orthvars:
                         ov.entry=entry
                         ov.save()
 
+                    # Этимология
                     etym = row[g('etym')].strip()
                     if etym:
                         greek = CategoryValue.objects.get(category_slug='language', slug='greek')
@@ -597,6 +598,205 @@ def import_moodle_base(request):
                                          unclear=False, questionable=False, mark=u'',
                                          additional_info=u'')
                         etym.save()
+
+                    # Создаём значения. Пока даже если они пустые. Далее для пустых значений
+                    # решение будет приниматься на основе наличия примеров.
+                    L1 = ['m1', 'm2', 'm3', 'm4', 'm5']
+                    L1 = [row[g(m)].strip() for m in L1]
+                    L2 = ['gl1', 'gl2', 'gl3', 'gl4', 'gl5']
+                    L2 = [row[g(gl)].strip() for gl in L2]
+
+                    meaning_args = {
+                        'metaphorical': False,
+                        'substantivus': False,
+                        'additional_info': u'',
+                        'hidden': False,
+                    }
+                    meanings = [Meaning(entry=entry, meaning=i, gloss=j, **meaning_args) for i, j in zip(L1, L2)]
+
+                    # Создаём примеры
+                    # для значения 1
+                    L1 = ['m1ex1', 'm1ex2', 'm1ex3', 'm1ex4', 'm1ex5', 'm1ex6', 'm1ex7', 'm1ex8']
+                    L1 = [row[g(ex)].strip() for ex in L1]
+
+                    L2 = ['m1adr1', 'm1adr2', 'm1adr3', 'm1adr4', 'm1adr5', 'm1adr6', 'm1adr7', 'm1adr8']
+                    L2 = [row[g(adr)].strip() for adr in L2]
+
+                    L3 = ['m1ctxt1', 'm1ctxt2', 'm1ctxt3', 'm1ctxt4', 'm1ctxt5', 'm1ctxt6', 'm1ctxt7', 'm1ctxt8']
+                    L3 = [row[g(ctxt)].strip() for ctxt in L3]
+
+                    L4 = ['m1gr1', 'm1gr2', 'm1gr3', 'm1gr4', 'm1gr5', 'm1gr6', 'm1gr7', 'm1gr8']
+                    L4 = [row[g(gr)].strip() for gr in L4]
+
+                    ex_args = {
+                        'meaning': meanings[0],
+                        'hidden': False,
+                        'additional_info': u'',
+                        'greek_eq_status': u'L',
+                    }
+                    examples = [Example(example=ex, context=ctxt,
+                                        address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
+                    ex_to_del = []
+                    for n, ex in enumerate(examples_m1):
+                        if not ex.example and not ex.context and not ex.address_text and not L4[n]:
+                            ex_to_del.append(n)
+
+                    for n, i in enumerate(ex_to_del):
+                        x = i - n
+                        del(L1[x], L2[x], L3[x], L4[x], examples[x])
+
+                    if examples:
+                        ex_args['meaning'].save()    
+                        for n, ex in enumerate(examples):
+                            ex.save()
+                            if L4[n]:
+                                gr = GreekEquivalentForExample(for_example=ex, text=L4[n], mark=u'',
+                                                               source=u'', additional_info=u'')
+                                gr.save()
+                            
+                    # для значения 2
+                    L1 = ['m2ex1', 'm2ex2', 'm2ex3', 'm2ex4']
+                    L1 = [row[g(ex)].strip() for ex in L1]
+
+                    L2 = ['m2adr1', 'm2adr2', 'm2adr3', 'm2adr4']
+                    L2 = [row[g(adr)].strip() for adr in L2]
+
+                    L3 = ['m2ctxt1', 'm2ctxt2', 'm2ctxt3', 'm2ctxt4']
+                    L3 = [row[g(ctxt)].strip() for ctxt in L3]
+
+                    L4 = ['m2gr1', 'm2gr2', 'm2gr3', 'm2gr4']
+                    L4 = [row[g(gr)].strip() for gr in L4]
+
+                    ex_args['meaning'] = meanings[1],
+                    examples = [Example(example=ex, context=ctxt,
+                                        address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
+                    ex_to_del = []
+                    for n, ex in enumerate(examples):
+                        if not ex.example and not ex.context and not ex.address_text and not L4[n]:
+                            ex_to_del.append(n)
+
+                    for n, i in enumerate(ex_to_del):
+                        x = i - n
+                        del(L1[x], L2[x], L3[x], L4[x], examples[x])
+
+                    if examples:
+                        ex_args['meaning'].save()    
+                        for n, ex in enumerate(examples):
+                            ex.save()
+                            if L4[n]:
+                                gr = GreekEquivalentForExample(for_example=ex, text=L4[n], mark=u'',
+                                                               source=u'', additional_info=u'')
+                                gr.save()
+
+                    # для значений 3, 4, 5
+                    for num in (3, 4, 5):
+                        m = 'm' + str(num)
+                        L1 = ['ex1', 'ex2', 'ex3']
+                        L1 = [row[g(m + ex)].strip() for ex in L1]
+
+                        L2 = ['adr1', 'adr2', 'adr3']
+                        L2 = [row[g(m + adr)].strip() for adr in L2]
+
+                        L3 = ['ctxt1', 'ctxt2', 'ctxt3']
+                        L3 = [row[g(m + ctxt)].strip() for ctxt in L3]
+
+                        L4 = ['gr1', 'gr2', 'gr3']
+                        L4 = [row[g(m + gr)].strip() for gr in L4]
+
+                        ex_args['meaning'] = meanings[num - 1],
+                        examples = [Example(example=ex, context=ctxt,
+                                            address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
+                        ex_to_del = []
+                        for n, ex in enumerate(examples):
+                            if not ex.example and not ex.context and not ex.address_text and not L4[n]:
+                                ex_to_del.append(n)
+
+                        for n, i in enumerate(ex_to_del):
+                            x = i - n
+                            del(L1[x], L2[x], L3[x], L4[x], examples[x])
+
+                        if examples:
+                            ex_args['meaning'].save()
+                            for n, ex in enumerate(examples):
+                                ex.save()
+                                if L4[n]:
+                                    gr = GreekEquivalentForExample(for_example=ex, text=L4[n], mark=u'',
+                                                                   source=u'', additional_info=u'')
+                                    gr.save()
+
+                    # Сохраняем все значения, которые непустые. Пустые значения,
+                    # но с непустыми примерами должны были быть сохранены раньше.
+                    for m in meanings:
+                        if m.meaning or m.gloss:
+                            m.save()
+
+                    # Создаём метафорические значения.
+                    L1 = ['mm1', 'mm2', 'mm3']
+                    L1 = [row[g(m)].strip() for m in L1]
+
+                    meaning_args = {
+                        'metaphorical': True,
+                        'substantivus': False,
+                        'additional_info': u'',
+                        'hidden': False,
+                        'gloss': u'',
+                    }
+                    meanings = [Meaning(entry=entry, meaning=i, **meaning_args) for i in L1]
+
+                    # Создаём примеры для метафорических значений
+                    for num in (1, 2, 3):
+                        m = 'mm' + str(num)
+                        L1 = ['ex1', 'ex2', 'ex3']
+                        L1 = [row[g(m + ex)].strip() for ex in L1]
+
+                        L2 = ['adr1', 'adr2', 'adr3']
+                        L2 = [row[g(m + adr)].strip() for adr in L2]
+
+                        L3 = ['ctxt1', 'ctxt2', 'ctxt3']
+                        L3 = [row[g(m + ctxt)].strip() for ctxt in L3]
+
+                        L4 = ['gr1', 'gr2', 'gr3']
+                        L4 = [row[g(m + gr)].strip() for gr in L4]
+
+                        ex_args['meaning'] = meanings[num - 1],
+                        examples = [Example(example=ex, context=ctxt,
+                                            address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
+                        ex_to_del = []
+                        for n, ex in enumerate(examples):
+                            if not ex.example and not ex.context and not ex.address_text and not L4[n]:
+                                ex_to_del.append(n)
+
+                        for n, i in enumerate(ex_to_del):
+                            x = i - n
+                            del(L1[x], L2[x], L3[x], L4[x], examples[x])
+
+                        if examples:
+                            ex_args['meaning'].save()
+                            for n, ex in enumerate(examples):
+                                ex.save()
+                                if L4[n]:
+                                    gr = GreekEquivalentForExample(for_example=ex, text=L4[n], mark=u'',
+                                                                   source=u'', additional_info=u'')
+                                    gr.save()
+
+                    # Сохраняем все значения, которые непустые. Пустые значения,
+                    # но с непустыми примерами должны были быть сохранены раньше.
+                    for m in meanings:
+                        if m.meaning or m.gloss:
+                            m.save()
+
+                    # Создаём словосочетания
+                    cs = ['cg1', 'cg2', 'cg3']
+                    cs = [row[g(x)].strip() for x in cs if row[g(x)].strip()]
+                    cgs = [CollocationGroup(base_entry=entry) for x in cs]
+                    cs = [Collocation(collogroup=cg, collocation=c,
+                                      civil_equivalent=civilrus_convert(c)) for c, cg in (cs, cgs)]
+                    for cg in cgs:
+                        cg.save()
+
+                    for c in cs:
+                        c.save()
+
 
             if orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
