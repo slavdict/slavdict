@@ -206,24 +206,24 @@ csv_translate = {
     'reconstr_ov3': u'Реконструкция орф. вар. (3)',
     'reconstr_ov4': u'Реконструкция орф. вар. (4)',
 
-    'reconstr_reliability': u'Надежность реконструкции',
-    'frequency': u'Частотность',
+    'reconstr_reliability': u'Надежность реконструкции', # игнорируем
+    'frequency': u'Частотность', # игнорируем
 
 
     'hom_num': u'Номер для словарных статей омонимов',
     'hom_gloss': u'Пояснение для словарных статей омонимов',
 
     'antconc': u'Запрос для AntConc',
-    'antconc_bool': u'Наличие запроса для AntConc',
+    'antconc_bool': u'Наличие запроса для AntConc', # игнорируем
     'wordforms': u'Словоформы',
 
     'author': u'Автор статьи',
-    'visa': u'Виза редактора',
+    'visa': u'Виза редактора', # игнорируем
     'status': u'Статус',
-    'edcomment': u'Комментарий редактора',
-    'edcomment_bool': u'Наличие замечаний редактора',
-    'grequiv_status_bool': u'Наличие греч. параллелей для контекстов',
-    'grequiv_status': u'Статус параллелей',
+    'edcomment': u'Комментарий редактора', # игнорируем
+    'edcomment_bool': u'Наличие замечаний редактора', # игнорируем
+    'grequiv_status_bool': u'Наличие греч. параллелей для контекстов', # игнорируем
+    'grequiv_status': u'Статус параллелей',  # игнорируем
 
     'free': u'Свободное поле',
 
@@ -245,7 +245,7 @@ csv_translate = {
 
 
     'etym': u'Греч. параллель',
-    'etym0': u'Греч. параллель для слав. слов',
+    'etym0': u'Греч. параллель для слав. слов', # игнорируем
 
     
 
@@ -588,6 +588,15 @@ def import_moodle_base(request):
                     for ov in ENTRY.orthvars:
                         ov.entry=entry
                         ov.save()
+
+                    etym = row[g('etym')].strip()
+                    if etym:
+                        greek = CategoryValue.objects.get(category_slug='language', slug='greek')
+                        etym = Etymology(entry=entry, language=greek, text=etym,
+                                         translit=u'', meaning=u'', gloss=u'', source=u'',
+                                         unclear=False, questionable=False, mark=u'',
+                                         additional_info=u'')
+                        etym.save()
 
             if orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
