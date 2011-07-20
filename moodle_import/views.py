@@ -528,9 +528,9 @@ def import_moodle_base(request):
                     # Грамматический род
                     gender = row[g('gender')].strip()
                     if gender:
-                        for g in genderL:
-                            if gender==g.tag:
-                                gender = g
+                        for i in genderL:
+                            if gender==i.tag:
+                                gender = i
                                 break
                         else:
                             raise NameError(u'Ярлык грамматического рода не опознан.')
