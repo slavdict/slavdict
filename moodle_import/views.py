@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 
-from dictionary.forms import BilletImportForm
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.contrib.auth.decorators import login_required
+
 import slavdict.unicode_csv as unicode_csv
 import StringIO
 
 from custom_user.models import CustomUser
+
 from slavdict.directory.models import CategoryValue
 ccc = CategoryValue.objects.get(pk=46) # Импортирована (Статус статьи "Статья импортирована из Moodle")
 
+from slavdict.dictionary.forms import BilletImportForm
 from slavdict.dictionary.models import entry_dict, civilrus_convert
-from slavdict.dictionary.models import Entry, OrthographicVariant, Meaning, Example, CollocationGroup
+from slavdict.dictionary.models import Entry, OrthographicVariant, Meaning, Example, CollocationGroup, Collocation
+
 
 
 orthvars = []
@@ -415,9 +420,6 @@ csv_translate = {
 }
 
 # Вспомогательные функции и классы
-def g(column_name):
-    return csv_columns[csv_translate[column_name]]
-
 class MoodleEntry:
     def __init__(self):
         self.orthvars = []
@@ -437,6 +439,8 @@ def import_moodle_base(request):
     if request.method == 'POST':
         form = BilletImportForm(request.POST, request.FILES)
         if form.is_valid():
+            def g(column_name):
+                return csv_columns[csv_translate[column_name]]
 
             csvfile = request.FILES['csvfile']
             csv_reader = unicode_csv.UnicodeReader(csvfile, dialect=unicode_csv.calc, encoding='utf-8')
@@ -491,9 +495,9 @@ def import_moodle_base(request):
 
                     # Номер омонима
                     hom_num = row[g('hom_num')]
-                    if hom_num:
+                    try:
                         hom_num = int(hom_num)
-                    else:
+                    except ValueError:
                         hom_num = None
 
                     # Свободное поле и поле ссылки
@@ -542,7 +546,7 @@ def import_moodle_base(request):
                         tantum = None
 
                     # Имя собственное
-                    onymB = get_bool(row[g('proper_name')]).strip()
+                    onymB = get_bool(row[g('proper_name')])
                     onym = row[g('proper_name_type')].strip()
                     onymL = CategoryValue.objects.filter(category__slug='onym')
                     onymOTH = onymL.get(tag=u'другое')
@@ -565,10 +569,10 @@ def import_moodle_base(request):
                         'antconc_query': row[g('antconc')],
                         'editor': author,
                         'additional_info': additional_info,
-                        'homonym_gloss': row[g('hom_gloss').strip()],
+                        'homonym_gloss': unicode(row[g('hom_gloss')]).strip(),
                         'homonym_order': hom_num,
                         'status': ccc,
-                        'pos': pos,
+                        'part_of_speech': pos,
                         'sg1': row[g('1sg')].strip(),
                         'sg2': row[g('2sg')].strip(),
                         'genitive': row[g('Gen')].strip(),
@@ -612,7 +616,7 @@ def import_moodle_base(request):
                         'additional_info': u'',
                         'hidden': False,
                     }
-                    meanings = [Meaning(entry=entry, meaning=i, gloss=j, **meaning_args) for i, j in zip(L1, L2)]
+                    meanings = [Meaning(entry_container=entry, meaning=i, gloss=j, **meaning_args) for i, j in zip(L1, L2)]
 
                     # Создаём примеры
                     # для значения 1
@@ -637,7 +641,7 @@ def import_moodle_base(request):
                     examples = [Example(example=ex, context=ctxt,
                                         address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
                     ex_to_del = []
-                    for n, ex in enumerate(examples_m1):
+                    for n, ex in enumerate(examples):
                         if not ex.example and not ex.context and not ex.address_text and not L4[n]:
                             ex_to_del.append(n)
 
@@ -667,7 +671,7 @@ def import_moodle_base(request):
                     L4 = ['m2gr1', 'm2gr2', 'm2gr3', 'm2gr4']
                     L4 = [row[g(gr)].strip() for gr in L4]
 
-                    ex_args['meaning'] = meanings[1],
+                    ex_args['meaning'] = meanings[1]
                     examples = [Example(example=ex, context=ctxt,
                                         address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
                     ex_to_del = []
@@ -703,7 +707,7 @@ def import_moodle_base(request):
                         L4 = ['gr1', 'gr2', 'gr3']
                         L4 = [row[g(m + gr)].strip() for gr in L4]
 
-                        ex_args['meaning'] = meanings[num - 1],
+                        ex_args['meaning'] = meanings[num - 1]
                         examples = [Example(example=ex, context=ctxt,
                                             address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
                         ex_to_del = []

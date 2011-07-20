@@ -26,7 +26,7 @@ def ucs_convert_affix(text):
     return text
 
 def civilrus_convert(word):
-    return convert(word, compiled_conversion_civil.encode('utf-8'))
+    return convert(word, compiled_conversion_civil).encode('utf-8')
 
 def ucs_affix_or_word(atr):
     """
