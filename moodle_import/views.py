@@ -792,14 +792,14 @@ def import_moodle_base(request):
                     cs = ['cg1', 'cg2', 'cg3']
                     cs = [row[g(x)].strip() for x in cs if row[g(x)].strip()]
                     cgs = [CollocationGroup(base_entry=entry) for x in cs]
-                    if cs: # and cgs:
-                        cs = [Collocation(collogroup=cg, collocation=c,
-                                          civil_equivalent=civilrus_convert(c)) for c, cg in (cs, cgs)]
                     for cg in cgs:
                         cg.save()
 
-                    for c in cs:
-                        c.save()
+                    if cs: # and cgs:
+                        cs = [Collocation(collogroup=cg, collocation=c,
+                                          civil_equivalent=civilrus_convert(c)) for c, cg in zip(cs, cgs)]
+                        for c in cs:
+                            c.save()
 
 
             if orthvar_collisions:
