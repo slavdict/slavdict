@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
+import datetime
+import StringIO
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 
 import slavdict.unicode_csv as unicode_csv
-import StringIO
-
-from custom_user.models import CustomUser
-
+from slavdict.custom_user.models import CustomUser
 from slavdict.directory.models import CategoryValue
 ccc = CategoryValue.objects.get(pk=46) # Импортирована (Статус статьи "Статья импортирована из Moodle")
 
 from slavdict.dictionary.forms import BilletImportForm
 from slavdict.dictionary.models import entry_dict, civilrus_convert
 from slavdict.dictionary.models import Entry, OrthographicVariant, Meaning, Example, CollocationGroup, Collocation
+from slavdict.dictionary.models import GreekEquivalentForExample
 
 
 
@@ -424,10 +424,14 @@ class MoodleEntry:
     def __init__(self):
         self.orthvars = []
 
-def get_bool(x):
-    if x==u'да':
+def get_bool(x, yes=None, no=None):
+    if not yes:
+        yes = []
+    if not no:
+        no = []
+    if x==u'да' or x in yes:
         return True
-    elif x==u'нет' or not x:
+    elif x==u'нет' or (not x) or (x in no):
         return False
     else:
         raise NameError(u"Булевское поле заполнено неправильно.")
@@ -584,7 +588,7 @@ def import_moodle_base(request):
                         'gender': gender,
                         'tantum': tantum,
                         'short_form': row[g('short_form')],
-                        'uninflected': get_bool(row[g('uninflected')]),
+                        'uninflected': get_bool(row[g('uninflected')], yes=(u'неизм.',), no=(u'изм.',)),
                         'onym': onym,
                     }
                     entry_args.update(from_csv)
@@ -799,13 +803,12 @@ def import_moodle_base(request):
                     # Создаём словосочетания
                     cs = ['cg1', 'cg2', 'cg3']
                     cs = [row[g(x)].strip() for x in cs if row[g(x)].strip()]
-                    cgs = [CollocationGroup(base_entry=entry) for x in cs]
-                    for cg in cgs:
-                        cg.save()
 
-                    if cs: # and cgs:
+                    if cs:
+                        cg = CollocationGroup(base_entry=entry)
+                        cg.save()
                         cs = [Collocation(collogroup=cg, collocation=c,
-                                          civil_equivalent=civilrus_convert(c)) for c, cg in zip(cs, cgs)]
+                                          civil_equivalent=civilrus_convert(c)) for c in cs]
                         for c in cs:
                             c.save()
 
