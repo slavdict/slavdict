@@ -513,7 +513,7 @@ def import_moodle_base(request):
                     if entry_sm:
                         additional_info = u'%s || см. %s' % (additional_info, entry_sm) if additional_info else u'см. %s' % entry_sm
 
-                    #Часть речи
+                    # Часть речи
                     pos = row[g('pos')].strip()
                     if pos:
                         for p in posL:
@@ -640,7 +640,7 @@ def import_moodle_base(request):
                         'additional_info': u'',
                         'greek_eq_status': u'L',
                     }
-                    examples = [Example(example=ex, context=ctxt, meaning=meanings[0],
+                    examples = [Example(example=ex, context=ctxt,
                                         address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
                     ex_to_del = []
                     for n, ex in enumerate(examples):
@@ -652,8 +652,10 @@ def import_moodle_base(request):
                         del(L1[x], L2[x], L3[x], L4[x], examples[x])
 
                     if examples:
-                        meanings[0].save()
+                        m = meanings[0]
+                        m.save()
                         for n, ex in enumerate(examples):
+                            ex.meaning = m
                             ex.save()
                             if L4[n]:
                                 gr = GreekEquivalentForExample(for_example=ex, text=L4[n], mark=u'',
@@ -673,7 +675,7 @@ def import_moodle_base(request):
                     L4 = ['m2gr1', 'm2gr2', 'm2gr3', 'm2gr4']
                     L4 = [row[g(gr)].strip() for gr in L4]
 
-                    examples = [Example(example=ex, context=ctxt, meaning=meanings[1],
+                    examples = [Example(example=ex, context=ctxt,
                                         address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
                     ex_to_del = []
                     for n, ex in enumerate(examples):
@@ -685,8 +687,10 @@ def import_moodle_base(request):
                         del(L1[x], L2[x], L3[x], L4[x], examples[x])
 
                     if examples:
-                        meanings[1].save()
+                        m = meanings[1]
+                        m.save()
                         for n, ex in enumerate(examples):
+                            ex.meaning = m
                             ex.save()
                             if L4[n]:
                                 gr = GreekEquivalentForExample(for_example=ex, text=L4[n], mark=u'',
@@ -708,7 +712,7 @@ def import_moodle_base(request):
                         L4 = ['gr1', 'gr2', 'gr3']
                         L4 = [row[g(m + gr)].strip() for gr in L4]
 
-                        examples = [Example(example=ex, context=ctxt, meaning=meanings[num - 1],
+                        examples = [Example(example=ex, context=ctxt,
                                             address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
                         ex_to_del = []
                         for n, ex in enumerate(examples):
@@ -720,8 +724,10 @@ def import_moodle_base(request):
                             del(L1[x], L2[x], L3[x], L4[x], examples[x])
 
                         if examples:
-                            meanings[num - 1].save()
+                            m = meanings[num - 1]
+                            m.save()
                             for n, ex in enumerate(examples):
+                                ex.meaning = m
                                 ex.save()
                                 if L4[n]:
                                     gr = GreekEquivalentForExample(for_example=ex, text=L4[n], mark=u'',
@@ -774,8 +780,10 @@ def import_moodle_base(request):
                             del(L1[x], L2[x], L3[x], L4[x], examples[x])
 
                         if examples:
-                            meanings[num - 1].save()
+                            m = meanings[num - 1]
+                            m.save()
                             for n, ex in enumerate(examples):
+                                ex.meaning = m
                                 ex.save()
                                 if L4[n]:
                                     gr = GreekEquivalentForExample(for_example=ex, text=L4[n], mark=u'',
