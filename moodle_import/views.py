@@ -432,6 +432,13 @@ def get_bool(x):
     else:
         raise NameError(u"Булевское поле заполнено неправильно.")
 
+onymL = CategoryValue.objects.filter(category__slug='onym')
+onymOTH = CategoryValue.objects.get(category__slug='onym', tag=u'другое')
+posL = CategoryValue.objects.filter(category__slug='partOfSpeech')
+genderL = CategoryValue.objects.filter(category__slug='gender')
+tantumL = CategoryValue.objects.filter(category__slug='tantum')
+greek = CategoryValue.objects.get(category__slug='language', slug='greek')
+
 # Основная view-функция
 @login_required
 def import_moodle_base(request):
@@ -508,7 +515,6 @@ def import_moodle_base(request):
 
                     #Часть речи
                     pos = row[g('pos')].strip()
-                    posL = CategoryValue.objects.filter(category__slug='partOfSpeech')
                     if pos:
                         for p in posL:
                             if pos==p.tag:
@@ -521,7 +527,6 @@ def import_moodle_base(request):
 
                     # Грамматический род
                     gender = row[g('gender')].strip()
-                    genderL = CategoryValue.objects.filter(category__slug='gender')
                     if gender:
                         for g in genderL:
                             if gender==g.tag:
@@ -534,7 +539,6 @@ def import_moodle_base(request):
 
                     # Число (tantum)
                     tantum = row[g('number')].strip()
-                    tantumL = CategoryValue.objects.filter(category__slug='tantum')
                     if tantum:
                         for t in tantumL:
                             if tantum==t.tag:
@@ -548,8 +552,7 @@ def import_moodle_base(request):
                     # Имя собственное
                     onymB = get_bool(row[g('proper_name')])
                     onym = row[g('proper_name_type')].strip()
-                    onymL = CategoryValue.objects.filter(category__slug='onym')
-                    onymOTH = onymL.get(tag=u'другое')
+
                     if onym:
                         for o in onymL:
                             if onym==o.tag:
@@ -596,7 +599,6 @@ def import_moodle_base(request):
                     # Этимология
                     etym = row[g('etym')].strip()
                     if etym:
-                        greek = CategoryValue.objects.get(category_slug='language', slug='greek')
                         etym = Etymology(entry=entry, language=greek, text=etym,
                                          translit=u'', meaning=u'', gloss=u'', source=u'',
                                          unclear=False, questionable=False, mark=u'',
@@ -633,12 +635,11 @@ def import_moodle_base(request):
                     L4 = [row[g(gr)].strip() for gr in L4]
 
                     ex_args = {
-                        'meaning': meanings[0],
                         'hidden': False,
                         'additional_info': u'',
                         'greek_eq_status': u'L',
                     }
-                    examples = [Example(example=ex, context=ctxt,
+                    examples = [Example(example=ex, context=ctxt, meaning=meanings[0],
                                         address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
                     ex_to_del = []
                     for n, ex in enumerate(examples):
@@ -650,7 +651,7 @@ def import_moodle_base(request):
                         del(L1[x], L2[x], L3[x], L4[x], examples[x])
 
                     if examples:
-                        ex_args['meaning'].save()    
+                        meanings[0].save()
                         for n, ex in enumerate(examples):
                             ex.save()
                             if L4[n]:
@@ -671,8 +672,7 @@ def import_moodle_base(request):
                     L4 = ['m2gr1', 'm2gr2', 'm2gr3', 'm2gr4']
                     L4 = [row[g(gr)].strip() for gr in L4]
 
-                    ex_args['meaning'] = meanings[1]
-                    examples = [Example(example=ex, context=ctxt,
+                    examples = [Example(example=ex, context=ctxt, meaning=meanings[1],
                                         address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
                     ex_to_del = []
                     for n, ex in enumerate(examples):
@@ -684,7 +684,7 @@ def import_moodle_base(request):
                         del(L1[x], L2[x], L3[x], L4[x], examples[x])
 
                     if examples:
-                        ex_args['meaning'].save()    
+                        meanings[1].save()
                         for n, ex in enumerate(examples):
                             ex.save()
                             if L4[n]:
@@ -707,8 +707,7 @@ def import_moodle_base(request):
                         L4 = ['gr1', 'gr2', 'gr3']
                         L4 = [row[g(m + gr)].strip() for gr in L4]
 
-                        ex_args['meaning'] = meanings[num - 1]
-                        examples = [Example(example=ex, context=ctxt,
+                        examples = [Example(example=ex, context=ctxt, meaning=meanings[num - 1],
                                             address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
                         ex_to_del = []
                         for n, ex in enumerate(examples):
@@ -720,7 +719,7 @@ def import_moodle_base(request):
                             del(L1[x], L2[x], L3[x], L4[x], examples[x])
 
                         if examples:
-                            ex_args['meaning'].save()
+                            meanings[num - 1].save()
                             for n, ex in enumerate(examples):
                                 ex.save()
                                 if L4[n]:
@@ -745,7 +744,7 @@ def import_moodle_base(request):
                         'hidden': False,
                         'gloss': u'',
                     }
-                    meanings = [Meaning(entry=entry, meaning=i, **meaning_args) for i in L1]
+                    meanings = [Meaning(entry_container=entry, meaning=i, **meaning_args) for i in L1]
 
                     # Создаём примеры для метафорических значений
                     for num in (1, 2, 3):
@@ -762,8 +761,7 @@ def import_moodle_base(request):
                         L4 = ['gr1', 'gr2', 'gr3']
                         L4 = [row[g(m + gr)].strip() for gr in L4]
 
-                        ex_args['meaning'] = meanings[num - 1],
-                        examples = [Example(example=ex, context=ctxt,
+                        examples = [Example(example=ex, context=ctxt, meaning=meanings[num - 1],
                                             address_text=adr, **ex_args) for ex, adr, ctxt in zip(L1, L2, L3)]
                         ex_to_del = []
                         for n, ex in enumerate(examples):
@@ -775,7 +773,7 @@ def import_moodle_base(request):
                             del(L1[x], L2[x], L3[x], L4[x], examples[x])
 
                         if examples:
-                            ex_args['meaning'].save()
+                            meanings[num - 1].save()
                             for n, ex in enumerate(examples):
                                 ex.save()
                                 if L4[n]:
@@ -793,8 +791,9 @@ def import_moodle_base(request):
                     cs = ['cg1', 'cg2', 'cg3']
                     cs = [row[g(x)].strip() for x in cs if row[g(x)].strip()]
                     cgs = [CollocationGroup(base_entry=entry) for x in cs]
-                    cs = [Collocation(collogroup=cg, collocation=c,
-                                      civil_equivalent=civilrus_convert(c)) for c, cg in (cs, cgs)]
+                    if cs: # and cgs:
+                        cs = [Collocation(collogroup=cg, collocation=c,
+                                          civil_equivalent=civilrus_convert(c)) for c, cg in (cs, cgs)]
                     for cg in cgs:
                         cg.save()
 
