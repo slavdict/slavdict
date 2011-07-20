@@ -10,7 +10,7 @@ compiled_conversion_without_aspiration = compile_conversion(antconc_ucs8_without
 compiled_conversion_civil = compile_conversion(antconc_civilrus.conversion)
 
 def ucs_convert(text):
-    return convert(text, compiled_conversion_with_aspiration).encode('utf-8')
+    return convert(text, compiled_conversion_with_aspiration)
 
 def ucs_convert_affix(text):
     """
@@ -22,11 +22,11 @@ def ucs_convert_affix(text):
     if text:
         if text[0] == u'-':
             text = text[1:]
-        return convert(text, compiled_conversion_without_aspiration).encode('utf-8')
+        return convert(text, compiled_conversion_without_aspiration)
     return text
 
 def civilrus_convert(word):
-    return convert(word, compiled_conversion_civil).encode('utf-8')
+    return convert(word, compiled_conversion_civil)
 
 def ucs_affix_or_word(atr):
     """
