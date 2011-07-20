@@ -575,6 +575,7 @@ def import_moodle_base(request):
                         'homonym_gloss': unicode(row[g('hom_gloss')]).strip(),
                         'homonym_order': hom_num,
                         'status': ccc,
+                        'percent_status': int(row[g('status')].strip(" %")),
                         'part_of_speech': pos,
                         'sg1': row[g('1sg')].strip(),
                         'sg2': row[g('2sg')].strip(),
