@@ -497,6 +497,7 @@ def import_csv_billet(request):
                     ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar,
                                                             is_reconstructed=orthvar_is_reconstructed)
                     ov.save()
+                    idems.append(ov.idem)
 
             if orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")

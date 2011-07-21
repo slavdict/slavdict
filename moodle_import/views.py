@@ -600,6 +600,7 @@ def import_moodle_base(request):
                     for ov in ENTRY.orthvars:
                         ov.entry=entry
                         ov.save()
+                        idems.append(ov.idem)
 
                     # Этимология
                     etym = row[g('etym')].strip()
