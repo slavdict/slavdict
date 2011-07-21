@@ -581,7 +581,7 @@ def entry_list(request, mine=False):
     elif COOKIES_SORT=='-alph':
         entry_list = sorted(entry_list, key=entry_key, reverse=True)
 
-    paginator = Paginator(entry_list, per_page=15, orphans=2)
+    paginator = Paginator(entry_list, per_page=12, orphans=2)
     try:
         pagenum = int(request.GET.get('page', 1))
     except ValueError:
