@@ -4,7 +4,6 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import RequestContext
-from uniconvertor.app.utils import output
 from dictionary.models import Entry, \
     Meaning, Example, OrthographicVariant, Etymology, \
     MeaningContext, GreekEquivalentForMeaning, \
@@ -626,11 +625,16 @@ def antconc2ucs8_converter(request):
     return render_to_response('converter.html', context, RequestContext(request))
 
 
-from django.core.serializers.xml_serializer import 
+from django.core.management import call_command
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def dumpdata(request):
-    response = HttpResponse(output.getvalue(), mimetype="text/csv")
-    response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M.%S')
+    output = call_command('dumpdata', 'dictionary', format='xml', indent=4)
+    output = unicode(output, encoding='utf-8')
+    response = HttpResponse(output, mimetype="application/xml")
+    response['Content-Disposition'] = 'attachment; filename=.dictionary--%s---%s.xml' % (
+        datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M'),
+        14,
+        )
     return response

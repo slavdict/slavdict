@@ -32,14 +32,12 @@ urlpatterns += patterns('',
     url( r'^entries/last/$', 'slavdict.dictionary.views.last_entry', name='last_entry' ),
     url( r'^forum/', include('slavdict.forum.urls') ),
     url( r'^wiki/$', redirect_to, kwargs={'url': 'http://slavonic.pbworks.com/'} ),
-    url( r'^switch/additional-info/', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
-    url( r'^greek-found/', 'slavdict.dictionary.views.make_greek_found' ), # Впоследствии необходимо будет удалить.
-    url( r'^csv-import/', 'slavdict.dictionary.views.import_csv_billet' ),
-    url( r'^moodle-import/', 'slavdict.moodle_import.views.import_moodle_base' ),
-    url( r'^converter/', 'slavdict.dictionary.views.antconc2ucs8_converter', name='converter' ),
-    url( r'^dump/dictionary/', 'slavdict.dictionary.views.dumpdata' ),
-    url( r'^dump/directory/', '' ),
-    url( r'^dump/users/', '' ),
+    url( r'^switch/additional-info/$', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
+    url( r'^greek-found/$', 'slavdict.dictionary.views.make_greek_found' ), # Впоследствии необходимо будет удалить.
+    url( r'^csv-import/$', 'slavdict.dictionary.views.import_csv_billet' ),
+    url( r'^moodle-import/$', 'slavdict.moodle_import.views.import_moodle_base' ),
+    url( r'^converter/$', 'slavdict.dictionary.views.antconc2ucs8_converter', name='converter' ),
+    url( r'^dump/dictionary/$', 'slavdict.dictionary.views.dumpdata' ),
 )
 
 urlpatterns += staticfiles_urlpatterns()
