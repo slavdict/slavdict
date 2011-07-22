@@ -37,6 +37,9 @@ urlpatterns += patterns('',
     url( r'^csv-import/', 'slavdict.dictionary.views.import_csv_billet' ),
     url( r'^moodle-import/', 'slavdict.moodle_import.views.import_moodle_base' ),
     url( r'^converter/', 'slavdict.dictionary.views.antconc2ucs8_converter', name='converter' ),
+    url( r'^dump/dictionary/', 'slavdict.dictionary.views.dumpdata' ),
+    url( r'^dump/directory/', '' ),
+    url( r'^dump/users/', '' ),
 )
 
 urlpatterns += staticfiles_urlpatterns()

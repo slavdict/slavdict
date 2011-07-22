@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import RequestContext
+from uniconvertor.app.utils import output
 from dictionary.models import Entry, \
     Meaning, Example, OrthographicVariant, Etymology, \
     MeaningContext, GreekEquivalentForMeaning, \
@@ -11,7 +12,7 @@ from dictionary.models import Entry, \
 
 from dictionary.forms import RawValueWidget
 from django.db.models import Q
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 # Вспомогательная функция
 # для сортировки списка словарных статей.
@@ -623,3 +624,13 @@ def antconc2ucs8_converter(request):
     )
     context = { 'convertee': random.choice(examples) }
     return render_to_response('converter.html', context, RequestContext(request))
+
+
+from django.core.serializers.xml_serializer import 
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def dumpdata(request):
+    response = HttpResponse(output.getvalue(), mimetype="text/csv")
+    response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M.%S')
+    return response
