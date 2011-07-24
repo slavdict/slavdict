@@ -268,22 +268,6 @@
                 </a>
             </div>
 
-            <div>
-                <a href="{% url UI:dictionary_meaning_add %}?entry={{ entry.id }}">
-                    <img src="{{ STATIC_URL }}plus.png" alt="" />
-                    {% space %}
-                    Добавить значение
-                </a>
-            </div>
-
-            <div>
-                <a href="{% url UI:dictionary_collocationgroup_add %}?entry={{ entry.id }}">
-                    <img src="{{ STATIC_URL }}plus.png" alt="" />
-                    {% space %}
-                    Добавить словосочетание
-                </a>
-            </div>
-
         </div>
 
     {% endif %}
@@ -292,13 +276,15 @@
     {% for m in entry.meanings %}
 
         <div style="margin-top: 0.7em; line-height: 140%;">
+        {% with mnumber=forloop.counter %}
 
             {% if not entry.meanings|length_is:"1" %}
-                <b>{{ forloop.counter }}</b>.{% space %}
+                <b>{{ mnumber }}</b>.{% space %}
             {% endif %}
 
             {% include '_meaning_with_children.html' %}
 
+        {% endwith %}
         </div>
 
         <div style="margin-top: 0.7em; line-height: 140%;">
@@ -345,6 +331,26 @@
 
 {% if intermed %}
 
+    <div class="edit-controls">
+
+        <div>
+            <a href="{% url UI:dictionary_meaning_add %}?entry={{ entry.id }}">
+                <img src="{{ STATIC_URL }}plus.png" alt="" />
+                {% space %}
+                Добавить значение
+            </a>
+        </div>
+
+        <div>
+            <a href="{% url UI:dictionary_collocationgroup_add %}?entry={{ entry.id }}">
+                <img src="{{ STATIC_URL }}plus.png" alt="" />
+                {% space %}
+                Добавить словосочетание
+            </a>
+        </div>
+
+    </div>
+    
     <div class="edit-controls" style="margin-bottom: 7em;">
 
         <a href="{{ entry.get_absolute_url }}" style="color: #070;">

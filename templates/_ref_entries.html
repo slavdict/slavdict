@@ -1,6 +1,7 @@
 {% load trim_spaces %}
 {% trim %}
 
+{% if not intermed %}
 {% if entry.orth_vars|slice:"1:" or entry.nom_pl_ucs_wax or entry.nom_sg_ucs_wax or entry.wordforms %}
 
     {% block refheader %}↑↑{% endblock %}
@@ -83,6 +84,7 @@
 
     {% endif %}
 
+{% endif %}
 {% endif %}
 
 {% endtrim %}

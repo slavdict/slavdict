@@ -13,3 +13,35 @@
         {% endfor %}
     {% endif %}
 {% endwith %}
+
+{% if intermed and not m.parent_meaning and m.examples %}
+    <div class="edit-controls">
+
+        <div>
+            <a href="{% url UI:dictionary_meaning_add %}?entry={{ entry.id }}&amp;parent_meaning={{ m.id }}">
+                <img src="{{ STATIC_URL }}plus.png" alt="" />
+                {% space %}
+                Добавить группу примеров
+                {% if mnumber %}
+                    для значения №&nbsp;{{ mnumber }}
+                {% else %}
+                    для данного значения
+                {% endif %}
+            </a>
+        </div>
+
+        <div>
+            <a href="{% url UI:dictionary_collocationgroup_add %}?meaning={{ m.id }}">
+                <img src="{{ STATIC_URL }}plus.png" alt="" />
+                {% space %}
+                Добавить словосочетание
+                {% if mnumber %}
+                    для значения №&nbsp;{{ mnumber }}
+                {% else %}
+                    для данного значения
+                {% endif %}
+            </a>
+        </div>
+
+    </div>
+{% endif %}

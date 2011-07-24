@@ -285,7 +285,7 @@ span.noaddress {
     font-size: smaller;
 }
 
-div.edit-controls { margin: 1em auto 1em 1.5em; }
+div.edit-controls { margin: 1em auto 4em 1.5em; }
 .edit-controls a { text-decoration: none;
     color: #369; border-bottom: 1px dotted #369; }
 span.edit-controls a { border-bottom-width: 0; }
@@ -422,3 +422,5 @@ div.hint {
 .pagination a:hover.current-page {
     background-color: #a00;
 }
+
+.exgroup { color: #a00; }

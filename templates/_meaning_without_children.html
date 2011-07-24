@@ -1,5 +1,10 @@
 {% load trim_spaces %}
 
+{% if m.parent_meaning %}
+    <span class="exgroup">||</span>
+    {% space %}
+{% endif %}
+
 {% if m.contexts %}
     {% for mc in m.contexts %}
 
@@ -196,6 +201,13 @@
 {% endif %}
 
 
+{% if m.examples %}
+    {% for e in m.examples %}
+        {% include '_example.html' %}
+    {% endfor %}
+{% endif %}
+
+
 {% if intermed %}
 
     <div class="edit-controls">
@@ -204,7 +216,12 @@
             <a href="{% url UI:dictionary_meaning_change m.pk %}">
                 <img src="{{ STATIC_URL }}pen.png" alt="" />
                 {% space %}
-                Редактировать значение
+                Редактировать
+                {% if not m.parent_meaning %}
+                    значение {% if mnumber %}№&nbsp;{{ mnumber }}{% endif %}
+                {% else %}
+                    группу примеров
+                {% endif %}
             </a>
         </div>
 
@@ -218,11 +235,4 @@
 
     </div>
 
-{% endif %}
-
-
-{% if m.examples %}
-    {% for e in m.examples %}
-        {% include '_example.html' %}
-    {% endfor %}
 {% endif %}

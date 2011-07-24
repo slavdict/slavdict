@@ -237,7 +237,7 @@ class AdminMeaning(admin.ModelAdmin):
     )
     fieldsets = (
             (u'То, к чему значение относится',
-                {'fields': (('entry_container', 'collogroup_container'),),
+                {'fields': (('entry_container', 'collogroup_container'), 'parent_meaning'),
                  'classes': ('hidden',)}),
             (u'См.',
                 {'fields': (('link_to_entry', 'link_to_collogroup'), 'link_to_meaning'),
