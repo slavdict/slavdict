@@ -7,15 +7,15 @@
             #step1, #step2, #step3 { position: absolute; }
 
         #step1 { top: 25px; }
-        #step1, #step2, #step3 { width: 30%; height: 100px; }
-        #step1 .main, #step2 .main, #step3 .main { width: 80%; float: right; display: block; }
-        #antconc-convertee { width: 64%; height: 100px; top: 25px; left: 35%; }
+        #step1, #step2, #step3 { width: 37%; height: 100px; }
+        #step1 .main, #step2 .main, #step3 .main { width: 84%; float: right; display: block; }
+        #antconc-convertee { width: 60%; height: 100px; top: 25px; left: 42%; }
 
         #step2 { top: 165px; }
-        #ucs8-raw { top: 165px; left: 35%; width: 64%; height: 100px; }
+        #ucs8-raw { top: 165px; left: 42%; width: 60%; height: 100px; }
 
-        #step3 { top: 305px; }
-        #ucs8 { left: 35%; top: 300px; width: 64%; }
+        #step3 { top: 305px; height: 107px; }
+        #ucs8 { left: 42%; top: 300px; width: 60%; }
 
         textarea {
             padding: 7px;
@@ -39,9 +39,8 @@
 
         <div class="message" id="step1">
             <u>Шаг 1</u>.
-            <span class="main">Поместите в голубое поле текст из АнтКонка.
-            В данный момент в поле уже есть некоторый текст, но он дан лишь
-            для иллюстративных целей. Замените его своим.</span>
+            <span class="main">Поместите в голубое поле текст из АнтКонка
+                на место уже имеющегося там иллюстративного текста.</span>
         </div>
 
         <textarea id="antconc-convertee" class="antconsol">{{ convertee }}</textarea>
@@ -56,10 +55,10 @@
 
         <div class="message" id="step3">
             <u>Шаг 3</u>.
-            <span class="main">Чтобы текст принял вид церковнослав. графики,
-            назначьте ему <span class="nobr">в редакторе</span> один
-            <span class="nobr">из UCS-шрифтов,</span> например,
-            Irmologion UCS. Здесь использован шрифт Triodion UCS.</span>
+            <span class="main">Чтобы текст принял нормальный вид,
+            назначьте ему <span class="nobr">в редакторе</span> шрифт
+            наподобие «Irmologion UCS». В названии шрифта должно обязательно фигурировать «UCS», например,
+            «Triodion UCS», «Hirmos UCS», «Akathistos UCS» и т.п.</span>
         </div>
 
         <div id="ucs8" class="cslav"></div>

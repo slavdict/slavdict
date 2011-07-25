@@ -631,7 +631,6 @@ from django.core.management import call_command
 @user_passes_test(lambda u: u.is_superuser)
 def dumpdata(request):
     output = call_command('dumpdata', 'dictionary', format='xml', indent=4)
-    output = unicode(output, encoding='utf-8')
     response = HttpResponse(output, mimetype="application/xml")
     response['Content-Disposition'] = 'attachment; filename=.dictionary--%s---%s.xml' % (
         datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M'),
