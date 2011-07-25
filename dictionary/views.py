@@ -11,12 +11,11 @@ from dictionary.models import Entry, \
 
 from dictionary.forms import RawValueWidget
 from django.db.models import Q
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
+from unicode_csv import UnicodeReader
 
 # Вспомогательная функция
 # для сортировки списка словарных статей.
-from unicode_csv import UnicodeReader
-
 def entry_key(entry):
     return u'%s %s' % ( entry.civil_equivalent.lower(), entry.homonym_order )
 
