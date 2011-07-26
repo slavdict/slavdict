@@ -70,7 +70,6 @@ def arabic2roman(number):
             number -= value
     return result
 
-
 from django.db import models
 from custom_user.models import CustomUser
 from slavdict.directory.models import CategoryValue
@@ -723,6 +722,14 @@ class MeaningContext(models.Model):
         auto_now=True,
     )
 
+    @property
+    def host_entry(self):
+        return self.meaning.host_entry
+
+    def save(self, *args, **kwargs):
+        super(MeaningContext, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.host_entry.save()
+
     def __unicode__(self):
         SPACE = u' '
         _list = (self.left_text, self.context, self.right_text)
@@ -936,6 +943,10 @@ class Meaning(models.Model):
         else:
             return self.collogroup_container
 
+    def save(self, *args, **kwargs):
+        super(Meaning, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.host_entry.save()
+
     def __unicode__(self):
         return self.meaning
 
@@ -1062,6 +1073,10 @@ class Example(models.Model):
     def host(self):
         return self.meaning.host
 
+    def save(self, *args, **kwargs):
+        super(Example, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.host_entry.save()
+
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
 
@@ -1155,6 +1170,10 @@ class CollocationGroup(models.Model, Meaningfull):
         else:
             return self.base_meaning.host_entry
 
+    def save(self, *args, **kwargs):
+        super(CollocationGroup, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.host_entry.save()
+
     class Meta:
         verbose_name = u'группа словосочетаний'
         verbose_name_plural = u'ГРУППЫ СЛОВОСОЧЕТАНИЙ'
@@ -1198,6 +1217,14 @@ class Collocation(models.Model):
         editable=False,
         auto_now=True,
     )
+
+    @property
+    def host_entry(self):
+        return self.collogroup.host_entry
+
+    def save(self, *args, **kwargs):
+        super(Collocation, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.host_entry.save()
 
     def __unicode__(self):
         return self.collocation
@@ -1255,6 +1282,14 @@ class GreekEquivalentForMeaning(GreekEquivalent):
 
     for_meaning = models.ForeignKey(Meaning)
 
+    @property
+    def host_entry(self):
+        return self.for_meaning.host_entry
+
+    def save(self, *args, **kwargs):
+        super(GreekEquivalentForMeaning, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.host_entry.save()
+
     class Meta:
         verbose_name = u'греческая параллель для значения'
         verbose_name_plural = u'греческие параллели'
@@ -1270,6 +1305,14 @@ class GreekEquivalentForExample(GreekEquivalent):
         blank = True,
         null = True,
         )
+
+    @property
+    def host_entry(self):
+        return self.for_example.host_entry
+
+    def save(self, *args, **kwargs):
+        super(GreekEquivalentForExample, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.host_entry.save()
 
     class Meta:
         verbose_name = u'греческая параллель для примера'
@@ -1337,6 +1380,14 @@ class OrthographicVariant(models.Model):
         auto_now=True,
     )
 
+    @property
+    def host_entry(self):
+        return self.entry
+
+    def save(self, *args, **kwargs):
+        super(OrthographicVariant, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.host_entry.save()
+
     def __unicode__(self):
         return self.idem
 
@@ -1389,6 +1440,14 @@ class WordForm(models.Model):
         editable=False,
         auto_now=True,
     )
+
+    @property
+    def host_entry(self):
+        return self.entry
+
+    def save(self, *args, **kwargs):
+        super(WordForm, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.host_entry.save()
 
     def __unicode__(self):
         return self.idem
