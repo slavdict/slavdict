@@ -91,8 +91,9 @@ def dumpdata(request):
     response = HttpResponse(mimetype="application/xml")
     response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(d.dump_file)
 
-    with open(d.dump_file) as f:
-        for line in f:
-            response.write(line)
+    f = open(d.dump_file)
+    for line in f.readline():
+        response.write(line)
+    f.close()
 
     return response
