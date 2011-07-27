@@ -3,6 +3,9 @@ import datetime, os, sys
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.management import call_command
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+
 
 
 from dumper.models import Dump
@@ -82,18 +85,21 @@ def dump_job():
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def dumpdata(request):
+    response = HttpResponse()
     try:
         d = Dump.objects.latest('dump_time')
+        path = d.dump_file
+        response = HttpResponse(mimetype="application/xml")
+        response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(path)
+
+        f = open(path)
+        for line in f.readline():
+            response.write(line)
+        f.close()
+
     except Dump.DoesNotExist:
         context = { 'error': u'Пока ни одной резервной копии ещё сделано не было.' }
         render_to_response('dump.html', context, RequestContext(request))
 
-    response = HttpResponse(mimetype="application/xml")
-    response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(d.dump_file)
-
-    f = open(d.dump_file)
-    for line in f.readline():
-        response.write(line)
-    f.close()
-
     return response
+
