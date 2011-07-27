@@ -9,5 +9,5 @@ DUMP_TYPE_CHOICES = (
 
 class Dump(models.Model):
     dump_time = models.DateTimeField(u'время создания дампа', auto_now=True)
-    dump_file = models.FilePathField(u'имя файла')
+    dump_file = models.FilePathField(u'имя файла', max_length=150)
     dump_type = models.CharField(choices=DUMP_TYPE_CHOICES, max_length=1)
