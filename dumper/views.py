@@ -72,7 +72,7 @@ logging.basicConfig()
 sched = Scheduler()
 sched.start()
 
-@sched.add_cron_job(minute=42)
+@sched.cron_schedule(minute='7,22,37,52')
 def dump_job():
     print 'j LATEST DUMP\t', datetime.datetime.strftime(Gauge.LATEST_DUMP['dictionary'], format='%Y.%m.%d %H:%M')
     print 'j LATEST CHANGE\t', datetime.datetime.strftime(Gauge.LATEST_CHANGE['dictionary'], format='%Y.%m.%d %H:%M')
