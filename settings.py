@@ -106,17 +106,17 @@ STATICFILES_DIRS = (
     ROOT + 'static/',
 )
 
-# Папка для дампов. Переменная для использования моим приложением dumper.
-DUMP_DIR = ROOT + '.dumps/'
-if not os.access(DUMP_DIR, os.F_OK):
-    os.mkdir(DUMP_DIR)
-
-# Версия схем БД приложений под надсмотром South.
-# Так же используется приложением dumper.
-DB_SCHEME_VERSIONS = {
-    'dictionary': 14,
-    'directory': 1,
-}
+## Папка для дампов. Переменная для использования моим приложением dumper.
+#DUMP_DIR = ROOT + '.dumps/'
+#if not os.access(DUMP_DIR, os.F_OK):
+#    os.mkdir(DUMP_DIR)
+#
+## Версия схем БД приложений под надсмотром South.
+## Так же используется приложением dumper.
+#DB_SCHEME_VERSIONS = {
+#    'dictionary': 14,
+#    'directory': 1,
+#}
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -132,9 +132,11 @@ INSTALLED_APPS = (
     'slavdict.custom_user',
     'slavdict.django_template_spaces',
     'slavdict.comments',
-    'slavdict.dumper',
+#    'slavdict.dumper',
 
     'south',
+#    'djcelery', # Celery.
+#    'djkombu',  # Нужно для Celery.
 #    'debug_toolbar',
 )
 
@@ -168,6 +170,18 @@ CUSTOM_USER_MODEL = 'custom_user.CustomUser'
 #    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
 #    'HIDE_DJANGO_SQL': False,
 #}
+
+# Celery
+#BROKER_HOST = "localhost"
+#BROKER_PORT = 5672
+#BROKER_USER = "guest"
+#BROKER_PASSWORD = "guest"
+#BROKER_VHOST = "/"
+#
+#BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
+#import djcelery
+#djcelery.setup_loader()
+
 
 
 # Локальное для компьютера переопределение настроек проекта
