@@ -8,7 +8,7 @@ FILE=".dictionary--$NOW---$DBS_VERSION.xml"
 
 python $PRJDIR/manage.py dumpdata dictionary --format=xml --indent=4 > $DUMPDIR/$FILE
 
-if [ LASTFILE ]
+if [ $LASTFILE -a $FILE != $LASTFILE]
 then
     x=$(diff $DUMPDIR/$FILE $DUMPDIR/$LASTFILE)
     if [ -z $x ]
