@@ -28,9 +28,6 @@ except Entry.DoesNotExist:
     Gauge.LATEST_CHANGE['dictionary'] = default_datetime
 
 
-print 'LATEST DUMP\t', datetime.datetime.strftime(Gauge.LATEST_DUMP['dictionary'], format='%Y.%m.%d %H:%M')
-print 'LATEST CHANGE\t', datetime.datetime.strftime(Gauge.LATEST_CHANGE['dictionary'], format='%Y.%m.%d %H:%M')
-
 
 # Функция, которая меняет показания счётчика, если сохраняется любой объект Entry.
 from django.dispatch import receiver
@@ -39,8 +36,6 @@ from django.db.models.signals import post_save
 @receiver(post_save, sender=Entry, dispatch_uid="dict_save_monitor")
 def dict_save_monitor(sender, **kwargs):
     Gauge.LATEST_CHANGE['dictionary'] = datetime.datetime.now()
-    print 's LATEST DUMP\t', datetime.datetime.strftime(Gauge.LATEST_DUMP['dictionary'], format='%Y.%m.%d %H:%M')
-    print 's LATEST CHANGE\t', datetime.datetime.strftime(Gauge.LATEST_CHANGE['dictionary'], format='%Y.%m.%d %H:%M')
 
 
 
@@ -59,13 +54,12 @@ def make_dump():
     d = Dump(dump_file=filename, dump_type=u'D')
     d.save()
     Gauge.LATEST_DUMP['dictionary'] = now
-    print 'd LATEST DUMP\t', datetime.datetime.strftime(Gauge.LATEST_DUMP['dictionary'], format='%Y.%m.%d %H:%M')
-    print 'd LATEST CHANGE\t', datetime.datetime.strftime(Gauge.LATEST_CHANGE['dictionary'], format='%Y.%m.%d %H:%M')
 
 
 
-
-
+def dump_job():
+    if Gauge.LATEST_CHANGE['dictionary'] > Gauge.LATEST_DUMP['dictionary']:
+        make_dump()
 
 
 
