@@ -22,6 +22,7 @@ orthvars = []
 
 csv_columns = {
     u'Заглавное слово': '',
+    u'Гражданское написание': '', # Фиктивное поле. В мудловской базе его не было.
     u'Отсылка': '',
     u'Орфографический вариант (1)': '',
     u'Орфографический вариант (2)': '',
@@ -200,6 +201,7 @@ csv_columns = {
 
 csv_translate = {
     'headword': u'Заглавное слово',
+    'civileq': u'Гражданское написание',
     'orthvar1': u'Орфографический вариант (1)',
     'orthvar2': u'Орфографический вариант (2)',
     'orthvar3': u'Орфографический вариант (3)',
@@ -570,9 +572,14 @@ def import_moodle_base(request):
                         else:
                             onym = None
 
+                    # Гражданское написание
+                    civileq = row[g('civileq')].strip()
+                    if not civileq:
+                        civileq = civilrus_convert(ENTRY.orthvars[0].idem)
+
                     from_csv = {
                         'word_forms_list': row[g('wordforms')],
-                        'civil_equivalent': civilrus_convert(ENTRY.orthvars[0].idem),
+                        'civil_equivalent': civileq,
                         'antconc_query': row[g('antconc')],
                         'editor': author,
                         'additional_info': additional_info,
