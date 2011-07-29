@@ -76,7 +76,12 @@
             <i>{{ entry.participle_type.tag }}</i>
             {% space %}
         {% else %}
-            <i>{{ entry.part_of_speech.tag }}</i>
+            {% if entry.part_of_speech %}
+                <i>{{ entry.part_of_speech.tag }}</i>
+            {% else %}
+                <span class="noaddress">Не указана часть речи!</span>
+            {% endif %}
+
             {% space %}
             {% if entry.gender %}
                 {% backspace %},{% space %}
