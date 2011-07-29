@@ -159,7 +159,7 @@ funcTemp.short_description = u'Лексема / Словосоч.'
 Example.entry_for_example = funcTemp
 
 EXAMPLE_FIELDSETS = (
-        (None, {'fields': ('example', 'address_text', 'greek_eq_status')}),
+        (None, {'fields': (('example', 'context'), 'address_text', 'greek_eq_status')}),
         (u'Примечание к примеру', {'fields': ('additional_info',), 'classes': ('collapse',)}),
     )
 

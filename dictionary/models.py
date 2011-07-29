@@ -659,6 +659,28 @@ class Etymology(models.Model):
         auto_now=True,
     )
 
+    @property
+    def host_entry(self):
+        if self.entry:
+            return self.entry
+        else:
+            return self.collocation.host_entry
+
+    @property
+    def host(self):
+        if self.entry:
+            return self.entry
+        else:
+            return self.collocation
+
+    def save(self, *args, **kwargs):
+        super(Etymology, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.host_entry.save()
+
+    def delete(self, *args, **kwargs):
+        super(Etymology, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+
     def __unicode__(self):
         return u'%s %s %s' % (self.language.tag, self.entry, self.translit)
 
@@ -729,6 +751,10 @@ class MeaningContext(models.Model):
     def save(self, *args, **kwargs):
         super(MeaningContext, self).save(*args, **kwargs) # Call the "real" save() method.
         self.host_entry.save()
+
+    def delete(self, *args, **kwargs):
+        super(MeaningContext, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         SPACE = u' '
@@ -947,6 +973,10 @@ class Meaning(models.Model):
         super(Meaning, self).save(*args, **kwargs) # Call the "real" save() method.
         self.host_entry.save()
 
+    def delete(self, *args, **kwargs):
+        super(Meaning, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+
     def __unicode__(self):
         return self.meaning
 
@@ -990,10 +1020,9 @@ class Example(models.Model):
         return ucs_convert(self.example)
 
     context = models.TextField(
-        u'контекст примера',
+        u'широкий контекст',
         help_text = u'Более широкий контекст для примера',
         blank = True,
-        editable = False,
         )
 
     class SplitContext:
@@ -1076,6 +1105,10 @@ class Example(models.Model):
     def save(self, *args, **kwargs):
         super(Example, self).save(*args, **kwargs) # Call the "real" save() method.
         self.host_entry.save()
+
+    def delete(self, *args, **kwargs):
+        super(Example, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
@@ -1174,6 +1207,10 @@ class CollocationGroup(models.Model, Meaningfull):
         super(CollocationGroup, self).save(*args, **kwargs) # Call the "real" save() method.
         self.host_entry.save()
 
+    def delete(self, *args, **kwargs):
+        super(CollocationGroup, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+
     class Meta:
         verbose_name = u'группа словосочетаний'
         verbose_name_plural = u'ГРУППЫ СЛОВОСОЧЕТАНИЙ'
@@ -1225,6 +1262,10 @@ class Collocation(models.Model):
     def save(self, *args, **kwargs):
         super(Collocation, self).save(*args, **kwargs) # Call the "real" save() method.
         self.host_entry.save()
+
+    def delete(self, *args, **kwargs):
+        super(Collocation, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         return self.collocation
@@ -1290,6 +1331,10 @@ class GreekEquivalentForMeaning(GreekEquivalent):
         super(GreekEquivalentForMeaning, self).save(*args, **kwargs) # Call the "real" save() method.
         self.host_entry.save()
 
+    def delete(self, *args, **kwargs):
+        super(GreekEquivalentForMeaning, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+
     class Meta:
         verbose_name = u'греческая параллель для значения'
         verbose_name_plural = u'греческие параллели'
@@ -1313,6 +1358,10 @@ class GreekEquivalentForExample(GreekEquivalent):
     def save(self, *args, **kwargs):
         super(GreekEquivalentForExample, self).save(*args, **kwargs) # Call the "real" save() method.
         self.host_entry.save()
+
+    def delete(self, *args, **kwargs):
+        super(GreekEquivalentForExample, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
 
     class Meta:
         verbose_name = u'греческая параллель для примера'
@@ -1388,6 +1437,10 @@ class OrthographicVariant(models.Model):
         super(OrthographicVariant, self).save(*args, **kwargs) # Call the "real" save() method.
         self.host_entry.save()
 
+    def delete(self, *args, **kwargs):
+        super(OrthographicVariant, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+
     def __unicode__(self):
         return self.idem
 
@@ -1448,6 +1501,10 @@ class WordForm(models.Model):
     def save(self, *args, **kwargs):
         super(WordForm, self).save(*args, **kwargs) # Call the "real" save() method.
         self.host_entry.save()
+
+    def delete(self, *args, **kwargs):
+        super(WordForm, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         return self.idem
