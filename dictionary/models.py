@@ -292,7 +292,7 @@ class Entry(models.Model, Meaningfull):
         u'краткая форма',
         help_text = u'''Если Вы указываете не всё слово,
                         а только его часть, предваряйте её дефисом.''',
-        max_length = 20,
+        max_length = 30,
         blank = True,
         )
 
@@ -318,7 +318,7 @@ class Entry(models.Model, Meaningfull):
 
     sg1 = models.CharField(
         u'форма 1 ед.',
-        max_length = 20,
+        max_length = 30,
         blank = True,
         help_text = u'''Целая словоформа или окончание.
                         В случае окончания первым
@@ -331,7 +331,7 @@ class Entry(models.Model, Meaningfull):
 
     sg2 = models.CharField(
         u'форма 2 ед.',
-        max_length = 20,
+        max_length = 30,
         blank = True,
         help_text = u'''Целая словоформа или окончание.
                         В случае окончания первым
