@@ -1,7 +1,7 @@
 #!/bin/bash
 NOW=$(date +"%Y.%m.%d--%H.%M")
-DBS_VERSION=15
-PRJDIR="$( cd "$( dirname "$( readlink -f "$0" )" )" && pwd )"
+DBS_VERSION=16
+PRJDIR="$( cd "$( dirname "$0" )" && pwd )" # ... dirname "$( readlink -f "$0" )" ...
 DUMPDIR="$PRJDIR/.dumps"
 LASTFILE=$(ls -tA $DUMPDIR | head -1)
 FILE=".dictionary--$NOW---$DBS_VERSION.xml"

@@ -138,7 +138,7 @@ class Entry(models.Model, Meaningfull):
 
     civil_equivalent = models.CharField(
         u'гражданское написание',
-        max_length = 40,
+        max_length = 50,
         )
 
     @property
@@ -493,7 +493,7 @@ class Entry(models.Model, Meaningfull):
         blank = True,
         null = True,
         )
-    
+
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
@@ -1236,7 +1236,7 @@ class Collocation(models.Model):
 
     civil_equivalent = models.CharField(
         u'гражданское написание',
-        max_length = 40,
+        max_length = 50,
         blank = True,
         )
 
@@ -1488,7 +1488,7 @@ class WordForm(models.Model):
         blank = True,
         null = True,
         )
-    
+
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
@@ -1542,7 +1542,7 @@ class SynonymGroup(models.Model):
         verbose_name = u'базовый синоним',
         related_name = 'base_synonym_in'
         )
-    
+
     ctime = models.DateTimeField(
         editable=False,
         auto_now_add=True,
