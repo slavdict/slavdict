@@ -206,7 +206,7 @@ csv_translate = {
     'orthvar2': u'Орфографический вариант (2)',
     'orthvar3': u'Орфографический вариант (3)',
     'orthvar4': u'Орфографический вариант (4)',
-    
+
     'reconstr': u'Реконструкция',
     'reconstr_ov1': u'Реконструкция орф. вар. (1)',
     'reconstr_ov2': u'Реконструкция орф. вар. (2)',
@@ -254,7 +254,7 @@ csv_translate = {
     'etym': u'Греч. параллель',
     'etym0': u'Греч. параллель для слав. слов', # игнорируем
 
-    
+
 
     'm1': u'Значение слова (1)',
     'm2': u'Значение слова (2)',
@@ -474,7 +474,7 @@ def import_moodle_base(request):
             authors = CustomUser.objects.all()
 
             orthvar_collisions = False
-            csv_authors = {}
+            csv_authors = {u'': None}
 
             for row in csv_reader:
                 ENTRY = MoodleEntry()
@@ -556,7 +556,7 @@ def import_moodle_base(request):
                         tantum = None
 
                     # Имя собственное
-                    onymB = get_bool(row[g('proper_name')])
+                    onymB = get_bool(row[g('proper_name')], yes=(u'собств.',))
                     onym = row[g('proper_name_type')].strip()
 
                     if onym:
@@ -673,7 +673,7 @@ def import_moodle_base(request):
                                 gr = GreekEquivalentForExample(for_example=ex, text=L4[n], mark=u'',
                                                                source=u'', additional_info=u'')
                                 gr.save()
-                            
+
                     # для значения 2
                     L1 = ['m2ex1', 'm2ex2', 'm2ex3', 'm2ex4']
                     L1 = [row[g(ex)].strip() for ex in L1]
