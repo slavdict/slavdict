@@ -13,7 +13,7 @@ then
     x=$(diff $FILE $LASTFILE)
 
     if [ -z "$x" ]
-    then rm $FILE
+    then rm $FILE $FILE.gz
     else
         if [ -a $LASTFILE.gz ]
         then rm $LASTFILE
