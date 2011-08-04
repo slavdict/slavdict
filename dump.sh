@@ -4,21 +4,21 @@ DBS_VERSION=16
 PRJDIR="$( cd "$( dirname "$0" )" && pwd )" # ... dirname "$( readlink -f "$0" )" ...
 DUMPDIR="$PRJDIR/.dumps"
 LASTFILE=$(ls -tA $DUMPDIR/.dictionary*.xml | head -1)
-FILE=".dictionary--$NOW---$DBS_VERSION.xml"
+FILE="$DUMPDIR/.dictionary--$NOW---$DBS_VERSION.xml"
 
-python $PRJDIR/manage.py dumpdata dictionary --format=xml --indent=4 > $DUMPDIR/$FILE
+python $PRJDIR/manage.py dumpdata dictionary --format=xml --indent=4 > $FILE
 
 if [ "$LASTFILE" -a "$FILE" != "$LASTFILE" ]
 then
-    x=$(diff $DUMPDIR/$FILE $DUMPDIR/$LASTFILE)
+    x=$(diff $FILE $LASTFILE)
 
     if [ -z "$x" ]
-    then rm $DUMPDIR/$FILE
+    then rm $FILE
     else
-        if [ -a $DUMPDIR/$LASTFILE.gz ]
-        then rm $DUMPDIR/$LASTFILE
+        if [ -a $LASTFILE.gz ]
+        then rm $LASTFILE
         fi
     fi
 fi
 
-gzip -c $DUMPDIR/$FILE > $DUMPDIR/$FILE.gz
+gzip -c $FILE > $FILE.gz
