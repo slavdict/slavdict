@@ -13,12 +13,12 @@ then
     x=$(diff $FILE $LASTFILE)
 
     if [ -z "$x" ]
-    then rm $FILE $FILE.gz
+    then rm $FILE
     else
+        gzip -c $FILE > $FILE.gz
+    
         if [ -a $LASTFILE.gz ]
         then rm $LASTFILE
         fi
     fi
 fi
-
-gzip -c $FILE > $FILE.gz
