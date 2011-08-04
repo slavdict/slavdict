@@ -8,6 +8,9 @@ FILE=".dictionary--$NOW---$DBS_VERSION.xml"
 
 python $PRJDIR/manage.py dumpdata dictionary --format=xml --indent=4 > $DUMPDIR/$FILE
 
+gzip $DUMPDIR/$FILE
+FILE="$FILE.gz"
+
 if [ "$LASTFILE" -a "$FILE" != "$LASTFILE" ]
 then
     x=$(diff $DUMPDIR/$FILE $DUMPDIR/$LASTFILE)

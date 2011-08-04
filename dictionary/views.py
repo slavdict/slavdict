@@ -111,7 +111,7 @@ def single_entry(request, entry_id, extra_context=None, template='single_entry.h
             pass
         else:
             return redirect(entry.get_absolute_url())
-        
+
     context = {
         'entry': entry,
         'title': u'Статья «%s»' % entry.civil_equivalent,
@@ -441,7 +441,7 @@ def import_csv_billet(request):
             authors = CustomUser.objects.all()
 
             orthvar_collisions = False
-            csv_authors = {}
+            csv_authors = {u'': None}
 
             for row in csv_reader:
                 # Столбцы в CSV-файле
@@ -547,7 +547,7 @@ def entry_list(request, mine=False):
     if GET_SORT:
         redirect_path = "./"
         if GET_FIND:
-            redirect_path = "?find=%s" % GET_FIND 
+            redirect_path = "?find=%s" % GET_FIND
         response = HttpResponseRedirect(redirect_path)
         if GET_SORT in VALID_SORT_PARAMS:
             response.set_cookie('sort', GET_SORT)
@@ -617,7 +617,7 @@ def antconc2ucs8_converter(request):
         u"и'хъ є'сть, и`же ѡбрѣта'ютъ єго`",
 
         u"Бꙋ'дите ѹ'бѡ вы` соверше'ни, ꙗ'коже ѻц~ъ ва'шъ нбСный соверше'нъ є'сть.",
-        
+
         u"Возведо'хъ ѻ'чи мои` въ го'ры, ѿню'дꙋже пріи'детъ по'мощь моѧ`",
     )
     context = { 'convertee': random.choice(examples) }
