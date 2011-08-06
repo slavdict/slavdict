@@ -572,6 +572,7 @@ def entry_list(request, mine=False):
                     Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_UPPER)
                 ).order_by(*SORT_PARAMS) #filter(editor=request.user)
         else:
+            GET_FIND = u''
             if mine:
                 entry_list = Entry.objects.filter(editor=request.user).order_by(*SORT_PARAMS)
             else:
