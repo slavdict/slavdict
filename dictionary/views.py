@@ -451,11 +451,12 @@ def import_csv_billet(request):
                     orthvar_collisions = True
                     csv_writer.writerow(row)
                 else:
+                    author_in_csv = author_in_csv.lower()
                     if author_in_csv in csv_authors:
                         author = csv_authors[author_in_csv]
                     else:
                         for au in authors:
-                            if au.last_name and author_in_csv.startswith(au.last_name):
+                            if au.last_name and author_in_csv.startswith(au.last_name.lower()):
                                 author = au
                                 csv_authors[author_in_csv] = au
                                 break

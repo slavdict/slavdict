@@ -491,13 +491,14 @@ def import_moodle_base(request):
                         break
                 else:
                     author_in_csv = row[g('author')]
+                    author_in_csv = author_in_csv.lower()
                     # Проверяем нет ли автора в кэше, т.е. не находили ли мы его уже раньше
                     if author_in_csv in csv_authors:
                         author = csv_authors[author_in_csv]
                     # если мы его раньше не находили, то находим
                     else:
                         for au in authors:
-                            if au.last_name and author_in_csv.startswith(au.last_name):
+                            if au.last_name and author_in_csv.startswith(au.last_name.lower()):
                                 author = au
                                 csv_authors[author_in_csv] = au
                                 break
