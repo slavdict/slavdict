@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import datetime
 from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
 from hip2unicode.conversions import antconc_ucs8
@@ -496,7 +497,6 @@ class Entry(models.Model, Meaningfull):
 
     mtime = models.DateTimeField(
         editable=False,
-        auto_now=True,
     )
 
     ctime = models.DateTimeField(
@@ -507,6 +507,11 @@ class Entry(models.Model, Meaningfull):
     @models.permalink
     def get_absolute_url(self):
         return ('single_entry_url', [str(self.id)])
+
+    def save(self, without_mtime=False, *args, **kwargs):
+        if not without_mtime:
+            self.mtime=datetime.datetime.now()
+        super(Entry, self).save(*args, **kwargs) # Call the "real" save() method.
 
     def __unicode__(self):
         return self.orth_vars[0].idem
