@@ -169,6 +169,7 @@
                 $('.short_form').show();
             }
         }
+
         checkUninflected();
         $('#id_uninflected').click(checkUninflected);
 
@@ -195,13 +196,14 @@
         });
 
         // Создаем гражданское напиание
+        // для заглавного слова
         x = $('#id_civil_equivalent');
         v = x.val();
         var v2 = $('#id_orthographic_variants-0-idem').val();
         if (!v && v2) {
             x.val(antconc_civilrus_word(v2));
         }
-        if ( v.indexOf('*') > -1 ){
+        if (v && v.indexOf('*') > -1) {
             x.addClass('myerr');
         } else {
             x.removeClass('myerr');
@@ -209,7 +211,7 @@
 
         $('#id_orthographic_variants-0-idem').keyup(function(){
             x.val(antconc_civilrus_word($(this).val()));
-            if ( x.val().indexOf('*') > -1 ){
+            if (x.val() && x.val().indexOf('*') > -1){
                 x.addClass('myerr');
             } else {
                 x.removeClass('myerr');
@@ -217,44 +219,57 @@
         });
 
         x.keyup(function(){
-            if ( x.val().indexOf('*') > -1 ){
+            if (x.val() && x.val().indexOf('*') > -1){
                 x.addClass('myerr');
             } else {
                 x.removeClass('myerr');
             }
         });
-/*
-        $('input[name|="collocation_set"]').filter('input[name$="-civil_equivalent"]').each(function(){
-            var ceq = $(this);
-            var ceqv = ceq.val();
-            var a = "collocation_set-" + ceq.attr('name').split("-")[1] + "-collocation";
-            var collov = $('#id_' + a).val();
-            if (!ceqv && collov) {
-                ceq.val(antconc_civilrus_word(collov));
-            }
-            if ( ceqv.indexOf('*') > -1 ){
-                ceq.addClass('myerr');
-            } else {
-                ceq.removeClass('myerr');
-            }
-        });
-/*
-        $('input[name|="collocation_set"]').filter('input[name$="-collocation"]').each(function(){
-            $(this).keyup(function(){
-                var collo = $(this);
-                var collov = collo.val();
-                var a = "collocation_set-" + collo.attr('name').split("-")[1] + "-civil_equivalent";
-                var ceq = $('#id_' + a);
-                ceq.val(antconc_civilrus_word(collov));
+
+        // для словосочетаний
+        $('input[name|="collocation_set"]')
+            .filter('input[name$="-civil_equivalent"]')
+            .each(function(){
+                var ceq = $(this);
                 var ceqv = ceq.val();
-                if ( ceqv.indexOf('*') > -1 ){
+                var a = "collocation_set-" + ceq.attr('name').split("-")[1] + "-collocation";
+                var collov = $('#id_' + a).val();
+                if (!ceqv && collov) {
+                    ceq.val(antconc_civilrus_word(collov));
+                }
+                if (ceqv && ceqv.indexOf('*') > -1){
                     ceq.addClass('myerr');
                 } else {
                     ceq.removeClass('myerr');
                 }
+                ceq.keyup(function(){
+                    var ceqv = $(this).val();
+                    if (ceqv && ceqv.indexOf('*') > -1){
+                        ceq.addClass('myerr');
+                    } else {
+                        ceq.removeClass('myerr');
+                    }
+                });
             });
-        });
-*/
+
+        $('input[name|="collocation_set"]')
+            .filter('input[name$="-collocation"]')
+            .each(function(){
+                $(this).keyup(function(){
+                    var collo = $(this);
+                    var collov = collo.val();
+                    var a = "collocation_set-" + collo.attr('name').split("-")[1] + "-civil_equivalent";
+                    var ceq = $('#id_' + a);
+                    ceq.val(antconc_civilrus_word(collov));
+                    var ceqv = ceq.val();
+                    if (ceqv && ceqv.indexOf('*') > -1){
+                        ceq.addClass('myerr');
+                    } else {
+                        ceq.removeClass('myerr');
+                    }
+                });
+            });
+
         /* Действия, которые необходимо отложить хотя бы на секунду, чтобы они
          * были успешно выполнены. */
         function returnToPostponed(){

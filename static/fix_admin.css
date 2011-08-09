@@ -31,6 +31,7 @@ body { font-family: Vardana, Arial, sans-serif; }
 textarea#id_example,
 #example_set-group .example textarea,
 #orthographic_variants-group .idem input,
+#collocation_set-group .collocation input,
 #wordform_set-group .idem input,
 input#id_nom_sg,
 input#id_genitive,
