@@ -46,6 +46,8 @@ input#id_sg2
     display: none;
 }
 
+.myerr { background-color: #fcd5d0; }
+
 /* Скрываем шапку в админке */
 #header,
 .breadcrumbs,

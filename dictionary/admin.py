@@ -192,7 +192,7 @@ class AdminExample(admin.ModelAdmin):
         )
     class Media:
         css = {"all": ("fix_admin.css",)}
-        js = ("fix_admin.js",)
+        js = ("js/libs/ac2ucs8.js", "fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -273,7 +273,7 @@ class AdminMeaning(admin.ModelAdmin):
         )
     class Media:
         css = {"all": ("fix_admin.css",)}
-        js = ("fix_admin.js",)
+        js = ("js/libs/ac2ucs8.js", "fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -402,7 +402,7 @@ class AdminEntry(admin.ModelAdmin):
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     class Media:
         css = {"all": ("fix_admin.css",)}
-        js = ("fix_admin.js",)
+        js = ("js/libs/ac2ucs8.js", "fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -427,7 +427,7 @@ from slavdict.dictionary.models import Collocation
 #        )
 #    class Media:
 #        css = {"all": ("fix_admin.css",)}
-#        js = ("fix_admin.js",)
+#        js = ("js/libs/ac2ucs8.js", "fix_admin.js",)
 #    def response_add(self, request, obj, post_url_continue='/'):
 #        post_url_continue = obj.host_entry.get_absolute_url()
 #        return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -479,7 +479,7 @@ class AdminCollocationGroup(admin.ModelAdmin):
     search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')
     class Media:
         css = {"all": ("fix_admin.css",)}
-        js = ("fix_admin.js",)
+        js = ("js/libs/ac2ucs8.js", "fix_admin.js",)
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
