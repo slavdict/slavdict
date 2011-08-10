@@ -209,15 +209,6 @@
             x.removeClass('myerr');
         }
 
-        $('#id_orthographic_variants-0-idem').keyup(function(){
-            x.val(antconc_civilrus_word($(this).val()));
-            if (x.val() && x.val().indexOf('*') > -1){
-                x.addClass('myerr');
-            } else {
-                x.removeClass('myerr');
-            }
-        });
-
         x.keyup(function(){
             if (x.val() && x.val().indexOf('*') > -1){
                 x.addClass('myerr');
@@ -226,6 +217,7 @@
             }
         });
 
+        
         // для словосочетаний
         $('input[name|="collocation_set"]')
             .filter('input[name$="-civil_equivalent"]')
@@ -289,6 +281,19 @@
             if (c.val()==0){
                 $('#orthographic_variants-group').find('div.add-row a').click();
             }
+
+
+            $('#id_orthographic_variants-0-idem')
+            .keyup(function(){
+                var x = $('#id_civil_equivalent');
+                var v = $(this).val();
+                x.val(antconc_civilrus_word(v));
+                if (v && v.indexOf('*') > -1){
+                    x.addClass('myerr');
+                } else {
+                    x.removeClass('myerr');
+                }
+            });
 
         }
         setTimeout(returnToPostponed, 1000);
