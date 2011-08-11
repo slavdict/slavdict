@@ -283,8 +283,8 @@
             }
 
 
-            $('#id_orthographic_variants-0-idem')
-            .keyup(function(){
+            var x = $('#id_orthographic_variants-0-idem');
+            x.keyup(function(){
                 var x = $('#id_civil_equivalent');
                 var v = $(this).val();
                 x.val(antconc_civilrus_word(v));
@@ -294,6 +294,7 @@
                     x.removeClass('myerr');
                 }
             });
+            x.focus();
 
         }
         setTimeout(returnToPostponed, 1000);
