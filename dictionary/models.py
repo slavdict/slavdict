@@ -236,14 +236,14 @@ class Entry(models.Model, Meaningfull):
         )
 
     genitive = models.CharField(
-        u'окончание Р. падежа',
+        u'форма Р. падежа',
         max_length = 10,
         blank = True,
         )
 
     @property
-    def genitive_ucs(self):
-        return ucs_convert_affix(self.genitive)
+    def genitive_ucs_wax(self):
+        return ucs_affix_or_word(self.genitive)
 
     onym = models.ForeignKey(
         CategoryValue,

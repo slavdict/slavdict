@@ -44,7 +44,8 @@
         {% endif %}
 
         {% if entry.genitive %}
-            -<span class="cslav">{{ entry.genitive_ucs }}</span>
+            {% if entry.genitive_ucs_wax.0 %}-{% endif %}
+            <span class="cslav">{{ entry.genitive_ucs_wax.1 }}</span>
             {% space %}
         {% endif %}
 
@@ -96,7 +97,7 @@
             {% space %}
         {% endif %}
 
-    
+
         {% if entry.derivation_entry %}
 
             {% if entry.possessive %}
@@ -277,7 +278,7 @@
 
     {% endif %}
 
-    
+
     {% for m in entry.meanings %}
 
         <div style="margin-top: 0.7em; line-height: 140%;">
@@ -355,7 +356,7 @@
         </div>
 
     </div>
-    
+
     <div class="edit-controls" style="margin-bottom: 7em;">
 
         <a href="{{ entry.get_absolute_url }}" style="color: #070;">
@@ -365,7 +366,7 @@
         </a>
 
     </div>
-    
+
 {% endif %}
 
 
