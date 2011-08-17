@@ -414,7 +414,11 @@ AdminEntry.has_add_permission = staff_has_add_permission
 AdminEntry.has_change_permission = staff_has_change_permission
 AdminEntry.has_delete_permission = superuser_has_delete_permission
 
-admin.site.register(Entry, AdminEntry)
+class AdminEntry2(AdminEntry):
+    pass
+AdminEntry2.fieldsets[-1][1]['fields'] = ('editor', 'status', 'antconc_query')
+
+admin.site.register(Entry, AdminEntry2)
 ui.register(Entry, AdminEntry)
 
 
