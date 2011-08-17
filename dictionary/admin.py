@@ -93,6 +93,13 @@ class OrthVar_Inline(admin.StackedInline):
             }),
         )
 
+class OrthVar_Inline2(OrthVar_Inline):
+    fieldsets = (
+        (None, {
+            'fields': (('idem', 'is_reconstructed'), ),
+            }),
+        )
+
 from slavdict.dictionary.models import Etymology
 ETYMOLOGY_FIELDSETS = (
     (u'Является этимоном для др. этимона',
@@ -415,7 +422,14 @@ AdminEntry.has_change_permission = staff_has_change_permission
 AdminEntry.has_delete_permission = superuser_has_delete_permission
 
 class AdminEntry2(AdminEntry):
-    pass
+    inlines = (
+        OrthVar_Inline2,
+        WordForm_Inline,
+        Etymology_Inline,
+        )
+
+import copy
+AdminEntry2.fieldsets = copy.deepcopy(AdminEntry.fieldsets)
 AdminEntry2.fieldsets[-1][1]['fields'] = ('editor', 'status', 'antconc_query')
 
 admin.site.register(Entry, AdminEntry2)
