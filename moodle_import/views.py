@@ -485,7 +485,7 @@ def import_moodle_base(request):
                 ENTRY.orthvars = [OrthographicVariant(idem=i, is_reconstructed=j) for i, j in zip(L1, L2) if i]
 
                 for orthvar in ENTRY.orthvars:
-                    if orthvar.idem in idems:
+                    if not request.GET.get('force', False) and orthvar.idem in idems:
                         orthvar_collisions = True
                         csv_writer.writerow(row)
                         break
@@ -822,7 +822,7 @@ def import_moodle_base(request):
                             c.save()
 
 
-            if orthvar_collisions:
+            if orthvar_collisions and not request.GET.get('force', False):
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
                 response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M.%S')
             else:

@@ -447,7 +447,7 @@ def import_csv_billet(request):
                 # Столбцы в CSV-файле
                 orthvar, orthvar_is_reconstructed, civil_equivalent, word_forms_list, antconc_query, author_in_csv, additional_info = row
 
-                if orthvar in idems:
+                if not request.GET.get('force', False) and orthvar in idems:
                     orthvar_collisions = True
                     csv_writer.writerow(row)
                 else:
@@ -499,7 +499,7 @@ def import_csv_billet(request):
                     ov.save()
                     idems.append(ov.idem)
 
-            if orthvar_collisions:
+            if not request.GET.get('force', False) and orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
                 response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M.%S')
             else:
