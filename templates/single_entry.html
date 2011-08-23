@@ -13,7 +13,7 @@
 {% block content %}
 
     {% if not intermed %}
-        {% if not entry.editor or user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" or user == entry.editor %}
+        {% if not entry.editor or user.is_admeditor or user == entry.editor %}
         {# user.groups.all|stringformat:"s" преобразует сам список объектов Group в текстовое представление. #}
         {# В результате получается строка вроде "[<Group: authors>, <Group: editors>]". #}
             <div style="position: absolute; top: -3px; left: -40px;">

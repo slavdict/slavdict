@@ -22,6 +22,19 @@ class CustomUser(User):
     # create_user и т.п.
     objects = UserManager()
 
+    # принадлежит ли пользователь к одной из привиллегированных
+    # групп пользователей (является суперпользователем,
+    # администратором или редактором [в отл. от авторов])
+    @property
+    def is_admeditor(self):
+        user_groups = [i[0] for i in self.groups.values_list('name')]
+        return self.is_superuser or 'editors' in user_groups or 'admins' in user_groups
+
+    @property
+    def is_editor(self):
+        user_groups = [i[0] for i in self.groups.values_list('name')]
+        return 'editors' in user_groups
+
     def __unicode__(self):
         try:
             first_name_initial = u' %s.' % self.first_name[0]

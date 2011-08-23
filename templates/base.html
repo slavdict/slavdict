@@ -16,7 +16,7 @@
                 <a href="{% url all_entries_url %}">Все статьи</a>
                 <!--<a href="/" class="home permanent">&nbsp;&nbsp;&nbsp;</a>-->
 
-                {% if user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" %}
+                {% if user.is_admeditor %}
                     <a href="{% url admin:dictionary_entry_add %}" rel="prefetch">+</a>
                 {% endif %}
 

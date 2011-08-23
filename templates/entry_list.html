@@ -52,14 +52,14 @@
             <tr class="entry-list-item">
 
                 <td class="eli-control first">
-                
+
                     <div class="shade">
                         <div class="center"></div>
                         <div class="left"></div>
                         <div class="right"></div>
                     </div>
 
-                    {% if not entry.editor or user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" or user == entry.editor %}
+                    {% if not entry.editor or user.is_admeditor or user == entry.editor %}
                         <a href="{% url intermediary_change_form_url entry.pk %}" class="icon edit">
                             <img src="{{ STATIC_URL }}transparent.png" alt="e" />
                         </a>
@@ -81,7 +81,7 @@
                 </td>
 
                 <td class="eli-entry">
-                
+
                     <div class="fade">
                         <div>
                             <a href="{{ entry.get_absolute_url }}" class="manual-entry">
@@ -120,7 +120,7 @@
                 </td>
 
                 <td class="eli-author">
-                
+
                     {% if entry.editor %}
                         <span class="ss">{{ entry.editor }}</span>
                     {% else %}
