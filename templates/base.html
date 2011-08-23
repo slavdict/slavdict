@@ -17,7 +17,7 @@
                 <!--<a href="/" class="home permanent">&nbsp;&nbsp;&nbsp;</a>-->
 
                 {% if user.is_superuser or 'editors' in user.groups.all|stringformat:"s" or 'admins' in user.groups.all|stringformat:"s" %}
-                    <a href="{% url UI:dictionary_entry_add %}">+</a>
+                    <a href="{% url admin:dictionary_entry_add %}" rel="prefetch">+</a>
                 {% endif %}
 
                 <form enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}">
