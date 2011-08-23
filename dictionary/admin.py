@@ -361,7 +361,7 @@ class AdminEntry(admin.ModelAdmin):
             'fields':  ('additional_info',),
             'classes': ('collapse',) }),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (None, { 'fields': ('editor', 'status') }),
+        (None, { 'fields': ('status',) }),
         )
     inlines = (
         OrthVar_Inline,
