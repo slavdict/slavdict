@@ -567,9 +567,9 @@ def entry_list(request, mine=False):
             # настроить COLLATION в Postgres. Когда это сделать удастся, надо будет в .filter использовать
             # `civil_equivalent__istartswith=GET_FIND`.
             FIND_LOWER = GET_FIND.lower()
-            FIND_UPPER = GET_FIND.capitalize()
+            FIND_CAPZD = GET_FIND.capitalize()
             entry_list = Entry.objects.filter(
-                    Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_UPPER)
+                    Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD)
                 ).order_by(*SORT_PARAMS) #filter(editor=request.user)
         else:
             GET_FIND = u''
@@ -624,3 +624,28 @@ def antconc2ucs8_converter(request):
     )
     context = { 'convertee': random.choice(examples) }
     return render_to_response('converter.html', context, RequestContext(request))
+
+@login_required
+def json_entries(request):
+    import json
+    GET_FIND = request.GET.get('find')
+    if GET_FIND:
+        FIND_LOWER = GET_FIND.lower()
+        FIND_CAPZD = GET_FIND.capitalize()
+        entries = Entry.objects.filter(
+                Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD)
+            ).order_by('civil_equivalent', 'homonym_order')
+        entries = [
+                {
+                'civil': e.civil_equivalent,
+                'entry': e.orth_vars[0].idem,
+                'pk': e.id,
+                'hom': e.homonym_order,
+                'pos': e.part_of_speech.tag if e.homonym_order else '',
+                'hint': e.homonym_gloss
+                }
+                for e in entries]
+        data = json.dumps(entries)
+    else:
+        return HttpResponse(mimetype='application/json')
+    return HttpResponse(data, mimetype='application/json')
