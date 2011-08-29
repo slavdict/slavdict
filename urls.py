@@ -38,7 +38,8 @@ urlpatterns += patterns('',
     url( r'^moodle-import/$', 'slavdict.moodle_import.views.import_moodle_base' ),
     url( r'^converter/$', 'slavdict.dictionary.views.antconc2ucs8_converter', name='converter' ),
 #    url( r'^dump/dictionary/$', 'slavdict.dumper.views.dumpdata' ),
-    url( r'^json/entries/', 'dictionary.views.json_entries'),
+    url( r'^json/entries/$', 'dictionary.views.json_entries'),
+    url( r'^test/multiselect/$', 'django.views.generic.simple.direct_to_template', {'template': 'multiselect.html'}),
 )
 
 urlpatterns += staticfiles_urlpatterns()

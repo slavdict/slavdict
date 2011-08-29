@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Мультиселект</title>
+</head>
+<body>
+    <style>
+.multiselect {
+    width: 200px;
+    min-height: 25px;
+    background-color: #ccc;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    padding: 2px 7px;
+    line-height: 25px;
+}
+.option {
+    min-height: 20px;
+    background-color: #fff;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    padding: 0 4px;
+    white-space: nowrap;
+}
+.x {
+    background-color: #a00;
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+    border-radius: 7px;
+    color: #fff;
+    line-height: 12px;
+    font-family: sans;
+    font-size: 10px;
+}
+.multiselect input {
+    width: 180px;
+    border-width: 0;
+    background-color: #ccc;
+    font-family: Verdana;
+    font-size: 12px;
+    color: #777;
+    outline-width: 0;
+}
+.multiselect input.empty {
+    font-size: 11px;
+    font-style: italic;
+    color: #999;
+}
+    </style>
+
+<!-- --------------------------------- -->
+    <select multiple="multiple"
+            data-bind="options: selectedEntries, selectedOptions: selectedEntries, optionsText: 'civil', optionsValue: 'pk'"></select>
+
+    <div class="multiselect"
+         data-bind="click: multiselectClick, template: {'name': 'entriesTemplate', 'foreach': selectedEntries}">
+        <input type="text" class="empty" placeholder="..." />
+    </div>
+
+    <script type="text/x-jquery-tmpl"
+            id="entriesTemplate">
+        <span class="option">
+            <span class="entry" data-bind="text: civil"></span>
+            <span class="hom" data-bind="text: hom"></span>
+            <span class="pos" data-bind="text: pos"></span>
+            <span class="hint" data-bind="text: hint"></span>
+            <span class="x">&times;</span></span>&#32;
+    </script>
+
+
+
+    <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.2.min.js'></script>
+    <script type='text/javascript' src='{{ STATIC_URL }}jquery-tmpl.js'></script>
+    <script type='text/javascript' src='{{ STATIC_URL }}knockout-1.2.1.js'></script>
+    <script>
+        var viewModel = {
+            entries: ko.observableArray(foundEntries),
+            selectedEntries: ko.observableArray(),
+            multiselectClick: function() {
+                var x = this.entries.pop();
+                this.selectedEntries.push(x);
+            },
+        };
+        ko.applyBindings(viewModel);
+    </script>
+
+</body>
+</html>
