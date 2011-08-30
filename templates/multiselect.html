@@ -48,6 +48,26 @@
     font-style: italic;
     color: #999;
 }
+.msList {
+    position: absolute;
+    top: 30px;
+    width: 180px;
+    max-height: 180px;
+    overflow-y: scroll;
+    padding: 0;
+}
+.msList ul {
+    margin: 0;
+    padding: 0;
+}
+.msList li {
+    list-style-type: none;
+    width: 140px;
+    display: block;
+    margin: 0;
+    padding: 0 4px;
+    border: 1px solid #ccc;
+}
     </style>
 
 <!-- --------------------------------- -->
@@ -59,46 +79,65 @@
 
     <table>
         <tr>
-            <td><input type="text" placeholder="..." data-bind="value: prefixQuery" /></td>
+            <td style="position: relative;">
+                <input type="text" placeholder="..." data-bind="value: prefixQuery, valueUpdate: 'afterkeydown'" />
+                <div class="msList">
+                    <ul data-bind="template: {name: 'listTemplate', foreach: entries}"></ul>
+                </div>
+            </td>
             <td>
                 <div class="multiselect"
-                     data-bind="click: multiselectClick,
-                      template: {'name': 'entriesTemplate', 'foreach': selectedEntries}"></div>
+                     data-bind="template: {name: 'entriesTemplate', foreach: selectedEntries}"></div>
             </td>
         </tr>
     </table>
 
+    Having followed the MVVM pattern and got an object-oriented representation of the UI's data and behaviors, you're in
+    a great position to sprinkle on extra behaviors in a very natural and convenient way.
 
-    <script type="text/x-jquery-tmpl"
-            id="entriesTemplate">
+    For example, if you're asked to display the total number of seats being reserved, you can implement that in just a
+    single place, and you don't have to write any extra code to make the seat count update when you add or remove items.
+    Just update the at the top of your view:
+
+        <script type="text/x-jquery-tmpl" id="entriesTemplate">
         <span class="option">
             <span class="entry" data-bind="text: civil"></span>
             <span class="hom" data-bind="text: hom"></span>
             <span class="pos" data-bind="text: pos"></span>
             <span class="hint" data-bind="text: hint"></span>
-            <span class="x">&times;</span></span>&#32;
+            <span class="x" data-bind="click: removeEntry">&times;</span></span>&#32;
+    </script>
+
+    <script type="text/x-jquery-tmpl" id="listTemplate">
+        <li>
+            <span class="entry" data-bind="text: civil"></span>
+            <span class="hom" data-bind="text: hom"></span>
+            <span class="pos" data-bind="text: pos"></span>
+            <span class="hint" data-bind="text: hint"></span>
+        </li>
     </script>
 
 
-
     <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.2.min.js'></script>
-    <script type='text/javascript' src='{{ STATIC_URL }}jquery-tmpl.js'></script>
+    <script type='text/javascript' src='{{ STATIC_URL }}jquery.tmpl.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-1.2.1.js'></script>
     <script>
         var viewModel = {
             prefixQuery: ko.observable(),
             entries: ko.observableArray(),
-            selectedEntries: ko.observableArray(),
-            multiselectClick: function() {
-                var x = this.entries.pop();
-                this.selectedEntries.push(x);
-            },
+            selectedEntries: ko.observableArray()
         };
         ko.applyBindings(viewModel);
 
         ko.dependentObservable(function() {
             if (this.lastEntriesRequest) this.lastEntriesRequest.abort();
-            this.lastEntriesRequest = $.get("/json/entries/", { find: this.prefixQuery() }, this.selectedEntries);
+            if (this.prefixQuery()) {
+                this.lastEntriesRequest = $.get(
+                        "/json/entries/",
+                        { find: this.prefixQuery() },
+                        this.entries
+                );
+            } else { this.entries.splice(0); }
         }, viewModel);
     </script>
 
