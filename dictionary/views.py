@@ -640,11 +640,13 @@ def json_entries(request):
                 'civil': e.civil_equivalent,
                 'entry': e.orth_vars[0].idem,
                 'pk': e.id,
-                'hom': e.homonym_order,
+                'hom': e.homonym_order_roman,
                 'pos': e.part_of_speech.tag if e.homonym_order else '',
                 'hint': e.homonym_gloss
                 }
                 for e in entries]
+        if len(entries) > 7:
+            entries = entries[:7]
         data = json.dumps(entries)
     else:
         return HttpResponse(mimetype='application/json')
