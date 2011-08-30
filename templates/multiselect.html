@@ -52,12 +52,22 @@
 
 <!-- --------------------------------- -->
     <select multiple="multiple"
-            data-bind="options: selectedEntries, selectedOptions: selectedEntries, optionsText: 'civil', optionsValue: 'pk'"></select>
+            data-bind="options: selectedEntries,
+                selectedOptions: selectedEntries,
+                optionsText: 'civil',
+                optionsValue: 'pk'"></select>
 
-    <div class="multiselect"
-         data-bind="click: multiselectClick, template: {'name': 'entriesTemplate', 'foreach': selectedEntries}">
-        <input type="text" class="empty" placeholder="..." />
-    </div>
+    <table>
+        <tr>
+            <td><input type="text" placeholder="..." data-bind="value: prefixQuery" /></td>
+            <td>
+                <div class="multiselect"
+                     data-bind="click: multiselectClick,
+                      template: {'name': 'entriesTemplate', 'foreach': selectedEntries}"></div>
+            </td>
+        </tr>
+    </table>
+
 
     <script type="text/x-jquery-tmpl"
             id="entriesTemplate">
@@ -76,7 +86,8 @@
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-1.2.1.js'></script>
     <script>
         var viewModel = {
-            entries: ko.observableArray(foundEntries),
+            prefixQuery: ko.observable(),
+            entries: ko.observableArray(),
             selectedEntries: ko.observableArray(),
             multiselectClick: function() {
                 var x = this.entries.pop();
@@ -84,6 +95,11 @@
             },
         };
         ko.applyBindings(viewModel);
+
+        ko.dependentObservable(function() {
+            if (this.lastEntriesRequest) this.lastEntriesRequest.abort();
+            this.lastEntriesRequest = $.get("/json/entries/", { find: this.prefixQuery() }, this.selectedEntries);
+        }, viewModel);
     </script>
 
 </body>
