@@ -33,6 +33,7 @@
     line-height: 12px;
     font-family: sans;
     font-size: 10px;
+    cursor: pointer;
 }
 .multiselect input {
     width: 180px;
@@ -68,7 +69,8 @@
     border: 1px solid #ccc;
     background-color: #fff;
 }
-.msList li.focused {
+.msList li.focused,
+.msList li:hover {
     background-color: #777;
     color: #fff;
 }
@@ -109,11 +111,11 @@
             <span class="hom" data-bind="text: hom"></span>
             <span class="pos" data-bind="text: pos"></span>
             <span class="hint" data-bind="text: hint"></span>
-            <span class="x" data-bind="click: removeEntry">&times;</span></span>&#32;
+            <span class="x" data-bind="click: function(){ viewModel.removeEntry($data); }">&times;</span></span>&#32;
     </script>
 
     <script type="text/x-jquery-tmpl" id="listTemplate">
-        <li data-bind="css: { focused: $data == viewModel.focusedEntry() }, click: function() { viewModel.focusedEntry($data) }">
+        <li data-bind="css: { focused: $data == viewModel.focusedEntry() }, click: function(){ viewModel.selectEntry($data); }">
             <span class="entry" data-bind="text: civil"></span>
             <span class="hom" data-bind="text: hom"></span>
             <span class="pos" data-bind="text: pos"></span>
@@ -130,7 +132,19 @@
             prefixQuery: ko.observable(),
             focusedEntry: ko.observable(),
             entries: ko.observableArray(),
-            selectedEntries: ko.observableArray()
+            selectedEntries: ko.observableArray(),
+            selectEntry: function(e) {
+                this.selectedEntries.push(e);
+                this.entries.splice(0);
+            },
+            removeEntry: function(e) {
+                for (var i=0; i<this.selectedEntries.length; i++) {
+                    if (e == this.selectedEntries[i]) {
+                        this.selectedEntries().splice(i, 1);
+                        break;
+                    }
+                }
+            }
         };
         ko.applyBindings(viewModel);
 
