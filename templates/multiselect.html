@@ -86,7 +86,8 @@
     <table>
         <tr>
             <td style="position: relative;">
-                <input type="text" placeholder="..." data-bind="value: prefixQuery, valueUpdate: 'afterkeydown'" />
+                <input type="text" placeholder="..." data-bind="value: prefixQuery, valueUpdate: 'afterkeydown',
+                event: { keydown: navigateList }, hasFocus: inputing" />
                 <div class="msList">
                     <ul data-bind="template: {name: 'listTemplate', foreach: entries}"></ul>
                 </div>
@@ -128,22 +129,51 @@
     <script type='text/javascript' src='{{ STATIC_URL }}jquery.tmpl.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-1.2.1.js'></script>
     <script>
+
+        ko.bindingHandlers.hasFocus = {
+            init: function(element, valueAccessor) {
+                $(element).focus(function() {
+                    var value = valueAccessor();
+                    value(true);
+                });
+                $(element).blur(function() {
+                    var value = valueAccessor();
+                    value(false);
+                });
+            },
+            update: function(element, valueAccessor) {
+                var value = valueAccessor();
+                if (ko.utils.unwrapObservable(value))
+                    element.focus();
+                else
+                    element.blur();
+            }
+        };
+
         var viewModel = {
             prefixQuery: ko.observable(),
+            inputing: ko.observable(),
             focusedEntry: ko.observable(),
             entries: ko.observableArray(),
             selectedEntries: ko.observableArray(),
             selectEntry: function(e) {
                 this.selectedEntries.push(e);
                 this.entries.splice(0);
+                this.prefixQuery('');
+                this.inputing(true);
+            },
+            navigateList: function(event){
+                if (event.which == 40) { // down arrow key
+
+                } else if (event.which == 38) { // up arrow key
+
+                } else {
+                    return true;
+                }
             },
             removeEntry: function(e) {
-                for (var i=0; i<this.selectedEntries.length; i++) {
-                    if (e == this.selectedEntries[i]) {
-                        this.selectedEntries().splice(i, 1);
-                        break;
-                    }
-                }
+                this.selectedEntries.remove(e);
+                this.inputing(true);
             }
         };
         ko.applyBindings(viewModel);
