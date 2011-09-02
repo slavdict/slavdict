@@ -77,6 +77,9 @@
     </style>
 
 <!-- --------------------------------- -->
+
+    <div data-bind="text: selectedIds"></div>
+
     <select multiple="multiple"
             data-bind="options: selectedEntries,
                 selectedOptions: selectedEntries,
@@ -163,19 +166,29 @@
                 this.inputing(true);
             },
             navigateList: function(event){
-                if (event.which == 40) { // down arrow key
-
-                } else if (event.which == 38) { // up arrow key
-
-                } else {
-                    return true;
-                }
+                if (this.entries) {
+                    var currentIndex = ko.utils.arrayIndexOf(this.entries(), this.focusedEntry());
+                    if (event.which == 40) { // down arrow key
+                        this.focusedEntry(this.entries[currentIndex <  1 ? this.entries.length - 1 : currentIndex - 1]);
+                    } else if (event.which == 38) { // up arrow key
+                        this.focusedEntry(this.entries[currentIndex < this.entries.length - 1 ? currentIndex + 1 : 0]);
+                    } else {
+                        return true;
+                    }
+                } else return true;
             },
             removeEntry: function(e) {
                 this.selectedEntries.remove(e);
                 this.inputing(true);
             }
         };
+        viewModel.selectedIds = ko.dependentObservable(function(){
+            var result = [];
+            ko.utils.arrayForEach(this.selectedEntries(), function(item) {
+                result.push(item.pk);
+            });
+            return result;
+        }, viewModel);
         ko.applyBindings(viewModel);
 
         ko.dependentObservable(function() {
@@ -183,10 +196,12 @@
             if (this.prefixQuery()) {
                 this.lastEntriesRequest = $.get(
                         "/json/entries/",
-                        { find: this.prefixQuery() },
+                        { find: this.prefixQuery(), ids: this.selectedIds() },
                         this.entries
                 );
-            } else { this.entries.splice(0); }
+            } else {
+                this.entries.splice(0);
+            }
         }, viewModel);
     </script>
 

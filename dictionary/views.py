@@ -629,25 +629,30 @@ def antconc2ucs8_converter(request):
 def json_entries(request):
     import json
     GET_FIND = request.GET.get('find')
+    GET_IDS = request.GET.get('ids[]', [])
+    print GET_IDS
     if GET_FIND:
         FIND_LOWER = GET_FIND.lower()
         FIND_CAPZD = GET_FIND.capitalize()
-        entries = Entry.objects.filter(
-                Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD)
-            ).order_by('civil_equivalent', 'homonym_order')
-        entries = [
-                {
-                'civil': e.civil_equivalent,
-                'entry': e.orth_vars[0].idem,
-                'pk': e.id,
-                'hom': e.homonym_order_roman,
-                'pos': e.part_of_speech.tag if e.homonym_order else '',
-                'hint': e.homonym_gloss
-                }
-                for e in entries]
-        if len(entries) > 7:
-            entries = entries[:7]
-        data = json.dumps(entries)
+        entries = Entry.objects \
+            .filter( Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD) ) \
+            .exclude(pk__in=GET_IDS) \
+            .order_by('civil_equivalent', 'homonym_order')[:7]
+        if entries:
+            entries = [
+                    {
+                    'civil': e.civil_equivalent,
+                    'entry': e.orth_vars[0].idem,
+                    'pk': e.id,
+                    'hom': e.homonym_order_roman,
+                    'pos': e.part_of_speech.tag if e.homonym_order else '',
+                    'hint': e.homonym_gloss
+                    }
+                    for e in entries]
+            data = json.dumps(entries)
+            response = HttpResponse(data, mimetype='application/json')
+        else:
+            response = HttpResponse(mimetype='application/json', status=404)
     else:
-        return HttpResponse(mimetype='application/json')
-    return HttpResponse(data, mimetype='application/json')
+        response = HttpResponse(mimetype='application/json', status=400)
+    return response
