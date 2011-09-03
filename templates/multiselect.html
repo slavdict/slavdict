@@ -69,35 +69,35 @@
     border: 1px solid #ccc;
     background-color: #fff;
 }
-.msList li.focused,
-.msList li:hover {
+.msList li.focused {
     background-color: #777;
     color: #fff;
 }
     </style>
 
-<!-- --------------------------------- -->
 
     <div data-bind="text: selectedIds"></div>
 
     <select multiple="multiple"
-            data-bind="options: selectedEntries,
-                selectedOptions: selectedEntries,
+            data-bind="options: selectedItems,
+                selectedOptions: selectedItems,
                 optionsText: 'civil',
                 optionsValue: 'pk'"></select>
 
     <table>
         <tr>
             <td style="position: relative;">
-                <input type="text" placeholder="..." data-bind="value: prefixQuery, valueUpdate: 'afterkeydown',
-                event: { keydown: navigateList }, hasFocus: inputing" />
+                <input type="text" placeholder="..."
+                       data-bind="value: searchPrefix, valueUpdate: 'afterkeydown',
+                                  event: { keydown: navigateFoundItems }, hasFocus: inputing"
+                />
                 <div class="msList">
-                    <ul data-bind="template: {name: 'listTemplate', foreach: entries}"></ul>
+                    <ul data-bind="template: {name: 'foundItemsTemplate', foreach: foundItems}"></ul>
                 </div>
             </td>
             <td>
                 <div class="multiselect"
-                     data-bind="template: {name: 'entriesTemplate', foreach: selectedEntries}"></div>
+                     data-bind="template: {name: 'selectedItemsTemplate', foreach: selectedItems}"></div>
             </td>
         </tr>
     </table>
@@ -109,21 +109,23 @@
     single place, and you don't have to write any extra code to make the seat count update when you add or remove items.
     Just update the at the top of your view:
 
-    <script type="text/x-jquery-tmpl" id="entriesTemplate">
+    <script type="text/x-jquery-tmpl" id="selectedItemsTemplate">
         <span class="option">
             <span class="entry" data-bind="text: civil"></span>
             <span class="hom" data-bind="text: hom"></span>
             <span class="pos" data-bind="text: pos"></span>
             <span class="hint" data-bind="text: hint"></span>
-            <span class="x" data-bind="click: function(){ viewModel.removeEntry($data); }">&times;</span></span>&#32;
+            <span class="x" data-bind="click: function(){ viewModel.deselectItem($data); }">&times;</span></span>&#32;
     </script>
 
-    <script type="text/x-jquery-tmpl" id="listTemplate">
-        <li data-bind="css: { focused: $data == viewModel.focusedEntry() }, click: function(){ viewModel.selectEntry($data); }">
+    <script type="text/x-jquery-tmpl" id="foundItemsTemplate">
+        <li data-bind="css: { focused: pk == viewModel.focusedItem().pk },
+                       click: function(){ viewModel.selectItem($data); }">
             <span class="entry" data-bind="text: civil"></span>
             <span class="hom" data-bind="text: hom"></span>
             <span class="pos" data-bind="text: pos"></span>
             <span class="hint" data-bind="text: hint"></span>
+            ${data}
         </li>
     </script>
 
@@ -132,6 +134,15 @@
     <script type='text/javascript' src='{{ STATIC_URL }}jquery.tmpl.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-1.2.1.js'></script>
     <script>
+
+        var Item = function(civil, entry, pk, hom, pos, hint) {
+            this.civil = civil;
+            this.entry = entry;
+            this.pk = pk;
+            this.hom = hom;
+            this.pos = pos;
+            this.hint = hint;
+        }
 
         ko.bindingHandlers.hasFocus = {
             init: function(element, valueAccessor) {
@@ -154,55 +165,57 @@
         };
 
         var viewModel = {
-            prefixQuery: ko.observable(),
+
+            searchPrefix: ko.observable(),
             inputing: ko.observable(),
-            focusedEntry: ko.observable(),
-            entries: ko.observableArray(),
-            selectedEntries: ko.observableArray(),
-            selectEntry: function(e) {
-                this.selectedEntries.push(e);
-                this.entries.splice(0);
-                this.prefixQuery('');
+            focusedItem: ko.observable( {pk: 0} ),
+            foundItems: ko.observableArray(),
+            selectedItems: ko.observableArray(),
+
+            selectItem: function(item) {
+                this.selectedItems.push(item);
+                this.foundItems.splice(0);
+                this.searchPrefix('');
                 this.inputing(true);
             },
-            navigateList: function(event){
-                if (this.entries) {
-                    var currentIndex = ko.utils.arrayIndexOf(this.entries(), this.focusedEntry());
+            deselectItem: function(item) {
+                this.selectedItems.remove(item);
+                this.inputing(true);
+            },
+            navigateFoundItems: function(event){
+                if (this.foundItems()) {
                     if (event.which == 40) { // down arrow key
-                        this.focusedEntry(this.entries[currentIndex <  1 ? this.entries.length - 1 : currentIndex - 1]);
+                        this.focusedItem(this.foundItems[1]);
                     } else if (event.which == 38) { // up arrow key
-                        this.focusedEntry(this.entries[currentIndex < this.entries.length - 1 ? currentIndex + 1 : 0]);
+                        this.focusedItem(this.foundItems[0]);
                     } else {
                         return true;
                     }
                 } else return true;
-            },
-            removeEntry: function(e) {
-                this.selectedEntries.remove(e);
-                this.inputing(true);
             }
         };
+        
         viewModel.selectedIds = ko.dependentObservable(function(){
             var result = [];
-            ko.utils.arrayForEach(this.selectedEntries(), function(item) {
+            ko.utils.arrayForEach(this.selectedItems(), function(item) {
                 result.push(item.pk);
             });
             return result;
         }, viewModel);
-        ko.applyBindings(viewModel);
 
         ko.dependentObservable(function() {
-            if (this.lastEntriesRequest) this.lastEntriesRequest.abort();
-            if (this.prefixQuery()) {
-                this.lastEntriesRequest = $.get(
-                        "/json/entries/",
-                        { find: this.prefixQuery(), ids: this.selectedIds() },
-                        this.entries
-                );
+            var dataToSend;
+            if (this.lastItemsRequest) this.lastItemsRequest.abort();
+            if (this.searchPrefix()) {
+                dataToSend = { find: this.searchPrefix() };
+                if (this.selectedIds().length) dataToSend.ids = this.selectedIds();
+                this.lastItemsRequest = $.get("/json/entries/", dataToSend, this.foundItems);
             } else {
-                this.entries.splice(0);
+                this.foundItems.splice(0);
             }
         }, viewModel);
+
+        ko.applyBindings(viewModel);
     </script>
 
 </body>
