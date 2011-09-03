@@ -629,8 +629,12 @@ def antconc2ucs8_converter(request):
 def json_entries(request):
     import json
     GET_FIND = request.GET.get('find')
-    GET_IDS = request.GET.get('ids[]', [])
-    print GET_IDS
+    GET_ID = request.GET.get('ids')
+    if GET_ID:
+        GET_IDS = [GET_ID]
+    else:
+        GET_IDS = request.GET.getlist('ids[]')
+        GET_IDS = [id for id in GET_IDS if id]
     if GET_FIND:
         FIND_LOWER = GET_FIND.lower()
         FIND_CAPZD = GET_FIND.capitalize()
