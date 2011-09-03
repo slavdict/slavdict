@@ -642,21 +642,18 @@ def json_entries(request):
             .filter( Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD) ) \
             .exclude(pk__in=GET_IDS) \
             .order_by('civil_equivalent', 'homonym_order')[:7]
-        if entries:
-            entries = [
-                    {
-                    'civil': e.civil_equivalent,
-                    'entry': e.orth_vars[0].idem,
-                    'pk': e.id,
-                    'hom': e.homonym_order_roman,
-                    'pos': e.part_of_speech.tag if e.homonym_order else '',
-                    'hint': e.homonym_gloss
-                    }
-                    for e in entries]
-            data = json.dumps(entries)
-            response = HttpResponse(data, mimetype='application/json')
-        else:
-            response = HttpResponse(mimetype='application/json', status=404)
+        entries = [
+                {
+                'civil': e.civil_equivalent,
+                'entry': e.orth_vars[0].idem,
+                'pk': e.id,
+                'hom': e.homonym_order_roman,
+                'pos': e.part_of_speech.tag if e.homonym_order else '',
+                'hint': e.homonym_gloss,
+                }
+                for e in entries]
+        data = json.dumps(entries)
+        response = HttpResponse(data, mimetype='application/json')
     else:
         response = HttpResponse(mimetype='application/json', status=400)
     return response
