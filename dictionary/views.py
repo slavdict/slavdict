@@ -650,8 +650,9 @@ def json_entries(request):
                 'hom': e.homonym_order_roman,
                 'pos': e.part_of_speech.tag if e.homonym_order else '',
                 'hint': e.homonym_gloss,
+                'index': n,
                 }
-                for e in entries]
+                for n, e in enumerate(entries)]
         data = json.dumps(entries)
         response = HttpResponse(data, mimetype='application/json')
     else:

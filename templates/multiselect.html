@@ -77,6 +77,7 @@
 
 
     <div data-bind="text: selectedIds"></div>
+    <div data-bind="text: focusedIndex"></div>
 
     <select multiple="multiple"
             data-bind="options: selectedItems,
@@ -92,7 +93,8 @@
                                   event: { keydown: navigateFoundItems }, hasFocus: inputing"
                 />
                 <div class="msList">
-                    <ul data-bind="template: {name: 'foundItemsTemplate', foreach: foundItems}"></ul>
+                    <ul data-bind="template: {name: 'foundItemsTemplate', foreach: foundItems,
+                                   templateOptions: { fi: focusedIndex() }}"></ul>
                 </div>
             </td>
             <td>
@@ -119,13 +121,12 @@
     </script>
 
     <script type="text/x-jquery-tmpl" id="foundItemsTemplate">
-        <li data-bind="css: { focused: pk == viewModel.focusedItem().pk },
+        <li data-bind="css: { focused: $data.index == viewModel.focusedIndex() },
                        click: function(){ viewModel.selectItem($data); }">
             <span class="entry" data-bind="text: civil"></span>
             <span class="hom" data-bind="text: hom"></span>
             <span class="pos" data-bind="text: pos"></span>
             <span class="hint" data-bind="text: hint"></span>
-            ${data}
         </li>
     </script>
 
@@ -134,15 +135,6 @@
     <script type='text/javascript' src='{{ STATIC_URL }}jquery.tmpl.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-1.2.1.js'></script>
     <script>
-
-        var Item = function(civil, entry, pk, hom, pos, hint) {
-            this.civil = civil;
-            this.entry = entry;
-            this.pk = pk;
-            this.hom = hom;
-            this.pos = pos;
-            this.hint = hint;
-        }
 
         ko.bindingHandlers.hasFocus = {
             init: function(element, valueAccessor) {
@@ -168,13 +160,14 @@
 
             searchPrefix: ko.observable(),
             inputing: ko.observable(),
-            focusedItem: ko.observable( {pk: 0} ),
+            focusedIndex: ko.observable(-1),
             foundItems: ko.observableArray(),
             selectedItems: ko.observableArray(),
 
             selectItem: function(item) {
                 this.selectedItems.push(item);
                 this.foundItems.splice(0);
+                this.focusedIndex(-1);
                 this.searchPrefix('');
                 this.inputing(true);
             },
@@ -182,12 +175,22 @@
                 this.selectedItems.remove(item);
                 this.inputing(true);
             },
+            moveFocusDown: function() {
+                var fi = this.focusedIndex();
+                this.focusedIndex(fi < this.foundItems().length - 1 ? fi + 1 : 0);
+            },
+            moveFocusUp: function() {
+                var fi = this.focusedIndex();
+                this.focusedIndex(fi < 1 ? this.foundItems().length - 1 : fi - 1);
+            },
             navigateFoundItems: function(event){
                 if (this.foundItems()) {
                     if (event.which == 40) { // down arrow key
-                        this.focusedItem(this.foundItems[1]);
+                        this.moveFocusDown();
                     } else if (event.which == 38) { // up arrow key
-                        this.focusedItem(this.foundItems[0]);
+                        this.moveFocusUp();
+                    } else if (event.which == 13) { // enter key
+                        if (this.focusedItem()) this.selectItem(this.focusedItem());
                     } else {
                         return true;
                     }
@@ -197,14 +200,16 @@
         
         viewModel.selectedIds = ko.dependentObservable(function(){
             var result = [];
-            ko.utils.arrayForEach(this.selectedItems(), function(item) {
-                result.push(item.pk);
-            });
+            ko.utils.arrayForEach(this.selectedItems(), function(item) { result.push(item.pk); });
             return result;
         }, viewModel);
 
+        viewModel.focusedItem = ko.dependentObservable(function(){
+            return (this.focusedIndex() > -1) ? this.foundItems()[this.focusedIndex()] : null;
+        }, viewModel);
+
         ko.dependentObservable(function() {
-            var dataToSend;
+            var dataToSend, receivedData = [];
             if (this.lastItemsRequest) this.lastItemsRequest.abort();
             if (this.searchPrefix()) {
                 dataToSend = { find: this.searchPrefix() };
