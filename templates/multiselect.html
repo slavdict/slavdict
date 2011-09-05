@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Мультиселект</title>
+    <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
     <style>
@@ -73,14 +74,13 @@
     background-color: #777;
     color: #fff;
 }
+.hidden { display: none; }
     </style>
 
 <form action="" method="get">
     <select multiple="multiple"
-            name="entries"
+            name="entries" class="hidden"
             data-bind="selectedOptionsWithTemplate: selectedItems">
-        <option selected="selected" value="1">Аарон   </option>
-        <option selected="selected" value="358">август II сущ. титул</option>
     </select>
     <input type="submit" />
 </form>
@@ -112,10 +112,10 @@
 
     <script type="text/x-jquery-tmpl" id="selectedItemsTemplate">
         <span class="option">
-            <span class="entry" data-bind="text: entry"></span>
+            <span class="cslav" data-bind="text: entry"></span>
             <span class="hom" data-bind="text: hom"></span>
-            <span class="pos" data-bind="text: pos"></span>
-            <span class="hint" data-bind="text: hint"></span>
+            <span class="pos ss" data-bind="text: pos"></span>
+            <span class="hint ss caps" data-bind="text: hint"></span>
             <span class="x" data-bind="click: function(){ viewModel.deselectItem($data); }">&times;</span></span>&#32;
     </script>
 
@@ -123,10 +123,10 @@
         <li data-bind="css: { focused: $data.index == viewModel.focusedIndex() },
                        event: { mouseover: function(){ viewModel.focusedIndex($data.index); } },
                        click: function(){ viewModel.selectItem($data); }">
-            <span class="entry" data-bind="text: entry"></span>
+            <span class="cslav" data-bind="text: entry"></span>
             <span class="hom" data-bind="text: hom"></span>
-            <span class="pos" data-bind="text: pos"></span>
-            <span class="hint" data-bind="text: hint"></span>
+            <span class="pos ss" data-bind="text: pos"></span>
+            <span class="hint ss caps" data-bind="text: hint"></span>
         </li>
     </script>
 
@@ -165,10 +165,11 @@
                     var txt = $.trim(x.text()).split(" ");
                     var item = {
                         pk: val,
-                        entry: txt[0],
-                        hom: (txt.length > 1) ? txt[1] : "",
-                        pos: (txt.length > 2) ? txt[2] : "",
-                        hint: (txt.length > 3) ? txt[3] : ""
+                        civil: txt[0],
+                        entry: txt[1].replace(/^\((.+)\)$/, "$1"),
+                        hom: (txt.length > 2) ? txt[2] : "",
+                        pos: (txt.length > 3) ? txt[3] : "",
+                        hint: (txt.length > 4) ? txt[4] : ""
                     };
                     list.push(item);
                 });
@@ -176,7 +177,7 @@
             update: function(element, valueAccessor) {
                 var list = ko.utils.unwrapObservable(valueAccessor());
                 $(element).contents().remove();
-                $.tmpl('<option selected="selected" value="${pk}">${entry} ${hom} ${pos} ${hint}</option>', list)
+                $.tmpl('<option selected="selected" value="${pk}">${civil} (${entry}) ${hom} ${pos} ${hint}</option>', list)
                     .appendTo(element);
             }
         };
