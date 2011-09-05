@@ -77,8 +77,8 @@
 
 <form action="" method="get">
     <select multiple="multiple"
-            name="entries" 
-            data-bind="template: {name: 'selectedOptionsTemplate', foreach: selectedItems}">
+            name="entries"
+            data-bind="selectedOptionsWithTemplate: selectedItems">
         <option selected="selected" value="1">Аарон   </option>
         <option selected="selected" value="358">август II сущ. титул</option>
     </select>
@@ -110,14 +110,9 @@
     single place, and you don't have to write any extra code to make the seat count update when you add or remove items.
     Just update the at the top of your view:
 
-
-    <script type="text/x-jquery-tmpl" id="selectedOptionsTemplate">
-        <option selected="selected" value="${pk}">${civil} ${hom} ${pos} ${hint}</option>
-    </script>
-
     <script type="text/x-jquery-tmpl" id="selectedItemsTemplate">
         <span class="option">
-            <span class="entry" data-bind="text: civil"></span>
+            <span class="entry" data-bind="text: entry"></span>
             <span class="hom" data-bind="text: hom"></span>
             <span class="pos" data-bind="text: pos"></span>
             <span class="hint" data-bind="text: hint"></span>
@@ -128,7 +123,7 @@
         <li data-bind="css: { focused: $data.index == viewModel.focusedIndex() },
                        event: { mouseover: function(){ viewModel.focusedIndex($data.index); } },
                        click: function(){ viewModel.selectItem($data); }">
-            <span class="entry" data-bind="text: civil"></span>
+            <span class="entry" data-bind="text: entry"></span>
             <span class="hom" data-bind="text: hom"></span>
             <span class="pos" data-bind="text: pos"></span>
             <span class="hint" data-bind="text: hint"></span>
@@ -161,12 +156,28 @@
             }
         };
 
-        ko.bindingHandlers.newSelectedOptions = {
+        ko.bindingHandlers.selectedOptionsWithTemplate = {
             init: function(element, valueAccessor) {
-
+                var list = valueAccessor();
+                $(element).find('option:selected').each(function(){
+                    var x = $(this);
+                    var val = x.val();
+                    var txt = $.trim(x.text()).split(" ");
+                    var item = {
+                        pk: val,
+                        entry: txt[0],
+                        hom: (txt.length > 1) ? txt[1] : "",
+                        pos: (txt.length > 2) ? txt[2] : "",
+                        hint: (txt.length > 3) ? txt[3] : ""
+                    };
+                    list.push(item);
+                });
             },
             update: function(element, valueAccessor) {
-
+                var list = ko.utils.unwrapObservable(valueAccessor());
+                $(element).contents().remove();
+                $.tmpl('<option selected="selected" value="${pk}">${entry} ${hom} ${pos} ${hint}</option>', list)
+                    .appendTo(element);
             }
         };
 
@@ -174,6 +185,7 @@
 
             searchPrefix: ko.observable(),
             inputing: ko.observable(),
+            items: ko.observableArray(),
             foundItems: ko.observableArray(),
             selectedItems: ko.observableArray(),
             focusedIndex: ko.observable(-1),
@@ -211,7 +223,7 @@
                 } else return true;
             }
         };
-        
+
         viewModel.selectedIds = ko.dependentObservable(function(){
             var result = [];
             ko.utils.arrayForEach(this.selectedItems(), function(item) { result.push(item.pk); });
