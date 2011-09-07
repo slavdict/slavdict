@@ -645,7 +645,7 @@ def json_entries(request):
         entries = [
                 {
                 'civil': e.civil_equivalent,
-                'entry': e.orth_vars[0].idem_ucs,
+                'headword': e.orth_vars[0].idem_ucs,
                 'pk': e.id,
                 'hom': e.homonym_order_roman,
                 'pos': e.part_of_speech.tag if e.homonym_order else '',

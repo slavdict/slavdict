@@ -6,7 +6,7 @@
 </head>
 <body>
     <style>
-.multiselect {
+.multicomplete--selectedItems {
     width: 200px;
     min-height: 25px;
     background-color: #ccc;
@@ -16,16 +16,16 @@
     padding: 2px 7px;
     line-height: 25px;
 }
-.option {
+.multicomplete--sI {
     min-height: 20px;
     background-color: #fff;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
     padding: 0 4px;
-    white-space: nowrap;
+
 }
-.x {
+.multicomplete--sI--deselect {
     background-color: #a00;
     -webkit-border-radius: 7px;
     -moz-border-radius: 7px;
@@ -36,8 +36,8 @@
     font-size: 10px;
     cursor: pointer;
 }
-.multiselect input {
-    width: 180px;
+.multicomplete--search {
+    width: 240px;
     border-width: 0;
     background-color: #ccc;
     font-family: Verdana;
@@ -45,23 +45,11 @@
     color: #777;
     outline-width: 0;
 }
-.multiselect input.empty {
-    font-size: 11px;
-    font-style: italic;
-    color: #999;
-}
-.msList {
-    position: absolute;
-    top: 30px;
-    width: 180px;
-    max-height: 180px;
-    padding: 0;
-}
-.msList ul {
+.multicomplete--foundItems {
     margin: 0;
     padding: 0;
 }
-.msList li {
+.multicomplete--fI {
     list-style-type: none;
     width: 140px;
     display: block;
@@ -69,8 +57,10 @@
     padding: 0 4px;
     border: 1px solid #ccc;
     background-color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
 }
-.msList li.focused {
+.multicomplete--fI.focused {
     background-color: #777;
     color: #fff;
 }
@@ -79,26 +69,32 @@
 
 <form action="" method="get">
     <select multiple="multiple"
-            name="entries" class="hidden"
+            name="entries" class="y-multicomplete"
             data-bind="selectedOptionsWithTemplate: selectedItems">
     </select>
     <input type="submit" />
 </form>
 
-    <table>
+    <table class="layout multicomplete">
         <tr>
-            <td style="position: relative;">
-                <input type="text" placeholder="..."
-                       data-bind="value: searchPrefix, valueUpdate: 'afterkeydown',
-                                  event: { keydown: navigateFoundItems }, hasFocus: inputing"
-                />
-                <div class="msList">
-                    <ul data-bind="template: {name: 'foundItemsTemplate', foreach: foundItems}"></ul>
-                </div>
+            <td>
+                <input type="text"
+                 class="multicomplete--search"
+                 placeholder="..."
+                 data-bind="
+                 value: searchPrefix,
+                 valueUpdate: 'afterkeydown',
+                 event: { keydown: navigateFoundItems },
+                 hasFocus: inputing" />
+
+                <ul class="multicomplete--foundItems"
+                 data-bind="template: { name: 'foundItemsTemplate', foreach: foundItems }"
+                 ></ul>
             </td>
             <td>
-                <div class="multiselect"
-                     data-bind="template: {name: 'selectedItemsTemplate', foreach: selectedItems}"></div>
+                <ul class="multicomplete--selectedItems"
+                 data-bind="template: {name: 'selectedItemsTemplate', foreach: selectedItems}"
+                 ></ul>
             </td>
         </tr>
     </table>
@@ -111,22 +107,25 @@
     Just update the at the top of your view:
 
     <script type="text/x-jquery-tmpl" id="selectedItemsTemplate">
-        <span class="option">
-            <span class="cslav" data-bind="text: entry"></span>
-            <span class="hom" data-bind="text: hom"></span>
-            <span class="pos ss" data-bind="text: pos"></span>
-            <span class="hint ss caps" data-bind="text: hint"></span>
-            <span class="x" data-bind="click: function(){ viewModel.deselectItem($data); }">&times;</span></span>&#32;
+        <li class="multicomplete--sI">
+            <span class="multicomplete--sI--headword" data-bind="text: headword"></span>
+            <span class="multicomplete--sI--homonym" data-bind="text: hom"></span>
+            <span class="multicomplete--sI--pOS" data-bind="text: pos"></span>
+            <span class="multicomplete--sI--hint" data-bind="text: hint"></span>
+            <span class="multicomplete--sI--deselect"
+             data-bind="click: function(){ viewModel.deselectItem($data); }">&times;</span>
+        </li>
     </script>
 
     <script type="text/x-jquery-tmpl" id="foundItemsTemplate">
-        <li data-bind="css: { focused: $data.index == viewModel.focusedIndex() },
-                       event: { mouseover: function(){ viewModel.focusedIndex($data.index); } },
-                       click: function(){ viewModel.selectItem($data); }">
-            <span class="cslav" data-bind="text: entry"></span>
-            <span class="hom" data-bind="text: hom"></span>
-            <span class="pos ss" data-bind="text: pos"></span>
-            <span class="hint ss caps" data-bind="text: hint"></span>
+        <li class="multicomplete--fI"
+         data-bind="css: { focused: $data.index == viewModel.focusedIndex() },
+         event: { mouseover: function(){ viewModel.focusedIndex($data.index); } },
+         click: function(){ viewModel.selectItem($data); }">
+            <span class="multicomplete--fI--headword" data-bind="text: headword"></span>
+            <span class="multicomplete--fI--homonym" data-bind="text: hom"></span>
+            <span class="multicomplete--fI--pOS" data-bind="text: pos"></span>
+            <span class="multicomplete--fI--hint" data-bind="text: hint"></span>
         </li>
     </script>
 
@@ -166,7 +165,7 @@
                     var item = {
                         pk: val,
                         civil: txt[0],
-                        entry: txt[1].replace(/^\((.+)\)$/, "$1"),
+                        headword: txt[1].replace(/^\((.+)\)$/, "$1"),
                         hom: (txt.length > 2) ? txt[2] : "",
                         pos: (txt.length > 3) ? txt[3] : "",
                         hint: (txt.length > 4) ? txt[4] : ""
@@ -177,7 +176,10 @@
             update: function(element, valueAccessor) {
                 var list = ko.utils.unwrapObservable(valueAccessor());
                 $(element).contents().remove();
-                $.tmpl('<option selected="selected" value="${pk}">${civil} (${entry}) ${hom} ${pos} ${hint}</option>', list)
+                $.tmpl(
+                    '<option selected="selected" value="${pk}">' +
+                    '${civil} (${headword}) ${hom} ${pos} ${hint}' +
+                    '</option>', list)
                     .appendTo(element);
             }
         };
