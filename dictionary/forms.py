@@ -106,7 +106,7 @@ class GrEqForExForm(ModelForm):
         }
 
 
-from django.forms.widgets import Widget
+from django.forms.widgets import Widget, SelectMultiple
 from django.utils.safestring import mark_safe
 
 class RawValueWidget(Widget):
@@ -124,3 +124,7 @@ class BilletImportForm(forms.Form):
         if not uploaded_file.name.upper().endswith('.CSV'):
             raise forms.ValidationError(u'Выбранный вами файл «%s», похоже, не является CSV-файлом.' % uploaded_file.name)
         return cleaned_data
+
+
+class SelectMultipleAutocomplete(SelectMultiple):
+    pass
