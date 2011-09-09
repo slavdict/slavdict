@@ -1,0 +1,57 @@
+.MC--sIs {
+  width: 200px;
+  min-height: 25px;
+  background-color: #cccccc;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  padding: 2px 7px;
+  line-height: 25px; }
+
+.MC--sI {
+  min-height: 20px;
+  background-color: white;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  padding: 0 4px; }
+
+.MC--sI--deselect {
+  background-color: #aa0000;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+  color: white;
+  line-height: 12px;
+  font-family: sans;
+  font-size: 10px;
+  cursor: pointer; }
+
+.multicomplete--search,
+.MC--search {
+  width: 240px;
+  border-width: 0;
+  background-color: #cccccc;
+  font-family: Verdana;
+  font-size: 12px;
+  color: #777777;
+  outline-width: 0; }
+
+.MC--fIs {
+  margin: 0;
+  padding: 0; }
+
+.MC--fI {
+  list-style-type: none;
+  width: 140px;
+  display: block;
+  margin: 0;
+  padding: 0 4px;
+  border: 1px solid #cccccc;
+  background-color: white;
+  cursor: pointer;
+  white-space: nowrap; }
+
+.MC--fI-focused {
+  background-color: #777777;
+  color: white; }

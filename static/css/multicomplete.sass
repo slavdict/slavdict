@@ -1,0 +1,67 @@
+@mixin roundedCorners($radius)
+    -moz-border-radius: $radius
+    -webkit-border-radius: $radius
+    border-radius: $radius
+
+//.multicomplete--selectedItems,
+.MC--sIs
+    width: 200px
+    min-height: 25px
+    background-color: #ccc
+    @include roundedCorners(4px)
+    padding: 2px 7px
+    line-height: 25px
+
+//.multicomplete--selectedItems--item,
+//.MC--sIs--i,
+//.multicomplete--selectedItem,
+.MC--sI
+    min-height: 20px
+    background-color: #fff
+    @include roundedCorners(4px)
+    padding: 0 4px
+
+//.multicomplete--selectedItems--item--deselect,
+.MC--sI--deselect
+    background-color: #a00
+    @include roundedCorners(7px)
+    color: #fff
+    line-height: 12px
+    font-family: sans
+    font-size: 10px
+    cursor: pointer
+
+.multicomplete--search,
+.MC--search
+    width: 240px
+    border-width: 0
+    background-color: #ccc
+    font-family: Verdana
+    font-size: 12px
+    color: #777
+    outline-width: 0
+
+//.multicomplete--foundItems,
+.MC--fIs
+    margin: 0
+    padding: 0
+
+//.multicomplete--foundItems--item,
+//.MC--fIs--i,
+//.multicomplete--foundItem,
+.MC--fI
+    list-style-type: none
+    width: 140px
+    display: block
+    margin: 0
+    padding: 0 4px
+    border: 1px solid #ccc
+    background-color: #fff
+    cursor: pointer
+    white-space: nowrap
+
+//.multicomplete--foundItem-focused,
+.MC--fI-focused
+    background-color: #777
+    color: #fff
+
