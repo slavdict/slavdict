@@ -443,9 +443,27 @@ def import_csv_billet(request):
             orthvar_collisions = False
             csv_authors = {u'': None}
 
+            import re
+            bar = re.compile(r"\s[/\|\\]\s", re.MULTILINE + re.UNICODE)
             for row in csv_reader:
                 # Столбцы в CSV-файле
-                orthvar, orthvar_is_reconstructed, civil_equivalent, word_forms_list, antconc_query, author_in_csv, additional_info = row
+                orthvars_info, civil_equivalent, word_forms_list, antconc_query, author_in_csv, additional_info = row
+
+                # Обработка поля с орфографическими вариантами.
+                # Орфографические варианты разделяются любой чертой (прямой, косой или обратной косой).
+                # Звездочка означает, что орфогр.вариант был реконструирован. Вопросительный знак --
+                # сомнения в правильности реконструкции. Черты и знаки могут отделяться друг от друга
+                # и от орф.вариантов любым количеством пробельного материала.
+                _list = bar.split(orthvars_info)
+                orthvars_list = [
+                        (
+                            i.strip(" \r\n\t*?"),
+                            False if i.find("*") < 0 else True,
+                            False if i.find("?") < 0 else True
+                        )
+                        for i in _list
+                ]
+
 
                 if not request.GET.get('force', False) and orthvar in idems:
                     orthvar_collisions = True
