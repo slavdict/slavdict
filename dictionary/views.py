@@ -438,13 +438,17 @@ def import_csv_billet(request):
 
             idems = OrthographicVariant.objects.all().values_list('idem') # Список списков, каждый из которых содержит один элемент.
             idems = [x[0] for x in idems] # Переходим от списка списков к списку самих элементов (орфографических вариантов).
+            idems = set(idems) # Оформляем орф.варианты в виде множества, а не списка
             authors = CustomUser.objects.all()
 
             orthvar_collisions = False
             csv_authors = {u'': None}
 
             import re
+            # Регулярное выражение для отыскания любой черты (прямой, косой, обратной косой),
+            # обрамленной любым количеством пробельного материала.
             bar = re.compile(r"\s[/\|\\]\s", re.MULTILINE + re.UNICODE)
+
             for row in csv_reader:
                 # Столбцы в CSV-файле
                 orthvars_info, civil_equivalent, word_forms_list, antconc_query, author_in_csv, additional_info = row
@@ -463,9 +467,9 @@ def import_csv_billet(request):
                         )
                         for i in _list
                 ]
+                orthvars_set = set([i[0] for i in orthvars_list])
 
-
-                if not request.GET.get('force', False) and orthvar in idems:
+                if not request.GET.get('force', False) and idems.intersection(orthvars_set):
                     orthvar_collisions = True
                     csv_writer.writerow(row)
                 else:
@@ -491,7 +495,7 @@ def import_csv_billet(request):
                     # преобразовываться. А для слов с титлами или буквотитлами гражданку лучше указывать, чтобы
                     # впоследствии не надо было её уточнять из форм вроде "бл*годетель".
                     if not civil_equivalent.strip():
-                        civil_equivalent = civilrus_convert(orthvar)
+                        civil_equivalent = civilrus_convert(orthvars_list[0][0])
 
                     from_csv = {
                         'word_forms_list': word_forms_list,
@@ -505,17 +509,15 @@ def import_csv_billet(request):
                     entry = Entry.objects.create(**entry_args)
                     entry.save()
 
-                    x = orthvar_is_reconstructed.strip()
-                    if x==u'да':
-                        orthvar_is_reconstructed = True
-                    elif x==u'нет' or not x:
-                        orthvar_is_reconstructed = False
-                    else:
-                        raise NameError(u"Поле реконструкции заполнено неправильно")
-                    ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar,
-                                                            is_reconstructed=orthvar_is_reconstructed)
-                    ov.save()
-                    idems.append(ov.idem)
+                    for i in orthvars_list:
+                        orthvar = i[0]
+                        orthvar_is_reconstructed = i[1]
+                        orthvar_is_questionable = i[2]
+                        ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar,
+                                                                is_reconstructed=orthvar_is_reconstructed,
+                                                                is_approved=orthvar_is_questionable)
+                        ov.save()
+                        idems.add(orthvar)
 
             if not request.GET.get('force', False) and orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
