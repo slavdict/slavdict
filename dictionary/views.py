@@ -469,7 +469,13 @@ def import_csv_billet(request):
                 ]
                 orthvars_set = set([i[0] for i in orthvars_list])
 
-                if not request.GET.get('force', False) and idems.intersection(orthvars_set):
+                # GET-параметр "force":
+                # =add    -- добавить лексему, даже если похожие лексемы уже есть.
+                # =update -- если похожая лексема всего одна, то дополнить информацию по ней из CSV-файла.
+                force = request.GET.get('force', False)
+                intersection = idems.intersection(orthvars_set)
+
+                if not force and intersection:
                     orthvar_collisions = True
                     csv_writer.writerow(row)
                 else:
@@ -504,20 +510,24 @@ def import_csv_billet(request):
                         'editor': author,
                         'additional_info': additional_info,
                     }
-                    entry_args.update(from_csv)
 
-                    entry = Entry.objects.create(**entry_args)
-                    entry.save()
+                    if force=='update':
+                        raise NameError(u"Поддержка GET-параметра 'force' со значением 'update' ещё не реализована.")
+                    else:
+                        entry_args.update(from_csv)
 
-                    for i in orthvars_list:
-                        orthvar = i[0]
-                        orthvar_is_reconstructed = i[1]
-                        orthvar_is_questionable = i[2]
-                        ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar,
-                                                                is_reconstructed=orthvar_is_reconstructed,
-                                                                is_approved=orthvar_is_questionable)
-                        ov.save()
-                        idems.add(orthvar)
+                        entry = Entry.objects.create(**entry_args)
+                        entry.save()
+
+                        for i in orthvars_list:
+                            orthvar = i[0]
+                            orthvar_is_reconstructed = i[1]
+                            orthvar_is_questionable = i[2]
+                            ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar,
+                                                                    is_reconstructed=orthvar_is_reconstructed,
+                                                                    is_approved=orthvar_is_questionable)
+                            ov.save()
+                            idems.add(orthvar)
 
             if not request.GET.get('force', False) and orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
