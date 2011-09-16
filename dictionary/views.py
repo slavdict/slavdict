@@ -462,8 +462,8 @@ def import_csv_billet(request):
                 orthvars_list = [
                         (
                             i.strip(" \r\n\t*?"),
-                            False if i.find("*") < 0 else True,
-                            False if i.find("?") < 0 else True
+                            "*" in i,
+                            "?" in i
                         )
                         for i in _list
                 ]
