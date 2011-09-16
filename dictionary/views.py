@@ -511,9 +511,7 @@ def import_csv_billet(request):
                         'additional_info': additional_info,
                     }
 
-                    if force=='update':
-                        raise NameError(u"Поддержка GET-параметра 'force' со значением 'update' ещё не реализована.")
-                    else:
+                    if not intersection or (force == 'add'):
                         entry_args.update(from_csv)
 
                         entry = Entry.objects.create(**entry_args)
@@ -528,6 +526,10 @@ def import_csv_billet(request):
                                                                     is_approved=orthvar_is_questionable)
                             ov.save()
                             idems.add(orthvar)
+                    elif intersection and (force=='update'):
+                        raise NameError(u"Поддержка GET-параметра 'force' со значением 'update' ещё не реализована.")
+                    else:
+                        raise NameError(u'Поддержка GET-параметра 'force' со значением '%s' не реализована.' % force)
 
             if not request.GET.get('force', False) and orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
