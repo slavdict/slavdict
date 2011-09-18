@@ -447,7 +447,7 @@ def import_csv_billet(request):
             import re
             # Регулярное выражение для отыскания любой черты (прямой, косой, обратной косой),
             # обрамленной любым количеством пробельного материала.
-            bar = re.compile(r"\s[/\|\\]\s", re.MULTILINE + re.UNICODE)
+            bar = re.compile(r"\s*[/\|\\]\s*", re.MULTILINE + re.UNICODE)
 
             for row in csv_reader:
                 # Столбцы в CSV-файле
