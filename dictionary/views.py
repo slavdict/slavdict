@@ -529,7 +529,7 @@ def import_csv_billet(request):
                     elif intersection and (force=='update'):
                         raise NameError(u"Поддержка GET-параметра 'force' со значением 'update' ещё не реализована.")
                     else:
-                        raise NameError(u'Поддержка GET-параметра 'force' со значением '%s' не реализована.' % force)
+                        raise NameError(u"Поддержка GET-параметра 'force' со значением '%s' не реализована." % force)
 
             if not request.GET.get('force', False) and orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
