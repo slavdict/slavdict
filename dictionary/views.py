@@ -528,12 +528,18 @@ def import_csv_billet(request):
                             idems.add(orthvar)
                     elif intersection and (force=='update'):
                         raise NameError(u"Поддержка GET-параметра 'force' со значением 'update' ещё не реализована.")
+                        # Вытягиваем из базы все словарные статьи, у которых встречаются хотя бы один из орф.вариантов
+                        # Если их больше одной, выплёвываем строку таблицы в csv-файл.
+                        # Если нет, то заменяем запрос для АнтКонка, дополняем доп.инфо через "||".
+                        # Для каждого орф.варианта если он уже существует обновляем флаги реконструкции и надежности.
+                        # Если нет, добавляем его полностью.
                     else:
                         raise NameError(u"Поддержка GET-параметра 'force' со значением '%s' не реализована." % force)
 
             if not request.GET.get('force', False) and orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
-                response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M.%S')
+                response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % \
+                    datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M.%S')
             else:
                 response = HttpResponseRedirect('/')
 
