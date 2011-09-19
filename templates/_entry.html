@@ -334,6 +334,15 @@
 
 </div>
 
+    {% if show_additional_info and not intermed %}
+        <div class="author">
+            {% if entry.editor %}
+                {{ entry.editor }}
+            {% else %}
+                &lt; Автор не назначен &gt;
+            {% endif %}
+        </div>
+    {% endif %}
 
 {% if intermed %}
 

@@ -334,7 +334,7 @@ tr.hover div.fade div { background-image: url("fade-right-blue.png")}
 .ssn { font-size: 10px; font-style: italic; }
 .ssn.white { color: white; }
 .caps { font-variant: small-caps; font-size: 13px; letter-spacing: 0.02em;
-    /*font-family: "Arial Black";*/ 
+    /*font-family: "Arial Black";*/
     -webkit-border-radius: 0.3em;
     -moz-border-radius: 0.3em;
     border-radius: 0.3em;
@@ -424,3 +424,14 @@ div.hint {
 }
 
 .exgroup { color: #a00; }
+
+.author {
+    font-style: italic;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+    color: #777;
+    margin-top: 20px;
+    margin-right: 50px;
+    text-align: right;
+
+}
