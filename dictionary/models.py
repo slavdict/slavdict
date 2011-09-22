@@ -678,13 +678,13 @@ class Etymology(models.Model):
         else:
             return self.collocation
 
-    def save(self, *args, **kwargs):
+    def save(self, without_mtime=False, *args, **kwargs):
         super(Etymology, self).save(*args, **kwargs) # Call the "real" save() method.
-        self.host_entry.save()
+        self.host_entry.save(without_mtime=without_mtime)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, without_mtime=False, *args, **kwargs):
         super(Etymology, self).delete(*args, **kwargs) # Call the "real" delete() method.
-        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         return u'%s %s %s' % (self.language.tag, self.entry, self.translit)
@@ -753,13 +753,13 @@ class MeaningContext(models.Model):
     def host_entry(self):
         return self.meaning.host_entry
 
-    def save(self, *args, **kwargs):
+    def save(self, without_mtime=False, *args, **kwargs):
         super(MeaningContext, self).save(*args, **kwargs) # Call the "real" save() method.
-        self.host_entry.save()
+        self.host_entry.save(without_mtime=without_mtime)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, without_mtime=False, *args, **kwargs):
         super(MeaningContext, self).delete(*args, **kwargs) # Call the "real" delete() method.
-        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         SPACE = u' '
@@ -974,13 +974,13 @@ class Meaning(models.Model):
         else:
             return self.collogroup_container
 
-    def save(self, *args, **kwargs):
+    def save(self, without_mtime=False, *args, **kwargs):
         super(Meaning, self).save(*args, **kwargs) # Call the "real" save() method.
-        self.host_entry.save()
+        self.host_entry.save(without_mtime=without_mtime)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, without_mtime=False, *args, **kwargs):
         super(Meaning, self).delete(*args, **kwargs) # Call the "real" delete() method.
-        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         return self.meaning
@@ -1107,13 +1107,13 @@ class Example(models.Model):
     def host(self):
         return self.meaning.host
 
-    def save(self, *args, **kwargs):
+    def save(self, without_mtime=False, *args, **kwargs):
         super(Example, self).save(*args, **kwargs) # Call the "real" save() method.
-        self.host_entry.save()
+        self.host_entry.save(without_mtime=without_mtime)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, without_mtime=False, *args, **kwargs):
         super(Example, self).delete(*args, **kwargs) # Call the "real" delete() method.
-        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
@@ -1208,13 +1208,13 @@ class CollocationGroup(models.Model, Meaningfull):
         else:
             return self.base_meaning.host_entry
 
-    def save(self, *args, **kwargs):
+    def save(self, without_mtime=False, *args, **kwargs):
         super(CollocationGroup, self).save(*args, **kwargs) # Call the "real" save() method.
-        self.host_entry.save()
+        self.host_entry.save(without_mtime=without_mtime)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, without_mtime=False, *args, **kwargs):
         super(CollocationGroup, self).delete(*args, **kwargs) # Call the "real" delete() method.
-        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     class Meta:
         verbose_name = u'группа словосочетаний'
@@ -1264,13 +1264,13 @@ class Collocation(models.Model):
     def host_entry(self):
         return self.collogroup.host_entry
 
-    def save(self, *args, **kwargs):
+    def save(self, without_mtime=False, *args, **kwargs):
         super(Collocation, self).save(*args, **kwargs) # Call the "real" save() method.
-        self.host_entry.save()
+        self.host_entry.save(without_mtime=without_mtime)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, without_mtime=False, *args, **kwargs):
         super(Collocation, self).delete(*args, **kwargs) # Call the "real" delete() method.
-        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         return self.collocation
@@ -1332,13 +1332,13 @@ class GreekEquivalentForMeaning(GreekEquivalent):
     def host_entry(self):
         return self.for_meaning.host_entry
 
-    def save(self, *args, **kwargs):
+    def save(self, without_mtime=False, *args, **kwargs):
         super(GreekEquivalentForMeaning, self).save(*args, **kwargs) # Call the "real" save() method.
-        self.host_entry.save()
+        self.host_entry.save(without_mtime=without_mtime)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, without_mtime=False, *args, **kwargs):
         super(GreekEquivalentForMeaning, self).delete(*args, **kwargs) # Call the "real" delete() method.
-        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     class Meta:
         verbose_name = u'греческая параллель для значения'
@@ -1360,13 +1360,13 @@ class GreekEquivalentForExample(GreekEquivalent):
     def host_entry(self):
         return self.for_example.host_entry
 
-    def save(self, *args, **kwargs):
+    def save(self, without_mtime=False, *args, **kwargs):
         super(GreekEquivalentForExample, self).save(*args, **kwargs) # Call the "real" save() method.
-        self.host_entry.save()
+        self.host_entry.save(without_mtime=without_mtime)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, without_mtime=False, *args, **kwargs):
         super(GreekEquivalentForExample, self).delete(*args, **kwargs) # Call the "real" delete() method.
-        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     class Meta:
         verbose_name = u'греческая параллель для примера'
@@ -1439,13 +1439,13 @@ class OrthographicVariant(models.Model):
     def host_entry(self):
         return self.entry
 
-    def save(self, *args, **kwargs):
+    def save(self, without_mtime=False, *args, **kwargs):
         super(OrthographicVariant, self).save(*args, **kwargs) # Call the "real" save() method.
-        self.host_entry.save()
+        self.host_entry.save(without_mtime=without_mtime)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, without_mtime=False, *args, **kwargs):
         super(OrthographicVariant, self).delete(*args, **kwargs) # Call the "real" delete() method.
-        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         return self.idem
@@ -1504,13 +1504,13 @@ class WordForm(models.Model):
     def host_entry(self):
         return self.entry
 
-    def save(self, *args, **kwargs):
+    def save(self, without_mtime=False, *args, **kwargs):
         super(WordForm, self).save(*args, **kwargs) # Call the "real" save() method.
-        self.host_entry.save()
+        self.host_entry.save(without_mtime=without_mtime)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, without_mtime=False, *args, **kwargs):
         super(WordForm, self).delete(*args, **kwargs) # Call the "real" delete() method.
-        self.host_entry.save() # Сохраняем (!) родительскую словарн.статью
+        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         return self.idem
