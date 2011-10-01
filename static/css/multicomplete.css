@@ -1,14 +1,19 @@
-.MC--sIs {
+.z-multicomplete {
+  display: none; }
+
+.multicomplete--selectedItems,
+.MC--selectedItems {
   width: 200px;
   min-height: 25px;
   background-color: #cccccc;
+  padding: 2px 7px;
+  line-height: 25px;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
-  border-radius: 4px;
-  padding: 2px 7px;
-  line-height: 25px; }
+  border-radius: 4px; }
 
-.MC--sI {
+.multicomplete--selectedItem,
+.MC--selectedItem {
   min-height: 20px;
   background-color: white;
   -moz-border-radius: 4px;
@@ -37,11 +42,12 @@
   color: #777777;
   outline-width: 0; }
 
-.MC--fIs {
+.multicomplete--foundItems {
   margin: 0;
   padding: 0; }
 
-.MC--fI {
+.multicomplete--foundItem,
+.MC--foundItem {
   list-style-type: none;
   width: 140px;
   display: block;
@@ -52,6 +58,7 @@
   cursor: pointer;
   white-space: nowrap; }
 
+.multicomplete--foundItem-focused,
 .MC--fI-focused {
   background-color: #777777;
   color: white; }

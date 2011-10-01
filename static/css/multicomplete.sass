@@ -3,28 +3,27 @@
     -webkit-border-radius: $radius
     border-radius: $radius
 
-.y-multicomplete
-    // pass
+.z-multicomplete,
+    display: none
 
-//.multicomplete--selectedItems,
-.MC--sIs
+.multicomplete--selectedItems,
+.MC--selectedItems,
     width: 200px
     min-height: 25px
     background-color: #ccc
-    @include roundedCorners(4px)
     padding: 2px 7px
     line-height: 25px
+    @include roundedCorners(4px)
 
 //.multicomplete--selectedItems--item,
-//.MC--sIs--i,
-//.multicomplete--selectedItem,
-.MC--sI
+.multicomplete--selectedItem,
+.MC--selectedItem,
     min-height: 20px
     background-color: #fff
     @include roundedCorners(4px)
     padding: 0 4px
 
-//.multicomplete--selectedItems--item--deselect,
+//.MC--selectedItem--deselect,
 .MC--sI--deselect
     background-color: #a00
     @include roundedCorners(7px)
@@ -44,15 +43,13 @@
     color: #777
     outline-width: 0
 
-//.multicomplete--foundItems,
-.MC--fIs
+.multicomplete--foundItems
     margin: 0
     padding: 0
 
 //.multicomplete--foundItems--item,
-//.MC--fIs--i,
-//.multicomplete--foundItem,
-.MC--fI
+.multicomplete--foundItem,
+.MC--foundItem
     list-style-type: none
     width: 140px
     display: block
@@ -63,7 +60,7 @@
     cursor: pointer
     white-space: nowrap
 
-//.multicomplete--foundItem-focused,
+.multicomplete--foundItem-focused,
 .MC--fI-focused
     background-color: #777
     color: #fff

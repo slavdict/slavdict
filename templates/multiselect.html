@@ -47,32 +47,32 @@
     Just update the at the top of your view:
 
     <script type="text/x-jquery-tmpl" id="selectedItemsTemplate">
-        <li class="multicomplete--sI">
-            <span class="multicomplete--sI--headword" data-bind="text: headword"></span>
-            <span class="multicomplete--sI--homonym" data-bind="text: hom"></span>
-            <span class="multicomplete--sI--pOS" data-bind="text: pos"></span>
-            <span class="multicomplete--sI--hint" data-bind="text: hint"></span>
-            <span class="multicomplete--sI--deselect"
+        <li class="MC--sI">
+            <span class="MC--sI--headword" data-bind="text: headword"></span>
+            <span class="MC--sI--homonym" data-bind="text: hom"></span>
+            <span class="MC--sI--pOS" data-bind="text: pos"></span>
+            <span class="MC--sI--hint" data-bind="text: hint"></span>
+            <span class="MC--sI--deselect"
              data-bind="click: function(){ viewModel.deselectItem($data); }">&times;</span>
         </li>
     </script>
 
     <script type="text/x-jquery-tmpl" id="foundItemsTemplate">
-        <li class="multicomplete--fI"
+        <li class="MC--fI"
          data-bind="css: { focused: $data.index == viewModel.focusedIndex() },
          event: { mouseover: function(){ viewModel.focusedIndex($data.index); } },
          click: function(){ viewModel.selectItem($data); }">
-            <span class="multicomplete--fI--headword" data-bind="text: headword"></span>
-            <span class="multicomplete--fI--homonym" data-bind="text: hom"></span>
-            <span class="multicomplete--fI--pOS" data-bind="text: pos"></span>
-            <span class="multicomplete--fI--hint" data-bind="text: hint"></span>
+            <span class="MC--fI--headword" data-bind="text: headword"></span>
+            <span class="MC--fI--homonym" data-bind="text: hom"></span>
+            <span class="MC--fI--pOS" data-bind="text: pos"></span>
+            <span class="MC--fI--hint" data-bind="text: hint"></span>
         </li>
     </script>
 
 
     <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.2.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}jquery.tmpl.min.js'></script>
-    <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.js'></script>
+    <script type='text/javascript' src='{{ STATIC_URL }}knockout-1.2.1.js'></script>
     <script>
 
         ko.bindingHandlers.hasFocus = {
