@@ -7,37 +7,37 @@
 </head>
 <body>
 
-    <form>
-        <select multiple="multiple"
-                name="entries" class="y-multicomplete"
-                data-bind="selectedOptionsWithTemplate: selectedItems">
-        </select>
-        <input type="submit" />
-    </form>
+    <div class="multicomplete">
+        <form>
+            <select multiple="multiple"
+                    name="entries" class="z-multicomplete"
+                    data-bind="selectedOptionsWithTemplate: selectedItems">
+            </select>
+            <input type="submit" />
+        </form>
 
-    <table class="layout multicomplete">
-        <tr>
-            <td>
-                <input type="text"
-                 class="multicomplete--search"
-                 placeholder="..."
-                 data-bind="
-                 value: searchPrefix,
-                 valueUpdate: 'afterkeydown',
-                 event: { keydown: navigateFoundItems },
-                 hasFocus: inputing" />
+        <table class="layout">
+            <tr>
+                <td>
+                    <input type="text" class="MC--search" placeholder="..."
+                        data-bind="
+                            value: searchPrefix,
+                            valueUpdate: 'afterkeydown',
+                            event: { keydown: navigateFoundItems },
+                            hasFocus: inputing" />
 
-                <ul class="multicomplete--foundItems"
-                 data-bind="template: { name: 'foundItemsTemplate', foreach: foundItems }"
-                 ></ul>
-            </td>
-            <td>
-                <ul class="multicomplete--selectedItems"
-                 data-bind="template: {name: 'selectedItemsTemplate', foreach: selectedItems}"
-                 ></ul>
-            </td>
-        </tr>
-    </table>
+                    <ul class="MC--foundItems"
+                        data-bind="template: { name: 'foundItemsTemplate', foreach: foundItems }"
+                    ></ul>
+                </td>
+                <td>
+                    <ul class="MC--selectedItems"
+                     data-bind="template: {name: 'selectedItemsTemplate', foreach: selectedItems}"
+                     ></ul>
+                </td>
+            </tr>
+        </table>
+    </div> <!-- /.multicomplete -->
 
     Having followed the MVVM pattern and got an object-oriented representation of the UI's data and behaviors, you're in
     a great position to sprinkle on extra behaviors in a very natural and convenient way.
@@ -47,7 +47,7 @@
     Just update the at the top of your view:
 
     <script type="text/x-jquery-tmpl" id="selectedItemsTemplate">
-        <li class="MC--sI">
+        <li class="MC--selectedItem">
             <span class="MC--sI--headword" data-bind="text: headword"></span>
             <span class="MC--sI--homonym" data-bind="text: hom"></span>
             <span class="MC--sI--pOS" data-bind="text: pos"></span>
@@ -58,8 +58,8 @@
     </script>
 
     <script type="text/x-jquery-tmpl" id="foundItemsTemplate">
-        <li class="MC--fI"
-         data-bind="css: { focused: $data.index == viewModel.focusedIndex() },
+        <li class="MC--foundItem"
+         data-bind="css: { 'MC--fI-focused': $data.index == viewModel.focusedIndex() },
          event: { mouseover: function(){ viewModel.focusedIndex($data.index); } },
          click: function(){ viewModel.selectItem($data); }">
             <span class="MC--fI--headword" data-bind="text: headword"></span>
