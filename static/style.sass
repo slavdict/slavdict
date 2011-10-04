@@ -1,0 +1,531 @@
+noscript
+    display: block
+    padding: 1em
+    color: white
+    background-color: #a00
+    text-align: center
+    font-family: Arial, sans-serif
+
+a img
+    border-width: 0
+
+.nobr
+    white-space: nowrap
+
+/* Меню сверху */
+#header
+    padding: 0.5em 1em
+    text-align: center
+    background-color: #484848
+    color: white
+
+#header a
+    background-color: #5f5f5f
+    padding: 0.25em 0.7em
+    color: white
+    font-family: Arial, sans-serif
+    font-size: 12px
+    text-decoration: none
+    -webkit-border-radius: 3px
+    -moz-border-radius: 3px
+    border-radius: 3px
+
+#header a.on, #header a:hover.on
+    background-color: white
+    color: #484848
+
+#header a:hover
+    color: white
+    background-color: #069
+
+#header a.permanent
+    background-color: transparent
+
+#header a:hover.permanent
+    background-color: #069
+
+
+#header a.home
+    background-image: url(home-white.png)
+    background-position: 50% 50%
+    background-repeat: no-repeat
+    margin-right: 7px
+
+#header form
+    display: inline
+
+.message
+    font-size: 12px
+    -webkit-border-radius: 0.5em
+    -moz-border-radius: 0.5em
+    border-radius: 0.5em
+    padding: 0.5em 0.7em
+    margin: 0em auto 0.5em auto
+    width: 25em
+    font-family: Arial, sans-serif
+    background-color: #fcf3d0
+    border: 1px solid #f4c873
+    color: #d29216
+
+.nowrap
+    white-space: nowrap
+
+.message .red.caps
+    background-color: #fcd5d0
+    color: #ea361c
+
+.invisible
+    visibility: hidden
+
+.transparent,.transparent *,.transparent * *,.transparent * * *
+    color: transparent !important
+    background-color: transparent !important
+
+@font-face
+    font-family: 'Triodion Ucs'
+    src: url('fonts/TriIEUcs.eot')
+    src: local('Triodion Ucs'), local('Triodion ieUcs'), local('Triodion ieUcs Regular'), local('Triodion-ieUcs'), url('fonts/TriIEUcs.woff') format('woff'), url('fonts/TriIEUcs.ttf') format('truetype'), url('fonts/TriIEUcs.svg#Triodion-ieUcs') format('svg')
+
+@font-face
+    font-family: 'SIL Ulysses'
+    src: url('fonts/silur-webfont.eot')
+    src: local('SIL Ulysses'), url('fonts/silur-webfont.woff') format('woff'), url('fonts/silur-webfont.ttf') format('truetype')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'hebrew'
+    src: url('fonts/hebrew-webfont.eot')
+    src: local('hebrew'), url('fonts/hebrew-webfont.woff') format('woff'), url('fonts/hebrew-webfont.ttf') format('truetype')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'Hebrew-Russian!'
+    src: url('fonts/heb-rus-webfont.eot')
+    src: local('Hebrew-Russian!'), url('fonts/heb-rus-webfont.woff') format('woff'), url('fonts/heb-rus-webfont.ttf') format('truetype')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'Estrangelo Edessa'
+    src: url('fonts/estre-webfont.eot')
+    src: local('Estrangelo Edessa'), url('fonts/estre-webfont.woff') format('woff'), url('fonts/estre-webfont.ttf') format('truetype')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'GEO-LitNusx'
+    src: url('fonts/ltzura2-webfont.eot')
+    src: local('GEO-LitNusx'), url('fonts/ltzura2-webfont.woff') format('woff'), url('fonts/ltzura2-webfont.ttf') format('truetype')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'SPEdessa'
+    src: url('fonts/spedessa-webfont.eot')
+    src: local('SPEdessa'), url('fonts/spedessa-webfont.woff') format('woff'), url('fonts/spedessa-webfont.ttf') format('truetype')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'Coptic'
+    src: url('fonts/coptic2-webfont.eot')
+    src: local('Coptic'), url('fonts/coptic2-webfont.woff') format('woff'), url('fonts/coptic2-webfont.ttf') format('truetype')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'Old Standard TT'
+    src: url('fonts/oldstandard-regular-webfont.eot')
+    src: url('fonts/oldstandard-regular-webfont.woff') format('woff'), url('fonts/oldstandard-regular-webfont.ttf') format('truetype')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'Old Standard TT'
+    src: url('fonts/oldstandard-italic-webfont.eot')
+    src: url('fonts/oldstandard-italic-webfont.woff') format('woff'), url('fonts/oldstandard-italic-webfont.ttf') format('truetype')
+    font-weight: normal
+    font-style: italic
+
+@font-face
+    font-family: 'Old Standard TT'
+    src: url('fonts/oldstandard-bold-webfont.eot')
+    src: url('fonts/oldstandard-bold-webfont.woff') format('woff'), url('fonts/oldstandard-bold-webfont.ttf') format('truetype')
+    font-weight: bold
+    font-style: normal
+
+@font-face
+    font-family: 'AntConSol'
+    src: url('fonts/antconsol-webfont.eot')
+    src: url('fonts/antconsol-webfont.woff') format('woff'), url('fonts/antconsol-webfont.ttf') format('truetype')
+
+
+.cslav
+    font-family: "Triodion Ucs"
+    font-weight: normal
+    font-size: 110%
+
+a.cslav
+    color: #000
+
+.antconsol
+    font-family: AntConSol
+
+.grec
+    font-family: 'SIL Ulysses'
+
+.hebrew,.aramaic
+    font-family: 'hebrew'
+
+.hebrew-translit,.syriac-translit,.aramaic-translit
+    font-family: 'Hebrew-Russian!'
+    font-size: 90%
+
+.akkadian
+    //pass
+
+.armenian
+    //pass
+
+.georgian
+    font-family: 'GEO-LitNusx'
+
+.coptic
+    font-family: Coptic
+
+.syriac
+    font-family: 'SPEdessa'
+
+/* 'Estrangelo Edessa' */
+
+body,div
+    margin: 0
+    padding: 0
+    font-size: 13pt
+    font-family: 'Old Standard TT', serif
+
+div#main
+    margin: 1em auto
+    width: 40em
+    position: relative
+
+div.entry,div.refheader
+    margin-top: 4em
+
+div.refheader
+    color: green
+    border-bottom: 1px solid green
+
+div.entry.ref
+    margin-top: 1.7em
+    line-height: 100%
+
+.headword
+    font-size: 150% !important
+
+.orthvar
+    font-size: 120% !important
+
+.ai
+    font-size: smaller
+
+.ai-etym
+    background-color: #fcd5fc
+    border: 1px solid #dbb5db
+
+.ai-example
+    background-color: #d5dffc
+    border: 1px solid #bbc4df
+
+.ai-meaning
+    background-color: #eafcd5
+    border: 1px solid #b9d796
+
+.ai-entry
+    background-color: #fcf3d0
+    border: 1px solid #f4c873
+
+.ai-grfmnng,.ai-grfex
+    background-color: #c3ffff
+    border: 1px solid #93d5dd
+
+div.ai
+    padding: 10px
+    line-height: 150%
+    -webkit-border-radius: 0.5em
+    -moz-border-radius: 0.5em
+    border-radius: 0.5em
+
+div.ai p
+    margin: 0 0 0.5em 0
+
+span.ai,span.noaddress
+    padding: 0.1em 0.4em
+    -webkit-border-radius: 0.3em
+    -moz-border-radius: 0.3em
+    border-radius: 0.3em
+
+span.noaddress
+    padding: 0.15em 0.4em
+    background-color: #a00
+    color: #fff
+    font-family: Arial, sans-serif
+    font-style: italic
+    font-size: smaller
+
+div.edit-controls
+    margin: 1em auto 4em 1.5em
+
+.edit-controls a
+    text-decoration: none
+    color: #369
+    border-bottom: 1px dotted #369
+
+span.edit-controls a
+    border-bottom-width: 0
+
+/* Конец стилей словaрных статей */
+
+/* Список словарных статей */
+table
+    table-layout: fixed
+    width: 100%
+    border-collapse: collapse
+
+table.entry-list
+    margin-top: 2em
+
+table.entry-list tr td
+    padding: 0.5% 2% 0.5% 0
+
+table.entry-list tr td.first
+    padding-left: 2%
+
+table.entry-list tr.hover
+    background-color: #069
+    color: #fff
+
+table.entry-list tr.last.hover
+    background-color: white
+    color: white
+
+table.entry-list tr.hover div.shade
+    display: none
+
+table.entry-list tr.last.hover div.shade
+    display: block
+
+table.entry-list tr td.eli-control
+    width: 5%
+
+table.entry-list tr td.eli-entry
+    overflow: hidden
+    padding-right: 0
+    padding-left: 0.7%
+    white-space: nowrap
+
+table.entry-list tr td.eli-status
+    width: 15%
+
+table.entry-list tr td.eli-author
+    width: 20%
+
+table.entry-list tr td.eli-mtime
+    width: 20%
+
+table.entry-list tr.hover td.eli-entry .cslav
+    text-shadow: 0 0 5px #023
+
+
+/* разделительная тень в списке статей */
+div.shade, div.fade
+    position: relative
+    height: 0
+
+div.shade div
+    position: absolute
+    top: -7px
+    height: 3px
+
+table.entry-list tr.last div.shade
+    top: 3px
+
+div.shade div.left
+    width: 80px
+    left: -16px
+    background: url(fadeBarLeft.gif) no-repeat top left
+
+div.shade div.center
+    width: 556px
+    left: 44px
+    background: url(fadeBarCenter.gif) repeat-x top left
+
+div.shade div.right
+    width: 80px
+    left: 600px
+    background: url(fadeBarRight.gif) no-repeat top left
+
+div.fade div
+    position: absolute
+    height: 60px
+    width: 100%
+    background: url("fade-right-white.png") repeat-y right top
+    // fade-right-white: 100px заготовкав в ширину в фотошопе, цвет белый, // градиентная заливка из белого в прозрачный/бесцветный цвет, // начало на 90-м пикселе, конец на 40-м. Получается около 10px справа
+    // заполнены непрозрачным белым, а далее влево он выцветает.
+tr.hover div.fade div
+    background-image: url("fade-right-blue.png")
+
+/* Выделения текста в списке статей */
+.ss /* Sans-Serif */, .ssn /* Sans-Serif Note */
+    font-family: Arial, sans-serif
+    font-size: 12px
+    line-height: 12px
+    color: gray
+
+.ssn
+    font-size: 10px
+    font-style: italic
+
+.ssn.white
+    color: white
+
+.caps
+    font-variant: small-caps
+    font-size: 13px
+    letter-spacing: 0.02em
+    /*font-family: "Arial Black"*/
+    -webkit-border-radius: 0.3em
+    -moz-border-radius: 0.3em
+    border-radius: 0.3em
+    background-color: #eee
+    padding: 0 0.5em 0.2em
+
+tr.entry-list-item.hover .ss, tr.hover .ssn
+    color: white
+
+tr.entry-list-item.hover .caps
+    color: white
+    background-color: #069
+
+
+/* Ссылки для лексем в списке */
+.manual-entry
+    color: black
+    text-decoration: none
+    border-bottom-width: 0
+
+tr.hover .manual-entry
+    color: #fff
+    border-bottom: 1px solid #fff
+
+
+a.icon img
+    width: 22px
+    height: 22px
+    vertical-align: middle
+    padding: 0
+    margin: 0
+a.icon.edit
+    background: url(edit-gray-faded.png) no-repeat 50% 50%
+
+a:hover.icon.edit
+    background: url(edit-gray.png) no-repeat 50% 50%
+
+tr.entry-list-item.hover a.icon.edit
+    background: url(edit-white.png) no-repeat 50% 50%
+
+a.icon.view
+    background: url(eye-gray-faded.png) no-repeat 50% 50%
+
+a:hover.icon.view
+    background: url(eye-gray.png) no-repeat 50% 50%
+
+tr.entry-list-item.hover a.icon.view
+    background: url(eye-white.png) no-repeat 50% 50%
+
+
+table.entry-list tr.control-row td
+    padding-bottom: 6px
+
+table.entry-list tr.control-row.hover td
+    background-color: #bbb
+
+
+.anchor
+    padding: 0 4px 3px
+    color: #ccc
+    -webkit-border-radius: 3px
+    -moz-border-radius: 3px
+    border-radius: 3px
+
+.anchor.on
+    background-color: #eee
+    color: #777
+
+table.entry-list tr.control-row.hover td .anchor:hover,table.entry-list tr.control-row.hover td .anchor.on
+    background-color: white
+    color: #484848
+    cursor: pointer
+
+
+span.hint-container
+    position: relative
+    display: none
+
+div.hint
+    font-family: Arial, sans-serif
+    font-size: 10px
+    line-height: 10px
+    position: absolute
+    padding: 1ex 1em
+    -webkit-border-radius: 0.3em
+    -moz-border-radius: 0.3em
+    border-radius: 0.3em
+    color: white
+    background-color: #484848
+    left: -130px
+    top: -28px
+
+
+/* Блок пагинации */
+.pagination
+    width: 300px
+    margin: 40px auto
+    text-align: center
+
+.pagination a
+    background-color: #dedede
+    padding: 0.25em 0.7em
+    color: #555
+    font-family: Arial, sans-serif
+    font-size: 12px
+    text-decoration: none
+    -webkit-border-radius: 3px
+    -moz-border-radius: 3px
+    border-radius: 3px
+
+.pagination a.current-page
+    background-color: #069
+    color: #fff
+
+.pagination a:hover
+    color: #fff
+    background-color: #555
+
+.pagination a:hover.current-page
+    background-color: #a00
+
+
+.exgroup
+    color: #a00
+
+.author
+    font-style: italic
+    font-size: 12px
+    font-family: Arial, sans-serif
+    color: #777
+    margin-top: 20px
+    margin-right: 50px
+    text-align: right
