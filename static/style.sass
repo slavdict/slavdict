@@ -1,5 +1,8 @@
 @charset 'utf-8'
 
+@import 'fonts'
+@import 'variables'
+
 noscript
     display: block
     padding: 1em
@@ -28,9 +31,7 @@ a img
     font-family: Arial, sans-serif
     font-size: 12px
     text-decoration: none
-    -webkit-border-radius: 3px
-    -moz-border-radius: 3px
-    border-radius: 3px
+    @include roundedCorners(3px)
 
 #header a.on, #header a:hover.on
     background-color: white
@@ -58,13 +59,11 @@ a img
 
 .message
     font-size: 12px
-    -webkit-border-radius: 0.5em
-    -moz-border-radius: 0.5em
-    border-radius: 0.5em
+    @include roundedCorners(0.5em)
     padding: 0.5em 0.7em
     margin: 0em auto 0.5em auto
     width: 25em
-    font-family: Arial, sans-serif
+    font-family: $sansFont
     background-color: #fcf3d0
     border: 1px solid #f4c873
     color: #d29216
@@ -82,86 +81,6 @@ a img
 .transparent,.transparent *,.transparent * *,.transparent * * *
     color: transparent !important
     background-color: transparent !important
-
-@font-face
-    font-family: 'Triodion Ucs'
-    src: url('fonts/TriIEUcs.eot')
-    src: local('Triodion Ucs'), local('Triodion ieUcs'), local('Triodion ieUcs Regular'), local('Triodion-ieUcs'), url('fonts/TriIEUcs.woff') format('woff'), url('fonts/TriIEUcs.ttf') format('truetype'), url('fonts/TriIEUcs.svg#Triodion-ieUcs') format('svg')
-
-@font-face
-    font-family: 'SIL Ulysses'
-    src: url('fonts/silur-webfont.eot')
-    src: local('SIL Ulysses'), url('fonts/silur-webfont.woff') format('woff'), url('fonts/silur-webfont.ttf') format('truetype')
-    font-weight: normal
-    font-style: normal
-
-@font-face
-    font-family: 'hebrew'
-    src: url('fonts/hebrew-webfont.eot')
-    src: local('hebrew'), url('fonts/hebrew-webfont.woff') format('woff'), url('fonts/hebrew-webfont.ttf') format('truetype')
-    font-weight: normal
-    font-style: normal
-
-@font-face
-    font-family: 'Hebrew-Russian!'
-    src: url('fonts/heb-rus-webfont.eot')
-    src: local('Hebrew-Russian!'), url('fonts/heb-rus-webfont.woff') format('woff'), url('fonts/heb-rus-webfont.ttf') format('truetype')
-    font-weight: normal
-    font-style: normal
-
-@font-face
-    font-family: 'Estrangelo Edessa'
-    src: url('fonts/estre-webfont.eot')
-    src: local('Estrangelo Edessa'), url('fonts/estre-webfont.woff') format('woff'), url('fonts/estre-webfont.ttf') format('truetype')
-    font-weight: normal
-    font-style: normal
-
-@font-face
-    font-family: 'GEO-LitNusx'
-    src: url('fonts/ltzura2-webfont.eot')
-    src: local('GEO-LitNusx'), url('fonts/ltzura2-webfont.woff') format('woff'), url('fonts/ltzura2-webfont.ttf') format('truetype')
-    font-weight: normal
-    font-style: normal
-
-@font-face
-    font-family: 'SPEdessa'
-    src: url('fonts/spedessa-webfont.eot')
-    src: local('SPEdessa'), url('fonts/spedessa-webfont.woff') format('woff'), url('fonts/spedessa-webfont.ttf') format('truetype')
-    font-weight: normal
-    font-style: normal
-
-@font-face
-    font-family: 'Coptic'
-    src: url('fonts/coptic2-webfont.eot')
-    src: local('Coptic'), url('fonts/coptic2-webfont.woff') format('woff'), url('fonts/coptic2-webfont.ttf') format('truetype')
-    font-weight: normal
-    font-style: normal
-
-@font-face
-    font-family: 'Old Standard TT'
-    src: url('fonts/oldstandard-regular-webfont.eot')
-    src: url('fonts/oldstandard-regular-webfont.woff') format('woff'), url('fonts/oldstandard-regular-webfont.ttf') format('truetype')
-    font-weight: normal
-    font-style: normal
-
-@font-face
-    font-family: 'Old Standard TT'
-    src: url('fonts/oldstandard-italic-webfont.eot')
-    src: url('fonts/oldstandard-italic-webfont.woff') format('woff'), url('fonts/oldstandard-italic-webfont.ttf') format('truetype')
-    font-weight: normal
-    font-style: italic
-
-@font-face
-    font-family: 'Old Standard TT'
-    src: url('fonts/oldstandard-bold-webfont.eot')
-    src: url('fonts/oldstandard-bold-webfont.woff') format('woff'), url('fonts/oldstandard-bold-webfont.ttf') format('truetype')
-    font-weight: bold
-    font-style: normal
-
-@font-face
-    font-family: 'AntConSol'
-    src: url('fonts/antconsol-webfont.eot')
-    src: url('fonts/antconsol-webfont.woff') format('woff'), url('fonts/antconsol-webfont.ttf') format('truetype')
 
 
 .cslav
@@ -256,24 +175,20 @@ div.entry.ref
 div.ai
     padding: 10px
     line-height: 150%
-    -webkit-border-radius: 0.5em
-    -moz-border-radius: 0.5em
-    border-radius: 0.5em
+    @include roundedCorners(0.5em)
 
 div.ai p
     margin: 0 0 0.5em 0
 
 span.ai,span.noaddress
     padding: 0.1em 0.4em
-    -webkit-border-radius: 0.3em
-    -moz-border-radius: 0.3em
-    border-radius: 0.3em
+    @include roundedCorners(0.3em)
 
 span.noaddress
     padding: 0.15em 0.4em
     background-color: #a00
     color: #fff
-    font-family: Arial, sans-serif
+    font-family: $sansFont
     font-style: italic
     font-size: smaller
 
@@ -397,10 +312,8 @@ tr.hover div.fade div
     font-variant: small-caps
     font-size: 13px
     letter-spacing: 0.02em
-    /*font-family: "Arial Black"*/
-    -webkit-border-radius: 0.3em
-    -moz-border-radius: 0.3em
-    border-radius: 0.3em
+    //font-family: "Arial Black"
+    @include roundedCorners(0.3em)
     background-color: #eee
     padding: 0 0.5em 0.2em
 
@@ -458,9 +371,7 @@ table.entry-list tr.control-row.hover td
 .anchor
     padding: 0 4px 3px
     color: #ccc
-    -webkit-border-radius: 3px
-    -moz-border-radius: 3px
-    border-radius: 3px
+    @include roundedCorners(3px)
 
 .anchor.on
     background-color: #eee
@@ -482,9 +393,7 @@ div.hint
     line-height: 10px
     position: absolute
     padding: 1ex 1em
-    -webkit-border-radius: 0.3em
-    -moz-border-radius: 0.3em
-    border-radius: 0.3em
+    @include roundedCorners(0.3em)
     color: white
     background-color: #484848
     left: -130px
@@ -504,9 +413,7 @@ div.hint
     font-family: Arial, sans-serif
     font-size: 12px
     text-decoration: none
-    -webkit-border-radius: 3px
-    -moz-border-radius: 3px
-    border-radius: 3px
+    @include roundedCorners(3px)
 
 .pagination a.current-page
     background-color: #069
