@@ -6,7 +6,12 @@
 
     <div style="line-height: 100%;">
 
-        <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
+
+        {% ifnotequal entry.part_of_speech.slug 'beyond' %}
+            <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
+        {% else %}
+            <span class="cslav headword cinnabar">{{ entry.orth_vars.0.idem_letter_ucs }}</span>
+        {% endifnotequal %}
         {% space %}
 
         {% if entry.homonym_order %}

@@ -1398,6 +1398,10 @@ class OrthographicVariant(models.Model):
     def idem_ucs(self):
         return ucs_convert(self.idem)
 
+    @property
+    def idem_letter_ucs(self):
+        return ucs_convert_affix(self.idem.lower())
+
     order = models.SmallIntegerField(
         u'порядок следования',
         blank = True,
