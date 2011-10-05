@@ -183,7 +183,7 @@
             if (this.searchPrefix()) {
                 dataToSend = { find: this.searchPrefix() };
                 if (this.selectedIds().length) dataToSend.ids = this.selectedIds();
-                this.lastItemsRequest = $.get("/json/entries/", dataToSend, this.foundItems);
+                this.lastItemsRequest = $.get("/json/multiselect/entries/", dataToSend, this.foundItems);
             } else {
                 this.foundItems.splice(0);
             }

@@ -1,0 +1,73 @@
+@charset 'utf-8'
+
+@import 'variables'
+@import 'layout'
+
+$baseFontSize: 19px
+
+.singlecomplete
+    font-size: $baseFontSize
+
+.singlecomplete--search,
+.SC--search
+    width: 240px
+    border-width: 0
+    background-color: #ccc
+    font: (13px / $baseFontSize + em) $sansFont
+    color: #777
+    outline-width: 0
+    padding-left: 5px
+    min-height: 25px
+    @include roundedCorners(4px)
+
+.singlecomplete--foundItems,
+.SC--foundItems
+    margin: 0
+    padding: 0
+    width: 240px
+    border-bottom: 1px solid #ccc
+
+.SC--foundItems-empty
+    display: none
+
+//.singlecomplete--foundItems--item,
+.singlecomplete--foundItem,
+.SC--foundItem
+    list-style-type: none
+    width: 240px
+    display: block
+    margin: 0
+    padding: 0 4px
+    border: 1px solid #ccc
+    border-bottom-width: 0px
+    background-color: #fff
+    cursor: pointer
+    white-space: nowrap
+
+.singlecomplete--foundItem-focused,
+.SC--fI-focused
+    background-color: #777
+    border: 1px solid #777
+    border-bottom-width: 0px
+    color: #fff
+
+.SC--sI--headword,
+.SC--fI--headword
+    font-family: $cslFont
+    line-height: 14px
+
+$onymFontSize: 14px / $baseFontSize + em
+$pOSFontSize:  13px / $baseFontSize + em
+$hintFontSize: 10px / $baseFontSize + em
+.SC--sI--homonym,
+.SC--fI--homonym
+    font-size: $onymFontSize
+
+.SC--sI--pOS,
+.SC--fI--pOS,
+    font: italic $pOSFontSize $sansFont
+
+.SC--sI--hint,
+.SC--fI--hint,
+    font: $hintFontSize $sansFont
+    text-transform: uppercase

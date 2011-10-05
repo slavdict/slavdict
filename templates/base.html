@@ -20,9 +20,18 @@
                     <a href="{% url admin:dictionary_entry_add %}" rel="prefetch">+</a>
                 {% endif %}
 
-                <form enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}">
-                    <input type="text" name="find" value="{{ find_prefix }}" />
+                <form enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}" class="singlecomplete-search">
+                    <input type="text" name="find" value="{{ find_prefix }}"
+                       class="singlecomplete--search"
+                       data-bind="
+                            value: searchPrefix,
+                            valueUpdate: 'afterkeydown',
+                            event: { keydown: navigateFoundItems },
+                            hasFocus: inputing" />
                     <input type="submit" value="найти" />
+                    <ul class="SC--foundItems"
+                        data-bind="template: { name: 'foundItemsTemplate', foreach: foundItems }"
+                    ></ul>
                 </form>
 
                 <a href="{% url converter %}">Конвертър</a>
@@ -35,7 +44,95 @@
             {% block content %}{% endblock %}
         </div>
 
-        <script type="text/javascript" src="{{ STATIC_URL }}jquery-1.5.2_min.js"></script>
+        <script type="text/x-jquery-tmpl" id="foundItemsTemplate">
+            <li class="SC--foundItem"
+             data-bind="css: { 'SC--fI-focused': $data.index == viewModel.focusedIndex() },
+             event: { mouseover: function(){ viewModel.focusedIndex($data.index); } },
+             click: function(){ viewModel.selectItem($data); }">
+                <span class="SC--fI--headword" data-bind="text: headword"></span>
+                <span class="SC--fI--homonym" data-bind="text: hom"></span>
+                <span class="SC--fI--pOS" data-bind="text: pos"></span>
+                <span class="SC--fI--hint" data-bind="text: hint"></span>
+            </li>
+        </script>
+
+        <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.2.min.js'></script>
+        <script type='text/javascript' src='{{ STATIC_URL }}jquery.tmpl.min.js'></script>
+        <script type='text/javascript' src='{{ STATIC_URL }}knockout-1.2.1.js'></script>
+        <script>
+
+            ko.bindingHandlers.hasFocus = {
+                init: function(element, valueAccessor) {
+                    $(element).focus(function() {
+                        var value = valueAccessor();
+                        value(true);
+                    });
+                    $(element).blur(function() {
+                        var value = valueAccessor();
+                        value(false);
+                    });
+                },
+                update: function(element, valueAccessor) {
+                    var value = valueAccessor();
+                    if (ko.utils.unwrapObservable(value))
+                        element.focus();
+                    else
+                        element.blur();
+                }
+            };
+
+            var viewModel = {
+
+                searchPrefix: ko.observable(),
+                inputing: ko.observable(),
+                items: ko.observableArray(),
+                foundItems: ko.observableArray(),
+                focusedIndex: ko.observable(-1),
+
+                moveFocusDown: function() {
+                    var fi = this.focusedIndex();
+                    this.focusedIndex(fi < this.foundItems().length - 1 ? fi + 1 : 0);
+                },
+                moveFocusUp: function() {
+                    var fi = this.focusedIndex();
+                    this.focusedIndex(fi < 1 ? this.foundItems().length - 1 : fi - 1);
+                },
+                go: function(item) {
+                    alert(item.url);
+                },
+                navigateFoundItems: function(event){
+                    if (this.foundItems()) {
+                        if (event.which == 40) { // down arrow key
+                            this.moveFocusDown();
+                        } else if (event.which == 38) { // up arrow key
+                            this.moveFocusUp();
+                        } else if (event.which == 13) { // enter key
+                            if (this.focusedItem()) this.go(this.focusedItem());
+                        } else {
+                            return true;
+                        }
+                    } else return true;
+                }
+            };
+
+            viewModel.focusedItem = ko.dependentObservable(function(){
+                return (this.focusedIndex() > -1) ? this.foundItems()[this.focusedIndex()] : null;
+            }, viewModel);
+
+            ko.dependentObservable(function() {
+                var dataToSend, receivedData = [];
+                if (this.lastItemsRequest) this.lastItemsRequest.abort();
+                if (this.searchPrefix()) {
+                    dataToSend = { find: this.searchPrefix() };
+                    this.lastItemsRequest = $.get("/json/singleselect/entries/urls/", dataToSend, this.foundItems);
+                } else {
+                    this.foundItems.splice(0);
+                }
+            }, viewModel);
+
+            ko.applyBindings(viewModel);
+        </script>
+
         {% block javascript %}{% endblock %}
 
     </body>

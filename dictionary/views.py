@@ -666,7 +666,7 @@ def antconc2ucs8_converter(request):
     return render_to_response('converter.html', context, RequestContext(request))
 
 @login_required
-def json_entries(request):
+def json_multiselect_entries(request):
     import json
     GET_FIND = request.GET.get('find')
     GET_ID = request.GET.get('ids')
@@ -691,6 +691,34 @@ def json_entries(request):
                 'pos': e.part_of_speech.tag if e.homonym_order else '',
                 'hint': e.homonym_gloss,
                 'index': n,
+                }
+                for n, e in enumerate(entries)]
+        data = json.dumps(entries)
+        response = HttpResponse(data, mimetype='application/json')
+    else:
+        response = HttpResponse(mimetype='application/json', status=400)
+    return response
+
+@login_required
+def json_singleselect_entries_urls(request):
+    import json
+    GET_FIND = request.GET.get('find')
+    if GET_FIND:
+        FIND_LOWER = GET_FIND.lower()
+        FIND_CAPZD = GET_FIND.capitalize()
+        entries = Entry.objects \
+            .filter( Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD) ) \
+            .order_by('civil_equivalent', 'homonym_order')[:7]
+        entries = [
+                {
+                'civil': e.civil_equivalent,
+                'headword': e.orth_vars[0].idem_ucs,
+                'pk': e.id,
+                'hom': e.homonym_order_roman,
+                'pos': e.part_of_speech.tag if e.homonym_order else '',
+                'hint': e.homonym_gloss,
+                'index': n,
+                'url': e.get_absolute_url(),
                 }
                 for n, e in enumerate(entries)]
         data = json.dumps(entries)
