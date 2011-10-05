@@ -99,7 +99,7 @@
                     this.focusedIndex(fi < 1 ? this.foundItems().length - 1 : fi - 1);
                 },
                 go: function(item) {
-                    window.history.go(item.url);
+                    window.location.href = item.url;
                 },
                 navigateFoundItems: function(event){
                     if (this.foundItems()) {
