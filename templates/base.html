@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <title>{{ title }}</title>
         <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
+        <link href="{{ STATIC_URL }}singlecomplete.css" rel="stylesheet" type="text/css">
     </head>
     <body>
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
@@ -20,7 +21,7 @@
                     <a href="{% url admin:dictionary_entry_add %}" rel="prefetch">+</a>
                 {% endif %}
 
-                <form enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}" class="singlecomplete-search">
+                <form enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}">
                     <input type="text" name="find" value="{{ find_prefix }}"
                        class="singlecomplete--search"
                        data-bind="
@@ -48,7 +49,7 @@
             <li class="SC--foundItem"
              data-bind="css: { 'SC--fI-focused': $data.index == viewModel.focusedIndex() },
              event: { mouseover: function(){ viewModel.focusedIndex($data.index); } },
-             click: function(){ viewModel.selectItem($data); }">
+             click: function(){ viewModel.go($data); }">
                 <span class="SC--fI--headword" data-bind="text: headword"></span>
                 <span class="SC--fI--homonym" data-bind="text: hom"></span>
                 <span class="SC--fI--pOS" data-bind="text: pos"></span>
@@ -98,7 +99,7 @@
                     this.focusedIndex(fi < 1 ? this.foundItems().length - 1 : fi - 1);
                 },
                 go: function(item) {
-                    alert(item.url);
+                    window.history.go(item.url);
                 },
                 navigateFoundItems: function(event){
                     if (this.foundItems()) {
