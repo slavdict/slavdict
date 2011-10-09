@@ -39,7 +39,16 @@ def make_greek_found(request):
 
 @login_required
 def all_entries(request):
-    entries = Entry.objects.all().order_by('civil_equivalent', 'homonym_order')
+    GET_FIND = request.GET.get('find')
+
+    if not GET_FIND:
+        entries = Entry.objects.all()
+    else:
+        FIND_LOWER = GET_FIND.lower()
+        FIND_CAPZD = GET_FIND.capitalize()
+        entries = Entry.objects.filter(
+            Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD) )
+
     entries = sorted(entries, key=entry_key)
     context = {
         'entries': entries,
