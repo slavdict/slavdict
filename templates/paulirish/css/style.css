@@ -9,9 +9,9 @@ textarea,
 select {
   background-color: #f9f9f9;
   border: 1px solid #adadad;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px; }
+  -webkit-border-radius: 3px 0 0 3px;
+  -moz-border-radius: 3px 0 0 3px;
+  border-radius: 3px 0 0 3px; }
 
 input[type="text"]:active, input[type="text"]:focus, input[type="text"]:hover,
 textarea:active, textarea:focus, textarea:hover,

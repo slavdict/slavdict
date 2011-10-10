@@ -1,41 +1,52 @@
 @charset 'utf-8'
 @import variables
 
-#header
+.header
     padding: 0.5em 1em
     text-align: center
     background-color: #484848
     color: white
+    position: relative
 
-#header a
+.header--item,
+.header--item-left,
+.header--item-right
     background-color: #5f5f5f
-    padding: 0.25em 0.7em
+    border-color: #5f5f5f
     color: white
-    font-family: Arial, sans-serif
+    padding: 0.25em 0.7em
+    font-family: $sansFont
     font-size: 12px
-    text-decoration: none
     @include roundedCorners(3px)
 
-#header a.on, #header a:hover.on
+.header--item-left
+    @include roundedCorners(3px 0 0 3px)
+    margin-right: 2px
+
+.header--item-right
+    @include roundedCorners(0 3px 3px 0)
+
+.header--item-block
+    height: 14px
+    padding: 2px 5px
+
+.header .button
+    height: 21px
+    padding: 0 auto
+
+.header .search
+    background-color: #fff
+    border-color: #fff
+    color: #8f8f8f
+
+.header--item.on
     background-color: white
     color: #484848
 
-#header a:hover
+a:hover
     color: white
     background-color: #069
 
-#header a.permanent
-    background-color: transparent
-
-#header a:hover.permanent
-    background-color: #069
-
-
-#header a.home
-    background-image: url(home-white.png)
-    background-position: 50% 50%
-    background-repeat: no-repeat
-    margin-right: 7px
-
-#header form
+.header form
     display: inline
+

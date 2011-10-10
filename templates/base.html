@@ -10,25 +10,24 @@
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
         {% block header_0 %}
-        <div id="header">
+        <div class="header">
             {% block header %}
 
-                <a href="{% url my_entries_url %}">Мои статьи</a>
-                <a href="{% url all_entries_url %}">Все статьи</a>
-                <!--<a href="/" class="home permanent">&nbsp;&nbsp;&nbsp;</a>-->
+                <a href="{% url my_entries_url %}" class="header--item">Мои статьи</a>
+                <a href="{% url all_entries_url %}" class="header--item">Все статьи</a>
 
                 {% if user.is_admeditor %}
-                    <a href="{% url admin:dictionary_entry_add %}" rel="prefetch">+</a>
+                    <a href="{% url admin:dictionary_entry_add %}" class="header--item">+</a>
                 {% endif %}
 
                 <form enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}">
                     <input type="text" name="find" value="{{ find_prefix }}"
-                       class="singlecomplete--search"
+                       class="header--item-left header--item-block search"
                        data-bind="
                             value: searchPrefix,
                             valueUpdate: 'afterkeydown',
-                            event: { keydown: navigateFoundItems }" />
-                    <input type="submit" value="найти" />
+                            event: { keydown: navigateFoundItems }"
+                    /><input type="submit" class="header--item-right button" value="найти" />
 
                     <ul class="SC--foundItems" data-bind="foreach: foundItems">
                         <li class="SC--foundItem" data-bind="css: {'SC--foundItem-focused': isSelected }">
@@ -40,7 +39,7 @@
                     </ul>
                 </form>
 
-                <a href="{% url converter %}">Конвертър</a>
+                <a href="{% url converter %}" class="header--item">Конвертър</a>
 
             {% endblock %}
         </div>
