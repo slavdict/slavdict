@@ -6,7 +6,7 @@
         <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
         <link href="{{ STATIC_URL }}singlecomplete.css" rel="stylesheet" type="text/css">
     </head>
-    <body>
+    <body data-bind="event: { keydown: function(event){ if (event.which == 27) viewModel.flushItems(); return true; } }">
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
         {% block header_0 %}
@@ -26,11 +26,16 @@
                        data-bind="
                             value: searchPrefix,
                             valueUpdate: 'afterkeydown',
-                            event: { keydown: navigateFoundItems }"
+                            event: { keydown: navigateFoundItems, blur: flushItems }"
+                       autocomplete="off"
+                       spellcheck="false"
                     /><input type="submit" class="header--item-right button" value="найти" />
 
-                    <ul class="SC--foundItems" data-bind="foreach: foundItems">
-                        <li class="SC--foundItem" data-bind="css: {'SC--foundItem-focused': isSelected }">
+                    <ul class="foundItems" data-bind="foreach: foundItems, css: { hidden: foundItems().length == 0 }">
+                        <li class="SC--foundItem"
+                            data-bind="css: { 'SC--foundItem-focused': isSelected },
+                                       event: { mouseover: function(){ $data.selectMe(); } },
+                                                click:     function(){ viewModel.go($data); }">
                             <span class="SC--fI--headword" data-bind="text: headword"></span>
                             <span class="SC--fI--homonym" data-bind="text: hom"></span>
                             <span class="SC--fI--pOS" data-bind="text: pos"></span>
@@ -74,57 +79,72 @@
             var viewModel = {
                 searchPrefix: ko.observable(),
                 foundItems: ko.observableArray(),
-                focusedItem: ko.observable(),
-
-                moveFocusDown: function() {
-//                    var arrLength = this.foundItems().length;
-//                    var currentItem = this.focusedItem();
-//                    var index = 0;
-//                    if (currentItem) {
-//                        index = ko.utils.arrayIndexOf(this.foundItems, currentItem);
-//                        index = index > (arrLength - 2) ? 0 : ++index;
-//                    }
-//                    this.foundItems[index].selectMe();
-                }.bind(this),
-                moveFocusUp: function() {
-                }.bind(this),
-                go: function(item) {
-                    window.location.href = item.url;
-                },
-                navigateFoundItems: function(event) {
-                    if (this.foundItems()) {
-                        if (event.which == 40) { // down arrow key
-                            this.moveFocusDown();
-                        } else if (event.which == 38) { // up arrow key
-                            this.moveFocusUp();
-                        } else if (event.which == 13) { // enter key
-                            if (this.focusedItem()) this.go(this.focusedItem());
-                        } else {
-                            return true;
-                        }
-                    } else return true;
-                }
+                focusedItem: ko.observable()
             };
 
-            ko.dependentObservable(function() {
-                var dataToSend, searchPrefix = this.searchPrefix();
-                if (this.lastItemsRequest) this.lastItemsRequest.abort();
-                if (searchPrefix) {
-                    dataToSend = { find: searchPrefix };
-                    this.lastItemsRequest = $.getJSON(
-                        "/json/singleselect/entries/urls/",
-                        dataToSend,
-                        function(data){
-                            var mappedData = ko.utils.arrayMap(
-                                data,
-                                function(item){ return new Item(item, viewModel.focusedItem); }
-                            );
-                            viewModel.foundItems(mappedData);
-                        }
-                    );
-                } else {
-                    viewModel.foundItems.splice(0);
+            viewModel.moveFocusDown = function() {
+                var items = this.foundItems;
+                var arrLength = items().length;
+                var currentItem = this.focusedItem();
+                var index = 0;
+                if (currentItem) {
+                    index = ko.utils.arrayIndexOf(items, currentItem);
+                    index = index > (arrLength - 2) ? 0 : ++index;
                 }
+                items()[index].selectMe();
+            }.bind(viewModel);
+
+            viewModel.moveFocusUp = function() {
+                var items = this.foundItems;
+                var arrLength = items().length;
+                var currentItem = this.focusedItem();
+                var index = arrLength - 1;
+                if (currentItem) {
+                    index = ko.utils.arrayIndexOf(items, currentItem);
+                    index = index < 1 ? arrLength - 1 : --index;
+                }
+                items()[index].selectMe();
+            }.bind(viewModel);
+
+            viewModel.go = function(item) {
+                window.location.href = item.url;
+            };
+
+            viewModel.flushItems = function() { this.foundItems.splice(0); }.bind(viewModel);
+
+            viewModel.navigateFoundItems = function(event) {
+                if (event.which == 40) { // down arrow key
+                    this.moveFocusDown();
+                } else if (event.which == 38) { // up arrow key
+                    this.moveFocusUp();
+                } else if (event.which == 13) { // enter key
+                    if (this.focusedItem()) this.go(this.focusedItem());
+                    else $('.header form').submit();
+                } else if (event.which == 27) { // esc key
+                    this.foundItems.splice(0);
+                } else {
+                    return true;
+                }
+            }.bind(viewModel);
+
+            viewModel.searchPrefixNotEmpty = ko.dependentObservable(function(){
+                return Boolean(this.searchPrefix());
+            }, viewModel);
+
+            ko.dependentObservable(function() {
+                var dataToSend = { find: this.searchPrefix() };
+                if (this.lastItemsRequest) this.lastItemsRequest.abort();
+                this.lastItemsRequest = $.getJSON(
+                    "/json/singleselect/entries/urls/",
+                    dataToSend,
+                    function(data){
+                        var mappedData = ko.utils.arrayMap(
+                            data,
+                            function(item){ return new Item(item, viewModel.focusedItem); }
+                        );
+                        viewModel.foundItems(mappedData);
+                    }
+                );
             }, viewModel);
 
             ko.applyBindings(viewModel);

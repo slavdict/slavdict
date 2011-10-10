@@ -2,11 +2,13 @@
 @import variables
 
 .header
-    padding: 0.5em 1em
+    padding: 5px
     text-align: center
     background-color: #484848
     color: white
     position: relative
+    line-height: 12px
+    height: 23px
 
 .header--item,
 .header--item-left,
@@ -17,7 +19,10 @@
     padding: 0.25em 0.7em
     font-family: $sansFont
     font-size: 12px
+    line-height: 12px
+    height: 14px
     @include roundedCorners(3px)
+    display: inline-block
 
 .header--item-left
     @include roundedCorners(3px 0 0 3px)
@@ -33,11 +38,15 @@
 .header .button
     height: 21px
     padding: 0 auto
+    display: inline-block
+    vertical-align: 0%
 
 .header .search
     background-color: #fff
     border-color: #fff
     color: #8f8f8f
+    display: inline-block
+    vertical-align: 0%
 
 .header--item.on
     background-color: white
@@ -49,4 +58,13 @@ a:hover
 
 .header form
     display: inline
+    vertical-align: 0%
+    position: relative
 
+.header .foundItems
+    position: absolute
+    left: 0px
+    background-color: rgba(#ddd, 0.85)
+    z-index: 255
+    padding: 2px 4px
+    @include roundedCorners(3px)
