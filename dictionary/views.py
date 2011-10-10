@@ -722,14 +722,12 @@ def json_singleselect_entries_urls(request):
                 {
                 'civil': e.civil_equivalent,
                 'headword': e.orth_vars[0].idem_ucs,
-                'pk': e.id,
                 'hom': e.homonym_order_roman,
                 'pos': e.part_of_speech.tag if e.homonym_order else '',
                 'hint': e.homonym_gloss,
-                'index': n,
                 'url': e.get_absolute_url(),
                 }
-                for n, e in enumerate(entries)]
+                for e in entries]
         data = json.dumps(entries)
         response = HttpResponse(data, mimetype='application/json')
     else:
