@@ -1,0 +1,196 @@
+@charset 'utf-8'
+@import variables
+
+
+table
+    table-layout: fixed
+    width: 100%
+    border-collapse: collapse
+
+table.entry-list
+    margin-top: 2em
+
+table.entry-list tr td
+    padding: 0.5% 2% 0.5% 0
+
+table.entry-list tr td.first
+    padding-left: 2%
+
+table.entry-list tr.hover
+    background-color: #069
+    color: #fff
+
+table.entry-list tr.last.hover
+    background-color: white
+    color: white
+
+table.entry-list tr.hover div.shade
+    display: none
+
+table.entry-list tr.last.hover div.shade
+    display: block
+
+table.entry-list tr td.eli-control
+    width: 5%
+
+table.entry-list tr td.eli-entry
+    overflow: hidden
+    padding-right: 0
+    padding-left: 0.7%
+    white-space: nowrap
+
+table.entry-list tr td.eli-status
+    width: 15%
+
+table.entry-list tr td.eli-author
+    width: 20%
+
+table.entry-list tr td.eli-mtime
+    width: 20%
+
+table.entry-list tr.hover td.eli-entry .cslav
+    text-shadow: 0 0 5px #023
+
+
+/* разделительная тень в списке статей */
+div.shade, div.fade
+    position: relative
+    height: 0
+
+div.shade div
+    position: absolute
+    top: -7px
+    height: 3px
+
+table.entry-list tr.last div.shade
+    top: 3px
+
+div.shade div.left
+    width: 80px
+    left: -16px
+    background: url(fadeBarLeft.gif) no-repeat top left
+
+div.shade div.center
+    width: 556px
+    left: 44px
+    background: url(fadeBarCenter.gif) repeat-x top left
+
+div.shade div.right
+    width: 80px
+    left: 600px
+    background: url(fadeBarRight.gif) no-repeat top left
+
+div.fade div
+    position: absolute
+    height: 60px
+    width: 100%
+    background: url("fade-right-white.png") repeat-y right top
+    // fade-right-white: 100px заготовкав в ширину в фотошопе, цвет белый, // градиентная заливка из белого в прозрачный/бесцветный цвет, // начало на 90-м пикселе, конец на 40-м. Получается около 10px справа
+    // заполнены непрозрачным белым, а далее влево он выцветает.
+tr.hover div.fade div
+    background-image: url("fade-right-blue.png")
+
+/* Выделения текста в списке статей */
+.ss /* Sans-Serif */, .ssn /* Sans-Serif Note */
+    font-family: Arial, sans-serif
+    font-size: 12px
+    line-height: 12px
+    color: gray
+
+.ssn
+    font-size: 10px
+    font-style: italic
+
+.ssn.white
+    color: white
+
+.caps
+    font-variant: small-caps
+    font-size: 13px
+    letter-spacing: 0.02em
+    //font-family: "Arial Black"
+    @include roundedCorners(0.3em)
+    background-color: #eee
+    padding: 0 0.5em 0.2em
+
+tr.entry-list-item.hover .ss, tr.hover .ssn
+    color: white
+
+tr.entry-list-item.hover .caps
+    color: white
+    background-color: #069
+
+
+/* Ссылки для лексем в списке */
+.manual-entry
+    color: black
+    text-decoration: none
+    border-bottom-width: 0
+
+tr.hover .manual-entry
+    color: #fff
+    border-bottom: 1px solid #fff
+
+
+a.icon img
+    width: 22px
+    height: 22px
+    vertical-align: middle
+    padding: 0
+    margin: 0
+a.icon.edit
+    background: url(edit-gray-faded.png) no-repeat 50% 50%
+
+a:hover.icon.edit
+    background: url(edit-gray.png) no-repeat 50% 50%
+
+tr.entry-list-item.hover a.icon.edit
+    background: url(edit-white.png) no-repeat 50% 50%
+
+a.icon.view
+    background: url(eye-gray-faded.png) no-repeat 50% 50%
+
+a:hover.icon.view
+    background: url(eye-gray.png) no-repeat 50% 50%
+
+tr.entry-list-item.hover a.icon.view
+    background: url(eye-white.png) no-repeat 50% 50%
+
+
+table.entry-list tr.control-row td
+    padding-bottom: 6px
+
+table.entry-list tr.control-row.hover td
+    background-color: #bbb
+
+
+.anchor
+    padding: 0 4px 3px
+    color: #ccc
+    @include roundedCorners(3px)
+
+.anchor.on
+    background-color: #eee
+    color: #777
+
+table.entry-list tr.control-row.hover td .anchor:hover,table.entry-list tr.control-row.hover td .anchor.on
+    background-color: white
+    color: #484848
+    cursor: pointer
+
+
+span.hint-container
+    position: relative
+    display: none
+
+div.hint
+    font-family: Arial, sans-serif
+    font-size: 10px
+    line-height: 10px
+    position: absolute
+    padding: 1ex 1em
+    @include roundedCorners(0.3em)
+    color: white
+    background-color: #484848
+    left: -130px
+    top: -28px

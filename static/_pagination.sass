@@ -1,0 +1,27 @@
+@charset 'utf-8'
+@import variables
+
+.pagination
+    width: 300px
+    margin: 40px auto
+    text-align: center
+
+.pagination a
+    background-color: #dedede
+    padding: 0.25em 0.7em
+    color: #555
+    font-family: Arial, sans-serif
+    font-size: 12px
+    text-decoration: none
+    @include roundedCorners(3px)
+
+.pagination a.current-page
+    background-color: #069
+    color: #fff
+
+.pagination a:hover
+    color: #fff
+    background-color: #555
+
+.pagination a:hover.current-page
+    background-color: #a00
