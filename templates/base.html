@@ -29,7 +29,7 @@
                             valueUpdate: 'afterkeydown',
                             event: { keydown: navigateFoundItems }" />
                     <input type="submit" value="найти" />
-                    
+
                     <ul class="SC--foundItems" data-bind="foreach: foundItems">
                         <li class="SC--foundItem" data-bind="css: {'SC--foundItem-focused': isSelected }">
                             <span class="SC--fI--headword" data-bind="text: headword"></span>
@@ -54,15 +54,13 @@
         <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.js'></script>
         <script>
 
-            function Item(item, index, selected) {
+            function Item(item, selected) {
 
                 this.headword = item.headword;
-                this.hom = item.hom;
-                this.pos = item.pos;
-                this.hint = item.hint;
+                this.hom = item.hom || '';
+                this.pos = item.pos || '';
+                this.hint = item.hint || '';
                 this.url = item.url;
-
-                this.index = index;
 
                 this.selectMe = function(){
                     selected(this);
@@ -80,29 +78,23 @@
                 focusedItem: ko.observable(),
 
                 moveFocusDown: function() {
-                    var index = this.focusedItem().index ? this.focusedItem().index : 0;
-                    var newIndex = index + 1 >= this.foundItems.length ? 0 : index + 1
-                    if (this.focusedItem()) {
-                        this.focusedItem(this.foundItems[newIndex]);
-                    } else {
-                        this.focusedItem(this.foundItems[0]);
-                    }
-                },
+//                    var arrLength = this.foundItems().length;
+//                    var currentItem = this.focusedItem();
+//                    var index = 0;
+//                    if (currentItem) {
+//                        index = ko.utils.arrayIndexOf(this.foundItems, currentItem);
+//                        index = index > (arrLength - 2) ? 0 : ++index;
+//                    }
+//                    this.foundItems[index].selectMe();
+                }.bind(this),
                 moveFocusUp: function() {
-                    var index = this.focusedItem().index ? this.focusedItem().index : this.foundItems.length - 1;
-                    var newIndex = index - 1 < 0 ? this.foundItems.length - 1 : index - 1
-                    if (this.focusedItem()) {
-                        this.focusedItem(this.foundItems[newIndex]);
-                    } else {
-                        this.focusedItem(this.foundItems[this.foundItems.length - 1]);
-                    }
-                },
+                }.bind(this),
                 go: function(item) {
                     window.location.href = item.url;
                 },
-                navigateFoundItems: function(event){
+                navigateFoundItems: function(event) {
                     if (this.foundItems()) {
-                        if (event.which == 39) { // down arrow key
+                        if (event.which == 40) { // down arrow key
                             this.moveFocusDown();
                         } else if (event.which == 38) { // up arrow key
                             this.moveFocusUp();
@@ -116,18 +108,23 @@
             };
 
             ko.dependentObservable(function() {
-                var dataToSend, index = 0;
+                var dataToSend, searchPrefix = this.searchPrefix();
                 if (this.lastItemsRequest) this.lastItemsRequest.abort();
-                if (this.searchPrefix) {
-                    dataToSend = { find: this.searchPrefix() };
-                    this.lastItemsRequest = $.getJSON("/json/singleselect/entries/urls/", dataToSend, function(data){
-                        var mappedData = ko.utils.arrayMap(data, function(item){
-                            return new Item(item, index++, viewModel.focusedItem);
-                        });
-                        viewModel.foundItems(mappedData);
-                    });
+                if (searchPrefix) {
+                    dataToSend = { find: searchPrefix };
+                    this.lastItemsRequest = $.getJSON(
+                        "/json/singleselect/entries/urls/",
+                        dataToSend,
+                        function(data){
+                            var mappedData = ko.utils.arrayMap(
+                                data,
+                                function(item){ return new Item(item, viewModel.focusedItem); }
+                            );
+                            viewModel.foundItems(mappedData);
+                        }
+                    );
                 } else {
-                    this.foundItems.splice(0);
+                    viewModel.foundItems.splice(0);
                 }
             }, viewModel);
 
