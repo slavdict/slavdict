@@ -127,25 +127,25 @@
                 }
             }.bind(viewModel);
 
-            viewModel.searchPrefixNotEmpty = ko.dependentObservable(function(){
-                return Boolean(this.searchPrefix());
-            }, viewModel);
-
-            ko.dependentObservable(function() {
-                var dataToSend = { find: this.searchPrefix() };
-                if (this.lastItemsRequest) this.lastItemsRequest.abort();
-                this.lastItemsRequest = $.getJSON(
-                    "/json/singleselect/entries/urls/",
-                    dataToSend,
-                    function(data){
-                        var mappedData = ko.utils.arrayMap(
-                            data,
-                            function(item){ return new Item(item, viewModel.focusedItem); }
-                        );
-                        viewModel.foundItems(mappedData);
-                    }
-                );
-            }, viewModel);
+            viewModel.searchPrefix.subscribe(function(newValue) {
+                if (newValue) {
+                    var dataToSend = { find: newValue };
+                    if (viewModel.lastItemsRequest) { viewModel.lastItemsRequest.abort(); }
+                    viewModel.lastItemsRequest = $.getJSON(
+                        "/json/singleselect/entries/urls/",
+                        dataToSend,
+                        function(data){
+                            var mappedData = ko.utils.arrayMap(
+                                data,
+                                function(item){ return new Item(item, viewModel.focusedItem); }
+                            );
+                            viewModel.foundItems(mappedData);
+                        }
+                    );
+                } else {
+                    viewModel.flushItems();
+                }
+            });
 
             ko.applyBindings(viewModel);
         </script>
