@@ -6,7 +6,7 @@
         <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
         <link href="{{ STATIC_URL }}singlecomplete.css" rel="stylesheet" type="text/css">
     </head>
-    <body data-bind="event: { keydown: function(event){ if (event.which == 27) viewModel.flushItems(); return true; } }">
+    <body data-bind="event: { keydown: function(event){ if (event.which == 27) vM_hdrSearch.flushItems(); return true; } }">
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
         {% block header_0 %}
@@ -35,7 +35,7 @@
                         <li class="SC--foundItem"
                             data-bind="css: { 'SC--foundItem-focused': isSelected },
                                        event: { mouseover: function(){ $data.selectMe(); } },
-                                                click:     function(){ viewModel.go($data); }">
+                                                click:     function(){ vM_hdrSearch.go($data); }">
                             <span class="SC--fI--headword" data-bind="text: headword"></span>
                             <span class="SC--fI--homonym" data-bind="text: hom"></span>
                             <span class="SC--fI--pOS" data-bind="text: pos"></span>
@@ -76,13 +76,13 @@
                 );
             }
 
-            var viewModel = {
+            var vM_hdrSearch = {
                 searchPrefix: ko.observable(),
                 foundItems: ko.observableArray(),
                 focusedItem: ko.observable()
             };
 
-            viewModel.moveFocusDown = function() {
+            vM_hdrSearch.moveFocusDown = function() {
                 var items = this.foundItems;
                 var arrLength = items().length;
                 var currentItem = this.focusedItem();
@@ -92,9 +92,9 @@
                     index = index > (arrLength - 2) ? 0 : ++index;
                 }
                 items()[index].selectMe();
-            }.bind(viewModel);
+            }.bind(vM_hdrSearch);
 
-            viewModel.moveFocusUp = function() {
+            vM_hdrSearch.moveFocusUp = function() {
                 var items = this.foundItems;
                 var arrLength = items().length;
                 var currentItem = this.focusedItem();
@@ -104,15 +104,15 @@
                     index = index < 1 ? arrLength - 1 : --index;
                 }
                 items()[index].selectMe();
-            }.bind(viewModel);
+            }.bind(vM_hdrSearch);
 
-            viewModel.go = function(item) {
+            vM_hdrSearch.go = function(item) {
                 window.location.href = item.url;
             };
 
-            viewModel.flushItems = function() { this.foundItems.splice(0); }.bind(viewModel);
+            vM_hdrSearch.flushItems = function() { this.foundItems.splice(0); }.bind(vM_hdrSearch);
 
-            viewModel.navigateFoundItems = function(event) {
+            vM_hdrSearch.navigateFoundItems = function(event) {
                 if (event.which == 40) { // down arrow key
                     this.moveFocusDown();
                 } else if (event.which == 38) { // up arrow key
@@ -125,29 +125,29 @@
                 } else {
                     return true;
                 }
-            }.bind(viewModel);
+            }.bind(vM_hdrSearch);
 
-            viewModel.searchPrefix.subscribe(function(newValue) {
+            vM_hdrSearch.searchPrefix.subscribe(function(newValue) {
                 if (newValue) {
                     var dataToSend = { find: newValue };
-                    if (viewModel.lastItemsRequest) { viewModel.lastItemsRequest.abort(); }
-                    viewModel.lastItemsRequest = $.getJSON(
+                    if (vM_hdrSearch.lastItemsRequest) { vM_hdrSearch.lastItemsRequest.abort(); }
+                    vM_hdrSearch.lastItemsRequest = $.getJSON(
                         "/json/singleselect/entries/urls/",
                         dataToSend,
                         function(data){
                             var mappedData = ko.utils.arrayMap(
                                 data,
-                                function(item){ return new Item(item, viewModel.focusedItem); }
+                                function(item){ return new Item(item, vM_hdrSearch.focusedItem); }
                             );
-                            viewModel.foundItems(mappedData);
+                            vM_hdrSearch.foundItems(mappedData);
                         }
                     );
                 } else {
-                    viewModel.flushItems();
+                    vM_hdrSearch.flushItems();
                 }
             });
 
-            ko.applyBindings(viewModel);
+            ko.applyBindings(vM_hdrSearch);
         </script>
 
         {% block javascript %}{% endblock %}
