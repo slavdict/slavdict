@@ -645,6 +645,7 @@ def entry_list(request, mine=False):
         'sort': COOKIES_SORT,
         'find_prefix': GET_FIND,
         'mine': mine,
+        'authors': CustomUser.objects.filter()
         }
     return render_to_response('entry_list.html', context, RequestContext(request))
 

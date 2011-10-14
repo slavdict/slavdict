@@ -36,7 +36,13 @@
                           title="Упорядочить по убыванию">↑</span>
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по алфавиту</span>
                 </td>
-                <td class="eli-author"></td>
+                <td class="eli-author">
+                    <select>
+                        {% for author in authors %}
+                        <option value="{{ author.id }}">{{ author }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                 <td class="eli-mtime">
                     <span class="ssn anchor{% ifequal sort 't' %} on{% endifequal %}" value="t"
                           title="Упорядочить по возрастанию">↓</span>
@@ -250,5 +256,10 @@
                 window.location = "?" + $.param(QUERY_STRING);
             }
         });
+
+        var vM_authorsFilter = {
+            authors: [],
+
+        };
     </script>
 {% endblock %}
