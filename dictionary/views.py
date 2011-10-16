@@ -639,13 +639,18 @@ def entry_list(request, mine=False):
         page = paginator.page(pagenum)
     except (EmptyPage, InvalidPage):
         page = paginator.page(paginator.num_pages)
+
+    authors = [{'id': u.id, 'name': u.__unicode__()} for u in CustomUser.objects.filter(groups__name=u'authors')]
+    authors.insert(0, {'name': u'все авторы', 'id': 'all'})
+    authors.append({'name': 'статьи без автора', 'id': 'none'})
+
     context = {
         'entries': page.object_list,
         'page': page,
         'sort': COOKIES_SORT,
         'find_prefix': GET_FIND,
         'mine': mine,
-        'authors': CustomUser.objects.filter()
+        'authors': authors,
         }
     return render_to_response('entry_list.html', context, RequestContext(request))
 
