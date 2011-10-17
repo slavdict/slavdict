@@ -6,7 +6,6 @@
     {% if not intermed %}
         <a href="{% url switch_info_url %}"
            class="header--item{% if show_additional_info %} on{% endif %}">инфо</a>
-        <a href="{% url entry_pdf_url entry.pk %}" class="header--item">PDF</a>
     {% endif %}
 
 {% endblock %}

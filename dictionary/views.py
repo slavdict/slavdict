@@ -561,22 +561,6 @@ def import_csv_billet(request):
 
 
 
-from slavdict.pdf import write_pdf
-
-@login_required
-def pdf_for_single_entry(request, entry_id):
-    entry = get_object_or_404(Entry, id=entry_id)
-    context = {
-        'entry': entry,
-        'title': u'Статья «%s»' % entry.civil_equivalent,
-        'show_additional_info': 'ai' in request.COOKIES,
-        'user': request.user,
-        'date': datetime.datetime.now(),
-        'filename': 'entry%s.pdf' % entry_id,
-        }
-    return write_pdf(request, 'pdf_for_single_entry.html', context)
-
-
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 @login_required
