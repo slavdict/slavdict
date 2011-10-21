@@ -148,11 +148,13 @@
                     this.flushItems();
                 }
             }, vM_hdrSearch);
-
-            ko.applyBindings(vM_hdrSearch);
         </script>
 
         {% block javascript %}{% endblock %}
+
+        <script>
+            ko.applyBindings(viewModel);
+        </script>
 
     </body>
 </html>

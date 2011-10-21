@@ -648,8 +648,6 @@ def entry_list(request, mine=False):
         page = paginator.page(paginator.num_pages)
 
     authors = [{'id': u.id, 'name': u.__unicode__()} for u in CustomUser.objects.filter(groups__name=u'authors')]
-    authors.insert(0, {'name': u'все авторы', 'id': 'all'})
-    authors.append({'name': 'статьи без автора', 'id': 'none'})
 
     context = {
         'entries': page.object_list,

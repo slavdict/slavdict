@@ -225,17 +225,19 @@
 {% endblock %}
 {% block javascript %}
     <script type="text/javascript">
-        var QUERY_STRING = {};
         $('tr').mouseover(function(){
             $(this).addClass('hover');
         }).mouseout(function(){
             $(this).removeClass('hover');
         });
+
         $('.icon').mouseover(function(){
             $(this).next('.hint-container').show();
         }).mouseout(function(){
             $(this).next('.hint-container').hide();
         });
+
+        var QUERY_STRING = {};
         $(".anchor").not('.on').click(function(){
             QUERY_STRING['sort'] = $(this).attr('data-sort');
             window.location = "?" + $.param(QUERY_STRING);
@@ -243,6 +245,10 @@
 
         var vM_authorsFilter = {
             authors: {{ authors|safe }}
+                .concat(
+                    {id:'all', name: 'Все авторы'},
+                    {id:'none', name: 'Без автора'}
+                )
         };
     </script>
 {% endblock %}
