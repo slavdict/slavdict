@@ -565,14 +565,13 @@ from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 @login_required
 def entry_list(request, mine=False):
-    SORT_MAPPING = {
+    VALID_SORT_PARAMS = {
         'alph': ('civil_equivalent', 'homonym_order'),
         '-alph': ('-civil_equivalent', '-homonym_order'),
         't': ('mtime', 'id'),
         '-t': ('-mtime', '-id'),
         }
     DEFAULT_SORT = '-t'
-    VALID_SORT_PARAMS = set(SORT_MAPPING)
     GET_SORT = request.GET.get('sort')
     GET_FIND = request.GET.get('find')
 
@@ -586,7 +585,7 @@ def entry_list(request, mine=False):
         return response
 
     COOKIES_SORT = request.COOKIES.get('sort', DEFAULT_SORT)
-    SORT_PARAMS = SORT_MAPPING[COOKIES_SORT]
+    SORT_PARAMS = VALID_SORT_PARAMS[COOKIES_SORT]
 
     if GET_FIND is None and not mine:
         GET_FIND = u''
