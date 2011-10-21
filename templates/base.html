@@ -6,7 +6,7 @@
         <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
         <link href="{{ STATIC_URL }}singlecomplete.css" rel="stylesheet" type="text/css">
     </head>
-    <body data-bind="event: { keydown: function(event){ if (event.which == 27) viewModel.flushItems(); return true; } }">
+    <body data-bind="event: { keydown: function(event){ if (event.which == 27) viewModel.search.flushItems(); return true; } }">
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
         {% block header_0 %}
@@ -24,18 +24,19 @@
                     <input type="text" name="find" value="{{ find_prefix }}"
                        class="header--item-left header--item-block search"
                        data-bind="
-                            value: searchPrefix,
+                            value: search.searchPrefix,
                             valueUpdate: 'afterkeydown',
-                            event: { keydown: navigateFoundItems, blur: flushItems }"
+                            event: { keydown: search.navigateFoundItems, blur: search.flushItems }"
                        autocomplete="off"
                        spellcheck="false"
                     /><input type="submit" class="header--item-right button" value="найти" />
 
-                    <ul class="foundItems" data-bind="foreach: foundItems, css: { hidden: foundItems().length == 0 }">
+                    <ul class="foundItems" data-bind="foreach: search.foundItems,
+                                                      css: { hidden: search.foundItems().length == 0 }">
                         <li class="SC--foundItem"
                             data-bind="css: { 'SC--foundItem-focused': isFocused },
                                        event: {
-                                            mousedown: function(){ $parent.go($data); },
+                                            mousedown: function(){ $parent.search.go($data); },
                                             mouseover: function(){ $data.focusMe(); }
                                        }">
                             <span class="SC--fI--headword" data-bind="text: headword"></span>
@@ -78,13 +79,14 @@
                 );
             }
 
-            var viewModel = {
+            var viewModel = {};
+            viewModel.search = {
                 searchPrefix: ko.observable(),
                 foundItems: ko.observableArray(),
                 focusedItem: ko.observable()
             };
 
-            viewModel.moveFocusDown = function() {
+            viewModel.search.moveFocusDown = function() {
                 var items = this.foundItems;
                 var arrLength = items().length;
                 var currentItem = this.focusedItem();
@@ -94,9 +96,9 @@
                     index = index > (arrLength - 2) ? 0 : ++index;
                 }
                 items()[index].focusMe();
-            }.bind(viewModel);
+            }.bind(viewModel.search);
 
-            viewModel.moveFocusUp = function() {
+            viewModel.search.moveFocusUp = function() {
                 var items = this.foundItems;
                 var arrLength = items().length;
                 var currentItem = this.focusedItem();
@@ -106,15 +108,15 @@
                     index = index < 1 ? arrLength - 1 : --index;
                 }
                 items()[index].focusMe();
-            }.bind(viewModel);
+            }.bind(viewModel.search);
 
-            viewModel.go = function(item) {
+            viewModel.search.go = function(item) {
                 window.location.href = item.url;
             };
 
-            viewModel.flushItems = function() { this.foundItems.splice(0); }.bind(viewModel);
+            viewModel.search.flushItems = function() { this.foundItems.splice(0); }.bind(viewModel.search);
 
-            viewModel.navigateFoundItems = function(event) {
+            viewModel.search.navigateFoundItems = function(event) {
                 if (event.which == 40) { // down arrow key
                     this.moveFocusDown();
                 } else if (event.which == 38) { // up arrow key
@@ -127,9 +129,9 @@
                 } else {
                     return true;
                 }
-            }.bind(viewModel);
+            }.bind(viewModel.search);
 
-            viewModel.searchPrefix.subscribe(function(newValue) {
+            viewModel.search.searchPrefix.subscribe(function(newValue) {
                 if (newValue) {
                     var dataToSend = { find: newValue };
                     if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
@@ -139,15 +141,15 @@
                         function(data){
                             var mappedData = ko.utils.arrayMap(
                                 data,
-                                function(item){ return new Item(item, viewModel.focusedItem); }
+                                function(item){ return new Item(item, viewModel.search.focusedItem); }
                             );
-                            viewModel.foundItems(mappedData);
+                            viewModel.search.foundItems(mappedData);
                         }
                     );
                 } else {
                     this.flushItems();
                 }
-            }, viewModel);
+            }, viewModel.search);
         </script>
 
         {% block javascript %}{% endblock %}
