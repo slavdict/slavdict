@@ -1,0 +1,29 @@
+@charset 'utf-8'
+
+@import variables
+
+.filter-select
+    position: relative
+    font-family: $sansFont
+
+.fS--header
+    cursor: pointer
+//.fS--h--text
+.fS--h--open,
+.fS--h--reset
+    position: absolute
+    width: 15px
+    height: 15px
+    display: block
+    background-color: #aaa
+    @include roundedCorners(4px)
+.fS--h--open
+    right: -20px
+.fS--h--reset
+    right: 0px
+
+.fS--items
+    position: absolute
+    
+//.fS--item
+//.fS--item-focused

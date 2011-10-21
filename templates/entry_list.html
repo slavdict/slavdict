@@ -37,9 +37,16 @@
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по алфавиту</span>
                 </td>
                 <td class="eli-author">
-                    <select data-bind="foreach: filters.authors">
-                        <option data-bind="value: id, text: name"></option>
-                    </select>
+                    <div class="filter-select">
+                        <span class="fS--header">
+                            <span class="fS--h--text" data-bind="text: filters.selectedAuthor()"></span>
+                            <span class="fS--h--open">▾</span>
+                            <span class="fS--h--reset">×</span>
+                        </span>
+                        <ul class="fS--items hidden" data-bind="foreach: filters.authors">
+                            <li class="fS--item" data-bind="text: name"></li>
+                        </ul>
+                    </div>
                 </td>
                 <td class="eli-mtime">
                     <span class="ssn anchor{% ifequal sort 't' %} on{% endifequal %}" data-sort="t"
@@ -246,7 +253,8 @@
                 .concat(
                     {id:'all', name: 'Все авторы'},
                     {id:'none', name: 'Без автора'}
-                )
+                ),
+            selectedAuthor: ko.observable()
         };
     </script>
 {% endblock %}
