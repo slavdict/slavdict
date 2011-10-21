@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
+
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
@@ -655,7 +657,7 @@ def entry_list(request, mine=False):
         'sort': COOKIES_SORT,
         'find_prefix': GET_FIND,
         'mine': mine,
-        'authors': authors,
+        'authors': json.dumps(authors, ensure_ascii=False, separators=(',',':')),
         }
     return render_to_response('entry_list.html', context, RequestContext(request))
 
@@ -687,7 +689,6 @@ def antconc2ucs8_converter(request):
 
 @login_required
 def json_multiselect_entries(request):
-    import json
     GET_FIND = request.GET.get('find')
     GET_ID = request.GET.get('ids')
     if GET_ID:
@@ -713,7 +714,7 @@ def json_multiselect_entries(request):
                 'index': n,
                 }
                 for n, e in enumerate(entries)]
-        data = json.dumps(entries)
+        data = json.dumps(entries, ensure_ascii=False, separators=(',',':'))
         response = HttpResponse(data, mimetype='application/json')
     else:
         response = HttpResponse(mimetype='application/json', status=400)
@@ -721,7 +722,6 @@ def json_multiselect_entries(request):
 
 @login_required
 def json_singleselect_entries_urls(request):
-    import json
     GET_FIND = request.GET.get('find')
     if GET_FIND:
         FIND_LOWER = GET_FIND.lower()
@@ -739,7 +739,7 @@ def json_singleselect_entries_urls(request):
                 'url': e.get_absolute_url(),
                 }
                 for e in entries]
-        data = json.dumps(entries)
+        data = json.dumps(entries, ensure_ascii=False, separators=(',',':'))
         response = HttpResponse(data, mimetype='application/json')
     else:
         response = HttpResponse(mimetype='application/json', status=400)
