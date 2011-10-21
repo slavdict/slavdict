@@ -6,7 +6,7 @@
 
     <div style="line-height: 100%;">
 
-
+        {% if show_additional_info and entry.orth_vars.0.is_reconstructed %}*{% endif %}
         {% ifnotequal entry.part_of_speech.slug 'beyond' %}
             <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
         {% else %}
@@ -23,6 +23,10 @@
 
             {% if forloop.first %}
                 {% space %}(
+            {% endif %}
+
+            {% if show_additional_info and ovar.is_reconstructed %}
+                {% if forloop.first %}{% backspace %}{% endif %}*
             {% endif %}
 
             <span class="cslav orthvar">{{ ovar.idem_ucs }}</span>

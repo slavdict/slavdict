@@ -33,11 +33,11 @@
 
                     <ul class="foundItems" data-bind="foreach: foundItems, css: { hidden: foundItems().length == 0 }">
                         <li class="SC--foundItem"
-                            data-bind="css: { 'SC--foundItem-focused': isSelected },
+                            data-bind="css: { 'SC--foundItem-focused': isFocused },
                                        event: {
-                                            mouseover: function(){ $data.selectMe(); },
-                                            click: function(){ vM_hdrSearch.go($data); }
-                                        }">
+                                            mousedown: function(){ $parent.go($data); },
+                                            mouseover: function(){ $data.focusMe(); }
+                                       }">
                             <span class="SC--fI--headword" data-bind="text: headword"></span>
                             <span class="SC--fI--homonym" data-bind="text: hom"></span>
                             <span class="SC--fI--pOS" data-bind="text: pos"></span>
@@ -60,7 +60,7 @@
         <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
         <script>
 
-            function Item(item, selected) {
+            function Item(item, focused) {
 
                 this.headword = item.headword;
                 this.hom = item.hom || '';
@@ -68,12 +68,12 @@
                 this.hint = item.hint || '';
                 this.url = item.url;
 
-                this.selectMe = function(){
-                    selected(this);
+                this.focusMe = function(){
+                    focused(this);
                 }.bind(this);
 
-                this.isSelected = ko.dependentObservable(
-                    function(){ return selected() === this; },
+                this.isFocused = ko.dependentObservable(
+                    function(){ return focused() === this; },
                     this
                 );
             }
@@ -93,7 +93,7 @@
                     index = ko.utils.arrayIndexOf(items, currentItem);
                     index = index > (arrLength - 2) ? 0 : ++index;
                 }
-                items()[index].selectMe();
+                items()[index].focusMe();
             }.bind(vM_hdrSearch);
 
             vM_hdrSearch.moveFocusUp = function() {
@@ -105,7 +105,7 @@
                     index = ko.utils.arrayIndexOf(items, currentItem);
                     index = index < 1 ? arrLength - 1 : --index;
                 }
-                items()[index].selectMe();
+                items()[index].focusMe();
             }.bind(vM_hdrSearch);
 
             vM_hdrSearch.go = function(item) {
