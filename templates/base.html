@@ -141,10 +141,10 @@
                         function(data){
                             var mappedData = ko.utils.arrayMap(
                                 data,
-                                function(item){ return new Item(item, viewModel.search.focusedItem); }
+                                function(item){ return new Item(item, this.focusedItem); }.bind(this)
                             );
-                            viewModel.search.foundItems(mappedData);
-                        }
+                            this.foundItems(mappedData);
+                        }.bind(this)
                     );
                 } else {
                     this.flushItems();
