@@ -572,8 +572,12 @@ def entry_list(request, mine=False):
         '-t': ('-mtime', '-id'),
         }
     DEFAULT_SORT = '-t'
+    FILTERS = {}
+    QS_PARSING_ERRORS = []
+
     GET_SORT = request.GET.get('sort')
     GET_FIND = request.GET.get('find')
+    GET_AUTHOR = request.GET.get('author')
 
     if GET_SORT:
         redirect_path = "./"
@@ -587,9 +591,27 @@ def entry_list(request, mine=False):
     COOKIES_SORT = request.COOKIES.get('sort', DEFAULT_SORT)
     SORT_PARAMS = VALID_SORT_PARAMS[COOKIES_SORT]
 
+    if GET_AUTHOR:
+        if GET_AUTHOR=='all':
+            pass
+        elif GET_AUTHOR=='none':
+            FILTERS['editor__isnull'] = True
+        elif GET_AUTHOR.isdigit():
+            FILTERS['editor'] = int(GET_AUTHOR)
+        else:
+            QS_PARSING_ERRORS.append('author')
+
+        if 'author' not in QS_PARSING_ERRORS:
+            redirect_path = "./"
+            if GET_FIND:
+                redirect_path = "?find=%s" % GET_FIND
+            response = HttpResponseRedirect(redirect_path)
+            response.set_cookie('author', GET_AUTHOR)
+
+
     if GET_FIND is None and not mine:
         GET_FIND = u''
-        entry_list = Entry.objects.all().order_by(*SORT_PARAMS) #filter(editor=request.user)
+        entry_list = Entry.objects.filter(**FILTERS).order_by(*SORT_PARAMS) #filter(editor=request.user)
     else:
         if GET_FIND:
             # Ищем все лексемы, удовлетворяющие запросу в независимости от регистра начальной буквы запроса.
@@ -600,7 +622,7 @@ def entry_list(request, mine=False):
             FIND_CAPZD = GET_FIND.capitalize()
             entry_list = Entry.objects.filter(
                     Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD)
-                ).order_by(*SORT_PARAMS) #filter(editor=request.user)
+                ).filter(**FILTERS).order_by(*SORT_PARAMS) #filter(editor=request.user)
         else:
             GET_FIND = u''
             if mine:
