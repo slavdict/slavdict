@@ -30,9 +30,9 @@
                 <td class="eli-control first"></td>
                 <td class="eli-control"></td>
                 <td class="eli-entry">
-                    <span class="ssn anchor{% ifequal sort 'alph' %} on{% endifequal %}" value="alph"
+                    <span class="ssn anchor{% ifequal sort 'alph' %} on{% endifequal %}" data-sort="alph"
                           title="Упорядочить по возрастанию">↓</span>
-                    <span class="ssn anchor{% ifequal sort '-alph' %} on{% endifequal %}" value="-alph"
+                    <span class="ssn anchor{% ifequal sort '-alph' %} on{% endifequal %}" data-sort="-alph"
                           title="Упорядочить по убыванию">↑</span>
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по алфавиту</span>
                 </td>
@@ -44,9 +44,9 @@
                     </select>
                 </td>
                 <td class="eli-mtime">
-                    <span class="ssn anchor{% ifequal sort 't' %} on{% endifequal %}" value="t"
+                    <span class="ssn anchor{% ifequal sort 't' %} on{% endifequal %}" data-sort="t"
                           title="Упорядочить по возрастанию">↓</span>
-                    <span class="ssn anchor{% ifequal sort '-t' %} on{% endifequal %}" value="-t"
+                    <span class="ssn anchor{% ifequal sort '-t' %} on{% endifequal %}" data-sort="-t"
                           title="Упорядочить по убыванию">↑</span>
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по вр. изм.</span>
                 </td>
@@ -225,20 +225,7 @@
 {% endblock %}
 {% block javascript %}
     <script type="text/javascript">
-        function getDictFromURIQS(){
-            var qs = window.location.search;
-            qs = qs.slice(1);
-            var qsDict = {};
-            if (qs) {
-                var params = qs.split("&");
-                for (var i=0; i < params.length; i++){
-                    var keyvalue = params[i].split("=");
-                    qsDict[keyvalue[0]] = keyvalue[1];
-                }
-            }
-            return qsDict;
-        }
-        var QUERY_STRING = getDictFromURIQS();
+        var QUERY_STRING = {};
         $('tr').mouseover(function(){
             $(this).addClass('hover');
         }).mouseout(function(){
@@ -252,14 +239,13 @@
         $(".anchor").click(function(){
             var x = $(this);
             if ( ! (x.hasClass('on')) ) {
-                QUERY_STRING['sort'] = x.attr('value');
+                QUERY_STRING['sort'] = x.attr('data-sort');
                 window.location = "?" + $.param(QUERY_STRING);
             }
         });
 
         var vM_authorsFilter = {
-            authors: [],
-
+            authors: []
         };
     </script>
 {% endblock %}
