@@ -6,7 +6,7 @@
         <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
         <link href="{{ STATIC_URL }}singlecomplete.css" rel="stylesheet" type="text/css">
     </head>
-    <body data-bind="event: { keydown: function(event){ if (event.which == 27) vM_hdrSearch.flushItems(); return true; } }">
+    <body data-bind="event: { keydown: function(event){ if (event.which == 27) viewModel.flushItems(); return true; } }">
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
         {% block header_0 %}
@@ -78,13 +78,13 @@
                 );
             }
 
-            var vM_hdrSearch = {
+            var viewModel = {
                 searchPrefix: ko.observable(),
                 foundItems: ko.observableArray(),
                 focusedItem: ko.observable()
             };
 
-            vM_hdrSearch.moveFocusDown = function() {
+            viewModel.moveFocusDown = function() {
                 var items = this.foundItems;
                 var arrLength = items().length;
                 var currentItem = this.focusedItem();
@@ -94,9 +94,9 @@
                     index = index > (arrLength - 2) ? 0 : ++index;
                 }
                 items()[index].focusMe();
-            }.bind(vM_hdrSearch);
+            }.bind(viewModel);
 
-            vM_hdrSearch.moveFocusUp = function() {
+            viewModel.moveFocusUp = function() {
                 var items = this.foundItems;
                 var arrLength = items().length;
                 var currentItem = this.focusedItem();
@@ -106,15 +106,15 @@
                     index = index < 1 ? arrLength - 1 : --index;
                 }
                 items()[index].focusMe();
-            }.bind(vM_hdrSearch);
+            }.bind(viewModel);
 
-            vM_hdrSearch.go = function(item) {
+            viewModel.go = function(item) {
                 window.location.href = item.url;
             };
 
-            vM_hdrSearch.flushItems = function() { this.foundItems.splice(0); }.bind(vM_hdrSearch);
+            viewModel.flushItems = function() { this.foundItems.splice(0); }.bind(viewModel);
 
-            vM_hdrSearch.navigateFoundItems = function(event) {
+            viewModel.navigateFoundItems = function(event) {
                 if (event.which == 40) { // down arrow key
                     this.moveFocusDown();
                 } else if (event.which == 38) { // up arrow key
@@ -127,9 +127,9 @@
                 } else {
                     return true;
                 }
-            }.bind(vM_hdrSearch);
+            }.bind(viewModel);
 
-            vM_hdrSearch.searchPrefix.subscribe(function(newValue) {
+            viewModel.searchPrefix.subscribe(function(newValue) {
                 if (newValue) {
                     var dataToSend = { find: newValue };
                     if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
@@ -139,15 +139,15 @@
                         function(data){
                             var mappedData = ko.utils.arrayMap(
                                 data,
-                                function(item){ return new Item(item, vM_hdrSearch.focusedItem); }
+                                function(item){ return new Item(item, viewModel.focusedItem); }
                             );
-                            vM_hdrSearch.foundItems(mappedData);
+                            viewModel.foundItems(mappedData);
                         }
                     );
                 } else {
                     this.flushItems();
                 }
-            }, vM_hdrSearch);
+            }, viewModel);
         </script>
 
         {% block javascript %}{% endblock %}

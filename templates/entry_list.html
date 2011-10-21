@@ -37,10 +37,8 @@
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по алфавиту</span>
                 </td>
                 <td class="eli-author">
-                    <select>
-                        {% for author in authors %}
-                        <option value="{{ author.id }}">{{ author.name }}</option>
-                        {% endfor %}
+                    <select data-bind="foreach: filters.authors">
+                        <option data-bind="value: id, text: name"></option>
                     </select>
                 </td>
                 <td class="eli-mtime">
@@ -243,7 +241,7 @@
             window.location = "?" + $.param(QUERY_STRING);
         });
 
-        var vM_authorsFilter = {
+        viewModel.filters = {
             authors: {{ authors|safe }}
                 .concat(
                     {id:'all', name: 'Все авторы'},
