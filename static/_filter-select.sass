@@ -8,15 +8,23 @@
 
 .fS--header
     cursor: pointer
+
+.fS--icon
+    cursor: pointer
+    display: block
+    width: 16px
+    height: 16px
+    background-image: url('filter.png')
+
 //.fS--h--text
 .fS--h--open,
 .fS--h--reset
     position: absolute
-    width: 15px
-    height: 15px
+    width: 16px
+    height: 16px
     display: block
     background-color: #aaa
-    @include roundedCorners(4px)
+    @include roundedCorners(3px)
 .fS--h--open
     right: -20px
 .fS--h--reset
@@ -24,6 +32,21 @@
 
 .fS--items
     position: absolute
+    left: 0px
+    background-color: rgba(#ddd, 0.85)
+    z-index: 255
+    padding: 4px
+    @include roundedCorners(3px)
+    cursor: pointer
     
-//.fS--item
+.fS--item
+    list-style: none
+    font-size: 11px
+    background-color: white
+    color: black
+    border-bottom: 1px solid #ccc
+    padding: 2px 4px
+
+.fS--item-newGroup
+    margin-bottom: 3px
 //.fS--item-focused

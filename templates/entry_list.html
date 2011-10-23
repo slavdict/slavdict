@@ -38,13 +38,20 @@
                 </td>
                 <td class="eli-author">
                     <div class="filter-select">
-                        <span class="fS--header">
-                            <span class="fS--h--text" data-bind="text: filters.selectedAuthor()"></span>
+                        <span class="fS--icon"
+                              data-bind="visible: filters.authors.state()=='default'"></span>
+                        <span class="fS--header"
+                              data-bind="visible: filters.authors.state()=='selected'">
+                            <span class="fS--h--text" data-bind="text: filters.authors.selectedAuthor"></span>
                             <span class="fS--h--open">▾</span>
                             <span class="fS--h--reset">×</span>
                         </span>
-                        <ul class="fS--items hidden" data-bind="foreach: filters.authors">
-                            <li class="fS--item" data-bind="text: name"></li>
+                        <ul class="fS--items"
+                            data-bind="foreach: filters.authors.list,
+                                       visible: filters.authors.state()=='choice'">
+                            <li class="fS--item"
+                                data-bind="text: name,
+                                           css: {'fS--item-newGroup': id=='none'}"></li>
                         </ul>
                     </div>
                 </td>
@@ -247,14 +254,62 @@
             QUERY_STRING['sort'] = $(this).attr('data-sort');
             window.location = "?" + $.param(QUERY_STRING);
         });
+    </script>
 
-        viewModel.filters = {
-            authors: {{ authors|safe }}
-                .concat(
-                    {id:'all', name: 'Все авторы'},
-                    {id:'none', name: 'Без автора'}
-                ),
-            selectedAuthor: ko.observable()
+    <script type="text/javascript">
+
+        function Author(author, focused, selected) {
+
+            this.id = author.id;
+            this.name = author.name;
+
+            this.focusMe = function(){
+                focused(this);
+            }.bind(this);
+
+            this.isFocused = ko.dependentObservable(
+                function(){ return focused() === this; },
+                this
+            );
+
+            this.selectMe = function(){
+                selected(this);
+            }.bind(this);
+
+            this.isSelected = ko.dependentObservable(
+                function(){ return selected() === this; },
+                this
+            );
+        }
+
+        viewModel.filters = {};
+        viewModel.filters.authors = {
+            list: ko.observableArray(),
+            state: ko.observable('default'),
+            focused: ko.observable(),
+            selected: ko.observable()
         };
+
+        viewModel.filters.authors.selectedAuthor = ko.dependentObservable(
+            function(){
+                return (this.selected()) ? this.selected().name : ''
+            },
+            viewModel.filters.authors
+        );
+
+        authorsData = 
+            [
+                {id:'all', name: 'Все авторы'},
+                {id:'none', name: 'Статьи без автора'}
+            ]
+                .concat({{ authors|safe }});
+        authorsData = ko.utils.arrayMap(authorsData, function(author){
+            return new Author(author, viewModel.filters.authors.focused, viewModel.filters.authors.selected);
+        });
+
+        viewModel.filters.authors.list(authorsData);
+        $('.fS--icon').live('mousedown', function(){
+            viewModel.filters.authors.state('choice');
+        });
     </script>
 {% endblock %}
