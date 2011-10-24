@@ -647,7 +647,8 @@ def entry_list(request, mine=False):
     except (EmptyPage, InvalidPage):
         page = paginator.page(paginator.num_pages)
 
-    authors = [{'id': u.id, 'name': u.__unicode__()} for u in CustomUser.objects.filter(groups__name=u'authors')]
+    authors = [ {'id': u.id, 'name': u.__unicode__()} for u in CustomUser.objects.filter(groups__name=u'authors')]
+    authors = [ {'id':'all', 'name': u'Все авторы'}, {'id':'none', 'name': u'Статьи без автора'} ] + authors
 
     context = {
         'entries': page.object_list,

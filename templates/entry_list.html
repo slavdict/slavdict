@@ -332,18 +332,13 @@
 
         viewModel.filters.authors.reset = function() {
             this.defaultState();
+            this.list()[0].selectMe(); // 'all'
         }.bind(viewModel.filters.authors);
         
-        authorsData = 
-            [
-                {id:'all', name: 'Все авторы'},
-                {id:'none', name: 'Статьи без автора'}
-            ]
-                .concat({{ authors|safe }});
-        authorsData = ko.utils.arrayMap(authorsData, function(author){
+        authorsData = ko.utils.arrayMap( {{ authors|safe }} , function(author){
             return new Author(author, viewModel.filters.authors.focused, viewModel.filters.authors.selected);
         });
         viewModel.filters.authors.list(authorsData);
-
+        
     </script>
 {% endblock %}
