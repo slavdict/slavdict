@@ -38,24 +38,31 @@
                 </td>
                 <td class="eli-author">
                     <div class="filter-select">
-                        <input type="text" class="fS--input hidden" data-bind="event: { keydown: filters.authors.navigate }" />
                         <span class="fS--icon"
-                              data-bind="visible: filters.authors.state()=='default'"></span>
+                              data-bind="visible: filters.authors.isDefaultState,
+                                         event: { mousedown: filters.authors.choiceState }"></span>
                         <span class="fS--header"
-                              data-bind="visible: filters.authors.state()=='selected'">
-                            <span class="fS--h--text" data-bind="text: filters.authors.selectedAuthor"></span>
-                            <span class="fS--h--open">▾</span>
-                            <span class="fS--h--reset">×</span>
+                              data-bind="visible: filters.authors.isSelectedState">
+                            <span class="fS--h--text"
+                                  data-bind="text: filters.authors.selectedAuthor,
+                                             event: { mousedown: filters.authors.choiceState }"></span>
+                            <span class="fS--h--open"
+                                  data-bind="event: { mousedown: filters.authors.choiceState }">▾</span>
+                            <span class="fS--h--reset"
+                                  data-bind="event: { mousedown: filters.authors.reset }">×</span>
                         </span>
                         <ul class="fS--items"
                             data-bind="foreach: filters.authors.list,
-                                       visible: filters.authors.state()=='choice'">
+                                       visible: filters.authors.isChoiceState">
                             <li class="fS--item"
                                 data-bind="text: name,
-                                           css: {'fS--item-newGroup': id=='none'},
+                                           css: {
+                                                'fS--item-newGroup': id=='none',
+                                                'fS--item-focused': $data.isFocused,
+                                                'fS--item-selected': $data.isSelected
+                                            },
                                            event: {
-                                                keydown: $parent.navigate,
-                                                mousedown: function() { $data.selectMe(); },
+                                                mousedown: function() { $root.filters.authors.select($data); },
                                                 mouseover: function() { $data.focusMe(); }
                                             }"></li>
                         </ul>
@@ -296,13 +303,37 @@
             selected: ko.observable()
         };
 
+        viewModel.filters.authors['defaultState']  = function() { viewModel.filters.authors.state('default');  };
+        viewModel.filters.authors['choiceState']   = function() { viewModel.filters.authors.state('choice');   };
+        viewModel.filters.authors['selectedState'] = function() { viewModel.filters.authors.state('selected'); };
+
+        viewModel.filters.authors['isDefaultState'] = ko.dependentObservable(
+            function() { return viewModel.filters.authors.state()=='default'; }
+        );
+        viewModel.filters.authors['isChoiceState'] = ko.dependentObservable(
+            function() { return viewModel.filters.authors.state()=='choice'; }
+        );
+        viewModel.filters.authors['isSelectedState'] = ko.dependentObservable(
+            function() { return viewModel.filters.authors.state()=='selected'; }
+        );
+
         viewModel.filters.authors.selectedAuthor = ko.dependentObservable(
-            function(){
-                return (this.selected()) ? this.selected().name : ''
+            function() {
+                var s = this.selected();
+                return (s && s.id!='all') ? s.name : '';
             },
             viewModel.filters.authors
         );
 
+        viewModel.filters.authors.select = function(item) {
+            this.selectedState();
+            item.selectMe();
+        }.bind(viewModel.filters.authors);
+
+        viewModel.filters.authors.reset = function() {
+            this.defaultState();
+        }.bind(viewModel.filters.authors);
+        
         authorsData = 
             [
                 {id:'all', name: 'Все авторы'},
@@ -312,65 +343,7 @@
         authorsData = ko.utils.arrayMap(authorsData, function(author){
             return new Author(author, viewModel.filters.authors.focused, viewModel.filters.authors.selected);
         });
-
         viewModel.filters.authors.list(authorsData);
-        $('.fS--icon').live('mousedown', function(){
-            viewModel.filters.authors.state('choice');
-        });
-
-        viewModel.filters.authors.moveFocusDown = function() {
-            var items = this.list;
-            var arrLength = items().length;
-            var currentItem = this.focused();
-            var index = 0;
-            if (currentItem) {
-                index = ko.utils.arrayIndexOf(items, currentItem);
-                index = index > (arrLength - 2) ? 0 : ++index;
-            }
-            items()[index].focusMe();
-        }.bind(viewModel.filters.authors);
-
-        viewModel.filters.authors.moveFocusUp = function() {
-            var items = this.list;
-            var arrLength = items().length;
-            var currentItem = this.focused();
-            var index = arrLength - 1;
-            if (currentItem) {
-                index = ko.utils.arrayIndexOf(items, currentItem);
-                index = index < 1 ? arrLength - 1 : --index;
-            }
-            items()[index].focusMe();
-        }.bind(viewModel.filters.authors);
-
-        viewModel.filters.authors.select = function(item) {
-            this.state('selected');
-            this.selected(item);
-        }.bind(viewModel.filters.authors);
-
-        viewModel.filters.authors.navigate = function(event) {
-            if (event.which == 40) { // down arrow key
-                this.moveFocusDown();
-            } else if (event.which == 38) { // up arrow key
-                this.moveFocusUp();
-            } else if (event.which == 13) { // enter key
-                if (this.focused()) {
-                    this.select(this.focused());
-                } else if (this.selected()) {
-                    this.state('selected');
-                } else {
-                    this.state('default');
-                }
-            } else if (event.which == 27) { // esc key
-                if (this.selected()) { this.state('selected'); }
-                else { this.state('default'); }
-            } else {
-                return true;
-            }
-        }.bind(viewModel.filters.authors);
-
-        viewModel.filters.authors.state.subscribe( function(newValue) {
-            if (newValue=='choice') $('.fS--input').focus();
-        }, viewModel.filters.authors);
 
     </script>
 {% endblock %}
