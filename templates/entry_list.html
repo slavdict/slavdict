@@ -38,6 +38,7 @@
                 </td>
                 <td class="eli-author">
                     <div class="filter-select">
+                        <input type="text" class="fS--input hidden" data-bind="event: { keydown: filters.authors.navigate }" />
                         <span class="fS--icon"
                               data-bind="visible: filters.authors.state()=='default'"></span>
                         <span class="fS--header"
@@ -51,7 +52,12 @@
                                        visible: filters.authors.state()=='choice'">
                             <li class="fS--item"
                                 data-bind="text: name,
-                                           css: {'fS--item-newGroup': id=='none'}"></li>
+                                           css: {'fS--item-newGroup': id=='none'},
+                                           event: {
+                                                keydown: $parent.navigate,
+                                                mousedown: function() { $data.selectMe(); },
+                                                mouseover: function() { $data.focusMe(); }
+                                            }"></li>
                         </ul>
                     </div>
                 </td>
@@ -311,5 +317,60 @@
         $('.fS--icon').live('mousedown', function(){
             viewModel.filters.authors.state('choice');
         });
+
+        viewModel.filters.authors.moveFocusDown = function() {
+            var items = this.list;
+            var arrLength = items().length;
+            var currentItem = this.focused();
+            var index = 0;
+            if (currentItem) {
+                index = ko.utils.arrayIndexOf(items, currentItem);
+                index = index > (arrLength - 2) ? 0 : ++index;
+            }
+            items()[index].focusMe();
+        }.bind(viewModel.filters.authors);
+
+        viewModel.filters.authors.moveFocusUp = function() {
+            var items = this.list;
+            var arrLength = items().length;
+            var currentItem = this.focused();
+            var index = arrLength - 1;
+            if (currentItem) {
+                index = ko.utils.arrayIndexOf(items, currentItem);
+                index = index < 1 ? arrLength - 1 : --index;
+            }
+            items()[index].focusMe();
+        }.bind(viewModel.filters.authors);
+
+        viewModel.filters.authors.select = function(item) {
+            this.state('selected');
+            this.selected(item);
+        }.bind(viewModel.filters.authors);
+
+        viewModel.filters.authors.navigate = function(event) {
+            if (event.which == 40) { // down arrow key
+                this.moveFocusDown();
+            } else if (event.which == 38) { // up arrow key
+                this.moveFocusUp();
+            } else if (event.which == 13) { // enter key
+                if (this.focused()) {
+                    this.select(this.focused());
+                } else if (this.selected()) {
+                    this.state('selected');
+                } else {
+                    this.state('default');
+                }
+            } else if (event.which == 27) { // esc key
+                if (this.selected()) { this.state('selected'); }
+                else { this.state('default'); }
+            } else {
+                return true;
+            }
+        }.bind(viewModel.filters.authors);
+
+        viewModel.filters.authors.state.subscribe( function(newValue) {
+            if (newValue=='choice') $('.fS--input').focus();
+        }, viewModel.filters.authors);
+
     </script>
 {% endblock %}
