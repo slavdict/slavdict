@@ -723,3 +723,23 @@ def json_singleselect_entries_urls(request):
     else:
         response = HttpResponse(mimetype='application/json', status=400)
     return response
+
+
+@login_required
+def hellinist_workbench(request):
+
+    paginator = Paginator(examples, per_page=12, orphans=2)
+    try:
+        pagenum = int(request.GET.get('page', 1))
+    except ValueError:
+        pagenum = 1
+    try:
+        page = paginator.page(pagenum)
+    except (EmptyPage, InvalidPage):
+        page = paginator.page(paginator.num_pages)
+
+    context = {
+        'examples': page.object_list,
+        'page': page,
+        }
+    return render_to_response('hellinist_workbench.html', context, RequestContext(request))
