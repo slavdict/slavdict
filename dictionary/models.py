@@ -1374,6 +1374,68 @@ class GreekEquivalentForExample(GreekEquivalent):
         verbose_name_plural = u'греческие параллели'
 
 
+class GreekUnicode(models.Model):
+
+    text = models.CharField(
+        u'греч. параллель',
+        max_length = 100,
+        )
+
+    mark = models.CharField(
+        u'грамматическая помета',
+        max_length = 20,
+        blank = True,
+        )
+
+    source = models.CharField(
+        u'документальный источник',
+        help_text = u'''Например, Септуагинта или,
+                        более узко, разные редакции
+                        одного текста.''',
+        max_length = 40,
+        blank = True,
+        )
+
+    for_example = models.ForeignKey(Example)
+
+    position = models.PositiveIntegerField(
+        verbose_name = u'позиция в примере',
+        help_text = u'Номер слова, после которого следует поставить параллель.',
+        blank = True,
+        null = True,
+        )
+
+    additional_info = models.TextField(
+        u'примечание',
+        help_text = u'Любая дополнительная информация ' \
+                    u'по данному греческому эквиваленту.',
+        blank = True,
+        )
+
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+        )
+
+    @property
+    def host_entry(self):
+        return self.for_example.host_entry
+
+    def save(self, without_mtime=False, *args, **kwargs):
+        super(GreekUnicode, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.host_entry.save(without_mtime=without_mtime)
+
+    def delete(self, without_mtime=False, *args, **kwargs):
+        super(GreekUnicode, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
+
+    def __unicode__(self):
+        return self.text
+
+    class Meta:
+        verbose_name = u'греческая параллель в юникоде'
+        verbose_name_plural = u'греческие параллели'
+
 
 
 
