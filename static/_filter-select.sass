@@ -16,7 +16,13 @@
     height: 16px
     background-image: url('filter.png')
 
-//.fS--h--text
+.fS--h--text
+    font-size: 10px
+    font-style: italic
+    color: #ccc
+    tr.hover &
+        color: white
+
 .fS--h--open,
 .fS--h--reset
     position: absolute
@@ -25,10 +31,11 @@
     display: block
     background-color: #aaa
     @include roundedCorners(3px)
+    font-size: 11px
 .fS--h--open
-    right: -20px
-.fS--h--reset
     right: 0px
+.fS--h--reset
+    right: -20px
 
 .fS--items
     position: absolute
