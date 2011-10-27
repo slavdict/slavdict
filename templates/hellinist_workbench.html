@@ -3,27 +3,38 @@
 <head>
     <meta charset="utf-8">
     <title>{{ title }}</title>
-    <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
+    <link href="{{ STATIC_URL }}hellinist_workbench.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-
-    <style>.context {color: gray;}</style>
-
+    <div id="main">
     {% for e in examples %}
         <div>
         {% ifchanged %}
-            <div>
-                <span class="cslav">{{ e.host_entry.orth_vars.0.idem_ucs }}</span>
+            <div class="exampleHeader">
+                <span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span>
                 <i>{{ e.host_entry.part_of_speech.tag }}</i>
+                {% if e.meaning.meaning %}
+                    ‘{{ e.meaning.meaning }}’
+                {% endif %}
+                {% if e.meaning.gloss %}
+                    {% if e.meaning.meaning %}
+                        ({{ e.meaning.gloss }})
+                    {% else %}
+                        {{ e.meaning.gloss }}
+                    {% endif %}
+                {% endif %}
             </div>
         {% endifchanged %}
         {% with leftContext=e.context_ucs.left example=e.context_ucs.example rightContext=e.context_ucs.right %}
-            <span class="cslav context">{{ leftContext }}</span>
-            <span class="cslav">{{ example }}</span>
-            <span class="cslav context">{{ rightContext }}</span>
+            <div class="example">
+                <span class="cslav context">{{ leftContext }}</span>
+                <span class="cslav">{{ example }}</span>
+                <span class="cslav context">{{ rightContext }}</span>
+                ({{ e.address_text }})
+            </div>
         {% endwith %}
         </div>
     {% endfor %}
-
+    </div>
 </body>
 </html>
