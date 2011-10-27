@@ -991,6 +991,20 @@ class Meaning(models.Model):
         ordering = ('id',)
 
 
+
+
+class SplitContext:
+    def __init__(self, left, middle, right, whole):
+        self.left = left
+        self.example = middle
+        self.right = right
+        self.whole = whole
+
+    def __unicode__(self):
+        return self.whole
+
+
+
 class Example(models.Model):
 
     meaning = models.ForeignKey(
@@ -1029,16 +1043,6 @@ class Example(models.Model):
         help_text = u'Более широкий контекст для примера',
         blank = True,
         )
-
-    class SplitContext:
-        def __init__(self, left, middle, right, whole):
-            self.left = left
-            self.example = middle
-            self.right = right
-            self.whole = whole
-
-        def __unicode__(self):
-            return self.whole
 
     @property
     def context_ucs(self):

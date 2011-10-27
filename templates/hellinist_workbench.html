@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <meta charset="utf-8">
+    <title>{{ title }}</title>
+    <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+
+    <style>.context {color: gray;}</style>
+
+    {% for e in examples %}
+        <div>
+        {% ifchanged %}
+            <div>
+                <span class="cslav">{{ e.host_entry.orth_vars.0.idem_ucs }}</span>
+                <i>{{ e.host_entry.part_of_speech.tag }}</i>
+            </div>
+        {% endifchanged %}
+        {% with leftContext=e.context_ucs.left example=e.context_ucs.example rightContext=e.context_ucs.right %}
+            <span class="cslav context">{{ leftContext }}</span>
+            <span class="cslav">{{ example }}</span>
+            <span class="cslav context">{{ rightContext }}</span>
+        {% endwith %}
+        </div>
+    {% endfor %}
 
 </body>
 </html>
