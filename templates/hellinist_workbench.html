@@ -27,10 +27,11 @@
         {% endifchanged %}
         {% with leftContext=e.context_ucs.left example=e.context_ucs.example rightContext=e.context_ucs.right %}
             <div class="example">
+                <span class="example--id">[{{ e.id }}]</span>
+                <span class="example--address">{{ e.address_text }}</span><br />
                 <span class="cslav context">{{ leftContext }}</span>
                 <span class="cslav">{{ example }}</span>
                 <span class="cslav context">{{ rightContext }}</span>
-                ({{ e.address_text }})
             </div>
         {% endwith %}
         </div>
