@@ -1,3 +1,4 @@
+{% load trim_spaces %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -37,5 +38,7 @@
         </div>
     {% endfor %}
     </div>
+
+    {% include '_pagination.html' %}
 </body>
 </html>
