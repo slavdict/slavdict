@@ -51,7 +51,7 @@ Martin Bryan, Web SGML and HTML 4.0 Explained.
 
 ##########################################################################
 
-В данный момент в модуле описаны только три тэга:
+В данный момент в модуле описано четыре тэга:
 
 {% trim %} ... {% endtrim %} -- Парный тэг. Удаляет все пробелы между
 x/html-тегами, а также x/html-тэгами и текстом.
@@ -64,6 +64,13 @@ x/html-тегами, а также x/html-тэгами и текстом.
 до ближайшего текста или тэга. Пробельное пространство может в частности содержать
 символьные ссылки &nbsp;
 
+{% punct %} -- Непарный вспомогательный тэг для использования внутри {% trim %}.
+В том случае если текст внутри тэга кончается на знак препинания, гарантирует
+наличие за ним пробела. К сожалению, пока его использоание регулируется слишком
+жесткими правилами. Его необходимо помещать между тэгами, в которых будет текст.
+Помещать внутрь таких тегов его нельзя. Впоследствии его надо будет каким-то
+образом переделать.
+
 """
 import re
 from django.template.base import Node
@@ -74,10 +81,15 @@ from django import template
 register = template.Library()
 
 def strip_spaces_between_tags_and_text(value):
-    value = re.sub(r'>\s+', '>', force_unicode(value.strip()))
-    value = re.sub(r'\s+<', '<', force_unicode(value))
-    value = re.sub(u'\u0007', u' ', force_unicode(value))
-    value = re.sub(ur'((\s)|(&nbsp;))*\u0008', u'', force_unicode(value))
+    value = re.sub(ur'>\s+', u'>', force_unicode(value.strip()))
+    value = re.sub(ur'\s+<', u'<', value)
+    # {% space %}
+    value = re.sub(u'\u0007', u' ', value)
+    # {% backspace %}
+    value = re.sub(ur'((\s)|(&nbsp;))*\u0008', u'', value)
+    # {% punct %}
+    value = re.sub(ur'\u1900(<[^>]+>)([\.,:;\!\?])', ur'\1\2', value)
+    value = re.sub(ur'\u1900', u' ', value)
     # Звёздочка вместо плюса в последнем случае нужна, чтобы \u0008 (backspace)
     # были удалены в любом случае независимо от того, предшествует им пробел
     # или нет.
@@ -104,3 +116,7 @@ def space():
 @register.simple_tag
 def backspace():
     return u'\u0008'
+
+@register.simple_tag
+def punct():
+    return u'\u1900'
