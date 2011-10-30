@@ -730,7 +730,7 @@ def hellinist_workbench(request):
 
     examples = Example.objects.filter(greek_eq_status=u'L')
 
-    paginator = Paginator(examples, per_page=12, orphans=2)
+    paginator = Paginator(examples, per_page=5, orphans=2)
     try:
         pagenum = int(request.GET.get('page', 1))
     except ValueError:

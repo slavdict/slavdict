@@ -10,14 +10,23 @@
     {% include '_pagination.html' %}
 
     <div id="main">
+    {% trim %}
     {% for e in examples %}
         <div>
         {% ifchanged %}
             <div class="exampleHeader">
-                <span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span>
-                <i>{{ e.host_entry.part_of_speech.tag }}</i>
+                {% if e.host.orth_vars %}
+                    <span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span>{% space %}
+                    <i>{{ e.host_entry.part_of_speech.tag }}</i>{% space %}
+                {% else %}
+                    {% for c in e.host.collocations %}
+                        <span class="cslav">{{ c.collocation_ucs }}</span>
+                        {% if not forloop.last %},{% endif %}{% space %}
+                    {% endfor %}
+                {% endif %}
                 {% if e.meaning.meaning %}
                     ‘{{ e.meaning.meaning }}’
+                    {% space %}
                 {% endif %}
                 {% if e.meaning.gloss %}
                     {% if e.meaning.meaning %}
@@ -39,6 +48,7 @@
         {% endwith %}
         </div>
     {% endfor %}
+    {% endtrim %}
     </div>
 
     {% include '_pagination.html' %}
