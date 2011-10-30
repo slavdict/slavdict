@@ -2,7 +2,7 @@
 
 {% if page.paginator.num_pages > 1 %}
 <div class="pagination">
-
+{% trim %}
     {% if page.has_previous %}
         {% if page.number > 4 %}
             <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page=1">1</a>
@@ -50,6 +50,6 @@
             {% endif %}
         {% endif %}
     {% endif %}
-
+{% endtrim %}
 </div>
 {% endif %}
