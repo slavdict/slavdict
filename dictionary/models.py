@@ -1400,6 +1400,12 @@ class GreekUnicode(models.Model):
         blank = True,
         )
 
+    initial_form = models.CharField(
+        u'начальная форма',
+        max_length = 100,
+        blank = True,
+        )
+
     for_example = models.ForeignKey(Example)
 
     position = models.PositiveIntegerField(
