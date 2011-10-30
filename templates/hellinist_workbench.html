@@ -37,7 +37,21 @@
                 {% endif %}
             </div>
         {% endifchanged %}
-        {% with leftContext=e.context_ucs.left example=e.context_ucs.example rightContext=e.context_ucs.right %}
+        {% if forloop.first %}
+            <div class="example" data-bind="with: example">
+                <span class="example--id">[<span data-bind="text: id"></span>]</span>
+                <span class="example--address" data-bind="text: address"></span><br />
+                <span class="cslav context" data-bind="text: triplet[0]"></span>
+                <span class="cslav" data-bind="text: triplet[1]"></span>
+                <span class="cslav context" data-bind="text: triplet[2]"></span>
+            </div>
+            <div>
+                <select data-bind="foreach: grEqStata">
+                    <option data-bind="value: $data[0], text: $data[1]"></option>
+                </select>
+            </div>
+        {% else %}
+        {% with leftContext=e.context_ucs.0 example=e.context_ucs.1 rightContext=e.context_ucs.2 %}
             <div class="example">
                 <span class="example--id">[{{ e.id }}]</span>
                 <span class="example--address">{{ e.address_text }}</span><br />
@@ -46,6 +60,7 @@
                 <span class="cslav context">{{ rightContext }}</span>
             </div>
         {% endwith %}
+        {% endif %}
         </div>
     {% endfor %}
     {% endtrim %}
@@ -57,11 +72,12 @@
     <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.4.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
     <script>
-
-        var json_examples = {{ json_examples }};
+        var statusList = {{ jsonGrEqStata|safe }};
+        var jsonExample = {{ jsonExample|safe }};
 
         var viewModel = {
-            examples: ko.observableArray(json_examples)
+            grEqStata: ko.observableArray(statusList),
+            example: ko.observable(jsonExample)
         };
 
         ko.applyBindings(viewModel);

@@ -760,15 +760,18 @@ def hellinist_workbench(request):
     except (EmptyPage, InvalidPage):
         page = paginator.page(paginator.num_pages)
 
-    vM_examples = [
+    vM_example = [
         { 'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context, 'address': e.address_text,
           'status': e.greek_eq_status }
-    for e in page.object_list]
+    for e in page.object_list][0]
 
+    import dictionary.models
     context = {
         'title': u'Греческий кабинет',
         'examples': page.object_list,
-        'json_examples': vM_examples,
+        'jsonExample': json.dumps(vM_example, ensure_ascii=False, separators=(',',':')),
+        'jsonGrEqStata': json.dumps(dictionary.models.Example.GREEK_EQ_STATUS,
+                                    ensure_ascii=False, separators=(',',':')),
         'page': page,
         }
     return render_to_response('hellinist_workbench.html', context, RequestContext(request))

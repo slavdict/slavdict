@@ -993,18 +993,6 @@ class Meaning(models.Model):
 
 
 
-class SplitContext:
-    def __init__(self, left, middle, right, whole):
-        self.left = left
-        self.example = middle
-        self.right = right
-        self.whole = whole
-
-    def __unicode__(self):
-        return self.whole
-
-
-
 class Example(models.Model):
 
     meaning = models.ForeignKey(
@@ -1051,14 +1039,11 @@ class Example(models.Model):
         if c:
             c = ucs_convert(c)
             x, y, z = c.partition(e)
-            x = x.strip()
-            y = y.strip()
-            z = z.strip()
             if y:
                 # Разбиение дало положительный результат,
                 # в "y" помещён сам пример.
-                return SplitContext(x, y, z, c)
-        return SplitContext(u'', e, u'', e)
+                return (x, y, z)
+        return (u'', e, u'')
 
     # Времеis_headwordнное поле для импорта вордовских статей.
     address_text = models.CharField(
