@@ -52,5 +52,20 @@
     </div>
 
     {% include '_pagination.html' %}
+
+
+    <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.4.min.js'></script>
+    <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
+    <script>
+
+        var json_examples = {{ json_examples }};
+
+        var viewModel = {
+            examples: ko.observableArray(json_examples)
+        };
+
+        ko.applyBindings(viewModel);
+    </script>
+
 </body>
 </html>

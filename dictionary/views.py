@@ -740,8 +740,15 @@ def hellinist_workbench(request):
     except (EmptyPage, InvalidPage):
         page = paginator.page(paginator.num_pages)
 
+    vM_examples = [
+        { 'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context, 'address': e.address_text,
+          'status': e.greek_eq_status }
+    for e in page.object_list]
+
     context = {
+        'title': u'Греческий кабинет',
         'examples': page.object_list,
+        'json_examples': vM_examples,
         'page': page,
         }
     return render_to_response('hellinist_workbench.html', context, RequestContext(request))
