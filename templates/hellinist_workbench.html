@@ -48,7 +48,7 @@
             </div>
             <div>
                 <select data-bind="foreach: grEqStata">
-                    <option data-bind="value: $data[0], text: $data[1]"></option>
+                    <option data-bind="value: $data[0], text: $data[1], selected: $data[0]==$parent.example().status"></option>
                 </select>
             </div>
         {% else %}
@@ -82,6 +82,18 @@
         var viewModel = {
             grEqStata: statusList,
             example: ko.observable(jsonExample)
+        };
+
+        ko.bindingHandlers.selected = {
+            update: function(element, valueAccessor) {
+                var x = $(element);
+                console.log(valueAccessor());
+                if (valueAccessor()) {
+                    x.attr('selected', 'selected');
+                } else {
+                    x.removeAttr('selected');
+                }
+            }
         };
 
         ko.applyBindings(viewModel);
