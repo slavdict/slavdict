@@ -7,10 +7,11 @@
     <link href="{{ STATIC_URL }}hellinist_workbench.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-    {% include '_pagination.html' %}
-
     <div id="main">
     {% trim %}
+
+    {% include '_pagination.html' %}
+
     {% for e in examples %}
         <div>
         {% ifchanged %}
@@ -63,6 +64,9 @@
         {% endif %}
         </div>
     {% endfor %}
+
+    {% include '_pagination.html' %}
+
     {% endtrim %}
     </div>
 
