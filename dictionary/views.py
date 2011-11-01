@@ -770,8 +770,7 @@ def hellinist_workbench(request):
         'title': u'Греческий кабинет',
         'examples': page.object_list,
         'jsonExample': json.dumps(vM_example, ensure_ascii=False, separators=(',',':')),
-        'jsonGrEqStata': json.dumps(dictionary.models.Example.GREEK_EQ_STATUS,
-                                    ensure_ascii=False, separators=(',',':')),
+        'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
         'page': page,
         }
     return render_to_response('hellinist_workbench.html', context, RequestContext(request))

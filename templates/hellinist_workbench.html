@@ -45,12 +45,20 @@
                 <span class="cslav context" data-bind="text: triplet[0]"></span>
                 <span class="cslav" data-bind="text: triplet[1]"></span>
                 <span class="cslav context" data-bind="text: triplet[2]"></span>
-            </div>
-            <div>
-                <select data-bind="foreach: grEqStata">
-                    <option data-bind="value: $data[0], text: $data[1], selected: $data[0]==$parent.example().status"></option>
+
+                <div class="example--greq">
+
+                </div>
+
+                <select data-bind="value: $data.status">
+                    {% for option in statusList %}
+                    <option value="{{ option.0 }}">{{ option.1 }}</option>
+                    {% endfor %}
                 </select>
+
             </div>
+            <div data-bind="text: json"></div>
+
         {% else %}
         {% with leftContext=e.context_ucs.0 example=e.context_ucs.1 rightContext=e.context_ucs.2 %}
             <div class="example">
@@ -76,25 +84,15 @@
     <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.4.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
     <script>
-        var statusList = {{ jsonGrEqStata|safe }};
         var jsonExample = {{ jsonExample|safe }};
 
         var viewModel = {
-            grEqStata: statusList,
             example: ko.observable(jsonExample)
         };
 
-        ko.bindingHandlers.selected = {
-            update: function(element, valueAccessor) {
-                var x = $(element);
-                console.log(valueAccessor());
-                if (valueAccessor()) {
-                    x.attr('selected', 'selected');
-                } else {
-                    x.removeAttr('selected');
-                }
-            }
-        };
+        viewModel.json = ko.dependentObservable(function(){
+            return ko.toJSON(this.example);
+        }, viewModel);
 
         ko.applyBindings(viewModel);
     </script>
