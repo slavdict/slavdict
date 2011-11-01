@@ -41,16 +41,16 @@
         {% if forloop.first %}
             <div class="example" data-bind="with: example">
                 <span class="example--id">[<span data-bind="text: id"></span>]</span>
-                <span class="example--address" data-bind="text: address"></span><br />
-                <span class="cslav context" data-bind="text: triplet[0]"></span>
-                <span class="cslav" data-bind="text: triplet[1]"></span>
-                <span class="cslav context" data-bind="text: triplet[2]"></span>
+                <input type="text" class="example--address" data-bind="value: address" /><br />
+                <span class="cslav context" data-bind="text: leftContext"></span>
+                <span class="cslav" data-bind="text: text"></span>
+                <span class="cslav context" data-bind="text: leftContext"></span>
 
                 <div class="example--greq">
 
                 </div>
 
-                <select data-bind="value: $data.status">
+                <select data-bind="value: status">
                     {% for option in statusList %}
                     <option value="{{ option.0 }}">{{ option.1 }}</option>
                     {% endfor %}
@@ -84,7 +84,18 @@
     <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.4.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
     <script>
-        var jsonExample = {{ jsonExample|safe }};
+        function Example(ex) {
+            this.id = ex.id;
+            this.status = ko.observable(ex.status);
+            this.address = ko.observable(ex.address);
+            this.leftContext = ex.triplet[0];
+            this.text = ex.triplet[1];
+            this.rightContext = ex.triplet[2];
+            this.antconc = ex.antconc;
+        }
+
+        var jsonExample = new Example( {{ jsonExample|safe }} );
+
 
         var viewModel = {
             example: ko.observable(jsonExample)
