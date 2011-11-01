@@ -50,6 +50,7 @@
 
                 </div>
 
+                <label class="example--formLabel">Статус греч. параллей</label>
                 <select data-bind="value: status">
                     {% for option in statusList %}
                     <option value="{{ option.0 }}">{{ option.1 }}</option>
@@ -91,6 +92,7 @@
             this.text = ex.triplet[1];
             this.rightContext = ex.triplet[2];
             this.antconc = ex.antconc;
+            this.greqs = ko.observableArray(ex.greqs);
         }
 
         var jsonExample = new Example( {{ jsonExample|safe }} );

@@ -748,7 +748,7 @@ def json_singleselect_entries_urls(request):
 @login_required
 def hellinist_workbench(request):
 
-    examples = Example.objects.filter(greek_eq_status=u'L')
+    examples = Example.objects.filter(greek_eq_status=u'F')
 
     paginator = Paginator(examples, per_page=5, orphans=2)
     try:
@@ -761,8 +761,9 @@ def hellinist_workbench(request):
         page = paginator.page(paginator.num_pages)
 
     vM_example = [
-        { 'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context, 'address': e.address_text,
-          'status': e.greek_eq_status }
+        { 'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context,
+          'address': e.address_text, 'status': e.greek_eq_status,
+          'greqs': [{ 'text': greq.text, 'initForm': greq.initial_form } for greq in e.greqs] }
     for e in page.object_list][0]
 
     import dictionary.models

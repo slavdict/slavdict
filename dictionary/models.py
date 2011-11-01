@@ -1056,6 +1056,10 @@ class Example(models.Model):
     def greek_equivs(self):
         return self.greekequivalentforexample_set.all().order_by('id')
 
+    @property
+    def greqs(self):
+        return self.greekunicode_set.all().order_by('id')
+
     additional_info = models.TextField(
         u'примечание',
         help_text = u'''Любая дополнительная информация
