@@ -57,7 +57,6 @@
                 </select>
 
             </div>
-            <div data-bind="text: json"></div>
 
         {% else %}
         {% with leftContext=e.context_ucs.0 example=e.context_ucs.1 rightContext=e.context_ucs.2 %}
@@ -100,10 +99,6 @@
         var viewModel = {
             example: ko.observable(jsonExample)
         };
-
-        viewModel.json = ko.dependentObservable(function(){
-            return ko.toJSON(this.example);
-        }, viewModel);
 
         ko.applyBindings(viewModel);
     </script>
