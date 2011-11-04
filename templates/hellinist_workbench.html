@@ -76,18 +76,25 @@
     <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.4.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
     <script>
+
         function Greq(ex, greq) {
+
             if (!greq) greq = {};
+            this.id = greq.id || '';
             this.text = ko.observable(greq.text || '');
             this.unitext = ko.observable(greq.unitext || '');
             this.initForm = ko.observable(greq.initForm || '');
+            this.forExample = ex.id;
             
             this.removeMe = function() {
                 ex.greqs.remove(this);
             }.bind(this);
+            
         }
 
+
         function Example(ex) {
+
             this.id = ex.id;
             this.status = ko.observable(ex.status);
             this.address = ko.observable(ex.address);
@@ -107,6 +114,12 @@
             this.addGreq = function() {
                 this.greqs.push(new Greq(this));
             }.bind(this);
+            
+            this.jsonGreq = function(greq) {
+                var dataToSend = ko.toJSON(greq);
+                $.post("/json/singleselect/entries/urls/", dataToSend);
+            };
+
         }
 
         var jsonExamples = ko.utils.arrayMap(

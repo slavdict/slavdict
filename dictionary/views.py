@@ -761,9 +761,15 @@ def hellinist_workbench(request):
         page = paginator.page(paginator.num_pages)
 
     vM_examples = [
-        { 'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context,
-          'address': e.address_text, 'status': e.greek_eq_status,
-          'greqs': [{ 'unitext': greq.unitext, 'text': greq.text, 'initForm': greq.initial_form } for greq in e.greek_equivs] }
+        {
+            'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context,
+            'address': e.address_text, 'status': e.greek_eq_status,
+            'greqs': [
+                { 'unitext': greq.unitext, 'text': greq.text, 'initForm': greq.initial_form,
+                  }
+                for greq in e.greek_equivs
+            ]
+        }
     for e in page.object_list]
 
     import dictionary.models
