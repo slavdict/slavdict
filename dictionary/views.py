@@ -760,18 +760,24 @@ def hellinist_workbench(request):
     except (EmptyPage, InvalidPage):
         page = paginator.page(paginator.num_pages)
 
-    vM_example = [
+    vM_examples = [
         { 'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context,
           'address': e.address_text, 'status': e.greek_eq_status,
-          'greqs': [{ 'text': greq.text, 'initForm': greq.initial_form } for greq in e.greqs] }
-    for e in page.object_list][0]
+          'greqs': [{ 'unitext': greq.unitext, 'text': greq.text, 'initForm': greq.initial_form } for greq in e.greek_equivs] }
+    for e in page.object_list]
 
     import dictionary.models
     context = {
         'title': u'Греческий кабинет',
         'examples': page.object_list,
-        'jsonExample': json.dumps(vM_example, ensure_ascii=False, separators=(',',':')),
+        'jsonExamples': json.dumps(vM_examples, ensure_ascii=False, separators=(',',':')),
         'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
         'page': page,
         }
     return render_to_response('hellinist_workbench.html', context, RequestContext(request))
+
+
+@login_required
+def json_greq_save(request):
+    
+    return HttpResponse(status=200)

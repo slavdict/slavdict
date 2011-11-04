@@ -14,7 +14,7 @@
 
     {% for e in examples %}
         <div>
-        {% ifchanged %}
+            {% ifchanged %}
             <div class="exampleHeader">
                 {% if e.host.orth_vars %}
                     <span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span>{% space %}
@@ -37,9 +37,9 @@
                     {% endif %}
                 {% endif %}
             </div>
-        {% endifchanged %}
-        {% if forloop.first %}
-            <div class="example" data-bind="with: example">
+            {% endifchanged %}
+
+            <div class="example" data-bind="with: examples[{{ forloop.counter0 }}]">
                 <span class="example--id">[<span data-bind="text: id"></span>]</span>
                 <input type="text" class="example--address" data-bind="value: address" /><br />
                 <span class="cslav context" data-bind="text: leftContext"></span>
@@ -48,33 +48,22 @@
 
                 <ul class="example--greq" data-bind="foreach: greqs">
                     <li>
-                        <input type="text" data-bind="value: text" />
+                        <span class="grec" data-bind="text: text"></span>
+                        <input type="text" data-bind="value: unitext" />
                         <input type="text" data-bind="value: initForm" />
                         <input type="button" value="&times;" data-bind="click: removeMe" />
                     </li>
                 </ul>
 
-                <label class="example--formLabel">Статус греч. параллей</label>
+                <label class="example--formLabel">Статус:</label>
                 <select data-bind="value: status">
                     {% for option in statusList %}
                     <option value="{{ option.0 }}">{{ option.1 }}</option>
                     {% endfor %}
                 </select>
-                <input type="button" value="+" data-bind="click: addGreq" />
+                <input type="button" value="+ Добавить параллель" data-bind="click: addGreq" />
 
             </div>
-
-        {% else %}
-        {% with leftContext=e.context_ucs.0 example=e.context_ucs.1 rightContext=e.context_ucs.2 %}
-            <div class="example">
-                <span class="example--id">[{{ e.id }}]</span>
-                <span class="example--address">{{ e.address_text }}</span><br />
-                <span class="cslav context">{{ leftContext }}</span>{% punct %}
-                <span class="cslav">{{ example }}</span>{% punct %}
-                <span class="cslav context">{{ rightContext }}</span>
-            </div>
-        {% endwith %}
-        {% endif %}
         </div>
     {% endfor %}
 
@@ -83,8 +72,6 @@
     {% endtrim %}
     </div>
 
-    {% include '_pagination.html' %}
-
 
     <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.4.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
@@ -92,6 +79,7 @@
         function Greq(ex, greq) {
             if (!greq) greq = {};
             this.text = ko.observable(greq.text || '');
+            this.unitext = ko.observable(greq.unitext || '');
             this.initForm = ko.observable(greq.initForm || '');
             
             this.removeMe = function() {
@@ -121,10 +109,13 @@
             }.bind(this);
         }
 
-        var jsonExample = new Example( {{ jsonExample|safe }} );
+        var jsonExamples = ko.utils.arrayMap(
+            {{ jsonExamples|safe }},
+            function(ex) { return new Example(ex); }
+        );
 
         var viewModel = {
-            example: ko.observable(jsonExample)
+            examples: jsonExamples
         };
 
         ko.applyBindings(viewModel);
