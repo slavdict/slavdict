@@ -89,7 +89,9 @@
             {% if entry.part_of_speech %}
                 <i>{{ entry.part_of_speech.tag }}</i>
             {% else %}
+                {% if show_additional_info %}
                 <span class="noaddress">Не указана часть речи!</span>
+                {% endif %}
             {% endif %}
 
             {% space %}
