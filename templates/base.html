@@ -142,6 +142,9 @@
                                 function(item){ return new Item(item, vM_hdrSearch.focusedItem); }
                             );
                             vM_hdrSearch.foundItems(mappedData);
+                            if (vM_hdrSearch.foundItems().length==1) {
+                                vM_hdrSearch.foundItems()[0].focusMe();
+                            }
                         }
                     );
                 } else {
