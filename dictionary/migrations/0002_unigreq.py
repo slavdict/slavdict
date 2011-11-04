@@ -8,24 +8,46 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding model 'GreekUnicode'
-        db.create_table('dictionary_greekunicode', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('text', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('mark', self.gf('django.db.models.fields.CharField')(max_length=20, blank=True)),
-            ('source', self.gf('django.db.models.fields.CharField')(max_length=40, blank=True)),
-            ('for_example', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['dictionary.Example'])),
-            ('position', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
-            ('additional_info', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('mtime', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-        ))
-        db.send_create_signal('dictionary', ['GreekUnicode'])
+        # Adding field 'GreekEquivalentForMeaning.unitext'
+        db.add_column('dictionary_greekequivalentformeaning', 'unitext', self.gf('django.db.models.fields.CharField')(default='', max_length=100, blank=True), keep_default=False)
+
+        # Adding field 'GreekEquivalentForExample.unitext'
+        db.add_column('dictionary_greekequivalentforexample', 'unitext', self.gf('django.db.models.fields.CharField')(default='', max_length=100, blank=True), keep_default=False)
+
+        # Adding field 'GreekEquivalentForExample.initial_form'
+        db.add_column('dictionary_greekequivalentforexample', 'initial_form', self.gf('django.db.models.fields.CharField')(default='', max_length=100, blank=True), keep_default=False)
+
+
+        db.alter_column(
+            'dictionary_greekequivalentformeaning',
+            'text', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)
+        )
+        db.alter_column(
+            'dictionary_greekequivalentforexample',
+            'text', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)
+        )
 
 
     def backwards(self, orm):
         
-        # Deleting model 'GreekUnicode'
-        db.delete_table('dictionary_greekunicode')
+        # Deleting field 'GreekEquivalentForMeaning.unitext'
+        db.delete_column('dictionary_greekequivalentformeaning', 'unitext')
+
+        # Deleting field 'GreekEquivalentForExample.unitext'
+        db.delete_column('dictionary_greekequivalentforexample', 'unitext')
+
+        # Deleting field 'GreekEquivalentForExample.initial_form'
+        db.delete_column('dictionary_greekequivalentforexample', 'initial_form')
+
+
+        db.alter_column(
+            'dictionary_greekequivalentformeaning',
+            'text', self.gf('django.db.models.fields.CharField')(max_length=100, blank=False)
+        )
+        db.alter_column(
+            'dictionary_greekequivalentforexample',
+            'text', self.gf('django.db.models.fields.CharField')(max_length=100, blank=False)
+        )
 
 
     models = {
@@ -167,11 +189,13 @@ class Migration(SchemaMigration):
             'additional_info': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'for_example': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['dictionary.Example']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'initial_form': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             'mark': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'position': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'source': ('django.db.models.fields.CharField', [], {'max_length': '40', 'blank': 'True'}),
-            'text': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+            'text': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
+            'unitext': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'})
         },
         'dictionary.greekequivalentformeaning': {
             'Meta': {'object_name': 'GreekEquivalentForMeaning'},
@@ -181,18 +205,8 @@ class Migration(SchemaMigration):
             'mark': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'}),
             'mtime': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'source': ('django.db.models.fields.CharField', [], {'max_length': '40', 'blank': 'True'}),
-            'text': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'dictionary.greekunicode': {
-            'Meta': {'object_name': 'GreekUnicode'},
-            'additional_info': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'for_example': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['dictionary.Example']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'mark': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'}),
-            'mtime': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'position': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'source': ('django.db.models.fields.CharField', [], {'max_length': '40', 'blank': 'True'}),
-            'text': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+            'text': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
+            'unitext': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'})
         },
         'dictionary.meaning': {
             'Meta': {'ordering': "('id',)", 'object_name': 'Meaning'},

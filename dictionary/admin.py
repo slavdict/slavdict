@@ -130,7 +130,7 @@ class GreekEquivalentForMeaning_Inline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (None, {
-            'fields': ('text', 'mark', 'source'),
+            'fields': (('unitext', 'text'), 'mark', 'source'),
             }),
         (u'Примечание к параллели',
             {'fields': ('additional_info',),
@@ -144,7 +144,7 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (None, {
-            'fields': ('text', 'mark', 'source'),
+            'fields': (('unitext', 'text'), 'mark', 'source'),
             }),
         (u'Примечание к параллели',
             {'fields': ('additional_info',),
