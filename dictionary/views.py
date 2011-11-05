@@ -785,7 +785,7 @@ def hellinist_workbench(request):
 
 @login_required
 def json_greq_save(request):
-    jsonGreq = request.POST.get['greq']
+    jsonGreq = request.POST.get('greq')
     if jsonGreq:
         greq = json.loads(jsonGreq)
         if not greq['id']:

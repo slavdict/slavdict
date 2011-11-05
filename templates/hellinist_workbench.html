@@ -49,7 +49,7 @@
                 <ul class="example--greq" data-bind="foreach: greqs">
                     <li>
                         <span class="grec" data-bind="text: text"></span>
-                        <input type="text" data-bind="value: unitext, event: { change: $parent.jsonGreq" />
+                        <input type="text" data-bind="value: unitext, event: { change: saveMe } " />
                         <input type="text" data-bind="value: initial_form" />
                         <input type="button" value="&times;" data-bind="click: removeMe" />
                     </li>
@@ -77,6 +77,14 @@
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
     <script>
 
+        function GreqForJSON(greq) {
+            this.id = greq.id;
+            this.text = greq.text;
+            this.unitext = greq.unitext;
+            this.initial_form = greq.initial_form;
+            this.for_example_id = greq.for_example_id;
+        }
+
         function Greq(ex, greq) {
 
             if (!greq) greq = {};
@@ -84,22 +92,20 @@
             this.text = ko.observable(greq.text || '');
             this.unitext = ko.observable(greq.unitext || '');
             this.initial_form = ko.observable(greq.initial_form || '');
-            this.for_example = ex.id;
+            this.for_example_id = ex.id;
             
             this.removeMe = function() {
                 ex.greqs.remove(this);
             }.bind(this);
-            
-        }
 
-        function GreqForJSON(greq) {
-
-            this.id = greq.id;
-            this.text = greq.text;
-            this.unitext = greq.unitext;
-            this.initial_form = greq.initial_form;
-            this.for_example = greq.for_example;
-
+            this.saveMe = function() {
+                var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(this)) };
+                $.post("{% url jsonGreqSaveURL %}", dataToSend, function(data) {
+                    if (data.action=='saved') {
+                        this.id = data.id;
+                    }
+                }.bind(this));
+            };
         }
 
         function Example(ex) {
@@ -124,15 +130,6 @@
                 this.greqs.push(new Greq(this));
             }.bind(this);
             
-            this.jsonGreq = function(greq) {
-                var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(greq)) };
-                $.post("{% url jsonGreqSaveURL %}", dataToSend, function(data) {
-                    if (data.action=='saved') {
-                        greq.id = data.id;
-                    }
-                });
-            };
-
         }
 
         var jsonExamples = ko.utils.arrayMap(
