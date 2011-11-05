@@ -765,8 +765,8 @@ def hellinist_workbench(request):
             'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context,
             'address': e.address_text, 'status': e.greek_eq_status,
             'greqs': [
-                { 'unitext': greq.unitext, 'text': greq.text, 'initForm': greq.initial_form,
-                  }
+                { 'unitext': greq.unitext, 'text': greq.text, 'initial_form': greq.initial_form,
+                  'id': greq.id }
                 for greq in e.greek_equivs
             ]
         }
@@ -785,5 +785,21 @@ def hellinist_workbench(request):
 
 @login_required
 def json_greq_save(request):
-    
-    return HttpResponse(status=200)
+    jsonGreq = request.POST.get['greq']
+    if jsonGreq:
+        greq = json.loads(jsonGreq)
+        if not greq['id']:
+            del greq['id']
+            gr = GreekEquivalentForExample(**greq)
+            gr.save()
+            print "------ greq id: %s -----"
+            data = json.dumps({'action': 'created', 'id': gr.id })
+        else:
+            gr = GreekEquivalentForExample.objects.get(pk=int(greq['id']))
+            gr.__dict__.update(greq)
+            gr.save()
+            data = json.dumps({'action': 'saved' })
+        response = HttpResponse(data, mimetype='application/json', status=200)
+    else:
+        response = HttpResponse(status=400)
+    return response

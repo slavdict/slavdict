@@ -49,8 +49,8 @@
                 <ul class="example--greq" data-bind="foreach: greqs">
                     <li>
                         <span class="grec" data-bind="text: text"></span>
-                        <input type="text" data-bind="value: unitext" />
-                        <input type="text" data-bind="value: initForm" />
+                        <input type="text" data-bind="value: unitext, event: { change: $parent.jsonGreq" />
+                        <input type="text" data-bind="value: initial_form" />
                         <input type="button" value="&times;" data-bind="click: removeMe" />
                     </li>
                 </ul>
@@ -83,8 +83,8 @@
             this.id = greq.id || '';
             this.text = ko.observable(greq.text || '');
             this.unitext = ko.observable(greq.unitext || '');
-            this.initForm = ko.observable(greq.initForm || '');
-            this.forExample = ex.id;
+            this.initial_form = ko.observable(greq.initial_form || '');
+            this.for_example = ex.id;
             
             this.removeMe = function() {
                 ex.greqs.remove(this);
@@ -92,6 +92,15 @@
             
         }
 
+        function GreqForJSON(greq) {
+
+            this.id = greq.id;
+            this.text = greq.text;
+            this.unitext = greq.unitext;
+            this.initial_form = greq.initial_form;
+            this.for_example = greq.for_example;
+
+        }
 
         function Example(ex) {
 
@@ -116,8 +125,12 @@
             }.bind(this);
             
             this.jsonGreq = function(greq) {
-                var dataToSend = ko.toJSON(greq);
-                $.post("/json/singleselect/entries/urls/", dataToSend);
+                var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(greq)) };
+                $.post("{% url jsonGreqSaveURL %}", dataToSend, function(data) {
+                    if (data.action=='saved') {
+                        greq.id = data.id;
+                    }
+                });
             };
 
         }
