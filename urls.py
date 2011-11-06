@@ -42,6 +42,7 @@ urlpatterns += patterns('',
     url( r'^test/multiselect/$', 'django.views.generic.simple.direct_to_template', {'template': 'multiselect.html'}),
     url( r'^greek/$', 'dictionary.views.hellinist_workbench', name='hellinist_workbench' ),
     url( r'^json/greq/save/$', 'dictionary.views.json_greq_save', name="jsonGreqSaveURL"),
+    url( r'^json/greq/delete/$', 'dictionary.views.json_greq_delete', name="jsonGreqDeleteURL"),
 )
 
 urlpatterns += staticfiles_urlpatterns()

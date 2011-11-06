@@ -95,7 +95,17 @@
             this.for_example_id = ex.id;
             
             this.removeMe = function() {
-                ex.greqs.remove(this);
+                var id = this.id;
+                if (id) {
+                    var dataToSend = { 'delete': id }
+                    $.post("{% url jsonGreqDeleteURL %}", dataToSend,
+                        function(data) {
+                            if (data.action=='deleted') {
+                                ex.greqs.remove(this);
+                            }
+                        }.bind(this)
+                    );
+                }
             }.bind(this);
 
             this.saveMe = function() {
@@ -105,7 +115,7 @@
                         this.id = data.id;
                     }
                 }.bind(this));
-            };
+            }.bind(this);
         }
 
         function Example(ex) {

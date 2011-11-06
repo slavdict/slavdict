@@ -803,3 +803,20 @@ def json_greq_save(request):
     else:
         response = HttpResponse(status=400)
     return response
+
+
+@login_required
+def json_greq_delete(request):
+    jsonDelete = request.POST.get('delete')
+    if jsonDelete:
+        id = int( json.loads(jsonDelete) )
+        if id:
+            gr = GreekEquivalentForExample.objects.get(pk=id)
+            gr.delete()
+            data = json.dumps({'action': 'deleted' })
+            response = HttpResponse(data, mimetype='application/json', status=200)
+        else:
+            response = HttpResponse(status=400)
+    else:
+        response = HttpResponse(status=400)
+    return response
