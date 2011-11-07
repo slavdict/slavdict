@@ -48,9 +48,17 @@
 
                 <ul class="example--greq" data-bind="foreach: greqs">
                     <li>
-                        <span class="grec" data-bind="text: text"></span>
-                        <input type="text" data-bind="value: unitext, event: { change: saveMe } " />
-                        <input type="text" data-bind="value: initial_form" />
+                        <span class="example--greq--ulysses">
+                            <label>греч. (устар.)</label>
+                            <span class="grec" data-bind="text: text"></span>
+                        </span>
+
+                        <label>греч. параллель</label>
+                        <input type="text" data-bind="value: unitext, event: { change: saveMe }" />
+
+                        <label>начальная форма</label>
+                        <input type="text" data-bind="value: initial_form, event: { change: saveMe }" />
+
                         <input type="button" value="&times;" data-bind="click: removeMe" />
                     </li>
                 </ul>
@@ -93,7 +101,7 @@
             this.unitext = ko.observable(greq.unitext || '');
             this.initial_form = ko.observable(greq.initial_form || '');
             this.for_example_id = ex.id;
-            
+
             this.removeMe = function() {
                 var id = this.id;
                 if (id) {
@@ -139,7 +147,7 @@
             this.addGreq = function() {
                 this.greqs.push(new Greq(this));
             }.bind(this);
-            
+
         }
 
         var jsonExamples = ko.utils.arrayMap(
