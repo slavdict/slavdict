@@ -44,10 +44,29 @@ div#main
     font-size: 13px
     margin-right: 1em
 
-.example--greq li
+.greqForExample
     list-style: none
     position: relative
 
-.example--greq--ulysses
+.greqFieldContainer
+    position: relative
+    display: inline-block
+    padding-top: 5px
+    margin: 10px 10px 0 0
+    label
+        position: absolute
+        white-space: nowrap
+        top: -3px
+        font:
+            family: $sansFont
+            size: 10px
+
+.greqFieldContainer-ulysses,
+.gFC-ulysses
     position: absolute
-    left: -50px
+    right: 0px
+
+.greqField-ulysses
+    font-family: 'SIL Ulysses'
+    letter-spacing: 0.1em
+    color: #a00

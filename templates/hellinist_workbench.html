@@ -46,18 +46,30 @@
                 <span class="cslav" data-bind="text: text"></span>
                 <span class="cslav context" data-bind="text: leftContext"></span>
 
-                <ul class="example--greq" data-bind="foreach: greqs">
-                    <li>
-                        <span class="example--greq--ulysses">
+                <span data-bind="if: greqs">
+                    &nbsp;&mdash;{% space %}
+                    <!-- ko foreach: greqs -->
+                    <span data-bind="ifnot: unitext, text: text" class="grec"></span>
+                    <span data-bind="if: unitext, text: unitext"></span>
+                    <!-- /ko -->
+                </span>
+
+                <ul data-bind="foreach: greqs">
+                    <li class="greqForExample">
+                        <span class="greqFieldContainer gFC-ulysses" data-bind="if: text">
                             <label>греч. (устар.)</label>
-                            <span class="grec" data-bind="text: text"></span>
+                            <span class="greqField-ulysses" data-bind="text: text"></span>
                         </span>
 
-                        <label>греч. параллель</label>
-                        <input type="text" data-bind="value: unitext, event: { change: saveMe }" />
+                        <span class="greqFieldContainer">
+                            <label>греч. параллель</label>
+                            <input type="text" data-bind="value: unitext, event: { change: saveMe }" />
+                        </span>
 
-                        <label>начальная форма</label>
-                        <input type="text" data-bind="value: initial_form, event: { change: saveMe }" />
+                        <span class="greqFieldContainer">
+                            <label>начальная форма</label>
+                            <input type="text" data-bind="value: initial_form, event: { change: saveMe }" />
+                        </span>
 
                         <input type="button" value="&times;" data-bind="click: removeMe" />
                     </li>
@@ -103,9 +115,8 @@
             this.for_example_id = ex.id;
 
             this.removeMe = function() {
-                var id = this.id;
-                if (id) {
-                    var dataToSend = { 'delete': id }
+                if (this.id) {
+                    var dataToSend = { 'delete': this.id }
                     $.post("{% url jsonGreqDeleteURL %}", dataToSend,
                         function(data) {
                             if (data.action=='deleted') {
@@ -113,6 +124,8 @@
                             }
                         }.bind(this)
                     );
+                } else {
+                    ex.greqs.remove(this);
                 }
             }.bind(this);
 
