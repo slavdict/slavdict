@@ -89,7 +89,7 @@ class OrthVar_Inline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (None, {
-            'fields': ('idem',),
+            'fields': (('idem', 'no_ref_entry'),),
             }),
         )
 

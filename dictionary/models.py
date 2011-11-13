@@ -146,6 +146,10 @@ class Entry(models.Model, Meaningfull):
     def orth_vars(self):
         return self.orthographic_variants.all()
 
+    @property
+    def orth_vars_refs(self):
+        return self.orthographic_variants.filter(no_ref_entry=False)
+
     reconstructed_headword = models.BooleanField(
         u'Заглавное слово реконструировано',
         default = False,
@@ -1453,6 +1457,11 @@ class OrthographicVariant(models.Model):
     # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
     # на конце автоматически добавляется дефис, заносить в базу без дефиса
     #is_factored_out = models.BooleanField(u'общая часть нескольких слов или словоформ')
+
+    no_ref_entry = models.BooleanField(
+        u'Не делать отсылочной статьи',
+        default = False,
+        )
 
     mtime = models.DateTimeField(
         editable=False,
