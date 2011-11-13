@@ -1,0 +1,179 @@
+{% load trim_spaces %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ title }}</title>
+    <link href="{{ STATIC_URL }}hellinist_workbench.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <div id="main">
+    {% trim %}
+
+    {% include '_pagination.html' %}
+
+    {% for e in examples %}
+        <div>
+            {% ifchanged %}
+            <div class="exampleHeader">
+                {% if e.host.orth_vars %}
+                    <span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span>{% space %}
+                    <i>{{ e.host_entry.part_of_speech.tag }}</i>{% space %}
+                {% else %}
+                    {% for c in e.host.collocations %}
+                        <span class="cslav">{{ c.collocation_ucs }}</span>
+                        {% if not forloop.last %},{% endif %}{% space %}
+                    {% endfor %}
+                {% endif %}
+                {% if e.meaning.meaning %}
+                    ‘{{ e.meaning.meaning }}’
+                    {% space %}
+                {% endif %}
+                {% if e.meaning.gloss %}
+                    {% if e.meaning.meaning %}
+                        ({{ e.meaning.gloss }})
+                    {% else %}
+                        {{ e.meaning.gloss }}
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endifchanged %}
+
+            <div class="example" data-bind="with: examples[{{ forloop.counter0 }}]">
+                <span class="example--id">[<span data-bind="text: id"></span>]</span>
+                <input type="text" class="example--address" data-bind="value: address" /><br />
+                <span class="cslav context" data-bind="text: leftContext"></span>
+                <span class="cslav" data-bind="text: text"></span>
+                <span class="cslav context" data-bind="text: leftContext"></span>
+
+                <span data-bind="if: greqs">
+                    &nbsp;&mdash;{% space %}
+                    <!-- ko foreach: greqs -->
+                    <span data-bind="ifnot: unitext, text: text" class="grec"></span>
+                    <span data-bind="if: unitext, text: unitext"></span>
+                    <!-- /ko -->
+                </span>
+
+                <ul data-bind="foreach: greqs">
+                    <li class="greqForExample">
+                        <span class="greqFieldContainer gFC-ulysses" data-bind="if: text">
+                            <label>греч. (устар.)</label>
+                            <span class="greqField-ulysses" data-bind="text: text"></span>
+                        </span>
+
+                        <span class="greqFieldContainer">
+                            <label>греч. параллель</label>
+                            <input type="text" data-bind="value: unitext, event: { change: saveMe }" />
+                        </span>
+
+                        <span class="greqFieldContainer">
+                            <label>начальная форма</label>
+                            <input type="text" data-bind="value: initial_form, event: { change: saveMe }" />
+                        </span>
+
+                        <input type="button" value="&times;" data-bind="click: removeMe" />
+                    </li>
+                </ul>
+
+                <label class="example--formLabel">Статус:</label>
+                <select data-bind="value: status">
+                    {% for option in statusList %}
+                    <option value="{{ option.0 }}">{{ option.1 }}</option>
+                    {% endfor %}
+                </select>
+                <input type="button" value="+ Добавить параллель" data-bind="click: addGreq" />
+
+            </div>
+        </div>
+    {% endfor %}
+
+    {% include '_pagination.html' %}
+
+    {% endtrim %}
+    </div>
+
+
+    <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.4.min.js'></script>
+    <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
+    <script>
+
+        function GreqForJSON(greq) {
+            this.id = greq.id;
+            this.text = greq.text;
+            this.unitext = greq.unitext;
+            this.initial_form = greq.initial_form;
+            this.for_example_id = greq.for_example_id;
+        }
+
+        function Greq(ex, greq) {
+
+            if (!greq) greq = {};
+            this.id = greq.id || '';
+            this.text = ko.observable(greq.text || '');
+            this.unitext = ko.observable(greq.unitext || '');
+            this.initial_form = ko.observable(greq.initial_form || '');
+            this.for_example_id = ex.id;
+
+            this.removeMe = function() {
+                if (this.id) {
+                    var dataToSend = { 'delete': this.id }
+                    $.post("{% url jsonGreqDeleteURL %}", dataToSend,
+                        function(data) {
+                            if (data.action=='deleted') {
+                                ex.greqs.remove(this);
+                            }
+                        }.bind(this)
+                    );
+                } else {
+                    ex.greqs.remove(this);
+                }
+            }.bind(this);
+
+            this.saveMe = function() {
+                var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(this)) };
+                $.post("{% url jsonGreqSaveURL %}", dataToSend, function(data) {
+                    if (data.action=='saved') {
+                        this.id = data.id;
+                    }
+                }.bind(this));
+            }.bind(this);
+        }
+
+        function Example(ex) {
+
+            this.id = ex.id;
+            this.status = ko.observable(ex.status);
+            this.address = ko.observable(ex.address);
+            this.leftContext = ex.triplet[0];
+            this.text = ex.triplet[1];
+            this.rightContext = ex.triplet[2];
+            this.antconc = ex.antconc;
+            this.greqs = ko.observableArray(
+                ko.utils.arrayMap(
+                    ex.greqs,
+                    function(greq){
+                        return new Greq(this, greq);
+                    }.bind(this)
+                )
+            );
+
+            this.addGreq = function() {
+                this.greqs.push(new Greq(this));
+            }.bind(this);
+
+        }
+
+        var jsonExamples = ko.utils.arrayMap(
+            {{ jsonExamples|safe }},
+            function(ex) { return new Example(ex); }
+        );
+
+        var viewModel = {
+            examples: jsonExamples
+        };
+
+        ko.applyBindings(viewModel);
+    </script>
+
+</body>
+</html>

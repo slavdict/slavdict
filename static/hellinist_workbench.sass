@@ -1,0 +1,72 @@
+@charset 'utf-8'
+
+@import reset
+@import fonts
+@import variables
+@import pagination
+
+body
+    font-family: $serifFont
+    font-size: 13pt
+
+div#main
+    margin: 1em auto
+    width: 40em
+    position: relative
+
+.exampleHeader
+    margin-top: 3em
+    color: #555
+    line-height: 24px
+    margin-bottom: 10px
+
+.example
+    padding-left: 50px
+    position: relative
+    margin-bottom: 10px
+
+.example--id
+    position: absolute
+    left: 0px
+    top: 3px
+    font-family: $sansFont
+    font-size: 13px
+    color: #65482a
+
+.example--address
+    color: #0a0
+
+.context
+    color: gray
+
+.example--formLabel
+    font-family: $sansFont
+    font-size: 13px
+    margin-right: 1em
+
+.greqForExample
+    list-style: none
+    position: relative
+
+.greqFieldContainer
+    position: relative
+    display: inline-block
+    padding-top: 5px
+    margin: 10px 10px 0 0
+    label
+        position: absolute
+        white-space: nowrap
+        top: -3px
+        font:
+            family: $sansFont
+            size: 10px
+
+.greqFieldContainer-ulysses,
+.gFC-ulysses
+    position: absolute
+    right: 0px
+
+.greqField-ulysses
+    font-family: 'SIL Ulysses'
+    letter-spacing: 0.1em
+    color: #a00

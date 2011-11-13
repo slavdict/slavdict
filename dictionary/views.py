@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
+
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
@@ -565,16 +567,19 @@ from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 @login_required
 def entry_list(request, mine=False):
-    SORT_MAPPING = {
+    VALID_SORT_PARAMS = {
         'alph': ('civil_equivalent', 'homonym_order'),
         '-alph': ('-civil_equivalent', '-homonym_order'),
         't': ('mtime', 'id'),
         '-t': ('-mtime', '-id'),
         }
     DEFAULT_SORT = '-t'
-    VALID_SORT_PARAMS = set(SORT_MAPPING)
+    FILTERS = {}
+    QS_PARSING_ERRORS = []
+
     GET_SORT = request.GET.get('sort')
     GET_FIND = request.GET.get('find')
+    GET_AUTHOR = request.GET.get('author')
 
     if GET_SORT:
         redirect_path = "./"
@@ -586,11 +591,29 @@ def entry_list(request, mine=False):
         return response
 
     COOKIES_SORT = request.COOKIES.get('sort', DEFAULT_SORT)
-    SORT_PARAMS = SORT_MAPPING[COOKIES_SORT]
+    SORT_PARAMS = VALID_SORT_PARAMS[COOKIES_SORT]
+
+    if GET_AUTHOR:
+        if GET_AUTHOR=='all':
+            pass
+        elif GET_AUTHOR=='none':
+            FILTERS['editor__isnull'] = True
+        elif GET_AUTHOR.isdigit():
+            FILTERS['editor'] = int(GET_AUTHOR)
+        else:
+            QS_PARSING_ERRORS.append('author')
+
+        if 'author' not in QS_PARSING_ERRORS:
+            redirect_path = "./"
+            if GET_FIND:
+                redirect_path = "?find=%s" % GET_FIND
+            response = HttpResponseRedirect(redirect_path)
+            response.set_cookie('author', GET_AUTHOR)
+
 
     if GET_FIND is None and not mine:
         GET_FIND = u''
-        entry_list = Entry.objects.all().order_by(*SORT_PARAMS) #filter(editor=request.user)
+        entry_list = Entry.objects.filter(**FILTERS).order_by(*SORT_PARAMS) #filter(editor=request.user)
     else:
         if GET_FIND:
             # Ищем все лексемы, удовлетворяющие запросу в независимости от регистра начальной буквы запроса.
@@ -601,7 +624,7 @@ def entry_list(request, mine=False):
             FIND_CAPZD = GET_FIND.capitalize()
             entry_list = Entry.objects.filter(
                     Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD)
-                ).order_by(*SORT_PARAMS) #filter(editor=request.user)
+                ).filter(**FILTERS).order_by(*SORT_PARAMS) #filter(editor=request.user)
         else:
             GET_FIND = u''
             if mine:
@@ -624,9 +647,8 @@ def entry_list(request, mine=False):
     except (EmptyPage, InvalidPage):
         page = paginator.page(paginator.num_pages)
 
-    authors = [{'id': u.id, 'name': u.__unicode__()} for u in CustomUser.objects.filter(groups__name=u'authors')]
-    authors.insert(0, {'name': u'все авторы', 'id': 'all'})
-    authors.append({'name': 'статьи без автора', 'id': 'none'})
+    authors = [ {'id': u.id, 'name': u.__unicode__()} for u in CustomUser.objects.filter(groups__name=u'authors')]
+    authors = [ {'id':'all', 'name': u'Все авторы'}, {'id':'none', 'name': u'Статьи без автора'} ] + authors
 
     context = {
         'entries': page.object_list,
@@ -634,7 +656,7 @@ def entry_list(request, mine=False):
         'sort': COOKIES_SORT,
         'find_prefix': GET_FIND,
         'mine': mine,
-        'authors': authors,
+        'authors': json.dumps(authors, ensure_ascii=False, separators=(',',':')),
         }
     return render_to_response('entry_list.html', context, RequestContext(request))
 
@@ -666,7 +688,6 @@ def antconc2ucs8_converter(request):
 
 @login_required
 def json_multiselect_entries(request):
-    import json
     GET_FIND = request.GET.get('find')
     GET_ID = request.GET.get('ids')
     if GET_ID:
@@ -692,7 +713,7 @@ def json_multiselect_entries(request):
                 'index': n,
                 }
                 for n, e in enumerate(entries)]
-        data = json.dumps(entries)
+        data = json.dumps(entries, ensure_ascii=False, separators=(',',':'))
         response = HttpResponse(data, mimetype='application/json')
     else:
         response = HttpResponse(mimetype='application/json', status=400)
@@ -700,7 +721,6 @@ def json_multiselect_entries(request):
 
 @login_required
 def json_singleselect_entries_urls(request):
-    import json
     GET_FIND = request.GET.get('find')
     if GET_FIND:
         FIND_LOWER = GET_FIND.lower()
@@ -718,8 +738,85 @@ def json_singleselect_entries_urls(request):
                 'url': e.get_absolute_url(),
                 }
                 for e in entries]
-        data = json.dumps(entries)
+        data = json.dumps(entries, ensure_ascii=False, separators=(',',':'))
         response = HttpResponse(data, mimetype='application/json')
     else:
         response = HttpResponse(mimetype='application/json', status=400)
+    return response
+
+
+@login_required
+def hellinist_workbench(request):
+
+    examples = Example.objects.filter(greek_eq_status=u'F')
+
+    paginator = Paginator(examples, per_page=5, orphans=2)
+    try:
+        pagenum = int(request.GET.get('page', 1))
+    except ValueError:
+        pagenum = 1
+    try:
+        page = paginator.page(pagenum)
+    except (EmptyPage, InvalidPage):
+        page = paginator.page(paginator.num_pages)
+
+    vM_examples = [
+        {
+            'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context,
+            'address': e.address_text, 'status': e.greek_eq_status,
+            'greqs': [
+                { 'unitext': greq.unitext, 'text': greq.text, 'initial_form': greq.initial_form,
+                  'id': greq.id }
+                for greq in e.greek_equivs
+            ]
+        }
+    for e in page.object_list]
+
+    import dictionary.models
+    context = {
+        'title': u'Греческий кабинет',
+        'examples': page.object_list,
+        'jsonExamples': json.dumps(vM_examples, ensure_ascii=False, separators=(',',':')),
+        'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
+        'page': page,
+        }
+    return render_to_response('hellinist_workbench.html', context, RequestContext(request))
+
+
+@login_required
+def json_greq_save(request):
+    jsonGreq = request.POST.get('greq')
+    if jsonGreq:
+        greq = json.loads(jsonGreq)
+        if not greq['id']:
+            del greq['id']
+            gr = GreekEquivalentForExample(**greq)
+            gr.save()
+            print "------ greq id: %s -----"
+            data = json.dumps({'action': 'created', 'id': gr.id })
+        else:
+            gr = GreekEquivalentForExample.objects.get(pk=int(greq['id']))
+            gr.__dict__.update(greq)
+            gr.save()
+            data = json.dumps({'action': 'saved' })
+        response = HttpResponse(data, mimetype='application/json', status=200)
+    else:
+        response = HttpResponse(status=400)
+    return response
+
+
+@login_required
+def json_greq_delete(request):
+    jsonDelete = request.POST.get('delete')
+    if jsonDelete:
+        id = int( json.loads(jsonDelete) )
+        if id:
+            gr = GreekEquivalentForExample.objects.get(pk=id)
+            gr.delete()
+            data = json.dumps({'action': 'deleted' })
+            response = HttpResponse(data, mimetype='application/json', status=200)
+        else:
+            response = HttpResponse(status=400)
+    else:
+        response = HttpResponse(status=400)
     return response
