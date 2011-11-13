@@ -146,6 +146,16 @@ class Entry(models.Model, Meaningfull):
     def orth_vars(self):
         return self.orthographic_variants.all()
 
+    reconstructed_headword = models.BooleanField(
+        u'Заглавное слово реконструировано',
+        default = False,
+        )
+
+    questionable_headword = models.BooleanField(
+        u'Реконструкция заглавного слова вызывает сомнения',
+        default = False,
+        )
+
     hidden = models.BooleanField(
         u'Скрыть лексему',
         help_text = u'Не отображать лексему в списке словарных статей.',
@@ -1439,32 +1449,10 @@ class OrthographicVariant(models.Model):
         null = True,
         )
 
-    # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
-    is_reconstructed = models.BooleanField(
-        u'является реконструкцией',
-        default = False,
-        )
-
-    # 2011.09 NB:
-    # Показывает является ли реконструкция сомнительной.
-    # Изначально у этого поля было другое значение, но название пока осталось.
-    is_approved = models.BooleanField(
-        u'сомнительная реконструкция',
-        default = False,
-        )
-
     # является ли орф. вариант только общей частью словоформ
     # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
     # на конце автоматически добавляется дефис, заносить в базу без дефиса
     #is_factored_out = models.BooleanField(u'общая часть нескольких слов или словоформ')
-
-    # частота встречаемости орфографического варианта
-    # ? для факторизантов не важна ?
-    frequency = models.PositiveIntegerField(
-        u'частота',
-        blank = True,
-        null  = True,
-        )
 
     mtime = models.DateTimeField(
         editable=False,

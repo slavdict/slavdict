@@ -313,6 +313,9 @@ class AdminEntry(admin.ModelAdmin):
     )
     fieldsets = (
         (None, {
+            'fields': (('reconstructed_headword', 'questionable_headword'),),
+            }),
+        (None, {
             'fields': ('civil_equivalent',),
             }),
         (u'Омонимия', {
