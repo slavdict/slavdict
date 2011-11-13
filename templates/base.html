@@ -85,27 +85,27 @@
             };
 
             vM_hdrSearch.moveFocusDown = function() {
-                var items = this.foundItems;
-                var arrLength = items().length;
+                var items = this.foundItems();
+                var arrLength = items.length;
                 var currentItem = this.focusedItem();
                 var index = 0;
                 if (currentItem) {
                     index = ko.utils.arrayIndexOf(items, currentItem);
                     index = index > (arrLength - 2) ? 0 : ++index;
                 }
-                items()[index].focusMe();
+                items[index].focusMe();
             }.bind(vM_hdrSearch);
 
             vM_hdrSearch.moveFocusUp = function() {
-                var items = this.foundItems;
-                var arrLength = items().length;
+                var items = this.foundItems();
+                var arrLength = items.length;
                 var currentItem = this.focusedItem();
                 var index = arrLength - 1;
                 if (currentItem) {
                     index = ko.utils.arrayIndexOf(items, currentItem);
                     index = index < 1 ? arrLength - 1 : --index;
                 }
-                items()[index].focusMe();
+                items[index].focusMe();
             }.bind(vM_hdrSearch);
 
             vM_hdrSearch.go = function(item) {
