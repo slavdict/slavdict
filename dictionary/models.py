@@ -1456,8 +1456,8 @@ class OrthographicVariant(models.Model):
         return self.idem
 
     class Meta:
-        verbose_name = u'орфографический вариант'
-        verbose_name_plural = u'орфографические варианты'
+        verbose_name = u'вариант'
+        verbose_name_plural = u'варианты'
         ordering = ('order','id')
 
 
