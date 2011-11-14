@@ -89,14 +89,7 @@ class OrthVar_Inline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (None, {
-            'fields': ('idem',),
-            }),
-        )
-
-class OrthVar_Inline2(OrthVar_Inline):
-    fieldsets = (
-        (None, {
-            'fields': (('idem', 'is_reconstructed'), ),
+            'fields': (('idem', 'no_ref_entry'),),
             }),
         )
 
@@ -320,6 +313,9 @@ class AdminEntry(admin.ModelAdmin):
     )
     fieldsets = (
         (None, {
+            'fields': (('reconstructed_headword', 'questionable_headword'),),
+            }),
+        (None, {
             'fields': ('civil_equivalent',),
             }),
         (u'Омонимия', {
@@ -422,11 +418,7 @@ AdminEntry.has_change_permission = staff_has_change_permission
 AdminEntry.has_delete_permission = superuser_has_delete_permission
 
 class AdminEntry2(AdminEntry):
-    inlines = (
-        OrthVar_Inline2,
-        WordForm_Inline,
-        Etymology_Inline,
-        )
+    pass
 
 import copy
 AdminEntry2.fieldsets = copy.deepcopy(AdminEntry.fieldsets)
