@@ -49,8 +49,8 @@
                 <span data-bind="if: greqs">
                     &nbsp;&mdash;{% space %}
                     <!-- ko foreach: greqs -->
-                    <span data-bind="ifnot: unitext, text: text" class="grec"></span>
-                    <span data-bind="if: unitext, text: unitext"></span>
+                    <span data-bind="text: text, visible: !unitext()" class="grec"></span>
+                    <span data-bind="text: unitext, visible: unitext()"></span><!-- ko if: "" -->,<!-- /ko -->{% space %}
                     <!-- /ko -->
                 </span>
 
@@ -72,6 +72,8 @@
                         </span>
 
                         <input type="button" value="&times;" data-bind="click: removeMe" />
+
+                        <span data-bind="text: id"></span>
                     </li>
                 </ul>
 
@@ -108,7 +110,7 @@
         function Greq(ex, greq) {
 
             if (!greq) greq = {};
-            this.id = greq.id || '';
+            this.id = ko.observable(greq.id || '');
             this.text = ko.observable(greq.text || '');
             this.unitext = ko.observable(greq.unitext || '');
             this.initial_form = ko.observable(greq.initial_form || '');
@@ -132,8 +134,8 @@
             this.saveMe = function() {
                 var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(this)) };
                 $.post("{% url jsonGreqSaveURL %}", dataToSend, function(data) {
-                    if (data.action=='saved') {
-                        this.id = data.id;
+                    if (data.action=='created') {
+                        this.id(data.id);
                     }
                 }.bind(this));
             }.bind(this);
