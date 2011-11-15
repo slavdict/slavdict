@@ -23,7 +23,7 @@ div#main
 .example
     padding-left: 50px
     position: relative
-    margin-bottom: 10px
+    margin-bottom: 40px
 
 .example--id
     position: absolute
@@ -73,3 +73,27 @@ div#main
 
 .greqList--comma:last-child
     display: none
+
+.greqFieldButton
+    background-color: #ccc
+    color: #fff
+    @include roundedCorners(3px)
+
+.greqFieldButton:hover
+    background-color: #a00
+    color: #fff
+
+.greqFieldAjaxLoader
+    background: transparent url('ajax-loader.gif') no-repeat 50% 50%
+    width: 16px
+    height: 16px
+    position: absolute
+    display: block
+    left: -30px
+    top: 20px
+
+.greqStatus
+    position: absolute
+    bottom: -5px
+    right: 0
+    width: 10em

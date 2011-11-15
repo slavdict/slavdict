@@ -792,7 +792,6 @@ def json_greq_save(request):
             del greq['id']
             gr = GreekEquivalentForExample(**greq)
             gr.save()
-            print "------ greq id: %s -----"
             data = json.dumps({'action': 'created', 'id': gr.id })
         else:
             gr = GreekEquivalentForExample.objects.get(pk=int(greq['id']))

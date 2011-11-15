@@ -40,18 +40,21 @@
             {% endifchanged %}
 
             <div class="example" data-bind="with: examples[{{ forloop.counter0 }}]">
+            
                 <span class="example--id">[<span data-bind="text: id"></span>]</span>
-                <input type="text" class="example--address" data-bind="value: address" /><br />
+                <span class="example--address" data-bind="text: address"></span><br />
+
                 <span class="cslav context" data-bind="text: leftContext"></span>
                 <span class="cslav" data-bind="text: text"></span>
                 <span class="cslav context" data-bind="text: leftContext"></span>
 
                 <span data-bind="visible: greqs().length">
                     &nbsp;&mdash;{% space %}
-                    <span data-bind="foreach: greqs">
+                    <!-- ko foreach: greqs -->
                         <span data-bind="text: text, visible: !unitext()" class="grec"></span>
-                        <span data-bind="text: unitext, visible: unitext()"></span><span class="greqList--comma">,</span>{% space %}
-                    </span>
+                        <span data-bind="text: unitext, visible: unitext()"></span>
+                        <span class="greqList--comma">,</span>{% space %}
+                    <!-- /ko -->
                 </span>
 
                 <ul data-bind="foreach: greqs">
@@ -71,19 +74,22 @@
                             <input type="text" data-bind="value: initial_form, event: { change: saveMe }" />
                         </span>
 
-                        <input type="button" value="&times;" data-bind="click: removeMe" />
+                        <input type="button" value="&times;" class="greqFieldButton" data-bind="click: removeMe" />
 
-                        <span data-bind="text: id"></span>
+                        <span class="greqFieldAjaxLoader" data-bind="visible: beingSaved()"></span>
                     </li>
                 </ul>
 
-                <label class="example--formLabel">Статус:</label>
-                <select data-bind="value: status">
-                    {% for option in statusList %}
-                    <option value="{{ option.0 }}">{{ option.1 }}</option>
-                    {% endfor %}
-                </select>
-                <input type="button" value="+ Добавить параллель" data-bind="click: addGreq" />
+                <input type="button" value="Добавить параллель" data-bind="click: addGreq" />
+
+                <div class="greqStatus greqFieldContainer">
+                    <label class="example--formLabel">Статус:</label>
+                    <select data-bind="value: status">
+                        {% for option in statusList %}
+                        <option value="{{ option.0 }}">{{ option.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
             </div>
         </div>
@@ -116,9 +122,12 @@
             this.initial_form = ko.observable(greq.initial_form || '');
             this.for_example_id = ex.id;
 
+            this.beingSaved = ko.observable(false);
+
             this.removeMe = function() {
-                if (this.id) {
-                    var dataToSend = { 'delete': this.id }
+                if (this.id()) {
+                    this.beingSaved(true);
+                    var dataToSend = { 'delete': this.id() }
                     $.post("{% url jsonGreqDeleteURL %}", dataToSend,
                         function(data) {
                             if (data.action=='deleted') {
@@ -132,11 +141,13 @@
             }.bind(this);
 
             this.saveMe = function() {
+                this.beingSaved(true);
                 var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(this)) };
                 $.post("{% url jsonGreqSaveURL %}", dataToSend, function(data) {
                     if (data.action=='created') {
                         this.id(data.id);
                     }
+                    this.beingSaved(false);
                 }.bind(this));
             }.bind(this);
         }
