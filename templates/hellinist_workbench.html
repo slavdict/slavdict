@@ -46,12 +46,12 @@
                 <span class="cslav" data-bind="text: text"></span>
                 <span class="cslav context" data-bind="text: leftContext"></span>
 
-                <span data-bind="if: greqs">
+                <span data-bind="visible: greqs().length">
                     &nbsp;&mdash;{% space %}
-                    <!-- ko foreach: greqs -->
-                    <span data-bind="text: text, visible: !unitext()" class="grec"></span>
-                    <span data-bind="text: unitext, visible: unitext()"></span><!-- ko if: "" -->,<!-- /ko -->{% space %}
-                    <!-- /ko -->
+                    <span data-bind="foreach: greqs">
+                        <span data-bind="text: text, visible: !unitext()" class="grec"></span>
+                        <span data-bind="text: unitext, visible: unitext()"></span><span class="greqList--comma">,</span>{% space %}
+                    </span>
                 </span>
 
                 <ul data-bind="foreach: greqs">
