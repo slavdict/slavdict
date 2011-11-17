@@ -40,13 +40,19 @@
             {% endifchanged %}
 
             <div class="example" data-bind="with: examples[{{ forloop.counter0 }}]">
-            
+
                 <span class="example--id">[<span data-bind="text: id"></span>]</span>
                 <span class="example--address" data-bind="text: address"></span><br />
 
-                <span class="cslav context" data-bind="text: leftContext"></span>
-                <span class="cslav" data-bind="text: text"></span>
-                <span class="cslav context" data-bind="text: leftContext"></span>
+                <span data-bind="visible: !antconcVisible()">
+                    <span class="cslav context" data-bind="text: leftContext"></span>
+                    <span class="cslav" data-bind="text: text"></span>
+                    <span class="cslav context" data-bind="text: leftContext"></span>
+                </span>
+
+                <span class="antconsol" data-bind="visible: antconcVisible(), text: antconc"></span>
+
+                <input type="button" value="АнтКонк" data-bind="click: toggleAntconc" />
 
                 <span data-bind="visible: greqs().length">
                     &nbsp;&mdash;{% space %}
@@ -161,6 +167,7 @@
             this.text = ex.triplet[1];
             this.rightContext = ex.triplet[2];
             this.antconc = ex.antconc;
+            this.antconcVisible = ko.observable(false);
             this.greqs = ko.observableArray(
                 ko.utils.arrayMap(
                     ex.greqs,
@@ -172,6 +179,11 @@
 
             this.addGreq = function() {
                 this.greqs.push(new Greq(this));
+            }.bind(this);
+
+            this.toggleAntconc = function() {
+                var value = this.antconcVisible();
+                this.antconcVisible(!value);
             }.bind(this);
 
         }

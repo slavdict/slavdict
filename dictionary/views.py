@@ -762,7 +762,7 @@ def hellinist_workbench(request):
 
     vM_examples = [
         {
-            'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context,
+            'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context.strip() or e.example,
             'address': e.address_text, 'status': e.greek_eq_status,
             'greqs': [
                 { 'unitext': greq.unitext, 'text': greq.text, 'initial_form': greq.initial_form,
