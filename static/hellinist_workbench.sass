@@ -75,13 +75,9 @@ div#main
     display: none
 
 .greqFieldButton
-    background-color: #ccc
     color: #fff
-    @include roundedCorners(3px)
-
-.greqFieldButton:hover
-    background-color: #a00
-    color: #fff
+    &:hover
+        background-color: #a00
 
 .greqFieldAjaxLoader
     background: transparent url('ajax-loader.gif') no-repeat 50% 50%
@@ -97,3 +93,7 @@ div#main
     bottom: -5px
     right: 0
     width: 10em
+
+.antconcButton
+    color: white
+    font-weight: bold

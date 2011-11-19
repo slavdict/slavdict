@@ -52,8 +52,6 @@
 
                 <span class="antconsol" data-bind="visible: antconcVisible(), text: antconc"></span>
 
-                <input type="button" value="АнтКонк" data-bind="click: toggleAntconc" />
-
                 <span data-bind="visible: greqs().length">
                     &nbsp;&mdash;{% space %}
                     <!-- ko foreach: greqs -->
@@ -61,6 +59,11 @@
                         <span data-bind="text: unitext, visible: unitext()"></span>
                         <span class="greqList--comma">,</span>{% space %}
                     <!-- /ko -->
+                </span>
+
+                <span class="button antconcButton" data-bind="click: toggleAntconc">
+                    <span data-bind="visible: antconcVisible()">ЦСЛ</span>
+                    <span data-bind="visible: !antconcVisible()">АнтКонк</span>
                 </span>
 
                 <ul data-bind="foreach: greqs">
@@ -80,13 +83,13 @@
                             <input type="text" data-bind="value: initial_form, event: { change: saveMe }" />
                         </span>
 
-                        <input type="button" value="&times;" class="greqFieldButton" data-bind="click: removeMe" />
+                        <span class="button greqFieldButton" data-bind="click: removeMe">&#x2716;</span>
 
                         <span class="greqFieldAjaxLoader" data-bind="visible: beingSaved()"></span>
                     </li>
                 </ul>
 
-                <input type="button" value="Добавить параллель" data-bind="click: addGreq" />
+                <span class="button" data-bind="click: addGreq">Добавить параллель</span>
 
                 <div class="greqStatus greqFieldContainer">
                     <label class="example--formLabel">Статус:</label>
