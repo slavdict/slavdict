@@ -87,7 +87,7 @@ def greek_to_find(request):
     for ex in ex_list:
         if ex.greek_eq_status == u'L':
             ex.greek_eq_status = u'F'
-            ex.save()
+            ex.save(without_mtime=True)
 
     # Выдаём все словарные статьи, для примеров которых найти греч. параллели
     # необходимо.
@@ -748,7 +748,7 @@ def json_singleselect_entries_urls(request):
 @login_required
 def hellinist_workbench(request):
 
-    examples = Example.objects.filter(greek_eq_status=u'F')
+    examples = Example.objects.filter(greek_eq_status=u'L')
 
     paginator = Paginator(examples, per_page=5, orphans=2)
     try:
@@ -763,7 +763,7 @@ def hellinist_workbench(request):
     vM_examples = [
         {
             'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context.strip() or e.example,
-            'address': e.address_text, 'status': e.greek_eq_status,
+            'address': e.address_text, 'status': e.greek_eq_status, 'comment': e.additional_info,
             'greqs': [
                 { 'unitext': greq.unitext, 'text': greq.text, 'initial_form': greq.initial_form,
                   'id': greq.id }

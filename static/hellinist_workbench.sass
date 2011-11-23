@@ -5,6 +5,8 @@
 @import variables
 @import pagination
 
+$exampleLeftPadding: 50px
+
 body
     font-family: $serifFont
     font-size: 13pt
@@ -21,7 +23,7 @@ div#main
     margin-bottom: 10px
 
 .example
-    padding-left: 50px
+    padding-left: $exampleLeftPadding
     position: relative
     margin-bottom: 40px
 
@@ -64,7 +66,14 @@ div#main
 .greqFieldContainer-ulysses,
 .gFC-ulysses
     position: absolute
-    right: 0px
+    right: 0
+
+.gFC-ulyssesContainer
+    position: absolute
+    left: -15px
+    width: 0
+    label
+        top: -7px
 
 .greqField-ulysses
     font-family: 'SIL Ulysses'

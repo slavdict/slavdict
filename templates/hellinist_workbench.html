@@ -43,6 +43,7 @@
 
                 <span class="example--id">[<span data-bind="text: id"></span>]</span>
                 <span class="example--address" data-bind="text: address"></span><br />
+                <span class="example--comment" data-bind="text: comment"></span><br />
 
                 <span data-bind="visible: !antconcVisible()">
                     <span class="cslav context" data-bind="text: leftContext"></span>
@@ -52,7 +53,7 @@
 
                 <span class="antconsol" data-bind="visible: antconcVisible(), text: antconc"></span>
 
-                <span data-bind="visible: greqs().length">
+                <span data-bind="visible: greqs().length && !antconcVisible()">
                     &nbsp;&mdash;{% space %}
                     <!-- ko foreach: greqs -->
                         <span data-bind="text: text, visible: !unitext()" class="grec"></span>
@@ -68,9 +69,12 @@
 
                 <ul data-bind="foreach: greqs">
                     <li class="greqForExample">
-                        <span class="greqFieldContainer gFC-ulysses" data-bind="if: text">
+
+                        <span class="greqFieldContainer gFC-ulyssesContainer" data-bind="if: text">
+                        <span class="gFC-ulysses">
                             <label>греч. (устар.)</label>
                             <span class="greqField-ulysses" data-bind="text: text"></span>
+                        </span>
                         </span>
 
                         <span class="greqFieldContainer">
@@ -89,7 +93,7 @@
                     </li>
                 </ul>
 
-                <span class="button" data-bind="click: addGreq">Добавить параллель</span>
+                <span><span class="button" data-bind="click: addGreq">&#x271a;</span> Добавить параллель</span>
 
                 <div class="greqStatus greqFieldContainer">
                     <label class="example--formLabel">Статус:</label>
@@ -166,6 +170,7 @@
             this.id = ex.id;
             this.status = ko.observable(ex.status);
             this.address = ko.observable(ex.address);
+            this.comment = ko.observable(ex.comment);
             this.leftContext = ex.triplet[0];
             this.text = ex.triplet[1];
             this.rightContext = ex.triplet[2];
