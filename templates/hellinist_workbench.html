@@ -46,7 +46,7 @@
                 <span class="example--address" data-bind="text: address, visible: !addressEditable(),
                                                           click: toggleAddress"></span>
                 <input class="example--address" data-bind="value: address, visible: addressEditable(),
-                                                           event: { change: toggleAddress, keydown: toggleAddress }" />
+                                                           event: { change: toggleAddress, blur: toggleAddress }" />
                 <br />
 
                 <span class="example--comment" data-bind="text: comment"></span><br />
@@ -202,26 +202,16 @@
                 this.greqs.push(new Greq(this));
             }.bind(this);
 
-            this._toggle = function(param) { param(!param()); };
-
-            this.toggleAntconc = this._toggle(this.antconcVisible);
-
-            this.toggleAddress = function(event) {
-                if (event.type=='keydown') {
-                    if (event.which==13 || event.which==27) {
-                        this._toggle(this.addressEditable);
-                    } else {
-                        return true;
-                    }
-                } else {
-                    this._toggle(this.addressEditable);
+            this.TOGGLE = function(param) {
+                return function() {
+                    var value = param();
+                    param(!value);
                 }
-            }.bind(this);
+            };
 
-            this.toggleComment = function() {
-                var value = this.commentEditable();
-                this.commentEditable(!value);
-            }.bind(this);
+            this.toggleAntconc = this.TOGGLE(this.antconcVisible);
+            this.toggleAddress = this.TOGGLE(this.addressEditable);
+            this.toggleComment = this.TOGGLE(this.commentEditable);
 
         }
 
