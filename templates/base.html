@@ -20,7 +20,7 @@
                     <a href="{% url admin:dictionary_entry_add %}" class="header--item">+</a>
                 {% endif %}
 
-                <form enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}">
+                <form class="searchForm" enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}">
                     <input type="text" name="find" value="{{ find_prefix }}"
                        class="header--item-left header--item-block search"
                        data-bind="
@@ -29,7 +29,8 @@
                             event: { keydown: navigateFoundItems, blur: flushItems }"
                        autocomplete="off"
                        spellcheck="false"
-                    /><input type="submit" class="header--item-right button" value="Найти" />
+                    /><span class="header--item-right button"
+                            data-bind="click: function(){ $('form.searchForm').submit(); }">Найти</span>
 
                     <ul class="foundItems" data-bind="foreach: foundItems, css: { hidden: foundItems().length == 0 }">
                         <li class="SC--foundItem"
@@ -47,6 +48,7 @@
                 </form>
 
                 <a href="{% url converter %}" class="header--item">Конвертър</a>
+                <a href="{% url hellinist_workbench %}" class="header--item">Греческий кабинет</a>
 
             {% endblock %}
         </div>

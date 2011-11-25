@@ -43,6 +43,7 @@ urlpatterns += patterns('',
     url( r'^greek/$', 'dictionary.views.hellinist_workbench', name='hellinist_workbench' ),
     url( r'^json/greq/save/$', 'dictionary.views.json_greq_save', name="jsonGreqSaveURL"),
     url( r'^json/greq/delete/$', 'dictionary.views.json_greq_delete', name="jsonGreqDeleteURL"),
+    url( r'^json/ex/save/$', 'dictionary.views.json_ex_save', name="jsonExSaveURL"),
 )
 
 urlpatterns += staticfiles_urlpatterns()

@@ -3,7 +3,10 @@
 @import reset
 @import fonts
 @import variables
+@import header
 @import pagination
+
+$exampleLeftPadding: 50px
 
 body
     font-family: $serifFont
@@ -21,9 +24,9 @@ div#main
     margin-bottom: 10px
 
 .example
-    padding-left: 50px
+    padding-left: $exampleLeftPadding
     position: relative
-    margin-bottom: 10px
+    margin-bottom: 40px
 
 .example--id
     position: absolute
@@ -35,6 +38,17 @@ div#main
 
 .example--address
     color: #0a0
+
+input.example--address
+    width: 90%
+
+.example--comment
+    padding: 0.1em 0.4em
+    font: 0.8em AntConSol
+    color: #0a0
+    background-color: #eafcd5
+    border: 1px solid #b9d796
+    @include roundedCorners(3px)
 
 .context
     color: gray
@@ -64,9 +78,61 @@ div#main
 .greqFieldContainer-ulysses,
 .gFC-ulysses
     position: absolute
-    right: 0px
+    right: 0
+
+.gFC-ulyssesContainer
+    position: absolute
+    left: -15px
+    width: 0
+    label
+        top: -7px
 
 .greqField-ulysses
     font-family: 'SIL Ulysses'
     letter-spacing: 0.1em
     color: #a00
+
+.greqList--comma:last-child
+    display: none
+
+.greqList
+    color: #be8c2b
+    & .grec
+        white-space: nowrap
+
+.greqComment
+    margin-left: 0.7em
+    padding: 0.1em 0.4em
+    font: 0.8em AntConSol
+    color: #be8c2b
+    background-color: #fcf3d0
+    border: 1px solid #f4c873
+    @include roundedCorners(3px)
+
+.greqFieldButton
+    color: #fff
+    &:hover
+        background-color: #a00
+
+.greqFieldAjaxLoader
+.exFieldAjaxLoader
+    background: transparent url('ajax-loader.gif') no-repeat 50% 50%
+    width: 16px
+    height: 16px
+    position: absolute
+    display: block
+    left: -30px
+    top: 20px
+
+.exFieldAjaxLoader
+    top: 0
+
+.greqStatus
+    position: absolute
+    bottom: -5px
+    right: 0
+    width: 10em
+
+.antconcButton,
+.addGreqButton,
+    // pass

@@ -6,6 +6,8 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import RequestContext
+
+import dictionary.models
 from dictionary.models import Entry, \
     Meaning, Example, OrthographicVariant, Etymology, \
     MeaningContext, GreekEquivalentForMeaning, \
@@ -91,7 +93,7 @@ def greek_to_find(request):
     for ex in ex_list:
         if ex.greek_eq_status == u'L':
             ex.greek_eq_status = u'F'
-            ex.save()
+            ex.save(without_mtime=True)
 
     # Выдаём все словарные статьи, для примеров которых найти греч. параллели
     # необходимо.
@@ -752,9 +754,22 @@ def json_singleselect_entries_urls(request):
 @login_required
 def hellinist_workbench(request):
 
-    examples = Example.objects.filter(greek_eq_status=u'F')
+    DEFAULT_STATUS = 'L'
+    GET_STATUS = request.GET.get('status')
+    if GET_STATUS not in [s[0] for s in dictionary.models.Example.GREEK_EQ_STATUS]:
+        GET_STATUS = None
 
-    paginator = Paginator(examples, per_page=5, orphans=2)
+    if GET_STATUS:
+        redirect_path = "./"
+        response = HttpResponseRedirect(redirect_path)
+        response.set_cookie('status', GET_STATUS)
+        return response
+
+    COOKIES_STATUS = request.COOKIES.get('status', DEFAULT_STATUS)
+
+    examples = Example.objects.filter(greek_eq_status=COOKIES_STATUS).order_by('id')
+
+    paginator = Paginator(examples, per_page=4, orphans=2)
     try:
         pagenum = int(request.GET.get('page', 1))
     except ValueError:
@@ -766,25 +781,41 @@ def hellinist_workbench(request):
 
     vM_examples = [
         {
-            'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context,
-            'address': e.address_text, 'status': e.greek_eq_status,
+            'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context.strip() or e.example,
+            'address': e.address_text, 'status': e.greek_eq_status, 'comment': e.additional_info,
             'greqs': [
                 { 'unitext': greq.unitext, 'text': greq.text, 'initial_form': greq.initial_form,
-                  'id': greq.id }
+                  'id': greq.id, 'additional_info': greq.additional_info }
                 for greq in e.greek_equivs
             ]
         }
     for e in page.object_list]
 
-    import dictionary.models
     context = {
         'title': u'Греческий кабинет',
         'examples': page.object_list,
         'jsonExamples': json.dumps(vM_examples, ensure_ascii=False, separators=(',',':')),
         'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
+        'filterStatus': COOKIES_STATUS,
         'page': page,
         }
     return render_to_response('hellinist_workbench.html', context, RequestContext(request))
+
+
+@login_required
+def json_ex_save(request):
+    jsonEx = request.POST.get('ex')
+    if jsonEx:
+        exDict = json.loads(jsonEx)
+        ex = Example.objects.get(pk=int(exDict['id']))
+        del exDict['id']
+        ex.__dict__.update(exDict)
+        ex.save()
+        data = json.dumps({ 'action': 'saved' })
+        response = HttpResponse(data, mimetype='application/json', status=200)
+    else:
+        response = HttpResponse(status=400)
+    return response
 
 
 @login_required
@@ -796,13 +827,12 @@ def json_greq_save(request):
             del greq['id']
             gr = GreekEquivalentForExample(**greq)
             gr.save()
-            print "------ greq id: %s -----"
-            data = json.dumps({'action': 'created', 'id': gr.id })
+            data = json.dumps({ 'action': 'created', 'id': gr.id })
         else:
             gr = GreekEquivalentForExample.objects.get(pk=int(greq['id']))
             gr.__dict__.update(greq)
             gr.save()
-            data = json.dumps({'action': 'saved' })
+            data = json.dumps({ 'action': 'saved' })
         response = HttpResponse(data, mimetype='application/json', status=200)
     else:
         response = HttpResponse(status=400)
@@ -817,7 +847,7 @@ def json_greq_delete(request):
         if id:
             gr = GreekEquivalentForExample.objects.get(pk=id)
             gr.delete()
-            data = json.dumps({'action': 'deleted' })
+            data = json.dumps({ 'action': 'deleted' })
             response = HttpResponse(data, mimetype='application/json', status=200)
         else:
             response = HttpResponse(status=400)

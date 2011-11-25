@@ -7,21 +7,33 @@
     <link href="{{ STATIC_URL }}hellinist_workbench.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+    <div class="header">
+
+        <a href="{% url all_entries_url %}" class="header--item">Вернуться к статьям</a>
+
+        <form class="filterForm" enctype="application/x-www-form-urlencoded" action="{% url hellinist_workbench %}">
+            <select name="status" onchange="$('form.filterForm').submit();">
+                {% for option in statusList %}
+                <option value="{{ option.0 }}"{% ifequal filterStatus option.0 %}selected="selected"{% endifequal %}>{{ option.1 }}</option>
+                {% endfor %}
+            </select>
+        </form>
+
+    </div>
+
     <div id="main">
     {% trim %}
-
-    {% include '_pagination.html' %}
 
     {% for e in examples %}
         <div>
             {% ifchanged %}
             <div class="exampleHeader">
                 {% if e.host.orth_vars %}
-                    <span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span>{% space %}
+                    <a href="{{ e.host.get_absolute_url }}" target="_blank"><span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span></a>{% space %}
                     <i>{{ e.host_entry.part_of_speech.tag }}</i>{% space %}
                 {% else %}
                     {% for c in e.host.collocations %}
-                        <span class="cslav">{{ c.collocation_ucs }}</span>
+                        <a href="{{ e.host_entry.get_absolute_url }}" target="_blank"><span class="cslav">{{ c.collocation_ucs }}</span></a>
                         {% if not forloop.last %},{% endif %}{% space %}
                     {% endfor %}
                 {% endif %}
@@ -40,25 +52,66 @@
             {% endifchanged %}
 
             <div class="example" data-bind="with: examples[{{ forloop.counter0 }}]">
-                <span class="example--id">[<span data-bind="text: id"></span>]</span>
-                <input type="text" class="example--address" data-bind="value: address" /><br />
-                <span class="cslav context" data-bind="text: leftContext"></span>
-                <span class="cslav" data-bind="text: text"></span>
-                <span class="cslav context" data-bind="text: leftContext"></span>
 
-                <span data-bind="if: greqs">
+                <span class="example--id">[<span data-bind="text: id"></span>]</span>
+
+                <span class="example--address" data-bind="text: address, visible: !addressEditable(),
+                                                          click: toggleAddress"></span>
+                <input class="example--address" data-bind="
+                    value: address, visibleActive: addressEditable(),
+                    event: {
+                        change: function() { $data.toggleAddress(); $data.saveMe(); },
+                        blur: toggleAddress
+                    }" />
+
+                {% space %}
+                <span data-bind="visible: comment() || commentEditable()">
+                    <span class="example--comment" data-bind="
+                        text: comment, visible: !commentEditable(), click: toggleComment"></span>
+                    <input class="example--comment" data-bind="
+                        value: comment, visibleActive: commentEditable(),
+                        event: {
+                            change: function() { $data.toggleComment(); $data.saveMe(); },
+                            blur: toggleComment
+                        }" />
+                </span>
+
+                {% space %}
+                <span class="button" data-bind="visible: !comment() && !commentEditable() , click: toggleComment">Добавить примечание к примеру</span>
+                <br />
+
+
+                <span data-bind="visible: !antconcVisible()">
+                    <span class="cslav context" data-bind="text: leftContext"></span>
+                    <span class="cslav" data-bind="text: text"></span>
+                    <span class="cslav context" data-bind="text: leftContext"></span>
+                </span>
+
+                <span class="antconsol" data-bind="visible: antconcVisible(), text: antconc"></span>
+
+                <span class="greqList" data-bind="visible: greqs().length && !antconcVisible()">
                     &nbsp;&mdash;{% space %}
                     <!-- ko foreach: greqs -->
-                    <span data-bind="ifnot: unitext, text: text" class="grec"></span>
-                    <span data-bind="if: unitext, text: unitext"></span>
+                        <span data-bind="text: text, visible: !unitext()" class="grec"></span>
+                        <span data-bind="text: unitext, visible: unitext()"></span>
+                        <span data-bind="text: additional_info, visible: additional_info()" class="greqComment"></span>
+                        <span class="greqList--comma">,</span>{% space %}
                     <!-- /ko -->
+                </span>{% space %}
+
+                <span class="button antconcButton" data-bind="click: toggleAntconc">
+                    <span data-bind="visible: antconcVisible()">ЦСЛ</span>
+                    <span data-bind="visible: !antconcVisible()">АнтКонк</span>
                 </span>
 
                 <ul data-bind="foreach: greqs">
                     <li class="greqForExample">
-                        <span class="greqFieldContainer gFC-ulysses" data-bind="if: text">
+
+                        <span class="greqFieldContainer gFC-ulyssesContainer" data-bind="if: text">
+                        <span class="gFC-ulysses">
                             <label>греч. (устар.)</label>
                             <span class="greqField-ulysses" data-bind="text: text"></span>
+                        </span>
                         </span>
 
                         <span class="greqFieldContainer">
@@ -71,17 +124,29 @@
                             <input type="text" data-bind="value: initial_form, event: { change: saveMe }" />
                         </span>
 
-                        <input type="button" value="&times;" data-bind="click: removeMe" />
+                        <span class="greqFieldContainer">
+                            <label>примечание</label>
+                            <input type="text" data-bind="value: additional_info, event: { change: saveMe }" />
+                        </span>
+
+                        <span class="button greqFieldButton" data-bind="click: removeMe">&#x2716;</span>
+
+                        <span class="greqFieldAjaxLoader" data-bind="visible: beingSaved()"></span>
                     </li>
                 </ul>
 
-                <label class="example--formLabel">Статус:</label>
-                <select data-bind="value: status">
-                    {% for option in statusList %}
-                    <option value="{{ option.0 }}">{{ option.1 }}</option>
-                    {% endfor %}
-                </select>
-                <input type="button" value="+ Добавить параллель" data-bind="click: addGreq" />
+                <span class="button addGreqButton" data-bind="click: addGreq">&#x271a; Добавить греч. параллель</span>
+
+                <div class="greqStatus greqFieldContainer">
+                    <label class="example--formLabel">Статус:</label>
+                    <select data-bind="value: status, event: { change: saveMe }">
+                        {% for option in statusList %}
+                        <option value="{{ option.0 }}">{{ option.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <span class="exFieldAjaxLoader" data-bind="visible: beingSaved()"></span>
 
             </div>
         </div>
@@ -97,26 +162,44 @@
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
     <script>
 
+        ko.bindingHandlers['visibleActive'] = {
+            'update': function (element, valueAccessor) {
+                var value = ko.utils.unwrapObservable(valueAccessor());
+                var isCurrentlyVisible = !(element.style.display == "none");
+                if (value && !isCurrentlyVisible) {
+                    element.style.display = "";
+                    element.focus();
+                } else if ((!value) && isCurrentlyVisible)
+                    element.style.display = "none";
+            }
+        }
+
         function GreqForJSON(greq) {
             this.id = greq.id;
             this.text = greq.text;
             this.unitext = greq.unitext;
             this.initial_form = greq.initial_form;
+            this.additional_info = greq.additional_info;
             this.for_example_id = greq.for_example_id;
         }
 
         function Greq(ex, greq) {
 
             if (!greq) greq = {};
-            this.id = greq.id || '';
+
+            this.id = ko.observable(greq.id || '');
             this.text = ko.observable(greq.text || '');
             this.unitext = ko.observable(greq.unitext || '');
             this.initial_form = ko.observable(greq.initial_form || '');
+            this.additional_info = ko.observable(greq.additional_info || '');
             this.for_example_id = ex.id;
 
+            this.beingSaved = ko.observable(false);
+
             this.removeMe = function() {
-                if (this.id) {
-                    var dataToSend = { 'delete': this.id }
+                if (this.id()) {
+                    this.beingSaved(true);
+                    var dataToSend = { 'delete': this.id() }
                     $.post("{% url jsonGreqDeleteURL %}", dataToSend,
                         function(data) {
                             if (data.action=='deleted') {
@@ -130,24 +213,42 @@
             }.bind(this);
 
             this.saveMe = function() {
+                this.beingSaved(true);
                 var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(this)) };
                 $.post("{% url jsonGreqSaveURL %}", dataToSend, function(data) {
-                    if (data.action=='saved') {
-                        this.id = data.id;
+                    if (data.action=='created') {
+                        this.id(data.id);
                     }
+                    this.beingSaved(false);
                 }.bind(this));
             }.bind(this);
+        }
+
+        function ExForJSON(ex) {
+            this.id = ex.id;
+            this.greek_eq_status = ex.status;
+            this.additional_info = ex.comment;
+            this.address_text = ex.address;
         }
 
         function Example(ex) {
 
             this.id = ex.id;
             this.status = ko.observable(ex.status);
+
             this.address = ko.observable(ex.address);
+            this.addressEditable = ko.observable(false);
+
+            this.comment = ko.observable(ex.comment);
+            this.commentEditable = ko.observable(false);
+
             this.leftContext = ex.triplet[0];
             this.text = ex.triplet[1];
             this.rightContext = ex.triplet[2];
+
             this.antconc = ex.antconc;
+            this.antconcVisible = ko.observable(false);
+
             this.greqs = ko.observableArray(
                 ko.utils.arrayMap(
                     ex.greqs,
@@ -161,6 +262,25 @@
                 this.greqs.push(new Greq(this));
             }.bind(this);
 
+            this.TOGGLE = function(param) {
+                return function() {
+                    var value = param();
+                    param(!value);
+                }
+            };
+
+            this.toggleAntconc = this.TOGGLE(this.antconcVisible);
+            this.toggleAddress = this.TOGGLE(this.addressEditable);
+            this.toggleComment = this.TOGGLE(this.commentEditable);
+
+            this.beingSaved = ko.observable(false);
+            this.saveMe = function() {
+                this.beingSaved(true);
+                var dataToSend = { 'ex': ko.toJSON(new ExForJSON(this)) };
+                $.post("{% url jsonExSaveURL %}", dataToSend, function(data) {
+                    this.beingSaved(false);
+                }.bind(this));
+            }.bind(this);
         }
 
         var jsonExamples = ko.utils.arrayMap(
