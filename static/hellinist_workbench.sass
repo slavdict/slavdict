@@ -41,6 +41,14 @@ div#main
 input.example--address
     width: 90%
 
+.example--comment
+    padding: 0.1em 0.4em
+    font: 0.8em AntConSol
+    color: #0a0
+    background-color: #eafcd5
+    border: 1px solid #b9d796
+    @include roundedCorners(3px)
+
 .context
     color: gray
 
@@ -86,12 +94,25 @@ input.example--address
 .greqList--comma:last-child
     display: none
 
+.greqList
+    color: #be8c2b
+
+.greqComment
+    margin-left: 0.7em
+    padding: 0.1em 0.4em
+    font: 0.8em AntConSol
+    color: #be8c2b
+    background-color: #fcf3d0
+    border: 1px solid #f4c873
+    @include roundedCorners(3px)
+
 .greqFieldButton
     color: #fff
     &:hover
         background-color: #a00
 
 .greqFieldAjaxLoader
+.exFieldAjaxLoader
     background: transparent url('ajax-loader.gif') no-repeat 50% 50%
     width: 16px
     height: 16px
@@ -100,12 +121,16 @@ input.example--address
     left: -30px
     top: 20px
 
+.exFieldAjaxLoader
+    top: 0
+
 .greqStatus
     position: absolute
     bottom: -5px
     right: 0
     width: 10em
 
-.antconcButton
-    color: white
-    font-weight: bold
+.antconcButton,
+.addGreqButton,
+    // pass
+

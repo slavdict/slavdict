@@ -766,7 +766,7 @@ def hellinist_workbench(request):
             'address': e.address_text, 'status': e.greek_eq_status, 'comment': e.additional_info,
             'greqs': [
                 { 'unitext': greq.unitext, 'text': greq.text, 'initial_form': greq.initial_form,
-                  'id': greq.id }
+                  'id': greq.id, 'additional_info': greq.additional_info }
                 for greq in e.greek_equivs
             ]
         }
@@ -784,6 +784,22 @@ def hellinist_workbench(request):
 
 
 @login_required
+def json_ex_save(request):
+    jsonEx = request.POST.get('ex')
+    if jsonEx:
+        exDict = json.loads(jsonEx)
+        ex = Example.objects.get(pk=int(exDict['id']))
+        del exDict['id']
+        ex.__dict__.update(exDict)
+        ex.save()
+        data = json.dumps({ 'action': 'saved' })
+        response = HttpResponse(data, mimetype='application/json', status=200)
+    else:
+        response = HttpResponse(status=400)
+    return response
+
+
+@login_required
 def json_greq_save(request):
     jsonGreq = request.POST.get('greq')
     if jsonGreq:
@@ -792,12 +808,12 @@ def json_greq_save(request):
             del greq['id']
             gr = GreekEquivalentForExample(**greq)
             gr.save()
-            data = json.dumps({'action': 'created', 'id': gr.id })
+            data = json.dumps({ 'action': 'created', 'id': gr.id })
         else:
             gr = GreekEquivalentForExample.objects.get(pk=int(greq['id']))
             gr.__dict__.update(greq)
             gr.save()
-            data = json.dumps({'action': 'saved' })
+            data = json.dumps({ 'action': 'saved' })
         response = HttpResponse(data, mimetype='application/json', status=200)
     else:
         response = HttpResponse(status=400)
@@ -812,7 +828,7 @@ def json_greq_delete(request):
         if id:
             gr = GreekEquivalentForExample.objects.get(pk=id)
             gr.delete()
-            data = json.dumps({'action': 'deleted' })
+            data = json.dumps({ 'action': 'deleted' })
             response = HttpResponse(data, mimetype='application/json', status=200)
         else:
             response = HttpResponse(status=400)
