@@ -45,11 +45,11 @@
 
                 <span class="example--address" data-bind="text: address, visible: !addressEditable(),
                                                           click: toggleAddress"></span>
-                <input class="example--address" data-bind="value: address, visible: addressEditable(),
+                <input class="example--address" data-bind="value: address, visibleActive: addressEditable(),
                                                            event: { change: toggleAddress, blur: toggleAddress }" />
                 <br />
 
-                <span class="example--comment" data-bind="text: comment"></span><br />
+                <span data-bind="visible: comment()"><span class="example--comment" data-bind="text: comment"></span><br /></span>
 
                 <span data-bind="visible: !antconcVisible()">
                     <span class="cslav context" data-bind="text: leftContext"></span>
@@ -123,6 +123,18 @@
     <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.4.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
     <script>
+
+        ko.bindingHandlers['visibleActive'] = {
+            'update': function (element, valueAccessor) {
+                var value = ko.utils.unwrapObservable(valueAccessor());
+                var isCurrentlyVisible = !(element.style.display == "none");
+                if (value && !isCurrentlyVisible) {
+                    element.style.display = "";
+                    element.focus();
+                } else if ((!value) && isCurrentlyVisible)
+                    element.style.display = "none";
+            }
+        }
 
         function GreqForJSON(greq) {
             this.id = greq.id;
