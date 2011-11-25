@@ -6,6 +6,8 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import RequestContext
+
+import dictionary.models
 from dictionary.models import Entry, \
     Meaning, Example, OrthographicVariant, Etymology, \
     MeaningContext, GreekEquivalentForMeaning, \
@@ -748,9 +750,22 @@ def json_singleselect_entries_urls(request):
 @login_required
 def hellinist_workbench(request):
 
-    examples = Example.objects.filter(greek_eq_status=u'L')
+    DEFAULT_STATUS = 'L'
+    GET_STATUS = request.GET.get('status')
+    if GET_STATUS not in [s[0] for s in dictionary.models.Example.GREEK_EQ_STATUS]:
+        GET_STATUS = None
 
-    paginator = Paginator(examples, per_page=5, orphans=2)
+    if GET_STATUS:
+        redirect_path = "./"
+        response = HttpResponseRedirect(redirect_path)
+        response.set_cookie('status', GET_STATUS)
+        return response
+
+    COOKIES_STATUS = request.COOKIES.get('status', DEFAULT_STATUS)
+
+    examples = Example.objects.filter(greek_eq_status=COOKIES_STATUS).order_by('id')
+
+    paginator = Paginator(examples, per_page=4, orphans=2)
     try:
         pagenum = int(request.GET.get('page', 1))
     except ValueError:
@@ -772,12 +787,12 @@ def hellinist_workbench(request):
         }
     for e in page.object_list]
 
-    import dictionary.models
     context = {
         'title': u'Греческий кабинет',
         'examples': page.object_list,
         'jsonExamples': json.dumps(vM_examples, ensure_ascii=False, separators=(',',':')),
         'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
+        'filterStatus': COOKIES_STATUS,
         'page': page,
         }
     return render_to_response('hellinist_workbench.html', context, RequestContext(request))
