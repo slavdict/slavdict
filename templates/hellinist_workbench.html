@@ -17,11 +17,11 @@
             {% ifchanged %}
             <div class="exampleHeader">
                 {% if e.host.orth_vars %}
-                    <span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span>{% space %}
+                    <a href="{{ e.host.get_absolute_url }}" target="_blank"><span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span></a>{% space %}
                     <i>{{ e.host_entry.part_of_speech.tag }}</i>{% space %}
                 {% else %}
                     {% for c in e.host.collocations %}
-                        <span class="cslav">{{ c.collocation_ucs }}</span>
+                        <a href="{{ e.host_entry.get_absolute_url }}" target="_blank"><span class="cslav">{{ c.collocation_ucs }}</span></a>
                         {% if not forloop.last %},{% endif %}{% space %}
                     {% endfor %}
                 {% endif %}
