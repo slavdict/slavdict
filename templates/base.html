@@ -48,7 +48,10 @@
                 </form>
 
                 <a href="{% url converter %}" class="header--item">Конвертър</a>
-                <a href="{% url hellinist_workbench %}" class="header--item">Греческий кабинет</a>
+
+                {% if user.is_admeditor or user.is_hellinist %}
+                    <a href="{% url hellinist_workbench %}" class="header--item">Греческий кабинет</a>
+                {% endif %}
 
             {% endblock %}
         </div>
