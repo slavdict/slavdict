@@ -21,8 +21,7 @@
                 {% endif %}
 
                 <form class="searchForm" enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}">
-                    <input type="text" name="find" value="{{ find_prefix }}"
-                       class="header--item-left header--item-block search"
+                    <input type="text" name="find" class="header--item-left header--item-block search"
                        data-bind="
                             value: searchPrefix,
                             valueUpdate: 'afterkeydown',
@@ -84,7 +83,7 @@
             }
 
             var vM_hdrSearch = {
-                searchPrefix: ko.observable(),
+                searchPrefix: ko.observable( '{{ find_prefix }}' ),
                 foundItems: ko.observableArray(),
                 focusedItem: ko.observable()
             };
