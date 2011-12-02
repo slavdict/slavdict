@@ -9,7 +9,7 @@
 <body>
     <div class="header">
 
-        <a href="{% url all_entries_url %}" class="header--item">Вернуться к статьям</a>
+        <a href="{% url all_entries_url %}" class="header--item button">Вернуться к статьям</a>
 
         <form class="filterForm" enctype="application/x-www-form-urlencoded" action="{% url hellinist_workbench %}">
             <select name="status" onchange="$('form.filterForm').submit();">
@@ -186,6 +186,7 @@
         function Greq(ex, greq) {
 
             if (!greq) greq = {};
+
             this.id = ko.observable(greq.id || '');
             this.text = ko.observable(greq.text || '');
             this.unitext = ko.observable(greq.unitext || '');

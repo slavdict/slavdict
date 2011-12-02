@@ -35,6 +35,11 @@ class CustomUser(User):
         user_groups = [i[0] for i in self.groups.values_list('name')]
         return 'editors' in user_groups
 
+    @property
+    def is_hellinist(self):
+        user_groups = [i[0] for i in self.groups.values_list('name')]
+        return 'hellinists' in user_groups
+
     def __unicode__(self):
         try:
             first_name_initial = u' %s.' % self.first_name[0]

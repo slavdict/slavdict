@@ -44,6 +44,7 @@ def make_greek_found(request):
 @login_required
 def all_entries(request):
     GET_FIND = request.GET.get('find')
+    GET_STATUS = request.GET.get('status')
 
     if not GET_FIND:
         entries = Entry.objects.all()
@@ -52,6 +53,9 @@ def all_entries(request):
         FIND_CAPZD = GET_FIND.capitalize()
         entries = Entry.objects.filter(
             Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD) )
+
+    if GET_STATUS=='-created':
+        entries = entries.exclude(status__slug=u'created')
 
     entries = sorted(entries, key=entry_key)
     context = {

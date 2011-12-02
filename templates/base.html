@@ -13,16 +13,16 @@
         <div class="header">
             {% block header %}
 
-                <a href="{% url my_entries_url %}" class="header--item">Мои статьи</a>
-                <a href="{% url all_entries_url %}" class="header--item">Все статьи</a>
+                <a href="{% url my_entries_url %}" class="header--item button">Мои статьи</a>
+                <a href="{% url all_entries_url %}" class="header--item button">Все статьи</a>
 
                 {% if user.is_admeditor %}
-                    <a href="{% url admin:dictionary_entry_add %}" class="header--item">+</a>
+                    <a href="{% url admin:dictionary_entry_add %}" class="header--item button">+</a>
                 {% endif %}
 
+
                 <form class="searchForm" enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}">
-                    <input type="text" name="find" value="{{ find_prefix }}"
-                       class="header--item-left header--item-block search"
+                    <input type="text" name="find" class="header--item-left header--item-block search"
                        data-bind="
                             value: searchPrefix,
                             valueUpdate: 'afterkeydown',
@@ -47,8 +47,12 @@
                     </ul>
                 </form>
 
-                <a href="{% url converter %}" class="header--item">Конвертър</a>
-                <a href="{% url hellinist_workbench %}" class="header--item">Греческий кабинет</a>
+
+                <a href="{% url converter %}" class="header--item button">Конвертър</a>
+
+                {% if user.is_admeditor or user.is_hellinist %}
+                    <a href="{% url hellinist_workbench %}" class="header--item button">Греческий кабинет</a>
+                {% endif %}
 
             {% endblock %}
         </div>
@@ -81,7 +85,7 @@
             }
 
             var vM_hdrSearch = {
-                searchPrefix: ko.observable(),
+                searchPrefix: ko.observable( '{{ find_prefix }}' ),
                 foundItems: ko.observableArray(),
                 focusedItem: ko.observable()
             };
