@@ -1084,11 +1084,9 @@ class Example(models.Model):
     GREEK_EQ_STATUS = (
         (u'L', u'следует найти'),   # look for
         (u'S', u'не нужны'),        # stop
-        (u'A', u'проверить'),       # audit
         (u'C', u'уточнить адрес'),  # check the address
         (u'N', u'найти не удалось'),# not found
         (u'F', u'найдены'),         # found
-        (u'x', u'...'),             # временный технический промежуточный статус
         )
 
     greek_eq_status = models.CharField(
