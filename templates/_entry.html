@@ -89,8 +89,10 @@
             <i>{{ entry.participle_type.tag }}</i>
             {% space %}
         {% else %}
-            {% if entry.part_of_speech and entry.part_of_speech.slug != "letter" and entry.part_of_speech.slug != "number" %}
+            {% if entry.part_of_speech %}
+                {% if entry.part_of_speech.slug != "letter" and entry.part_of_speech.slug != "number" %}
                 <i>{{ entry.part_of_speech.tag }}</i>
+                {% endif %}
             {% else %}
                 {% if show_additional_info %}
                 <span class="noaddress">Не указана часть речи!</span>
