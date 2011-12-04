@@ -14,7 +14,7 @@
             {% endif %}
         {% endif %}
     
-        {% ifnotequal entry.part_of_speech.slug 'beyond' %}
+        {% ifnotequal entry.part_of_speech.slug 'letter' %}
             <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
         {% else %}
             <span class="cslav headword cinnabar">{{ entry.orth_vars.0.idem_letter_ucs }}</span>
@@ -89,7 +89,7 @@
             <i>{{ entry.participle_type.tag }}</i>
             {% space %}
         {% else %}
-            {% if entry.part_of_speech %}
+            {% if entry.part_of_speech and entry.part_of_speech.slug != "letter" and entry.part_of_speech.slug != "number" %}
                 <i>{{ entry.part_of_speech.tag }}</i>
             {% else %}
                 {% if show_additional_info %}
