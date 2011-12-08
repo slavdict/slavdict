@@ -6,7 +6,7 @@
         <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
         <link href="{{ STATIC_URL }}singlecomplete.css" rel="stylesheet" type="text/css">
     </head>
-    <body data-bind="event: { keydown: function(event){ if (event.which == 27) vM_hdrSearch.flushItems(); return true; } }">
+    <body data-bind="event: { keydown: function(event){ if (event.which == 27) viewModel.search.flushItems(); return true; } }">
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
         {% block header_0 %}
@@ -37,7 +37,7 @@
                         <li class="SC--foundItem"
                             data-bind="css: { 'SC--foundItem-focused': isFocused },
                                        event: {
-                                            mousedown: function(){ $parent.go($data); },
+                                            mousedown: function(){ $root.search.go($data); },
                                             mouseover: function(){ $data.focusMe(); }
                                        }">
                             <span class="SC--fI--headword" data-bind="text: headword"></span>
@@ -85,13 +85,15 @@
                 );
             }
 
-            var vM_hdrSearch = {
+            var viewModel = {};
+
+            viewModel.search = {
                 searchPrefix: ko.observable( '{{ find_prefix }}' ),
                 foundItems: ko.observableArray(),
                 focusedItem: ko.observable()
             };
 
-            vM_hdrSearch.moveFocusDown = function() {
+            viewModel.search.moveFocusDown = function() {
                 var items = this.foundItems();
                 var arrLength = items.length;
                 var currentItem = this.focusedItem();
@@ -101,9 +103,9 @@
                     index = index > (arrLength - 2) ? 0 : ++index;
                 }
                 items[index].focusMe();
-            }.bind(vM_hdrSearch);
+            }.bind(viewModel.search);
 
-            vM_hdrSearch.moveFocusUp = function() {
+            viewModel.search.moveFocusUp = function() {
                 var items = this.foundItems();
                 var arrLength = items.length;
                 var currentItem = this.focusedItem();
@@ -113,15 +115,15 @@
                     index = index < 1 ? arrLength - 1 : --index;
                 }
                 items[index].focusMe();
-            }.bind(vM_hdrSearch);
+            }.bind(viewModel.search);
 
-            vM_hdrSearch.go = function(item) {
+            viewModel.search.go = function(item) {
                 window.location.href = item.url;
             };
 
-            vM_hdrSearch.flushItems = function() { this.foundItems.splice(0); }.bind(vM_hdrSearch);
+            viewModel.search.flushItems = function() { this.foundItems.splice(0); }.bind(viewModel.search);
 
-            vM_hdrSearch.navigateFoundItems = function(event) {
+            viewModel.search.navigateFoundItems = function(event) {
                 if (event.which == 40) { // down arrow key
                     this.moveFocusDown();
                 } else if (event.which == 38) { // up arrow key
@@ -134,9 +136,9 @@
                 } else {
                     return true;
                 }
-            }.bind(vM_hdrSearch);
+            }.bind(viewModel.search);
 
-            vM_hdrSearch.searchPrefix.subscribe(function(newValue) {
+            viewModel.search.searchPrefix.subscribe(function(newValue) {
                 if (newValue) {
                     var dataToSend = { find: newValue };
                     if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
@@ -149,16 +151,16 @@
                                 function(item){ return new Item(item, this.focusedItem); }.bind(this)
                             );
 
-                            vM_hdrSearch.foundItems(mappedData);
-                            if (vM_hdrSearch.foundItems().length==1) {
-                                vM_hdrSearch.foundItems()[0].focusMe();
+                            this.foundItems(mappedData);
+                            if (this.foundItems().length==1) {
+                                this.foundItems()[0].focusMe();
                             }
-                        }
+                        }.bind(this)
                     );
                 } else {
                     this.flushItems();
                 }
-            }, vM_hdrSearch);
+            }, viewModel.search);
         </script>
 
         {% block javascript %}{% endblock %}
@@ -166,6 +168,5 @@
         <script>
             ko.applyBindings(viewModel);
         </script>
-
     </body>
 </html>
