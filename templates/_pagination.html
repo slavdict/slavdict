@@ -1,0 +1,55 @@
+{% load trim_spaces %}
+
+{% if page.paginator.num_pages > 1 %}
+<div class="pagination">
+
+    {% if page.has_previous %}
+        {% if page.number > 4 %}
+            <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page=1">1</a>
+            {% space %}...{% space %}
+        {% else %}
+            {% if page.number > 2 %}
+                <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page=1">1</a>
+                {% space %}
+                {% ifequal page.number 4 %}
+                    <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page=2">2</a>
+                    {% space %}
+                {% endifequal %}
+            {% endif %}
+        {% endif %}
+        <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.previous_page_number }}">
+            {{ page.previous_page_number }}
+        </a>
+        {% space %}
+    {% endif %}
+
+    <a class="current-page">{{ page.number }}</a>
+
+    {% if page.has_next %}
+        {% space %}
+        <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.next_page_number }}">
+            {{ page.next_page_number }}
+        </a>
+        {% if page.number < page.paginator.num_pages|add:"-3" %}
+            {% space %}...{% space %}
+            <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.paginator.num_pages }}">
+                {{ page.paginator.num_pages }}
+            </a>
+        {% else %}
+            {% if page.number < page.paginator.num_pages|add:"-1" %}
+                {% if page.number < page.paginator.num_pages|add:"-2" %}
+                    {% space %}
+                    <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.paginator.num_pages|add:"-1" }}">
+                        {{ page.paginator.num_pages|add:"-1" }}
+                    </a>
+                {% endif %}
+                {% space %}
+                <a href="?{% if find_prefix %}find={{ find_prefix }}&{% endif %}page={{ page.paginator.num_pages }}">
+                    {{ page.paginator.num_pages }}
+                </a>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+</div>
+{% endif %}

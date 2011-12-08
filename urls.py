@@ -40,6 +40,10 @@ urlpatterns += patterns('',
     url( r'^json/multiselect/entries/$', 'dictionary.views.json_multiselect_entries'),
     url( r'^json/singleselect/entries/urls/$', 'dictionary.views.json_singleselect_entries_urls'),
     url( r'^test/multiselect/$', 'django.views.generic.simple.direct_to_template', {'template': 'multiselect.html'}),
+    url( r'^greek/$', 'dictionary.views.hellinist_workbench', name='hellinist_workbench' ),
+    url( r'^json/greq/save/$', 'dictionary.views.json_greq_save', name="jsonGreqSaveURL"),
+    url( r'^json/greq/delete/$', 'dictionary.views.json_greq_delete', name="jsonGreqDeleteURL"),
+    url( r'^json/ex/save/$', 'dictionary.views.json_ex_save', name="jsonExSaveURL"),
 )
 
 urlpatterns += staticfiles_urlpatterns()

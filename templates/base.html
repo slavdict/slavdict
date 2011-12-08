@@ -6,37 +6,38 @@
         <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
         <link href="{{ STATIC_URL }}singlecomplete.css" rel="stylesheet" type="text/css">
     </head>
-    <body data-bind="event: { keydown: function(event){ if (event.which == 27) viewModel.search.flushItems(); return true; } }">
+    <body data-bind="event: { keydown: function(event){ if (event.which == 27) vM_hdrSearch.flushItems(); return true; } }">
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
         {% block header_0 %}
         <div class="header">
             {% block header %}
 
-                <a href="{% url my_entries_url %}" class="header--item">Мои статьи</a>
-                <a href="{% url all_entries_url %}" class="header--item">Все статьи</a>
+                <a href="{% url my_entries_url %}" class="header--item button">Мои статьи</a>
+                <a href="{% url all_entries_url %}" class="header--item button">Все статьи</a>
 
                 {% if user.is_admeditor %}
-                    <a href="{% url admin:dictionary_entry_add %}" class="header--item">+</a>
+                    <a href="{% url admin:dictionary_entry_add %}" class="header--item button">+</a>
                 {% endif %}
 
-                <form enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}">
-                    <input type="text" name="find" value="{{ find_prefix }}"
-                       class="header--item-left header--item-block search"
+
+                <form class="searchForm" enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}">
+                    <input type="text" name="find" class="header--item-left header--item-block search"
                        data-bind="
                             value: search.searchPrefix,
                             valueUpdate: 'afterkeydown',
                             event: { keydown: search.navigateFoundItems, blur: search.flushItems }"
                        autocomplete="off"
                        spellcheck="false"
-                    /><input type="submit" class="header--item-right button" value="найти" />
+                    /><span class="header--item-right button"
+                            data-bind="click: function(){ $('form.searchForm').submit(); }">Найти</span>
 
                     <ul class="foundItems" data-bind="foreach: search.foundItems,
                                                       css: { hidden: search.foundItems().length == 0 }">
                         <li class="SC--foundItem"
                             data-bind="css: { 'SC--foundItem-focused': isFocused },
                                        event: {
-                                            mousedown: function(){ $parent.search.go($data); },
+                                            mousedown: function(){ $parent.go($data); },
                                             mouseover: function(){ $data.focusMe(); }
                                        }">
                             <span class="SC--fI--headword" data-bind="text: headword"></span>
@@ -47,7 +48,12 @@
                     </ul>
                 </form>
 
-                <a href="{% url converter %}" class="header--item">Конвертър</a>
+
+                <a href="{% url converter %}" class="header--item button">Конвертър</a>
+
+                {% if user.is_admeditor or user.is_hellinist %}
+                    <a href="{% url hellinist_workbench %}" class="header--item button">Греческий кабинет</a>
+                {% endif %}
 
             {% endblock %}
         </div>
@@ -79,44 +85,43 @@
                 );
             }
 
-            var viewModel = {};
-            viewModel.search = {
-                searchPrefix: ko.observable(),
+            var vM_hdrSearch = {
+                searchPrefix: ko.observable( '{{ find_prefix }}' ),
                 foundItems: ko.observableArray(),
                 focusedItem: ko.observable()
             };
 
-            viewModel.search.moveFocusDown = function() {
-                var items = this.foundItems;
-                var arrLength = items().length;
+            vM_hdrSearch.moveFocusDown = function() {
+                var items = this.foundItems();
+                var arrLength = items.length;
                 var currentItem = this.focusedItem();
                 var index = 0;
                 if (currentItem) {
                     index = ko.utils.arrayIndexOf(items, currentItem);
                     index = index > (arrLength - 2) ? 0 : ++index;
                 }
-                items()[index].focusMe();
-            }.bind(viewModel.search);
+                items[index].focusMe();
+            }.bind(vM_hdrSearch);
 
-            viewModel.search.moveFocusUp = function() {
-                var items = this.foundItems;
-                var arrLength = items().length;
+            vM_hdrSearch.moveFocusUp = function() {
+                var items = this.foundItems();
+                var arrLength = items.length;
                 var currentItem = this.focusedItem();
                 var index = arrLength - 1;
                 if (currentItem) {
                     index = ko.utils.arrayIndexOf(items, currentItem);
                     index = index < 1 ? arrLength - 1 : --index;
                 }
-                items()[index].focusMe();
-            }.bind(viewModel.search);
+                items[index].focusMe();
+            }.bind(vM_hdrSearch);
 
-            viewModel.search.go = function(item) {
+            vM_hdrSearch.go = function(item) {
                 window.location.href = item.url;
             };
 
-            viewModel.search.flushItems = function() { this.foundItems.splice(0); }.bind(viewModel.search);
+            vM_hdrSearch.flushItems = function() { this.foundItems.splice(0); }.bind(vM_hdrSearch);
 
-            viewModel.search.navigateFoundItems = function(event) {
+            vM_hdrSearch.navigateFoundItems = function(event) {
                 if (event.which == 40) { // down arrow key
                     this.moveFocusDown();
                 } else if (event.which == 38) { // up arrow key
@@ -129,9 +134,9 @@
                 } else {
                     return true;
                 }
-            }.bind(viewModel.search);
+            }.bind(vM_hdrSearch);
 
-            viewModel.search.searchPrefix.subscribe(function(newValue) {
+            vM_hdrSearch.searchPrefix.subscribe(function(newValue) {
                 if (newValue) {
                     var dataToSend = { find: newValue };
                     if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
@@ -143,13 +148,17 @@
                                 data,
                                 function(item){ return new Item(item, this.focusedItem); }.bind(this)
                             );
-                            this.foundItems(mappedData);
-                        }.bind(this)
+
+                            vM_hdrSearch.foundItems(mappedData);
+                            if (vM_hdrSearch.foundItems().length==1) {
+                                vM_hdrSearch.foundItems()[0].focusMe();
+                            }
+                        }
                     );
                 } else {
                     this.flushItems();
                 }
-            }, viewModel.search);
+            }, vM_hdrSearch);
         </script>
 
         {% block javascript %}{% endblock %}

@@ -2,11 +2,11 @@
 {% trim %}
 
 {% if not intermed %}
-{% if entry.orth_vars|slice:"1:" or entry.nom_pl_ucs_wax or entry.nom_sg_ucs_wax or entry.wordforms %}
+{% if entry.orth_vars_refs|slice:"1:" or entry.nom_pl_ucs_wax or entry.nom_sg_ucs_wax or entry.wordforms %}
 
     {% block refheader %}↑↑{% endblock %}
 
-    {% for e in entry.orth_vars|slice:"1:" %}
+    {% for e in entry.orth_vars_refs|slice:"1:" %}
 
         <div class="entry ref">
 

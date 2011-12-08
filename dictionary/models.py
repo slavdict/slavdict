@@ -146,6 +146,20 @@ class Entry(models.Model, Meaningfull):
     def orth_vars(self):
         return self.orthographic_variants.all()
 
+    @property
+    def orth_vars_refs(self):
+        return self.orthographic_variants.filter(no_ref_entry=False)
+
+    reconstructed_headword = models.BooleanField(
+        u'Заглавное слово реконструировано',
+        default = False,
+        )
+
+    questionable_headword = models.BooleanField(
+        u'Реконструкция заглавного слова вызывает сомнения',
+        default = False,
+        )
+
     hidden = models.BooleanField(
         u'Скрыть лексему',
         help_text = u'Не отображать лексему в списке словарных статей.',
@@ -991,6 +1005,8 @@ class Meaning(models.Model):
         ordering = ('id',)
 
 
+
+
 class Example(models.Model):
 
     meaning = models.ForeignKey(
@@ -1030,16 +1046,6 @@ class Example(models.Model):
         blank = True,
         )
 
-    class SplitContext:
-        def __init__(self, left, middle, right, whole):
-            self.left = left
-            self.example = middle
-            self.right = right
-            self.whole = whole
-
-        def __unicode__(self):
-            return self.whole
-
     @property
     def context_ucs(self):
         c = self.context
@@ -1047,14 +1053,11 @@ class Example(models.Model):
         if c:
             c = ucs_convert(c)
             x, y, z = c.partition(e)
-            x = x.strip()
-            y = y.strip()
-            z = z.strip()
             if y:
                 # Разбиение дало положительный результат,
                 # в "y" помещён сам пример.
-                return SplitContext(x, y, z, c)
-        return SplitContext(u'', e, u'', e)
+                return (x, y, z)
+        return (u'', e, u'')
 
     # Времеis_headwordнное поле для импорта вордовских статей.
     address_text = models.CharField(
@@ -1066,7 +1069,7 @@ class Example(models.Model):
     @property
     def greek_equivs(self):
         return self.greekequivalentforexample_set.all().order_by('id')
-
+    
     additional_info = models.TextField(
         u'примечание',
         help_text = u'''Любая дополнительная информация
@@ -1081,11 +1084,9 @@ class Example(models.Model):
     GREEK_EQ_STATUS = (
         (u'L', u'следует найти'),   # look for
         (u'S', u'не нужны'),        # stop
-        (u'A', u'проверить'),       # audit
         (u'C', u'уточнить адрес'),  # check the address
         (u'N', u'найти не удалось'),# not found
         (u'F', u'найдены'),         # found
-        (u'x', u'...'),             # временный технический промежуточный статус
         )
 
     greek_eq_status = models.CharField(
@@ -1284,14 +1285,20 @@ class Collocation(models.Model):
 
 
 
-class GreekEquivalent(models.Model):
+class GreekEquivalentForMeaning(models.Model):
 
-    class Meta:
-        abstract = True
+    for_meaning = models.ForeignKey(Meaning)
+
+    unitext = models.CharField(
+        u'греч. параллель (Unicode)',
+        max_length = 100,
+        blank = True,
+        )
 
     text = models.CharField(
-        u'греч. параллель',
+        u'греч. параллель (устар.)',
         max_length = 100,
+        blank = True,
         )
 
     mark = models.CharField(
@@ -1321,14 +1328,6 @@ class GreekEquivalent(models.Model):
         auto_now=True,
     )
 
-    def __unicode__(self):
-        return self.text
-
-
-class GreekEquivalentForMeaning(GreekEquivalent):
-
-    for_meaning = models.ForeignKey(Meaning)
-
     @property
     def host_entry(self):
         return self.for_meaning.host_entry
@@ -1346,9 +1345,36 @@ class GreekEquivalentForMeaning(GreekEquivalent):
         verbose_name_plural = u'греческие параллели'
 
 
-class GreekEquivalentForExample(GreekEquivalent):
+class GreekEquivalentForExample(models.Model):
 
     for_example = models.ForeignKey(Example)
+
+    unitext = models.CharField(
+        u'греч. параллель (Unicode)',
+        max_length = 100,
+        blank = True,
+        )
+
+    text = models.CharField(
+        u'греч. параллель (устар.)',
+        max_length = 100,
+        blank = True,
+        )
+
+    mark = models.CharField(
+        u'грамматическая помета',
+        max_length = 20,
+        blank = True,
+        )
+
+    source = models.CharField(
+        u'документальный источник',
+        help_text = u'''Например, Септуагинта или,
+                        более узко, разные редакции
+                        одного текста.''',
+        max_length = 40,
+        blank = True,
+        )
 
     position = models.PositiveIntegerField(
         verbose_name = u'позиция в примере',
@@ -1356,6 +1382,24 @@ class GreekEquivalentForExample(GreekEquivalent):
         blank = True,
         null = True,
         )
+    
+    initial_form = models.CharField(
+        u'начальная форма',
+        max_length = 100,
+        blank = True,
+        )
+
+    additional_info = models.TextField(
+        u'примечание',
+        help_text = u'Любая дополнительная информация ' \
+                    u'по данному греческому эквиваленту.',
+        blank = True,
+        )
+
+    mtime = models.DateTimeField(
+        editable=False,
+        auto_now=True,
+    )
 
     @property
     def host_entry(self):
@@ -1372,7 +1416,6 @@ class GreekEquivalentForExample(GreekEquivalent):
     class Meta:
         verbose_name = u'греческая параллель для примера'
         verbose_name_plural = u'греческие параллели'
-
 
 
 
@@ -1408,31 +1451,14 @@ class OrthographicVariant(models.Model):
         null = True,
         )
 
-    # является ли данное слово реконструкцией (реконструированно, так как не встретилось в корпусе)
-    is_reconstructed = models.BooleanField(
-        u'является реконструкцией',
-        default = False,
-        )
-
-    # 2011.09 NB:
-    # Показывает является ли реконструкция сомнительной.
-    # Изначально у этого поля было другое значение, но название пока осталось.
-    is_approved = models.BooleanField(
-        u'сомнительная реконструкция',
-        default = False,
-        )
-
     # является ли орф. вариант только общей частью словоформ
     # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
     # на конце автоматически добавляется дефис, заносить в базу без дефиса
     #is_factored_out = models.BooleanField(u'общая часть нескольких слов или словоформ')
 
-    # частота встречаемости орфографического варианта
-    # ? для факторизантов не важна ?
-    frequency = models.PositiveIntegerField(
-        u'частота',
-        blank = True,
-        null  = True,
+    no_ref_entry = models.BooleanField(
+        u'Не делать отсылочной статьи',
+        default = False,
         )
 
     mtime = models.DateTimeField(
@@ -1456,8 +1482,8 @@ class OrthographicVariant(models.Model):
         return self.idem
 
     class Meta:
-        verbose_name = u'орфографический вариант'
-        verbose_name_plural = u'орфографические варианты'
+        verbose_name = u'вариант'
+        verbose_name_plural = u'варианты'
         ordering = ('order','id')
 
 

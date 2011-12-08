@@ -1,4 +1,5 @@
 # encoding: UTF-8
+import copy
 from django import forms
 from django.db import models
 from django.contrib import admin
@@ -83,22 +84,20 @@ def entry_for_example(obj):
     return u'%s%s' % (r, i)
 
 
+
+
 from slavdict.dictionary.models import OrthographicVariant
 class OrthVar_Inline(admin.StackedInline):
     model = OrthographicVariant
     extra = 0
     fieldsets = (
         (None, {
-            'fields': ('idem',),
+            'fields': (('idem', 'no_ref_entry'),),
             }),
         )
 
-class OrthVar_Inline2(OrthVar_Inline):
-    fieldsets = (
-        (None, {
-            'fields': (('idem', 'is_reconstructed'), ),
-            }),
-        )
+
+
 
 from slavdict.dictionary.models import Etymology
 ETYMOLOGY_FIELDSETS = (
@@ -119,10 +118,16 @@ class Etymology_Inline(admin.StackedInline):
     extra = 0
     fieldsets = ETYMOLOGY_FIELDSETS
 
+
+
+
 class EtymologyForCollocation_Inline(admin.StackedInline):
     model = Etymology
     extra = 1
     fieldsets = ETYMOLOGY_FIELDSETS
+
+
+
 
 from slavdict.dictionary.models import GreekEquivalentForMeaning
 class GreekEquivalentForMeaning_Inline(admin.StackedInline):
@@ -130,7 +135,7 @@ class GreekEquivalentForMeaning_Inline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (None, {
-            'fields': ('text', 'mark', 'source'),
+            'fields': (('unitext', 'text'), 'mark', 'source'),
             }),
         (u'Примечание к параллели',
             {'fields': ('additional_info',),
@@ -138,19 +143,25 @@ class GreekEquivalentForMeaning_Inline(admin.StackedInline):
             ),
         )
 
+
+
+
 from slavdict.dictionary.models import GreekEquivalentForExample
 class GreekEquivalentForExample_Inline(admin.StackedInline):
     model = GreekEquivalentForExample
     extra = 0
     fieldsets = (
         (None, {
-            'fields': ('text', 'mark', 'source'),
+            'fields': (('unitext', 'text'), 'mark', 'source'),
             }),
         (u'Примечание к параллели',
             {'fields': ('additional_info',),
             'classes': ('collapse',)}
             ),
         )
+
+
+
 
 
 from slavdict.dictionary.models import Example
@@ -175,7 +186,6 @@ class Example_Inline(admin.StackedInline):
     extra = 1
     fieldsets = EXAMPLE_FIELDSETS
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
-
 
 class AdminExample(admin.ModelAdmin):
     inlines = (GreekEquivalentForExample_Inline,)
@@ -216,11 +226,15 @@ ui.register(Example, AdminExample)
 
 
 
+
 from slavdict.dictionary.models import MeaningContext
 class MeaningContext_Inline(admin.StackedInline):
     model = MeaningContext
     extra = 0
     fieldsets = ((None, {'fields': ('context', ('left_text', 'right_text'),)}),)
+
+
+
 
 from slavdict.dictionary.models import Meaning
 Meaning.__unicode__=lambda self:meaning_with_entry(self)
@@ -292,11 +306,18 @@ AdminMeaning.has_add_permission = staff_has_add_permission
 AdminMeaning.has_change_permission = staff_has_change_permission
 AdminMeaning.has_delete_permission = staff_has_delete_permission
 
-class AdminMeaning_MAIN(AdminMeaning):
+class AdminMeaningADMIN(AdminMeaning):
     inlines = AdminMeaning.inlines + AdminMeaning.inlines_MAIN
 
-admin.site.register(Meaning, AdminMeaning_MAIN)
-ui.register(Meaning, AdminMeaning)
+class AdminMeaningUI(AdminMeaning):
+    pass
+AdminMeaningUI.fieldsets = copy.deepcopy(AdminMeaning.fieldsets)
+AdminMeaningUI.fieldsets = AdminMeaningUI.fieldsets[0:1] + AdminMeaningUI.fieldsets[3:]
+
+admin.site.register(Meaning, AdminMeaningADMIN)
+ui.register(Meaning, AdminMeaningUI)
+
+
 
 
 from slavdict.dictionary.models import WordForm
@@ -304,6 +325,8 @@ class WordForm_Inline(admin.StackedInline):
     model = WordForm
     extra = 1
     fieldsets = ((None, { 'fields': ('tp', 'idem') }),)
+
+
 
 
 from slavdict.dictionary.models import Entry
@@ -319,6 +342,9 @@ class AdminEntry(admin.ModelAdmin):
         'cf_meanings',
     )
     fieldsets = (
+        (None, {
+            'fields': (('reconstructed_headword', 'questionable_headword'),),
+            }),
         (None, {
             'fields': ('civil_equivalent',),
             }),
@@ -421,19 +447,21 @@ AdminEntry.has_add_permission = staff_has_add_permission
 AdminEntry.has_change_permission = staff_has_change_permission
 AdminEntry.has_delete_permission = superuser_has_delete_permission
 
-class AdminEntry2(AdminEntry):
-    inlines = (
-        OrthVar_Inline2,
-        WordForm_Inline,
-        Etymology_Inline,
-        )
 
-import copy
-AdminEntry2.fieldsets = copy.deepcopy(AdminEntry.fieldsets)
-AdminEntry2.fieldsets[-1][1]['fields'] = ('editor', 'status', 'antconc_query')
+class AdminEntryADMIN(AdminEntry):
+    pass
 
-admin.site.register(Entry, AdminEntry2)
-ui.register(Entry, AdminEntry)
+AdminEntryADMIN.fieldsets = copy.deepcopy(AdminEntry.fieldsets)
+AdminEntryADMIN.fieldsets[-1][1]['fields'] = ('editor', 'status', 'antconc_query')
+
+class AdminEntryUI(AdminEntry):
+    pass
+
+AdminEntryUI.fieldsets = AdminEntry.fieldsets[:14] + AdminEntry.fieldsets[16:]
+
+admin.site.register(Entry, AdminEntryADMIN)
+ui.register(Entry, AdminEntryUI)
+
 
 
 
@@ -466,6 +494,9 @@ class Collocation_Inline(admin.StackedInline):
     fieldsets = (
             (None, {'fields': ('collocation', 'civil_equivalent')}),
         )
+
+
+
 
 from slavdict.dictionary.models import CollocationGroup
 CollocationGroup.__unicode__=lambda self: _collocations(self)
@@ -509,5 +540,10 @@ AdminCollocationGroup.has_add_permission = staff_has_add_permission
 AdminCollocationGroup.has_change_permission = staff_has_change_permission
 AdminCollocationGroup.has_delete_permission = staff_has_delete_permission
 
+class AdminCollocationGroupUI(AdminCollocationGroup):
+    pass
+AdminCollocationGroupUI.fieldsets = copy.deepcopy(AdminCollocationGroup.fieldsets)
+AdminCollocationGroupUI.fieldsets = AdminCollocationGroupUI.fieldsets[0:1]
+
 admin.site.register(CollocationGroup, AdminCollocationGroup)
-ui.register(CollocationGroup, AdminCollocationGroup)
+ui.register(CollocationGroup, AdminCollocationGroupUI)
