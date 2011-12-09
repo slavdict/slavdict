@@ -754,6 +754,26 @@ def json_singleselect_entries_urls(request):
 @login_required
 def hellinist_workbench(request):
 
+    CATEGORY_LIST = (
+            ('d', 'обычные параллели'),
+            ('u', 'срочные параллели'),
+            ('o', 'остальные'),
+            ('a', 'все'),
+        )
+
+    DEFAULT_CATEGORY = 'd'
+    GET_CATEGORY = request.GET.get('category')
+    if GET_CATEGORY not in [s[0] for s in CATEGORY_LIST]:
+        GET_CATEGORY = None
+
+    if GET_CATEGORY:
+        redirect_path = "./"
+        response = HttpResponseRedirect(redirect_path)
+        response.set_cookie('category', GET_CATEGORY)
+        return response
+
+    COOKIES_CATEGORY = request.COOKIES.get('category', DEFAULT_CATEGORY)
+
     DEFAULT_STATUS = 'L'
     GET_STATUS = request.GET.get('status')
     if GET_STATUS not in [s[0] for s in dictionary.models.Example.GREEK_EQ_STATUS]:
@@ -797,6 +817,8 @@ def hellinist_workbench(request):
         'jsonExamples': json.dumps(vM_examples, ensure_ascii=False, separators=(',',':')),
         'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
         'filterStatus': COOKIES_STATUS,
+        'categoryList': CATEGORY_LIST,
+        'filterCategory': COOKIES_CATEGORY,
         'page': page,
         }
     return render_to_response('hellinist_workbench.html', context, RequestContext(request))
