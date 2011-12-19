@@ -724,7 +724,7 @@ class MeaningContext(models.Model):
 
     left_text = models.CharField(
         u'дополнительный текст слева',
-        max_length = 20,
+        max_length = 50,
         help_text = u'''Здесь указывается текст на <span class="green">русском</span> языке.
                         Например, если необходим контекст «<span class="civil">+</span
                         >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
@@ -750,7 +750,7 @@ class MeaningContext(models.Model):
 
     right_text = models.CharField(
         u'дополнительный текст справа',
-        max_length = 20,
+        max_length = 50,
         help_text = u'''Здесь указывается текст на <span class="green">русском</span> языке.
                         Например, если необходим контекст «<span class="civil">+</span
                         >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
