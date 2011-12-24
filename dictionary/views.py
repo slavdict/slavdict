@@ -45,6 +45,7 @@ def make_greek_found(request):
 def all_entries(request):
     GET_FIND = request.GET.get('find')
     GET_STATUS = request.GET.get('status')
+    GET_LIST = request.GET.get('list')
 
     if not GET_FIND:
         entries = Entry.objects.all()
@@ -56,6 +57,14 @@ def all_entries(request):
 
     if GET_STATUS=='-created':
         entries = entries.exclude(status__slug=u'created')
+
+    if GET_LIST:
+        try:
+            GET_LIST = [int(i) for i in GET_LIST.split(',')]
+        except ValueError:
+            pass
+        else:
+            entries = entries.filter(pk__in=GET_LIST)
 
     entries = sorted(entries, key=entry_key)
     context = {
