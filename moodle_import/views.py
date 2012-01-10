@@ -439,7 +439,7 @@ def get_bool(x, yes=None, no=None):
         raise NameError(u"Булевское поле заполнено неправильно.")
 
 onymL = CategoryValue.objects.filter(category__slug='onym')
-onymOTH = CategoryValue.objects.get(category__slug='onym', tag=u'другое')
+onymOTH = CategoryValue.objects.get(category__slug='onym', slug='other')
 posL = CategoryValue.objects.filter(category__slug='partOfSpeech')
 genderL = CategoryValue.objects.filter(category__slug='gender')
 tantumL = CategoryValue.objects.filter(category__slug='tantum')
