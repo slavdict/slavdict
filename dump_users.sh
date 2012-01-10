@@ -9,7 +9,7 @@ python $PRJDIR/manage.py dumpdata auth.User auth.Group custom_user.CustomUser --
 
 if [ "$LASTFILE" -a "$FILE" != "$LASTFILE" ]
 then
-    x=$(diff $FILE $LASTFILE)
+    x=$(diff -I ".*last_login.*" $FILE $LASTFILE)
 
     if [ -z "$x" ]; then
         rm $FILE
