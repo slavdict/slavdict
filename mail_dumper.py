@@ -28,7 +28,7 @@ def check_output(*popenargs, **kwargs):
         raise error
     return output
 
-if not hasattr(subprocess, check_output):
+if not hasattr(subprocess, 'check_output'):
     subprocess.check_output = check_output
 
 output = subprocess.check_output('./dump.sh', shell=True)
