@@ -495,20 +495,6 @@ class Entry(models.Model, Meaningfull):
         blank = True,
         )
 
-    grequiv_status = models.CharField(
-        u'греческие параллели',
-        max_length = 1,
-        choices = (
-                ('1', u'следует найти параллели'),
-                ('2', u'параллели не нужны'),
-                ('3', u'идет поиск параллелей'),
-                ('4', u'параллели найдены'),
-                ('5', u'параллели найдены частично'),
-            ),
-        blank = True,
-        null = True,
-        )
-
     mtime = models.DateTimeField(
         editable=False,
     )
