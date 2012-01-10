@@ -11,7 +11,9 @@ if [ "$LASTFILE" -a "$FILE" != "$LASTFILE" ]
 then
     x=$(diff $FILE $LASTFILE)
 
-    if [ -z "$x" ]
-    then rm $FILE
+    if [ -z "$x" ]; then
+        rm $FILE
+    else
+        echo "::$FILE"
     fi
 fi

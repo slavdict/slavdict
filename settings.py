@@ -25,6 +25,10 @@ ADMINS = (
     ('khitrov', 'a.n.khitrov@gmail.com'),
 )
 MANAGERS = ADMINS
+BACKUP_MANAGERS = MANAGERS + (
+    ('imperfect', 'imperfect@yandex.ru'),
+)
+SERVER_EMAIL = 'no-reply@slavonic.makd.ru'
 INTERNAL_IPS = ('127.0.0.1',)
 
 DATABASES = {

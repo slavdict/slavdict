@@ -16,6 +16,7 @@ then
     then rm $FILE
     else
         gzip -c $FILE > $FILE.gz
+        echo "::$FILE.gz"
 
         if [ -a $LASTFILE.gz ]
         then rm $LASTFILE
