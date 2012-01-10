@@ -4,7 +4,7 @@ import sys
 import subprocess
 import datetime
 from django.core import mail, management
-from slavdict import settings
+import settings
 management.setup_environ(settings)
 
 output = subprocess.check_output('./dump.sh', shell=True)
