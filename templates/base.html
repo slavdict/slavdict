@@ -6,7 +6,7 @@
         <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
         <link href="{{ STATIC_URL }}singlecomplete.css" rel="stylesheet" type="text/css">
     </head>
-    <body data-bind="event: { keydown: function(event){ if (event.which == 27) vM_hdrSearch.flushItems(); return true; } }">
+    <body>
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
         {% block header_0 %}
@@ -124,20 +124,20 @@
 
             vM_hdrSearch.flushItems = function() { this.foundItems.splice(0); }.bind(vM_hdrSearch);
 
-            vM_hdrSearch.navigateFoundItems = function(event) {
+            vM_hdrSearch.navigateFoundItems = function(vM, event) {
                 if (event.which == 40) { // down arrow key
-                    this.moveFocusDown();
+                    vM.moveFocusDown();
                 } else if (event.which == 38) { // up arrow key
-                    this.moveFocusUp();
+                    vM.moveFocusUp();
                 } else if (event.which == 13) { // enter key
-                    if (this.focusedItem()) this.go(this.focusedItem());
+                    if (vM.focusedItem()) vM.go(vM.focusedItem());
                     else $('.header form').submit();
                 } else if (event.which == 27) { // esc key
-                    this.foundItems.splice(0);
+                    vM.foundItems.splice(0);
                 } else {
                     return true;
                 }
-            }.bind(vM_hdrSearch);
+            };
 
             vM_hdrSearch.searchPrefix.subscribe(function(newValue) {
                 if (newValue) {
