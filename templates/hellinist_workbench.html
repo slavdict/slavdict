@@ -13,7 +13,9 @@
 
         <form class="statusFilterForm" enctype="application/x-www-form-urlencoded" action="{% url hellinist_workbench %}">
 
-            <select name="status" onchange="$('form.statusFilterForm').submit();">
+            <label for="status_id">Фильтр греч. параллелей</label>
+
+            <select name="status" id="status_id" onchange="$('form.statusFilterForm').submit();">
                 {% for option in statusList %}
                 <option value="{{ option.0 }}"{% ifequal statusFilter option.0 %}selected="selected"{% endifequal %}>{{ option.1 }}</option>
                 {% endfor %}
