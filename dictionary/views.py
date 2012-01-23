@@ -770,7 +770,7 @@ def hellinist_workbench(request):
             ('a', 'все'),
         )
 
-    DEFAULT_CATEGORY = 'd'
+    DEFAULT_CATEGORY = 'u'
     httpGET_CATEGORY = request.GET.get('category')
     if httpGET_CATEGORY not in [s[0] for s in CATEGORY_LIST]:
         httpGET_CATEGORY = None
