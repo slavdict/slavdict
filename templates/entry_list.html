@@ -50,7 +50,7 @@
                             <span class="fS--h--open"
                                   data-bind="event: { mousedown: filters.authors.choiceState }">▾</span>
                             <span class="fS--h--reset"
-                                  data-bind="event: { mousedown: filters.authors.reset }">×</span>
+                                  data-bind="event: { mousedown: filters.authors.defaultState }">×</span>
                         </span>
                         <ul class="fS--items"
                             data-bind="foreach: filters.authors.list,
@@ -242,6 +242,7 @@
 
             this.selectMe = function(){
                 selected(this);
+                focused(this);
             }.bind(this);
 
             this.isSelected = ko.dependentObservable(
@@ -253,12 +254,15 @@
         viewModel.filters = {};
         viewModel.filters.authors = {
             list: ko.observableArray(),
-            state: ko.observable('default'),
+            state: ko.observable(),
             focused: ko.observable(),
             selected: ko.observable()
         };
 
-        viewModel.filters.authors['defaultState']  = function() { viewModel.filters.authors.state('default');  };
+        viewModel.filters.authors['defaultState']  = function() {
+            viewModel.filters.authors.state('default');
+            viewModel.filters.authors.list()[0].selectMe();
+        };
         viewModel.filters.authors['choiceState']   = function() { viewModel.filters.authors.state('choice');   };
         viewModel.filters.authors['selectedState'] = function() { viewModel.filters.authors.state('selected'); };
 
@@ -272,6 +276,11 @@
             function() { return viewModel.filters.authors.state()=='selected'; }
         );
 
+        viewModel.filters.authors.select = function(item) {
+            this.selectedState();
+            item.selectMe();
+        }.bind(viewModel.filters.authors);
+
         viewModel.filters.authors.selectedAuthor = ko.dependentObservable(
             function() {
                 var s = this.selected();
@@ -280,20 +289,13 @@
             viewModel.filters.authors
         );
 
-        viewModel.filters.authors.select = function(item) {
-            this.selectedState();
-            item.selectMe();
-        }.bind(viewModel.filters.authors);
 
-        viewModel.filters.authors.reset = function() {
-            this.defaultState();
-            this.list()[0].selectMe(); // 'all'
-        }.bind(viewModel.filters.authors);
 
         authorsData = ko.utils.arrayMap( {{ authors|safe }} , function(author){
             return new Author(author, viewModel.filters.authors.focused, viewModel.filters.authors.selected);
         });
         viewModel.filters.authors.list(authorsData);
+        viewModel.filters.authors.defaultState();
 
     </script>
 {% endblock %}

@@ -127,7 +127,8 @@
 
             viewModel.search.flushItems = function() { this.foundItems.splice(0); }.bind(viewModel.search);
 
-            vM_hdrSearch.navigateFoundItems = function(vM, event) {
+            viewModel.search.navigateFoundItems = function(vM, event) {
+                var vM = vM.search;
                 if (event.which == 40) { // down arrow key
                     vM.moveFocusDown();
                 } else if (event.which == 38) { // up arrow key
