@@ -495,20 +495,6 @@ class Entry(models.Model, Meaningfull):
         blank = True,
         )
 
-    grequiv_status = models.CharField(
-        u'греческие параллели',
-        max_length = 1,
-        choices = (
-                ('1', u'следует найти параллели'),
-                ('2', u'параллели не нужны'),
-                ('3', u'идет поиск параллелей'),
-                ('4', u'параллели найдены'),
-                ('5', u'параллели найдены частично'),
-            ),
-        blank = True,
-        null = True,
-        )
-
     mtime = models.DateTimeField(
         editable=False,
     )
@@ -724,7 +710,7 @@ class MeaningContext(models.Model):
 
     left_text = models.CharField(
         u'дополнительный текст слева',
-        max_length = 20,
+        max_length = 50,
         help_text = u'''Здесь указывается текст на <span class="green">русском</span> языке.
                         Например, если необходим контекст «<span class="civil">+</span
                         >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
@@ -750,7 +736,7 @@ class MeaningContext(models.Model):
 
     right_text = models.CharField(
         u'дополнительный текст справа',
-        max_length = 20,
+        max_length = 50,
         help_text = u'''Здесь указывается текст на <span class="green">русском</span> языке.
                         Например, если необходим контекст «<span class="civil">+</span
                         >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
@@ -1087,6 +1073,7 @@ class Example(models.Model):
         (u'C', u'уточнить адрес'),  # check the address
         (u'N', u'найти не удалось'),# not found
         (u'F', u'найдены'),         # found
+        (u'M', u'необходимы для опр-я значения') # meaning
         )
 
     greek_eq_status = models.CharField(

@@ -43,19 +43,28 @@ def make_greek_found(request):
 
 @login_required
 def all_entries(request):
-    GET_FIND = request.GET.get('find')
-    GET_STATUS = request.GET.get('status')
+    httpGET_FIND = request.GET.get('find')
+    httpGET_STATUS = request.GET.get('status')
+    httpGET_LIST = request.GET.get('list')
 
-    if not GET_FIND:
+    if not httpGET_FIND:
         entries = Entry.objects.all()
     else:
-        FIND_LOWER = GET_FIND.lower()
-        FIND_CAPZD = GET_FIND.capitalize()
+        FIND_LOWER = httpGET_FIND.lower()
+        FIND_CAPZD = httpGET_FIND.capitalize()
         entries = Entry.objects.filter(
             Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD) )
 
-    if GET_STATUS=='-created':
+    if httpGET_STATUS=='-created':
         entries = entries.exclude(status__slug=u'created')
+
+    if httpGET_LIST:
+        try:
+            httpGET_LIST = [int(i) for i in httpGET_LIST.split(',')]
+        except ValueError:
+            pass
+        else:
+            entries = entries.filter(pk__in=httpGET_LIST)
 
     entries = sorted(entries, key=entry_key)
     context = {
@@ -583,56 +592,56 @@ def entry_list(request, mine=False):
     FILTERS = {}
     QS_PARSING_ERRORS = []
 
-    GET_SORT = request.GET.get('sort')
-    GET_FIND = request.GET.get('find')
-    GET_AUTHOR = request.GET.get('author')
+    httpGET_SORT = request.GET.get('sort')
+    httpGET_FIND = request.GET.get('find')
+    httpGET_AUTHOR = request.GET.get('author')
 
-    if GET_SORT:
+    if httpGET_SORT:
         redirect_path = "./"
-        if GET_FIND:
-            redirect_path = "?find=%s" % GET_FIND
+        if httpGET_FIND:
+            redirect_path = "?find=%s" % httpGET_FIND
         response = HttpResponseRedirect(redirect_path)
-        if GET_SORT in VALID_SORT_PARAMS:
-            response.set_cookie('sort', GET_SORT)
+        if httpGET_SORT in VALID_SORT_PARAMS:
+            response.set_cookie('sort', httpGET_SORT)
         return response
 
     COOKIES_SORT = request.COOKIES.get('sort', DEFAULT_SORT)
     SORT_PARAMS = VALID_SORT_PARAMS[COOKIES_SORT]
 
-    if GET_AUTHOR:
-        if GET_AUTHOR=='all':
+    if httpGET_AUTHOR:
+        if httpGET_AUTHOR=='all':
             pass
-        elif GET_AUTHOR=='none':
+        elif httpGET_AUTHOR=='none':
             FILTERS['editor__isnull'] = True
-        elif GET_AUTHOR.isdigit():
-            FILTERS['editor'] = int(GET_AUTHOR)
+        elif httpGET_AUTHOR.isdigit():
+            FILTERS['editor'] = int(httpGET_AUTHOR)
         else:
             QS_PARSING_ERRORS.append('author')
 
         if 'author' not in QS_PARSING_ERRORS:
             redirect_path = "./"
-            if GET_FIND:
-                redirect_path = "?find=%s" % GET_FIND
+            if httpGET_FIND:
+                redirect_path = "?find=%s" % httpGET_FIND
             response = HttpResponseRedirect(redirect_path)
-            response.set_cookie('author', GET_AUTHOR)
+            response.set_cookie('author', httpGET_AUTHOR)
 
 
-    if GET_FIND is None and not mine:
-        GET_FIND = u''
+    if httpGET_FIND is None and not mine:
+        httpGET_FIND = u''
         entry_list = Entry.objects.filter(**FILTERS).order_by(*SORT_PARAMS) #filter(editor=request.user)
     else:
-        if GET_FIND:
+        if httpGET_FIND:
             # Ищем все лексемы, удовлетворяющие запросу в независимости от регистра начальной буквы запроса.
             # Код писался из расчёта, что на БД полагаться нельзя, поскольку у меня не получается правильно
             # настроить COLLATION в Postgres. Когда это сделать удастся, надо будет в .filter использовать
-            # `civil_equivalent__istartswith=GET_FIND`.
-            FIND_LOWER = GET_FIND.lower()
-            FIND_CAPZD = GET_FIND.capitalize()
+            # `civil_equivalent__istartswith=httpGET_FIND`.
+            FIND_LOWER = httpGET_FIND.lower()
+            FIND_CAPZD = httpGET_FIND.capitalize()
             entry_list = Entry.objects.filter(
                     Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD)
                 ).filter(**FILTERS).order_by(*SORT_PARAMS) #filter(editor=request.user)
         else:
-            GET_FIND = u''
+            httpGET_FIND = u''
             if mine:
                 entry_list = Entry.objects.filter(editor=request.user).order_by(*SORT_PARAMS)
             else:
@@ -660,7 +669,7 @@ def entry_list(request, mine=False):
         'entries': page.object_list,
         'page': page,
         'sort': COOKIES_SORT,
-        'find_prefix': GET_FIND,
+        'find_prefix': httpGET_FIND,
         'mine': mine,
         'authors': json.dumps(authors, ensure_ascii=False, separators=(',',':')),
         }
@@ -694,19 +703,19 @@ def antconc2ucs8_converter(request):
 
 @login_required
 def json_multiselect_entries(request):
-    GET_FIND = request.GET.get('find')
-    GET_ID = request.GET.get('ids')
-    if GET_ID:
-        GET_IDS = [GET_ID]
+    httpGET_FIND = request.GET.get('find')
+    httpGET_ID = request.GET.get('ids')
+    if httpGET_ID:
+        httpGET_IDS = [httpGET_ID]
     else:
-        GET_IDS = request.GET.getlist('ids[]')
-        GET_IDS = [id for id in GET_IDS if id]
-    if GET_FIND:
-        FIND_LOWER = GET_FIND.lower()
-        FIND_CAPZD = GET_FIND.capitalize()
+        httpGET_IDS = request.GET.getlist('ids[]')
+        httpGET_IDS = [id for id in httpGET_IDS if id]
+    if httpGET_FIND:
+        FIND_LOWER = httpGET_FIND.lower()
+        FIND_CAPZD = httpGET_FIND.capitalize()
         entries = Entry.objects \
             .filter( Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD) ) \
-            .exclude(pk__in=GET_IDS) \
+            .exclude(pk__in=httpGET_IDS) \
             .order_by('civil_equivalent', 'homonym_order')[:7]
         entries = [
                 {
@@ -727,10 +736,10 @@ def json_multiselect_entries(request):
 
 @login_required
 def json_singleselect_entries_urls(request):
-    GET_FIND = request.GET.get('find')
-    if GET_FIND:
-        FIND_LOWER = GET_FIND.lower()
-        FIND_CAPZD = GET_FIND.capitalize()
+    httpGET_FIND = request.GET.get('find')
+    if httpGET_FIND:
+        FIND_LOWER = httpGET_FIND.lower()
+        FIND_CAPZD = httpGET_FIND.capitalize()
         entries = Entry.objects \
             .filter( Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD) ) \
             .order_by('civil_equivalent', 'homonym_order')[:7]
@@ -755,14 +764,14 @@ def json_singleselect_entries_urls(request):
 def hellinist_workbench(request):
 
     DEFAULT_STATUS = 'L'
-    GET_STATUS = request.GET.get('status')
-    if GET_STATUS not in [s[0] for s in dictionary.models.Example.GREEK_EQ_STATUS]:
-        GET_STATUS = None
+    httpGET_STATUS = request.GET.get('status')
+    if httpGET_STATUS not in [s[0] for s in dictionary.models.Example.GREEK_EQ_STATUS]:
+        httpGET_STATUS = None
 
-    if GET_STATUS:
+    if httpGET_STATUS:
         redirect_path = "./"
         response = HttpResponseRedirect(redirect_path)
-        response.set_cookie('status', GET_STATUS)
+        response.set_cookie('status', httpGET_STATUS)
         return response
 
     COOKIES_STATUS = request.COOKIES.get('status', DEFAULT_STATUS)
@@ -796,7 +805,7 @@ def hellinist_workbench(request):
         'examples': page.object_list,
         'jsonExamples': json.dumps(vM_examples, ensure_ascii=False, separators=(',',':')),
         'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
-        'filterStatus': COOKIES_STATUS,
+        'statusFilter': COOKIES_STATUS,
         'page': page,
         }
     return render_to_response('hellinist_workbench.html', context, RequestContext(request))

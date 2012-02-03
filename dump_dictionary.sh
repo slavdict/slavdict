@@ -1,6 +1,6 @@
 #!/bin/bash
 NOW=$(date +"%Y.%m.%d--%H.%M")
-DBS_VERSION=2.6
+DBS_VERSION=2.7
 PRJDIR="$( cd "$( dirname "$0" )" && pwd )" # ... dirname "$( readlink -f "$0" )" ...
 DUMPDIR="$PRJDIR/.dumps"
 LASTFILE=$(ls -tA $DUMPDIR/.dictionary*.xml | head -1)
@@ -16,6 +16,7 @@ then
     then rm $FILE
     else
         gzip -c $FILE > $FILE.gz
+        echo "::$FILE.gz"
 
         if [ -a $LASTFILE.gz ]
         then rm $LASTFILE

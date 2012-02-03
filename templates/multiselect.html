@@ -70,9 +70,9 @@
     </script>
 
 
-    <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.2.min.js'></script>
+    <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.7.1.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}jquery.tmpl.min.js'></script>
-    <script type='text/javascript' src='{{ STATIC_URL }}knockout-1.2.1.js'></script>
+    <script type='text/javascript' src='{{ STATIC_URL }}knockout-2.0.0.js'></script>
     <script>
 
         ko.bindingHandlers.hasFocus = {
@@ -152,14 +152,14 @@
                 var fi = this.focusedIndex();
                 this.focusedIndex(fi < 1 ? this.foundItems().length - 1 : fi - 1);
             },
-            navigateFoundItems: function(event){
-                if (this.foundItems()) {
+            navigateFoundItems: function(vM, event){
+                if (vM.foundItems()) {
                     if (event.which == 40) { // down arrow key
-                        this.moveFocusDown();
+                        vM.moveFocusDown();
                     } else if (event.which == 38) { // up arrow key
-                        this.moveFocusUp();
+                        vM.moveFocusUp();
                     } else if (event.which == 13) { // enter key
-                        if (this.focusedItem()) this.selectItem(this.focusedItem());
+                        if (vM.focusedItem()) vM.selectItem(vM.focusedItem());
                     } else {
                         return true;
                     }

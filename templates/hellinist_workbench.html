@@ -11,12 +11,16 @@
 
         <a href="{% url all_entries_url %}" class="header--item button">Вернуться к статьям</a>
 
-        <form class="filterForm" enctype="application/x-www-form-urlencoded" action="{% url hellinist_workbench %}">
-            <select name="status" onchange="$('form.filterForm').submit();">
+        <form class="statusFilterForm" enctype="application/x-www-form-urlencoded" action="{% url hellinist_workbench %}">
+
+            <label for="status_id">Фильтр греч. параллелей</label>
+
+            <select name="status" id="status_id" onchange="$('form.statusFilterForm').submit();">
                 {% for option in statusList %}
-                <option value="{{ option.0 }}"{% ifequal filterStatus option.0 %}selected="selected"{% endifequal %}>{{ option.1 }}</option>
+                <option value="{{ option.0 }}"{% ifequal statusFilter option.0 %}selected="selected"{% endifequal %}>{{ option.1 }}</option>
                 {% endfor %}
             </select>
+
         </form>
 
     </div>
@@ -158,8 +162,8 @@
     </div>
 
 
-    <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.4.min.js'></script>
-    <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
+    <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.7.1.min.js'></script>
+    <script type='text/javascript' src='{{ STATIC_URL }}knockout-2.0.0.js'></script>
     <script>
 
         ko.bindingHandlers['visibleActive'] = {

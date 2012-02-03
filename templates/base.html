@@ -6,7 +6,7 @@
         <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
         <link href="{{ STATIC_URL }}singlecomplete.css" rel="stylesheet" type="text/css">
     </head>
-    <body data-bind="event: { keydown: function(event){ if (event.which == 27) viewModel.search.flushItems(); return true; } }">
+    <body>
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
         {% block header_0 %}
@@ -55,6 +55,10 @@
                     <a href="{% url hellinist_workbench %}" class="header--item button">Греческий кабинет</a>
                 {% endif %}
 
+                <span class="right-justification">
+                    <a href="https://docs.google.com/document/d/1F2vnJpp_J48X49tdwrqefmtNd7wJIiAbuExp5TgZuwE/view?hl=en_US"
+                       class="header--item button">Инструкция</a>
+                </span>
             {% endblock %}
         </div>
         {% endblock %}
@@ -63,8 +67,8 @@
             {% block content %}{% endblock %}
         </div>
 
-        <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.6.4.min.js'></script>
-        <script type='text/javascript' src='{{ STATIC_URL }}knockout-latest.debug.js'></script>
+        <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.7.1.min.js'></script>
+        <script type='text/javascript' src='{{ STATIC_URL }}knockout-2.0.0.js'></script>
         <script>
 
             function Item(item, focused) {
@@ -123,20 +127,20 @@
 
             viewModel.search.flushItems = function() { this.foundItems.splice(0); }.bind(viewModel.search);
 
-            viewModel.search.navigateFoundItems = function(event) {
+            vM_hdrSearch.navigateFoundItems = function(vM, event) {
                 if (event.which == 40) { // down arrow key
-                    this.moveFocusDown();
+                    vM.moveFocusDown();
                 } else if (event.which == 38) { // up arrow key
-                    this.moveFocusUp();
+                    vM.moveFocusUp();
                 } else if (event.which == 13) { // enter key
-                    if (this.focusedItem()) this.go(this.focusedItem());
+                    if (vM.focusedItem()) vM.go(vM.focusedItem());
                     else $('.header form').submit();
                 } else if (event.which == 27) { // esc key
-                    this.foundItems.splice(0);
+                    vM.foundItems.splice(0);
                 } else {
                     return true;
                 }
-            }.bind(viewModel.search);
+            };
 
             viewModel.search.searchPrefix.subscribe(function(newValue) {
                 if (newValue) {
