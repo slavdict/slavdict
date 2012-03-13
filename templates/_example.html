@@ -10,14 +10,14 @@
 
     {% for ge in e.greek_equivs %}
 
-        {% if ge.text %}
-            <span class="grec">{{ ge.text }}</span>
-            {% space %}
-        {% endif %}
-
         {% if ge.unitext %}
             <span class="unigrec">{{ ge.unitext }}</span>
             {% space %}
+        {% else %}
+            {% if ge.text %}
+                <span class="grec">{{ ge.text }}</span>
+                {% space %}
+            {% endif %}
         {% endif %}
 
         {%if ge.mark %}
