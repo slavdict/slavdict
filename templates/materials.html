@@ -2,6 +2,38 @@
 
 {% block content %}
 
+<style>
+    #materials {
+        font-family: Arial, sans-serif;
+        width: 35em;
+        margin: 2em auto;
+        color: #333;
+    }
+    #materials ul {
+        list-style-type: none;
+        margin-top: 0.5em;
+    }
+    #materials li:before {
+        content: '—';
+    }
+    #materials li {
+        padding: 0;
+        font-size: 80%;
+        margin-bottom: 0.35em;
+    }
+    #materials li a:link,
+    #materials li a:active,
+    #materials li a:hover,
+    #materials li a:visited {
+        color: #00a;
+    }
+    #materials li a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div id='materials'>
+
     <h1>Материалы</h1>
 
     <ul>
@@ -13,18 +45,26 @@
         </li>
 
         <li>
-            <a>
-                Корпус текстов
+            <a href='/dl/corpus-07.03.2011.exe'>
+                Корпус текстов (по состоянию на 07.03.2011)
             </a>
         </li>
 
         <li>
-            <a>
+            <a href='/dl/AntConSol.ttf'>
+                Шрифт AntConSol
+            </a>
+        </li>
+
+        <li>
+            <a href='http://www.antlab.sci.waseda.ac.jp/software/antconc3.2.4w.exe'>
                 Конкордансер &laquo;АнтКонк&raquo;
             </a>
         </li>
 
     </ul>
+
+</div>
 
 {% endblock %}
 
