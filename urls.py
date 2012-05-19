@@ -29,6 +29,8 @@ urlpatterns += patterns('',
          name="intermediary_change_form_url"),
     url( r'^entries/(\d+)/change/$', 'slavdict.dictionary.views.change_entry' ),
     url( r'^entries/last/$', 'slavdict.dictionary.views.last_entry', name='last_entry' ),
+
+    url( r'^materials/$', 'django.views.generic.simple.direct_to_template', {'template': 'materials.html'}),
     url( r'^forum/', include('slavdict.forum.urls') ),
     url( r'^wiki/$', redirect_to, kwargs={'url': 'http://slavonic.pbworks.com/'} ),
     url( r'^switch/additional-info/$', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
