@@ -32,11 +32,7 @@ urlpatterns += patterns('',
     url( r'^forum/', include('slavdict.forum.urls') ),
     url( r'^wiki/$', redirect_to, kwargs={'url': 'http://slavonic.pbworks.com/'} ),
     url( r'^switch/additional-info/$', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
-    url( r'^greek-found/$', 'slavdict.dictionary.views.make_greek_found' ), # Впоследствии необходимо будет удалить.
-    url( r'^csv-import/$', 'slavdict.dictionary.views.import_csv_billet' ),
-    url( r'^moodle-import/$', 'slavdict.moodle_import.views.import_moodle_base' ),
     url( r'^converter/$', 'slavdict.dictionary.views.antconc2ucs8_converter', name='converter' ),
-#    url( r'^dump/dictionary/$', 'slavdict.dumper.views.dumpdata' ),
     url( r'^json/multiselect/entries/$', 'dictionary.views.json_multiselect_entries'),
     url( r'^json/singleselect/entries/urls/$', 'dictionary.views.json_singleselect_entries_urls'),
     url( r'^test/multiselect/$', 'django.views.generic.simple.direct_to_template', {'template': 'multiselect.html'}),
@@ -44,6 +40,12 @@ urlpatterns += patterns('',
     url( r'^json/greq/save/$', 'dictionary.views.json_greq_save', name="jsonGreqSaveURL"),
     url( r'^json/greq/delete/$', 'dictionary.views.json_greq_delete', name="jsonGreqDeleteURL"),
     url( r'^json/ex/save/$', 'dictionary.views.json_ex_save', name="jsonExSaveURL"),
+
+    # TODO: В последствии всё это должно быть удалено.
+    url( r'^adhoc/greek-found/$', 'slavdict.dictionary.views.make_greek_found' ),
+    url( r'^adhoc/csv-import/$', 'slavdict.dictionary.views.import_csv_billet' ),
+    url( r'^adhoc/moodle-import/$', 'slavdict.moodle_import.views.import_moodle_base' ),
+    #url( r'^utils/dump/dictionary/$', 'slavdict.dumper.views.dumpdata' ),
 )
 
 urlpatterns += staticfiles_urlpatterns()
