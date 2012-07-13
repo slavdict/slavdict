@@ -39,4 +39,20 @@ restart: stop checkout syncdb start
 
 migrestart: stop checkout syncdb migrate start
 
-.PHONY: run stop checkout syncdb migrate start restart migrastart
+clean:
+	-find -name '*.pyc' -execdir rm {} \;
+	-rm -fR .sass-cache/
+	-rm -fR .static/*
+
+.PHONY: \
+    checkout \
+    clean \
+    migrate \
+    migrestart \
+    restart \
+    run \
+    start \
+    stop \
+    syncdb \
+
+
