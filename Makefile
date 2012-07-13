@@ -1,14 +1,18 @@
 GITWORKTREE = /var/www/slavdict
 GITDIR = /home/git/slavdict.www
 SLAVDICT_ENVIRONMENT ?= production
+IS_PRODUCTION = test ${SLAVDICT_ENVIRONMENT} = production || (echo "Окружение не является боевым" && exit 1)
+IS_DEVELOPMENT = test ${SLAVDICT_ENVIRONMENT} = development || (echo "Окружение не являетя тестовым" && exit 1)
 
-rundj:
-	@echo Running Django:
-	compass compile -e ${SLAVDICT_ENVIRONMENT}
+run:
+	@echo "Запуск сервера в тестовом окружении..."
+	@$(IS_DEVELOPMENT)
+	compass compile -e development
 	python ./manage.py collectstatic --noinput
 	python ./manage.py runserver
 
 stop:
+	@$(IS_PRODUCTION)
 	sudo /etc/init.d/cherokee stop
 	-sudo killall -9 uwsgi
 
@@ -16,9 +20,10 @@ start:
 	sudo /etc/init.d/cherokee start
 
 checkout:
+	@$(IS_PRODUCTION)
 	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
 		pull origin master
-	compass compile -e ${SLAVDICT_ENVIRONMENT}
+	compass compile -e production
 	python ./manage.py collectstatic --noinput
 	chown -R www-data:www-is ./
 	chown -R git:www-is /home/git/slavdict.*
@@ -32,6 +37,6 @@ migrate:
 
 restart: stop checkout syncdb start
 
-migrastart: stop checkout syncdb migrate start
+migrestart: stop checkout syncdb migrate start
 
-.PHONY: rundj stop checkout syncdb migrate start restart migrastart
+.PHONY: run stop checkout syncdb migrate start restart migrastart
