@@ -10,7 +10,7 @@ rundj:
 
 stop:
 	sudo /etc/init.d/cherokee stop
-	sudo killall -9 uwsgi
+	-sudo killall -9 uwsgi
 
 start:
 	sudo /etc/init.d/cherokee start
