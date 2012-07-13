@@ -1,9 +1,10 @@
-GITWORKTREE=/var/www/slavdict
-GITDIR=/home/git/slavdict.www
+GITWORKTREE = /var/www/slavdict
+GITDIR = /home/git/slavdict.www
+SLAVDICT_ENVIRONMENT ?= production
 
 rundj:
 	@echo Running Django:
-	sass --update static
+	compass compile -e ${SLAVDICT_ENVIRONMENT}
 	python ./manage.py collectstatic --noinput
 	python ./manage.py runserver
 
@@ -17,7 +18,7 @@ start:
 checkout:
 	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
 		pull origin master
-	sass update --static
+	compass compile -e ${SLAVDICT_ENVIRONMENT}
 	python ./manage.py collectstatic --noinput
 	chown -R www-data:www-is ./
 	chown -R git:www-is /home/git/slavdict.*
