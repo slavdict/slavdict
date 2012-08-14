@@ -191,6 +191,16 @@ class Entry(models.Model, Meaningfull):
         blank = True,
         )
 
+    duplicate = models.BooleanField(
+        u'Дубликат словарной статьи',
+        help_text = u'''В нормальном случае дубликатов быть не должно.
+                        Они возникают только в результате недосмотров или
+                        программных ошибок при создании новых статей
+                        или автоматизированном импорте заготовок статей.''',
+        default = False,
+        editable = False,
+        )
+
     @property
     def syns(self):
         g = self.synonym_in.all()
