@@ -398,6 +398,7 @@ class AdminEntry(admin.ModelAdmin):
         'id',
         'civil_equivalent',
         '__unicode__',
+        'duplicate',
         'editor',
         'status',
         'part_of_speech',
@@ -421,6 +422,7 @@ class AdminEntry(admin.ModelAdmin):
         'participle_type',
         )
     list_editable = (
+        'duplicate',
         'editor',
         'status',
         )
