@@ -4,6 +4,10 @@
 {% if intermed and entry.antconc_query %}<div class="message antconsol">{{ entry.antconc_query }}</div>{% endif %}
 <div class="entry">
 
+    {% if entry.duplicate %}
+    <span class="noaddress">Осторожно! У этой статьи есть дубликат!</span>
+    {% endif %}
+
     <div style="line-height: 100%;">
 
         {% if show_additional_info %}

@@ -90,6 +90,11 @@
                                      &nbsp;{{ entry.homonym_order_roman }}
                                  {% endif %}
                             </a>
+
+                            {% if entry.duplicate %}
+                                &nbsp;<span class="noaddress">дубликат</span>
+                            {% endif %}
+
                             <span class="ss transparent">
                                 &nbsp;&nbsp;&nbsp;
                                 {% if entry.part_of_speech.slug != "letter" and entry.part_of_speech.slug != "number" %}
