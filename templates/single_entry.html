@@ -16,11 +16,13 @@
         {% if not entry.editor or user.is_admeditor or user == entry.editor %}
         {# user.groups.all|stringformat:"s" преобразует сам список объектов Group в текстовое представление. #}
         {# В результате получается строка вроде "[<Group: authors>, <Group: editors>]". #}
+            {% if not entry.duplicate or user.is_admeditor %}
             <div style="position: absolute; top: -3px; left: -40px;">
                 <a href="{% url intermediary_change_form_url entry.pk %}" class="icon edit">
                     <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
                 </a>
             </div>
+            {% endif %}
         {% endif %}
     {% endif %}
 

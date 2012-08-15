@@ -60,12 +60,14 @@
                     </div>
 
                     {% if not entry.editor or user.is_admeditor or user == entry.editor %}
+                        {% if not entry.duplicate or user.is_admeditor %}
                         <a href="{% url intermediary_change_form_url entry.pk %}" class="icon edit">
                             <img src="{{ STATIC_URL }}transparent.png" alt="e" />
                         </a>
                         <span class="hint-container">
                             <div class="hint">Редактировать<br/>статью</div>
                         </span>
+                        {% else %}&nbsp;{% endif %}
                     {% else %}
                         &nbsp;
                     {% endif %}
