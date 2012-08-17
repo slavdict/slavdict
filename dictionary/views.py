@@ -581,7 +581,7 @@ def import_csv_billet(request):
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 @login_required
-def entry_list(request, mine=False):
+def entry_list(request, mine=False, duplicates=False):
     VALID_SORT_PARAMS = {
         'alph': ('civil_equivalent', 'homonym_order'),
         '-alph': ('-civil_equivalent', '-homonym_order'),
@@ -646,6 +646,9 @@ def entry_list(request, mine=False):
                 entry_list = Entry.objects.filter(editor=request.user).order_by(*SORT_PARAMS)
             else:
                 return HttpResponseRedirect("./")
+
+    if duplicates:
+        entry_list = entry_list.filter(duplicate=True)
 
     if COOKIES_SORT=='alph':
         entry_list = sorted(entry_list, key=entry_key, reverse=False)
