@@ -46,6 +46,7 @@ def all_entries(request):
     httpGET_FIND = request.GET.get('find')
     httpGET_STATUS = request.GET.get('status')
     httpGET_LIST = request.GET.get('list')
+    httpGET_USER = request.GET.get('user')
 
     if not httpGET_FIND:
         entries = Entry.objects.all()
@@ -54,6 +55,9 @@ def all_entries(request):
         FIND_CAPZD = httpGET_FIND.capitalize()
         entries = Entry.objects.filter(
             Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD) )
+
+    if httpGET_USER:
+        entries = entries.filter(editor__username=httpGET_USER)
 
     if httpGET_STATUS=='-created':
         entries = entries.exclude(status__slug=u'created')
