@@ -46,7 +46,7 @@ def all_entries(request):
     httpGET_FIND = request.GET.get('find')
     httpGET_STATUS = request.GET.get('status')
     httpGET_LIST = request.GET.get('list')
-    httpGET_USER = request.GET.get('user')
+    httpGET_AUTHOR = request.GET.get('author')
 
     if not httpGET_FIND:
         entries = Entry.objects.all()
@@ -56,8 +56,11 @@ def all_entries(request):
         entries = Entry.objects.filter(
             Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD) )
 
-    if httpGET_USER:
-        entries = entries.filter(editor__username=httpGET_USER)
+    if httpGET_AUTHOR:
+        if httpGET_AUTHOR == 'is-not-assigned!':
+            entries = entries.filter(editor__isnull=True)
+        else:
+            entries = entries.filter(editor__username=httpGET_AUTHOR)
 
     if httpGET_STATUS=='-created':
         entries = entries.exclude(status__slug=u'created')
