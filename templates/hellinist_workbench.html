@@ -1,4 +1,3 @@
-{% load trim_spaces %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,7 +16,7 @@
 
             <select name="status" id="status_id" onchange="$('form.statusFilterForm').submit();">
                 {% for option in statusList %}
-                <option value="{{ option.0 }}"{% ifequal statusFilter option.0 %}selected="selected"{% endifequal %}>{{ option.1 }}</option>
+                <option value="{{ option.0 }}"{% if statusFilter == option.0 %}selected="selected"{% endif %}>{{ option.1 }}</option>
                 {% endfor %}
             </select>
 
@@ -30,20 +29,23 @@
 
     {% for e in examples %}
         <div>
-            {% ifchanged %}
+            {% set prevFingerprint = fingerprint %}
+            {% set fingerprint = e.host ~ e.meaning.meaning ~ e.meaning.gloss %}
+            {% set isEntryNew = (fingerprint != prevFingerprint) %}
+            {% if isEntryNew %}
             <div class="exampleHeader">
                 {% if e.host.orth_vars %}
-                    <a href="{{ e.host.get_absolute_url }}" target="_blank"><span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span></a>{% space %}
-                    <i>{{ e.host_entry.part_of_speech.tag }}</i>{% space %}
+                    <a href="{{ e.host.get_absolute_url() }}" target="_blank"><span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span></a>{{ space }}
+                    <i>{{ e.host_entry.part_of_speech.tag }}</i>{{ space }}
                 {% else %}
                     {% for c in e.host.collocations %}
-                        <a href="{{ e.host_entry.get_absolute_url }}" target="_blank"><span class="cslav">{{ c.collocation_ucs }}</span></a>
-                        {% if not forloop.last %},{% endif %}{% space %}
+                        <a href="{{ e.host_entry.get_absolute_url() }}" target="_blank"><span class="cslav">{{ c.collocation_ucs }}</span></a>
+                        {% if not loop.last %},{% endif %}{{ space }}
                     {% endfor %}
                 {% endif %}
                 {% if e.meaning.meaning %}
                     ‘{{ e.meaning.meaning }}’
-                    {% space %}
+                    {{ space }}
                 {% endif %}
                 {% if e.meaning.gloss %}
                     {% if e.meaning.meaning %}
@@ -53,9 +55,9 @@
                     {% endif %}
                 {% endif %}
             </div>
-            {% endifchanged %}
+            {% endif %}
 
-            <div class="example" data-bind="with: examples[{{ forloop.counter0 }}]">
+            <div class="example" data-bind="with: examples[{{ loop.index0 }}]">
 
                 <span class="example--id">[<span data-bind="text: id"></span>]</span>
 
@@ -68,7 +70,7 @@
                         blur: toggleAddress
                     }" />
 
-                {% space %}
+                {{ space }}
                 <span data-bind="visible: comment() || commentEditable()">
                     <span class="example--comment" data-bind="
                         text: comment, visible: !commentEditable(), click: toggleComment"></span>
@@ -80,7 +82,7 @@
                         }" />
                 </span>
 
-                {% space %}
+                {{ space }}
                 <span class="button" data-bind="visible: !comment() && !commentEditable() , click: toggleComment">Добавить примечание к примеру</span>
                 <br />
 
@@ -94,14 +96,14 @@
                 <span class="antconsol" data-bind="visible: antconcVisible(), text: antconc"></span>
 
                 <span class="greqList" data-bind="visible: greqs().length && !antconcVisible()">
-                    &nbsp;&mdash;{% space %}
+                    &nbsp;&mdash;{{ space }}
                     <!-- ko foreach: greqs -->
                         <span data-bind="text: text, visible: !unitext()" class="grec"></span>
                         <span data-bind="text: unitext, visible: unitext()"></span>
                         <span data-bind="text: additional_info, visible: additional_info()" class="greqComment"></span>
-                        <span class="greqList--comma">,</span>{% space %}
+                        <span class="greqList--comma">,</span>{{ space }}
                     <!-- /ko -->
-                </span>{% space %}
+                </span>{{ space }}
 
                 <span class="button antconcButton" data-bind="click: toggleAntconc">
                     <span data-bind="visible: antconcVisible()">ЦСЛ</span>

@@ -1,114 +1,114 @@
-{% load trim_spaces %}
+{% macro etymology(etym, isLanguageChanged, loop) %}
 
-{% ifchanged etym.language.tag %}
-    {% if not forloop.first %}
-        {% backspace %};{% space %}
-    {% endif %}
-{% else %}
-    {% if not forloop.first %}
-        {% backspace %},{% space %}
-    {% endif %}
-{% endifchanged %}
 
-{% ifchanged %}
+{% if isLanguageChanged %}
+    {% if not loop.first %}
+        {{ backspace }};{{ space }}
+    {% endif %}
+
     <i>{{ etym.language.tag }}</i>&nbsp;
-{% endifchanged %}
+{% else %}
+    {% if not loop.first %}
+        {{ backspace }},{{ space }}
+    {% endif %}
+{% endif %}
+
 
 {% if etym.text %}
     <span class="{{ etym.language.css_class }}">{{ etym.text }}</span>
-    {% space %}
+    {{ space }}
 {% endif %}
 
 {% if etym.translit %}
     {% if etym.text %}
-        {% space %}[
+        {{ space }}[
         <span class="{{ etym.language.css_class2 }}">{{ etym.translit }}</span>
-        ]{% space %}
+        ]{{ space }}
     {% else %}
         <span class="{{ etym.language.css_class2 }}">{{ etym.translit }}</span>
-        {% space %}
+        {{ space }}
     {% endif %}
 {% endif %}
 
 {% if etym.mark %}
-    (<i>{{ etym.mark }}</i>){% space %}
+    (<i>{{ etym.mark }}</i>){{ space }}
 {% endif %}
 
 {% if etym.meaning %}
     <span>‘{{ etym.meaning }}’</span>
-    {% space %}
+    {{ space }}
 {% endif %}
 
 {% if etym.gloss %}
     <i>{{ etym.gloss }}</i>
-    {% space %}
+    {{ space }}
 {% endif %}
 
 {% if etym.source %}
     <span>[{{ etym.source }}]</span>
-    {% space %}
+    {{ space }}
 {% endif %}
 
 {% if etym.unclear %}
     {% if etym.gloss %}
-        {% backspace %},{% space %}
+        {{ backspace }},{{ space }}
     {% endif %}
     <i>этимол. неясна</i>
 {% else %}
     {% if etym.etymons %}
         {% if etym.etymons.0.questionable %}
             <span>этимол. спорна:</span>
-            {% space %}
+            {{ space }}
         {% else %}
             <span>от</span>
-            {% space %}
+            {{ space }}
         {% endif %}
 
         {% for etym2 in etym.etymons %}
 
-            {% if not forloop.first %}
-                {% backspace %};{% space %}
+            {% if not loop.first %}
+                {{ backspace }};{{ space }}
             {% endif %}
 
             {% if etym.etymons|length > 1 %}
-                <span>{{ forloop.counter }})</span>&nbsp;
+                <span>{{ loop.index }})</span>&nbsp;
             {% endif %}
 
             <i>{{ etym2.language.tag }}</i>&nbsp;
 
             {% if etym2.text %}
                 <span class="{{ etym2.language.css_class }}">{{ etym2.text }}</span>
-                {% space %}
+                {{ space }}
             {% endif %}
 
             {% if etym2.translit %}
                 {% if etym2.text %}
-                    {% space %}[
+                    {{ space }}[
                     <span class="{{ etym2.language.css_class2 }}">{{ etym2.translit }}</span>
-                    ]{% space %}
+                    ]{{ space }}
                 {% else %}
                     <span class="{{ etym2.language.css_class2 }}">{{ etym2.translit }}</span>
-                    {% space %}
+                    {{ space }}
                 {% endif %}
             {% endif %}
 
             {% if etym2.mark %}
-                (<i>{{ etym2.mark }}</i>){% space %}
+                (<i>{{ etym2.mark }}</i>){{ space }}
             {% endif %}
 
             {% if etym2.meaning %}
                 <span>‘{{ etym2.meaning }}’</span>
-                {% space %}
+                {{ space }}
             {% endif %}
 
             {% if etym2.gloss %}
                 <i>{{ etym2.gloss }}</i>
-                {% space %}
+                {{ space }}
             {% endif %}
 
             {% if etym2.source %}
                 <span>[{{ etym2.source }}]</span>
-                {% space %}
+                {{ space }}
             {% endif %}
 
             {% if show_additional_info and etym2.additional_info %}
@@ -122,3 +122,5 @@
 {% if show_additional_info and etym.additional_info %}
     <span class="ai ai-etym">{{ etym.additional_info }}</span>
 {% endif %}
+
+{% endmacro %}

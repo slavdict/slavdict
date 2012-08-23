@@ -73,50 +73,51 @@ x/html-тегами, а также x/html-тэгами и текстом.
 
 """
 import re
-from django.template.base import Node
+
 from django.utils.functional import allow_lazy
 from django.utils.encoding import force_unicode
-from django import template
 
-register = template.Library()
+from jinja2 import nodes
+from jinja2.ext import Extension
+
 
 def strip_spaces_between_tags_and_text(value):
     value = re.sub(ur'>\s+', u'>', force_unicode(value.strip()))
     value = re.sub(ur'\s+<', u'<', value)
-    # {% space %}
+    # {{ space }}
     value = re.sub(u'\u0007', u' ', value)
-    # {% backspace %}
+    # {{ backspace }}
+    #  Звёздочка вместо плюса нужна, чтобы \u0008 (backspace) были удалены
+    #  в любом случае независимо от того, предшествует им пробел или нет.
     value = re.sub(ur'((\s)|(&nbsp;))*\u0008', u'', value)
-    # {% punct %}
+    # {{ punct }}
     value = re.sub(ur'\u1900(<[^>]+>)([\.,:;\!\?])', ur'\1\2', value)
     value = re.sub(ur'\u1900', u' ', value)
-    # Звёздочка вместо плюса в последнем случае нужна, чтобы \u0008 (backspace)
-    # были удалены в любом случае независимо от того, предшествует им пробел
-    # или нет.
     return value
 strip_spaces_between_tags_and_text = allow_lazy(strip_spaces_between_tags_and_text, unicode)
 
-class TrimNode(Node):
-    def __init__(self, nodelist):
-        self.nodelist = nodelist
+class TrimExtension(Extension):
 
-    def render(self, context):
-        return strip_spaces_between_tags_and_text(self.nodelist.render(context).strip())
+    tags = set(['trim'])
 
-@register.tag
-def trim(parser, token):
-    nodelist = parser.parse(('endtrim',))
-    parser.delete_first_token()
-    return TrimNode(nodelist)
+    def parse(self, parser):
+        lineno = parser.stream.next().lineno
+        body = parser.parse_statements(['name:endtrim'], drop_needle=True)
+        return nodes.CallBlock(
+            self.call_method('_strip_spaces', [], [], None, None),
+            [], [], body,
+        ).set_lineno(lineno)
 
-@register.simple_tag
-def space():
-    return u'\u0007'
+    def _strip_spaces(self, caller=None):
+        return strip_spaces_between_tags_and_text(caller().strip())
 
-@register.simple_tag
-def backspace():
-    return u'\u0008'
+    def preprocess(self, source, name, filename=None):
+        # {{ space }}
+        source = re.sub(ur'{{\s*space\s*}}', ur'\u0007', source)
+        # {{ backspace }}
+        source = re.sub(ur'{{\s*backspace\s*}}', ur'\u0008', source)
+        # {{ punct }}
+        source = re.sub(ur'{{\s*punct\s*}}', ur'\u1900', source)
+        return source
 
-@register.simple_tag
-def punct():
-    return u'\u1900'
+trim = TrimExtension

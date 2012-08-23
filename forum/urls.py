@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.conf.urls.defaults import *
+from coffin.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 
 test = {

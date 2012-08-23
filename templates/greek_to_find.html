@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load trim_spaces %}
 
 {% block header_0 %}{% endblock %}
 
@@ -9,40 +8,43 @@
     {% for n, host, e in examples_with_hosts %}
 
         <div class="entry">
-            <div style="line-height: 100%; {% ifchanged host %}{% else %}color: gray;{% endifchanged %}">
+            {% set PREVHOST = HOST %}
+            {% set HOST = host %}
+            {% set isHostTheSame = (PREVHOST == HOST) %}
+            <div style="line-height: 100%;{% if isHostTheSame %} color: gray;{% endif %}">
 
-            [<b>{{ n }}</b>]{% space %}
+            [<b>{{ n }}</b>]{{ space }}
             
             {# Хостом для примера является словарная статья, а не словосочетание. #}
             {% if host.orth_vars %}
 
                 <span class="cslav headword" style="text-decoration: underline;"">{{ host.orth_vars.0.idem_ucs }}</span>
-                {% space %}
+                {{ space }}
 
                 {% if host.homonym_order %}
                     {{ host.homonym_order_roman }}
-                    {% space %}
+                    {{ space }}
                 {% endif %}
 
-                {% for ovar in host.orth_vars|slice:"1:" %}
+                {% for ovar in host.orth_vars[1:] %}
 
-                    {% if forloop.first %}
-                        {% space %}(
+                    {% if loop.first %}
+                        {{ space }}(
                     {% endif %}
 
                     <span class="cslav orthvar">{{ ovar.idem_ucs }}</span>
 
-                    {% if forloop.last %}
-                        {% backspace %}){% space %}
+                    {% if loop.last %}
+                        {{ backspace }}){{ space }}
                     {% else %}
-                        {% backspace %},{% space %}
+                        {{ backspace }},{{ space }}
                     {% endif %}
 
                 {% endfor %}
 
 
                 <i>{{ host.part_of_speech.tag }}</i>
-                {% space %}
+                {{ space }}
 
                 {% if host.homonym_gloss %}
                     <span style="text-transform: uppercase;">{{ host.homonym_gloss }}</span>
@@ -54,8 +56,8 @@
                 {% for c in host.collocations %}
 
                         <span class="cslav" style="text-decoration: underline;">{{ c.collocation_ucs }}</span>
-                        {% if not forloop.last %}
-                            ,{% space %}
+                        {% if not loop.last %}
+                            ,{{ space }}
                         {% endif %}
 
                 {% endfor %}
@@ -66,21 +68,21 @@
 
 
             <span class="cslav">{{ e.example_ucs }}</span>
-            {% space %}
+            {{ space }}
 
             {% if e.address_text %}
                 ({{ e.address_text }}
                 {% if e.additional_info %}
-                    {% space %}<span class="ai ai-example">{{ e.additional_info }}</span>
+                    {{ space }}<span class="ai ai-example">{{ e.additional_info }}</span>
                 {% endif %}
-                {% backspace %}){% space %}
+                {{ backspace }}){{ space }}
             {% else %}
                     (
                     <span class="noaddress">Нет адреса!</span>
                     {% if e.additional_info %}
                         <span class="ai ai-example">{{ e.additional_info }}</span>
                     {% endif %}
-                    ){% space %}
+                    ){{ space }}
             {% endif %}
         </div>
 

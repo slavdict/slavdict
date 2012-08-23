@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% load trim_spaces %}
+
 {% block content %}
     {% if not entries %}
         <div class="message">
         {% if find_prefix %}
             К сожалению, ни одной словарной статьи, начинающейся <span
-            class="nowrap">с <b class="red caps">{{ find_prefix.lower }}...</b>, не найдено.</span>
+            class="nowrap">с <b class="red caps">{{ find_prefix.lower() }}...</b>, не найдено.</span>
             Пожалуйста, проверьте Ваш запрос на наличие опечаток или измените его
             в целях поиска другого слова. Поиск производится без учёта регистра символов.
         {% else %}{% if mine %}
@@ -30,17 +30,17 @@
                 <td class="eli-control first"></td>
                 <td class="eli-control"></td>
                 <td class="eli-entry">
-                    <span class="ssn anchor{% ifequal sort 'alph' %} on{% endifequal %}" value="alph"
+                    <span class="ssn anchor{% if sort == 'alph' %} on{% endif %}" value="alph"
                           title="Упорядочить по возрастанию">↓</span>
-                    <span class="ssn anchor{% ifequal sort '-alph' %} on{% endifequal %}" value="-alph"
+                    <span class="ssn anchor{% if sort == '-alph' %} on{% endif %}" value="-alph"
                           title="Упорядочить по убыванию">↑</span>
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по алфавиту</span>
                 </td>
                 <td class="eli-author"></td>
                 <td class="eli-mtime">
-                    <span class="ssn anchor{% ifequal sort 't' %} on{% endifequal %}" value="t"
+                    <span class="ssn anchor{% if sort == 't' %} on{% endif %}" value="t"
                           title="Упорядочить по возрастанию">↓</span>
-                    <span class="ssn anchor{% ifequal sort '-t' %} on{% endifequal %}" value="-t"
+                    <span class="ssn anchor{% if sort == '-t' %} on{% endif %}" value="-t"
                           title="Упорядочить по убыванию">↑</span>
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по вр. изм.</span>
                 </td>
@@ -74,7 +74,7 @@
                 </td>
 
                 <td class="eli-control">
-                    <a href="{{ entry.get_absolute_url }}" class="icon view">
+                    <a href="{{ entry.get_absolute_url() }}" class="icon view">
                         <img src="{{ STATIC_URL }}transparent.png" alt="v" />
                     </a>
                     <span class="hint-container">
@@ -86,7 +86,7 @@
 
                     <div class="fade">
                         <div>
-                            <a href="{{ entry.get_absolute_url }}" class="manual-entry">
+                            <a href="{{ entry.get_absolute_url() }}" class="manual-entry">
                                  <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
                                  {% if entry.homonym_order %}
                                      &nbsp;{{ entry.homonym_order_roman }}
@@ -103,14 +103,14 @@
                                     <i>{{ entry.part_of_speech.tag }}</i>
                                 {% endif %}
                                 {% if entry.homonym_gloss %}
-                                    {% space %}
+                                    {{ space }}
                                     <span class="caps" title="{{ entry.homonym_gloss }}">{{ entry.homonym_gloss }}</span>
                                 {% endif %}
                             </span>
                         </div>
                     </div>
 
-                    <a href="{{ entry.get_absolute_url }}" class="manual-entry invisible">
+                    <a href="{{ entry.get_absolute_url() }}" class="manual-entry invisible">
                         <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
                 {% if entry.homonym_order %}
                         &nbsp;{{ entry.homonym_order_roman }}
@@ -121,7 +121,7 @@
                                 <i>{{ entry.part_of_speech.tag }}</i>
                             {% endif %}
                             {% if entry.homonym_gloss %}
-                                {% space %}
+                                {{ space }}
                                 <span class="caps">{{ entry.homonym_gloss }}</span>
                             {% endif %}
                         </span>
@@ -141,7 +141,7 @@
 
                 <td class="eli-mtime">
                     <span class="ss">
-                        {{ entry.mtime|date:"d.m.Y, H:i" }}
+                        {{ entry.mtime|date("d.m.Y, H:i") }}
                     </span>
                 </td>
 

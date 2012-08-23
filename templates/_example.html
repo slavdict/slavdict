@@ -1,36 +1,34 @@
-{% load trim_spaces %}
-
 <span class="cslav">{{ e.example_ucs }}</span>
-{% space %}
+{{ space }}
 
 
 {% if e.greek_equivs %}
 
-    {% backspace %}&nbsp;&mdash;{% space %}
+    {{ backspace }}&nbsp;&mdash;{{ space }}
 
     {% for ge in e.greek_equivs %}
 
         {% if ge.unitext %}
             <span class="unigrec">{{ ge.unitext }}</span>
-            {% space %}
+            {{ space }}
         {% else %}
             {% if ge.text %}
                 <span class="grec">{{ ge.text }}</span>
-                {% space %}
+                {{ space }}
             {% endif %}
         {% endif %}
 
         {%if ge.mark %}
             <i>{{ ge.mark }}</i>
-            {% space %}
+            {{ space }}
         {% endif %}
 
         {% if show_additional_info and ge.additional_info %}
             <span class="ai ai-grfex">{{ ge.additional_info }}</span>
         {% endif %}
 
-        {% if not forloop.last %}
-            {% backspace %},{% space %}
+        {% if not loop.last %}
+            {{ backspace }},{{ space }}
         {% endif %}
 
     {% endfor %}
@@ -41,9 +39,9 @@
 {% if e.address_text %}
     ({{ e.address_text }}
     {% if show_additional_info and e.additional_info %}
-        {% space %}<span class="ai ai-example">{{ e.additional_info }}</span>
+        {{ space }}<span class="ai ai-example">{{ e.additional_info }}</span>
     {% endif %}
-    {% backspace %}){% space %}
+    {{ backspace }}){{ space }}
 {% else %}
     {% if show_additional_info %}
         (
@@ -51,7 +49,7 @@
         {% if show_additional_info and e.additional_info %}
             <span class="ai ai-example">{{ e.additional_info }}</span>
         {% endif %}
-        ){% space %}
+        ){{ space }}
     {% endif %}
 {% endif %}
 

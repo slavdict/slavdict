@@ -19,11 +19,11 @@
 
                     <div style="line-height: 100%;">
                     {% for ovar in entry.orth_vars %}
-                            {% if forloop.counter == 2 %}({% endif %}<span
-                            class="cslav {% if forloop.first %}headword{% else %}orthvar{% endif %}"
+                            {% if loop.index == 2 %}({% endif %}<span
+                            class="cslav {% if loop.first %}headword{% else %}orthvar{% endif %}"
                             >{{ ovar.idem_ucs }}</span
-                            >{% if not forloop.last %},
-                            {% else %}{% if not forloop.first %}){% endif %}{% endif %}{% if forloop.first and forloop.last %}{% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %},{% endif %}{% endif %}
+                            >{% if not loop.last %},
+                            {% else %}{% if not loop.first %}){% endif %}{% endif %}{% if loop.first and loop.last %}{% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %},{% endif %}{% endif %}
                     {% endfor %}
 
                     {% if entry.short_form %}<span class="cslav">{{ entry.short_form_ucs }}</span
@@ -47,16 +47,16 @@
                         >{{ etym.language.abbreviation }}</i>
 
                         {% if etym.text %}<span class="{{ etym.language.css_class }}">{{ etym.text }}</span
-                        >{% if etym.translit or etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %}; {% endif %}{% endif %}{% endif %}{% if etym.translit %}<span
+                        >{% if etym.translit or etym.meaning or etym.gloss %}{% else %}{% if not loop.last %}; {% endif %}{% endif %}{% endif %}{% if etym.translit %}<span
 
                         class="{{ etym.language.translit_css_class }}">{{ etym.translit }}</span
-                        >{% if etym.meaning or etym.gloss %}{% else %}{% if not forloop.last %}; {% endif %}{% endif %}{% endif %}{% if etym.meaning %}<span
+                        >{% if etym.meaning or etym.gloss %}{% else %}{% if not loop.last %}; {% endif %}{% endif %}{% endif %}{% if etym.meaning %}<span
 
                         >‘{{ etym.meaning }}’</span
-                        >{% if etym.gloss %}{% else %}{% if not forloop.last %}; {% endif %}{% endif %}{% endif %}{% if etym.gloss %}<i
+                        >{% if etym.gloss %}{% else %}{% if not loop.last %}; {% endif %}{% endif %}{% endif %}{% if etym.gloss %}<i
 
                         >{{ etym.meaning }}</i
-                        >{% if not forloop.last %}; {% endif %}{% endif %}{% endfor %}</div>
+                        >{% if not loop.last %}; {% endif %}{% endif %}{% endfor %}</div>
                     {% endif %}
 
 
@@ -65,7 +65,7 @@
             <div>
                 <i>Тж.</i>
                 {% for s in entry.syns %}
-                    <span class="cslav">{{ s.orth_vars.0.idem_ucs }}</span>{% if not forloop.last %},{% endif %}
+                    <span class="cslav">{{ s.orth_vars.0.idem_ucs }}</span>{% if not loop.last %},{% endif %}
                 {% endfor %}
             </div>
 
@@ -86,7 +86,7 @@
                     {% for m in entry.meanings %}
                     <div style="margin-top: 0.7em; line-height: 140%;">
                         {% if not entry.meanings|length_is:"1" %}
-                            <b>{{ forloop.counter }}</b>.
+                            <b>{{ loop.index }}</b>.
                         {% endif %}
 
                         {% if m.link_to_entry %}
@@ -96,11 +96,11 @@
                         {% else %}
                             {% if m.contexts %}
                                 {% for mc in m.contexts %}
-                                    {% if forloop.first %}<span  style="color: #070;">[{% endif %}{% if mc.left_text %}<i
+                                    {% if loop.first %}<span  style="color: #070;">[{% endif %}{% if mc.left_text %}<i
                                     >{{ mc.left_text }}</i> {% endif %}<span
                                     class="cslav">{{ mc.context }}</span
                                     >{% if mc.right_text %} <i>{{ mc.right_text }}</i
-                                    >{% endif %}{% if not forloop.last %}, {% else %}]</span> {% endif %}
+                                    >{% endif %}{% if not loop.last %}, {% else %}]</span> {% endif %}
                                 {% endfor %}
                             {% endif %}
                             {% if m.meaning %}

@@ -3,7 +3,7 @@ import datetime, os, sys
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.management import call_command
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from coffin.shortcuts import render_to_response
 from django.template import RequestContext
 
 

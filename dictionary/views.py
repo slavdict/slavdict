@@ -2,7 +2,7 @@
 import datetime
 import json
 
-from django.shortcuts import render_to_response
+from coffin.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import RequestContext

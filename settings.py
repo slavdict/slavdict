@@ -80,10 +80,18 @@ SECRET_KEY = 'td2+2t^tz-)^j^%@4_^c8ds#6-po3sfoqbwaa2u*i3rj3y%hs1'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
-    )),
+)
+
+#from jinja2 import StrictUndefined
+JINJA2_ENVIRONMENT_OPTIONS = {
+    'autoescape': False,
+#    'undefined': StrictUndefined,
+}
+
+JINJA2_EXTENSIONS = (
+    'slavdict.django_template_spaces.templatetags.trim_spaces.trim',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -143,6 +151,7 @@ INSTALLED_APPS = (
 #    'slavdict.dumper',
 
     'south',
+    'coffin',
 #    'djcelery', # Celery.
 #    'djkombu',  # Нужно для Celery.
 #    'debug_toolbar',
@@ -197,3 +206,11 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+# When using Auto Escape you will notice that marking something as
+# a Safestrings with Django will not affect the rendering in Jinja 2. To fix
+# this you can monkeypatch Django to produce Jinja 2 compatible Safestrings:
+from django.utils import safestring
+if not hasattr(safestring, '__html__'):
+    safestring.SafeString.__html__ = lambda self: str(self)
+    safestring.SafeUnicode.__html__ = lambda self: unicode(self)

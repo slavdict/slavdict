@@ -3,7 +3,7 @@ import datetime
 import StringIO
 
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from coffin.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 
 import slavdict.unicode_csv as unicode_csv

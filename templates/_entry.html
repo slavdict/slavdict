@@ -1,4 +1,5 @@
-{% load trim_spaces %}
+{% from '_etymology.html'   import etymology    with context %}
+
 {% trim %}
 
 {% if intermed and entry.antconc_query %}<div class="message antconsol">{{ entry.antconc_query }}</div>{% endif %}
@@ -18,36 +19,36 @@
             {% endif %}
         {% endif %}
     
-        {% ifnotequal entry.part_of_speech.slug 'letter' %}
+        {% if entry.part_of_speech.slug != 'letter' %}
             <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
         {% else %}
             <span class="cslav headword cinnabar">{{ entry.orth_vars.0.idem_letter_ucs }}</span>
-        {% endifnotequal %}
-        {% space %}
+        {% endif %}
+        {{ space }}
 
         {% if entry.homonym_order %}
             {{ entry.homonym_order_roman }}
-            {% space %}
+            {{ space }}
         {% endif %}
 
-        {% for ovar in entry.orth_vars|slice:"1:" %}
+        {% for ovar in entry.orth_vars[1:] %}
 
-            {% if forloop.first %}
-                {% space %}(
+            {% if loop.first %}
+                {{ space }}(
             {% endif %}
 
             <span class="cslav orthvar">{{ ovar.idem_ucs }}</span>
 
-            {% if forloop.last %}
-                {% backspace %}){% space %}
+            {% if loop.last %}
+                {{ backspace }}){{ space }}
             {% else %}
-                {% backspace %},{% space %}
+                {{ backspace }},{{ space }}
             {% endif %}
 
-        {% empty %}
+        {% else %}
 
             {% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %}
-                {% backspace %},{% space %}
+                {{ backspace }},{{ space }}
             {% endif %}
 
         {% endfor %}
@@ -56,42 +57,42 @@
         {% if entry.short_form %}
             {% if entry.short_form_ucs_wax.0 %}-{% endif %}
             <span class="cslav">{{ entry.short_form_ucs_wax.1 }}</span>
-            {% space %}
+            {{ space }}
         {% endif %}
 
         {% if entry.genitive %}
             {% if entry.genitive_ucs_wax.0 %}-{% endif %}
             <span class="cslav">{{ entry.genitive_ucs_wax.1 }}</span>
-            {% space %}
+            {{ space }}
         {% endif %}
 
         {% if entry.sg1 %}
             {% if entry.sg1_ucs_wax.0 %}-{% endif %}
             <span class="cslav">{{ entry.sg1_ucs_wax.1 }}</span>
             {% if entry.sg2 %},{%endif %}
-            {% space %}
+            {{ space }}
         {% endif %}
 
         {% if entry.sg2 %}
             {% if entry.sg2_ucs_wax.0 %}-{% endif %}
             <span class="cslav">{{ entry.sg2_ucs_wax.1 }}</span>
-            {% space %}
+            {{ space }}
         {% endif %}
 
         {% if entry.uninflected %}
             <i>неизм.</i>
-            {% space %}
+            {{ space }}
         {% endif %}
 
         {% if entry.possessive %}
             <i>притяж.</i>
-            {% space %}
+            {{ space }}
         {% endif %}
 
 
         {% if entry.participle_type %}
             <i>{{ entry.participle_type.tag }}</i>
-            {% space %}
+            {{ space }}
         {% else %}
             {% if entry.part_of_speech %}
                 {% if entry.part_of_speech.slug != "letter" and entry.part_of_speech.slug != "number" %}
@@ -103,18 +104,18 @@
                 {% endif %}
             {% endif %}
 
-            {% space %}
+            {{ space }}
             {% if entry.gender %}
-                {% backspace %},{% space %}
+                {{ backspace }},{{ space }}
                 <i>{{ entry.gender.tag }}</i>
-                {% space %}
+                {{ space }}
             {% endif %}
         {% endif %}
 
 
         {% if entry.tantum %}
             <i>{{ entry.tantum.tag }}</i>
-            {% space %}
+            {{ space }}
         {% endif %}
 
 
@@ -126,13 +127,12 @@
                 <i>от</i>&nbsp;
             {% endif %}
 
-            {% with entry.derivation_entry as de %}
-                <a href="{{ de.get_absolute_url }}">
+            {% set de = entry.derivation_entry %}
+                <a href="{{ de.get_absolute_url() }}">
                     <span class="cslav">{{ de.orth_vars.0.idem_ucs }}</span>
                     {% if de.homonym_order %}&nbsp;{{ de.homonym_order_roman }}{% endif %}
                 </a>
-                {% space %}
-            {% endwith %}
+                {{ space }}
 
         {% endif %}
 
@@ -147,7 +147,7 @@
         {% if entry.nom_pl_ucs_wax %}
             <div>
                 <i>И.п. мн.</i>
-                {% space %}
+                {{ space }}
                 {% if entry.nom_pl_ucs_wax.0 %}-{% endif %}
                 <span class="cslav">{{ entry.nom_pl_ucs_wax.1 }}</span>
             </div>
@@ -155,7 +155,7 @@
         {% if entry.nom_sg_ucs_wax %}
             <div>
                 <i>м.р. И.п. ед.</i>
-                {% space %}
+                {{ space }}
                 {% if entry.nom_sg_ucs_wax.0 %}-{%endif %}
                 <span class="cslav">{{ entry.nom_sg_ucs_wax.1 }}</span>
             </div>
@@ -166,7 +166,13 @@
     {% if entry.etymologies %}
         <div style="line-height: 100%;">
             {% for etym in entry.etymologies %}
-                {% include '_etymology.html' %}
+
+                {% set prevLang = Lang %}
+                {% set Lang = etym.language.tag %}
+                {% set isLanguageChanged = (Lang != prevLang) %}
+
+                {{ etymology(etym, isLanguageChanged, loop) }}
+
             {% endfor %}
         </div>
     {% endif %}
@@ -175,7 +181,7 @@
     {% if entry.onym.slug == 'anthroponym' %}
         <i>имя собств.</i>
         {% if entry.canonical_name %}
-            ,{% space %}
+            ,{{ space }}
             <i>канонич.</i>
         {% endif %}
     {% endif %}
@@ -188,12 +194,12 @@
     {% if entry.link_to_entry or entry.link_to_collogroup or entry.link_to_meaning %}
     <div>
         <i>см.</i>
-        {% space %}
+        {{ space }}
 
         {% if entry.link_to_meaning %}
-            {% with entry.link_to_meaning as eltm %}
+                {% set eltm = entry.link_to_meaning %}
                 {% if eltm.entry_container %}
-                    <a href="{{ eltm.entry_container.get_absolute_url }}">
+                    <a href="{{ eltm.entry_container.get_absolute_url() }}">
                         <span class="cslav">
                             {{ eltm.entry_container.orth_vars.0.idem_ucs }}
                         </span>
@@ -207,11 +213,10 @@
                         {{ eltm.collogroup_container.collocations.0.collocation_ucs }}
                     </span>
                 {% endif %}
-            {% endwith %}
         {% endif %}
 
         {% if entry.link_to_entry %}
-            <a href="{{ entry.link_to_entry.get_absolute_url }}">
+            <a href="{{ entry.link_to_entry.get_absolute_url() }}">
                 <span class="cslav">
                     {{ entry.link_to_entry.orth_vars.0.idem_ucs }}
                 </span>
@@ -235,11 +240,11 @@
         <i>ср.&nbsp;</i>
 
         {% for cfm in entry.cfmeanings %}
-            {% if not forloop.first %}
-                {% backspace %},{% space %}
+            {% if not loop.first %}
+                {{ backspace }},{{ space }}
             {% endif %}
             {% if cfm.entry_container %}
-                <a href="{{ cfm.entry_container.get_absolute_url }}">
+                <a href="{{ cfm.entry_container.get_absolute_url() }}">
                     <span class="cslav">
                         {{ cfm.entry_container.orth_vars.0.idem_ucs }}
                     </span>
@@ -256,10 +261,10 @@
         {% endfor %}
 
         {% for cfe in entry.cfentries %}
-            {% if not forloop.first or entry.cfmeanings %}
-                ,{% space %}
+            {% if not loop.first or entry.cfmeanings %}
+                ,{{ space }}
             {% endif %}
-            <a href="{{ cfe.get_absolute_url }}">
+            <a href="{{ cfe.get_absolute_url() }}">
                 <span class="cslav">
                     {{ cfe.orth_vars.0.idem_ucs }}
                 </span>
@@ -270,8 +275,8 @@
         {% endfor %}
 
         {% for cfcg in entry.cfcollogroups %}
-            {% if not forloop.first or entry.cfmeanings or entry.cfentries %}
-                ,{% space %}
+            {% if not loop.first or entry.cfmeanings or entry.cfentries %}
+                ,{{ space }}
             {% endif %}
             <span class="cslav">
                 {{ cfcg.collocations.0.collocation_ucs }}
@@ -289,7 +294,7 @@
             <div>
                 <a href="{% if user.is_admeditor %}{% url admin:dictionary_entry_change entry.pk %}{% else %}{% url UI:dictionary_entry_change entry.pk %}{% endif %}">
                     <img src="{{ STATIC_URL }}pen.png" alt="" />
-                    {% space %}
+                    {{ space }}
                     Редактировать информацию о лексеме
                 </a>
             </div>
@@ -302,15 +307,14 @@
     {% for m in entry.meanings %}
 
         <div style="margin-top: 0.7em; line-height: 140%;">
-        {% with mnumber=forloop.counter %}
+        {% set mnumber = loop.index %}
 
-            {% if not entry.meanings|length_is:"1" %}
-                <b>{{ mnumber }}</b>.{% space %}
+            {% if not entry.meanings|length == 1 %}
+                <b>{{ mnumber }}</b>.{{ space }}
             {% endif %}
 
             {% include '_meaning_with_children.html' %}
 
-        {% endwith %}
         </div>
 
         <div style="margin-top: 0.7em; line-height: 140%;">
@@ -331,7 +335,7 @@
         <div style="margin-top: 0.7em; line-height: 140%;">
 
             <span style="color: #777;">►</span>
-            {% space %}
+            {{ space }}
             {% include '_meaning_with_children.html' %}
 
         </div>
@@ -372,7 +376,7 @@
             <a rel="prefetch"
                href="{% if user.is_admeditor %}{% url admin:dictionary_meaning_add %}{% else %}{% url UI:dictionary_meaning_add %}{% endif %}?entry={{ entry.id }}">
                 <img src="{{ STATIC_URL }}plus.png" alt="" />
-                {% space %}
+                {{ space }}
                 Добавить значение
             </a>
         </div>
@@ -381,7 +385,7 @@
             <a rel="prefetch"
                href="{% if user.is_admeditor %}{% url admin:dictionary_collocationgroup_add %}{% else %}{% url UI:dictionary_collocationgroup_add %}{% endif %}?entry={{ entry.id }}">
                 <img src="{{ STATIC_URL }}plus.png" alt="" />
-                {% space %}
+                {{ space }}
                 Добавить словосочетание
             </a>
         </div>
@@ -390,9 +394,9 @@
 
     <div class="edit-controls" style="margin-bottom: 7em;">
 
-        <a href="{{ entry.get_absolute_url }}" style="color: #070;">
+        <a href="{{ entry.get_absolute_url() }}" style="color: #070;">
             <img src="{{ STATIC_URL }}check.png" alt="" />
-            {% space %}
+            {{ space }}
             Закончить редактирование
         </a>
 
