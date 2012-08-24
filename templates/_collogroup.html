@@ -1,3 +1,4 @@
+{% from '_etymology.html'   import etymology    with context %}
 <div style="line-height: 140%;">
     {% if cg.host_entry.has_meanings %}
         □<!-- &#x25A1; -->&nbsp;
@@ -13,7 +14,11 @@
             {% if c.etymologies %}
                 <span>(</span>
                 {% for etym in c.etymologies %}
-                    {% include '_etymology.html' %}
+                    {% set prevLang = Lang %}
+                    {% set Lang = etym.language.tag %}
+                    {% set isLanguageChanged = (Lang != prevLang) %}
+
+                    {{ etymology(etym, isLanguageChanged, loop) }}
                 {% endfor %}
                 {{ backspace }}){{ space }}
             {% endif %}
