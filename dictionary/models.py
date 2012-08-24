@@ -466,6 +466,14 @@ class Entry(models.Model, Meaningfull):
         blank = True,
         )
 
+    examples = models.ManyToManyField(
+        'Example',
+        verbose_name = u'примеры употребления',
+        related_name = 'entry_set',
+        blank = True,
+        null = True,
+        )
+
     @property
     def etymologies(self):
         return self.etymology_set.filter(etymon_to__isnull=True).order_by('order', 'id')
@@ -1065,7 +1073,7 @@ class Example(models.Model):
     @property
     def greek_equivs(self):
         return self.greekequivalentforexample_set.all().order_by('id')
-    
+
     additional_info = models.TextField(
         u'примечание',
         help_text = u'''Любая дополнительная информация
@@ -1250,6 +1258,14 @@ class Collocation(models.Model):
         null = True,
         )
 
+    examples = models.ManyToManyField(
+        Example,
+        verbose_name = u'примеры употребления',
+        related_name = 'collocation_set',
+        blank = True,
+        null = True,
+        )
+
     @property
     def etymologies(self):
         return self.etymology_set.filter(etymon_to__isnull=True).order_by('order', 'id')
@@ -1379,7 +1395,7 @@ class GreekEquivalentForExample(models.Model):
         blank = True,
         null = True,
         )
-    
+
     initial_form = models.CharField(
         u'начальная форма',
         max_length = 100,
