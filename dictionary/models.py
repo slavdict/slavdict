@@ -1094,6 +1094,7 @@ class Example(models.Model):
         (u'N', u'найти не удалось'),# not found
         (u'F', u'найдены'),         # found
         (u'M', u'необходимы для опр-я значения') # meaning
+        (u'U', u'срочное')          # urgent
         )
 
     greek_eq_status = models.CharField(
