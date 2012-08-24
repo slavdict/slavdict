@@ -1119,11 +1119,13 @@ class Example(models.Model):
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(Example, self).save(*args, **kwargs) # Call the "real" save() method.
-        self.host_entry.save(without_mtime=without_mtime)
+        if self.meaning:
+            self.host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Example, self).delete(*args, **kwargs) # Call the "real" delete() method.
-        self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
+        if self.meaning:
+            self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
