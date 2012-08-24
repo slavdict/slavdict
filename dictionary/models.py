@@ -1017,6 +1017,8 @@ class Example(models.Model):
         Meaning,
         verbose_name = u'значение',
         help_text = u'Значение, к которому относится данный пример.',
+        blank = True,
+        null = True,
         )
     # TODO: это должно быть поле ManyToManyField,
     # а не FK. Соответственно, оно должно
