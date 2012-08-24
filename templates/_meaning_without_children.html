@@ -140,10 +140,9 @@
 
     <i>ср.&nbsp;</i>
 
+    {% set comma = joiner('{{ backspace }},{{ space }}') %}
     {% for cfm in m.cfmeanings %}
-        {% if not loop.first %}
-            {{ backspace }},{{ space }}
-        {% endif %}
+        {{ comma() }}
         {% if cfm.entry_container %}
             <a href="{{ cfm.entry_container.get_absolute_url() }}">
                 <span class="cslav">
@@ -162,9 +161,7 @@
     {% endfor %}
 
     {% for cfe in m.cfentries %}
-        {% if not loop.first or entry.cfmeanings %}
-            {{ backspace }},{{ space }}
-        {% endif %}
+        {{ comma() }}
         <a href="{{ cfe.get_absolute_url() }}">
             <span class="cslav">
                 {{ cfe.orth_vars.0.idem_ucs }}
@@ -176,9 +173,7 @@
     {% endfor %}
 
     {% for cfcg in m.cfcollogroups %}
-        {% if not loop.first or entry.cfmeanings or entry.cfentries %}
-            {{ backspace }},{{ space }}
-        {% endif %}
+        {{ comma() }}
         <span class="cslav">
             {{ cfcg.collocations.0.collocation_ucs }}
         </span>
