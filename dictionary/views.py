@@ -12,6 +12,7 @@ from dictionary.models import Entry, \
     Meaning, Example, OrthographicVariant, Etymology, \
     MeaningContext, GreekEquivalentForMeaning, \
     GreekEquivalentForExample
+from custom_user.models import CustomUser
 
 from dictionary.forms import RawValueWidget
 from django.db.models import Q
@@ -77,10 +78,22 @@ def all_entries(request):
         else:
             entries = entries.filter(pk__in=httpGET_LIST)
 
+    # Формирование заголовка страницы в зависимости от переданных GET-параметров
+    if httpGET_DUPLICATES:
+        title = u'Статьи-дубликаты'
+    else:
+        if httpGET_AUTHOR:
+            title = u'Статьи автора „%s“' % CustomUser.objects.get(username=httpGET_AUTHOR)
+        else:
+            title = u'Все статьи'
+
+    if httpGET_FIND:
+        title += u', начинающиеся на „%s-“' % httpGET_FIND
+
     entries = sorted(entries, key=entry_key)
     context = {
         'entries': entries,
-        'title': u'Все статьи',
+        'title': title,
         'show_additional_info': 'ai' in request.COOKIES,
         'show_duplicates_warning': False if httpGET_DUPLICATES else True,
         'user': request.user,
