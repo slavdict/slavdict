@@ -47,6 +47,7 @@ def all_entries(request):
     httpGET_STATUS = request.GET.get('status')
     httpGET_LIST = request.GET.get('list')
     httpGET_AUTHOR = request.GET.get('author')
+    httpGET_DUPLICATES = request.GET.get('duplicates')
 
     if not httpGET_FIND:
         entries = Entry.objects.all()
@@ -64,6 +65,9 @@ def all_entries(request):
 
     if httpGET_STATUS=='-created':
         entries = entries.exclude(status__slug=u'created')
+
+    if httpGET_DUPLICATES:
+        entries = entries.filter(duplicate=True)
 
     if httpGET_LIST:
         try:
