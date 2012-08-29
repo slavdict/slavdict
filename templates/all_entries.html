@@ -7,8 +7,9 @@
         <div style="position: relative;">
 
             <div style="position: absolute; top: -27px; color: #369;">
-                <b>[{{ entry.id }}]</b>
+                <span>[{{ loop.index }}-</span><b>{{ entry.id }}</b>]
             </div>
+
 
             {% include '_entry.html' %}
             {% include '_ref_entries.html' %}
