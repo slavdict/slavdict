@@ -5,7 +5,10 @@
 {% if intermed and entry.antconc_query %}<div class="message antconsol">{{ entry.antconc_query }}</div>{% endif %}
 <div class="entry">
 
-    {% if entry.duplicate %}
+    {% if show_duplicates_warning is not defined %}
+        {% set show_duplicates_warning = true %}
+    {% endif %}
+    {% if entry.duplicate and show_duplicates_warning %}
     <span class="noaddress">У этой статьи есть дубликат!</span>
     {% endif %}
 
@@ -18,7 +21,7 @@
                 {% if entry.reconstructed_headword %}*{% endif %}
             {% endif %}
         {% endif %}
-    
+
         {% if entry.part_of_speech.slug != 'letter' %}
             <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
         {% else %}

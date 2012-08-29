@@ -96,6 +96,7 @@ def test_entries(request):
         'entries': entries,
         'title': u'Избранные статьи',
         'show_additional_info': 'ai' in request.COOKIES,
+        'show_duplicates_warning': False if httpGET_DUPLICATES else True,
         'user': request.user,
         }
     return render_to_response('all_entries.html', context, RequestContext(request))
