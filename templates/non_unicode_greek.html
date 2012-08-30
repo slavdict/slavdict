@@ -34,8 +34,23 @@
                 <span class="greek">{{ char }}</span>
                 <span>{{ char.__repr__() }}</span>
                 <span>
-                    {% for w in words[char] %}
-                        <span class="grec">{{ w }}</span>
+                    {% for word, entry_id, meaning_id, example_id in words[char] %}
+                        <span class="grec">{{ word }}</span>
+                        (
+                        <a href='/entries/{{ entry_id }}/'>{{ entry_id }}</a>
+                        :
+                        <a href='/admin/dictionary/entry/{{ entry_id }}/'>{{ entry_id }}</a>
+
+                        {% if meaning_id %}
+                            :
+                            <a href='/admin/dictionary/meaning/{{ meaning_id }}/'>{{ meaning_id }}</a>
+                        {% endif %}
+
+                        {% if example_id %}
+                            :
+                            <a href='/admin/dictionary/example/{{ example_id }}/'>{{ example_id }}</a>
+                        {% endif %}
+                        )
                     {% endfor %}
                 </span>
             </div>

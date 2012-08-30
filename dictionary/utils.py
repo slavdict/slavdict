@@ -14,14 +14,14 @@ def non_unicode_greek(request):
     greqex = GreekEquivalentForExample.objects.all()
     greqm = GreekEquivalentForMeaning.objects.all()
 
-    words = [i.text for i in greek_etymons if i.text]
-    words.extend([i.text for i in greqex if i.text])
-    words.extend([i.text for i in greqm if i.text])
+    words = [(i.text, i.host_entry.id, False, False) for i in greek_etymons if i.text]
+    words.extend([(i.text, i.host_entry.id, False, i.for_example.id) for i in greqex if i.text])
+    words.extend([(i.text, i.host_entry.id, i.for_meaning.id, False) for i in greqm if i.text])
 
     chardict = defaultdict(set)
-    for word in words:
+    for word, entry_id, meaning_id, example_id in words:
         for char in word:
-            chardict[char].add(word)
+            chardict[char].add((word, entry_id, meaning_id, example_id))
     chars = sorted(chardict.keys())
     context = {
         'title': u'Неюникодные греческие символы',
