@@ -50,6 +50,7 @@ urlpatterns += patterns('',
     url( r'^adhoc/csv-import/$', 'slavdict.dictionary.views.import_csv_billet' ),
     url( r'^adhoc/moodle-import/$', 'slavdict.moodle_import.views.import_moodle_base' ),
     #url( r'^utils/dump/dictionary/$', 'slavdict.dumper.views.dumpdata' ),
+    url( r'^utils/non-unicode-greek/$', 'slavdict.dictionary.utils.non_unicode_greek' ),
 )
 
 urlpatterns += staticfiles_urlpatterns()

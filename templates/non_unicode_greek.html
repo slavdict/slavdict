@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <style>
+        #window-container { position: relative; }
+
+        .greek {
+            padding: 3px;
+            background-color: #eafcd5;
+            border: 1px solid #b9d796;
+            color: #648044;
+            font-size: larger;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px; }
+
+        .repr {
+            background-color: #d5dffc;
+            border: 1px solid #bbc4df;
+            color: #626f94;
+        }
+
+        .nowrap {
+            white-space: nowrap;
+        }
+
+    </style>
+
+    <div id="window-container">
+
+        {% for char in chars %}
+            <div class='nowrap'>
+                <span class="greek grec">{{ char }}</span>
+                <span class="greek">{{ char }}</span>
+                <span>{{ char.__repr__() }}</span>
+                <span>
+                    {% for w in words[char] %}
+                        <span class="grec">{{ w }}</span>
+                    {% endfor %}
+                </span>
+            </div>
+        {% endfor %}
+
+    </div>
+{% endblock %}
+
