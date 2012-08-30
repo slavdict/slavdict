@@ -4,7 +4,7 @@
     <style>
         #window-container { position: relative; }
 
-        .greek {
+        .greek, .repr{
             padding: 3px;
             background-color: #eafcd5;
             border: 1px solid #b9d796;
@@ -20,6 +20,11 @@
             color: #626f94;
         }
 
+        .char {
+            margin-left: 3em;
+            text-indent: -3em;
+        }
+
         .nowrap {
             white-space: nowrap;
         }
@@ -29,10 +34,10 @@
     <div id="window-container">
 
         {% for char in chars %}
-            <div class='nowrap'>
+            <div class='char'>
                 <span class="greek grec">{{ char }}</span>
                 <span class="greek">{{ char }}</span>
-                <span>{{ char.__repr__() }}</span>
+                <span class="repr">{{ char.__repr__() }}</span>
                 <span>
                     {% for word, entry_id, meaning_id, example_id in words[char] %}
                         <span class="grec">{{ word }}</span>
@@ -57,5 +62,13 @@
         {% endfor %}
 
     </div>
+    <script src="{{ STATIC_URL }}js/libs/jquery-1.4.4.min.js"></script>
+    <script>
+       $(function(){
+          $('.char').dblclick(function(){
+              $(this).toggleClass('nowrap');
+          });
+       });
+    </script>
 {% endblock %}
 
