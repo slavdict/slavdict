@@ -48,7 +48,7 @@ def all_entries(request):
     httpGET_STATUS = request.GET.get('status')
     httpGET_LIST = request.GET.get('list')
     httpGET_AUTHOR = request.GET.get('author')
-    httpGET_DUPLICATES = request.GET.get('duplicates')
+    httpGET_DUPLICATES = 'duplicates' in request.GET
 
     if not httpGET_FIND:
         entries = Entry.objects.all()
