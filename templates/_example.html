@@ -13,7 +13,9 @@
             {{ space }}
         {% else %}
             {% if ge.text %}
-                <span class="grec">{{ ge.text }}</span>
+                <span class="grec{% if ge.corrupted %} cinnabar{% endif %}">
+                    {{ ge.text }}
+                </span>
                 {{ space }}
             {% endif %}
         {% endif %}

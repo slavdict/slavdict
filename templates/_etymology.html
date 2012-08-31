@@ -15,7 +15,8 @@
 
 
 {% if etym.text %}
-    <span class="{{ etym.language.css_class }}">{{ etym.text }}</span>
+    <span class="{{ etym.language.css_class }}
+    {% if etym.corrupted %} cinnabar{% endif %}">{{ etym.text }}</span>
     {{ space }}
 {% endif %}
 
@@ -77,7 +78,8 @@
             <i>{{ etym2.language.tag }}</i>&nbsp;
 
             {% if etym2.text %}
-                <span class="{{ etym2.language.css_class }}">{{ etym2.text }}</span>
+                <span class="{{ etym2.language.css_class }}
+                {% if etym2.corrupted %} cinnabar{% endif %}">{{ etym2.text }}</span>
                 {{ space }}
             {% endif %}
 

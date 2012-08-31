@@ -106,7 +106,9 @@
 
     {% for ge in m.greek_equivs %}
 
-        <span class="grec">{{ ge.text }}</span>
+        <span class="grec {% if ge.corrupted %}cinnabar{% endif %}">
+            {{ ge.text }}
+        </span>
 
         {% if ge.mark %}
             (<i>{{ ge.mark }}</i>)
