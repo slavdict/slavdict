@@ -106,7 +106,15 @@ ETYMOLOGY_FIELDSETS = (
         'classes': ('collapse',)}
         ),
     (None,
-        {'fields': ('language', 'text', 'translit', 'meaning', 'gloss', 'unclear', 'mark', 'source')}
+        {'fields': (
+            'language',
+            ('text', 'corrupted'),
+            'translit',
+            'meaning',
+            'gloss',
+            'unclear',
+            'mark',
+            'source')}
         ),
     (u'Примечание к этимологии',
         {'fields': ('additional_info',),
@@ -135,7 +143,11 @@ class GreekEquivalentForMeaning_Inline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (None, {
-            'fields': (('unitext', 'text'), 'mark', 'source'),
+            'fields': (
+                ('unitext', 'text'),
+                ('mark', 'corrupted'),
+                'source',
+                ),
             }),
         (u'Примечание к параллели',
             {'fields': ('additional_info',),
@@ -152,7 +164,12 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (None, {
-            'fields': (('unitext', 'text'), 'mark', 'source'),
+            'fields': (
+                ('unitext', 'text'),
+                ('mark', 'corrupted'),
+                'source',
+                'initial_form',
+                ),
             }),
         (u'Примечание к параллели',
             {'fields': ('additional_info',),
