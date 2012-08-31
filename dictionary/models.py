@@ -677,6 +677,11 @@ class Etymology(models.Model):
         blank = True,
         )
 
+    corrupted = models.BooleanField(
+        u'текст испорчен',
+        default = False,
+        )
+
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
@@ -1341,6 +1346,11 @@ class GreekEquivalentForMeaning(models.Model):
         blank = True,
         )
 
+    corrupted = models.BooleanField(
+        u'неюникодный текст испорчен',
+        default = False,
+        )
+
     mtime = models.DateTimeField(
         editable=False,
         auto_now=True,
@@ -1412,6 +1422,11 @@ class GreekEquivalentForExample(models.Model):
         help_text = u'Любая дополнительная информация ' \
                     u'по данному греческому эквиваленту.',
         blank = True,
+        )
+
+    corrupted = models.BooleanField(
+        u'неюникодный текст испорчен',
+        default = False,
         )
 
     mtime = models.DateTimeField(
