@@ -34,7 +34,7 @@
     <div id="window-container">
 
         {% for char in chars %}
-            <div class='char nowrap'>
+            <div class='char {% if nowrap %}nowrap{% endif %}'>
                 <span class="greek grec">{{ char }}</span>
                 <span class="greek">{{ char }}</span>
                 <span class="repr">{{ char.__repr__() }}</span>

@@ -11,6 +11,7 @@ from .models import GreekEquivalentForMeaning
 
 def non_unicode_greek(request):
     corrupted = 'corrupted' in request.GET
+    nowrap = 'nowrap' in request.GET
 
     greek_etymons = Etymology.objects.filter(language__slug='greek', corrupted=corrupted)
     greqex = GreekEquivalentForExample.objects.filter(corrupted=corrupted)
@@ -29,5 +30,6 @@ def non_unicode_greek(request):
         'title': u'Неюникодные греческие символы',
         'chars': chars,
         'words': chardict,
+        'nowrap': nowrap,
     }
     return render_to_response('non_unicode_greek.html', context, RequestContext(request))
