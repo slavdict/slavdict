@@ -10,9 +10,11 @@ from .models import GreekEquivalentForExample
 from .models import GreekEquivalentForMeaning
 
 def non_unicode_greek(request):
-    greek_etymons = Etymology.objects.filter(language__slug='greek')
-    greqex = GreekEquivalentForExample.objects.all()
-    greqm = GreekEquivalentForMeaning.objects.all()
+    corrupted = 'corrupted' in request.GET
+
+    greek_etymons = Etymology.objects.filter(language__slug='greek', corrupted=corrupted)
+    greqex = GreekEquivalentForExample.objects.filter(corrupted=corrupted)
+    greqm = GreekEquivalentForMeaning.objects.filter(corrupted=corrupted)
 
     words = [(i.text, i.host_entry.id, False, False) for i in greek_etymons if i.text]
     words.extend([(i.text, i.host_entry.id, False, i.for_example.id) for i in greqex if i.text])
