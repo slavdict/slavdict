@@ -90,7 +90,6 @@ ULYSSESMAP = (
     (u'\uf078', u'\u03be'), # xi (ksi)
     (u'\uf079', u'\u03c8'), # psi
     (u'\uf07a', u'\u03b6'), # zeta
-    (u'\uf07a', u'\u03b6'), # zeta
 
     (u'\uf080', u'\u1f71'), # alpha with oxia
     (u'\uf081', u'\u1f70'), # alpha with varia
