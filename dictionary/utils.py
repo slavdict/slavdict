@@ -71,6 +71,25 @@ ULYSSESMAP = (
     (u'\uf064', u'\u03b4'), # delta
     (u'\uf065', u'\u03b5'), # epsilon
     (u'\uf066', u'\u03c6'), # phi
+    (u'\uf067', u'\u03b3'), # gamma
+    (u'\uf069', u'\u03b9'), # iota
+    (u'\uf06a', u'\u03b7'), # eta
+    (u'\uf06b', u'\u03ba'), # kappa
+    (u'\uf06c', u'\u03bb'), # lambda
+    (u'\uf06d', u'\u03bc'), # mu
+    (u'\uf06e', u'\u03bd'), # nu
+    (u'\uf06f', u'\u03bf'), # omicron
+    (u'\uf070', u'\u03c0'), # pi
+    (u'\uf071', u'\u03b8'), # theta
+    (u'\uf072', u'\u03c1'), # rho
+    (u'\uf073', u'\u03c3'), # sigma
+    (u'\uf074', u'\u03c4'), # tau
+    (u'\uf075', u'\u03c5'), # upsilon
+    (u'\uf076', u'\u03c2'), # sigma final
+    (u'\uf077', u'\u03c9'), # omega
+    (u'\uf078', u'\u03be'), # xi (ksi)
+    (u'\uf079', u'\u03c8'), # psi
+    (u'\uf07a', u'\u03b6'), # zeta
 )
 
 def ulysses2unicode(text, mapping=ULYSSESMAP):
