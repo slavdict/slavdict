@@ -44,9 +44,9 @@ ULYSSESMAP = (
     (u'\uf02c', u','),
     (u'\uf02d', u'-'),
     (u'\uf02e', u'.'),
-    (u'\uf03c', u'\u1ffe'), # dasia
+    (u'\uf03c(.)', ur'\1\u0314'), # dasia
     (u'\uf03d', u'='),
-    (u'\uf03e', u'\u1fbf'), # psili
+    (u'\uf03e(.)', ur'\1\u0313'), # psili
 
     (u'\uf041', u'\u0391'), # Alpha
     (u'\uf042', u'\u0392'), # Beta
@@ -90,6 +90,28 @@ ULYSSESMAP = (
     (u'\uf078', u'\u03be'), # xi (ksi)
     (u'\uf079', u'\u03c8'), # psi
     (u'\uf07a', u'\u03b6'), # zeta
+    (u'\uf07a', u'\u03b6'), # zeta
+
+    (u'\uf080', u'\u1f71'), # alpha with oxia
+    (u'\uf081', u'\u1f70'), # alpha with varia
+    (u'\uf082', u'\u1fb6'), # alpha with perispomeni
+    (u'\uf083', u'\u1f01'), # alpha with dasia
+    (u'\uf084', u'\u1f05'), # alpha with dasia and oxia
+    (u'\uf087', u'\u1f00'), # alpha with psili
+    (u'\uf088', u'\u1f04'), # alpha with psili and oxia
+    (u'\uf089', u'\u1f02'), # alpha with psili and varia
+    (u'\uf08b', u'\u1fb3'), # alpha with ypogigrammeni
+    (u'\uf090', u'\u1f85'), # alpha with dasia, oxia and ypogigrammeni
+
+    (u'\uf099', u'\u1f73'), # epsilon with oxia
+    (u'\uf09a', u'\u1f72'), # epsilon with varia
+    (u'\uf09c', u'\u1f15'), # epsilon with dasia and oxia
+    (u'\uf09d', u'\u1f10'), # epsilon with psili
+    (u'\uf09e', u'\u1f14'), # epsilon with psili and oxia
+
+    (u'\uf0a9(.)', ur'\1\u0314\u0301'), # dasia and oxia
+    (u'\uf0ad(.)', ur'\1\u0313\u0300'), # psili and varia
+    (u'\uf0af(.)', ur'\1\u0313\u0342'), # psili and perispomeni
 )
 
 def ulysses2unicode(text, mapping=ULYSSESMAP):
