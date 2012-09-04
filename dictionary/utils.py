@@ -145,6 +145,34 @@ def ulysses2unicode(text, mapping=ULYSSESMAP):
     text = normalize('NFC', text)
     return text
 
+def greek_data_manipulation(func):
+    greek_etymons = Etymology.objects.filter(language__slug='greek', corrupted=False)
+    greqex = GreekEquivalentForExample.objects.filter(corrupted=False)
+    greqm = GreekEquivalentForMeaning.objects.filter(corrupted=False)
+
+    for i in greek_etymons:
+        func(i)
+
+    for i in greqex:
+        func(i)
+
+    for i in greqm:
+        func(i)
+
+def greek_data_migration():
+    def migration(x):
+        if x.text and not x.unitext:
+            x.unitext = ulysses2unicode(x.text)
+            x.save(without_mtime=True)
+    greek_data_manipulation(migration)
+
+def greek_old_data_deletion():
+    def deletion(x):
+        if x.text and x.unitext == ulysses2unicode(x.text):
+            x.text = u''
+            x.save(without_mtime=True)
+    greek_data_manipulation(deletion)
+
 
 
 def non_unicode_greek(request):
