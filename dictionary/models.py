@@ -631,6 +631,12 @@ class Etymology(models.Model):
         blank = True,
         )
 
+    unitext = models.CharField(
+        u'языковой эквивалент (Unicode)',
+        max_length = 40,
+        blank = True,
+        )
+
     translit = models.CharField(
         u'транслитерация',
         max_length = 40,
