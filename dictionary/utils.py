@@ -150,14 +150,20 @@ def ulysses2unicode(text, mapping=ULYSSESMAP):
 def non_unicode_greek(request):
     corrupted = 'corrupted' in request.GET
     nowrap = 'nowrap' in request.GET
+    already_mapped = 'already-mapped' in request.GET
 
     greek_etymons = Etymology.objects.filter(language__slug='greek', corrupted=corrupted)
     greqex = GreekEquivalentForExample.objects.filter(corrupted=corrupted)
     greqm = GreekEquivalentForMeaning.objects.filter(corrupted=corrupted)
 
-    words = [(i.text, i.host_entry.id, False, False) for i in greek_etymons if i.text]
-    words.extend([(i.text, i.host_entry.id, False, i.for_example.id) for i in greqex if i.text])
-    words.extend([(i.text, i.host_entry.id, i.for_meaning.id, False) for i in greqm if i.text])
+    if already_mapped:
+        good = lambda x: x.text and hasattr(x, 'unitext') and x.unitext
+    else:
+        good = lambda x: x.text
+
+    words = [(i.text, i.host_entry.id, False, False) for i in greek_etymons if good(i)]
+    words.extend([(i.text, i.host_entry.id, False, i.for_example.id) for i in greqex if good(i)])
+    words.extend([(i.text, i.host_entry.id, i.for_meaning.id, False) for i in greqm if good(i)])
 
     chardict = defaultdict(set)
     for word, entry_id, meaning_id, example_id in words:
