@@ -17,6 +17,7 @@
     and etym.unitext
     and not etym.corrupted %}
         <span>{{ etym.unitext }}</span>
+        {{ space }}
 {% else %}
     {% if etym.text %}
         <span class="{{ etym.language.css_class }}
@@ -86,6 +87,7 @@
                 and etym2.unitext
                 and not etym2.corrupted %}
                     <span>{{ etym2.unitext }}</span>
+                    {{ space }}
             {% else %}
                 {% if etym2.text %}
                     <span class="{{ etym2.language.css_class }}
