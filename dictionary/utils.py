@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import re
 from collections import defaultdict
+from unicodedata import normalize
 
 from django.template import RequestContext
 
@@ -134,10 +136,13 @@ ULYSSESMAP = (
     (u'\uf0fb', u'\u1ff3'), # omega with ypogegrammeni
     (u'\uf0fe', u'\u1ff7'), # omega with perispomeni and ypogegrammeni
 )
+ULYSSESMAP = [(re.compile(src), dst) for src, dst in ULYSSESMAP]
 
 def ulysses2unicode(text, mapping=ULYSSESMAP):
+    text = text.strip()
     for src, dst in mapping:
-        text = text.replace(src, dst)
+        text = src.sub(dst, text)
+    text = normalize('NFC', text)
     return text
 
 
@@ -164,5 +169,6 @@ def non_unicode_greek(request):
         'chars': chars,
         'words': chardict,
         'nowrap': nowrap,
+        'ulys2uni': ulysses2unicode,
     }
     return render_to_response('non_unicode_greek.html', context, RequestContext(request))

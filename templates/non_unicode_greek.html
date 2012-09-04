@@ -14,6 +14,10 @@
             -moz-border-radius: 3px;
             border-radius: 3px; }
 
+        .unigreek {
+            color: green;
+        }
+
         .repr {
             background-color: #d5dffc;
             border: 1px solid #bbc4df;
@@ -41,6 +45,7 @@
                 <span>
                     {% for word, entry_id, meaning_id, example_id in words[char] %}
                         <span class="grec">{{ word }}</span>
+                        <span class='unigreek'>{{ ulys2uni(word) }}</span>
                         (
                         <a href='/entries/{{ entry_id }}/' target='_blank'>{{ entry_id }}</a>
                         :
