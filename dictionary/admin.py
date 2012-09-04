@@ -1,10 +1,13 @@
 # encoding: UTF-8
 import copy
+
 from django import forms
-from django.db import models
 from django.contrib import admin
+from django.db import models
 from django.http import HttpResponseRedirect
+
 from slavdict.admin import ui
+
 admin.site.login_template = ui.login_template
 
 def staff_has_add_permission(self, request):
@@ -108,7 +111,7 @@ ETYMOLOGY_FIELDSETS = (
     (None,
         {'fields': (
             'language',
-            ('text', 'corrupted'),
+            ('text', 'unitext', 'corrupted'),
             'translit',
             'meaning',
             'gloss',

@@ -86,7 +86,11 @@
         /* Для текста этимологии и для транслита устанавливаем нужные
          * CSS-классы в зависимости от конкретного языка. Такая установка
          * проводится и при загрузке страницы и вешается на событие изменения
-         * значения поля языка конкретной этимологии. */
+         * значения поля языка конкретной этимологии.
+         *
+         * Для всех языков кроме того отображаем поле text, но скрываем
+         * unitext. Для греческого поле unitext отображаем всегда, а text
+         * только, если там что-нибудь есть. */
         lang2cssclass = {
             '10': 'grec',
             '11': 'hebrew',
@@ -105,12 +109,32 @@
             if (v){
                 var c1 = lang2cssclass[v];
                 var c2 = c1 + '-translit';
-                x.nextAll('.text').find('input')
+                x.nextAll('.text').find('input[id$="-text"]')
                     .removeClass( langclsss1 )
                     .addClass( c1 );
-                x.nextAll('.translit').find('input')
+                x.nextAll('.translit').find('input[id$="-translit"]')
                     .removeClass( langclsss2 )
                     .addClass( c2 );
+            }
+        }
+        function textAndUnitext(x, v) {
+            var isGreek,
+                text = x.nextAll('.text').find('input[id$="-text"]'),
+                unitext = x.nextAll('.unitext').find('input[id$="-unitext"]'),
+                show = function(field) { field.parent().removeClass('hidden'); },
+                hide = function(field) { field.parent().addClass('hidden'); };
+            if (v){
+                isGreek = (lang2cssclass[v] == 'grec');
+                if( isGreek ) {
+                    show(unitext);
+                    if( text.val() ) { show(text); } else { hide(text); }
+                } else {
+                    show(text);
+                    hide(unitext);
+                }
+            } else {
+                show(text);
+                show(unitext);
             }
         }
 
@@ -118,12 +142,14 @@
             var x = $(this);
             var v = x.find('select').val();
             changeLangCSSClass(x, v);
+            textAndUnitext(x, v);
         });
         $('#etymology_set-group .form-row.language select').change(function(){
             var i = $(this);
             var x = i.closest('.form-row.language');
             var v = i.val();
             changeLangCSSClass(x, v);
+            textAndUnitext(x, v);
         });
 
 
