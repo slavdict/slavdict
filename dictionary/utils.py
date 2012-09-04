@@ -111,6 +111,54 @@ ULYSSESMAP = (
     (u'\uf0a9(.)', ur'\1\u0314\u0301'), # dasia and oxia
     (u'\uf0ad(.)', ur'\1\u0313\u0300'), # psili and varia
     (u'\uf0af(.)', ur'\1\u0313\u0342'), # psili and perispomeni
+
+    (u'\uf0b0', u'\u1f77'), # iota with oxia
+    (u'\uf0b1', u'\u1f76'), # iota with varia
+    (u'\uf0b2', u'\u1fd6'), # iota with perispomeni
+    (u'\uf0b3', u'\u1f31'), # iota with dasia
+    (u'\uf0b8', u'\u1f30'), # iota with psili
+    (u'\uf0b9', u'\u1f34'), # iota with psili and oxia
+    (u'\uf0ba', u'\u1f36'), # iota with psili and perispomeni
+    (u'\uf0bb', u'\u03ca'), # iota with dialytika
+    (u'\uf0bc', u'\u1fd3'), # iota with dialytika and oxia
+
+    (u'\uf0bf', u'\u1fe5'), # rho with dasia
+
+    (u'\uf0c0', u'\u1f7b'), # upsilon with oxia
+    (u'\uf0c1', u'\u1f7a'), # upsilon with varia
+    (u'\uf0c2', u'\u1fe6'), # upsilon with perispomeni
+    (u'\uf0c3', u'\u1f51'), # upsilon with dasia
+    (u'\uf0c7', u'\u1f50'), # upsilon with psili
+    (u'\uf0c8', u'\u1f54'), # upsilon with psili and oxia
+    (u'\uf0ca', u'\u1f56'), # upsilon with psili and perispomeni
+
+    (u'\uf0d0', u'\u1f75'), # eta with oxia
+    (u'\uf0d1', u'\u1f74'), # eta with varia
+    (u'\uf0d2', u'\u1fc6'), # eta with perispomeni
+    (u'\uf0d3', u'\u1f21'), # eta with dasia
+    (u'\uf0d7', u'\u1f20'), # eta with psili
+    (u'\uf0d8', u'\u1f24'), # eta with psili and oxia
+    (u'\uf0da', u'\u1f26'), # eta with psili and perispomeni
+    (u'\uf0db', u'\u1fc3'), # eta with ypogegrammeni
+    (u'\uf0de', u'\u1fc7'), # eta with perispomeni and ypogegrammeni
+    (u'\uf0e6', u'\u1f96'), # eta with psili, perispomeni and ypogegrammeni
+
+    (u'\uf0e7', u'\u1f79'), # omicron with oxia
+    (u'\uf0e8', u'\u1f78'), # omicron with varia
+    (u'\uf0e9', u'\u1f41'), # omicron with dasia
+    (u'\uf0ea', u'\u1f45'), # omicron with dasia and oxia
+    (u'\uf0ec', u'\u1f40'), # omicron with psili
+    (u'\uf0ed', u'\u1f44'), # omicron with psili and oxia
+
+    (u'\uf0f0', u'\u1f7d'), # omega with oxia
+    (u'\uf0f1', u'\u1f7c'), # omega with varia
+    (u'\uf0f2', u'\u1ff6'), # omega with perispomeni
+    (u'\uf0f3', u'\u1f61'), # omega with dasia
+    (u'\uf0f4', u'\u1f65'), # omega with dasia and oxia
+    (u'\uf0f7', u'\u1f60'), # omega with psili
+    (u'\uf0fa', u'\u1f66'), # omega with psili and perispomeni
+    (u'\uf0fb', u'\u1ff3'), # omega with ypogegrammeni
+    (u'\uf0fe', u'\u1ff7'), # omega with perispomeni and ypogegrammeni
 )
 
 def ulysses2unicode(text, mapping=ULYSSESMAP):
