@@ -85,7 +85,7 @@ ULYSSESMAP = (
     (u'\uf09e', u'\u1f14'), # epsilon with psili and oxia
 
     (u'\uf0a9(.)', ur'\1\u0314\u0301'), # dasia and oxia
-    (u'\uf0ad(.)', ur'\1\u0313\u0300'), # psili and varia
+    (u'\uf0ad(.)', ur'\1\u0313\u0301'), # psili and oxia
     (u'\uf0af(.)', ur'\1\u0313\u0342'), # psili and perispomeni
 
     (u'\uf0b0', u'\u1f77'), # iota with oxia
