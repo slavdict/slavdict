@@ -157,7 +157,7 @@ def non_unicode_greek(request):
     greqm = GreekEquivalentForMeaning.objects.filter(corrupted=corrupted)
 
     if already_mapped:
-        good = lambda x: x.text and hasattr(x, 'unitext') and x.unitext
+        good = lambda x: x.text and getattr(x, 'unitext', False)
     else:
         good = lambda x: x.text
 
