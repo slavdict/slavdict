@@ -1,23 +1,49 @@
 # -*- coding: utf-8 -*-
 import datetime
 import json
+import StringIO
 
 from coffin.shortcuts import render_to_response
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.core.paginator import EmptyPage
+from django.core.paginator import InvalidPage
+from django.db.models import Q
+from django.forms.models import modelformset_factory
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import RequestContext
 
 import dictionary.models
-from dictionary.models import Entry, \
-    Meaning, Example, OrthographicVariant, Etymology, \
-    MeaningContext, GreekEquivalentForMeaning, \
-    GreekEquivalentForExample
+import unicode_csv
 from custom_user.models import CustomUser
-
+from dictionary.forms import BilletImportForm
+from dictionary.forms import EntryForm
+from dictionary.forms import EtymologyForm
+from dictionary.forms import ExampleForm
+from dictionary.forms import GrEqForExForm
+from dictionary.forms import GrEqForMnngForm
+from dictionary.forms import MeaningForm
+from dictionary.forms import MnngCntxtForm
+from dictionary.forms import OrthVarForm
 from dictionary.forms import RawValueWidget
-from django.db.models import Q
-from django.contrib.auth.decorators import login_required
+from dictionary.models import civilrus_convert
+from dictionary.models import Entry
+from dictionary.models import entry_dict
+from dictionary.models import Etymology
+from dictionary.models import Example
+from dictionary.models import GreekEquivalentForExample
+from dictionary.models import GreekEquivalentForMeaning
+from dictionary.models import Meaning
+from dictionary.models import MeaningContext
+from dictionary.models import OrthographicVariant
+from directory.models import CategoryValue
 from unicode_csv import UnicodeReader
+
+
+
 
 # Вспомогательная функция
 # для сортировки списка словарных статей.
@@ -26,7 +52,6 @@ def entry_key(entry):
 
 @login_required
 def make_greek_found(request):
-    from slavdict.dictionary.models import GreekEquivalentForExample
 
     greqlist = GreekEquivalentForExample.objects.all() # Выбираем все греч. параллели для примеров.
     exlist = [g.for_example for g in greqlist] # Создаём для них список примеров, к которым они относятся.
@@ -119,7 +144,6 @@ def test_entries(request):
 def greek_to_find(request):
     # Обеспечиваем то, чтобы поля статуса параллей у примеров с параллелями
     # были отличны от u'L' (статус "необходимо найти параллели")
-    from slavdict.dictionary.models import GreekEquivalentForExample, Example
     greqlist = GreekEquivalentForExample.objects.all() # Выбираем все греч. параллели для примеров.
     ex_list = [g.for_example for g in greqlist] # Создаём для них список примеров, к которым они относятся.
     # Присваеваем полю статуса греч. параллелей для каждого примера значение "найдены".
@@ -202,12 +226,6 @@ def switch_additional_info(request):
         response.set_cookie('ai', max_age=7776000, expires=date_expired)
     return response
 
-
-
-from django.forms.models import modelformset_factory
-from slavdict.dictionary.forms import EntryForm, \
-    MeaningForm, ExampleForm, OrthVarForm, EtymologyForm, \
-    MnngCntxtForm, GrEqForMnngForm, GrEqForExForm
 
 @login_required
 def change_entry(request, entry_id):
@@ -460,17 +478,7 @@ def change_entry(request, entry_id):
 
 
 
-from dictionary.forms import BilletImportForm
-from django.http import HttpResponse, HttpResponseRedirect
-import slavdict.unicode_csv as unicode_csv
-import StringIO
-
-from custom_user.models import CustomUser
-from slavdict.directory.models import CategoryValue
 ccc = CategoryValue.objects.get(pk=26) # Создана (Статус статьи "Статья создана")
-
-from slavdict.dictionary.models import entry_dict, civilrus_convert
-
 @login_required
 def import_csv_billet(request):
 
@@ -602,8 +610,6 @@ def import_csv_billet(request):
     return render_to_response('csv_import.html', {'form': form})
 
 
-
-from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 @login_required
 def entry_list(request, mine=False, duplicates=False):
