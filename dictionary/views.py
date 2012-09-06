@@ -478,7 +478,6 @@ def change_entry(request, entry_id):
 
 
 
-ccc = CategoryValue.objects.get(pk=26) # Создана (Статус статьи "Статья создана")
 @login_required
 def import_csv_billet(request):
 
@@ -551,7 +550,7 @@ def import_csv_billet(request):
                             raise NameError(u"Автор, указанный в CSV-файле, не найден среди участников работы над словарём.")
 
                     entry_args = entry_dict.copy() # Поверхностная (!) копия словаря.
-                    entry_args['status'] = ccc
+                    entry_args['status'] = CategoryValue.objects.get(pk=26) # 26 -- статус статьи "Статья создана"
                     # Все булевские переменные уже выставлены по умолчанию в False в entry_dict
 
                     # Если поле с гражданским эквивалентом пусто, то берем конвертацию в гражданку заглавного слова.
