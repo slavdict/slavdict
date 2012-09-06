@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
 import json
+import random
+import re
 import StringIO
 
 from coffin.shortcuts import render_to_response
@@ -502,7 +504,6 @@ def import_csv_billet(request):
             orthvar_collisions = False
             csv_authors = {u'': None}
 
-            import re
             # Регулярное выражение для отыскания любой черты (прямой, косой, обратной косой),
             # обрамленной любым количеством пробельного материала.
             bar = re.compile(r"\s*[/\|\\]\s*", re.MULTILINE + re.UNICODE)
@@ -710,7 +711,6 @@ def entry_list(request, mine=False, duplicates=False):
 
 @login_required
 def antconc2ucs8_converter(request):
-    import random
     random.seed()
     examples = (
         u"Дрꙋ'гъ дрꙋ'га тѧготы^ носи'те, и та'кѡ испо'лните зако'нъ хрСто'въ.",
