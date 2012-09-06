@@ -115,9 +115,10 @@ def all_entries(request):
         # WARNING: Переменная entries теперь будет содержать обычный список
         # вместо объекта django.db.models.query.QuerySet, так что теперь на
         # entries больше нельзя нанизывать никаких фильтров.
-        entries = [i.host_entry for i in greek_etymons]
-        entries.extend([i.host_entry for i in greqex])
-        entries.extend([i.host_entry for i in greqm])
+        entries = set([i.host_entry for i in greek_etymons])
+        entries.update([i.host_entry for i in greqex])
+        entries.update([i.host_entry for i in greqm])
+        entries = list(entries)
         entries.sort(key=lambda entry: entry.civil_equivalent)
 
     # Формирование заголовка страницы в зависимости от переданных GET-параметров
