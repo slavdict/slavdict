@@ -3,9 +3,8 @@ import re
 from collections import defaultdict
 from unicodedata import normalize
 
-from django.template import RequestContext
-
 from coffin.shortcuts import render_to_response
+from django.template import RequestContext
 
 from .models import Etymology
 from .models import GreekEquivalentForExample
