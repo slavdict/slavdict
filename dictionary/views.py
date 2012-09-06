@@ -72,6 +72,7 @@ def make_greek_found(request):
 @login_required
 def all_entries(request):
     httpGET_AUTHOR = request.GET.get('author')
+    httpGET_CORRUPTED_GREEK = 'corrupted-greek' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
     httpGET_FIND = request.GET.get('find')
     httpGET_LIST = request.GET.get('list')
@@ -105,6 +106,19 @@ def all_entries(request):
             pass
         else:
             entries = entries.filter(pk__in=httpGET_LIST)
+
+    if httpGET_CORRUPTED_GREEK:
+        greek_etymons = Etymology.objects.filter(language__slug='greek', corrupted=True)
+        greqex = GreekEquivalentForExample.objects.filter(corrupted=True)
+        greqm = GreekEquivalentForMeaning.objects.filter(corrupted=True)
+
+        # WARNING: Переменная entries теперь будет содержать обычный список
+        # вместо объекта django.db.models.query.QuerySet, так что теперь на
+        # entries больше нельзя нанизывать никаких фильтров.
+        entries = [i.host_entry for i in greek_etymons]
+        entries.extend([i.host_entry for i in greqex])
+        entries.extend([i.host_entry for i in greqm])
+        entries.sort(key=lambda entry: entry.civil_equivalent)
 
     # Формирование заголовка страницы в зависимости от переданных GET-параметров
     if httpGET_DUPLICATES:
