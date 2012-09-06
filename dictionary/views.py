@@ -71,19 +71,20 @@ def make_greek_found(request):
 
 @login_required
 def all_entries(request):
-    httpGET_FIND = request.GET.get('find')
-    httpGET_STATUS = request.GET.get('status')
-    httpGET_LIST = request.GET.get('list')
     httpGET_AUTHOR = request.GET.get('author')
     httpGET_DUPLICATES = 'duplicates' in request.GET
+    httpGET_FIND = request.GET.get('find')
+    httpGET_LIST = request.GET.get('list')
+    httpGET_STATUS = request.GET.get('status')
 
-    if not httpGET_FIND:
-        entries = Entry.objects.all()
-    else:
-        FIND_LOWER = httpGET_FIND.lower()
-        FIND_CAPZD = httpGET_FIND.capitalize()
-        entries = Entry.objects.filter(
-            Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD) )
+    entries = Entry.objects.all()
+    if httpGET_FIND:
+        query = (
+            Q(civil_equivalent__startswith=httpGET_FIND.lower())
+            |
+            Q(civil_equivalent__startswith=httpGET_FIND.capitalize())
+        )
+        entries = entries.filter(query)
 
     if httpGET_AUTHOR:
         if httpGET_AUTHOR == 'is-not-assigned!':
