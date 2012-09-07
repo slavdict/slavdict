@@ -180,7 +180,6 @@ function antconc_ucs8(antconc_text, isAffix){
 }
 
 function antconc_civilrus_word(word){
-    var civilword = word;
     var conversion = [
         // Все буквы -- строчные.
         [/'/g,              ''],        // '  -->
@@ -338,7 +337,7 @@ function antconc_civilrus_word(word){
     for (var i = 0; i < conversion_len; i++) {
         pattern     = conversion[i][0];
         replacement = conversion[i][1];
-        civilword   = civilword.replace(pattern, replacement);
+        word = word.replace(pattern, replacement);
     }
-    return civilword;
+    return word;
 }
