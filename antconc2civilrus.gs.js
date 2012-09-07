@@ -5,11 +5,11 @@ var scriptAssets;
  * для конвертации из Антконк в гражданку.
  */
 function makeCivil() {
-  var sheet = SpreadsheetApp.getActiveSheet(),
-      r = sheet.getDataRange().getNumRows(),
-      srcCol = sheet.getRange('C2:C' + r),
-      dstCol = sheet.getRange('A2:A' + r),
-      srcValues = srcCol.getValues(),
+  var sheet = SpreadsheetApp.getActiveSheet(), // активный лист
+      r = sheet.getDataRange().getNumRows(), // количество строк с данными
+      srcCol = sheet.getRange('C2:C' + r), // дипазон, состоящий из ячеек столбца С
+      dstCol = sheet.getRange('A2:A' + r), // дипазон, состоящий из ячеек столбца А
+      srcValues = srcCol.getValues(), // получение значений диапазона в виде списка списков
       validAntconcValues = [],
       dstValues = [],
       validAntconcVal,
