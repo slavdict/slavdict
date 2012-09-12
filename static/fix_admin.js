@@ -59,7 +59,7 @@
 
         /* Переносим группу полей словоформ (пока в списке типов только
          * причастия) в расположение после полей форм глагола. */
-        x = $('#wordform_set-group').detach();
+        x = $('#participle_set-group').detach();
         x.addClass('hidden verb');
         y = $('#id_sg1').closest('fieldset');
         x.insertAfter(y);

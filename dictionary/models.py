@@ -483,8 +483,8 @@ class Entry(models.Model, Meaningfull):
         return self.collocationgroup_set.all().order_by('id')
 
     @property
-    def wordforms(self):
-        return self.wordform_set.all().order_by('order', 'id')
+    def participles(self):
+        return self.participle_set.all().order_by('order', 'id')
 
     # административная информация
     status = models.ForeignKey(
@@ -1527,7 +1527,7 @@ class OrthographicVariant(models.Model):
 
 
 
-class WordForm(models.Model):
+class Participle(models.Model):
 
     # словарная статья, к которой относится данная словоформа
     entry = models.ForeignKey(
@@ -1575,11 +1575,11 @@ class WordForm(models.Model):
         return self.entry
 
     def save(self, without_mtime=False, *args, **kwargs):
-        super(WordForm, self).save(*args, **kwargs) # Call the "real" save() method.
+        super(Participle, self).save(*args, **kwargs) # Call the "real" save() method.
         self.host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
-        super(WordForm, self).delete(*args, **kwargs) # Call the "real" delete() method.
+        super(Participle, self).delete(*args, **kwargs) # Call the "real" delete() method.
         self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):

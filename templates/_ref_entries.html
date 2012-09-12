@@ -1,7 +1,7 @@
 {% trim %}
 
 {% if not intermed %}
-{% if entry.orth_vars_refs[1:] or entry.nom_pl_ucs_wax or entry.nom_sg_ucs_wax or entry.wordforms %}
+{% if entry.orth_vars_refs[1:] or entry.nom_pl_ucs_wax or entry.nom_sg_ucs_wax or entry.participles %}
 
     {% block refheader %}↑↑{% endblock %}
 
@@ -58,9 +58,9 @@
     {% endif %}
 
 
-    {% if entry.wordforms %}
+    {% if entry.participles %}
 
-        {% for wf in entry.wordforms %}
+        {% for wf in entry.participles %}
 
             <div class="entry ref">
 

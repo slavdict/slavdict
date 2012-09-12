@@ -340,9 +340,9 @@ ui.register(Meaning, AdminMeaningUI)
 
 
 
-from slavdict.dictionary.models import WordForm
-class WordForm_Inline(admin.StackedInline):
-    model = WordForm
+from slavdict.dictionary.models import Participle
+class Participle_Inline(admin.StackedInline):
+    model = Participle
     extra = 1
     fieldsets = ((None, { 'fields': ('tp', 'idem') }),)
 
@@ -411,7 +411,7 @@ class AdminEntry(admin.ModelAdmin):
         )
     inlines = (
         OrthVar_Inline,
-        WordForm_Inline,
+        Participle_Inline,
         Etymology_Inline,
         )
     list_display = (
