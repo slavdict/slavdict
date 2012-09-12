@@ -217,13 +217,14 @@ def init_examples_order():
     meaning = -1
     ex_group = []
     for num, ex in enumerate(examples):
-        if ex.meaning.id != meaning:
-            for i, e in enumerate(ex_group):
-                e.order = i + 1
-                e.save(without_mtime=True)
-            meaning = ex.meaning.id
-            ex_group = []
-        ex_group.append(ex)
+        if ex.meaning:
+            if ex.meaning.id != meaning:
+                for i, e in enumerate(ex_group):
+                    e.order = i + 1
+                    e.save(without_mtime=True)
+                meaning = ex.meaning.id
+                ex_group = []
+            ex_group.append(ex)
         sys.stdout.write(message % (num * 100.0 / total))
     print
     print 'Done!'
