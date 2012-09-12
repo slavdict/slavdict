@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
+import sys
 from collections import defaultdict
 from unicodedata import normalize
 
@@ -7,6 +8,7 @@ from coffin.shortcuts import render_to_response
 from django.template import RequestContext
 
 from .models import Etymology
+from .models import Example
 from .models import GreekEquivalentForExample
 from .models import GreekEquivalentForMeaning
 
@@ -205,3 +207,24 @@ def non_unicode_greek(request):
         'ulys2uni': ulysses2unicode,
     }
     return render_to_response('non_unicode_greek.html', context, RequestContext(request))
+
+
+
+def init_examples_order():
+    message = 'Assigning order numbers to examples: %i%%\r'
+    examples = Example.objects.order_by('meaning__id', 'order', 'id')
+    total = len(examples) - 1
+    meaning = -1
+    ex_group = []
+    for num, ex in enumerate(examples):
+        if ex.meaning.id != meaning:
+            for i, e in enumerate(ex_group):
+                e.order = i + 1
+                e.save(without_mtime=True)
+            meaning = ex.meaning.id
+            ex_group = []
+        ex_group.append(ex)
+        sys.stdout.write(message % (num * 100.0 / total))
+    print
+    print 'Done!'
+
