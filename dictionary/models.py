@@ -960,7 +960,7 @@ class Meaning(models.Model):
 
     @property
     def examples(self):
-        return self.example_set.all()
+        return self.example_set.order_by('order', 'id')
 
     @property
     def contexts(self):
