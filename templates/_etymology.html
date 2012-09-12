@@ -27,7 +27,7 @@
 {% endif %}
 
 {% if etym.translit %}
-    {% if etym.text %}
+    {% if etym.text or etym.unitext %}
         {{ space }}[
         <span class="{{ etym.language.css_class2 }}">{{ etym.translit }}</span>
         ]{{ space }}
@@ -97,7 +97,7 @@
             {% endif %}
 
             {% if etym2.translit %}
-                {% if etym2.text %}
+                {% if etym2.text or etym2.unitext %}
                     {{ space }}[
                     <span class="{{ etym2.language.css_class2 }}">{{ etym2.translit }}</span>
                     ]{{ space }}
