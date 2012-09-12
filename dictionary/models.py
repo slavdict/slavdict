@@ -828,7 +828,7 @@ class Meaning(models.Model):
     order = models.SmallIntegerField(
         u'порядок следования',
         blank = True,
-        null = True,
+        default = 345,
         )
 
     parent_meaning = models.ForeignKey(
@@ -1038,7 +1038,7 @@ class Example(models.Model):
     order = models.SmallIntegerField(
         u'порядок следования',
         blank = True,
-        null = True,
+        default = 345,
         )
 
     hidden = models.BooleanField(
