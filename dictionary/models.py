@@ -1353,7 +1353,7 @@ class GreekEquivalentForMeaning(models.Model):
         )
 
     corrupted = models.BooleanField(
-        u'неюникодный текст испорчен',
+        u'текст испорчен',
         default = False,
         )
 
@@ -1431,7 +1431,7 @@ class GreekEquivalentForExample(models.Model):
         )
 
     corrupted = models.BooleanField(
-        u'неюникодный текст испорчен',
+        u'текст испорчен',
         default = False,
         )
 

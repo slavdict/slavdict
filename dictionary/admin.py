@@ -147,8 +147,8 @@ class GreekEquivalentForMeaning_Inline(admin.StackedInline):
     fieldsets = (
         (None, {
             'fields': (
-                ('unitext', 'text'),
-                ('mark', 'corrupted'),
+                ('unitext', 'corrupted'),
+                'mark',
                 'source',
                 ),
             }),
@@ -168,8 +168,8 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
     fieldsets = (
         (None, {
             'fields': (
-                ('unitext', 'text'),
-                ('mark', 'corrupted'),
+                ('unitext', 'corrupted'),
+                'mark',
                 'source',
                 'initial_form',
                 ),

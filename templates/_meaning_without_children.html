@@ -106,13 +106,9 @@
 
     {% for ge in m.greek_equivs %}
 
-        {% if ge.unitext %}
-            <span>{{ ge.unitext }}</span>
-        {% else %}
         <span class="grec {% if ge.corrupted %}cinnabar{% endif %}">
-            {{ ge.text }}
+            {{ ge.unitext }}
         </span>
-        {% endif %}
         {{ space }}
 
         {% if ge.mark %}
