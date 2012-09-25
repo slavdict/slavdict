@@ -4,6 +4,7 @@ import json
 import random
 import re
 import StringIO
+import urllib
 
 from coffin.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
@@ -526,7 +527,8 @@ def import_csv_billet(request):
 
             for row in csv_reader:
                 # Столбцы в CSV-файле
-                orthvars_info, civil_equivalent, word_forms_list, antconc_query, author_in_csv, additional_info = row
+                orthvars_info, civil_equivalent, word_forms_list, antconc_query, author_in_csv, \
+                    additional_info, homonym_order, homonym_gloss, duplicate = row
 
                 # Обработка поля с орфографическими вариантами.
                 # Орфографические варианты разделяются любой чертой (прямой, косой или обратной косой).
@@ -584,21 +586,24 @@ def import_csv_billet(request):
                         'antconc_query': antconc_query,
                         'editor': author,
                         'additional_info': additional_info,
+                        'homonym_order': int(float(homonym_order)) if homonym_order else None,
+                        'homonym_gloss': homonym_gloss or u'',
+                        'duplicate': bool(duplicate),
                     }
 
                     if not intersection or (force == 'add'):
                         entry_args.update(from_csv)
+                        entry_args.update({
+                            'reconstructed_headword': orthvars_list[0][1],
+                            'questionable_headword': orthvars_list[0][2],
+                            })
 
                         entry = Entry.objects.create(**entry_args)
                         entry.save()
 
                         for i in orthvars_list:
                             orthvar = i[0]
-                            orthvar_is_reconstructed = i[1]
-                            orthvar_is_questionable = i[2]
-                            ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar,
-                                                                    is_reconstructed=orthvar_is_reconstructed,
-                                                                    is_approved=orthvar_is_questionable)
+                            ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar)
                             ov.save()
                             idems.add(orthvar)
                     elif intersection and (force=='update'):
@@ -611,7 +616,7 @@ def import_csv_billet(request):
                     else:
                         raise NameError(u"Поддержка GET-параметра 'force' со значением '%s' не реализована." % force)
 
-            if not request.GET.get('force', False) and orthvar_collisions:
+            if 'force' not in request.GET and orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
                 response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % \
                     datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M.%S')
@@ -623,7 +628,7 @@ def import_csv_billet(request):
             return response
     else:
         form = BilletImportForm()
-    return render_to_response('csv_import.html', {'form': form})
+    return render_to_response('csv_import.html', {'form': form, 'get_parameters': '?' + urllib.urlencode(request.GET)})
 
 
 
