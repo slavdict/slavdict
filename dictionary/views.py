@@ -802,7 +802,7 @@ def json_singleselect_entries_urls(request):
                 'civil': e.civil_equivalent,
                 'headword': e.orth_vars[0].idem_ucs,
                 'hom': e.homonym_order_roman,
-                'pos': e.part_of_speech.tag if e.homonym_order and e.part_of_speech.slug not in ('letter', 'number') else '',
+                'pos': e.part_of_speech.tag if e.homonym_order and e.part_of_speech and e.part_of_speech.slug not in ('letter', 'number') else '',
                 'hint': e.homonym_gloss,
                 'url': e.get_absolute_url(),
                 }
