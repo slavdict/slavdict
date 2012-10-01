@@ -72,7 +72,7 @@
 
     <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.7.1.min.js'></script>
     <script type='text/javascript' src='{{ STATIC_URL }}jquery.tmpl.min.js'></script>
-    <script type='text/javascript' src='{{ STATIC_URL }}knockout-2.0.0.js'></script>
+    <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/knockout/2.1.0/knockout-min.js'></script>
     <script>
 
         ko.bindingHandlers.hasFocus = {
@@ -167,17 +167,17 @@
             }
         };
 
-        viewModel.selectedIds = ko.dependentObservable(function(){
+        viewModel.selectedIds = ko.computed(function(){
             var result = [];
             ko.utils.arrayForEach(this.selectedItems(), function(item) { result.push(item.pk); });
             return result;
         }, viewModel);
 
-        viewModel.focusedItem = ko.dependentObservable(function(){
+        viewModel.focusedItem = ko.computed(function(){
             return (this.focusedIndex() > -1) ? this.foundItems()[this.focusedIndex()] : null;
         }, viewModel);
 
-        ko.dependentObservable(function() {
+        ko.computed(function() {
             var dataToSend, receivedData = [];
             if (this.lastItemsRequest) this.lastItemsRequest.abort();
             if (this.searchPrefix()) {
