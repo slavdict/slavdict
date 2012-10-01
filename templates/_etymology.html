@@ -13,6 +13,7 @@
     {% endif %}
 {% endif %}
 
+{% if etym.text or etym.unitext %}
 {% if etym.language.slug == 'greek' %}
         <span{% if etym.corrupted %} class="cinnabar"{% endif %}>{{ etym.unitext }}</span>
         {{ space }}
@@ -20,6 +21,7 @@
         <span class="{{ etym.language.css_class }}
         {% if etym.corrupted %} cinnabar{% endif %}">{{ etym.text }}</span>
         {{ space }}
+{% endif %}
 {% endif %}
 
 {% if etym.translit %}
@@ -79,6 +81,7 @@
 
             <i>{{ etym2.language.tag }}</i>&nbsp;
 
+            {% if etym2.text or etym2.unitext %}
             {% if etym2.language.slug == 'greek' %}
                     <span{% if etym2.corrupted %} class="cinnabar"{% endif %}>{{ etym2.unitext }}</span>
                     {{ space }}
@@ -86,6 +89,7 @@
                     <span class="{{ etym2.language.css_class }}
                     {% if etym2.corrupted %} cinnabar{% endif %}">{{ etym2.text }}</span>
                     {{ space }}
+            {% endif %}
             {% endif %}
 
             {% if etym2.translit %}
