@@ -32,7 +32,10 @@
                     /><span class="header--item-right button"
                             data-bind="click: function(){ $('form.searchForm').submit(); }">Найти</span>
 
-                    <ul class="foundItems" data-bind="foreach: foundItems, css: { hidden: foundItems().length == 0 }">
+                    <ul class="foundItems hidden"
+                        data-bind="foreach: foundItems,
+                        css: { hidden: foundItems().length == 0 }">
+
                         <li class="SC--foundItem"
                             data-bind="css: { 'SC--foundItem-focused': isFocused },
                                        event: {
@@ -44,6 +47,7 @@
                             <span class="SC--fI--pOS" data-bind="text: pos"></span>
                             <span class="SC--fI--hint" data-bind="text: hint"></span>
                         </li>
+
                     </ul>
                 </form>
 
