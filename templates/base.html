@@ -69,7 +69,37 @@
 
         <div class="filters">
             <div class="f5s--dashboard">
+                <form name="filters" method="post">
 
+                <div class="f5sD--sort">
+                <h3>Упорядочить статьи</h3>
+
+                    <ul>
+                        <li><input type="radio" name="sortOrder"
+                        id="sortOrderAsc" value="asc"/><label
+                        for="sortOrderAsc"> по возрастанию</label></li>
+
+                        <li><input type="radio" name="sortOrder"
+                        id="sortOrderDesc" value="desc"/><label
+                        for="sortOrderDesc"> по убыванию</label></li>
+                    </ul>
+
+                    на основе <select>
+                        <option value="civil">гражданского написания</option>
+                        <option value="time">времени изменения</option>
+                    </select>
+
+                </div>
+
+                <div class="f5sD--filter">
+                <h3>Отобрать статьи по следующим критериям</h3>
+
+                    Заглавное слово должно начинаться на
+                    <input type="text" name="prefix" value=""/>
+
+                </div>
+
+                </form>
             </div>
             <div class="f5s--advertiser">
                 <span class="f5sA--label">фильтры</span>
@@ -181,6 +211,8 @@
             $(document).ready(function(){
                 $('.f5sA--label').click(function(){
                     $('.f5s--dashboard').slideToggle();
+                    $('.header').slideToggle();
+                    $('#main').slideToggle();
                 });
             });
         </script>
