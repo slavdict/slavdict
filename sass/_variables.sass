@@ -9,16 +9,21 @@ $cslFont: 'Triodion Ucs'
 $sansFont: Arial, sans-serif
 $serifFont: 'Old Standard TT'
 
+@mixin button
+    cursor: pointer
+    white-space: nowrap
+    -webkit-user-select: none
+    -moz-user-select: none
+    -ms-user-select: none
 
 .button
-    cursor: pointer
     font: 11px $sansFont
     text-align: center
     padding: 0.2em 0.5em
     background-color: #777
     color: #fff
+    @include button
     @include roundedCorners(3px)
-    white-space: nowrap
 
     &:hover
         background-color: #369
