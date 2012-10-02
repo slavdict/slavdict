@@ -1,0 +1,30 @@
+@charset 'utf-8'
+@import variables
+
+.filters
+    font-family: $sansFont
+    position: relative
+    text-align: center
+    background-color: #eee
+
+    .f5s--dashboard
+        padding: 10px
+        display: none
+
+    .f5s--advertiser
+        background-color: #999
+        height: 4px
+        position: relative
+
+        .f5sA--label
+            position: absolute
+            text-align: center
+            width: 70px
+            height: 15px
+            background-color: #999
+            color: white
+            font-family: $sansFont
+            font-size: 10px
+            font-weight: bold
+            @include roundedCorners(3px)
+            @include button

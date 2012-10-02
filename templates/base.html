@@ -67,6 +67,15 @@
         </div>
         {% endblock %}
 
+        <div class="filters">
+            <div class="f5s--dashboard">
+
+            </div>
+            <div class="f5s--advertiser">
+                <span class="f5sA--label">фильтры</span>
+            </div>
+        </div>
+
         <div id="main">
             {% block content %}{% endblock %}
         </div>
@@ -168,6 +177,12 @@
             }, vM_hdrSearch);
 
             ko.applyBindings(vM_hdrSearch);
+
+            $(document).ready(function(){
+                $('.f5sA--label').click(function(){
+                    $('.f5s--dashboard').slideToggle();
+                });
+            });
         </script>
 
         {% block javascript %}{% endblock %}
