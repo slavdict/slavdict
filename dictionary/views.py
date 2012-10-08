@@ -631,81 +631,148 @@ def import_csv_billet(request):
     return render_to_response('csv_import.html', {'form': form, 'get_parameters': '?' + urllib.urlencode(request.GET)})
 
 
+def _get_entries(get_params, cookies):
+    entries = Entry.objects
+    FILTER_PARAMS = {}
+    FILTER_EXCLUDE_PARAMS = {}
+    SORT_PARAMS = []
+    PARSING_ERRORS = []
+    COOKABLE_PARAMS = {}
 
-@login_required
-def entry_list(request, mine=False, duplicates=False):
+    # Сортировка
+    DEFAULT_SORT = '-t'
+    sortdir = get_params.get('sortdir', '')
+    sortbase = get_params.get('sortbase', '')
+    sort = sortdir + sortbase
+    if not sort:
+        sort = get_params.get('sort') or cookies.get('sort') or DEFAULT_SORT
     VALID_SORT_PARAMS = {
         'alph': ('civil_equivalent', 'homonym_order'),
         '-alph': ('-civil_equivalent', '-homonym_order'),
         't': ('mtime', 'id'),
         '-t': ('-mtime', '-id'),
         }
-    DEFAULT_SORT = '-t'
-    FILTERS = {}
-    QS_PARSING_ERRORS = []
-
-    httpGET_SORT = request.GET.get('sort')
-    httpGET_FIND = request.GET.get('find')
-    httpGET_AUTHOR = request.GET.get('author')
-
-    if httpGET_SORT:
-        redirect_path = "./"
-        if httpGET_FIND:
-            redirect_path = "?find=%s" % httpGET_FIND
-        response = HttpResponseRedirect(redirect_path)
-        if httpGET_SORT in VALID_SORT_PARAMS:
-            response.set_cookie('sort', httpGET_SORT)
-        return response
-
-    COOKIES_SORT = request.COOKIES.get('sort', DEFAULT_SORT)
-    SORT_PARAMS = VALID_SORT_PARAMS[COOKIES_SORT]
-
-    if httpGET_AUTHOR:
-        if httpGET_AUTHOR=='all':
-            pass
-        elif httpGET_AUTHOR=='none':
-            FILTERS['editor__isnull'] = True
-        elif httpGET_AUTHOR.isdigit():
-            FILTERS['editor'] = int(httpGET_AUTHOR)
-        else:
-            QS_PARSING_ERRORS.append('author')
-
-        if 'author' not in QS_PARSING_ERRORS:
-            redirect_path = "./"
-            if httpGET_FIND:
-                redirect_path = "?find=%s" % httpGET_FIND
-            response = HttpResponseRedirect(redirect_path)
-            response.set_cookie('author', httpGET_AUTHOR)
-
-
-    if httpGET_FIND is None and not mine:
-        httpGET_FIND = u''
-        entry_list = Entry.objects.filter(**FILTERS).order_by(*SORT_PARAMS) #filter(editor=request.user)
+    if sort in VALID_SORT_PARAMS:
+        SORT_PARAMS = VALID_SORT_PARAMS[sort]
     else:
-        if httpGET_FIND:
-            # Ищем все лексемы, удовлетворяющие запросу в независимости от регистра начальной буквы запроса.
-            # Код писался из расчёта, что на БД полагаться нельзя, поскольку у меня не получается правильно
-            # настроить COLLATION в Postgres. Когда это сделать удастся, надо будет в .filter использовать
-            # `civil_equivalent__istartswith=httpGET_FIND`.
-            FIND_LOWER = httpGET_FIND.lower()
-            FIND_CAPZD = httpGET_FIND.capitalize()
-            entry_list = Entry.objects.filter(
-                    Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD)
-                ).filter(**FILTERS).order_by(*SORT_PARAMS) #filter(editor=request.user)
+        PARSING_ERRORS.append('sort')
+    if sortbase or get_params.get('sort'):
+        COOKABLE_PARAMS['sort'] = sort
+
+    # Статьи начинаются с
+    find = get_params.get('find')
+    if find:
+        FILTER_PARAMS['civil_equivalent__istartswith'] = find
+
+
+    def _set_enumerable_param(param, model_property=None):
+        model_property = model_property or param
+        value = get_params.get(param) or cookies.get(param) or 'all'
+        if value=='all':
+            pass
+        elif value=='none':
+            FILTER_PARAMS[model_property + '__isnull'] = True
+        elif value.isdigit():
+            FILTER_PARAMS[model_property] = int(value)
         else:
-            httpGET_FIND = u''
-            if mine:
-                entry_list = Entry.objects.filter(editor=request.user).order_by(*SORT_PARAMS)
-            else:
-                return HttpResponseRedirect("./")
+            PARSING_ERRORS.append(param)
+        if param not in PARSING_ERRORS and get_params.get(param):
+            COOKABLE_PARAMS[param] = value
 
-    if duplicates:
-        entry_list = entry_list.filter(duplicate=True)
+    # Автор статьи
+    _set_enumerable_param('author', 'editor')
 
-    if COOKIES_SORT=='alph':
-        entry_list = sorted(entry_list, key=entry_key, reverse=False)
-    elif COOKIES_SORT=='-alph':
-        entry_list = sorted(entry_list, key=entry_key, reverse=True)
+    # Статус статьи
+    _set_enumerable_param('status')
+
+    # Часть речи
+    _set_enumerable_param('pos', 'part_of_speech')
+
+    # Род
+    _set_enumerable_param('gender')
+
+    # Число
+    _set_enumerable_param('tantum')
+
+    # Тип имени собственного
+    _set_enumerable_param('onym')
+
+
+    def _check_bool_param(param):
+        """ Чекбоксы отсылают свои значения только, когда они выделены.
+        Поэтому если на странице несколько форм, отправляемые одному
+        и тому же обработчику, возникает неоднозначность. То ли поле
+        не было выделено и потому отсутствует среди гет-параметров, то
+        ли нужная форма вообще не отправлялась на обработку. Поскольку
+        поле ``author`` обязательно должно присутствовать среди
+        гет-параметров при отправке нужной формы, по его наличию
+        среди гет-параметров можно понять значимым или не значимым
+        является отсутствие нужного нам параметра, и соотвественно,
+        нужно или не нужно его сохранять в куках. """
+
+        if param in get_params:
+            COOKABLE_PARAMS[param] = 1
+            return True
+        elif 'author' in get_params:
+            COOKABLE_PARAMS[param] = 0
+            return False
+        return cookies.get(param)
+
+    # Каноническое имя
+    if _check_bool_param('canonical_name'):
+        FILTER_PARAMS['canonical_name'] = True
+
+    # Притяжательность
+    if _check_bool_param('possessive'):
+        FILTER_PARAMS['possessive'] = True
+
+    # Омонимы
+    if _check_bool_param('homonym'):
+        FILTER_PARAMS['homonym_order__isnull'] = False
+
+    # Есть примечание
+    if _check_bool_param('additional_info'):
+        FILTER_EXCLUDE_PARAMS['additional_info'] = ''
+
+    # Есть этимологии
+    if _check_bool_param('etymology'):
+        etyms = Etymology.objects.values_list('entry')
+        FILTER_PARAMS['id__in'] = [item[0] for item in set(etyms)]
+
+    # Статьи-дубликаты
+    if _check_bool_param('duplicate'):
+        FILTER_PARAMS['duplicate'] = True
+
+    # Неизменяемое
+    if _check_bool_param('uninflected'):
+        FILTER_PARAMS['uninflected'] = True
+
+
+    entries = entries.filter(**FILTER_PARAMS)
+    entries = entries.exclude(**FILTER_EXCLUDE_PARAMS)
+    entries = entries.order_by(*SORT_PARAMS)
+
+    return entries, COOKABLE_PARAMS, PARSING_ERRORS
+
+
+@login_required
+def entry_list(request, mine=False, duplicates=False):
+
+    entry_list, cookable_params, parsing_errors = _get_entries(request.GET, request.COOKIES)
+    if parsing_errors:
+        raise NameError('Недопустимые значения параметров: %s' % parsing_errors)
+
+    if request.GET:
+        redirect_path = "./"
+        if 'find' in request.GET:
+            redirect_path += '?' + request.GET['find']
+        response = HttpResponseRedirect(redirect_path)
+
+        for param, value in cookable_params.items():
+            response.set_cookie(param, value)
+
+    if mine:
+        entry_list = entry_list.filter(editor=request.user)
 
     paginator = Paginator(entry_list, per_page=12, orphans=2)
     try:
@@ -723,8 +790,8 @@ def entry_list(request, mine=False, duplicates=False):
     context = {
         'entries': page.object_list,
         'page': page,
-        'sort': COOKIES_SORT,
-        'find_prefix': httpGET_FIND,
+        'sort': cookable_params['sort'],
+        'find_prefix': request.GET.get('find', u''),
         'mine': mine,
         'authors': json.dumps(authors, ensure_ascii=False, separators=(',',':')),
         }

@@ -1,12 +1,22 @@
 # -*- coding: UTF-8 -*-
 from django import forms
-from django.forms import ModelForm, \
-    HiddenInput, TextInput
+from django.forms import ModelForm
+from django.forms import HiddenInput
+from django.forms import TextInput
 from django.forms.models import inlineformset_factory
+from django.forms.widgets import Widget
+from django.forms.widgets import SelectMultiple
+from django.utils.safestring import mark_safe
 
-from dictionary.models import Entry, Meaning, Example, \
-    Etymology, MeaningContext, GreekEquivalentForMeaning, \
-    GreekEquivalentForExample
+from custom_user.models import CustomUser
+from dictionary.models import Entry
+from dictionary.models import Meaning
+from dictionary.models import Example
+from dictionary.models import Etymology
+from dictionary.models import MeaningContext
+from dictionary.models import GreekEquivalentForMeaning
+from dictionary.models import GreekEquivalentForExample
+from directory.models import CategoryValue
 
 class EntryForm(ModelForm):
     class Meta:
@@ -105,10 +115,6 @@ class GrEqForExForm(ModelForm):
             'position': HiddenInput,
         }
 
-
-from django.forms.widgets import Widget, SelectMultiple
-from django.utils.safestring import mark_safe
-
 class RawValueWidget(Widget):
     def render(self, name, value, attrs=None):
         if value is None:
@@ -128,3 +134,95 @@ class BilletImportForm(forms.Form):
 
 class SelectMultipleAutocomplete(SelectMultiple):
     pass
+
+
+
+BLANKLABEL = '&nbsp;'
+
+AUTHOR_CHOICES = (
+    ('all',  u'все авторы'),
+    ('none', u'статьи без автора'),
+    (BLANKLABEL, [
+        (author.id, author.__unicode__())
+        for author in CustomUser.objects.filter(groups__name=u'authors')
+    ]),
+)
+
+SORTDIR_CHOICES = (
+    ('',  u'по возрастанию'),
+    ('-', u'по убыванию'),
+)
+
+SORTBASE_CHOICES = (
+    ('alph', u'гражданского написания'),
+    ('t',    u'времени изменения'),
+)
+
+def category_values(category):
+    return [
+        (item.id, item.tag)
+        for item
+        in CategoryValue.objects.filter(category__slug=category)
+    ]
+
+STATUS_CHOICES = (
+    ('all',  u'все статусы'),
+    (BLANKLABEL, category_values('entryStatus')),
+)
+
+POS_CHOICES = (
+    ('all',  u'любая'),
+    ('none', u'не определена'),
+    (BLANKLABEL, category_values('partOfSpeech')),
+)
+
+GENDER_CHOICES = (
+    ('all',  u'любой'),
+    ('none', u'не определен'),
+    (BLANKLABEL, category_values('gender')),
+)
+
+TANTUM_CHOICES = (
+    ('all',  u'любое'),
+    ('none', u'не определено'),
+    (BLANKLABEL, category_values('tantum')),
+)
+
+ONYM_CHOICES = (
+    ('all',  u'любой'),
+    ('none', u'не определен'),
+    (BLANKLABEL, category_values('onym')),
+)
+
+CANONNAME_CHOICES = (
+    ('all',  u'все имена'),
+    (1, u'только канонические'),
+    (0, u'только неканонические'),
+)
+
+POSSESSIVE_CHOICES = (
+    ('all',  u''),
+    (1, u'притяжательные'),
+    (0, u'непритяжательные'),
+)
+
+class FilterEntriesForm(forms.Form):
+    sortdir = forms.ChoiceField(choices=SORTDIR_CHOICES)
+    sortbase = forms.ChoiceField(choices=SORTBASE_CHOICES)
+    find = forms.CharField(required=False, label=u'Начинается с')
+    author = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор')
+    status = forms.ChoiceField(choices=STATUS_CHOICES, label=u'Статус статьи')
+    pos = forms.ChoiceField(choices=POS_CHOICES, label=u'Часть речи')
+    uninflected = forms.BooleanField(label=u'Неизменяемые')
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, label=u'Род')
+    tantum = forms.ChoiceField(choices=TANTUM_CHOICES, label=u'Число')
+    onym = forms.ChoiceField(choices=ONYM_CHOICES,
+            label=u'Тип имени собственного')
+    canonical_name = forms.ChoiceField(choices=CANONNAME_CHOICES,
+            label=u'Канонические имена')
+    possessive = forms.ChoiceField(choices=POSSESSIVE_CHOICES,
+            label=u'Притяжательность')
+    etymology = forms.BooleanField(label=u'Статьи с этимологией')
+    additional_info = forms.BooleanField(label=u'Статьи с примечаниями')
+    homonym = forms.BooleanField(label=u'Статьи-омонимы')
+    duplicate = forms.BooleanField(label=u'Статьи-дубликаты')
