@@ -1,6 +1,78 @@
 {% extends 'base.html' %}
 
+{% set find_prefix = form['find'].value() %}
+{% set sort = form['sortdir'].value() + form['sortbase'].value() %}
+{% set filters = form.cleaned_data %}
+
+{% block subheader %}
+
+    <div class="filters">
+        <div class="f5s--dashboard">
+
+            <div class="f5sD--sort">
+            <h3>Упорядочить статьи</h3>
+            {{ form.sortdir }} на основе {{ form.sortbase }}
+            </div>
+
+            <div class="f5sD--filter">
+            <h3>Отобрать статьи по следующим критериям</h3>
+
+                {{ form.find.label_tag() }}
+                {{ form.find }}
+
+                {{ form.author.label_tag() }}
+                {{ form.author }}
+
+                {{ form.status.label_tag() }}
+                {{ form.status }}
+
+                {{ form.pos.label_tag() }}
+                {{ form.pos }}
+
+                {{ form.uninflected }}
+                {{ form.uninflected.label_tag() }}
+
+                {{ form.gender.label_tag() }}
+                {{ form.gender }}
+
+                {{ form.tantum.label_tag() }}
+                {{ form.tantum }}
+
+                {{ form.possessive.label_tag() }}
+                {{ form.possessive }}
+
+                {{ form.onym.label_tag() }}
+                {{ form.onym }}
+
+                {{ form.canonical_name.label_tag() }}
+                {{ form.canonical_name }}
+
+                {{ form.etymology }}
+                {{ form.etymology.label_tag() }}
+
+                {{ form.additional_info }}
+                {{ form.additional_info.label_tag() }}
+
+                {{ form.homonym }}
+                {{ form.homonym.label_tag() }}
+
+                {{ form.duplicate }}
+                {{ form.duplicate.label_tag() }}
+            </div>
+
+            <input type="submit" value="применить"/>
+
+        </div>
+        <div class="f5s--advertiser">
+            <span class="f5sA--label">фильтры</span>
+        </div>
+    </div>
+
+{% endblock %}
+
+
 {% block content %}
+
     {% if not entries %}
         <div class="message">
         {% if find_prefix %}
@@ -30,17 +102,25 @@
                 <td class="eli-control first"></td>
                 <td class="eli-control"></td>
                 <td class="eli-entry">
-                    <span class="ssn anchor{% if sort == 'alph' %} on{% endif %}" value="alph"
+                    <span class="ssn anchor"
+                          data-bind="css: { on: sort() === 'alph' },
+                                   click: doSort.bind($data, 'alph')"
                           title="Упорядочить по возрастанию">↓</span>
-                    <span class="ssn anchor{% if sort == '-alph' %} on{% endif %}" value="-alph"
+                      <span class="ssn anchor"
+                          data-bind="css: { on: sort() === '-alph' },
+                                   click: doSort.bind($data, '-alph')"
                           title="Упорядочить по убыванию">↑</span>
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по алфавиту</span>
                 </td>
                 <td class="eli-author"></td>
                 <td class="eli-mtime">
-                    <span class="ssn anchor{% if sort == 't' %} on{% endif %}" value="t"
+                    <span class="ssn anchor"
+                          data-bind="css: { on: sort() === 't' },
+                                   click: doSort.bind($data, 't')"
                           title="Упорядочить по возрастанию">↓</span>
-                    <span class="ssn anchor{% if sort == '-t' %} on{% endif %}" value="-t"
+                    <span class="ssn anchor"
+                          data-bind="css: { on: sort() === '-t' },
+                                   click: doSort.bind($data, '-t')"
                           title="Упорядочить по убыванию">↑</span>
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по вр. изм.</span>
                 </td>
@@ -178,37 +258,58 @@
 {% endblock %}
 {% block javascript %}
     <script type="text/javascript">
-        function getDictFromURIQS(){
-            var qs = window.location.search;
-            qs = qs.slice(1);
-            var qsDict = {};
-            if (qs) {
-                var params = qs.split("&");
-                for (var i=0; i < params.length; i++){
-                    var keyvalue = params[i].split("=");
-                    qsDict[keyvalue[0]] = keyvalue[1];
+
+        var vM; if (!vM) vM = {};
+
+        vM.filters = {
+            form: vM.hdrSearch.form,
+            sortdir: ko.observable('{{ filters.sortdir }}'),
+            sortbase: ko.observable('{{ filters.sortbase }}'),
+            find: vM.hdrSearch.searchPrefix,
+            authors: ko.observableArray(),
+            status: ko.observable('{{ filters.status }}')
+        };
+
+        vM.filters.sort = ko.computed({
+            read: function(){
+                return this.sortdir() + this.sortbase();
+            },
+            write: function(value){
+                if (value.charAt(0) === '-') {
+                    this.sortdir('-');
+                    this.sortbase(value.slice(1));
+                } else {
+                    this.sortdir('');
+                    this.sortbase(value);
                 }
-            }
-            return qsDict;
-        }
-        var QUERY_STRING = getDictFromURIQS();
-        console.log(QUERY_STRING);
+            },
+            owner: vM.filters
+        });
+
+        vM.filters.doSort = function(sort){
+            this.sort(sort);
+            this.form.submit();
+        };
+
+        //$('#id_author').attr('data-bind', 'options: authors');
+
+        ko.applyBindings(vM.filters, $('.filters').get(0));
+        ko.applyBindings(vM.filters, $('#main').get(0));
+
+        $('.f5sA--label').click(function(){
+            $('.f5s--dashboard').slideToggle();
+        });
+
         $('tr').mouseover(function(){
             $(this).addClass('hover');
         }).mouseout(function(){
             $(this).removeClass('hover');
         });
+
         $('.icon').mouseover(function(){
             $(this).next('.hint-container').show();
         }).mouseout(function(){
             $(this).next('.hint-container').hide();
-        });
-        $(".anchor").click(function(){
-            var x = $(this);
-            if ( ! (x.hasClass('on')) ) {
-                QUERY_STRING['sort'] = x.attr('value');
-                window.location = "?" + $.param(QUERY_STRING);
-            }
         });
     </script>
 {% endblock %}

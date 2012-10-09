@@ -9,6 +9,8 @@
     <body>
         <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
+        <form class="headerForm" action="{% url all_entries_url %}" method="post">
+
         {% block header_0 %}
         <div class="header">
             {% block header %}
@@ -21,7 +23,6 @@
                 {% endif %}
 
 
-                <form class="searchForm" enctype="application/x-www-form-urlencoded" action="{% url all_entries_url %}">
                     <input type="text" name="find" class="header--item-left header--item-block search"
                        data-bind="
                             value: searchPrefix,
@@ -30,7 +31,7 @@
                        autocomplete="off"
                        spellcheck="false"
                     /><span class="header--item-right button"
-                            data-bind="click: function(){ $('form.searchForm').submit(); }">Найти</span>
+                            data-bind="click: form.submit">Найти</span>
 
                     <ul class="foundItems hidden"
                         data-bind="foreach: foundItems,
@@ -49,8 +50,6 @@
                         </li>
 
                     </ul>
-                </form>
-
 
                 <a href="{% url converter %}" class="header--item button">Конвертър</a>
 
@@ -71,44 +70,10 @@
         </div>
         {% endblock %}
 
-        <div class="filters">
-            <div class="f5s--dashboard">
-                <form name="filters" method="post">
+        {% block subheader %}{% endblock %}
 
-                <div class="f5sD--sort">
-                <h3>Упорядочить статьи</h3>
+        </form>
 
-                    <ul>
-                        <li><input type="radio" name="sortOrder"
-                        id="sortOrderAsc" value="asc"/><label
-                        for="sortOrderAsc"> по возрастанию</label></li>
-
-                        <li><input type="radio" name="sortOrder"
-                        id="sortOrderDesc" value="desc"/><label
-                        for="sortOrderDesc"> по убыванию</label></li>
-                    </ul>
-
-                    на основе <select>
-                        <option value="civil">гражданского написания</option>
-                        <option value="time">времени изменения</option>
-                    </select>
-
-                </div>
-
-                <div class="f5sD--filter">
-                <h3>Отобрать статьи по следующим критериям</h3>
-
-                    Заглавное слово должно начинаться на
-                    <input type="text" name="prefix" value=""/>
-
-                </div>
-
-                </form>
-            </div>
-            <div class="f5s--advertiser">
-                <span class="f5sA--label">фильтры</span>
-            </div>
-        </div>
 
         <div id="main">
             {% block content %}{% endblock %}
@@ -136,13 +101,14 @@
                 );
             }
 
-            var vM_hdrSearch = {
+            var vM = { hdrSearch: {
                 searchPrefix: ko.observable( '{{ find_prefix }}' ),
                 foundItems: ko.observableArray(),
-                focusedItem: ko.observable()
-            };
+                focusedItem: ko.observable(),
+                form: $('.headerForm')
+            }};
 
-            vM_hdrSearch.moveFocusDown = function() {
+            vM.hdrSearch.moveFocusDown = function() {
                 var items = this.foundItems();
                 var arrLength = items.length;
                 var currentItem = this.focusedItem();
@@ -152,9 +118,9 @@
                     index = index > (arrLength - 2) ? 0 : ++index;
                 }
                 items[index].focusMe();
-            }.bind(vM_hdrSearch);
+            }.bind(vM.hdrSearch);
 
-            vM_hdrSearch.moveFocusUp = function() {
+            vM.hdrSearch.moveFocusUp = function() {
                 var items = this.foundItems();
                 var arrLength = items.length;
                 var currentItem = this.focusedItem();
@@ -164,15 +130,15 @@
                     index = index < 1 ? arrLength - 1 : --index;
                 }
                 items[index].focusMe();
-            }.bind(vM_hdrSearch);
+            }.bind(vM.hdrSearch);
 
-            vM_hdrSearch.go = function(item) {
+            vM.hdrSearch.go = function(item) {
                 window.location.href = item.url;
             };
 
-            vM_hdrSearch.flushItems = function() { this.foundItems.splice(0); }.bind(vM_hdrSearch);
+            vM.hdrSearch.flushItems = function() { this.foundItems.splice(0); }.bind(vM.hdrSearch);
 
-            vM_hdrSearch.navigateFoundItems = function(vM, event) {
+            vM.hdrSearch.navigateFoundItems = function(vM, event) {
                 if (event.which == 40) { // down arrow key
                     vM.moveFocusDown();
                 } else if (event.which == 38) { // up arrow key
@@ -187,7 +153,7 @@
                 }
             };
 
-            vM_hdrSearch.searchPrefix.subscribe(function(newValue) {
+            vM.hdrSearch.searchPrefix.subscribe(function(newValue) {
                 if (newValue) {
                     var dataToSend = { find: newValue };
                     if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
@@ -197,28 +163,20 @@
                         function(data){
                             var mappedData = ko.utils.arrayMap(
                                 data,
-                                function(item){ return new Item(item, vM_hdrSearch.focusedItem); }
+                                function(item){ return new Item(item, vM.hdrSearch.focusedItem); }
                             );
-                            vM_hdrSearch.foundItems(mappedData);
-                            if (vM_hdrSearch.foundItems().length==1) {
-                                vM_hdrSearch.foundItems()[0].focusMe();
+                            vM.hdrSearch.foundItems(mappedData);
+                            if (vM.hdrSearch.foundItems().length==1) {
+                                vM.hdrSearch.foundItems()[0].focusMe();
                             }
                         }
                     );
                 } else {
                     this.flushItems();
                 }
-            }, vM_hdrSearch);
+            }, vM.hdrSearch);
 
-            ko.applyBindings(vM_hdrSearch);
-
-            $(document).ready(function(){
-                $('.f5sA--label').click(function(){
-                    $('.f5s--dashboard').slideToggle();
-                    $('.header').slideToggle();
-                    $('#main').slideToggle();
-                });
-            });
+            ko.applyBindings(vM.hdrSearch, $('.header').get(0));
         </script>
 
         {% block javascript %}{% endblock %}

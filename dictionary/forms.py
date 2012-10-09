@@ -137,7 +137,7 @@ class SelectMultipleAutocomplete(SelectMultiple):
 
 
 
-BLANKLABEL = '&nbsp;'
+BLANKLABEL = ''
 
 AUTHOR_CHOICES = (
     ('all',  u'все авторы'),
@@ -166,7 +166,7 @@ def category_values(category):
     ]
 
 STATUS_CHOICES = (
-    ('all',  u'все статусы'),
+    ('all',  u'любой'),
     (BLANKLABEL, category_values('entryStatus')),
 )
 
@@ -207,13 +207,14 @@ POSSESSIVE_CHOICES = (
 )
 
 class FilterEntriesForm(forms.Form):
-    sortdir = forms.ChoiceField(choices=SORTDIR_CHOICES)
+    sortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
     sortbase = forms.ChoiceField(choices=SORTBASE_CHOICES)
     find = forms.CharField(required=False, label=u'Начинается с')
     author = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор')
     status = forms.ChoiceField(choices=STATUS_CHOICES, label=u'Статус статьи')
     pos = forms.ChoiceField(choices=POS_CHOICES, label=u'Часть речи')
-    uninflected = forms.BooleanField(label=u'Неизменяемые')
+    uninflected = forms.BooleanField(label=u'Только неизменяемые',
+            required=False)
     gender = forms.ChoiceField(choices=GENDER_CHOICES, label=u'Род')
     tantum = forms.ChoiceField(choices=TANTUM_CHOICES, label=u'Число')
     onym = forms.ChoiceField(choices=ONYM_CHOICES,
@@ -222,7 +223,29 @@ class FilterEntriesForm(forms.Form):
             label=u'Канонические имена')
     possessive = forms.ChoiceField(choices=POSSESSIVE_CHOICES,
             label=u'Притяжательность')
-    etymology = forms.BooleanField(label=u'Статьи с этимологией')
-    additional_info = forms.BooleanField(label=u'Статьи с примечаниями')
-    homonym = forms.BooleanField(label=u'Статьи-омонимы')
-    duplicate = forms.BooleanField(label=u'Статьи-дубликаты')
+    etymology = forms.BooleanField(label=u'Статьи с этимологией',
+            required=False)
+    additional_info = forms.BooleanField(label=u'Статьи с примечаниями',
+            required=False)
+    homonym = forms.BooleanField(label=u'Статьи-омонимы',
+            required=False)
+    duplicate = forms.BooleanField(label=u'Статьи-дубликаты',
+            required=False)
+    default_data = {
+        'sortdir':  '-',
+        'sortbase': 't',
+        'find': u'',
+        'author': 'all',
+        'status': 'all',
+        'pos': 'all',
+        'uninflected': False,
+        'gender': 'all',
+        'tantum': 'all',
+        'onym': 'all',
+        'canonical_name': 'all',
+        'possessive': 'all',
+        'etymology': False,
+        'additional_info': False,
+        'homonym': False,
+        'duplicate': False,
+    }

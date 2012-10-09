@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import datetime
 import json
 import random
@@ -26,6 +27,7 @@ from dictionary.forms import BilletImportForm
 from dictionary.forms import EntryForm
 from dictionary.forms import EtymologyForm
 from dictionary.forms import ExampleForm
+from dictionary.forms import FilterEntriesForm
 from dictionary.forms import GrEqForExForm
 from dictionary.forms import GrEqForMnngForm
 from dictionary.forms import MeaningForm
@@ -631,21 +633,20 @@ def import_csv_billet(request):
     return render_to_response('csv_import.html', {'form': form, 'get_parameters': '?' + urllib.urlencode(request.GET)})
 
 
-def _get_entries(get_params, cookies):
+def _get_entries(form):
     entries = Entry.objects
     FILTER_PARAMS = {}
     FILTER_EXCLUDE_PARAMS = {}
     SORT_PARAMS = []
     PARSING_ERRORS = []
-    COOKABLE_PARAMS = {}
 
     # Сортировка
     DEFAULT_SORT = '-t'
-    sortdir = get_params.get('sortdir', '')
-    sortbase = get_params.get('sortbase', '')
+    sortdir = form['sortdir']
+    sortbase = form['sortbase']
     sort = sortdir + sortbase
     if not sort:
-        sort = get_params.get('sort') or cookies.get('sort') or DEFAULT_SORT
+        sort = form['sort'] or DEFAULT_SORT
     VALID_SORT_PARAMS = {
         'alph': ('civil_equivalent', 'homonym_order'),
         '-alph': ('-civil_equivalent', '-homonym_order'),
@@ -656,18 +657,16 @@ def _get_entries(get_params, cookies):
         SORT_PARAMS = VALID_SORT_PARAMS[sort]
     else:
         PARSING_ERRORS.append('sort')
-    if sortbase or get_params.get('sort'):
-        COOKABLE_PARAMS['sort'] = sort
 
     # Статьи начинаются с
-    find = get_params.get('find')
+    find = form['find']
     if find:
         FILTER_PARAMS['civil_equivalent__istartswith'] = find
 
 
     def _set_enumerable_param(param, model_property=None):
         model_property = model_property or param
-        value = get_params.get(param) or cookies.get(param) or 'all'
+        value = form[param] or 'all'
         if value=='all':
             pass
         elif value=='none':
@@ -676,8 +675,6 @@ def _get_entries(get_params, cookies):
             FILTER_PARAMS[model_property] = int(value)
         else:
             PARSING_ERRORS.append(param)
-        if param not in PARSING_ERRORS and get_params.get(param):
-            COOKABLE_PARAMS[param] = value
 
     # Автор статьи
     _set_enumerable_param('author', 'editor')
@@ -697,88 +694,71 @@ def _get_entries(get_params, cookies):
     # Тип имени собственного
     _set_enumerable_param('onym')
 
-
-    def _check_bool_param(param):
-        """ Чекбоксы отсылают свои значения только, когда они выделены.
-        Поэтому если на странице несколько форм, отправляемые одному
-        и тому же обработчику, возникает неоднозначность. То ли поле
-        не было выделено и потому отсутствует среди гет-параметров, то
-        ли нужная форма вообще не отправлялась на обработку. Поскольку
-        поле ``author`` обязательно должно присутствовать среди
-        гет-параметров при отправке нужной формы, по его наличию
-        среди гет-параметров можно понять значимым или не значимым
-        является отсутствие нужного нам параметра, и соотвественно,
-        нужно или не нужно его сохранять в куках. """
-
-        if param in get_params:
-            COOKABLE_PARAMS[param] = 1
-            return True
-        elif 'author' in get_params:
-            COOKABLE_PARAMS[param] = 0
-            return False
-        return cookies.get(param)
-
     # Каноническое имя
-    if _check_bool_param('canonical_name'):
-        FILTER_PARAMS['canonical_name'] = True
+    _set_enumerable_param('canonical_name')
 
     # Притяжательность
-    if _check_bool_param('possessive'):
-        FILTER_PARAMS['possessive'] = True
+    _set_enumerable_param('possessive')
 
     # Омонимы
-    if _check_bool_param('homonym'):
+    if form['homonym']:
         FILTER_PARAMS['homonym_order__isnull'] = False
 
     # Есть примечание
-    if _check_bool_param('additional_info'):
+    if form['additional_info']:
         FILTER_EXCLUDE_PARAMS['additional_info'] = ''
 
     # Есть этимологии
-    if _check_bool_param('etymology'):
+    if form['etymology']:
         etyms = Etymology.objects.values_list('entry')
         FILTER_PARAMS['id__in'] = [item[0] for item in set(etyms)]
 
     # Статьи-дубликаты
-    if _check_bool_param('duplicate'):
+    if form['duplicate']:
         FILTER_PARAMS['duplicate'] = True
 
     # Неизменяемое
-    if _check_bool_param('uninflected'):
+    if form['uninflected']:
         FILTER_PARAMS['uninflected'] = True
 
+    if PARSING_ERRORS:
+        raise NameError('Недопустимые значения параметров: %s' % PARSING_ERRORS)
 
     entries = entries.filter(**FILTER_PARAMS)
     entries = entries.exclude(**FILTER_EXCLUDE_PARAMS)
     entries = entries.order_by(*SORT_PARAMS)
 
-    return entries, COOKABLE_PARAMS, PARSING_ERRORS
+    return entries
 
 
 @login_required
 def entry_list(request, mine=False, duplicates=False):
+    if 'find' in request.COOKIES:
+        request.COOKIES['find'] = base64.standard_b64decode(request.COOKIES['find']).decode('utf8')
 
-    entry_list, cookable_params, parsing_errors = _get_entries(request.GET, request.COOKIES)
-    if parsing_errors:
-        raise NameError('Недопустимые значения параметров: %s' % parsing_errors)
+    if request.method == 'POST':
+        data = request.POST
+    else:
+        data = dict(FilterEntriesForm.default_data)
+        data.update(request.COOKIES)
 
-    if request.GET:
-        redirect_path = "./"
-        if 'find' in request.GET:
-            redirect_path += '?' + request.GET['find']
-        response = HttpResponseRedirect(redirect_path)
-
-        for param, value in cookable_params.items():
-            response.set_cookie(param, value)
+    form = FilterEntriesForm(data)
+    if not form.is_valid():
+        import code; code.interact(local=locals())
+        raise NameError('Форма заполнена неправильно')
+    entries = _get_entries(form.cleaned_data)
 
     if mine:
-        entry_list = entry_list.filter(editor=request.user)
+        entries = entries.filter(editor=request.user)
 
-    paginator = Paginator(entry_list, per_page=12, orphans=2)
-    try:
-        pagenum = int(request.GET.get('page', 1))
-    except ValueError:
+    paginator = Paginator(entries, per_page=12, orphans=2)
+    if request.method == 'POST':
         pagenum = 1
+    else:
+        try:
+            pagenum = int(request.GET.get('page', 1))
+        except ValueError:
+            pagenum = 1
     try:
         page = paginator.page(pagenum)
     except (EmptyPage, InvalidPage):
@@ -788,14 +768,18 @@ def entry_list(request, mine=False, duplicates=False):
     authors = [ {'id':'all', 'name': u'Все авторы'}, {'id':'none', 'name': u'Статьи без автора'} ] + authors
 
     context = {
-        'entries': page.object_list,
-        'page': page,
-        'sort': cookable_params['sort'],
-        'find_prefix': request.GET.get('find', u''),
-        'mine': mine,
         'authors': json.dumps(authors, ensure_ascii=False, separators=(',',':')),
+        'entries': page.object_list,
+        'form': form,
+        'mine': mine,
+        'page': page,
         }
-    return render_to_response('entry_list.html', context, RequestContext(request))
+    response = render_to_response('entry_list.html', context, RequestContext(request))
+    if request.method == 'POST':
+        form.cleaned_data['find'] = base64.standard_b64encode(form.cleaned_data['find'].encode('utf8'))
+        for param, value in form.cleaned_data.items():
+            response.set_cookie(param, value, path=request.path)
+    return response
 
 @login_required
 def antconc2ucs8_converter(request):
@@ -892,7 +876,7 @@ def hellinist_workbench(request):
     if httpGET_STATUS:
         redirect_path = "./"
         response = HttpResponseRedirect(redirect_path)
-        response.set_cookie('status', httpGET_STATUS)
+        response.set_cookie('status', httpGET_STATUS, request.path)
         return response
 
     COOKIES_STATUS = request.COOKIES.get('status', DEFAULT_STATUS)
