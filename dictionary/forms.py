@@ -8,6 +8,8 @@ from django.forms.widgets import Widget
 from django.forms.widgets import SelectMultiple
 from django.utils.safestring import mark_safe
 
+import dictionary.viewmodels
+
 from custom_user.models import CustomUser
 from dictionary.models import Entry
 from dictionary.models import Meaning
@@ -139,14 +141,7 @@ class SelectMultipleAutocomplete(SelectMultiple):
 
 BLANKLABEL = ''
 
-AUTHOR_CHOICES = (
-    ('all',  u'все авторы'),
-    ('none', u'статьи без автора'),
-    (BLANKLABEL, [
-        (author.id, author.__unicode__())
-        for author in CustomUser.objects.filter(groups__name=u'authors')
-    ]),
-)
+AUTHOR_CHOICES = dictionary.viewmodels.tupleAuthors
 
 SORTDIR_CHOICES = (
     ('',  u'по возрастанию'),
@@ -165,11 +160,7 @@ def category_values(category):
         in CategoryValue.objects.filter(category__slug=category)
     ]
 
-STATUS_CHOICES = (
-    ('all',  u'любой'),
-    (BLANKLABEL, category_values('entryStatus')),
-)
-
+STATUS_CHOICES = dictionary.viewmodels.tupleStatuses
 POS_CHOICES = (
     ('all',  u'любая'),
     ('none', u'не определена'),

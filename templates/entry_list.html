@@ -7,6 +7,10 @@
 {% block subheader %}
 
     <div class="filters">
+        <div class="f5s--statusbar">
+            <span data-bind='text: authorObj().name, visible: author() != "all"'></span>
+            <span data-bind='text: statusObj().name, visible: status() != "all"'></span>
+        </div>
         <div class="f5s--dashboard">
 
             <div class="f5sD--sort">
@@ -266,9 +270,29 @@
             sortdir: ko.observable('{{ filters.sortdir }}'),
             sortbase: ko.observable('{{ filters.sortbase }}'),
             find: vM.hdrSearch.searchPrefix,
-            authors: ko.observableArray(),
+            author: ko.observable('{{ filters.author }}'),
             status: ko.observable('{{ filters.status }}')
         };
+
+        vM.filters['index2obj'] = function(field, value){
+            var representer = function(item){ return item.id; },
+                arr = ko.utils.arrayMap(field.list(), representer),
+                index = ko.utils.arrayIndexOf(arr, value);
+            if (index < 0) throw new Error('Элемент в массиве не найден.');
+            return field.list()[index];
+        };
+
+        vM.filters.author.list = ko.observableArray({{ viewmodel.authors }});
+        vM.filters.status.list = ko.observableArray({{ viewmodel.statuses }});
+
+        vM.filters.authorObj = ko.computed(
+            function(){ return this.index2obj(this.author, this.author()); },
+            vM.filters
+        );
+        vM.filters.statusObj = ko.computed(
+            function(){ return this.index2obj(this.status, this.status()); },
+            vM.filters
+        );
 
         vM.filters.sort = ko.computed({
             read: function(){
@@ -291,7 +315,19 @@
             this.form.submit();
         };
 
-        //$('#id_author').attr('data-bind', 'options: authors');
+        $('#id_author').attr('data-bind',
+                'options: author.list,' +
+                'value: author,' +
+                'optionsText: "name",' +
+                'optionsValue: "id"'
+                );
+
+        $('#id_status').attr('data-bind',
+                'options: status.list,' +
+                'value: status,' +
+                'optionsText: "name",' +
+                'optionsValue: "id"'
+                );
 
         ko.applyBindings(vM.filters, $('.filters').get(0));
         ko.applyBindings(vM.filters, $('#main').get(0));

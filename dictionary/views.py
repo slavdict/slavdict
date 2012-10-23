@@ -21,6 +21,7 @@ from django.shortcuts import redirect
 from django.template import RequestContext
 
 import dictionary.models
+import dictionary.viewmodels
 import unicode_csv
 from custom_user.models import CustomUser
 from dictionary.forms import BilletImportForm
@@ -764,11 +765,11 @@ def entry_list(request, mine=False, duplicates=False):
     except (EmptyPage, InvalidPage):
         page = paginator.page(paginator.num_pages)
 
-    authors = [ {'id': u.id, 'name': u.__unicode__()} for u in CustomUser.objects.filter(groups__name=u'authors')]
-    authors = [ {'id':'all', 'name': u'Все авторы'}, {'id':'none', 'name': u'Статьи без автора'} ] + authors
-
     context = {
-        'authors': json.dumps(authors, ensure_ascii=False, separators=(',',':')),
+        'viewmodel': {
+            'authors': dictionary.viewmodels.jsonAuthors,
+            'statuses': dictionary.viewmodels.jsonStatuses,
+            },
         'entries': page.object_list,
         'form': form,
         'mine': mine,
