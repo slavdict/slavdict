@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 
-{% set find_prefix = form['find'].value() %}
 {% set sort = form['sortdir'].value() + form['sortbase'].value() %}
 {% set filters = form.cleaned_data %}
 
@@ -8,14 +7,24 @@
 
     <div class="filters">
         <div class="f5s--statusbar">
-            <span data-bind='text: authorObj().name, visible: author() != "all"'></span>
-            <span data-bind='text: statusObj().name, visible: status() != "all"'></span>
+            <span data-bind="visible: author() != 'all'">
+                <span data-bind="text: authorObj().name"></span>
+            </span>
+            <span data-bind="visible: find()">
+                на
+                <span data-bind="text: find"></span>
+            </span>
+            <span data-bind="visible: status() != 'all'">
+                <span data-bind="text: statusObj().name"></span>
+            </span>
         </div>
         <div class="f5s--dashboard">
 
             <div class="f5sD--sort">
             <h3>Упорядочить статьи</h3>
-            {{ form.sortdir }} на основе {{ form.sortbase }}
+
+                {{ form.sortdir }} на основе {{ form.sortbase }}
+
             </div>
 
             <div class="f5sD--filter">
@@ -79,9 +88,9 @@
 
     {% if not entries %}
         <div class="message">
-        {% if find_prefix %}
+        {% if filters.find %}
             К сожалению, ни одной словарной статьи, начинающейся <span
-            class="nowrap">с <b class="red caps">{{ find_prefix.lower() }}...</b>, не найдено.</span>
+            class="nowrap">с <b class="red caps">{{ filters.find.lower() }}...</b>, не найдено.</span>
             Пожалуйста, проверьте Ваш запрос на наличие опечаток или измените его
             в целях поиска другого слова. Поиск производится без учёта регистра символов.
         {% else %}{% if mine %}
@@ -269,7 +278,7 @@
             form: vM.hdrSearch.form,
             sortdir: ko.observable('{{ filters.sortdir }}'),
             sortbase: ko.observable('{{ filters.sortbase }}'),
-            find: ko.observable('{{ search_prefix }}'),
+            find: ko.observable('{{ filters.find }}'),
             author: ko.observable('{{ filters.author }}'),
             status: ko.observable('{{ filters.status }}')
         };
@@ -315,19 +324,19 @@
             this.form.submit();
         };
 
+        $('#id_find').attr('data-bind',
+                'value: find,' +
+                'valueUpdate: "afterkeydown"');
         $('#id_author').attr('data-bind',
                 'options: author.list,' +
                 'value: author,' +
                 'optionsText: "name",' +
-                'optionsValue: "id"'
-                );
-
+                'optionsValue: "id"');
         $('#id_status').attr('data-bind',
                 'options: status.list,' +
                 'value: status,' +
                 'optionsText: "name",' +
-                'optionsValue: "id"'
-                );
+                'optionsValue: "id"');
 
         ko.applyBindings(vM.filters, $('.filters').get(0));
         ko.applyBindings(vM.filters, $('#main').get(0));

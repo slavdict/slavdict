@@ -750,8 +750,7 @@ def entry_list(request, mine=False, duplicates=False):
             data['find'] = request.POST['hdrSearch']
 
     form = FilterEntriesForm(data)
-    if not form.is_valid():
-        raise NameError('Форма заполнена неправильно')
+    assert form.is_valid(), u'Форма заполнена неправильно'
     entries = _get_entries(form.cleaned_data)
 
     if mine:
