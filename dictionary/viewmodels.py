@@ -25,10 +25,24 @@ authors = [
     for u in CustomUser.objects.filter(groups__name=u'authors')
 ]
 
+sortdir = (
+    {'id': '', 'name': u'по возрастанию'},
+    {'id': '-','name': u'по убыванию'},
+)
+
+sortbase = (
+    {'id': 'alph', 'name': u'гражданского написания'},
+    {'id': 't',    'name': u'времени изменения'},
+)
+
 statuses = [ {'id': 'all', 'name': u'любой'}, ] + category_values('entryStatus')
 
 jsonAuthors = _json(authors)
+jsonSortbase = _json(sortbase)
+jsonSortdir = _json(sortdir)
 jsonStatuses = _json(statuses)
 
 tupleAuthors = _tuple(authors)
+tupleSortbase = _tuple(sortbase)
+tupleSortdir = _tuple(sortdir)
 tupleStatuses = _tuple(statuses)

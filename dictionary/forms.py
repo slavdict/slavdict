@@ -142,16 +142,9 @@ class SelectMultipleAutocomplete(SelectMultiple):
 BLANKLABEL = ''
 
 AUTHOR_CHOICES = dictionary.viewmodels.tupleAuthors
-
-SORTDIR_CHOICES = (
-    ('',  u'по возрастанию'),
-    ('-', u'по убыванию'),
-)
-
-SORTBASE_CHOICES = (
-    ('alph', u'гражданского написания'),
-    ('t',    u'времени изменения'),
-)
+SORTDIR_CHOICES = dictionary.viewmodels.tupleSortdir
+SORTBASE_CHOICES = dictionary.viewmodels.tupleSortbase
+STATUS_CHOICES = dictionary.viewmodels.tupleStatuses
 
 def category_values(category):
     return [
@@ -160,7 +153,6 @@ def category_values(category):
         in CategoryValue.objects.filter(category__slug=category)
     ]
 
-STATUS_CHOICES = dictionary.viewmodels.tupleStatuses
 POS_CHOICES = (
     ('all',  u'любая'),
     ('none', u'не определена'),

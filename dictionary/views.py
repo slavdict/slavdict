@@ -773,6 +773,8 @@ def entry_list(request, mine=False, duplicates=False):
         'viewmodel': {
             'authors': dictionary.viewmodels.jsonAuthors,
             'statuses': dictionary.viewmodels.jsonStatuses,
+            'sortdir': dictionary.viewmodels.jsonSortdir,
+            'sortbase': dictionary.viewmodels.jsonSortbase,
             },
         'entries': page.object_list,
         'form': form,
