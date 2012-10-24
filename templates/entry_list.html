@@ -8,14 +8,14 @@
     <div class="filters">
         <div class="f5s--statusbar">
             <span data-bind="visible: author() != 'all'">
-                <span data-bind="text: authorObj().name"></span>
+                <span data-bind="text: author.obj().name"></span>
             </span>
             <span data-bind="visible: find()">
                 на
                 <span data-bind="text: find"></span>
             </span>
             <span data-bind="visible: status() != 'all'">
-                <span data-bind="text: statusObj().name"></span>
+                <span data-bind="text: status.obj().name"></span>
             </span>
         </div>
         <div class="f5s--dashboard">
@@ -272,6 +272,19 @@
 {% block javascript %}
     <script type="text/javascript">
 
+        ko.observable.fn['objList'] = function(objList){
+            this.list = ko.observableArray(objList);
+            this.obj = ko.computed(function(){ return this.index2obj(this()); }, this);
+            return this;
+        };
+        ko.observable.fn['index2obj'] = function(value){
+            var representer = function(item){ return item.id; },
+                arr = ko.utils.arrayMap(this.list(), representer),
+                index = ko.utils.arrayIndexOf(arr, value);
+            if (index < 0) throw new Error('Элемент в массиве не найден.');
+            return this.list()[index];
+        };
+
         var vM; if (!vM) vM = {};
 
         vM.filters = {
@@ -279,29 +292,10 @@
             sortdir: ko.observable('{{ filters.sortdir }}'),
             sortbase: ko.observable('{{ filters.sortbase }}'),
             find: ko.observable('{{ filters.find }}'),
-            author: ko.observable('{{ filters.author }}'),
-            status: ko.observable('{{ filters.status }}')
+            author: ko.observable('{{ filters.author }}').objList({{ viewmodel.authors }}),
+            status: ko.observable('{{ filters.status }}').objList({{ viewmodel.statuses }})
         };
 
-        vM.filters['index2obj'] = function(field, value){
-            var representer = function(item){ return item.id; },
-                arr = ko.utils.arrayMap(field.list(), representer),
-                index = ko.utils.arrayIndexOf(arr, value);
-            if (index < 0) throw new Error('Элемент в массиве не найден.');
-            return field.list()[index];
-        };
-
-        vM.filters.author.list = ko.observableArray({{ viewmodel.authors }});
-        vM.filters.status.list = ko.observableArray({{ viewmodel.statuses }});
-
-        vM.filters.authorObj = ko.computed(
-            function(){ return this.index2obj(this.author, this.author()); },
-            vM.filters
-        );
-        vM.filters.statusObj = ko.computed(
-            function(){ return this.index2obj(this.status, this.status()); },
-            vM.filters
-        );
 
         vM.filters.sort = ko.computed({
             read: function(){
