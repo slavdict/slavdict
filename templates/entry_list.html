@@ -269,7 +269,7 @@
             form: vM.hdrSearch.form,
             sortdir: ko.observable('{{ filters.sortdir }}'),
             sortbase: ko.observable('{{ filters.sortbase }}'),
-            find: vM.hdrSearch.searchPrefix,
+            find: ko.observable('{{ search_prefix }}'),
             author: ko.observable('{{ filters.author }}'),
             status: ko.observable('{{ filters.status }}')
         };

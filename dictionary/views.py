@@ -737,15 +737,20 @@ def entry_list(request, mine=False, duplicates=False):
     if 'find' in request.COOKIES:
         request.COOKIES['find'] = base64.standard_b64decode(request.COOKIES['find']).decode('utf8')
 
-    if request.method == 'POST':
-        data = request.POST
+    if request.method == 'POST' and len(request.POST) > 1:
+        data = request.POST.copy() # Сам по себе объект QueryDict, на который указывает request.POST,
+            # является неизменяемым. Метод ``copy()`` делает его полную уже доступную для изменения
+            # копию.
+        if request.POST['hdrSearch']:
+            data['find'] = request.POST['hdrSearch']
     else:
         data = dict(FilterEntriesForm.default_data)
         data.update(request.COOKIES)
+        if request.method == 'POST' and len(request.POST) == 1 and 'hdrSearch' in request.POST:
+            data['find'] = request.POST['hdrSearch']
 
     form = FilterEntriesForm(data)
     if not form.is_valid():
-        import code; code.interact(local=locals())
         raise NameError('Форма заполнена неправильно')
     entries = _get_entries(form.cleaned_data)
 

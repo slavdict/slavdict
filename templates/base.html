@@ -22,8 +22,9 @@
                     <a href="{% url admin:dictionary_entry_add %}" class="header--item button">+</a>
                 {% endif %}
 
+                <span style="position: relative;">
 
-                    <input type="text" name="find" class="header--item-left header--item-block search"
+                    <input type="text" name="hdrSearch" class="header--item-left header--item-block search"
                        data-bind="
                             value: searchPrefix,
                             valueUpdate: 'afterkeydown',
@@ -33,7 +34,7 @@
                     /><span class="header--item-right button"
                             data-bind="click: form.submit">Найти</span>
 
-                    <ul class="foundItems hidden"
+                    <ul class="SC--foundItems hidden"
                         data-bind="foreach: foundItems,
                         css: { hidden: foundItems().length == 0 }">
 
@@ -50,6 +51,8 @@
                         </li>
 
                     </ul>
+
+                </span>
 
                 <a href="{% url converter %}" class="header--item button">Конвертър</a>
 
@@ -102,7 +105,7 @@
             }
 
             var vM = { hdrSearch: {
-                searchPrefix: ko.observable( '{{ find_prefix }}' ),
+                searchPrefix: ko.observable(),
                 foundItems: ko.observableArray(),
                 focusedItem: ko.observable(),
                 form: $('.headerForm')
@@ -136,7 +139,10 @@
                 window.location.href = item.url;
             };
 
-            vM.hdrSearch.flushItems = function() { this.foundItems.splice(0); }.bind(vM.hdrSearch);
+            vM.hdrSearch.flushItems = function() {
+                this.foundItems.splice(0);
+                this.focusedItem(null);
+            }.bind(vM.hdrSearch);
 
             vM.hdrSearch.navigateFoundItems = function(vM, event) {
                 if (event.which == 40) { // down arrow key
@@ -145,7 +151,7 @@
                     vM.moveFocusUp();
                 } else if (event.which == 13) { // enter key
                     if (vM.focusedItem()) vM.go(vM.focusedItem());
-                    else $('.header form').submit();
+                    else vM.form.submit();
                 } else if (event.which == 27) { // esc key
                     vM.foundItems.splice(0);
                 } else {
@@ -154,7 +160,7 @@
             };
 
             vM.hdrSearch.searchPrefix.subscribe(function(newValue) {
-                if (newValue) {
+                if (/^[а-яА-Я]+$/.test(newValue)) {
                     var dataToSend = { find: newValue };
                     if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
                     this.lastItemsRequest = $.getJSON(
