@@ -37,12 +37,19 @@ sortbase = (
 
 statuses = [ {'id': 'all', 'name': u'любой'}, ] + category_values('entryStatus')
 
+pos = [
+    {'id': 'all',  'name': u'любая'},
+    {'id': 'none', 'name': u'где часть речи не указана'},
+] + category_values('partOfSpeech')
+
 jsonAuthors = _json(authors)
+jsonPos = _json(pos)
 jsonSortbase = _json(sortbase)
 jsonSortdir = _json(sortdir)
 jsonStatuses = _json(statuses)
 
 tupleAuthors = _tuple(authors)
+tuplePos = _tuple(pos)
 tupleSortbase = _tuple(sortbase)
 tupleSortdir = _tuple(sortdir)
 tupleStatuses = _tuple(statuses)

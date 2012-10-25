@@ -772,6 +772,7 @@ def entry_list(request, mine=False, duplicates=False):
     context = {
         'viewmodel': {
             'authors': dictionary.viewmodels.jsonAuthors,
+            'pos': dictionary.viewmodels.jsonPos,
             'statuses': dictionary.viewmodels.jsonStatuses,
             'sortdir': dictionary.viewmodels.jsonSortdir,
             'sortbase': dictionary.viewmodels.jsonSortbase,

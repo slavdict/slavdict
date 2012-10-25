@@ -142,6 +142,7 @@ class SelectMultipleAutocomplete(SelectMultiple):
 BLANKLABEL = ''
 
 AUTHOR_CHOICES = dictionary.viewmodels.tupleAuthors
+POS_CHOICES = dictionary.viewmodels.tuplePos
 SORTDIR_CHOICES = dictionary.viewmodels.tupleSortdir
 SORTBASE_CHOICES = dictionary.viewmodels.tupleSortbase
 STATUS_CHOICES = dictionary.viewmodels.tupleStatuses
@@ -152,12 +153,6 @@ def category_values(category):
         for item
         in CategoryValue.objects.filter(category__slug=category)
     ]
-
-POS_CHOICES = (
-    ('all',  u'любая'),
-    ('none', u'не определена'),
-    (BLANKLABEL, category_values('partOfSpeech')),
-)
 
 GENDER_CHOICES = (
     ('all',  u'любой'),

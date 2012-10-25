@@ -7,17 +7,21 @@
 
     <div class="filters">
         <div class="f5s--statusbar" data-bind="visible: notDefaultValues">
-            Фильтры:
+            Выбранные фильтры:
             <span data-bind="visible: find()">
                 статьи на
                 <span data-bind="text: find"></span>
             </span>
-            <span data-bind="visible: author() != 'all'">
+            <span data-bind="visible: !author.isDefaultValue()">
                 <span data-bind="text: author.obj().name"></span>
             </span>
-            <span data-bind="visible: status() != 'all'">
+            <span data-bind="visible: !status.isDefaultValue()">
                 <span data-bind="text: status.obj().name"></span>
             </span>
+            <span data-bind="visible: !pos.isDefaultValue()">
+                <span data-bind="text: pos.obj().name"></span>
+            </span>
+            <span data-bind="visible: uninflected">неизм.</span>
         </div>
         <div class="f5s--dashboard">
 
@@ -283,6 +287,10 @@
                 'optionsValue: "id"');
             return this;
         };
+        ko.observable.fn['htmlCheckbox'] = function(name){
+            $('#id_' + name).attr('data-bind', 'checked: ' + name);
+            return this;
+        };
         ko.observable.fn['index2obj'] = function(value){
             var representer = function(item){ return item.id; },
                 arr = ko.utils.arrayMap(this.list(), representer),
@@ -295,18 +303,51 @@
             }
             return this.list()[index];
         };
+        ko.observable.fn['rememberDefault'] = function(defaultValue){
+            this.defaultValue = defaultValue;
+            this.getDefaultValue = function(){ this(this.defaultValue); return this; };
+            this.isDefaultValue = function(){ return this() === this.defaultValue; };
+            return this;
+        };
+        ko.observable.fn['rememberInitial'] = function(initial){
+            this.initialValue = initial;
+            this.getInitialValue = function(){ this(this.initialValue); return this; };
+            this.isInitialValue = function(){ return this() === this.initialValue; };
+            return this.getInitialValue();
+        };
 
         var vM; if (!vM) vM = {};
 
         vM.filters = {
             form: vM.hdrSearch.form,
 
-            find: ko.observable('{{ filters.find }}'),
+            find: ko.observable()
+                .rememberInitial('{{ filters.find }}')
+                .rememberDefault(''),
 
-            author: ko.observable('{{ filters.author }}').htmlSelect('author', {{ viewmodel.authors }}),
-            sortbase: ko.observable('{{ filters.sortbase }}').htmlSelect('sortbase', {{ viewmodel.sortbase }}),
-            sortdir: ko.observable('{{ filters.sortdir }}').htmlSelect('sortdir', {{ viewmodel.sortdir }}),
-            status: ko.observable('{{ filters.status }}').htmlSelect('status', {{ viewmodel.statuses }})
+            author: ko.observable()
+                .rememberInitial('{{ filters.author }}')
+                .rememberDefault('all')
+                .htmlSelect('author', {{ viewmodel.authors }}),
+
+            sortbase: ko.observable('{{ filters.sortbase }}')
+                .htmlSelect('sortbase', {{ viewmodel.sortbase }}),
+
+            sortdir: ko.observable('{{ filters.sortdir }}')
+                .htmlSelect('sortdir', {{ viewmodel.sortdir }}),
+
+            status: ko.observable()
+                .rememberInitial('{{ filters.status }}')
+                .rememberDefault('all')
+                .htmlSelect('status', {{ viewmodel.statuses }}),
+
+            pos: ko.observable()
+                .rememberInitial('{{ filters.pos }}')
+                .rememberDefault('all')
+                .htmlSelect('pos', {{ viewmodel.pos }}),
+
+            uninflected: ko.observable({{ 'true' if filters.uninflected else 'false' }})
+                .htmlCheckbox('uninflected')
         };
 
         vM.filters.sort = ko.computed({
@@ -331,8 +372,9 @@
         };
 
         vM.filters.notDefaultValues = ko.computed(function(){
-            return (this.find() || this.author() != 'all'
-                    || this.status() != 'all')
+            return (this.find() || !this.author.isDefaultValue()
+                || !this.status.isDefaultValue()
+                || this.uninflected())
         }, vM.filters);
 
         $('#id_find').attr('data-bind',
