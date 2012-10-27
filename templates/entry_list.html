@@ -10,44 +10,52 @@
 
             Выбранные фильтры:
 
-            <span data-bind="visible: find">
+            <span class="f5sS--item" data-bind="visible: find">
                 статьи на
                 <span data-bind="text: find"></span>
             </span>
 
-            <span data-bind="visible: !author.hasDefaultValue()">
+            <span class="f5sS--item" data-bind="visible: !author.hasDefaultValue()">
                 <span data-bind="text: author.obj().name"></span>
             </span>
 
-            <span data-bind="visible: !status.hasDefaultValue()">
+            <span class="f5sS--item" data-bind="visible: !status.hasDefaultValue()">
                 <span data-bind="text: status.obj().name"></span>
             </span>
 
-            <span data-bind="visible: !pos.hasDefaultValue()">
+            <span class="f5sS--item" data-bind="visible: !pos.hasDefaultValue()">
                 <span data-bind="text: pos.obj().name"></span>
             </span>
 
-            <span data-bind="visible: uninflected">неизм.</span>
+            <span class="f5sS--item" data-bind="visible: uninflected">неизм.</span>
 
-            <span data-bind="visible: !gender.hasDefaultValue()">
+            <span class="f5sS--item" data-bind="visible: !gender.hasDefaultValue()">
                 <span data-bind="text: gender.obj().name"></span>
             </span>
 
-            <span data-bind="visible: !tantum.hasDefaultValue()">
+            <span class="f5sS--item" data-bind="visible: !tantum.hasDefaultValue()">
                 <span data-bind="text: tantum.obj().name"></span>
             </span>
 
-            <span data-bind="visible: !possessive.hasDefaultValue()">
+            <span class="f5sS--item" data-bind="visible: !possessive.hasDefaultValue()">
                 <span data-bind="text: possessive.obj().name"></span>
             </span>
 
-            <span data-bind="visible: !onym.hasDefaultValue()">
+            <span class="f5sS--item" data-bind="visible: !onym.hasDefaultValue()">
                 <span data-bind="text: onym.obj().name"></span>
             </span>
 
-            <span data-bind="visible: !canonical_name.hasDefaultValue()">
+            <span class="f5sS--item" data-bind="visible: !canonical_name.hasDefaultValue()">
                 <span data-bind="text: canonical_name.obj().name"></span>
             </span>
+
+            <span class="f5sS--item" data-bind="visible: etymology">с этимологией</span>
+
+            <span class="f5sS--item" data-bind="visible: additional_info">с примечаниями</span>
+
+            <span class="f5sS--item" data-bind="visible: homonym">омонимы</span>
+
+            <span class="f5sS--item" data-bind="visible: duplicate">дубликаты</span>
 
         </div>
         <div class="f5s--dashboard">
@@ -401,7 +409,27 @@
             canonical_name: ko.observable()
                 .rememberInitial('{{ filters.canonical_name }}')
                 .rememberDefault('all')
-                .htmlSelect('canonical_name', {{ viewmodel.canonical_name }})
+                .htmlSelect('canonical_name', {{ viewmodel.canonical_name }}),
+
+            etymology: ko.observable()
+                .rememberInitial({{ 'true' if filters.etymology else 'false' }})
+                .rememberDefault(false)
+                .htmlCheckbox('etymology'),
+
+            additional_info: ko.observable()
+                .rememberInitial({{ 'true' if filters.additional_info else 'false' }})
+                .rememberDefault(false)
+                .htmlCheckbox('additional_info'),
+
+            homonym: ko.observable()
+                .rememberInitial({{ 'true' if filters.homonym else 'false' }})
+                .rememberDefault(false)
+                .htmlCheckbox('homonym'),
+
+            duplicate: ko.observable()
+                .rememberInitial({{ 'true' if filters.duplicate else 'false' }})
+                .rememberDefault(false)
+                .htmlCheckbox('duplicate')
         };
 
         vM.filters.sort = ko.computed({
@@ -436,6 +464,10 @@
                 || !this.possessive.hasDefaultValue()
                 || !this.onym.hasDefaultValue()
                 || !this.canonical_name.hasDefaultValue()
+                || !this.etymology.hasDefaultValue()
+                || !this.additional_info.hasDefaultValue()
+                || !this.homonym.hasDefaultValue()
+                || !this.duplicate.hasDefaultValue()
                 )
         }, vM.filters);
 
