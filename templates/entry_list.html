@@ -45,6 +45,10 @@
                 <span data-bind="text: onym.obj().name"></span>
             </span>
 
+            <span data-bind="visible: !canonical_name.hasDefaultValue()">
+                <span data-bind="text: canonical_name.obj().name"></span>
+            </span>
+
         </div>
         <div class="f5s--dashboard">
 
@@ -392,7 +396,12 @@
             onym: ko.observable()
                 .rememberInitial('{{ filters.onym }}')
                 .rememberDefault('all')
-                .htmlSelect('onym', {{ viewmodel.onym }})
+                .htmlSelect('onym', {{ viewmodel.onym }}),
+
+            canonical_name: ko.observable()
+                .rememberInitial('{{ filters.canonical_name }}')
+                .rememberDefault('all')
+                .htmlSelect('canonical_name', {{ viewmodel.canonical_name }})
         };
 
         vM.filters.sort = ko.computed({
@@ -426,6 +435,7 @@
                 || !this.tantum.hasDefaultValue()
                 || !this.possessive.hasDefaultValue()
                 || !this.onym.hasDefaultValue()
+                || !this.canonical_name.hasDefaultValue()
                 )
         }, vM.filters);
 

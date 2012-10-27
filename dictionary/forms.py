@@ -139,9 +139,8 @@ class SelectMultipleAutocomplete(SelectMultiple):
 
 
 
-BLANKLABEL = ''
-
 AUTHOR_CHOICES = dictionary.viewmodels.tupleAuthors
+CANONNAME_CHOICES = dictionary.viewmodels.tupleCanonicalName
 GENDER_CHOICES = dictionary.viewmodels.tupleGenders
 ONYM_CHOICES = dictionary.viewmodels.tupleOnyms
 POS_CHOICES = dictionary.viewmodels.tuplePos
@@ -150,19 +149,6 @@ SORTDIR_CHOICES = dictionary.viewmodels.tupleSortdir
 SORTBASE_CHOICES = dictionary.viewmodels.tupleSortbase
 STATUS_CHOICES = dictionary.viewmodels.tupleStatuses
 TANTUM_CHOICES = dictionary.viewmodels.tupleTantum
-
-def category_values(category):
-    return [
-        (item.id, item.tag)
-        for item
-        in CategoryValue.objects.filter(category__slug=category)
-    ]
-
-CANONNAME_CHOICES = (
-    ('all',  u'все имена'),
-    (1, u'только канонические'),
-    (0, u'только неканонические'),
-)
 
 class FilterEntriesForm(forms.Form):
     sortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)

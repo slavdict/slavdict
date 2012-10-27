@@ -772,6 +772,7 @@ def entry_list(request, mine=False, duplicates=False):
     context = {
         'viewmodel': {
             'authors': dictionary.viewmodels.jsonAuthors,
+            'canonical_name': dictionary.viewmodels.jsonCanonicalName,
             'gender': dictionary.viewmodels.jsonGenders,
             'onym': dictionary.viewmodels.jsonOnyms,
             'pos': dictionary.viewmodels.jsonPos,

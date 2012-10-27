@@ -25,6 +25,12 @@ authors = [
     for u in CustomUser.objects.filter(groups__name=u'authors')
 ]
 
+canonical_name = (
+    {'id': 'all', 'name': u'все имена'},
+    {'id': '1',   'name': u'только канонические'},
+    {'id': '0',   'name': u'только неканонические'},
+)
+
 genders = [
     {'id': 'all',  'name': u'любой'},
     {'id': 'none', 'name': u'где род не указан'},
@@ -63,7 +69,9 @@ tantum = [
 
 statuses = [ {'id': 'all', 'name': u'любой'}, ] + category_values('entryStatus')
 
+
 jsonAuthors = _json(authors)
+jsonCanonicalName = _json(canonical_name)
 jsonGenders = _json(genders)
 jsonOnyms = _json(onyms)
 jsonPos = _json(pos)
@@ -74,6 +82,7 @@ jsonStatuses = _json(statuses)
 jsonTantum = _json(tantum)
 
 tupleAuthors = _tuple(authors)
+tupleCanonicalName = _tuple(canonical_name)
 tupleGenders = _tuple(genders)
 tupleOnyms = _tuple(onyms)
 tuplePos = _tuple(pos)
