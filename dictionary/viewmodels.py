@@ -25,6 +25,16 @@ authors = [
     for u in CustomUser.objects.filter(groups__name=u'authors')
 ]
 
+genders = [
+    {'id': 'all',  'name': u'любой'},
+    {'id': 'none', 'name': u'где род не указан'},
+] + category_values('gender')
+
+pos = [
+    {'id': 'all',  'name': u'любая'},
+    {'id': 'none', 'name': u'где часть речи не указана'},
+] + category_values('partOfSpeech')
+
 sortdir = (
     {'id': '', 'name': u'по возрастанию'},
     {'id': '-','name': u'по убыванию'},
@@ -37,18 +47,15 @@ sortbase = (
 
 statuses = [ {'id': 'all', 'name': u'любой'}, ] + category_values('entryStatus')
 
-pos = [
-    {'id': 'all',  'name': u'любая'},
-    {'id': 'none', 'name': u'где часть речи не указана'},
-] + category_values('partOfSpeech')
-
 jsonAuthors = _json(authors)
+jsonGenders = _json(genders)
 jsonPos = _json(pos)
 jsonSortbase = _json(sortbase)
 jsonSortdir = _json(sortdir)
 jsonStatuses = _json(statuses)
 
 tupleAuthors = _tuple(authors)
+tupleGenders = _tuple(genders)
 tuplePos = _tuple(pos)
 tupleSortbase = _tuple(sortbase)
 tupleSortdir = _tuple(sortdir)

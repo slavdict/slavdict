@@ -8,20 +8,23 @@
     <div class="filters">
         <div class="f5s--statusbar" data-bind="visible: notDefaultValues">
             Выбранные фильтры:
-            <span data-bind="visible: find()">
+            <span data-bind="visible: find">
                 статьи на
                 <span data-bind="text: find"></span>
             </span>
-            <span data-bind="visible: !author.isDefaultValue()">
+            <span data-bind="visible: !author.hasDefaultValue()">
                 <span data-bind="text: author.obj().name"></span>
             </span>
-            <span data-bind="visible: !status.isDefaultValue()">
+            <span data-bind="visible: !status.hasDefaultValue()">
                 <span data-bind="text: status.obj().name"></span>
             </span>
-            <span data-bind="visible: !pos.isDefaultValue()">
+            <span data-bind="visible: !pos.hasDefaultValue()">
                 <span data-bind="text: pos.obj().name"></span>
             </span>
             <span data-bind="visible: uninflected">неизм.</span>
+            <span data-bind="visible: !gender.hasDefaultValue()">
+                <span data-bind="text: gender.obj().name"></span>
+            </span>
         </div>
         <div class="f5s--dashboard">
 
@@ -306,13 +309,13 @@
         ko.observable.fn['rememberDefault'] = function(defaultValue){
             this.defaultValue = defaultValue;
             this.getDefaultValue = function(){ this(this.defaultValue); return this; };
-            this.isDefaultValue = function(){ return this() === this.defaultValue; };
+            this.hasDefaultValue = function(){ return this() === this.defaultValue; };
             return this;
         };
         ko.observable.fn['rememberInitial'] = function(initial){
             this.initialValue = initial;
             this.getInitialValue = function(){ this(this.initialValue); return this; };
-            this.isInitialValue = function(){ return this() === this.initialValue; };
+            this.hasInitialValue = function(){ return this() === this.initialValue; };
             return this.getInitialValue();
         };
 
@@ -346,8 +349,15 @@
                 .rememberDefault('all')
                 .htmlSelect('pos', {{ viewmodel.pos }}),
 
-            uninflected: ko.observable({{ 'true' if filters.uninflected else 'false' }})
-                .htmlCheckbox('uninflected')
+            uninflected: ko.observable()
+                .rememberInitial({{ 'true' if filters.uninflected else 'false' }})
+                .rememberDefault(false)
+                .htmlCheckbox('uninflected'),
+
+            gender: ko.observable()
+                .rememberInitial('{{ filters.gender }}')
+                .rememberDefault('all')
+                .htmlSelect('gender', {{ viewmodel.gender }})
         };
 
         vM.filters.sort = ko.computed({
@@ -372,9 +382,11 @@
         };
 
         vM.filters.notDefaultValues = ko.computed(function(){
-            return (this.find() || !this.author.isDefaultValue()
-                || !this.status.isDefaultValue()
-                || this.uninflected())
+            return (!this.find.hasDefaultValue()
+                || !this.author.hasDefaultValue()
+                || !this.status.hasDefaultValue()
+                || !this.uninflected.hasDefaultValue()
+                || !this.gender.hasDefaultValue())
         }, vM.filters);
 
         $('#id_find').attr('data-bind',
