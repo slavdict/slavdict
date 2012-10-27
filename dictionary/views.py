@@ -774,6 +774,7 @@ def entry_list(request, mine=False, duplicates=False):
             'authors': dictionary.viewmodels.jsonAuthors,
             'gender': dictionary.viewmodels.jsonGenders,
             'pos': dictionary.viewmodels.jsonPos,
+            'possessive': dictionary.viewmodels.jsonPossessive,
             'statuses': dictionary.viewmodels.jsonStatuses,
             'sortdir': dictionary.viewmodels.jsonSortdir,
             'sortbase': dictionary.viewmodels.jsonSortbase,

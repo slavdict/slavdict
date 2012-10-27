@@ -144,6 +144,7 @@ BLANKLABEL = ''
 AUTHOR_CHOICES = dictionary.viewmodels.tupleAuthors
 GENDER_CHOICES = dictionary.viewmodels.tupleGenders
 POS_CHOICES = dictionary.viewmodels.tuplePos
+POSSESSIVE_CHOICES = dictionary.viewmodels.tuplePossessive
 SORTDIR_CHOICES = dictionary.viewmodels.tupleSortdir
 SORTBASE_CHOICES = dictionary.viewmodels.tupleSortbase
 STATUS_CHOICES = dictionary.viewmodels.tupleStatuses
@@ -166,12 +167,6 @@ CANONNAME_CHOICES = (
     ('all',  u'все имена'),
     (1, u'только канонические'),
     (0, u'только неканонические'),
-)
-
-POSSESSIVE_CHOICES = (
-    ('all',  u''),
-    (1, u'притяжательные'),
-    (0, u'непритяжательные'),
 )
 
 class FilterEntriesForm(forms.Form):

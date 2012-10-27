@@ -37,6 +37,10 @@
                 <span data-bind="text: tantum.obj().name"></span>
             </span>
 
+            <span data-bind="visible: !possessive.hasDefaultValue()">
+                <span data-bind="text: possessive.obj().name"></span>
+            </span>
+
         </div>
         <div class="f5s--dashboard">
 
@@ -374,7 +378,12 @@
             tantum: ko.observable()
                 .rememberInitial('{{ filters.tantum }}')
                 .rememberDefault('all')
-                .htmlSelect('tantum', {{ viewmodel.tantum }})
+                .htmlSelect('tantum', {{ viewmodel.tantum }}),
+
+            possessive: ko.observable()
+                .rememberInitial('{{ filters.possessive }}')
+                .rememberDefault('all')
+                .htmlSelect('possessive', {{ viewmodel.possessive }})
         };
 
         vM.filters.sort = ko.computed({
@@ -406,6 +415,7 @@
                 || !this.uninflected.hasDefaultValue()
                 || !this.gender.hasDefaultValue()
                 || !this.tantum.hasDefaultValue()
+                || !this.possessive.hasDefaultValue()
                 )
         }, vM.filters);
 

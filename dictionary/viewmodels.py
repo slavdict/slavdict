@@ -35,9 +35,15 @@ pos = [
     {'id': 'none', 'name': u'где часть речи не указана'},
 ] + category_values('partOfSpeech')
 
+possessive = (
+    {'id': 'all', 'name': u''},
+    {'id': '1',   'name': u'притяжательные'},
+    {'id': '0',   'name': u'непритяжательные'},
+)
+
 sortdir = (
-    {'id': '', 'name': u'по возрастанию'},
-    {'id': '-','name': u'по убыванию'},
+    {'id': '',  'name': u'по возрастанию'},
+    {'id': '-', 'name': u'по убыванию'},
 )
 
 sortbase = (
@@ -55,6 +61,7 @@ statuses = [ {'id': 'all', 'name': u'любой'}, ] + category_values('entrySta
 jsonAuthors = _json(authors)
 jsonGenders = _json(genders)
 jsonPos = _json(pos)
+jsonPossessive = _json(possessive)
 jsonSortbase = _json(sortbase)
 jsonSortdir = _json(sortdir)
 jsonStatuses = _json(statuses)
@@ -63,6 +70,7 @@ jsonTantum = _json(tantum)
 tupleAuthors = _tuple(authors)
 tupleGenders = _tuple(genders)
 tuplePos = _tuple(pos)
+tuplePossessive = _tuple(possessive)
 tupleSortbase = _tuple(sortbase)
 tupleSortdir = _tuple(sortdir)
 tupleStatuses = _tuple(statuses)
