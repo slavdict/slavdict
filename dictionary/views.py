@@ -777,6 +777,7 @@ def entry_list(request, mine=False, duplicates=False):
             'statuses': dictionary.viewmodels.jsonStatuses,
             'sortdir': dictionary.viewmodels.jsonSortdir,
             'sortbase': dictionary.viewmodels.jsonSortbase,
+            'tantum': dictionary.viewmodels.jsonTantum,
             },
         'entries': page.object_list,
         'form': form,

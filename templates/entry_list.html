@@ -7,24 +7,36 @@
 
     <div class="filters">
         <div class="f5s--statusbar" data-bind="visible: notDefaultValues">
+
             Выбранные фильтры:
+
             <span data-bind="visible: find">
                 статьи на
                 <span data-bind="text: find"></span>
             </span>
+
             <span data-bind="visible: !author.hasDefaultValue()">
                 <span data-bind="text: author.obj().name"></span>
             </span>
+
             <span data-bind="visible: !status.hasDefaultValue()">
                 <span data-bind="text: status.obj().name"></span>
             </span>
+
             <span data-bind="visible: !pos.hasDefaultValue()">
                 <span data-bind="text: pos.obj().name"></span>
             </span>
+
             <span data-bind="visible: uninflected">неизм.</span>
+
             <span data-bind="visible: !gender.hasDefaultValue()">
                 <span data-bind="text: gender.obj().name"></span>
             </span>
+
+            <span data-bind="visible: !tantum.hasDefaultValue()">
+                <span data-bind="text: tantum.obj().name"></span>
+            </span>
+
         </div>
         <div class="f5s--dashboard">
 
@@ -357,7 +369,12 @@
             gender: ko.observable()
                 .rememberInitial('{{ filters.gender }}')
                 .rememberDefault('all')
-                .htmlSelect('gender', {{ viewmodel.gender }})
+                .htmlSelect('gender', {{ viewmodel.gender }}),
+
+            tantum: ko.observable()
+                .rememberInitial('{{ filters.tantum }}')
+                .rememberDefault('all')
+                .htmlSelect('tantum', {{ viewmodel.tantum }})
         };
 
         vM.filters.sort = ko.computed({
@@ -382,11 +399,14 @@
         };
 
         vM.filters.notDefaultValues = ko.computed(function(){
-            return (!this.find.hasDefaultValue()
+            return (
+                !this.find.hasDefaultValue()
                 || !this.author.hasDefaultValue()
                 || !this.status.hasDefaultValue()
                 || !this.uninflected.hasDefaultValue()
-                || !this.gender.hasDefaultValue())
+                || !this.gender.hasDefaultValue()
+                || !this.tantum.hasDefaultValue()
+                )
         }, vM.filters);
 
         $('#id_find').attr('data-bind',

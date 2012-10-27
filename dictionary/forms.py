@@ -147,6 +147,7 @@ POS_CHOICES = dictionary.viewmodels.tuplePos
 SORTDIR_CHOICES = dictionary.viewmodels.tupleSortdir
 SORTBASE_CHOICES = dictionary.viewmodels.tupleSortbase
 STATUS_CHOICES = dictionary.viewmodels.tupleStatuses
+TANTUM_CHOICES = dictionary.viewmodels.tupleTantum
 
 def category_values(category):
     return [
@@ -154,12 +155,6 @@ def category_values(category):
         for item
         in CategoryValue.objects.filter(category__slug=category)
     ]
-
-TANTUM_CHOICES = (
-    ('all',  u'любое'),
-    ('none', u'не определено'),
-    (BLANKLABEL, category_values('tantum')),
-)
 
 ONYM_CHOICES = (
     ('all',  u'любой'),

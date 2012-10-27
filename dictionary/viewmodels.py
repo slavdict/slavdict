@@ -45,6 +45,11 @@ sortbase = (
     {'id': 't',    'name': u'времени изменения'},
 )
 
+tantum = [
+    {'id': 'all',  'name': u'любое'},
+    {'id': 'none', 'name': u'где число не указано'},
+] + category_values('tantum')
+
 statuses = [ {'id': 'all', 'name': u'любой'}, ] + category_values('entryStatus')
 
 jsonAuthors = _json(authors)
@@ -53,6 +58,7 @@ jsonPos = _json(pos)
 jsonSortbase = _json(sortbase)
 jsonSortdir = _json(sortdir)
 jsonStatuses = _json(statuses)
+jsonTantum = _json(tantum)
 
 tupleAuthors = _tuple(authors)
 tupleGenders = _tuple(genders)
@@ -60,3 +66,4 @@ tuplePos = _tuple(pos)
 tupleSortbase = _tuple(sortbase)
 tupleSortdir = _tuple(sortdir)
 tupleStatuses = _tuple(statuses)
+tupleTantum = _tuple(tantum)
