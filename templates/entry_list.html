@@ -41,6 +41,10 @@
                 <span data-bind="text: possessive.obj().name"></span>
             </span>
 
+            <span data-bind="visible: !onym.hasDefaultValue()">
+                <span data-bind="text: onym.obj().name"></span>
+            </span>
+
         </div>
         <div class="f5s--dashboard">
 
@@ -383,7 +387,12 @@
             possessive: ko.observable()
                 .rememberInitial('{{ filters.possessive }}')
                 .rememberDefault('all')
-                .htmlSelect('possessive', {{ viewmodel.possessive }})
+                .htmlSelect('possessive', {{ viewmodel.possessive }}),
+
+            onym: ko.observable()
+                .rememberInitial('{{ filters.onym }}')
+                .rememberDefault('all')
+                .htmlSelect('onym', {{ viewmodel.onym }})
         };
 
         vM.filters.sort = ko.computed({
@@ -416,6 +425,7 @@
                 || !this.gender.hasDefaultValue()
                 || !this.tantum.hasDefaultValue()
                 || !this.possessive.hasDefaultValue()
+                || !this.onym.hasDefaultValue()
                 )
         }, vM.filters);
 

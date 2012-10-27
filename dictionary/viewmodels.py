@@ -30,6 +30,11 @@ genders = [
     {'id': 'none', 'name': u'где род не указан'},
 ] + category_values('gender')
 
+onyms = [
+    {'id': 'all',  'name': u'любой'},
+    {'id': 'none', 'name': u'не имя собственное'},
+] + category_values('onym')
+
 pos = [
     {'id': 'all',  'name': u'любая'},
     {'id': 'none', 'name': u'где часть речи не указана'},
@@ -60,6 +65,7 @@ statuses = [ {'id': 'all', 'name': u'любой'}, ] + category_values('entrySta
 
 jsonAuthors = _json(authors)
 jsonGenders = _json(genders)
+jsonOnyms = _json(onyms)
 jsonPos = _json(pos)
 jsonPossessive = _json(possessive)
 jsonSortbase = _json(sortbase)
@@ -69,6 +75,7 @@ jsonTantum = _json(tantum)
 
 tupleAuthors = _tuple(authors)
 tupleGenders = _tuple(genders)
+tupleOnyms = _tuple(onyms)
 tuplePos = _tuple(pos)
 tuplePossessive = _tuple(possessive)
 tupleSortbase = _tuple(sortbase)

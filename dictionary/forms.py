@@ -143,6 +143,7 @@ BLANKLABEL = ''
 
 AUTHOR_CHOICES = dictionary.viewmodels.tupleAuthors
 GENDER_CHOICES = dictionary.viewmodels.tupleGenders
+ONYM_CHOICES = dictionary.viewmodels.tupleOnyms
 POS_CHOICES = dictionary.viewmodels.tuplePos
 POSSESSIVE_CHOICES = dictionary.viewmodels.tuplePossessive
 SORTDIR_CHOICES = dictionary.viewmodels.tupleSortdir
@@ -156,12 +157,6 @@ def category_values(category):
         for item
         in CategoryValue.objects.filter(category__slug=category)
     ]
-
-ONYM_CHOICES = (
-    ('all',  u'любой'),
-    ('none', u'не определен'),
-    (BLANKLABEL, category_values('onym')),
-)
 
 CANONNAME_CHOICES = (
     ('all',  u'все имена'),

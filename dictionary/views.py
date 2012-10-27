@@ -773,6 +773,7 @@ def entry_list(request, mine=False, duplicates=False):
         'viewmodel': {
             'authors': dictionary.viewmodels.jsonAuthors,
             'gender': dictionary.viewmodels.jsonGenders,
+            'onym': dictionary.viewmodels.jsonOnyms,
             'pos': dictionary.viewmodels.jsonPos,
             'possessive': dictionary.viewmodels.jsonPossessive,
             'statuses': dictionary.viewmodels.jsonStatuses,
