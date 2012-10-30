@@ -6,7 +6,7 @@
 {% block subheader %}
 
     <div class="filters">
-        <div class="f5s--statusbar" data-bind="visible: notDefaultState">
+        <div class="f5s--statusbar hidden" data-bind="css: {hidden: !notDefaultState()}">
 
             Выбранные фильтры:
 
