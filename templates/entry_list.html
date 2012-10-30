@@ -234,7 +234,8 @@
                             <a href="{{ entry.get_absolute_url() }}" class="manual-entry">
                                  <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
                                  {% if entry.homonym_order %}
-                                     &nbsp;{{ entry.homonym_order_roman }}
+                                    {{ space }}
+                                     <span class="serif">{{ entry.homonym_order_roman }}</span>
                                  {% endif %}
                             </a>
 
@@ -258,7 +259,8 @@
                     <a href="{{ entry.get_absolute_url() }}" class="manual-entry invisible">
                         <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
                 {% if entry.homonym_order %}
-                        &nbsp;{{ entry.homonym_order_roman }}
+                    {{ space }}
+                    <span class="serif">{{ entry.homonym_order_roman }}</span>
                     </a>
                         <span class="ss">
                             &nbsp;&nbsp;&nbsp;

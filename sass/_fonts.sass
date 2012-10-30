@@ -1,5 +1,9 @@
 @charset 'utf-8'
 
+$cslFont: 'Triodion Ucs'
+$sansFont: Arial, sans-serif
+$serifFont: 'Old Standard TT', serif
+
 @font-face
     font-family: 'Triodion Ucs'
     src: url('fonts/TriIEUcs.eot')
@@ -82,10 +86,11 @@
 
 
 
-
+.serif
+    font-family: $serifFont !important
 
 .cslav
-    font-family: "Triodion Ucs" !important
+    font-family: $cslFont !important
     font-weight: normal !important
     font-size: 110% !important
 
