@@ -58,7 +58,7 @@
             <span class="f5sS--item" data-bind="visible: duplicate">дубликаты</span>
 
         </div>
-        <div class="f5s--dashboard">
+        <div class="f5s--dashboard" data-bind="slide: isOperated">
 
             <div class="f5sD--sort">
             <h3>Упорядочить статьи</h3>
@@ -116,8 +116,9 @@
             <input type="submit" value="применить"/>
 
         </div>
-        <div class="f5s--advertiser">
-            <span class="f5sA--label">фильтры</span>
+        <div class="f5s--advertiser" data-bind="click: isOperated.toggle">
+            <span class="f5sA--label"
+                data-bind="visible: !isOperated()">фильтры</span>
         </div>
     </div>
 
@@ -354,6 +355,15 @@
         };
 
         var vM; if (!vM) vM = {};
+        ko.bindingHandlers.slide = {
+            update: function(element, valueAccessor){
+                if (ko.utils.unwrapObservable(valueAccessor())){
+                    $(element).slideDown();
+                } else {
+                    $(element).slideUp();
+                }
+            }
+        };
 
         vM.meta = {
             initials: [],
@@ -362,6 +372,7 @@
 
         vM.filters = {
             formSubmit: vM.hdrSearch.formSubmit,
+            isOperated: ko.observable(false),
 
             find: ko.observable()
                 .rememberInitial('{{ filters.find }}')
@@ -468,6 +479,7 @@
             this.formSubmit();
         };
 
+        vM.filters.isOperated.toggle = function(){ this(!this()); }.bind(vM.filters.isOperated)
 
         vM.filters.notDefaultState = ko.computed(function(){
             var defaults = vM.meta.defaults;
@@ -505,10 +517,6 @@
 
         ko.applyBindings(vM.filters, $('.filters').get(0));
         ko.applyBindings(vM.filters, $('#main').get(0));
-
-        $('.f5sA--label').click(function(){
-            $('.f5s--dashboard').slideToggle();
-        });
 
         $('tr').mouseover(function(){
             $(this).addClass('hover');
