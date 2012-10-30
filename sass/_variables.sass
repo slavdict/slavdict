@@ -1,12 +1,8 @@
 @charset 'utf-8'
+@import compass
 @import fonts
 
 $headerBackgroundColor: #484848
-
-@mixin roundedCorners($radius)
-    -moz-border-radius: $radius
-    -webkit-border-radius: $radius
-    border-radius: $radius
 
 @mixin button
     cursor: pointer
@@ -22,7 +18,7 @@ $headerBackgroundColor: #484848
     background-color: #777
     color: #fff
     @include button
-    @include roundedCorners(3px)
+    @include border-radius(3px)
 
     &:hover
         background-color: #369
