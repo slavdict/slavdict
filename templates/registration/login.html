@@ -8,9 +8,13 @@
     <form method="post" action="">
     {% csrf_token %}
     <div class="form">
+        <style>
+            td input[type="text"],
+            td input[type="password"] { width: 97%; }
+        </style>
         <table>
-            <col style="width: 40%;"></col>
-            <col style="width: 60%;"></col>
+            <col style="width: 35%;"></col>
+            <col style="width: 65%;"></col>
             <tr>
                 <td>Имя</td>
                 <td>{{ form.username }}</td>
