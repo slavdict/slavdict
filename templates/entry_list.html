@@ -372,10 +372,18 @@
                 .rememberDefault('all')
                 .htmlSelect('author', {{ viewmodel.authors }}),
 
-            sortbase: ko.observable('{{ filters.sortbase }}')
+            sortbase: ko.observable()
+                .rememberInitial('{{ filters.sortbase }}')
+                // .rememberDefault... Значения по умолчанию
+                // на клиенте намеренно не определяем,
+                // хотя оно есть на сервере
                 .htmlSelect('sortbase', {{ viewmodel.sortbase }}),
 
-            sortdir: ko.observable('{{ filters.sortdir }}')
+            sortdir: ko.observable()
+                .rememberInitial('{{ filters.sortdir }}')
+                // .rememberDefault... Значения по умолчанию
+                // на клиенте намеренно не определяем,
+                // хотя оно есть на сервере
                 .htmlSelect('sortdir', {{ viewmodel.sortdir }}),
 
             status: ko.observable()
