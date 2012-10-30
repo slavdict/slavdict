@@ -342,16 +342,23 @@
             this.defaultValue = defaultValue;
             this.getDefaultValue = function(){ this(this.defaultValue); return this; };
             this.hasDefaultValue = function(){ return this() === this.defaultValue; };
+            vM.meta.defaults.push(this);
             return this;
         };
         ko.observable.fn['rememberInitial'] = function(initial){
             this.initialValue = initial;
             this.getInitialValue = function(){ this(this.initialValue); return this; };
             this.hasInitialValue = function(){ return this() === this.initialValue; };
+            vM.meta.initials.push(this);
             return this.getInitialValue();
         };
 
         var vM; if (!vM) vM = {};
+
+        vM.meta = {
+            initials: [],
+            defaults: []
+        };
 
         vM.filters = {
             formSubmit: vM.hdrSearch.formSubmit,
@@ -453,23 +460,36 @@
             this.formSubmit();
         };
 
-        vM.filters.notDefaultValues = ko.computed(function(){
-            return (
-                !this.find.hasDefaultValue()
-                || !this.author.hasDefaultValue()
-                || !this.status.hasDefaultValue()
-                || !this.uninflected.hasDefaultValue()
-                || !this.gender.hasDefaultValue()
-                || !this.tantum.hasDefaultValue()
-                || !this.possessive.hasDefaultValue()
-                || !this.onym.hasDefaultValue()
-                || !this.canonical_name.hasDefaultValue()
-                || !this.etymology.hasDefaultValue()
-                || !this.additional_info.hasDefaultValue()
-                || !this.homonym.hasDefaultValue()
-                || !this.duplicate.hasDefaultValue()
-                )
+
+        vM.filters.notDefaultState = ko.computed(function(){
+            var defaults = vM.meta.defaults;
+            for(var i = 0, j = defaults.length; i < j; i++){
+                if (!defaults[i].hasDefaultValue()) return true;
+            }
+            return false;
         }, vM.filters);
+
+        vM.filters.notInitialState = ko.computed(function(){
+            var initials = vM.meta.initials;
+            for(var i = 0, j = initials.length; i < j; i++){
+                if (!initials[i].hasInitialValue()) return true;
+            }
+            return false;
+        }, vM.filters);
+
+        vM.filters.getDefaultState = function(){
+            var defaults = vM.meta.defaults;
+            for(var i = 0, j = defaults.length; i < j; i++){
+                defaults[i].getDefaultValue();
+            }
+        };
+
+        vM.filters.getInitialState = function(){
+            var initials = vM.meta.initials;
+            for(var i = 0, j = initials.length; i < j; i++){
+                initials[i].getInitialValue();
+            }
+        };
 
         $('#id_find').attr('data-bind',
                 'value: find,' +
