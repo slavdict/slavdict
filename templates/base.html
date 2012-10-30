@@ -32,7 +32,7 @@
                        autocomplete="off"
                        spellcheck="false"
                     /><span class="header--item-right button"
-                            data-bind="click: form.submit">Найти</span>
+                            data-bind="click: formSubmit">Найти</span>
 
                     <ul class="SC--foundItems hidden"
                         data-bind="foreach: foundItems,
@@ -109,7 +109,7 @@
                 searchPrefix: ko.observable(),
                 foundItems: ko.observableArray(),
                 focusedItem: ko.observable(),
-                form: $('.headerForm')
+                formSubmit: function(){ $('.headerForm').submit(); }
             }};
 
             vM.hdrSearch.moveFocusDown = function() {
@@ -152,7 +152,7 @@
                     vM.moveFocusUp();
                 } else if (event.which == 13) { // enter key
                     if (vM.focusedItem()) vM.go(vM.focusedItem());
-                    else vM.form.submit();
+                    else vM.formSubmit();
                 } else if (event.which == 27) { // esc key
                     vM.foundItems.splice(0);
                 } else {

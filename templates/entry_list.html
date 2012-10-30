@@ -354,7 +354,7 @@
         var vM; if (!vM) vM = {};
 
         vM.filters = {
-            form: vM.hdrSearch.form,
+            formSubmit: vM.hdrSearch.formSubmit,
 
             find: ko.observable()
                 .rememberInitial('{{ filters.find }}')
@@ -450,7 +450,7 @@
 
         vM.filters.doSort = function(sort){
             this.sort(sort);
-            this.form.submit();
+            this.formSubmit();
         };
 
         vM.filters.notDefaultValues = ko.computed(function(){
