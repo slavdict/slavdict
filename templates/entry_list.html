@@ -6,7 +6,7 @@
 {% block subheader %}
 
     <div class="filters">
-        <div class="f5s--statusbar" data-bind="visible: notDefaultValues">
+        <div class="f5s--statusbar" data-bind="visible: notDefaultState">
 
             Выбранные фильтры:
 
@@ -113,7 +113,18 @@
                 {{ form.duplicate.label_tag() }}
             </div>
 
-            <input type="submit" value="применить"/>
+            <span data-bind="click: closeFilters"
+                class="button">закрыть</span>
+
+            <span data-bind="click: getDefaultState, visible: notDefaultState"
+                class="button">сбросить</span>
+            <span data-bind="visible: !notDefaultState()"
+                class="button disabled">сбросить</span>
+
+            <span data-bind="click: formSubmit, visible: notInitialState"
+                class="button">применить</span>
+            <span data-bind="visible: !notInitialState()"
+                class="button disabled">применить</span>
 
         </div>
         <div class="f5s--advertiser" data-bind="click: isOperated.toggle">
@@ -372,6 +383,10 @@
         vM.filters = {
             formSubmit: vM.hdrSearch.formSubmit,
             isOperated: ko.observable(false),
+            closeFilters: function(){
+                    this.isOperated(false);
+                    this.getInitialState();
+                },
 
             find: ko.observable()
                 .rememberInitial('{{ filters.find }}')
