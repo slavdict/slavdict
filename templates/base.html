@@ -11,7 +11,7 @@
         <form class="headerForm" action="{% url all_entries_url %}" method="post">
 
         {% block header_0 %}
-        <div class="header"><div class="grid">
+        <div class="header"><div class="grid without-overflow">
             {% block header %}
 
                 <a href="{% url my_entries_url %}" class="header--item button">Мои статьи</a>
