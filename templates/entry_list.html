@@ -608,9 +608,11 @@
             }
         };
 
-        $('#id_find').attr('data-bind',
-                'value: find,' +
-                'valueUpdate: "afterkeydown"');
+        $('#id_find')
+            .attr('data-bind', 'value: find,' +
+                'valueUpdate: "afterkeydown"')
+            .attr('autocomplete', 'off')
+            .attr('spellcheck', 'false');
 
         ko.applyBindings(vM.filters, $('.filters').get(0));
         ko.applyBindings(vM.filters, $('#main').get(0));
