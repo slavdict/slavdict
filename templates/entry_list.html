@@ -77,7 +77,14 @@
             <span class="f5sS--item" data-bind="visible: duplicate">дубликаты</span>
 
         </div></div>
-        <div class="f5s--dashboard" data-bind="slide: isOperated"><div class="grid-debug">
+        <div class="f5s--dashboard" data-bind="slide: isOperated"><div class="grid"
+                ondblclick="
+                    var x = $(this);
+                    if (x.hasClass('grid-debug'))
+                        x.removeClass('grid-debug');
+                    else
+                        x.addClass('grid-debug');
+                ">
 
             <div class="f5sD--sort">
             <h3>Упорядочить статьи</h3>
