@@ -17,6 +17,31 @@
         padding: 10px
         display: none
 
+        .f5sD--sort
+            @include column(6)
+
+            #id_sortdir
+                @include column(4)
+            #id_sortbase
+                @include column(6)
+
+        .f5sD--filter
+            @include column(14, true)
+            @include prepend(1)
+
+        .f5sD--buttons
+            @include column(6)
+
+        .button.f5sD--close,
+        .button.f5sD--reset,
+        .button.f5sD--submit
+            padding: 0
+        .button.f5sD--close,
+        .button.f5sD--reset
+            @include column(3)
+        .button.f5sD--submit
+            @include column(3,true)
+
     .f5s--advertiser
         background-color: #999
         height: 4px
