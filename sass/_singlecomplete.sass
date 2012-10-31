@@ -1,8 +1,5 @@
 @charset 'utf-8'
 
-@import 'variables'
-@import 'layout'
-
 $baseFontSize: 19px
 
 .singlecomplete
@@ -18,21 +15,25 @@ $baseFontSize: 19px
     outline-width: 0
     padding-left: 5px
     min-height: 25px
-    @include roundedCorners(4px)
+    @include border-radius(4px)
 
 .singlecomplete--foundItems,
 .SC--foundItems
-    margin: 0
-    padding: 0
-    width: 240px
-    border-bottom: 1px solid #ccc
     position: absolute
+    left: 0px
+    z-index: 255
+    margin: 0
+    padding: 2px 4px
+    border-bottom: 1px solid #ccc
+    width: 240px
+    background-color: rgba(#ddd, 0.85)
+    @include border-radius(3px)
 
 //.singlecomplete--foundItems--item,
 .singlecomplete--foundItem,
 .SC--foundItem
     list-style-type: none
-    width: 240px
+    width: 232px
     display: block
     margin: 0
     padding: 0 4px

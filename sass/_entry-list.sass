@@ -1,6 +1,4 @@
 @charset 'utf-8'
-@import variables
-
 
 table
     table-layout: fixed
@@ -109,7 +107,7 @@ tr.hover div.fade div
     font-size: 13px
     letter-spacing: 0.02em
     //font-family: "Arial Black"
-    @include roundedCorners(0.3em)
+    @include border-radius(0.3em)
     background-color: #eee
     padding: 0 0.5em 0.2em
 
@@ -167,7 +165,7 @@ table.entry-list tr.control-row.hover td
 .anchor
     padding: 0 4px 3px
     color: #ccc
-    @include roundedCorners(3px)
+    @include border-radius(3px)
 
 .anchor.on
     background-color: #eee
@@ -189,7 +187,7 @@ div.hint
     line-height: 10px
     position: absolute
     padding: 1ex 1em
-    @include roundedCorners(0.3em)
+    @include border-radius(0.3em)
     color: white
     background-color: #484848
     left: -130px

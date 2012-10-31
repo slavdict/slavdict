@@ -1,5 +1,9 @@
 @charset 'utf-8'
 
+$cslFont: 'Triodion Ucs'
+$sansFont: Arial, sans-serif
+$serifFont: 'Old Standard TT', serif
+
 @font-face
     font-family: 'Triodion Ucs'
     src: url('fonts/TriIEUcs.eot')
@@ -82,28 +86,29 @@
 
 
 
-
+.serif
+    font-family: $serifFont !important
 
 .cslav
-    font-family: "Triodion Ucs"
-    font-weight: normal
-    font-size: 110%
+    font-family: $cslFont !important
+    font-weight: normal !important
+    font-size: 110% !important
 
 .antconsol
-    font-family: AntConSol
+    font-family: AntConSol !important
 
 .grec
-    font-family: 'SIL Ulysses'
+    font-family: 'SIL Ulysses' !important
 
 .hebrew,
 .aramaic
-    font-family: 'hebrew'
+    font-family: 'hebrew' !important
 
 .hebrew-translit,
 .syriac-translit,
 .aramaic-translit
-    font-family: 'Hebrew-Russian!'
-    font-size: 90%
+    font-family: 'Hebrew-Russian!' !important
+    font-size: 90% !important
 
 .akkadian
     //pass
@@ -112,12 +117,12 @@
     //pass
 
 .georgian
-    font-family: 'GEO-LitNusx'
+    font-family: 'GEO-LitNusx' !important
 
 .coptic
-    font-family: Coptic
+    font-family: Coptic !important
 
 .syriac
-    font-family: 'SPEdessa'
+    font-family: 'SPEdessa' !important
 
 // 'Estrangelo Edessa'

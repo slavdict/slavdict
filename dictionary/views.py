@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import datetime
 import json
 import random
@@ -20,12 +21,14 @@ from django.shortcuts import redirect
 from django.template import RequestContext
 
 import dictionary.models
+import dictionary.viewmodels
 import unicode_csv
 from custom_user.models import CustomUser
 from dictionary.forms import BilletImportForm
 from dictionary.forms import EntryForm
 from dictionary.forms import EtymologyForm
 from dictionary.forms import ExampleForm
+from dictionary.forms import FilterEntriesForm
 from dictionary.forms import GrEqForExForm
 from dictionary.forms import GrEqForMnngForm
 from dictionary.forms import MeaningForm
@@ -631,104 +634,165 @@ def import_csv_billet(request):
     return render_to_response('csv_import.html', {'form': form, 'get_parameters': '?' + urllib.urlencode(request.GET)})
 
 
+def _get_entries(form):
+    entries = Entry.objects
+    FILTER_PARAMS = {}
+    FILTER_EXCLUDE_PARAMS = {}
+    SORT_PARAMS = []
+    PARSING_ERRORS = []
 
-@login_required
-def entry_list(request, mine=False, duplicates=False):
+    # Сортировка
+    DEFAULT_SORT = '-t'
+    sortdir = form['sortdir']
+    sortbase = form['sortbase']
+    sort = sortdir + sortbase
+    if not sort:
+        sort = form['sort'] or DEFAULT_SORT
     VALID_SORT_PARAMS = {
         'alph': ('civil_equivalent', 'homonym_order'),
         '-alph': ('-civil_equivalent', '-homonym_order'),
         't': ('mtime', 'id'),
         '-t': ('-mtime', '-id'),
         }
-    DEFAULT_SORT = '-t'
-    FILTERS = {}
-    QS_PARSING_ERRORS = []
-
-    httpGET_SORT = request.GET.get('sort')
-    httpGET_FIND = request.GET.get('find')
-    httpGET_AUTHOR = request.GET.get('author')
-
-    if httpGET_SORT:
-        redirect_path = "./"
-        if httpGET_FIND:
-            redirect_path = "?find=%s" % httpGET_FIND
-        response = HttpResponseRedirect(redirect_path)
-        if httpGET_SORT in VALID_SORT_PARAMS:
-            response.set_cookie('sort', httpGET_SORT)
-        return response
-
-    COOKIES_SORT = request.COOKIES.get('sort', DEFAULT_SORT)
-    SORT_PARAMS = VALID_SORT_PARAMS[COOKIES_SORT]
-
-    if httpGET_AUTHOR:
-        if httpGET_AUTHOR=='all':
-            pass
-        elif httpGET_AUTHOR=='none':
-            FILTERS['editor__isnull'] = True
-        elif httpGET_AUTHOR.isdigit():
-            FILTERS['editor'] = int(httpGET_AUTHOR)
-        else:
-            QS_PARSING_ERRORS.append('author')
-
-        if 'author' not in QS_PARSING_ERRORS:
-            redirect_path = "./"
-            if httpGET_FIND:
-                redirect_path = "?find=%s" % httpGET_FIND
-            response = HttpResponseRedirect(redirect_path)
-            response.set_cookie('author', httpGET_AUTHOR)
-
-
-    if httpGET_FIND is None and not mine:
-        httpGET_FIND = u''
-        entry_list = Entry.objects.filter(**FILTERS).order_by(*SORT_PARAMS) #filter(editor=request.user)
+    if sort in VALID_SORT_PARAMS:
+        SORT_PARAMS = VALID_SORT_PARAMS[sort]
     else:
-        if httpGET_FIND:
-            # Ищем все лексемы, удовлетворяющие запросу в независимости от регистра начальной буквы запроса.
-            # Код писался из расчёта, что на БД полагаться нельзя, поскольку у меня не получается правильно
-            # настроить COLLATION в Postgres. Когда это сделать удастся, надо будет в .filter использовать
-            # `civil_equivalent__istartswith=httpGET_FIND`.
-            FIND_LOWER = httpGET_FIND.lower()
-            FIND_CAPZD = httpGET_FIND.capitalize()
-            entry_list = Entry.objects.filter(
-                    Q(civil_equivalent__startswith=FIND_LOWER) | Q(civil_equivalent__startswith=FIND_CAPZD)
-                ).filter(**FILTERS).order_by(*SORT_PARAMS) #filter(editor=request.user)
+        PARSING_ERRORS.append('sort')
+
+    # Статьи начинаются с
+    find = form['find']
+    if find:
+        FILTER_PARAMS['civil_equivalent__istartswith'] = find
+
+
+    def _set_enumerable_param(param, model_property=None):
+        model_property = model_property or param
+        value = form[param] or 'all'
+        if value=='all':
+            pass
+        elif value=='none':
+            FILTER_PARAMS[model_property + '__isnull'] = True
+        elif value.isdigit():
+            FILTER_PARAMS[model_property] = int(value)
         else:
-            httpGET_FIND = u''
-            if mine:
-                entry_list = Entry.objects.filter(editor=request.user).order_by(*SORT_PARAMS)
-            else:
-                return HttpResponseRedirect("./")
+            PARSING_ERRORS.append(param)
 
-    if duplicates:
-        entry_list = entry_list.filter(duplicate=True)
+    # Автор статьи
+    _set_enumerable_param('author', 'editor')
 
-    if COOKIES_SORT=='alph':
-        entry_list = sorted(entry_list, key=entry_key, reverse=False)
-    elif COOKIES_SORT=='-alph':
-        entry_list = sorted(entry_list, key=entry_key, reverse=True)
+    # Статус статьи
+    _set_enumerable_param('status')
 
-    paginator = Paginator(entry_list, per_page=12, orphans=2)
-    try:
-        pagenum = int(request.GET.get('page', 1))
-    except ValueError:
+    # Часть речи
+    _set_enumerable_param('pos', 'part_of_speech')
+
+    # Род
+    _set_enumerable_param('gender')
+
+    # Число
+    _set_enumerable_param('tantum')
+
+    # Тип имени собственного
+    _set_enumerable_param('onym')
+
+    # Каноническое имя
+    _set_enumerable_param('canonical_name')
+
+    # Притяжательность
+    _set_enumerable_param('possessive')
+
+    # Омонимы
+    if form['homonym']:
+        FILTER_PARAMS['homonym_order__isnull'] = False
+
+    # Есть примечание
+    if form['additional_info']:
+        FILTER_EXCLUDE_PARAMS['additional_info'] = ''
+
+    # Есть этимологии
+    if form['etymology']:
+        etyms = Etymology.objects.values_list('entry')
+        FILTER_PARAMS['id__in'] = [item[0] for item in set(etyms)]
+
+    # Статьи-дубликаты
+    if form['duplicate']:
+        FILTER_PARAMS['duplicate'] = True
+
+    # Неизменяемое
+    if form['uninflected']:
+        FILTER_PARAMS['uninflected'] = True
+
+    if PARSING_ERRORS:
+        raise NameError('Недопустимые значения параметров: %s' % PARSING_ERRORS)
+
+    entries = entries.filter(**FILTER_PARAMS)
+    entries = entries.exclude(**FILTER_EXCLUDE_PARAMS)
+    entries = entries.order_by(*SORT_PARAMS)
+
+    return entries
+
+
+@login_required
+def entry_list(request, mine=False, duplicates=False):
+    if 'find' in request.COOKIES:
+        request.COOKIES['find'] = base64.standard_b64decode(request.COOKIES['find']).decode('utf8')
+
+    if request.method == 'POST' and len(request.POST) > 1:
+        data = request.POST.copy() # Сам по себе объект QueryDict, на который указывает request.POST,
+            # является неизменяемым. Метод ``copy()`` делает его полную уже доступную для изменения
+            # копию.
+        if request.POST['hdrSearch']:
+            data['find'] = request.POST['hdrSearch']
+    else:
+        data = dict(FilterEntriesForm.default_data)
+        data.update(request.COOKIES)
+        if request.method == 'POST' and len(request.POST) == 1 and 'hdrSearch' in request.POST:
+            data['find'] = request.POST['hdrSearch']
+
+    form = FilterEntriesForm(data)
+    assert form.is_valid(), u'Форма заполнена неправильно'
+    entries = _get_entries(form.cleaned_data)
+
+    if mine:
+        entries = entries.filter(editor=request.user)
+
+    paginator = Paginator(entries, per_page=12, orphans=2)
+    if request.method == 'POST':
         pagenum = 1
+    else:
+        try:
+            pagenum = int(request.GET.get('page', 1))
+        except ValueError:
+            pagenum = 1
     try:
         page = paginator.page(pagenum)
     except (EmptyPage, InvalidPage):
         page = paginator.page(paginator.num_pages)
 
-    authors = [ {'id': u.id, 'name': u.__unicode__()} for u in CustomUser.objects.filter(groups__name=u'authors')]
-    authors = [ {'id':'all', 'name': u'Все авторы'}, {'id':'none', 'name': u'Статьи без автора'} ] + authors
-
     context = {
+        'viewmodel': {
+            'authors': dictionary.viewmodels.jsonAuthors,
+            'canonical_name': dictionary.viewmodels.jsonCanonicalName,
+            'gender': dictionary.viewmodels.jsonGenders,
+            'onym': dictionary.viewmodels.jsonOnyms,
+            'pos': dictionary.viewmodels.jsonPos,
+            'possessive': dictionary.viewmodels.jsonPossessive,
+            'statuses': dictionary.viewmodels.jsonStatuses,
+            'sortdir': dictionary.viewmodels.jsonSortdir,
+            'sortbase': dictionary.viewmodels.jsonSortbase,
+            'tantum': dictionary.viewmodels.jsonTantum,
+            },
         'entries': page.object_list,
-        'page': page,
-        'sort': COOKIES_SORT,
-        'find_prefix': httpGET_FIND,
+        'form': form,
         'mine': mine,
-        'authors': json.dumps(authors, ensure_ascii=False, separators=(',',':')),
+        'page': page,
         }
-    return render_to_response('entry_list.html', context, RequestContext(request))
+    response = render_to_response('entry_list.html', context, RequestContext(request))
+    if request.method == 'POST':
+        form.cleaned_data['find'] = base64.standard_b64encode(form.cleaned_data['find'].encode('utf8'))
+        for param, value in form.cleaned_data.items():
+            response.set_cookie(param, value, path=request.path)
+    return response
 
 @login_required
 def antconc2ucs8_converter(request):
@@ -825,7 +889,7 @@ def hellinist_workbench(request):
     if httpGET_STATUS:
         redirect_path = "./"
         response = HttpResponseRedirect(redirect_path)
-        response.set_cookie('status', httpGET_STATUS)
+        response.set_cookie('status', httpGET_STATUS, request.path)
         return response
 
     COOKIES_STATUS = request.COOKIES.get('status', DEFAULT_STATUS)

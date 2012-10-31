@@ -1,12 +1,24 @@
 # -*- coding: UTF-8 -*-
 from django import forms
-from django.forms import ModelForm, \
-    HiddenInput, TextInput
+from django.forms import ModelForm
+from django.forms import HiddenInput
+from django.forms import TextInput
 from django.forms.models import inlineformset_factory
+from django.forms.widgets import Widget
+from django.forms.widgets import SelectMultiple
+from django.utils.safestring import mark_safe
 
-from dictionary.models import Entry, Meaning, Example, \
-    Etymology, MeaningContext, GreekEquivalentForMeaning, \
-    GreekEquivalentForExample
+import dictionary.viewmodels
+
+from custom_user.models import CustomUser
+from dictionary.models import Entry
+from dictionary.models import Meaning
+from dictionary.models import Example
+from dictionary.models import Etymology
+from dictionary.models import MeaningContext
+from dictionary.models import GreekEquivalentForMeaning
+from dictionary.models import GreekEquivalentForExample
+from directory.models import CategoryValue
 
 class EntryForm(ModelForm):
     class Meta:
@@ -105,10 +117,6 @@ class GrEqForExForm(ModelForm):
             'position': HiddenInput,
         }
 
-
-from django.forms.widgets import Widget, SelectMultiple
-from django.utils.safestring import mark_safe
-
 class RawValueWidget(Widget):
     def render(self, name, value, attrs=None):
         if value is None:
@@ -128,3 +136,60 @@ class BilletImportForm(forms.Form):
 
 class SelectMultipleAutocomplete(SelectMultiple):
     pass
+
+
+
+AUTHOR_CHOICES = dictionary.viewmodels.tupleAuthors
+CANONNAME_CHOICES = dictionary.viewmodels.tupleCanonicalName
+GENDER_CHOICES = dictionary.viewmodels.tupleGenders
+ONYM_CHOICES = dictionary.viewmodels.tupleOnyms
+POS_CHOICES = dictionary.viewmodels.tuplePos
+POSSESSIVE_CHOICES = dictionary.viewmodels.tuplePossessive
+SORTDIR_CHOICES = dictionary.viewmodels.tupleSortdir
+SORTBASE_CHOICES = dictionary.viewmodels.tupleSortbase
+STATUS_CHOICES = dictionary.viewmodels.tupleStatuses
+TANTUM_CHOICES = dictionary.viewmodels.tupleTantum
+
+class FilterEntriesForm(forms.Form):
+    sortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
+    sortbase = forms.ChoiceField(choices=SORTBASE_CHOICES)
+    find = forms.CharField(required=False, label=u'Начинается с')
+    author = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор')
+    status = forms.ChoiceField(choices=STATUS_CHOICES, label=u'Статус статьи')
+    pos = forms.ChoiceField(choices=POS_CHOICES, label=u'Часть речи')
+    uninflected = forms.BooleanField(label=u'Неизменяемые сущ. / прил.',
+            required=False)
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, label=u'Род')
+    tantum = forms.ChoiceField(choices=TANTUM_CHOICES, label=u'Число')
+    onym = forms.ChoiceField(choices=ONYM_CHOICES,
+            label=u'Тип имени собст.')
+    canonical_name = forms.ChoiceField(choices=CANONNAME_CHOICES,
+            label=u'Канонические имена')
+    possessive = forms.ChoiceField(choices=POSSESSIVE_CHOICES,
+            label=u'Притяжательность')
+    etymology = forms.BooleanField(label=u'Статьи с этимологией',
+            required=False)
+    additional_info = forms.BooleanField(label=u'Статьи с примечаниями',
+            required=False)
+    homonym = forms.BooleanField(label=u'Статьи-омонимы',
+            required=False)
+    duplicate = forms.BooleanField(label=u'Статьи-дубликаты',
+            required=False)
+    default_data = {
+        'sortdir':  '-',
+        'sortbase': 't',
+        'find': u'',
+        'author': 'all',
+        'status': 'all',
+        'pos': 'all',
+        'uninflected': False,
+        'gender': 'all',
+        'tantum': 'all',
+        'onym': 'all',
+        'canonical_name': 'all',
+        'possessive': 'all',
+        'etymology': False,
+        'additional_info': False,
+        'homonym': False,
+        'duplicate': False,
+    }
