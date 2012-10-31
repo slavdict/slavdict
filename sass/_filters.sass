@@ -1,21 +1,38 @@
 @charset 'utf-8'
 
+.filters,
+.filters *
+    font-size: 11px
+    line-height: 18px
+
 .filters
+    background-color: #eee
     font-family: $sansFont
     position: relative
-    text-align: center
-    background-color: #eee
+    text-align: left
 
     .f5s--statusbar
-        background-color: orange
+        background-color: $yellowBackground
+        color: $yellowText
+        display: none
+        padding: 5px 0
+        word-spacing: 3px
         .f5sS--item
-            background-color: yellow
             @include border-radius(3px)
+            background-color: $yellowBorder
+            text-shadow: 0 0 5px white
+            font-weight: bold
+            padding: 0 5px
+            white-space: nowrap
+            word-spacing: 1px
+
+            .f5sSI--prefix
+                text-transform: uppercase
+                font-weight: bold
 
     .f5s--dashboard
-        //border-top: 4px solid $headerBackgroundColor
-        padding: 10px
         display: none
+        padding: 10px
 
         .f5sD--sort
             @include column(6)
@@ -48,13 +65,15 @@
         position: relative
 
         .f5sA--label
+            @include border-radius(3px)
+            @include button
+            background-color: #999
+            color: white
+            display: none
+            font-size: 10px
+            font-weight: bold
+            height: 15px
+            line-height: 120%
             position: absolute
             text-align: center
             width: 70px
-            height: 15px
-            background-color: #999
-            color: white
-            font-size: 10px
-            font-weight: bold
-            @include border-radius(3px)
-            @include button

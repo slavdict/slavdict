@@ -4,66 +4,88 @@
 {% set filters = form.cleaned_data %}
 
 {% block subheader %}
+{% trim %}
 
     <div class="filters">
-        <div class="f5s--statusbar hidden" data-bind="css: {hidden: !notDefaultState()}">
+        <div class="f5s--statusbar"
+            data-bind="show: isOperated() || notDefaultState()"><div class="grid">
 
-            Выбранные фильтры:
+            <strong data-bind="visible: notDefaultState">Выбранные фильтры</strong>
+            <strong data-bind="visible: !notDefaultState()">Ни один фильтр не выбран</strong>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: find">
+                {{ space }}
                 статьи на
-                <span data-bind="text: find"></span>
+                {{ space }}
+                <span class="f5sSI--prefix"><span data-bind="text: find"></span>...</span>
             </span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: !author.hasDefaultValue()">
                 <span data-bind="text: author.obj().name"></span>
             </span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: !status.hasDefaultValue()">
                 <span data-bind="text: status.obj().name"></span>
             </span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: !pos.hasDefaultValue()">
                 <span data-bind="text: pos.obj().name"></span>
             </span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: uninflected">неизм.</span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: !gender.hasDefaultValue()">
                 <span data-bind="text: gender.obj().name"></span>
             </span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: !tantum.hasDefaultValue()">
                 <span data-bind="text: tantum.obj().name"></span>
             </span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: !possessive.hasDefaultValue()">
                 <span data-bind="text: possessive.obj().name"></span>
             </span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: !onym.hasDefaultValue()">
                 <span data-bind="text: onym.obj().name"></span>
             </span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: !canonical_name.hasDefaultValue()">
                 <span data-bind="text: canonical_name.obj().name"></span>
             </span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: etymology">с этимологией</span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: additional_info">с примечаниями</span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: homonym">омонимы</span>
 
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: duplicate">дубликаты</span>
 
-        </div>
-        <div class="f5s--dashboard" data-bind="slide: isOperated">
+        </div></div>
+        <div class="f5s--dashboard" data-bind="slide: isOperated"><div class="grid-debug">
 
             <div class="f5sD--sort">
             <h3>Упорядочить статьи</h3>
 
-                {{ form.sortdir }} на основе {{ form.sortbase }}
+                {{ form.sortdir }}
+
+                <label for="id_sortbase">на основе</label>
+                {{ form.sortbase }}
 
             </div>
 
@@ -111,15 +133,19 @@
 
                 {{ form.duplicate }}
                 {{ form.duplicate.label_tag() }}
+
             </div>
+            <div class="f5sD--buttons">
 
-            <span data-bind="click: closeFilters"
-                class="button">закрыть</span>
+                <span data-bind="click: getDefaultState, visible: notDefaultState"
+                    class="button f5sD--reset">сбросить</span>
+                <span data-bind="visible: !notDefaultState()"
+                    class="button f5sD--reset disabled" id>сбросить</span>
 
-            <span data-bind="click: getDefaultState, visible: notDefaultState"
-                class="button">сбросить</span>
-            <span data-bind="visible: !notDefaultState()"
-                class="button disabled">сбросить</span>
+                <span data-bind="click: formSubmit, visible: notInitialState"
+                    class="button f5sD--submit">применить</span>
+                <span data-bind="visible: !notInitialState()"
+                    class="button f5sD--submit disabled">применить</span>
 
             </div>
 
@@ -127,13 +153,18 @@
 
         <div class="f5s--advertiser"><div class="grid">
 
-        </div>
-        <div class="f5s--advertiser" data-bind="click: isOperated.toggle">
             <span class="f5sA--label"
-                data-bind="visible: !isOperated()">фильтры</span>
-        </div>
+                data-bind="click: isOperated.toggle,
+                show: !isOperated()">фильтры</span>
+            <span class="f5sA--label"
+                data-bind="click: closeFilters,
+                show: isOperated">закрыть</span>
+
+        </div></div>
+
     </div>
 
+{% endtrim %}
 {% endblock %}
 
 
@@ -378,6 +409,16 @@
             }
         };
 
+        ko.bindingHandlers.show = {
+            update: function(element, valueAccessor){
+                if (ko.utils.unwrapObservable(valueAccessor())){
+                    $(element).show();
+                } else {
+                    $(element).hide();
+                }
+            }
+        };
+
         vM.meta = {
             initials: [],
             defaults: []
@@ -546,5 +587,7 @@
         }).mouseout(function(){
             $(this).next('.hint-container').hide();
         });
+
     </script>
+
 {% endblock %}
