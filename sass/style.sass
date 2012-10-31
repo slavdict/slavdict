@@ -1,83 +1,11 @@
 @charset 'utf-8'
 
 @import reset
-@import variables
+@import common
 
 @import header
+@import singlecomplete
 @import filters
-@import entry
 @import entry-list
 @import pagination
-
-
-noscript
-    display: block
-    padding: 1em
-    color: white
-    background-color: #a00
-    text-align: center
-    font-family: Arial, sans-serif
-
-a img
-    border-width: 0
-
-.nobr, .nowrap
-    white-space: nowrap
-
-
-.message
-    font-size: 12px
-    @include border-radius(0.5em)
-    padding: 0.5em 0.7em
-    margin: 0em auto 0.5em auto
-    width: 25em
-    font-family: $sansFont
-    background-color: #fcf3d0
-    border: 1px solid #f4c873
-    color: #d29216
-
-.message .red.caps
-    background-color: #fcd5d0
-    color: #ea361c
-
-.invisible
-    visibility: hidden
-
-.transparent,.transparent *,.transparent * *,.transparent * * *
-    color: transparent !important
-    background-color: transparent !important
-
-
-a.cslav
-    color: #000
-
-body,div
-    margin: 0
-    padding: 0
-    font-size: 13pt
-    font-family: $sansFont
-
-div#main
-    margin: 1em auto
-    width: 40em
-    position: relative
-
-
-.exgroup
-    color: #a00
-
-.author
-    font-style: italic
-    font-size: 12px
-    font-family: Arial, sans-serif
-    color: #777
-    margin-top: 20px
-    margin-right: 50px
-    text-align: right
-
-.cinnabar
-    color: #f00
-
-.hidden
-    display: none
-    visibility: hidden
+@import entry
