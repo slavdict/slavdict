@@ -157,12 +157,12 @@ class FilterEntriesForm(forms.Form):
     author = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор')
     status = forms.ChoiceField(choices=STATUS_CHOICES, label=u'Статус статьи')
     pos = forms.ChoiceField(choices=POS_CHOICES, label=u'Часть речи')
-    uninflected = forms.BooleanField(label=u'Только неизменяемые',
+    uninflected = forms.BooleanField(label=u'Неизменяемые сущ. / прил.',
             required=False)
     gender = forms.ChoiceField(choices=GENDER_CHOICES, label=u'Род')
     tantum = forms.ChoiceField(choices=TANTUM_CHOICES, label=u'Число')
     onym = forms.ChoiceField(choices=ONYM_CHOICES,
-            label=u'Тип имени собственного')
+            label=u'Тип имени собст.')
     canonical_name = forms.ChoiceField(choices=CANONNAME_CHOICES,
             label=u'Канонические имена')
     possessive = forms.ChoiceField(choices=POSSESSIVE_CHOICES,
