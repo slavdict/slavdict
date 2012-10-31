@@ -18,8 +18,8 @@ def category_values(category):
     ]
 
 authors = [
-    {'id': 'all',  'name': u'Все авторы'},
-    {'id': 'none', 'name': u'Статьи без автора'} ] + [
+    {'id': 'all',  'name': u'все авторы'},
+    {'id': 'none', 'name': u'статьи без автора'} ] + [
 
     {'id': str(u.id), 'name': u.__unicode__()}
     for u in CustomUser.objects.filter(groups__name=u'authors')
