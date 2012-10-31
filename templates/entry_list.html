@@ -8,7 +8,7 @@
 
     <div class="filters">
         <div class="f5s--statusbar"
-            data-bind="show: isOperated() || notDefaultState()"><div class="grid">
+            data-bind="slide: isOperated() || notDefaultState()"><div class="grid">
 
             <strong data-bind="visible: notDefaultState">Выбранные фильтры</strong>
             <strong data-bind="visible: !notDefaultState()">Ни один фильтр не выбран</strong>
@@ -97,49 +97,65 @@
             </div>
 
             <div class="f5sD--filter">
-            <h3>Отобрать статьи по следующим критериям</h3>
 
-                {{ form.find.label_tag() }}
-                {{ form.find }}<br/>
+                <div class="A">
+                    <h3>Отобрать статьи по следующим критериям</h3>
 
-                {{ form.author.label_tag() }}
-                {{ form.author }}
+                    <div class="AA">
+                    {{ form.find.label_tag() }}
+                    {{ form.find }}
 
-                {{ form.status.label_tag() }}
-                {{ form.status }}<br/>
+                    </div>
 
-                {{ form.pos.label_tag() }}
-                {{ form.pos }}
+                    <div class="AB">
+                    {{ form.author.label_tag() }}
+                    {{ form.author }}
 
-                {{ form.uninflected }}
-                {{ form.uninflected.label_tag() }}<br/>
+                    {{ form.status.label_tag() }}
+                    {{ form.status }}
+                    </div>
+                </div>
 
-                {{ form.gender.label_tag() }}
-                {{ form.gender }}
+                <div class="B">
+                    <div class="BA">
+                    {{ form.pos.label_tag() }}
+                    {{ form.pos }}
 
-                {{ form.tantum.label_tag() }}
-                {{ form.tantum }}
+                    {{ form.uninflected.label_tag() }}
+                    {{ form.uninflected }}
 
-                {{ form.possessive.label_tag() }}
-                {{ form.possessive }}<br/>
+                    {{ form.gender.label_tag() }}
+                    {{ form.gender }}
 
-                {{ form.onym.label_tag() }}
-                {{ form.onym }}
+                    {{ form.tantum.label_tag() }}
+                    {{ form.tantum }}
+                    </div>
 
-                {{ form.canonical_name.label_tag() }}
-                {{ form.canonical_name }}<br/>
+                    <div class="BB">
+                    {{ form.onym.label_tag() }}
+                    {{ form.onym }}
 
-                {{ form.etymology }}
-                {{ form.etymology.label_tag() }}
+                    {{ form.canonical_name.label_tag() }}
+                    {{ form.canonical_name }}
 
-                {{ form.additional_info }}
-                {{ form.additional_info.label_tag() }}<br/>
+                    {{ form.possessive.label_tag() }}
+                    {{ form.possessive }}
+                    </div>
 
-                {{ form.homonym }}
-                {{ form.homonym.label_tag() }}
+                    <div class="BC">
+                    {{ form.etymology }}
+                    {{ form.etymology.label_tag() }}
 
-                {{ form.duplicate }}
-                {{ form.duplicate.label_tag() }}
+                    {{ form.additional_info }}
+                    {{ form.additional_info.label_tag() }}
+
+                    {{ form.homonym }}
+                    {{ form.homonym.label_tag() }}
+
+                    {{ form.duplicate }}
+                    {{ form.duplicate.label_tag() }}
+                    </div>
+                </div>
 
             </div>
             <div class="f5sD--buttons">
@@ -369,16 +385,29 @@
             this.list = ko.observableArray(objList);
             this.obj = ko.computed(function(){ return this.index2obj(this()); }, this);
             $('#id_' + name).attr('data-bind',
-                'options: ' + name + '.list,' +
-                'value: ' + name + ',' +
-                'optionsText: "name",' +
+                'options: ' + name + '.list, ' +
+                'value: ' + name + ', ' +
+                'optionsText: "name", ' +
                 'optionsValue: "id"');
             return this;
         };
+
         ko.observable.fn['htmlCheckbox'] = function(name){
-            $('#id_' + name).attr('data-bind', 'checked: ' + name);
+            var x = $('#id_' + name),
+                n = x.next('label[for="id_' + name + '"]').detach(),
+                p = x.prev('label[for="id_' + name + '"]').detach();
+            x.attr('data-bind', 'checked: ' + name)
+                .wrap('<div class="checkbox-group for_id_' + name + '">' +
+                    '<div class="checkbox for_id_' + name + '" /></div>')
+                .parent().after(n).before(p);
             return this;
         };
+
+        ko.observable.fn['htmlTextInput'] = function(name){
+            $('#id_' + name).wrap('<div class="textinput for_id_' + name + '"/>');
+            return this;
+        };
+
         ko.observable.fn['index2obj'] = function(value){
             var representer = function(item){ return item.id; },
                 arr = ko.utils.arrayMap(this.list(), representer),
@@ -391,6 +420,7 @@
             }
             return this.list()[index];
         };
+
         ko.observable.fn['rememberDefault'] = function(defaultValue){
             this.defaultValue = defaultValue;
             this.getDefaultValue = function(){ this(this.defaultValue); return this; };
@@ -398,6 +428,7 @@
             vM.meta.defaults.push(this);
             return this;
         };
+
         ko.observable.fn['rememberInitial'] = function(initial){
             this.initialValue = initial;
             this.getInitialValue = function(){ this(this.initialValue); return this; };
@@ -441,7 +472,8 @@
 
             find: ko.observable()
                 .rememberInitial('{{ filters.find }}')
-                .rememberDefault(''),
+                .rememberDefault('')
+                .htmlTextInput('find'),
 
             author: ko.observable()
                 .rememberInitial('{{ filters.author }}')

@@ -1,12 +1,14 @@
 @charset 'utf-8'
 
+$advertiserColor: #999
+
 .filters,
 .filters *
     font-size: 11px
     line-height: 18px
 
 .filters
-    background-color: #eee
+    background-color: white
     font-family: $sansFont
     position: relative
     text-align: left
@@ -33,25 +35,109 @@
     .f5s--dashboard
         display: none
         padding: 10px
+        color: #444
+
+        h3
+            margin-bottom: 2.4em
+        div.checkbox
+            @include column(1)
+            text-align: right
+        select
+            margin-bottom: 1em
 
         .f5sD--sort
-            @include column(6)
+            @include column(6, true)
+            @include prepend(15)
 
             #id_sortdir
                 @include column(4)
+                margin-bottom: 0.7em
+
             #id_sortbase
                 @include column(6)
 
         .f5sD--filter
-            @include column(14, true)
-            @include prepend(1)
+            label
+                @include column(3)
+                text-align: right
+
+            .A
+                @include column(14, true)
+                @include pull(21, true)
+                @include colborder($advertiserColor, 1px)
+
+                .AA
+                    @include column(7)
+                    .for_id_find
+                        @include column(4, true)
+                        margin-bottom: 0.7em
+
+                .AB
+                    @include column(7, true)
+                    #id_author
+                        @include column(4, true)
+                    #id_status
+                        @include column(4, true)
+
+            .B
+                @include column(21, true)
+                margin-top: 3em
+                margin-bottom: 3em
+
+                .BA
+                    @include column(7)
+
+                    #id_pos
+                        @include column(4, true)
+                    .checkbox-group.for_id_uninflected
+                        @include column(4)
+                        margin-bottom: 1em
+                    .checkbox-group.for_id_uninflected label
+                        @include column(3)
+                        text-align: right
+                        line-height: 10px
+                    .checkbox.for_id_uninflected
+                        @include column(1, true)
+                        text-align: left
+                    #id_gender
+                        @include column(4, true)
+                    #id_tantum
+                        @include column(4, true)
+
+                .BB
+                    @include column(9)
+
+                    label
+                        @include column(4)
+                    #id_possessive,
+                    #id_onym,
+                    #id_canonical_name
+                        @include column(4, true)
+
+                .BC
+                    @include column(5, true)
+                    margin-top: 2.4em
+
+                    .for_id_etymology.checkbox-group,
+                    .for_id_additional_info.checkbox-group,
+                    .for_id_homonym.checkbox-group,
+                    .for_id_duplicate.checkbox-group
+                        @include column(6, true)
+
+            .checkbox-group label
+                @include column(5, true)
+                padding-top: 2px
+                text-align: left
+
+            .textinput input
+                width: 98%
+
 
         .f5sD--buttons
             @include column(6)
 
-        .button.f5sD--close,
-        .button.f5sD--reset,
-        .button.f5sD--submit
+        .button
+            background-color: $advertiserColor
             padding: 0
         .button.f5sD--close,
         .button.f5sD--reset
@@ -60,14 +146,14 @@
             @include column(3,true)
 
     .f5s--advertiser
-        background-color: #999
+        background-color: $advertiserColor
         height: 4px
         position: relative
 
         .f5sA--label
             @include border-radius(3px)
             @include button
-            background-color: #999
+            background-color: $advertiserColor
             color: white
             display: none
             font-size: 10px

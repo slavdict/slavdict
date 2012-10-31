@@ -1,0 +1,52 @@
+@charset 'utf-8'
+
+$borderColor: #adadad
+$bgColor: #f9f9f9
+
+$activeBorderColor: #f7b84c
+$activeBgColor: #fff2db
+
+$activeTextColor: #b86200
+
+$curve: 3px
+
+textarea
+    padding: 2px
+
+input[type="text"]
+    padding: 0 5px
+
+input[type="text"],
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+textarea,
+select,
+    background-color: $bgColor
+    border: 1px solid $borderColor
+    @include border-radius($curve)
+
+input[type="text"]:active, input[type="text"]:focus, input[type="text"]:hover,
+textarea:active, textarea:focus, textarea:hover,
+select:active, select:focus, select:hover,
+    background-color: $activeBgColor
+    border: 1px solid $activeBorderColor
+    color: $activeTextColor
+
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+    font-size: 11px
+    background: #eee url(button-bg.png) repeat-x
+    border: 1px solid $borderColor
+
+input[type="button"]:active,
+input[type="submit"]:active,
+input[type="reset"]:active,
+    background-image: none
+
+input[type="button"]:hover, input[type="button"]:focus,
+input[type="submit"]:hover, input[type="submit"]:focus,
+input[type="reset"]:hover, input[type="reset"]:focus,
+    border: 1px solid $activeBorderColor
+    color: $activeTextColor
