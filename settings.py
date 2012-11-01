@@ -140,7 +140,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'django.contrib.staticfiles',
+    'staticfiles',
     'django.contrib.messages',
 
     'slavdict.dictionary',
