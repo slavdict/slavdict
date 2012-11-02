@@ -153,6 +153,7 @@ INSTALLED_APPS = (
 
     'south',
     'coffin',
+    'pipeline',
 #    'djcelery', # Celery.
 #    'djkombu',  # Нужно для Celery.
 #    'debug_toolbar',
@@ -168,6 +169,9 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 CUSTOM_USER_MODEL = 'custom_user.CustomUser'
+
+# django-pipeline
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
 # debug_toolbar
 #DEBUG_TOOLBAR_PANELS = (
