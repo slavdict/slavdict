@@ -889,10 +889,10 @@ def hellinist_workbench(request):
     if httpGET_STATUS:
         redirect_path = "./"
         response = HttpResponseRedirect(redirect_path)
-        response.set_cookie('status', httpGET_STATUS, path=request.path)
+        response.set_cookie('HWstatus', httpGET_STATUS, path=request.path)
         return response
 
-    COOKIES_STATUS = request.COOKIES.get('status', DEFAULT_STATUS)
+    COOKIES_STATUS = request.COOKIES.get('HWstatus', DEFAULT_STATUS)
 
     examples = Example.objects.filter(greek_eq_status=COOKIES_STATUS).order_by('id')
 
