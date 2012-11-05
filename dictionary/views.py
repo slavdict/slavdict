@@ -889,7 +889,7 @@ def hellinist_workbench(request):
     if httpGET_STATUS:
         redirect_path = "./"
         response = HttpResponseRedirect(redirect_path)
-        response.set_cookie('status', httpGET_STATUS, request.path)
+        response.set_cookie('status', httpGET_STATUS, path=request.path)
         return response
 
     COOKIES_STATUS = request.COOKIES.get('status', DEFAULT_STATUS)
