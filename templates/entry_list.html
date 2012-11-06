@@ -3,6 +3,18 @@
 {% set sort = form['sortdir'].value() + form['sortbase'].value() %}
 {% set filters = form.cleaned_data %}
 
+{% block header %}
+
+    <a class="header--item button"
+        data-bind="click: function(){
+            var x = vM.filters;
+            x.author('{{ user.id }}');
+            x.isOperated(true);
+        }">Мои статьи</a>
+    {{ super() }}
+
+{% endblock %}
+
 {% block subheader %}
 {% trim %}
 

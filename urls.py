@@ -16,7 +16,6 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('',
     url( r'^$', 'slavdict.dictionary.views.entry_list', name='all_entries_url' ),
-    url( r'^entries/mine/$', 'slavdict.dictionary.views.entry_list', kwargs={'mine': True}, name='my_entries_url' ),
     url( r'^entries/duplicates/$', 'slavdict.dictionary.views.entry_list',
          kwargs={'duplicates': True}, name='duplicate_entries_url' ),
     url( r'^login/$', 'django.contrib.auth.views.login'),

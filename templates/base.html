@@ -14,7 +14,6 @@
         <div class="header"><div class="grid without-overflow">
             {% block header %}
 
-                <a href="{% url my_entries_url %}" class="header--item button">Мои статьи</a>
                 <a href="{% url all_entries_url %}" class="header--item button">Все статьи</a>
 
                 {% if user.is_admeditor %}

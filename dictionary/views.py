@@ -786,6 +786,7 @@ def entry_list(request, mine=False, duplicates=False):
         'form': form,
         'mine': mine,
         'page': page,
+        'user': request.user,
         }
     response = render_to_response('entry_list.html', context, RequestContext(request))
     if request.method == 'POST':
