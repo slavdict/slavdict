@@ -733,7 +733,7 @@ def _get_entries(form):
 
 
 @login_required
-def entry_list(request, mine=False):
+def entry_list(request):
     if 'find' in request.COOKIES:
         request.COOKIES['find'] = base64.standard_b64decode(request.COOKIES['find']).decode('utf8')
 
@@ -752,9 +752,6 @@ def entry_list(request, mine=False):
     form = FilterEntriesForm(data)
     assert form.is_valid(), u'Форма заполнена неправильно'
     entries = _get_entries(form.cleaned_data)
-
-    if mine:
-        entries = entries.filter(editor=request.user)
 
     paginator = Paginator(entries, per_page=12, orphans=2)
     if request.method == 'POST':
@@ -784,7 +781,6 @@ def entry_list(request, mine=False):
             },
         'entries': page.object_list,
         'form': form,
-        'mine': mine,
         'page': page,
         'user': request.user,
         }
