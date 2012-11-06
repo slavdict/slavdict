@@ -1,9 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'base--hdrSearch.html' %}
 
 {% block header %}
 
     {{ super() }}
     {% if not intermed %}
+        {{ space }}
         <a href="{% url switch_info_url %}"
            class="header--item{% if show_additional_info %} on{% endif %}">Инфо</a>
     {% endif %}

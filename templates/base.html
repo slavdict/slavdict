@@ -3,188 +3,40 @@
     <head>
         <meta charset="utf-8">
         <title>{{ title }}</title>
-        <link href="{{ STATIC_URL }}style.css" rel="stylesheet" type="text/css">
+        <link href="{{ STATIC_URL }}{% block css %}style.css{% endblock %}"
+            rel="stylesheet" type="text/css">
     </head>
     <body>
-        <noscript>Для правильной работы данной лексикографической системы необходимо, чтобы у Вас были включены скрипты.</noscript>
+        <noscript>Для правильной работы данной лексикографической
+        системы необходимо, чтобы у Вас были включены скрипты.</noscript>
 
-        <form class="headerForm" action="{% url all_entries_url %}" method="post">
 
-        {% block header_0 %}
-        <div class="header"><div class="grid without-overflow">
-            {% block header %}
+        {% trim %}
+        <form class="headerForm" method="post"
+            action="{% block headerFormAddress %}{% url all_entries_url %}{% endblock %}">
 
-                <a href="{% url all_entries_url %}" class="header--item button">Все статьи</a>
+            <div class="header"><div class="grid without-overflow">
+                {% block header %}{% endblock %}
+            </div></div>
 
-                {% if user.is_admeditor %}
-                    <a href="{% url admin:dictionary_entry_add %}" class="header--item button">+</a>
-                {% endif %}
-
-                <span style="position: relative;">
-
-                    <input type="text" name="hdrSearch" class="header--item-left header--item-block search"
-                       data-bind="
-                            value: searchPrefix,
-                            valueUpdate: 'afterkeydown',
-                            event: { keydown: navigateFoundItems, blur: flushItems }"
-                       autocomplete="off"
-                       spellcheck="false"
-                    /><span class="header--item-right button"
-                            data-bind="click: formSubmit">Найти</span>
-
-                    <ul class="SC--foundItems hidden"
-                        data-bind="foreach: foundItems,
-                        css: { hidden: foundItems().length == 0 }">
-
-                        <li class="SC--foundItem"
-                            data-bind="css: { 'SC--foundItem-focused': isFocused },
-                                       event: {
-                                            mousedown: function(){ $parent.go($data); },
-                                            mouseover: function(){ $data.focusMe(); }
-                                       }">
-                            <span class="SC--fI--headword" data-bind="text: headword"></span>
-                            <span class="SC--fI--homonym" data-bind="text: hom"></span>
-                            <span class="SC--fI--pOS" data-bind="text: pos"></span>
-                            <span class="SC--fI--hint" data-bind="text: hint"></span>
-                        </li>
-
-                    </ul>
-
-                </span>
-
-                <a href="{% url converter %}" class="header--item button">Конвертър</a>
-
-                {% if user.is_admeditor or user.is_hellinist %}
-                    <a href="{% url hellinist_workbench %}" class="header--item button">Греческий кабинет</a>
-                {% endif %}
-
-                <span class="right-justification">
-
-                    <a href="/materials/"
-                       class="header--item button">Материалы</a>
-
-                    <a href="https://docs.google.com/document/d/1F2vnJpp_J48X49tdwrqefmtNd7wJIiAbuExp5TgZuwE/view?hl=en_US"
-                       class="header--item button">Инструкция</a>
-
-                </span>
-            {% endblock %}
-        </div></div>
-        {% endblock %}
-
-        {% block subheader %}{% endblock %}
+            {% block subheader %}{% endblock %}
 
         </form>
+        {% endtrim %}
 
 
         <div id="main">
             {% block content %}{% endblock %}
         </div>
 
-{% include '_script.jquery.html' %}
-{% include '_script.knockoutjs.html' %}
 
-        <script>
+        {% include '_script.jquery.html' %}
+        {% include '_script.knockoutjs.html' %}
 
-            function Item(item, focused) {
-
-                this.headword = item.headword;
-                this.hom = item.hom || '';
-                this.pos = item.pos || '';
-                this.hint = item.hint || '';
-                this.url = item.url;
-
-                this.focusMe = function(){
-                    focused(this);
-                }.bind(this);
-
-                this.isFocused = ko.computed(
-                    function(){ return focused() === this; },
-                    this
-                );
-            }
-
-            var vM = { hdrSearch: {
-                searchPrefix: ko.observable(),
-                foundItems: ko.observableArray(),
-                focusedItem: ko.observable(),
-                formSubmit: function(){ $('.headerForm').submit(); }
-            }};
-
-            vM.hdrSearch.moveFocusDown = function() {
-                var items = this.foundItems();
-                var arrLength = items.length;
-                var currentItem = this.focusedItem();
-                var index = 0;
-                if (currentItem) {
-                    index = ko.utils.arrayIndexOf(items, currentItem);
-                    index = index > (arrLength - 2) ? 0 : ++index;
-                }
-                items[index].focusMe();
-            }.bind(vM.hdrSearch);
-
-            vM.hdrSearch.moveFocusUp = function() {
-                var items = this.foundItems();
-                var arrLength = items.length;
-                var currentItem = this.focusedItem();
-                var index = arrLength - 1;
-                if (currentItem) {
-                    index = ko.utils.arrayIndexOf(items, currentItem);
-                    index = index < 1 ? arrLength - 1 : --index;
-                }
-                items[index].focusMe();
-            }.bind(vM.hdrSearch);
-
-            vM.hdrSearch.go = function(item) {
-                window.location.href = item.url;
-            };
-
-            vM.hdrSearch.flushItems = function() {
-                this.foundItems.splice(0);
-                this.focusedItem(null);
-            }.bind(vM.hdrSearch);
-
-            vM.hdrSearch.navigateFoundItems = function(vM, event) {
-                if (event.which == 40) { // down arrow key
-                    vM.moveFocusDown();
-                } else if (event.which == 38) { // up arrow key
-                    vM.moveFocusUp();
-                } else if (event.which == 13) { // enter key
-                    if (vM.focusedItem()) vM.go(vM.focusedItem());
-                    else vM.formSubmit();
-                } else if (event.which == 27) { // esc key
-                    vM.foundItems.splice(0);
-                } else {
-                    return true;
-                }
-            };
-
-            vM.hdrSearch.searchPrefix.subscribe(function(newValue) {
-                if (/^[а-яА-Я]+$/.test(newValue)) {
-                    var dataToSend = { find: newValue };
-                    if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
-                    this.lastItemsRequest = $.getJSON(
-                        "/json/singleselect/entries/urls/",
-                        dataToSend,
-                        function(data){
-                            var mappedData = ko.utils.arrayMap(
-                                data,
-                                function(item){ return new Item(item, vM.hdrSearch.focusedItem); }
-                            );
-                            vM.hdrSearch.foundItems(mappedData);
-                            if (vM.hdrSearch.foundItems().length==1) {
-                                vM.hdrSearch.foundItems()[0].focusMe();
-                            }
-                        }
-                    );
-                } else {
-                    this.flushItems();
-                }
-            }, vM.hdrSearch);
-
-            ko.applyBindings(vM.hdrSearch, $('.header').get(0));
+        <script type="text/javascript">
+            {% block javascript %}{% endblock %}
         </script>
 
-        {% block javascript %}{% endblock %}
 
     </body>
 </html>

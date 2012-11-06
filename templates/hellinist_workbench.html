@@ -1,31 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>{{ title }}</title>
-    <link href="{{ STATIC_URL }}hellinist_workbench.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-    <div class="header">
+{% extends 'base.html' %}
 
-        <a href="{% url all_entries_url %}" class="header--item button">Вернуться к статьям</a>
+{% block css %}hellinist_workbench.css{% endblock %}
+{% block headerFormAddress %}{% url hellinist_workbench %}{% endblock %}
 
-        <form class="statusFilterForm" enctype="application/x-www-form-urlencoded" action="{% url hellinist_workbench %}">
+{% block header %}
 
-            <label for="status_id">Фильтр греч. параллелей</label>
+    <a href="{% url all_entries_url %}" class="header--item button">Вернуться к статьям</a>
 
-            <select name="status" id="status_id" onchange="$('form.statusFilterForm').submit();">
-                {% for option in statusList %}
-                <option value="{{ option.0 }}"{% if statusFilter == option.0 %}selected="selected"{% endif %}>{{ option.1 }}</option>
-                {% endfor %}
-            </select>
+    <label for="status_id">Фильтр греч. параллелей</label>
 
-        </form>
+    <select name="status" id="status_id" onchange="$('form.headerForm').submit();">
+        {% for option in statusList %}
+            <option value="{{ option.0 }}"
+            {% if statusFilter == option.0 %}selected="selected"{% endif %}
+            >{{ option.1 }}</option>
+        {% endfor %}
+    </select>
 
-    </div>
+{% endblock %}
 
-    <div id="main">
-    {% trim %}
+{% block content %}
 
     {% for e in examples %}
         <div>
@@ -160,146 +154,140 @@
 
     {% include '_pagination.html' %}
 
-    {% endtrim %}
-    </div>
+{% endblock %}
 
+{% block javascript %}
 
-    <script type='text/javascript' src='{{ STATIC_URL }}jquery-1.7.1.min.js'></script>
-    <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/knockout/2.1.0/knockout-min.js'></script>
-    <script>
-
-        ko.bindingHandlers['visibleActive'] = {
-            'update': function (element, valueAccessor) {
-                var value = ko.utils.unwrapObservable(valueAccessor());
-                var isCurrentlyVisible = !(element.style.display == "none");
-                if (value && !isCurrentlyVisible) {
-                    element.style.display = "";
-                    element.focus();
-                } else if ((!value) && isCurrentlyVisible)
-                    element.style.display = "none";
-            }
+    ko.bindingHandlers['visibleActive'] = {
+        'update': function (element, valueAccessor) {
+            var value = ko.utils.unwrapObservable(valueAccessor());
+            var isCurrentlyVisible = !(element.style.display == "none");
+            if (value && !isCurrentlyVisible) {
+                element.style.display = "";
+                element.focus();
+            } else if ((!value) && isCurrentlyVisible)
+                element.style.display = "none";
         }
+    }
 
-        function GreqForJSON(greq) {
-            this.id = greq.id;
-            this.text = greq.text;
-            this.unitext = greq.unitext;
-            this.initial_form = greq.initial_form;
-            this.additional_info = greq.additional_info;
-            this.for_example_id = greq.for_example_id;
-        }
+    function GreqForJSON(greq) {
+        this.id = greq.id;
+        this.text = greq.text;
+        this.unitext = greq.unitext;
+        this.initial_form = greq.initial_form;
+        this.additional_info = greq.additional_info;
+        this.for_example_id = greq.for_example_id;
+    }
 
-        function Greq(ex, greq) {
+    function Greq(ex, greq) {
 
-            if (!greq) greq = {};
+        if (!greq) greq = {};
 
-            this.id = ko.observable(greq.id || '');
-            this.text = ko.observable(greq.text || '');
-            this.unitext = ko.observable(greq.unitext || '');
-            this.initial_form = ko.observable(greq.initial_form || '');
-            this.additional_info = ko.observable(greq.additional_info || '');
-            this.for_example_id = ex.id;
+        this.id = ko.observable(greq.id || '');
+        this.text = ko.observable(greq.text || '');
+        this.unitext = ko.observable(greq.unitext || '');
+        this.initial_form = ko.observable(greq.initial_form || '');
+        this.additional_info = ko.observable(greq.additional_info || '');
+        this.for_example_id = ex.id;
 
-            this.beingSaved = ko.observable(false);
+        this.beingSaved = ko.observable(false);
 
-            this.removeMe = function() {
-                if (this.id()) {
-                    this.beingSaved(true);
-                    var dataToSend = { 'delete': this.id() }
-                    $.post("{% url jsonGreqDeleteURL %}", dataToSend,
-                        function(data) {
-                            if (data.action=='deleted') {
-                                ex.greqs.remove(this);
-                            }
-                        }.bind(this)
-                    );
-                } else {
-                    ex.greqs.remove(this);
-                }
-            }.bind(this);
-
-            this.saveMe = function() {
+        this.removeMe = function() {
+            if (this.id()) {
                 this.beingSaved(true);
-                var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(this)) };
-                $.post("{% url jsonGreqSaveURL %}", dataToSend, function(data) {
-                    if (data.action=='created') {
-                        this.id(data.id);
-                    }
-                    this.beingSaved(false);
-                }.bind(this));
-            }.bind(this);
-        }
-
-        function ExForJSON(ex) {
-            this.id = ex.id;
-            this.greek_eq_status = ex.status;
-            this.additional_info = ex.comment;
-            this.address_text = ex.address;
-        }
-
-        function Example(ex) {
-
-            this.id = ex.id;
-            this.status = ko.observable(ex.status);
-
-            this.address = ko.observable(ex.address);
-            this.addressEditable = ko.observable(false);
-
-            this.comment = ko.observable(ex.comment);
-            this.commentEditable = ko.observable(false);
-
-            this.leftContext = ex.triplet[0];
-            this.text = ex.triplet[1];
-            this.rightContext = ex.triplet[2];
-
-            this.antconc = ex.antconc;
-            this.antconcVisible = ko.observable(false);
-
-            this.greqs = ko.observableArray(
-                ko.utils.arrayMap(
-                    ex.greqs,
-                    function(greq){
-                        return new Greq(this, greq);
+                var dataToSend = { 'delete': this.id() }
+                $.post("{% url jsonGreqDeleteURL %}", dataToSend,
+                    function(data) {
+                        if (data.action=='deleted') {
+                            ex.greqs.remove(this);
+                        }
                     }.bind(this)
-                )
-            );
+                );
+            } else {
+                ex.greqs.remove(this);
+            }
+        }.bind(this);
 
-            this.addGreq = function() {
-                this.greqs.push(new Greq(this));
-            }.bind(this);
-
-            this.TOGGLE = function(param) {
-                return function() {
-                    var value = param();
-                    param(!value);
+        this.saveMe = function() {
+            this.beingSaved(true);
+            var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(this)) };
+            $.post("{% url jsonGreqSaveURL %}", dataToSend, function(data) {
+                if (data.action=='created') {
+                    this.id(data.id);
                 }
-            };
+                this.beingSaved(false);
+            }.bind(this));
+        }.bind(this);
+    }
 
-            this.toggleAntconc = this.TOGGLE(this.antconcVisible);
-            this.toggleAddress = this.TOGGLE(this.addressEditable);
-            this.toggleComment = this.TOGGLE(this.commentEditable);
+    function ExForJSON(ex) {
+        this.id = ex.id;
+        this.greek_eq_status = ex.status;
+        this.additional_info = ex.comment;
+        this.address_text = ex.address;
+    }
 
-            this.beingSaved = ko.observable(false);
-            this.saveMe = function() {
-                this.beingSaved(true);
-                var dataToSend = { 'ex': ko.toJSON(new ExForJSON(this)) };
-                $.post("{% url jsonExSaveURL %}", dataToSend, function(data) {
-                    this.beingSaved(false);
-                }.bind(this));
-            }.bind(this);
-        }
+    function Example(ex) {
 
-        var jsonExamples = ko.utils.arrayMap(
-            {{ jsonExamples|safe }},
-            function(ex) { return new Example(ex); }
+        this.id = ex.id;
+        this.status = ko.observable(ex.status);
+
+        this.address = ko.observable(ex.address);
+        this.addressEditable = ko.observable(false);
+
+        this.comment = ko.observable(ex.comment);
+        this.commentEditable = ko.observable(false);
+
+        this.leftContext = ex.triplet[0];
+        this.text = ex.triplet[1];
+        this.rightContext = ex.triplet[2];
+
+        this.antconc = ex.antconc;
+        this.antconcVisible = ko.observable(false);
+
+        this.greqs = ko.observableArray(
+            ko.utils.arrayMap(
+                ex.greqs,
+                function(greq){
+                    return new Greq(this, greq);
+                }.bind(this)
+            )
         );
 
-        var viewModel = {
-            examples: jsonExamples
+        this.addGreq = function() {
+            this.greqs.push(new Greq(this));
+        }.bind(this);
+
+        this.TOGGLE = function(param) {
+            return function() {
+                var value = param();
+                param(!value);
+            }
         };
 
-        ko.applyBindings(viewModel);
-    </script>
+        this.toggleAntconc = this.TOGGLE(this.antconcVisible);
+        this.toggleAddress = this.TOGGLE(this.addressEditable);
+        this.toggleComment = this.TOGGLE(this.commentEditable);
 
-</body>
-</html>
+        this.beingSaved = ko.observable(false);
+        this.saveMe = function() {
+            this.beingSaved(true);
+            var dataToSend = { 'ex': ko.toJSON(new ExForJSON(this)) };
+            $.post("{% url jsonExSaveURL %}", dataToSend, function(data) {
+                this.beingSaved(false);
+            }.bind(this));
+        }.bind(this);
+    }
+
+    var jsonExamples = ko.utils.arrayMap(
+        {{ jsonExamples|safe }},
+        function(ex) { return new Example(ex); }
+    );
+
+    var viewModel = {
+        examples: jsonExamples
+    };
+
+    ko.applyBindings(viewModel);
+
+{% endblock %}

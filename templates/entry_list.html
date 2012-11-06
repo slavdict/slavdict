@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base--hdrSearch.html' %}
 
 {% set sort = form['sortdir'].value() + form['sortbase'].value() %}
 {% set filters = form.cleaned_data %}
@@ -16,7 +16,6 @@
 {% endblock %}
 
 {% block subheader %}
-{% trim %}
 
     <div class="filters">
         <div class="f5s--statusbar"
@@ -199,7 +198,6 @@
 
     </div>
 
-{% endtrim %}
 {% endblock %}
 
 
@@ -389,256 +387,255 @@
     {% endtrim %}
 {% endblock %}
 {% block javascript %}
-    <script type="text/javascript">
 
-        ko.observable.fn['htmlSelect'] = function(name, objList){
-            this.list = ko.observableArray(objList);
-            this.obj = ko.computed(function(){ return this.index2obj(this()); }, this);
-            $('#id_' + name).attr('data-bind',
-                'options: ' + name + '.list, ' +
-                'value: ' + name + ', ' +
-                'optionsText: "name", ' +
-                'optionsValue: "id"');
-            return this;
-        };
+    {{ super() }}
 
-        ko.observable.fn['htmlCheckbox'] = function(name){
-            var x = $('#id_' + name),
-                n = x.next('label[for="id_' + name + '"]').detach(),
-                p = x.prev('label[for="id_' + name + '"]').detach();
-            x.attr('data-bind', 'checked: ' + name)
-                .wrap('<div class="checkbox-group for_id_' + name + '">' +
-                    '<div class="checkbox for_id_' + name + '" /></div>')
-                .parent().after(n).before(p);
-            return this;
-        };
+    ko.observable.fn['htmlSelect'] = function(name, objList){
+        this.list = ko.observableArray(objList);
+        this.obj = ko.computed(function(){ return this.index2obj(this()); }, this);
+        $('#id_' + name).attr('data-bind',
+            'options: ' + name + '.list, ' +
+            'value: ' + name + ', ' +
+            'optionsText: "name", ' +
+            'optionsValue: "id"');
+        return this;
+    };
 
-        ko.observable.fn['htmlTextInput'] = function(name){
-            $('#id_' + name).wrap('<div class="textinput for_id_' + name + '"/>');
-            return this;
-        };
+    ko.observable.fn['htmlCheckbox'] = function(name){
+        var x = $('#id_' + name),
+            n = x.next('label[for="id_' + name + '"]').detach(),
+            p = x.prev('label[for="id_' + name + '"]').detach();
+        x.attr('data-bind', 'checked: ' + name)
+            .wrap('<div class="checkbox-group for_id_' + name + '">' +
+                '<div class="checkbox for_id_' + name + '" /></div>')
+            .parent().after(n).before(p);
+        return this;
+    };
 
-        ko.observable.fn['index2obj'] = function(value){
-            var representer = function(item){ return item.id; },
-                arr = ko.utils.arrayMap(this.list(), representer),
-                index = ko.utils.arrayIndexOf(arr, value);
-            if (index < 0){
-                console.log('Object list: ', this.list());
-                console.log('Array: ', arr);
-                console.log('Value to find in the array: ', value);
-                throw new Error('Элемент в массиве не найден.');
+    ko.observable.fn['htmlTextInput'] = function(name){
+        $('#id_' + name).wrap('<div class="textinput for_id_' + name + '"/>');
+        return this;
+    };
+
+    ko.observable.fn['index2obj'] = function(value){
+        var representer = function(item){ return item.id; },
+            arr = ko.utils.arrayMap(this.list(), representer),
+            index = ko.utils.arrayIndexOf(arr, value);
+        if (index < 0){
+            console.log('Object list: ', this.list());
+            console.log('Array: ', arr);
+            console.log('Value to find in the array: ', value);
+            throw new Error('Элемент в массиве не найден.');
+        }
+        return this.list()[index];
+    };
+
+    ko.observable.fn['rememberDefault'] = function(defaultValue){
+        this.defaultValue = defaultValue;
+        this.getDefaultValue = function(){ this(this.defaultValue); return this; };
+        this.hasDefaultValue = function(){ return this() === this.defaultValue; };
+        vM.meta.defaults.push(this);
+        return this;
+    };
+
+    ko.observable.fn['rememberInitial'] = function(initial){
+        this.initialValue = initial;
+        this.getInitialValue = function(){ this(this.initialValue); return this; };
+        this.hasInitialValue = function(){ return this() === this.initialValue; };
+        vM.meta.initials.push(this);
+        return this.getInitialValue();
+    };
+
+    ko.bindingHandlers.slide = {
+        update: function(element, valueAccessor){
+            if (ko.utils.unwrapObservable(valueAccessor())){
+                $(element).slideDown();
+            } else {
+                $(element).slideUp();
             }
-            return this.list()[index];
-        };
+        }
+    };
 
-        ko.observable.fn['rememberDefault'] = function(defaultValue){
-            this.defaultValue = defaultValue;
-            this.getDefaultValue = function(){ this(this.defaultValue); return this; };
-            this.hasDefaultValue = function(){ return this() === this.defaultValue; };
-            vM.meta.defaults.push(this);
-            return this;
-        };
-
-        ko.observable.fn['rememberInitial'] = function(initial){
-            this.initialValue = initial;
-            this.getInitialValue = function(){ this(this.initialValue); return this; };
-            this.hasInitialValue = function(){ return this() === this.initialValue; };
-            vM.meta.initials.push(this);
-            return this.getInitialValue();
-        };
-
-        ko.bindingHandlers.slide = {
-            update: function(element, valueAccessor){
-                if (ko.utils.unwrapObservable(valueAccessor())){
-                    $(element).slideDown();
-                } else {
-                    $(element).slideUp();
-                }
+    ko.bindingHandlers.show = {
+        update: function(element, valueAccessor){
+            if (ko.utils.unwrapObservable(valueAccessor())){
+                $(element).show();
+            } else {
+                $(element).hide();
             }
-        };
+        }
+    };
 
-        ko.bindingHandlers.show = {
-            update: function(element, valueAccessor){
-                if (ko.utils.unwrapObservable(valueAccessor())){
-                    $(element).show();
-                } else {
-                    $(element).hide();
-                }
-            }
-        };
+    vM.meta = {
+        initials: [],
+        defaults: []
+    };
 
-        vM.meta = {
-            initials: [],
-            defaults: []
-        };
-
-        vM.filters = {
-            formSubmit: vM.hdrSearch.formSubmit,
-            isOperated: ko.observable(false),
-            closeFilters: function(){
-                    this.isOperated(false);
-                    this.getInitialState();
-                },
-
-            find: ko.observable()
-                .rememberInitial('{{ filters.find }}')
-                .rememberDefault('')
-                .htmlTextInput('find'),
-
-            author: ko.observable()
-                .rememberInitial('{{ filters.author }}')
-                .rememberDefault('all')
-                .htmlSelect('author', {{ viewmodel.authors }}),
-
-            sortbase: ko.observable()
-                .rememberInitial('{{ filters.sortbase }}')
-                // .rememberDefault... Значения по умолчанию
-                // на клиенте намеренно не определяем,
-                // хотя оно есть на сервере
-                .htmlSelect('sortbase', {{ viewmodel.sortbase }}),
-
-            sortdir: ko.observable()
-                .rememberInitial('{{ filters.sortdir }}')
-                // .rememberDefault... Значения по умолчанию
-                // на клиенте намеренно не определяем,
-                // хотя оно есть на сервере
-                .htmlSelect('sortdir', {{ viewmodel.sortdir }}),
-
-            status: ko.observable()
-                .rememberInitial('{{ filters.status }}')
-                .rememberDefault('all')
-                .htmlSelect('status', {{ viewmodel.statuses }}),
-
-            pos: ko.observable()
-                .rememberInitial('{{ filters.pos }}')
-                .rememberDefault('all')
-                .htmlSelect('pos', {{ viewmodel.pos }}),
-
-            uninflected: ko.observable()
-                .rememberInitial({{ 'true' if filters.uninflected else 'false' }})
-                .rememberDefault(false)
-                .htmlCheckbox('uninflected'),
-
-            gender: ko.observable()
-                .rememberInitial('{{ filters.gender }}')
-                .rememberDefault('all')
-                .htmlSelect('gender', {{ viewmodel.gender }}),
-
-            tantum: ko.observable()
-                .rememberInitial('{{ filters.tantum }}')
-                .rememberDefault('all')
-                .htmlSelect('tantum', {{ viewmodel.tantum }}),
-
-            possessive: ko.observable()
-                .rememberInitial('{{ filters.possessive }}')
-                .rememberDefault('all')
-                .htmlSelect('possessive', {{ viewmodel.possessive }}),
-
-            onym: ko.observable()
-                .rememberInitial('{{ filters.onym }}')
-                .rememberDefault('all')
-                .htmlSelect('onym', {{ viewmodel.onym }}),
-
-            canonical_name: ko.observable()
-                .rememberInitial('{{ filters.canonical_name }}')
-                .rememberDefault('all')
-                .htmlSelect('canonical_name', {{ viewmodel.canonical_name }}),
-
-            etymology: ko.observable()
-                .rememberInitial({{ 'true' if filters.etymology else 'false' }})
-                .rememberDefault(false)
-                .htmlCheckbox('etymology'),
-
-            additional_info: ko.observable()
-                .rememberInitial({{ 'true' if filters.additional_info else 'false' }})
-                .rememberDefault(false)
-                .htmlCheckbox('additional_info'),
-
-            homonym: ko.observable()
-                .rememberInitial({{ 'true' if filters.homonym else 'false' }})
-                .rememberDefault(false)
-                .htmlCheckbox('homonym'),
-
-            duplicate: ko.observable()
-                .rememberInitial({{ 'true' if filters.duplicate else 'false' }})
-                .rememberDefault(false)
-                .htmlCheckbox('duplicate')
-        };
-
-        vM.filters.sort = ko.computed({
-            read: function(){
-                return this.sortdir() + this.sortbase();
+    vM.filters = {
+        formSubmit: vM.hdrSearch.formSubmit,
+        isOperated: ko.observable(false),
+        closeFilters: function(){
+                this.isOperated(false);
+                this.getInitialState();
             },
-            write: function(value){
-                if (value.charAt(0) === '-') {
-                    this.sortdir('-');
-                    this.sortbase(value.slice(1));
-                } else {
-                    this.sortdir('');
-                    this.sortbase(value);
-                }
-            },
-            owner: vM.filters
-        });
 
-        vM.filters.doSort = function(sort){
-            this.sort(sort);
-            this.formSubmit();
-        };
+        find: ko.observable()
+            .rememberInitial('{{ filters.find }}')
+            .rememberDefault('')
+            .htmlTextInput('find'),
 
-        vM.filters.isOperated.toggle = function(){ this(!this()); }.bind(vM.filters.isOperated)
+        author: ko.observable()
+            .rememberInitial('{{ filters.author }}')
+            .rememberDefault('all')
+            .htmlSelect('author', {{ viewmodel.authors }}),
 
-        vM.filters.notDefaultState = ko.computed(function(){
-            var defaults = vM.meta.defaults;
-            for(var i = 0, j = defaults.length; i < j; i++){
-                if (!defaults[i].hasDefaultValue()) return true;
+        sortbase: ko.observable()
+            .rememberInitial('{{ filters.sortbase }}')
+            // .rememberDefault... Значения по умолчанию
+            // на клиенте намеренно не определяем,
+            // хотя оно есть на сервере
+            .htmlSelect('sortbase', {{ viewmodel.sortbase }}),
+
+        sortdir: ko.observable()
+            .rememberInitial('{{ filters.sortdir }}')
+            // .rememberDefault... Значения по умолчанию
+            // на клиенте намеренно не определяем,
+            // хотя оно есть на сервере
+            .htmlSelect('sortdir', {{ viewmodel.sortdir }}),
+
+        status: ko.observable()
+            .rememberInitial('{{ filters.status }}')
+            .rememberDefault('all')
+            .htmlSelect('status', {{ viewmodel.statuses }}),
+
+        pos: ko.observable()
+            .rememberInitial('{{ filters.pos }}')
+            .rememberDefault('all')
+            .htmlSelect('pos', {{ viewmodel.pos }}),
+
+        uninflected: ko.observable()
+            .rememberInitial({{ 'true' if filters.uninflected else 'false' }})
+            .rememberDefault(false)
+            .htmlCheckbox('uninflected'),
+
+        gender: ko.observable()
+            .rememberInitial('{{ filters.gender }}')
+            .rememberDefault('all')
+            .htmlSelect('gender', {{ viewmodel.gender }}),
+
+        tantum: ko.observable()
+            .rememberInitial('{{ filters.tantum }}')
+            .rememberDefault('all')
+            .htmlSelect('tantum', {{ viewmodel.tantum }}),
+
+        possessive: ko.observable()
+            .rememberInitial('{{ filters.possessive }}')
+            .rememberDefault('all')
+            .htmlSelect('possessive', {{ viewmodel.possessive }}),
+
+        onym: ko.observable()
+            .rememberInitial('{{ filters.onym }}')
+            .rememberDefault('all')
+            .htmlSelect('onym', {{ viewmodel.onym }}),
+
+        canonical_name: ko.observable()
+            .rememberInitial('{{ filters.canonical_name }}')
+            .rememberDefault('all')
+            .htmlSelect('canonical_name', {{ viewmodel.canonical_name }}),
+
+        etymology: ko.observable()
+            .rememberInitial({{ 'true' if filters.etymology else 'false' }})
+            .rememberDefault(false)
+            .htmlCheckbox('etymology'),
+
+        additional_info: ko.observable()
+            .rememberInitial({{ 'true' if filters.additional_info else 'false' }})
+            .rememberDefault(false)
+            .htmlCheckbox('additional_info'),
+
+        homonym: ko.observable()
+            .rememberInitial({{ 'true' if filters.homonym else 'false' }})
+            .rememberDefault(false)
+            .htmlCheckbox('homonym'),
+
+        duplicate: ko.observable()
+            .rememberInitial({{ 'true' if filters.duplicate else 'false' }})
+            .rememberDefault(false)
+            .htmlCheckbox('duplicate')
+    };
+
+    vM.filters.sort = ko.computed({
+        read: function(){
+            return this.sortdir() + this.sortbase();
+        },
+        write: function(value){
+            if (value.charAt(0) === '-') {
+                this.sortdir('-');
+                this.sortbase(value.slice(1));
+            } else {
+                this.sortdir('');
+                this.sortbase(value);
             }
-            return false;
-        }, vM.filters);
+        },
+        owner: vM.filters
+    });
 
-        vM.filters.notInitialState = ko.computed(function(){
-            var initials = vM.meta.initials;
-            for(var i = 0, j = initials.length; i < j; i++){
-                if (!initials[i].hasInitialValue()) return true;
-            }
-            return false;
-        }, vM.filters);
+    vM.filters.doSort = function(sort){
+        this.sort(sort);
+        this.formSubmit();
+    };
 
-        vM.filters.getDefaultState = function(){
-            var defaults = vM.meta.defaults;
-            for(var i = 0, j = defaults.length; i < j; i++){
-                defaults[i].getDefaultValue();
-            }
-        };
+    vM.filters.isOperated.toggle = function(){ this(!this()); }.bind(vM.filters.isOperated)
 
-        vM.filters.getInitialState = function(){
-            var initials = vM.meta.initials;
-            for(var i = 0, j = initials.length; i < j; i++){
-                initials[i].getInitialValue();
-            }
-        };
+    vM.filters.notDefaultState = ko.computed(function(){
+        var defaults = vM.meta.defaults;
+        for(var i = 0, j = defaults.length; i < j; i++){
+            if (!defaults[i].hasDefaultValue()) return true;
+        }
+        return false;
+    }, vM.filters);
 
-        $('#id_find')
-            .attr('data-bind', 'value: find,' +
-                'valueUpdate: "afterkeydown"')
-            .attr('autocomplete', 'off')
-            .attr('spellcheck', 'false');
+    vM.filters.notInitialState = ko.computed(function(){
+        var initials = vM.meta.initials;
+        for(var i = 0, j = initials.length; i < j; i++){
+            if (!initials[i].hasInitialValue()) return true;
+        }
+        return false;
+    }, vM.filters);
 
-        ko.applyBindings(vM.filters, $('.filters').get(0));
-        ko.applyBindings(vM.filters, $('#main').get(0));
+    vM.filters.getDefaultState = function(){
+        var defaults = vM.meta.defaults;
+        for(var i = 0, j = defaults.length; i < j; i++){
+            defaults[i].getDefaultValue();
+        }
+    };
 
-        $('tr').mouseover(function(){
-            $(this).addClass('hover');
-        }).mouseout(function(){
-            $(this).removeClass('hover');
-        });
+    vM.filters.getInitialState = function(){
+        var initials = vM.meta.initials;
+        for(var i = 0, j = initials.length; i < j; i++){
+            initials[i].getInitialValue();
+        }
+    };
 
-        $('.icon').mouseover(function(){
-            $(this).next('.hint-container').show();
-        }).mouseout(function(){
-            $(this).next('.hint-container').hide();
-        });
+    $('#id_find')
+        .attr('data-bind', 'value: find,' +
+            'valueUpdate: "afterkeydown"')
+        .attr('autocomplete', 'off')
+        .attr('spellcheck', 'false');
 
-    </script>
+    ko.applyBindings(vM.filters, $('.filters').get(0));
+    ko.applyBindings(vM.filters, $('#main').get(0));
+
+    $('tr').mouseover(function(){
+        $(this).addClass('hover');
+    }).mouseout(function(){
+        $(this).removeClass('hover');
+    });
+
+    $('.icon').mouseover(function(){
+        $(this).next('.hint-container').show();
+    }).mouseout(function(){
+        $(this).next('.hint-container').hide();
+    });
 
 {% endblock %}
