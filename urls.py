@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from coffin.conf.urls.defaults import *
-from django.views.generic.simple import redirect_to
 from coffin.views.generic.simple import direct_to_template
+from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.views.generic.simple import redirect_to
 
 from slavdict.admin import ui
-from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
