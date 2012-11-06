@@ -735,7 +735,9 @@ def _get_entries(form):
 @login_required
 def entry_list(request):
     if 'find' in request.COOKIES:
-        request.COOKIES['find'] = base64.standard_b64decode(request.COOKIES['find']).decode('utf8')
+        request.COOKIES['find'] = base64 \
+            .standard_b64decode(request.COOKIES['find']) \
+            .decode('utf8')
 
     if request.method == 'POST' and len(request.POST) > 1:
         data = request.POST.copy() # Сам по себе объект QueryDict, на который указывает request.POST,
@@ -786,7 +788,8 @@ def entry_list(request):
         }
     response = render_to_response('entry_list.html', context, RequestContext(request))
     if request.method == 'POST':
-        form.cleaned_data['find'] = base64.standard_b64encode(form.cleaned_data['find'].encode('utf8'))
+        form.cleaned_data['find'] = base64 \
+            .standard_b64encode(form.cleaned_data['find'].encode('utf8'))
         for param, value in form.cleaned_data.items():
             response.set_cookie(param, value, path=request.path)
     return response
@@ -821,21 +824,29 @@ def hellinist_workbench(request):
         page = paginator.page(paginator.num_pages)
 
     vM_examples = [
-        {
-            'id': e.id, 'triplet': e.context_ucs, 'antconc': e.context.strip() or e.example,
-            'address': e.address_text, 'status': e.greek_eq_status, 'comment': e.additional_info,
-            'greqs': [
-                { 'unitext': greq.unitext, 'text': greq.text, 'initial_form': greq.initial_form,
-                  'id': greq.id, 'additional_info': greq.additional_info }
-                for greq in e.greek_equivs
-            ]
-        }
+    {
+        'id': e.id,
+        'triplet': e.context_ucs,
+        'antconc': e.context.strip() or e.example,
+        'address': e.address_text,
+        'status': e.greek_eq_status,
+        'comment': e.additional_info,
+        'greqs': [
+            {
+                'unitext': greq.unitext,
+                'text': greq.text,
+                'initial_form': greq.initial_form,
+                'id': greq.id,
+                'additional_info': greq.additional_info
+            }
+            for greq in e.greek_equivs]
+    }
     for e in page.object_list]
 
     context = {
         'title': u'Греческий кабинет',
         'examples': page.object_list,
-        'jsonExamples': json.dumps(vM_examples, ensure_ascii=False, separators=(',',':')),
+        'jsonExamples': dictionary.viewmodels._json(vM_examples),
         'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
         'statusFilter': COOKIES_STATUS,
         'page': page,
