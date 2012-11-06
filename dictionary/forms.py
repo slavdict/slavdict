@@ -142,6 +142,8 @@ class SelectMultipleAutocomplete(SelectMultiple):
 AUTHOR_CHOICES = dictionary.viewmodels.tupleAuthors
 CANONNAME_CHOICES = dictionary.viewmodels.tupleCanonicalName
 GENDER_CHOICES = dictionary.viewmodels.tupleGenders
+GREQSORTBASE_CHOICES = dictionary.viewmodels.tupleGreqSortbase
+GREQSTATUS_CHOICES = dictionary.viewmodels.tupleGreqStatuses
 ONYM_CHOICES = dictionary.viewmodels.tupleOnyms
 POS_CHOICES = dictionary.viewmodels.tuplePos
 POSSESSIVE_CHOICES = dictionary.viewmodels.tuplePossessive
@@ -192,4 +194,24 @@ class FilterEntriesForm(forms.Form):
         'additional_info': False,
         'homonym': False,
         'duplicate': False,
+    }
+
+class FilterExamplesForm(forms.Form):
+    hwAdditional_info = forms.BooleanField(label=u'Примеры с примечаниями',
+            required=False)
+    hwAddress = forms.CharField(required=False, label=u'Адрес начинается на')
+    hwAuthor = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор')
+    hwPrfx = forms.CharField(required=False, label=u'Статья начинается на')
+    hwSortbase = forms.ChoiceField(choices=GREQSORTBASE_CHOICES)
+    hwSortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
+    hwStatus = forms.ChoiceField(choices=GREQSTATUS_CHOICES,
+            label=u'Статус греч.параллелей')
+    default_data = {
+        'hwAdditional_info': False,
+        'hwAddress': u'',
+        'hwAuthor': 'all',
+        'hwPrfx': u'',
+        'hwSortbase': 'alph',
+        'hwSortdir':  '-',
+        'hwStatus': 'all',
     }

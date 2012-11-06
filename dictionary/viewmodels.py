@@ -36,6 +36,13 @@ genders = [
     {'id': 'none', 'name': u'где род не указан'},
 ] + category_values('gender')
 
+greqSortbase = (
+    {'id': 'alph', 'name': u'по заглавному слову'},
+    {'id': 'addr', 'name': u'по адресу примера'},
+)
+
+greqStatuses = [ {'id': 'all', 'name': u'любой'}, ] + category_values('entryStatus')
+
 onyms = [
     {'id': 'all',  'name': u'любой'},
     {'id': 'none', 'name': u'не имя собственное'},
@@ -73,6 +80,8 @@ statuses = [ {'id': 'all', 'name': u'любой'}, ] + category_values('entrySta
 jsonAuthors = _json(authors)
 jsonCanonicalName = _json(canonical_name)
 jsonGenders = _json(genders)
+jsonGreqSortbase = _json(greqSortbase)
+jsonGreqStatuses = _json(greqStatuses)
 jsonOnyms = _json(onyms)
 jsonPos = _json(pos)
 jsonPossessive = _json(possessive)
@@ -84,6 +93,8 @@ jsonTantum = _json(tantum)
 tupleAuthors = _tuple(authors)
 tupleCanonicalName = _tuple(canonical_name)
 tupleGenders = _tuple(genders)
+tupleGreqSortbase = _tuple(greqSortbase)
+tupleGreqStatuses = _tuple(greqStatuses)
 tupleOnyms = _tuple(onyms)
 tuplePos = _tuple(pos)
 tuplePossessive = _tuple(possessive)
