@@ -2,6 +2,7 @@
 
 from coffin.conf.urls.defaults import *
 from django.views.generic.simple import redirect_to
+from coffin.views.generic.simple import direct_to_template
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from slavdict.admin import ui
@@ -29,14 +30,14 @@ urlpatterns += patterns('',
     url( r'^entries/(\d+)/change/$', 'slavdict.dictionary.views.change_entry' ),
     url( r'^entries/last/$', 'slavdict.dictionary.views.last_entry', name='last_entry' ),
 
-    url( r'^materials/$', 'django.views.generic.simple.direct_to_template', {'template': 'materials.html'}),
+    url( r'^materials/$', direct_to_template, {'template': 'materials.html'}),
     url( r'^forum/', include('slavdict.forum.urls') ),
     url( r'^wiki/$', redirect_to, kwargs={'url': 'http://slavonic.pbworks.com/'} ),
     url( r'^switch/additional-info/$', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
     url( r'^converter/$', 'slavdict.dictionary.views.antconc2ucs8_converter', name='converter' ),
     url( r'^json/multiselect/entries/$', 'dictionary.views.json_multiselect_entries'),
     url( r'^json/singleselect/entries/urls/$', 'dictionary.views.json_singleselect_entries_urls'),
-    url( r'^test/multiselect/$', 'django.views.generic.simple.direct_to_template', {'template': 'multiselect.html'}),
+    url( r'^test/multiselect/$', direct_to_template, {'template': 'multiselect.html'}),
     url( r'^greek/$', 'dictionary.views.hellinist_workbench', name='hellinist_workbench' ),
     url( r'^json/greq/save/$', 'dictionary.views.json_greq_save', name="jsonGreqSaveURL"),
     url( r'^json/greq/delete/$', 'dictionary.views.json_greq_delete', name="jsonGreqDeleteURL"),
