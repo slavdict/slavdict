@@ -733,7 +733,7 @@ def _get_entries(form):
 
 
 @login_required
-def entry_list(request, mine=False, duplicates=False):
+def entry_list(request, mine=False):
     if 'find' in request.COOKIES:
         request.COOKIES['find'] = base64.standard_b64decode(request.COOKIES['find']).decode('utf8')
 
