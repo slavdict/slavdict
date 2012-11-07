@@ -7,8 +7,10 @@
 
     <a href="{% url all_entries_url %}" class="header--item button">Вернуться к статьям</a>
 
-    <label for="hwStatus_id">Фильтр греч. параллелей</label>
+    {{ space }}
+    <label for="hwStatus_id" class="header--item">Фильтр греч. параллелей</label>
 
+    {{ space }}
     <select name="hwStatus" id="hwStatus_id" onchange="$('form.headerForm').submit();">
         {% for option in statusList %}
             <option value="{{ option.0 }}"
