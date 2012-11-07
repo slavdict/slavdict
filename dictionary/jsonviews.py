@@ -2,7 +2,12 @@
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.http import HttpResponse
 
+from dictionary.models import Entry
+from dictionary.models import Example
+from dictionary.models import GreekEquivalentForExample
 
 def _json(x):
     return json.dumps(x, ensure_ascii=False, separators=(',',':'))

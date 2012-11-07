@@ -7,9 +7,9 @@
 
     <a href="{% url all_entries_url %}" class="header--item button">Вернуться к статьям</a>
 
-    <label for="status_id">Фильтр греч. параллелей</label>
+    <label for="hwStatus_id">Фильтр греч. параллелей</label>
 
-    <select name="status" id="status_id" onchange="$('form.headerForm').submit();">
+    <select name="hwStatus" id="hwStatus_id" onchange="$('form.headerForm').submit();">
         {% for option in statusList %}
             <option value="{{ option.0 }}"
             {% if statusFilter == option.0 %}selected="selected"{% endif %}

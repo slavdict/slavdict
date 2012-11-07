@@ -703,17 +703,17 @@ def entry_list(request):
 def hellinist_workbench(request):
 
     DEFAULT_STATUS = 'L'
-    httpGET_STATUS = request.GET.get('status')
+    httpGET_STATUS = request.POST.get('hwStatus')
     if httpGET_STATUS not in [s[0] for s in dictionary.models.Example.GREEK_EQ_STATUS]:
         httpGET_STATUS = None
 
     if httpGET_STATUS:
         redirect_path = "./"
         response = HttpResponseRedirect(redirect_path)
-        response.set_cookie('HWstatus', httpGET_STATUS, path=request.path)
+        response.set_cookie('hwStatus', httpGET_STATUS, path=request.path)
         return response
 
-    COOKIES_STATUS = request.COOKIES.get('HWstatus', DEFAULT_STATUS)
+    COOKIES_STATUS = request.COOKIES.get('hwStatus', DEFAULT_STATUS)
 
     examples = Example.objects.filter(greek_eq_status=COOKIES_STATUS).order_by('id')
 
