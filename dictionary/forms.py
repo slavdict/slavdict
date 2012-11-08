@@ -211,7 +211,7 @@ class FilterExamplesForm(forms.Form):
         'hwAddress': u'',
         'hwAuthor': 'all',
         'hwPrfx': u'',
-        'hwSortbase': 'alph',
+        'hwSortbase': 'id',
         'hwSortdir':  '-',
         'hwStatus': 'all',
     }
