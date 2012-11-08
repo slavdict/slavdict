@@ -21,6 +21,15 @@
         <div class="f5s--statusbar"
             data-bind="slide: isOperated() || notDefaultState()"><div class="grid">
 
+            <span class="f5sS--total"
+                data-bind="visible: !notInitialState()">
+                {{ space }}
+                Найдено статей:
+                {{ space }}
+                <strong>{{ number_of_entries }}</strong>
+                {{ space }}
+            </span>
+
             <strong data-bind="visible: notDefaultState">Выбранные фильтры</strong>
             <strong data-bind="visible: !notDefaultState()">Ни один фильтр не выбран</strong>
 

@@ -686,6 +686,7 @@ def entry_list(request):
             'tantum': dictionary.viewmodels.jsonTantum,
             },
         'entries': page.object_list,
+        'number_of_entries': paginator.count,
         'form': form,
         'page': page,
         'user': request.user,
