@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from dictionary.models import Entry
+from dictionary.models import Etymology
 from dictionary.models import Example
 
 def get_entries(form):
