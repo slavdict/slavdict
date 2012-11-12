@@ -1,3 +1,6 @@
+import newrelic.agent
+newrelic.agent.initialize('/usr/local/etc/newrelic.ini')
+
 import os
 import sys
 
@@ -9,3 +12,4 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'slavdict.settings'
 
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()
+application = newrelic.agent.wsgi_application()(application)
