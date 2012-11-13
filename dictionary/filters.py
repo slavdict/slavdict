@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.db.models import Q
+
 from dictionary.models import Entry
 from dictionary.models import Etymology
 from dictionary.models import Example
@@ -133,7 +135,7 @@ def get_examples(form):
     elif value=='none':
         entries = Entry.objects.filter(editor__isnull=True)
     elif value.isdigit():
-        entries = Entry.objects.filter(editor_id=int(value))
+        entries = Entry.objects.filter(editor__id=int(value))
     else:
         PARSING_ERRORS.append('hwAuthor')
 
@@ -143,8 +145,13 @@ def get_examples(form):
         entries = entries or Entry.objects
         entries = entries.filter(civil_equivalent__istartswith=prfx)
 
+    # Адреса начинаются на
+    address = form['hwAddress']
+    if address:
+        FILTER_PARAMS['address_text__istartswith'] = address
+
     # Статус греческих параллелей
-    value = form['hwStatus'] or 'all'
+    value = form['hwStatus'] or 'L'
     if value=='all':
         pass
     elif value.isalpha() and len(value) == 1:
@@ -157,7 +164,7 @@ def get_examples(form):
 
     if entries:
         examples = examples.filter(
-            Q(meaning__entry_container_id__in=entries) |
+            Q(meaning__entry_container__in=entries) |
             Q(meaning__collogroup_container__base_meaning__entry_container__in=entries)
             )
 

@@ -197,8 +197,6 @@ class FilterEntriesForm(forms.Form):
     }
 
 class FilterExamplesForm(forms.Form):
-    hwAdditional_info = forms.BooleanField(label=u'Примеры с примечаниями',
-            required=False)
     hwAddress = forms.CharField(required=False, label=u'Адрес начинается на')
     hwAuthor = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор')
     hwPrfx = forms.CharField(required=False, label=u'Статья начинается на')
@@ -207,7 +205,6 @@ class FilterExamplesForm(forms.Form):
     hwStatus = forms.ChoiceField(choices=GREQSTATUS_CHOICES,
             label=u'Статус греч.параллелей')
     default_data = {
-        'hwAdditional_info': False,
         'hwAddress': u'',
         'hwAuthor': 'all',
         'hwPrfx': u'',

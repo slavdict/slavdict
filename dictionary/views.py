@@ -702,27 +702,34 @@ def entry_list(request):
 
 @login_required
 def hellinist_workbench(request):
+    if 'hwPrfx' in request.COOKIES:
+        request.COOKIES['hwPrfx'] = base64 \
+            .standard_b64decode(request.COOKIES['hwPrfx']) \
+            .decode('utf8')
 
-    DEFAULT_STATUS = 'L'
-    httpGET_STATUS = request.POST.get('hwStatus')
-    if httpGET_STATUS not in [s[0] for s in dictionary.models.Example.GREEK_EQ_STATUS]:
-        httpGET_STATUS = None
+    if 'hwAddress' in request.COOKIES:
+        request.COOKIES['hwAddress'] = base64 \
+            .standard_b64decode(request.COOKIES['hwAddress']) \
+            .decode('utf8')
 
-    if httpGET_STATUS:
-        redirect_path = "./"
-        response = HttpResponseRedirect(redirect_path)
-        response.set_cookie('hwStatus', httpGET_STATUS, path=request.path)
-        return response
+    if request.method == 'POST':
+        data = request.POST
+    else:
+        data = FilterExamplesForm.default_data
+        data.update(request.COOKIES)
 
-    COOKIES_STATUS = request.COOKIES.get('hwStatus', DEFAULT_STATUS)
-
-    examples = Example.objects.filter(greek_eq_status=COOKIES_STATUS).order_by('id')
+    form = FilterExamplesForm(data)
+    assert form.is_valid(), u'Форма FilterExamplesForm заполнена неправильно'
+    examples = dictionary.filters.get_examples(form.cleaned_data)
 
     paginator = Paginator(examples, per_page=4, orphans=2)
-    try:
-        pagenum = int(request.GET.get('page', 1))
-    except ValueError:
+    if request.method == 'POST':
         pagenum = 1
+    else:
+        try:
+            pagenum = int(request.GET.get('page', 1))
+        except ValueError:
+            pagenum = 1
     try:
         page = paginator.page(pagenum)
     except (EmptyPage, InvalidPage):
@@ -749,14 +756,29 @@ def hellinist_workbench(request):
     for e in page.object_list]
 
     context = {
-        'title': u'Греческий кабинет',
         'examples': page.object_list,
+        'form': form,
         'jsonExamples': dictionary.viewmodels._json(vM_examples),
-        'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
-        'statusFilter': COOKIES_STATUS,
+        'number_of_examples': paginator.count,
         'page': page,
+        'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
+        'title': u'Греческий кабинет',
+        'viewmodel': {
+            'authors': dictionary.viewmodels.jsonAuthors,
+            'statuses': dictionary.viewmodels.jsonGreqStatuses,
+            'sortdir': dictionary.viewmodels.jsonSortdir,
+            'sortbase': dictionary.viewmodels.jsonGreqSortbase,
+            },
         }
-    return render_to_response('hellinist_workbench.html', context, RequestContext(request))
+    response = render_to_response('hellinist_workbench.html', context, RequestContext(request))
+    if request.method == 'POST':
+        form.cleaned_data['hwPrfx'] = base64 \
+            .standard_b64encode(form.cleaned_data['hwPrfx'].encode('utf8'))
+        form.cleaned_data['hwAddress'] = base64 \
+            .standard_b64encode(form.cleaned_data['hwAddress'].encode('utf8'))
+        for param, value in form.cleaned_data.items():
+            response.set_cookie(param, value, path=request.path)
+    return response
 
 
 @login_required
