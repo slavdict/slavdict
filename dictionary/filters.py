@@ -165,6 +165,7 @@ def get_examples(form):
     if entries:
         examples = examples.filter(
             Q(meaning__entry_container__in=entries) |
+            Q(meaning__meaning__entry_container__in=entries) |
             Q(meaning__collogroup_container__base_meaning__entry_container__in=entries)
             )
 
