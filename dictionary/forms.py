@@ -198,12 +198,12 @@ class FilterEntriesForm(forms.Form):
 
 class FilterExamplesForm(forms.Form):
     hwAddress = forms.CharField(required=False, label=u'Адрес начинается на')
-    hwAuthor = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор')
+    hwAuthor = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор статьи')
     hwPrfx = forms.CharField(required=False, label=u'Статья начинается на')
     hwSortbase = forms.ChoiceField(choices=GREQSORTBASE_CHOICES)
     hwSortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
     hwStatus = forms.ChoiceField(choices=GREQSTATUS_CHOICES,
-            label=u'Статус греч.параллелей')
+            label=u'Статус греч. парал.')
     default_data = {
         'hwAddress': u'',
         'hwAuthor': 'all',

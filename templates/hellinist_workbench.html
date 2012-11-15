@@ -10,21 +10,12 @@
 
     <a href="{% url all_entries_url %}" class="header--item button">Вернуться к статьям</a>
 
-    {{ space }}
-    <label class="header--item">Фильтр греч. параллелей</label>
-
-    {{ space }}
-    <select onchange="if (!vM.filters.isOperated()) { setTimeout(function(){ $('form.headerForm').submit(); }, 100); }"
-        data-bind="options: hwStatus.list, value: hwStatus,
-        optionsText: 'name', optionsValue: 'id'"></select>
-
 {% endblock %}
 
 {% block subheader %}
 
-    <div class="filters">
-        <div class="f5s--statusbar"
-            data-bind="slide: isOperated() || notDefaultState()"><div class="grid">
+    <div class="hellinist-filters">
+        <div class="f5s--statusbar"><div class="grid">
 
             <span class="f5sS--total"
                 data-bind="visible: !notInitialState()">
@@ -37,6 +28,16 @@
 
             <strong data-bind="visible: notDefaultState">Выбранные фильтры</strong>
             <strong data-bind="visible: !notDefaultState()">Ни один фильтр не выбран</strong>
+
+            {{ space }}
+            <span class="f5sS--item" data-bind="visible: !hwStatus.hasDefaultValue()">
+                Статус &laquo;<span data-bind="text: hwStatus.obj().name"></span>&raquo;
+            </span>
+
+            {{ space }}
+            <span class="f5sS--item" data-bind="visible: !hwAuthor.hasDefaultValue()">
+                <span data-bind="text: hwAuthor.obj().name"></span>
+            </span>
 
             {{ space }}
             <span class="f5sS--item" data-bind="visible: hwPrfx">
@@ -54,18 +55,8 @@
                 <span class="f5sSI--prefix"><span data-bind="text: hwAddress"></span>...</span>
             </span>
 
-            {{ space }}
-            <span class="f5sS--item" data-bind="visible: !hwAuthor.hasDefaultValue()">
-                <span data-bind="text: hwAuthor.obj().name"></span>
-            </span>
-
-            {{ space }}
-            <span class="f5sS--item" data-bind="visible: !hwStatus.hasDefaultValue()">
-                <span data-bind="text: hwStatus.obj().name"></span>
-            </span>
-
         </div></div>
-        <div class="f5s--dashboard" data-bind="slide: isOperated"><div class="grid"
+        <div class="f5s--dashboard"><div class="grid"
                 ondblclick="
                     var x = $(this);
                     if (x.hasClass('grid-debug'))
@@ -75,62 +66,50 @@
                 ">
 
             <div class="f5sD--sort">
-            <h3>Упорядочить статьи</h3>
+            <h3>Упорядочить примеры</h3>
 
-                {{ form.hwSortdir }}
-
-                <label for="id_sortbase">на основе</label>
                 {{ form.hwSortbase }}
+                {{ form.hwSortdir }}
 
             </div>
 
             <div class="f5sD--filter">
 
-                <div class="A">
-                    <h3>Отобрать статьи по следующим критериям</h3>
+                <h3>Отобрать примеры по следующим критериям</h3>
 
-                    <div class="AA">
-                    {{ form.hwPrfx.label_tag() }}
-                    {{ form.hwPrfx }}
-
-                    {{ form.hwAddress.label_tag() }}
-                    {{ form.hwAddress }}
-                    </div>
-
-                    <div class="AB">
-                    {{ form.hwAuthor.label_tag() }}
-                    {{ form.hwAuthor }}
-
-                    {{ form.hwStatus.label_tag() }}
-                    {{ form.hwStatus }}
-                    </div>
+                <div class="M">
+                {{ form.hwStatus.label_tag() }}
+                {{ form.hwStatus }}
                 </div>
 
-            </div>
-            <div class="f5sD--buttons" style="clear: both;">
+                <div class="N">
+                {{ form.hwAuthor.label_tag() }}
+                {{ form.hwAuthor }}
+                </div>
 
-                <span data-bind="click: getDefaultState, visible: notDefaultState"
-                    class="button f5sD--reset">сбросить</span>
-                <span data-bind="visible: !notDefaultState()"
-                    class="button f5sD--reset disabled" id>сбросить</span>
+                <div class="O">
+                {{ form.hwAddress.label_tag() }}
+                {{ form.hwAddress }}
 
-                <span data-bind="click: formSubmit, visible: notInitialState"
-                    class="button f5sD--submit">применить</span>
-                <span data-bind="visible: !notInitialState()"
-                    class="button f5sD--submit disabled">применить</span>
+                {{ form.hwPrfx.label_tag() }}
+                {{ form.hwPrfx }}
+                </div>
 
             </div>
 
         </div></div>
 
-        <div class="f5s--advertiser"><div class="grid">
+        <div class="f5sD--buttons"><div class="grid">
 
-            <span class="f5sA--label"
-                data-bind="click: isOperated.toggle,
-                show: !isOperated()">фильтры</span>
-            <span class="f5sA--label"
-                data-bind="click: closeFilters,
-                show: isOperated">закрыть</span>
+                <span data-bind="click: getDefaultState, visible: notDefaultState"
+                    class="button f5sD--reset">сбросить фильтры</span>
+                <span data-bind="visible: !notDefaultState()"
+                    class="button f5sD--reset disabled">сбросить фильтры</span>
+
+                <span data-bind="click: formSubmit, visible: notInitialState"
+                    class="button f5sD--submit">применить фильтры</span>
+                <span data-bind="visible: !notInitialState()"
+                    class="button f5sD--submit disabled">применить фильтры</span>
 
         </div></div>
 
@@ -419,11 +398,6 @@
         examples: jsonExamples,
 
         formSubmit: function(){ $('.headerForm').submit(); },
-        isOperated: ko.observable(false),
-        closeFilters: function(){
-                this.isOperated(false);
-                this.getInitialState();
-            },
 
         hwAuthor: ko.observable()
             .rememberInitial('{{ filters.hwAuthor }}')
@@ -460,8 +434,6 @@
             .htmlSelect('hwStatus', {{ viewmodel.statuses }})
 
     };
-
-    vM.filters.isOperated.toggle = function(){ this(!this()); }.bind(vM.filters.isOperated)
 
     vM.filters.notDefaultState = ko.computed(function(){
         var defaults = vM.meta.defaults;

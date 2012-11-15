@@ -42,7 +42,7 @@ greqSortbase = (
     {'id': 'addr', 'name': u'по адресу примера'},
 )
 
-greqStatuses = [ {'id': 'all', 'name': u'любой'}, ] + [
+greqStatuses = [ {'id': 'all', 'name': u'— любой —'}, ] + [
     dict(id=item[0], name=item[1])
     for item in dictionary.models.Example.GREEK_EQ_STATUS
 ]
