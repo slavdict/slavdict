@@ -209,6 +209,6 @@ class FilterExamplesForm(forms.Form):
         'hwAuthor': 'all',
         'hwPrfx': u'',
         'hwSortbase': 'id',
-        'hwSortdir':  '-',
+        'hwSortdir':  '',
         'hwStatus': 'all',
     }
