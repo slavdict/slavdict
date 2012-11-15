@@ -224,7 +224,8 @@
 
                         <span class="greqFieldContainer">
                             <label>примечание</label>
-                            <input type="text" data-bind="value: additional_info, event: { change: saveMe }" />
+                            <input type="text" data-bind="value: additional_info,
+                                event: { change: saveMe }, disable: !unitext()" />
                         </span>
 
                         <span class="button greqFieldButton" data-bind="click: removeMe">&#x2716;</span>
