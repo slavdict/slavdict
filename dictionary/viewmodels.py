@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
+import dictionary.models
 from custom_user.models import CustomUser
 from directory.models import CategoryValue
 
@@ -37,11 +38,14 @@ genders = [
 ] + category_values('gender')
 
 greqSortbase = (
-    {'id': 'alph', 'name': u'по заглавному слову'},
+    {'id': 'id',   'name': u'в порядке добавления примеров'},
     {'id': 'addr', 'name': u'по адресу примера'},
 )
 
-greqStatuses = [ {'id': 'all', 'name': u'любой'}, ] + category_values('entryStatus')
+greqStatuses = [ {'id': 'all', 'name': u'— любой —'}, ] + [
+    dict(id=item[0], name=item[1])
+    for item in dictionary.models.Example.GREEK_EQ_STATUS
+]
 
 onyms = [
     {'id': 'all',  'name': u'любой'},

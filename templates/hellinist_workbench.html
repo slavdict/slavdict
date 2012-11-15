@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 
+{% set sort = form['hwSortdir'].value() + form['hwSortbase'].value() %}
+{% set filters = form.cleaned_data %}
+
 {% block css %}hellinist_workbench.css{% endblock %}
 {% block headerFormAddress %}{% url hellinist_workbench %}{% endblock %}
 
@@ -7,17 +10,110 @@
 
     <a href="{% url all_entries_url %}" class="header--item button">Вернуться к статьям</a>
 
-    {{ space }}
-    <label for="hwStatus_id" class="header--item">Фильтр греч. параллелей</label>
+{% endblock %}
 
-    {{ space }}
-    <select name="hwStatus" id="hwStatus_id" onchange="$('form.headerForm').submit();">
-        {% for option in statusList %}
-            <option value="{{ option.0 }}"
-            {% if statusFilter == option.0 %}selected="selected"{% endif %}
-            >{{ option.1 }}</option>
-        {% endfor %}
-    </select>
+{% block subheader %}
+
+    <div class="hellinist-filters">
+        <div class="f5s--statusbar"><div class="grid">
+
+            <span class="f5sS--total"
+                data-bind="visible: !notInitialState()">
+                {{ space }}
+                Найдено примеров:
+                {{ space }}
+                <strong>{{ number_of_examples }}</strong>
+                {{ space }}
+            </span>
+
+            <strong data-bind="visible: notDefaultState">Выбранные фильтры</strong>
+            <strong data-bind="visible: !notDefaultState()">Ни один фильтр не выбран</strong>
+
+            {{ space }}
+            <span class="f5sS--item" data-bind="visible: !hwStatus.hasDefaultValue()">
+                Статус &laquo;<span data-bind="text: hwStatus.obj().name"></span>&raquo;
+            </span>
+
+            {{ space }}
+            <span class="f5sS--item" data-bind="visible: !hwAuthor.hasDefaultValue()">
+                <span data-bind="text: hwAuthor.obj().name"></span>
+            </span>
+
+            {{ space }}
+            <span class="f5sS--item" data-bind="visible: hwPrfx">
+                {{ space }}
+                статьи на
+                {{ space }}
+                <span class="f5sSI--prefix"><span data-bind="text: hwPrfx"></span>...</span>
+            </span>
+
+            {{ space }}
+            <span class="f5sS--item" data-bind="visible: hwAddress">
+                {{ space }}
+                адреса примеров на
+                {{ space }}
+                <span class="f5sSI--prefix"><span data-bind="text: hwAddress"></span>...</span>
+            </span>
+
+        </div></div>
+        <div class="f5s--dashboard"><div class="grid"
+                ondblclick="
+                    var x = $(this);
+                    if (x.hasClass('grid-debug'))
+                        x.removeClass('grid-debug');
+                    else
+                        x.addClass('grid-debug');
+                ">
+
+            <div class="f5sD--sort">
+            <h3>Упорядочить примеры</h3>
+
+                {{ form.hwSortbase }}
+                {{ form.hwSortdir }}
+
+            </div>
+
+            <div class="f5sD--filter">
+
+                <h3>Отобрать примеры по следующим критериям</h3>
+
+                <div class="M">
+                {{ form.hwStatus.label_tag() }}
+                {{ form.hwStatus }}
+                </div>
+
+                <div class="N">
+                {{ form.hwAuthor.label_tag() }}
+                {{ form.hwAuthor }}
+                </div>
+
+                <div class="O">
+                {{ form.hwAddress.label_tag() }}
+                {{ form.hwAddress }}
+
+                {{ form.hwPrfx.label_tag() }}
+                {{ form.hwPrfx }}
+                </div>
+
+            </div>
+
+        </div></div>
+
+        <div class="f5sD--buttons"><div class="grid">
+
+                <span data-bind="click: getDefaultState, visible: notDefaultState"
+                    class="button f5sD--reset">сбросить фильтры</span>
+                <span data-bind="visible: !notDefaultState()"
+                    class="button f5sD--reset disabled">сбросить фильтры</span>
+
+                <span data-bind="click: formSubmit, visible: notInitialState"
+                    class="button f5sD--submit">применить фильтры</span>
+                <span data-bind="visible: !notInitialState()"
+                    class="button f5sD--submit disabled">применить фильтры</span>
+
+        </div></div>
+
+    </div>
 
 {% endblock %}
 
@@ -128,7 +224,8 @@
 
                         <span class="greqFieldContainer">
                             <label>примечание</label>
-                            <input type="text" data-bind="value: additional_info, event: { change: saveMe }" />
+                            <input type="text" data-bind="value: additional_info,
+                                event: { change: saveMe }, disable: !unitext()" />
                         </span>
 
                         <span class="button greqFieldButton" data-bind="click: removeMe">&#x2716;</span>
@@ -162,6 +259,8 @@
 {% endblock %}
 
 {% block javascript %}
+
+    {% include '_script.my.knockout.common.js.html' %}
 
     ko.bindingHandlers['visibleActive'] = {
         'update': function (element, valueAccessor) {
@@ -289,10 +388,84 @@
         function(ex) { return new Example(ex); }
     );
 
-    var viewModel = {
-        examples: jsonExamples
+    var vM = {};
+
+    vM.meta = {
+        initials: [],
+        defaults: []
     };
 
-    ko.applyBindings(viewModel);
+    vM.filters = {
+        examples: jsonExamples,
+
+        formSubmit: function(){ $('.headerForm').submit(); },
+
+        hwAuthor: ko.observable()
+            .rememberInitial('{{ filters.hwAuthor }}')
+            .rememberDefault('all')
+            .htmlSelect('hwAuthor', {{ viewmodel.authors }}),
+
+        hwAddress: ko.observable()
+            .rememberInitial('{{ filters.hwAddress }}')
+            .rememberDefault('')
+            .htmlTextInput('hwAddress'),
+
+        hwPrfx: ko.observable()
+            .rememberInitial('{{ filters.hwPrfx }}')
+            .rememberDefault('')
+            .htmlTextInput('hwPrfx'),
+
+        hwSortbase: ko.observable()
+            .rememberInitial('{{ filters.hwSortbase }}')
+            // .rememberDefault... Значения по умолчанию
+            // на клиенте намеренно не определяем,
+            // хотя оно есть на сервере
+            .htmlSelect('hwSortbase', {{ viewmodel.sortbase }}),
+
+        hwSortdir: ko.observable()
+            .rememberInitial('{{ filters.hwSortdir }}')
+            // .rememberDefault... Значения по умолчанию
+            // на клиенте намеренно не определяем,
+            // хотя оно есть на сервере
+            .htmlSelect('hwSortdir', {{ viewmodel.sortdir }}),
+
+        hwStatus: ko.observable()
+            .rememberInitial('{{ filters.hwStatus }}')
+            .rememberDefault('all')
+            .htmlSelect('hwStatus', {{ viewmodel.statuses }})
+
+    };
+
+    vM.filters.notDefaultState = ko.computed(function(){
+        var defaults = vM.meta.defaults;
+        for(var i = 0, j = defaults.length; i < j; i++){
+            if (!defaults[i].hasDefaultValue()) return true;
+        }
+        return false;
+    }, vM.filters);
+
+    vM.filters.notInitialState = ko.computed(function(){
+        var initials = vM.meta.initials;
+        for(var i = 0, j = initials.length; i < j; i++){
+            if (!initials[i].hasInitialValue()) return true;
+        }
+        return false;
+    }, vM.filters);
+
+    vM.filters.getDefaultState = function(){
+        var defaults = vM.meta.defaults;
+        for(var i = 0, j = defaults.length; i < j; i++){
+            defaults[i].getDefaultValue();
+        }
+    };
+
+    vM.filters.getInitialState = function(){
+        var initials = vM.meta.initials;
+        for(var i = 0, j = initials.length; i < j; i++){
+            initials[i].getInitialValue();
+        }
+    };
+
+    ko.applyBindings(vM.filters);
 
 {% endblock %}

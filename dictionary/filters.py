@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.db.models import Q
+
 from dictionary.models import Entry
 from dictionary.models import Etymology
+from dictionary.models import Example
 
 def get_entries(form):
     entries = Entry.objects
@@ -98,3 +101,74 @@ def get_entries(form):
     entries = entries.order_by(*SORT_PARAMS)
 
     return entries
+
+
+def get_examples(form):
+    examples = Example.objects
+    entries = None
+    FILTER_PARAMS = {}
+    SORT_PARAMS = []
+    PARSING_ERRORS = []
+
+    # Сортировка
+    DEFAULT_SORT = 'id'
+    sortdir = form['hwSortdir']
+    sortbase = form['hwSortbase']
+    sort = sortdir + sortbase
+    if not sort:
+        sort = form['hwSort'] or DEFAULT_SORT
+    VALID_SORT_PARAMS = {
+        'id': ('id',),
+        '-id': ('-id',),
+        'addr': ('address_text', 'id'),
+        '-addr': ('-address_text', '-id'),
+        }
+    if sort in VALID_SORT_PARAMS:
+        SORT_PARAMS = VALID_SORT_PARAMS[sort]
+    else:
+        PARSING_ERRORS.append('sort')
+
+    # Автор статьи
+    value = form['hwAuthor'] or 'all'
+    if value=='all':
+        pass
+    elif value=='none':
+        entries = Entry.objects.filter(editor__isnull=True)
+    elif value.isdigit():
+        entries = Entry.objects.filter(editor__id=int(value))
+    else:
+        PARSING_ERRORS.append('hwAuthor')
+
+    # Статьи начинаются с
+    prfx = form['hwPrfx']
+    if prfx:
+        entries = entries or Entry.objects
+        entries = entries.filter(civil_equivalent__istartswith=prfx)
+
+    # Адреса начинаются на
+    address = form['hwAddress']
+    if address:
+        FILTER_PARAMS['address_text__istartswith'] = address
+
+    # Статус греческих параллелей
+    value = form['hwStatus'] or 'L'
+    if value=='all':
+        pass
+    elif value.isalpha() and len(value) == 1:
+        FILTER_PARAMS['greek_eq_status'] = value
+    else:
+        PARSING_ERRORS.append('hwStatus')
+
+    if PARSING_ERRORS:
+        raise NameError('Недопустимые значения параметров: %s' % PARSING_ERRORS)
+
+    if entries:
+        examples = examples.filter(
+            Q(meaning__entry_container__in=entries) |
+            Q(meaning__collogroup_container__base_meaning__entry_container__in=entries)
+            )
+
+    examples = examples.filter(**FILTER_PARAMS)
+    examples = examples.order_by(*SORT_PARAMS)
+
+    return examples
