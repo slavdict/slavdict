@@ -162,6 +162,26 @@ def get_examples(form):
     if PARSING_ERRORS:
         raise NameError('Недопустимые значения параметров: %s' % PARSING_ERRORS)
 
+    # CategoryValue для статусов статей
+    good_statuses = [
+            48, # поиск греч.
+            46, # импортирована
+            28, # завершена
+            50, # редактируется
+            29, # утверждена
+            ]
+    bad_statuses = [
+            26, # создана
+            27, # в работе
+            ]
+    # Примеры не должны попадать к грецисту, если статья имеет статус "создана" или
+    # "в работе", за исключением тех случаев когда у примера выставлен
+    # статус греческих параллелей "необходимы для определения значения" (M)
+    # или "срочное" (U).
+    if greq_status not in (u'M', u'U'):
+        entries = entries or Entry.objects
+        entries = entries.exclude(status__in=bad_statuses)
+
     if entries:
         examples = examples.filter(
             Q(meaning__entry_container__in=entries) |
