@@ -130,9 +130,9 @@ def get_examples(form):
 
     # Автор статьи
     value = form['hwAuthor'] or 'all'
-    if value=='all':
+    if value == 'all':
         pass
-    elif value=='none':
+    elif value == 'none':
         entries = Entry.objects.filter(editor__isnull=True)
     elif value.isdigit():
         entries = Entry.objects.filter(editor__id=int(value))
