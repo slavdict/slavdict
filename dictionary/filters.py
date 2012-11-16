@@ -151,11 +151,11 @@ def get_examples(form):
         FILTER_PARAMS['address_text__istartswith'] = address
 
     # Статус греческих параллелей
-    value = form['hwStatus'] or 'L'
-    if value=='all':
+    greq_status = form['hwStatus'] or 'L'
+    if greq_status == 'all':
         pass
-    elif value.isalpha() and len(value) == 1:
-        FILTER_PARAMS['greek_eq_status'] = value
+    elif value.isalpha() and len(greq_status) == 1:
+        FILTER_PARAMS['greek_eq_status'] = greq_status
     else:
         PARSING_ERRORS.append('hwStatus')
 
