@@ -81,6 +81,7 @@ def all_entries(request):
     httpGET_CORRUPTED_GREEK = 'corrupted-greek' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
     httpGET_FIND = request.GET.get('find')
+    httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_LIST = request.GET.get('list')
     httpGET_STATUS = request.GET.get('status')
 
@@ -142,8 +143,9 @@ def all_entries(request):
     entries = sorted(entries, key=entry_key)
     context = {
         'entries': entries,
+        'show_numbers': not httpGET_HIDENUMBERS,
         'title': title,
-        'show_additional_info': 'ai' in request.COOKIES,
+        'show_additional_info': 'ai' in request.COOKIES and not httpGET_HIDENUMBERS,
         'show_duplicates_warning': False if httpGET_DUPLICATES else True,
         'user': request.user,
         }

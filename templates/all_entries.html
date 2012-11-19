@@ -5,9 +5,11 @@
     {% for entry in entries %}
         <div style="position: relative;">
 
+        {% if show_numbers %}
             <div style="position: absolute; top: -27px; color: #369;">
                 <span>[{{ loop.index }}-</span><b>{{ entry.id }}</b>]
             </div>
+        {% endif %}
 
 
             {% include '_entry.html' %}
