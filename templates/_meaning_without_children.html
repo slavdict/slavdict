@@ -1,4 +1,4 @@
-{% if m.parent_meaning %}
+{% if not m.metaphorical and m.parent_meaning %}
     <span class="exgroup">||</span>
     {{ space }}
 {% endif %}
