@@ -4,9 +4,15 @@
 
 {% if e.greek_equivs %}
 
-    {{ backspace }}&nbsp;&mdash;{{ space }}
-
+    {% set DASH = cycler('&nbsp;&mdash;', '', '', '') %}
+    {% set COMMA = joiner(',') %}
     {% for ge in e.greek_equivs %}
+
+        {% set ADDITIONAL_INFO = show_additional_info and ge.additional_info %}
+        {% if ge.unitext or ADDITIONAL_INFO %}
+            {{ backspace }}{{ DASH.next() }}{{ space }}
+            {{ backspace }}{{ COMMA() }}{{ space }}
+        {% endif %}
 
         <span class="unigrec{% if ge.corrupted %} cinnabar{% endif %}">{{ ge.unitext }}</span>
         {{ space }}
@@ -16,13 +22,10 @@
             {{ space }}
         {% endif %}
 
-        {% if show_additional_info and ge.additional_info %}
+        {% if ADDITIONAL_INFO %}
             <span class="ai ai-grfex">{{ ge.additional_info }}</span>
         {% endif %}
 
-        {% if not loop.last %}
-            {{ backspace }},{{ space }}
-        {% endif %}
 
     {% endfor %}
 
