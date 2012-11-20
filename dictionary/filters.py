@@ -141,7 +141,7 @@ def get_examples(form):
     # Статьи начинаются с
     prfx = form['hwPrfx']
     if prfx:
-        entries = entries or Entry.objects
+        entries = Entry.objects if entries is None else entries
         entries = entries.filter(civil_equivalent__istartswith=prfx)
 
     # Адреса начинаются на
@@ -177,10 +177,10 @@ def get_examples(form):
     # статус греческих параллелей "необходимы для определения значения" (M)
     # или "срочное" (U).
     if greq_status not in (u'M', u'U'):
-        entries = entries or Entry.objects
+        entries = Entry.objects if entries is None else entries
         entries = entries.exclude(status__in=bad_statuses)
 
-    if entries:
+    if entries is not None:
         examples = examples.filter(
             Q(meaning__entry_container__in=entries) |
             Q(meaning__parent_meaning__entry_container__in=entries) |
