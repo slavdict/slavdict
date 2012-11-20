@@ -93,8 +93,7 @@ def get_entries(form):
     if form['uninflected']:
         FILTER_PARAMS['uninflected'] = True
 
-    if PARSING_ERRORS:
-        raise NameError('Недопустимые значения параметров: %s' % PARSING_ERRORS)
+    assert not PARSING_ERRORS, u'Недопустимые значения параметров: %s' % PARSING_ERRORS
 
     entries = entries.filter(**FILTER_PARAMS)
     entries = entries.exclude(**FILTER_EXCLUDE_PARAMS)
@@ -159,8 +158,7 @@ def get_examples(form):
     else:
         PARSING_ERRORS.append('hwStatus')
 
-    if PARSING_ERRORS:
-        raise NameError('Недопустимые значения параметров: %s' % PARSING_ERRORS)
+    assert not PARSING_ERRORS, u'Недопустимые значения параметров: %s' % PARSING_ERRORS
 
     # CategoryValue для статусов статей
     good_statuses = [
