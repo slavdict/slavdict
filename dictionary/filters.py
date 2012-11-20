@@ -110,7 +110,7 @@ def get_examples(form):
     PARSING_ERRORS = []
 
     # Сортировка
-    DEFAULT_SORT = 'id'
+    DEFAULT_SORT = 'addr'
     sortdir = form['hwSortdir']
     sortbase = form['hwSortbase']
     sort = sortdir + sortbase
