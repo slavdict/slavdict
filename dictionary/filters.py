@@ -181,11 +181,14 @@ def get_examples(form):
         entries = entries.exclude(status__in=bad_statuses)
 
     if entries is not None:
-        examples = examples.filter(
-            Q(meaning__entry_container__in=entries) |
-            Q(meaning__parent_meaning__entry_container__in=entries) |
-            Q(meaning__collogroup_container__base_meaning__entry_container__in=entries)
-            )
+        if entries.exists():
+            examples = examples.filter(
+                Q(meaning__entry_container__in=entries) |
+                Q(meaning__parent_meaning__entry_container__in=entries) |
+                Q(meaning__collogroup_container__base_meaning__entry_container__in=entries)
+                )
+        else:
+            examples = examples.none()
 
     examples = examples.filter(**FILTER_PARAMS)
     examples = examples.order_by(*SORT_PARAMS)
