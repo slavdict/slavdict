@@ -42,7 +42,7 @@ if filepaths:
     message = mail.EmailMessage(
         '[slavdict backup] %s' % butime,
         '',
-        'autobackup@slavonic.makd.ru',
+        'autobackup@slavdict.ruslang.ru',
         emails,
         attachments=attachments,
         connection=connection,
