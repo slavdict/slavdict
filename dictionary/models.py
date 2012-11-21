@@ -522,6 +522,17 @@ class Entry(models.Model, Meaningfull):
         auto_now_add=True,
     )
 
+    good = models.TextField(
+        u'Годность статьи для показа',
+        max_length=1,
+        choices=(
+            (u'b', u'не подходит'), # bad
+            (u's', u'возможно, подходит'), # so so
+            (u'g', u'подходит'), # good
+        ),
+        default=u'b',
+    )
+
     @models.permalink
     def get_absolute_url(self):
         return ('single_entry_url', [str(self.id)])
