@@ -1,21 +1,85 @@
 {% extends 'base.html' %}
 
+{% block shapka %}{% endblock %}
+
 {% block content %}
-    <div contenteditable>
+
+{% if is_paged %}
+    <style>
+        .goodness label {
+            font-size: 12px;
+            padding: 5px;
+            display: block;
+            width: 50px;
+            float: left;
+        }
+        .goodness label:first-child:hover {
+            background-color: rgba(255,0,0,0.2);
+        }
+        .goodness label:nth-child(2n):hover {
+            background-color: rgba(255,200,0,0.2);
+        }
+        .goodness label:nth-child(3n):hover {
+            background-color: rgba(0,255,0,0.2);
+        }
+        .goodness:after {
+            content: '';
+            display: block;
+            height: 20px;
+            clear: both;
+            margin-bottom: 140px;
+        }
+        .goodness.red { background-color: red }
+    </style>
+{% endif %}
+
+<div{% if not is_paged %} contenteditable{% endif %}>
     {% for entry in entries %}
         <div style="position: relative;">
 
         {% if show_numbers %}
-            <div style="position: absolute; top: -27px; color: #369;">
+            <a href="/entries/{{ entry.id }}/"
+                style="position: absolute; top: -27px; color: #369;">
                 <span>[{{ loop.index }}-</span><b>{{ entry.id }}</b>]
-            </div>
+            </a>
         {% endif %}
 
 
             {% include '_entry.html' %}
             {% include '_ref_entries.html' %}
 
+
+        {% if is_paged %}
+            <div class="goodness">
+
+                {% for goodness, goodness_text in (('b', '–'), ('s', '±'), ('g', '+')) %}
+
+                    <label>
+                        <input type="radio"
+                            name="good{{ entry.id }}" value="{{ goodness }}"
+                            onchange="
+                                var self = this;
+                                $.ajax('/json/goodness/save/', {
+                                    type: 'POST',
+                                    data: { id: {{entry.id}}, goodness: '{{ goodness }}' },
+                                    success: function(){},
+                                    error: function(){ $(self).parent().parent().addClass('red'); }
+                                }
+                                );"
+                            {% if entry.good == goodness %}checked{% endif %} />
+                        {{ goodness_text }}
+                    </label>
+
+                {% endfor %}
+
+            </div>
+        {% endif %}
+
         </div>
     {% endfor %}
+
+    {% if is_paged %}
+        {% include '_pagination.html' %}
+    {% endif %}
     </div>
 {% endblock %}
