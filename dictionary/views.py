@@ -76,13 +76,15 @@ def make_greek_found(request):
 
 
 @login_required
-def all_entries(request):
+def all_entries(request, is_paged=False):
     httpGET_AUTHOR = request.GET.get('author')
     httpGET_CORRUPTED_GREEK = 'corrupted-greek' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
     httpGET_FIND = request.GET.get('find')
+    httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_LIST = request.GET.get('list')
+    httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STATUS = request.GET.get('status')
 
     entries = Entry.objects.all()
@@ -141,13 +143,41 @@ def all_entries(request):
         title += u', начинающиеся на „%s-“' % httpGET_FIND
 
     entries = sorted(entries, key=entry_key)
+    if is_paged:
+        paginator = Paginator(entries, per_page=12, orphans=2)
+        try:
+            pagenum = int(request.GET.get('page', 1))
+        except ValueError:
+            pagenum = 1
+        try:
+            page = paginator.page(pagenum)
+        except (EmptyPage, InvalidPage):
+            page = paginator.page(paginator.num_pages)
+        entries = page.object_list
+    else:
+        page = None
+
+    show_additional_info = httpGET_SHOWAI or \
+        'ai' in request.COOKIES and not httpGET_HIDENUMBERS,
+    if httpGET_HIDEAI:
+        show_additional_info = False
+
     context = {
         'entries': entries,
         'show_numbers': not httpGET_HIDENUMBERS,
         'title': title,
-        'show_additional_info': 'ai' in request.COOKIES and not httpGET_HIDENUMBERS,
+        'show_additional_info': show_additional_info,
         'show_duplicates_warning': False if httpGET_DUPLICATES else True,
         'user': request.user,
+        'is_paged': is_paged,
+        'page': page,
+        'params_without_page': urllib.urlencode(
+            dict(
+                (k, unicode(v).encode('utf-8'))
+                for k, v in request.GET.items()
+                if k != 'page'
+            )
+        ),
         }
     return render_to_response('all_entries.html', context, RequestContext(request))
 

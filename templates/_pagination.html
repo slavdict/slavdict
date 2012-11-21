@@ -1,5 +1,11 @@
+{% if params_without_page %}
+    {% set other_get_params = '&' ~ params_without_page %}
+{% else %}
+    {% set other_get_params = '' %}
+{% endif %}
+
 {% macro pageref(page) -%}
-    <a href="?page={{ page }}">{{ page }}</a>
+    <a href="?page={{ page }}{{ other_get_params }}">{{ page }}</a>
 {%- endmacro %}
 
 {% if page.paginator.num_pages > 1 %}
