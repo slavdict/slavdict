@@ -81,6 +81,7 @@ def all_entries(request, is_paged=False):
     httpGET_CORRUPTED_GREEK = 'corrupted-greek' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
     httpGET_FIND = request.GET.get('find')
+    httpGET_GOODNESS = request.GET.get('goodness')
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_LIST = request.GET.get('list')
@@ -104,6 +105,14 @@ def all_entries(request, is_paged=False):
 
     if httpGET_STATUS=='-created':
         entries = entries.exclude(status__slug=u'created')
+
+    if httpGET_GOODNESS:
+        g = httpGET_GOODNESS
+        if len(g) == 1:
+            entries = entries.filter(good=g)
+        else:
+            g = g.split(',')
+            entries = entries.filter(good__in=g)
 
     if httpGET_DUPLICATES:
         entries = entries.filter(duplicate=True)
