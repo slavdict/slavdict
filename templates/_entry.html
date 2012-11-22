@@ -30,7 +30,7 @@
         {{ space }}
 
         {% if entry.homonym_order %}
-            {{ entry.homonym_order_roman }}
+            <sup>{{ entry.homonym_order }}</sup>
             {{ space }}
         {% endif %}
 
@@ -133,7 +133,9 @@
             {% set de = entry.derivation_entry %}
                 <a href="{{ de.get_absolute_url() }}">
                     <span class="cslav">{{ de.orth_vars.0.idem_ucs }}</span>
-                    {% if de.homonym_order %}&nbsp;{{ de.homonym_order_roman }}{% endif %}
+                    {% if de.homonym_order %}
+                        <sup>{{ de.homonym_order }}</sup>
+                    {% endif %}
                 </a>
                 {{ space }}
 
@@ -207,7 +209,7 @@
                             {{ eltm.entry_container.orth_vars.0.idem_ucs }}
                         </span>
                         {% if eltm.entry_container.homonym_order %}
-                            &nbsp;{{ eltm.entry_container.homonym_order_roman }}
+                            <sup>{{ eltm.entry_container.homonym_order }}</sup>
                         {% endif %}
                     </a>
                 {% endif %}
@@ -224,7 +226,7 @@
                     {{ entry.link_to_entry.orth_vars.0.idem_ucs }}
                 </span>
                 {% if entry.link_to_entry.homonym_order %}
-                    &nbsp;{{ entry.link_to_entry.homonym_order_roman }}
+                    <sup>{{ entry.link_to_entry.homonym_order }}</sup>
                 {% endif %}
             </a>
         {% endif %}
@@ -252,7 +254,7 @@
                         {{ cfm.entry_container.orth_vars.0.idem_ucs }}
                     </span>
                     {% if cfm.entry_container.homonym_order %}
-                        &nbsp;{{ cfm.entry_container.homonym_order_roman }}
+                        <sup>{{ cfm.entry_container.homonym_order }}</sup>
                     {% endif %}
                 </a>
             {% endif %}
@@ -272,7 +274,7 @@
                     {{ cfe.orth_vars.0.idem_ucs }}
                 </span>
                 {% if cfe.homonym_order %}
-                    &nbsp;{{ cfe.homonym_order_roman }}
+                    <sup>{{ cfe.homonym_order }}</sup>
                 {% endif %}
             </a>
         {% endfor %}
