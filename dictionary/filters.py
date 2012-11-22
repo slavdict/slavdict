@@ -6,6 +6,7 @@ from dictionary.models import Entry
 from dictionary.models import Etymology
 from dictionary.models import Example
 from dictionary.models import Meaning
+from dictionary.models import MeaningContext
 
 def get_entries(form):
     entries = Entry.objects
@@ -90,6 +91,15 @@ def get_entries(form):
     # Статьи с словосочетаниями
     if form['collocations']:
         good_entries = set(cg.host_entry.id for cg in CollocationGroup.objects.all() if cg and cg.host_entry)
+        if 'id__in' in FILTER_PARAMS:
+            FILTER_PARAMS['id__in'] = \
+                    FILTER_PARAMS['id__in'].intersection(good_entries)
+        else:
+            FILTER_PARAMS['id__in'] = good_entries
+
+    # Статьи с контекстами значений
+    if form['meaningcontexts']:
+        good_entries = set(cg.host_entry.id for cg in MeaningContext.objects.all())
         if 'id__in' in FILTER_PARAMS:
             FILTER_PARAMS['id__in'] = \
                     FILTER_PARAMS['id__in'].intersection(good_entries)

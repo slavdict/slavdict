@@ -179,6 +179,8 @@ class FilterEntriesForm(forms.Form):
             required=False)
     collocations = forms.BooleanField(label=u'Со словосочетаниями',
             required=False)
+    meaningcontexts = forms.BooleanField(label=u'С контекстами значения',
+            required=False)
     default_data = {
         'sortdir':  '-',
         'sortbase': 't',
@@ -197,6 +199,7 @@ class FilterEntriesForm(forms.Form):
         'homonym': False,
         'duplicate': False,
         'collocations': False,
+        'meaningcontexts': False,
     }
 
 class FilterExamplesForm(forms.Form):

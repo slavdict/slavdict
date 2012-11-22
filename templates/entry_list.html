@@ -91,6 +91,9 @@
             <span class="f5sS--item" data-bind="visible: collocations">со словосочетаниями</span>
 
             {{ space }}
+            <span class="f5sS--item" data-bind="visible: meaningcontexts">с контекстами значения</span>
+
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: additional_info">с примечаниями</span>
 
             {{ space }}
@@ -171,6 +174,9 @@
 
                     {{ form.collocations }}
                     {{ form.collocations.label_tag() }}
+
+                    {{ form.meaningcontexts }}
+                    {{ form.meaningcontexts.label_tag() }}
 
                     {{ form.additional_info }}
                     {{ form.additional_info.label_tag() }}
@@ -493,6 +499,11 @@
             .rememberInitial({{ 'true' if filters.collocations else 'false' }})
             .rememberDefault(false)
             .htmlCheckbox('collocations'),
+
+        meaningcontexts: ko.observable()
+            .rememberInitial({{ 'true' if filters.meaningcontexts else 'false' }})
+            .rememberDefault(false)
+            .htmlCheckbox('meaningcontexts'),
 
         additional_info: ko.observable()
             .rememberInitial({{ 'true' if filters.additional_info else 'false' }})
