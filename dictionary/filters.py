@@ -89,16 +89,12 @@ def get_entries(form):
 
     # Статьи с словосочетаниями
     if form['collocations']:
-        values = CollocationGroup.objects.values_list('base_entry', 'base_meaning')
-        set1 = set(e for e, m in values if e)
-        set2 = set(m for e, m in values if m)
-        set2 = set(Meaning.objects.get(id=m).host_entry.id for m in set2)
-        set3 = set1.union(set2)
+        good_entries = set(cg.host_entry.id for cg in CollocationGroup.objects.all() if cg and cg.host_entry)
         if 'id__in' in FILTER_PARAMS:
             FILTER_PARAMS['id__in'] = \
-                    FILTER_PARAMS['id__in'].intersection(set3)
+                    FILTER_PARAMS['id__in'].intersection(good_entries)
         else:
-            FILTER_PARAMS['id__in'] = set3
+            FILTER_PARAMS['id__in'] = good_entries
 
     # Статьи-дубликаты
     if form['duplicate']:
