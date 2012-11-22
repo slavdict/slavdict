@@ -1237,10 +1237,7 @@ class CollocationGroup(models.Model, Meaningfull):
 
     @property
     def host_entry(self):
-        if self.base_entry:
-            return self.base_entry
-        else:
-            return self.base_meaning.host_entry
+        return self.base_entry or self.base_meaning and self.base_meaning.host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(CollocationGroup, self).save(*args, **kwargs) # Call the "real" save() method.
