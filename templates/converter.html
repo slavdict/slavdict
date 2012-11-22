@@ -65,19 +65,20 @@
 
     </div>
 
-    <script src="{{ STATIC_URL }}js/libs/jquery-1.4.4.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/ac2ucs8.js"></script>
-    <script>
-       $(function(){
-          var x = antconc_ucs8($('#antconc-convertee').val(), false);
-          $('#ucs8-raw').val(x);
-          $('#ucs8').html(x);
-          $('#antconc-convertee').keyup(function(){
-              var x = antconc_ucs8($(this).val(), false);
-              $('#ucs8-raw').val(x);
-              $('#ucs8').html(x)
-          });
-       });
-    </script>
 {% endblock %}
 
+{% block javascript %}
+
+   $(function(){
+      var x = antconc_ucs8($('#antconc-convertee').val(), false);
+      $('#ucs8-raw').val(x);
+      $('#ucs8').html(x);
+      $('#antconc-convertee').keyup(function(){
+          var x = antconc_ucs8($(this).val(), false);
+          $('#ucs8-raw').val(x);
+          $('#ucs8').html(x)
+      });
+   });
+
+{% endblock %}
