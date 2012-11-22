@@ -88,6 +88,9 @@
             <span class="f5sS--item" data-bind="visible: etymology">с этимологией</span>
 
             {{ space }}
+            <span class="f5sS--item" data-bind="visible: collocations">со словосочетаниями</span>
+
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: additional_info">с примечаниями</span>
 
             {{ space }}
@@ -165,6 +168,9 @@
                     <div class="BC">
                     {{ form.etymology }}
                     {{ form.etymology.label_tag() }}
+
+                    {{ form.collocations }}
+                    {{ form.collocations.label_tag() }}
 
                     {{ form.additional_info }}
                     {{ form.additional_info.label_tag() }}
@@ -482,6 +488,11 @@
             .rememberInitial({{ 'true' if filters.etymology else 'false' }})
             .rememberDefault(false)
             .htmlCheckbox('etymology'),
+
+        collocations: ko.observable()
+            .rememberInitial({{ 'true' if filters.collocations else 'false' }})
+            .rememberDefault(false)
+            .htmlCheckbox('collocations'),
 
         additional_info: ko.observable()
             .rememberInitial({{ 'true' if filters.additional_info else 'false' }})

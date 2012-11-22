@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Q
 
+from dictionary.models import CollocationGroup
 from dictionary.models import Entry
 from dictionary.models import Etymology
 from dictionary.models import Example
+from dictionary.models import Meaning
 
 def get_entries(form):
     entries = Entry.objects
@@ -83,7 +85,20 @@ def get_entries(form):
     # Есть этимологии
     if form['etymology']:
         etyms = Etymology.objects.values_list('entry')
-        FILTER_PARAMS['id__in'] = [item[0] for item in set(etyms)]
+        FILTER_PARAMS['id__in'] = set(item[0] for item in set(etyms))
+
+    # Статьи с словосочетаниями
+    if form['collocations']:
+        values = CollocationGroup.objects.values_list('base_entry', 'base_meaning')
+        set1 = set(e for e, m in values if e)
+        set2 = set(m for e, m in values if m)
+        set2 = set(Meaning.objects.get(id=m).host_entry.id for m in set2)
+        set3 = set1.union(set2)
+        if 'id__in' in FILTER_PARAMS:
+            FILTER_PARAMS['id__in'] = \
+                    FILTER_PARAMS['id__in'].intersection(set3)
+        else:
+            FILTER_PARAMS['id__in'] = set3
 
     # Статьи-дубликаты
     if form['duplicate']:

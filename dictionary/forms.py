@@ -177,6 +177,8 @@ class FilterEntriesForm(forms.Form):
             required=False)
     duplicate = forms.BooleanField(label=u'Статьи-дубликаты',
             required=False)
+    collocations = forms.BooleanField(label=u'Со словосочетаниями',
+            required=False)
     default_data = {
         'sortdir':  '-',
         'sortbase': 't',
@@ -194,6 +196,7 @@ class FilterEntriesForm(forms.Form):
         'additional_info': False,
         'homonym': False,
         'duplicate': False,
+        'collocations': False,
     }
 
 class FilterExamplesForm(forms.Form):
