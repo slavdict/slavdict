@@ -122,18 +122,6 @@ STATICFILES_DIRS = (
     ROOT + 'static/',
 )
 
-## Папка для дампов. Переменная для использования моим приложением dumper.
-#DUMP_DIR = ROOT + '.dumps/'
-#if not os.access(DUMP_DIR, os.F_OK):
-#    os.mkdir(DUMP_DIR)
-#
-## Версия схем БД приложений под надсмотром South.
-## Так же используется приложением dumper.
-#DB_SCHEME_VERSIONS = {
-#    'dictionary': 14,
-#    'directory': 1,
-#}
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -145,10 +133,8 @@ INSTALLED_APPS = (
 
     'slavdict.dictionary',
     'slavdict.directory',
-
     'slavdict.custom_user',
     'slavdict.django_template_spaces',
-#    'slavdict.dumper',
 
     'south',
     'coffin',
