@@ -192,37 +192,6 @@ def all_entries(request, is_paged=False):
 
 
 @login_required
-def greek_to_find(request):
-    # Обеспечиваем то, чтобы поля статуса параллей у примеров с параллелями
-    # были отличны от u'L' (статус "необходимо найти параллели")
-    greqlist = GreekEquivalentForExample.objects.all() # Выбираем все греч. параллели для примеров.
-    ex_list = [g.for_example for g in greqlist] # Создаём для них список примеров, к которым они относятся.
-    # Присваеваем полю статуса греч. параллелей для каждого примера значение "найдены".
-    # И сохраняем каждый пример из списка.
-    for ex in ex_list:
-        if ex.greek_eq_status == u'L':
-            ex.greek_eq_status = u'F'
-            ex.save(without_mtime=True)
-
-    # Выдаём все словарные статьи, для примеров которых найти греч. параллели
-    # необходимо.
-    status_list = (u'L',)
-    #status_list = (u'L', u'A', u'C', u'N')
-    ex_list = Example.objects.filter(greek_eq_status__in=status_list)
-    examples_with_hosts = [(ex.host_entry, ex.host, ex) for ex in ex_list]
-    examples_with_hosts = sorted(examples_with_hosts, key=lambda x: entry_key(x[0]))
-    examples_with_hosts = [(n + 1, e[1], e[2]) for n, e in enumerate(examples_with_hosts)]
-
-    context = {
-        'examples_with_hosts': examples_with_hosts,
-        'title': u'Примеры, для которых необходимо найти греческие параллели',
-        'show_additional_info': 'ai' in request.COOKIES,
-        'user': request.user,
-        }
-    return render_to_response('greek_to_find.html', context, RequestContext(request))
-
-
-@login_required
 def single_entry(request, entry_id, extra_context=None, template='single_entry.html'):
     if not extra_context:
         extra_context = {}
