@@ -19,8 +19,10 @@ urlpatterns += patterns('',
     url( r'^$', 'slavdict.dictionary.views.entry_list', name='all_entries_url' ),
     url( r'^login/$', 'django.contrib.auth.views.login'),
     url( r'^logout/$', 'django.contrib.auth.views.logout_then_login'),
+
     url( r'^print/$', 'slavdict.dictionary.views.all_entries' ),
     url( r'^cherry-pick/$', 'slavdict.dictionary.views.all_entries', kwargs={'is_paged': True} ),
+
     url( r'^entries/(\d+)/$', 'slavdict.dictionary.views.single_entry', name='single_entry_url' ),
     url( r'^entries/(\d+)/intermed/$',
          'slavdict.dictionary.views.single_entry',
@@ -29,9 +31,9 @@ urlpatterns += patterns('',
     url( r'^entries/(\d+)/change/$', 'slavdict.dictionary.views.change_entry' ),
 
     url( r'^materials/$', direct_to_template, {'template': 'materials.html'}),
-    url( r'^wiki/$', redirect_to, kwargs={'url': 'http://slavonic.pbworks.com/'} ),
     url( r'^switch/additional-info/$', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
     url( r'^converter/$', 'slavdict.dictionary.views.antconc2ucs8_converter', name='converter' ),
+
     url( r'^json/multiselect/entries/$', 'dictionary.jsonviews.json_multiselect_entries'),
     url( r'^json/singleselect/entries/urls/$', 'dictionary.jsonviews.json_singleselect_entries_urls'),
     url( r'^test/multiselect/$', direct_to_template, {'template': 'multiselect.html'}),
