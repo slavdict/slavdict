@@ -58,22 +58,6 @@ from unicode_csv import UnicodeReader
 def entry_key(entry):
     return u'%s %s' % ( entry.civil_equivalent.lower(), entry.homonym_order )
 
-@login_required
-def make_greek_found(request):
-
-    greqlist = GreekEquivalentForExample.objects.all() # Выбираем все греч. параллели для примеров.
-    exlist = [g.for_example for g in greqlist] # Создаём для них список примеров, к которым они относятся.
-    # Присваеваем полю статуса греч. параллелей для каждого примера значение "найдены".
-    # И сохраняем каждый пример из списка.
-    for ex in exlist:
-        if ex.greek_eq_status == u'L':
-            ex.greek_eq_status = u'F'
-            ex.save()
-    # Перенаправляем на ту страницу, с которой пользователь пришёл, либо на заглавную страницу.
-    referer = request.META.get('HTTP_REFERER', '/')
-    response = redirect(referer)
-    return response
-
 
 @login_required
 def all_entries(request, is_paged=False):

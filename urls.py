@@ -37,6 +37,7 @@ urlpatterns += patterns('',
     url( r'^json/multiselect/entries/$', 'dictionary.jsonviews.json_multiselect_entries'),
     url( r'^json/singleselect/entries/urls/$', 'dictionary.jsonviews.json_singleselect_entries_urls'),
     url( r'^test/multiselect/$', direct_to_template, {'template': 'multiselect.html'}),
+
     url( r'^greek/$', 'dictionary.views.hellinist_workbench', name='hellinist_workbench' ),
     url( r'^json/greq/save/$', 'dictionary.jsonviews.json_greq_save', name="jsonGreqSaveURL"),
     url( r'^json/greq/delete/$', 'dictionary.jsonviews.json_greq_delete', name="jsonGreqDeleteURL"),
@@ -44,7 +45,6 @@ urlpatterns += patterns('',
     url( r'^json/goodness/save/$', 'dictionary.jsonviews.json_goodness_save', name="jsonGoodnessSaveURL"),
 
     # TODO: В последствии всё это должно быть удалено.
-    url( r'^adhoc/greek-found/$', 'slavdict.dictionary.views.make_greek_found' ),
     url( r'^adhoc/csv-import/$', 'slavdict.dictionary.views.import_csv_billet' ),
     url( r'^utils/non-unicode-greek/$', 'slavdict.dictionary.utils.non_unicode_greek' ),
 )
