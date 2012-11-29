@@ -47,7 +47,6 @@ urlpatterns += patterns('',
     # TODO: В последствии всё это должно быть удалено.
     url( r'^adhoc/greek-found/$', 'slavdict.dictionary.views.make_greek_found' ),
     url( r'^adhoc/csv-import/$', 'slavdict.dictionary.views.import_csv_billet' ),
-    url( r'^adhoc/moodle-import/$', 'slavdict.moodle_import.views.import_moodle_base' ),
     #url( r'^utils/dump/dictionary/$', 'slavdict.dumper.views.dumpdata' ),
     url( r'^utils/non-unicode-greek/$', 'slavdict.dictionary.utils.non_unicode_greek' ),
 )
