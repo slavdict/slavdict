@@ -192,20 +192,6 @@ def all_entries(request, is_paged=False):
 
 
 @login_required
-def test_entries(request):
-    grfexs = GreekEquivalentForExample.objects.filter(~Q(mark=u''))
-    entry_id_list = [grfex.for_example.meaning.entry_container.id for grfex in grfexs]
-    entries = Entry.objects.filter(id__in=entry_id_list).order_by('civil_equivalent', 'homonym_order')
-    context = {
-        'entries': entries,
-        'title': u'Избранные статьи',
-        'show_additional_info': 'ai' in request.COOKIES,
-        'user': request.user,
-        }
-    return render_to_response('all_entries.html', context, RequestContext(request))
-
-
-@login_required
 def greek_to_find(request):
     # Обеспечиваем то, чтобы поля статуса параллей у примеров с параллелями
     # были отличны от u'L' (статус "необходимо найти параллели")
