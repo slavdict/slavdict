@@ -137,8 +137,6 @@ INSTALLED_APPS = (
 
     'south',
     'coffin',
-#    'djcelery', # Celery.
-#    'djkombu',  # Нужно для Celery.
 )
 
 ######################################
@@ -151,18 +149,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 CUSTOM_USER_MODEL = 'custom_user.CustomUser'
-
-
-# Celery
-#BROKER_HOST = "localhost"
-#BROKER_PORT = 5672
-#BROKER_USER = "guest"
-#BROKER_PASSWORD = "guest"
-#BROKER_VHOST = "/"
-#
-#BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
-#import djcelery
-#djcelery.setup_loader()
 
 
 # Локальное для компьютера переопределение настроек проекта
