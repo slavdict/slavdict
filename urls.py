@@ -27,7 +27,6 @@ urlpatterns += patterns('',
          kwargs={'extra_context': {'show_additional_info': True, 'intermed': True}},
          name="intermediary_change_form_url"),
     url( r'^entries/(\d+)/change/$', 'slavdict.dictionary.views.change_entry' ),
-    url( r'^entries/last/$', 'slavdict.dictionary.views.last_entry', name='last_entry' ),
 
     url( r'^materials/$', direct_to_template, {'template': 'materials.html'}),
     url( r'^wiki/$', redirect_to, kwargs={'url': 'http://slavonic.pbworks.com/'} ),

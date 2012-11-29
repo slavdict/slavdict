@@ -218,24 +218,6 @@ def single_entry(request, entry_id, extra_context=None, template='single_entry.h
 
 
 @login_required
-def last_entry(request):
-    error = False
-    try:
-        entry = Entry.objects.all().order_by('-id')[0]
-    except IndexError:
-        entry = None
-        error = True
-    context = {
-        'entry': entry,
-        'title': u'Последняя добавленная статья',
-        'show_additional_info': 'ai' in request.COOKIES,
-        'error': error,
-        'user': request.user,
-        }
-    return render_to_response('single_entry.html', context, RequestContext(request))
-
-
-@login_required
 def switch_additional_info(request):
     referer = request.META.get('HTTP_REFERER', '/')
     response = redirect(referer)
