@@ -180,7 +180,7 @@ GENDER_CHOICES = (
         )
 GENDER_MAP = {
         'masculine': 'm',
-        'femenine': 'f',
+        'feminine': 'f',
         'neutral': 'n',
         }
 
