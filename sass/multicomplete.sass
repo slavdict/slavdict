@@ -1,0 +1,107 @@
+@charset 'utf-8'
+
+@import common
+@import layout
+
+$baseFontSize: 19px
+
+.multicomplete
+    font-size: $baseFontSize
+
+.z-multicomplete
+    display: none
+
+.multicomplete--selectedItems,
+.MC--selectedItems,
+    width: 200px
+    min-height: 25px
+    background-color: #ccc
+    padding: 2px 7px
+    @include border-radius(4px)
+    margin: 0
+
+//.multicomplete--selectedItems--item,
+.multicomplete--selectedItem,
+.MC--selectedItem,
+    list-style-type: none
+    height: 23px
+    background-color: #fff
+    @include border-radius(4px)
+    padding: 0 4px
+    margin-bottom: 4px
+
+//.MC--selectedItem--deselect,
+.MC--sI--deselect
+    display: block
+    float: right
+    width: 16px
+    height: 16px
+    background-color: #a00
+    color: #fff
+    @include border-radius(11px)
+    font: 12px/16px $sansFont
+    text-align: center
+    margin-top: 4px
+    padding: 0
+    cursor: pointer
+
+.multicomplete--search,
+.MC--search
+    width: 240px
+    border-width: 0
+    background-color: #ccc
+    font: (13px / $baseFontSize + em) $sansFont
+    color: #777
+    outline-width: 0
+    padding-left: 5px
+    min-height: 25px
+    @include border-radius(4px)
+
+.multicomplete--foundItems,
+.MC--foundItems
+    margin: 0
+    padding: 0
+    width: 240px
+    border-bottom: 1px solid #ccc
+
+//.multicomplete--foundItems--item,
+.multicomplete--foundItem,
+.MC--foundItem
+    list-style-type: none
+    width: 240px
+    display: block
+    margin: 0
+    padding: 0 4px
+    border: 1px solid #ccc
+    border-bottom-width: 0px
+    background-color: #fff
+    cursor: pointer
+    white-space: nowrap
+
+.multicomplete--foundItem-focused,
+.MC--fI-focused
+    background-color: #777
+    border: 1px solid #777
+    border-bottom-width: 0px
+    color: #fff
+
+.MC--sI--headword,
+.MC--fI--headword
+    font-family: $cslFont
+    line-height: 14px
+
+$onymFontSize: 14px / $baseFontSize + em
+$pOSFontSize:  13px / $baseFontSize + em
+$hintFontSize: 10px / $baseFontSize + em
+.MC--sI--homonym,
+.MC--fI--homonym
+    font-size: $onymFontSize
+
+.MC--sI--pOS,
+.MC--fI--pOS,
+    font: italic $pOSFontSize $sansFont
+
+.MC--sI--hint,
+.MC--fI--hint,
+    font: $hintFontSize $sansFont
+    text-transform: uppercase
