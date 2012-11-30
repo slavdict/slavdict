@@ -33,9 +33,7 @@ urlpatterns += patterns('',
     url( r'^switch/additional-info/$', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
     url( r'^converter/$', 'slavdict.dictionary.views.antconc2ucs8_converter', name='converter' ),
 
-    url( r'^json/multiselect/entries/$', 'dictionary.jsonviews.json_multiselect_entries'),
     url( r'^json/singleselect/entries/urls/$', 'dictionary.jsonviews.json_singleselect_entries_urls'),
-    url( r'^test/multiselect/$', direct_to_template, {'template': 'multiselect.html'}),
 
     url( r'^greek/$', 'dictionary.views.hellinist_workbench', name='hellinist_workbench' ),
     url( r'^json/greq/save/$', 'dictionary.jsonviews.json_greq_save', name="jsonGreqSaveURL"),
