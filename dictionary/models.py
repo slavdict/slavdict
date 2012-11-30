@@ -133,7 +133,164 @@ class Meaningfull:
 #        CustomUser,
 #        editable=False,
 #    )
+PART_OF_SPEECH_CHOICES = (
+        ('a', u'сущ.'),
+        ('b', u'прил.'),
+        ('c', u'мест.'),
+        ('d', u'гл.'),
+        ('e', u'[прич.]'),
+        ('f', u'нареч.'),
+        ('g', u'союз'),
+        ('h', u'предл.'),
+        ('i', u'част.'),
+        ('j', u'межд.'),
+        ('k', u'[число]'),
+        ('l', u'[буква]'),
+        )
+PART_OF_SPEECH_MAP = {
+        'noun': 'a',
+        'adjective': 'b',
+        'pronoun': 'c',
+        'verb': 'd',
+        'participle': 'e',
+        'adverb': 'f',
+        'conjunction': 'g',
+        'adposition': 'h',
+        'particle': 'i',
+        'interjection': 'j',
+        'number': 'k',
+        'letter': 'l',
+        }
 
+TANTUM_CHOICES = (
+        ('s', u'только ед.'),
+        ('d', u'только дв.'),
+        ('p', u'только мн.'),
+        )
+TANTUM_MAP = {
+        'singulareTantum': 's',
+        'dualeTantum': 'd',
+        'pluraleTantum': 'p',
+        }
+
+GENDER_CHOICES = (
+        ('m', u'м.'),
+        ('f', u'ж.'),
+        ('n', u'ср.'),
+        )
+GENDER_MAP = {
+        'masculine': 'm',
+        'femenine': 'f',
+        'neutral': 'n',
+        }
+
+ONYM_CHOICES = (
+        ('a', u'имя'),
+        ('b', u'топоним'),
+        ('c', u'народ/общность людей'),
+        ('d', u'[другое]'),
+        )
+ONYM_MAP = {
+        'anthroponym': 'a',
+        'toponym': 'b',
+        'ethnonym': 'c',
+        'other': 'd',
+        }
+
+TRANSITIVITY_CHOICES = (
+        ('t', u'перех.'),
+        ('i', u'неперех.'),
+        )
+TRANSITIVITY_MAP = {
+        'transitive': 't',
+        'intransitive': 'i',
+        }
+
+PARTICIPLE_TYPE_CHOICES = (
+        ('a', u'действ. прич. наст. вр.'),
+        ('b', u'действ. прич. прош. вр.'),
+        ('c', u'страд. прич. наст. вр.'),
+        ('d', u'страд. прич. прош. вр.'),
+        )
+PARTICIPLE_TYPE_MAP = {
+        'pres_act': 'a',
+        'perf_act': 'b',
+        'pres_pass': 'c',
+        'perf_pass': 'd',
+        }
+
+STATUS_CHOICES = (
+        ('c', u'создана'),
+        ('w', u'в работе'),
+        ('g', u'поиск греч.'),
+        ('f', u'завершена'),
+        ('e', u'редактируется'),
+        ('a', u'утверждена'),
+        ('i', u'импортирована'),
+        )
+STATUS_MAP = {
+        'created': 'c',
+        'inWork': 'w',
+        'greek': 'g',
+        'finished': 'f',
+        'beingEdited': 'e',
+        'approved': 'a',
+        'imported': 'i',
+        }
+
+LANGUAGE_CHOICES = (
+        ('a', u'греч.'),
+        ('b', u'ивр.'),
+        ('c', u'аккад.'),
+        ('d', u'арам.'),
+        ('e', u'арм.'),
+        ('f', u'груз.'),
+        ('g', u'копт.'),
+        ('h', u'лат.'),
+        ('i', u'сир.'),
+        )
+LANGUAGE_MAP = {
+        'greek': 'a',
+        'hebrew': 'b',
+        'akkadian': 'c',
+        'aramaic': 'd',
+        'armenian': 'e',
+        'georgian': 'f',
+        'coptic': 'g',
+        'latin': 'h',
+        'syriac': 'i',
+        }
+LANGUAGE_CSS = {
+        'greek': 'grec',
+        'hebrew': 'hebrew',
+        'akkadian': 'akkadian',
+        'aramaic': 'aramaic',
+        'armenian': 'armenian',
+        'georgian': 'georgian',
+        'coptic': 'coptic',
+        'latin': '',
+        'syriac': 'syriac',
+        }
+LANGUAGE_CSS2 = {
+        'greek': '',
+        'hebrew': 'hebrew-translit',
+        'akkadian': '',
+        'aramaic': 'aramaic-translit',
+        'armenian': '',
+        'georgian': '',
+        'coptic': '',
+        'latin': '',
+        'syriac': 'syriac-translit',
+        }
+
+SUBSTANTIVUS_TYPE_CHOICES = (
+        ('a', u'ср.ед.'),
+        ('b', u'ср.мн.'),
+        )
+SUBSTANTIVUS_TYPE_MAP = {
+        'n.sg.': 'a',
+        'n.pl.': 'b',
+        }
 
 class Entry(models.Model, Meaningfull):
 
@@ -229,6 +386,9 @@ class Entry(models.Model, Meaningfull):
         null = True,
         )
 
+    DMG_part_of_speech = models.CharField(u'часть речи', max_length=1,
+            choices=PART_OF_SPEECH_CHOICES, default='')
+
     uninflected = models.BooleanField(
         u'неизменяемое', # Для сущ. и прил.
         default = False,
@@ -250,6 +410,9 @@ class Entry(models.Model, Meaningfull):
         null = True,
         )
 
+    DMG_tantum = models.CharField(u'число', choices=TANTUM_CHOICES,
+            max_length=1, blank=True, default='')
+
     gender = models.ForeignKey(
         CategoryValue,
         verbose_name = u'род',
@@ -258,6 +421,9 @@ class Entry(models.Model, Meaningfull):
         blank = True,
         null = True,
         )
+
+    DMG_gender = models.CharField(u'род', choices=GENDER_CHOICES,
+            max_length=1, blank=True, default='')
 
     genitive = models.CharField(
         u'форма Р. падежа',
@@ -276,6 +442,10 @@ class Entry(models.Model, Meaningfull):
         blank = True,
         null = True,
         )
+
+    DMG_onym = models.CharField(u'тип имени собственного',
+            max_length=1, choices=ONYM_CHOICES,
+            blank=True, default='')
 
     canonical_name = models.BooleanField(
         u'каноническое',
@@ -341,6 +511,11 @@ class Entry(models.Model, Meaningfull):
         null = True,
         )
 
+    # только для глаголов
+    DMG_transitivity = models.CharField(u'переходность',
+            max_length=1, choices=TRANSITIVITY_CHOICES,
+            blank=True, default='')
+
     sg1 = models.CharField(
         u'форма 1 ед.',
         max_length = 30,
@@ -375,6 +550,10 @@ class Entry(models.Model, Meaningfull):
         blank = True,
         null = True,
         )
+
+    DMG_participle_type = models.CharField(u'тип причастия',
+        max_length=1, choices=PARTICIPLE_TYPE_CHOICES,
+        blank=True, default='')
 
     derivation_entry = models.ForeignKey(
         'self',
@@ -495,6 +674,9 @@ class Entry(models.Model, Meaningfull):
         blank = True,
         null = True,
         )
+
+    DMG_status = models.CharField(u'статус статьи',
+            max_length=1, choices=STATUS_CHOICES, default='c')
 
     percent_status = models.PositiveSmallIntegerField(
         u'статус готовности статьи в процентах',
@@ -635,6 +817,9 @@ class Etymology(models.Model):
         limit_choices_to = {'category__slug': 'language'},
         verbose_name = u'язык',
         )
+
+    DMG_language = models.CharField(u'язык', max_length=1,
+            choices=LANGUAGE_CHOICES, default='')
 
     text = models.CharField(
         u'языковой эквивалент',
@@ -958,6 +1143,10 @@ class Meaning(models.Model):
         blank = True,
         null = True,
         )
+
+    DMG_substantivus_type = models.CharField(u'форма субстантива',
+            max_length=1, choices=SUBSTANTIVUS_TYPE_CHOICES,
+            blank=True, default='')
 
     additional_info = models.TextField(
         u'примечание',
