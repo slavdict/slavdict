@@ -378,14 +378,6 @@ class Entry(models.Model, Meaningfull):
 
     # lexeme (посредник к граматическим формам и свойствам)
 
-    part_of_speech = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'часть речи',
-        limit_choices_to = {'category__slug': 'partOfSpeech'},
-        related_name = 'entries_of_pos',
-        null = True,
-        )
-
     DMG_part_of_speech = models.CharField(u'часть речи', max_length=1,
             choices=PART_OF_SPEECH_CHOICES, default='')
 
@@ -401,26 +393,8 @@ class Entry(models.Model, Meaningfull):
         )
 
     # только для существительных
-    tantum = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'число',
-        limit_choices_to = {'category__slug': 'tantum'},
-        related_name = 'entries_of_tantum',
-        blank = True,
-        null = True,
-        )
-
     DMG_tantum = models.CharField(u'число', choices=TANTUM_CHOICES,
             max_length=1, blank=True, default='')
-
-    gender = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'род',
-        limit_choices_to = {'category__slug': 'gender'},
-        related_name = 'entries_of_gender',
-        blank = True,
-        null = True,
-        )
 
     DMG_gender = models.CharField(u'род', choices=GENDER_CHOICES,
             max_length=1, blank=True, default='')
@@ -434,14 +408,6 @@ class Entry(models.Model, Meaningfull):
     @property
     def genitive_ucs_wax(self):
         return ucs_affix_or_word(self.genitive)
-
-    onym = models.ForeignKey(
-        CategoryValue,
-        limit_choices_to = {'category__slug': 'onym'},
-        verbose_name = u'тип имени собственного',
-        blank = True,
-        null = True,
-        )
 
     DMG_onym = models.CharField(u'тип имени собственного',
             max_length=1, choices=ONYM_CHOICES,
@@ -502,16 +468,6 @@ class Entry(models.Model, Meaningfull):
         )
 
     # только для глаголов
-    transitivity = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'переходность',
-        limit_choices_to = {'category__slug': 'transitivity'},
-        related_name = 'entries_of_transitivity',
-        blank = True,
-        null = True,
-        )
-
-    # только для глаголов
     DMG_transitivity = models.CharField(u'переходность',
             max_length=1, choices=TRANSITIVITY_CHOICES,
             blank=True, default='')
@@ -541,15 +497,6 @@ class Entry(models.Model, Meaningfull):
     @property
     def sg2_ucs_wax(self):
         return ucs_affix_or_word(self.sg2)
-
-    participle_type = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'тип причастия',
-        limit_choices_to = {'category__slug': 'participle_type'},
-        related_name = 'entries_of_parttype',
-        blank = True,
-        null = True,
-        )
 
     DMG_participle_type = models.CharField(u'тип причастия',
         max_length=1, choices=PARTICIPLE_TYPE_CHOICES,
@@ -666,15 +613,6 @@ class Entry(models.Model, Meaningfull):
         return self.participle_set.all().order_by('order', 'id')
 
     # административная информация
-    status = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'статус статьи',
-        limit_choices_to = {'category__slug': 'entryStatus'},
-        related_name = 'entries_of_status',
-        blank = True,
-        null = True,
-        )
-
     DMG_status = models.CharField(u'статус статьи',
             max_length=1, choices=STATUS_CHOICES, default='c')
 
@@ -811,12 +749,6 @@ class Etymology(models.Model):
     @property
     def etymons(self):
         return self.etymon_set.filter(etymon_to=self.id).order_by('order', 'id')
-
-    language = models.ForeignKey(
-        CategoryValue,
-        limit_choices_to = {'category__slug': 'language'},
-        verbose_name = u'язык',
-        )
 
     DMG_language = models.CharField(u'язык', max_length=1,
             choices=LANGUAGE_CHOICES, default='')
@@ -1135,14 +1067,6 @@ class Meaning(models.Model):
         )
 
     substantivus = models.BooleanField(u'в роли сущ.')
-
-    substantivus_type = models.ForeignKey(
-        CategoryValue,
-        limit_choices_to = {'category__slug': 'substantivus'},
-        verbose_name = u'форма субстантива',
-        blank = True,
-        null = True,
-        )
 
     DMG_substantivus_type = models.CharField(u'форма субстантива',
             max_length=1, choices=SUBSTANTIVUS_TYPE_CHOICES,
