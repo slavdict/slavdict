@@ -378,7 +378,7 @@ class Entry(models.Model, Meaningfull):
 
     # lexeme (посредник к граматическим формам и свойствам)
 
-    DMG_part_of_speech = models.CharField(u'часть речи', max_length=1,
+    part_of_speech = models.CharField(u'часть речи', max_length=1,
             choices=PART_OF_SPEECH_CHOICES, default='')
 
     uninflected = models.BooleanField(
@@ -393,10 +393,10 @@ class Entry(models.Model, Meaningfull):
         )
 
     # только для существительных
-    DMG_tantum = models.CharField(u'число', choices=TANTUM_CHOICES,
+    tantum = models.CharField(u'число', choices=TANTUM_CHOICES,
             max_length=1, blank=True, default='')
 
-    DMG_gender = models.CharField(u'род', choices=GENDER_CHOICES,
+    gender = models.CharField(u'род', choices=GENDER_CHOICES,
             max_length=1, blank=True, default='')
 
     genitive = models.CharField(
@@ -409,7 +409,7 @@ class Entry(models.Model, Meaningfull):
     def genitive_ucs_wax(self):
         return ucs_affix_or_word(self.genitive)
 
-    DMG_onym = models.CharField(u'тип имени собственного',
+    onym = models.CharField(u'тип имени собственного',
             max_length=1, choices=ONYM_CHOICES,
             blank=True, default='')
 
@@ -468,7 +468,7 @@ class Entry(models.Model, Meaningfull):
         )
 
     # только для глаголов
-    DMG_transitivity = models.CharField(u'переходность',
+    transitivity = models.CharField(u'переходность',
             max_length=1, choices=TRANSITIVITY_CHOICES,
             blank=True, default='')
 
@@ -498,7 +498,7 @@ class Entry(models.Model, Meaningfull):
     def sg2_ucs_wax(self):
         return ucs_affix_or_word(self.sg2)
 
-    DMG_participle_type = models.CharField(u'тип причастия',
+    participle_type = models.CharField(u'тип причастия',
         max_length=1, choices=PARTICIPLE_TYPE_CHOICES,
         blank=True, default='')
 
@@ -613,7 +613,7 @@ class Entry(models.Model, Meaningfull):
         return self.participle_set.all().order_by('order', 'id')
 
     # административная информация
-    DMG_status = models.CharField(u'статус статьи',
+    status = models.CharField(u'статус статьи',
             max_length=1, choices=STATUS_CHOICES, default='c')
 
     percent_status = models.PositiveSmallIntegerField(
@@ -750,7 +750,7 @@ class Etymology(models.Model):
     def etymons(self):
         return self.etymon_set.filter(etymon_to=self.id).order_by('order', 'id')
 
-    DMG_language = models.CharField(u'язык', max_length=1,
+    language = models.CharField(u'язык', max_length=1,
             choices=LANGUAGE_CHOICES, default='')
 
     text = models.CharField(
@@ -1068,7 +1068,7 @@ class Meaning(models.Model):
 
     substantivus = models.BooleanField(u'в роли сущ.')
 
-    DMG_substantivus_type = models.CharField(u'форма субстантива',
+    substantivus_type = models.CharField(u'форма субстантива',
             max_length=1, choices=SUBSTANTIVUS_TYPE_CHOICES,
             blank=True, default='')
 
