@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from dictionary.models import Entry
 from dictionary.models import Example
 from dictionary.models import GreekEquivalentForExample
+from dictionary.models import PART_OF_SPEECH_MAP
 
 def _json(x):
     return json.dumps(x, ensure_ascii=False, separators=(',',':'))
@@ -29,10 +30,12 @@ def json_singleselect_entries_urls(request):
                 'civil': e.civil_equivalent,
                 'headword': e.orth_vars[0].idem_ucs,
                 'hom': e.homonym_order_roman,
-                'pos': e.part_of_speech.tag if e.homonym_order \
-                    and e.part_of_speech \
-                    and e.part_of_speech.slug not in ('letter', 'number')
-                    else '',
+                'pos': e.get_part_of_speech_display() if (e.homonym_order
+                    and e.part_of_speech
+                    and e.part_of_speech
+                        not in (PART_OF_SPEECH_MAP['letter'],
+                                PART_OF_SPEECH_MAP['number'])
+                    ) else '',
                 'hint': e.homonym_gloss,
                 'url': e.get_absolute_url(),
                 }
