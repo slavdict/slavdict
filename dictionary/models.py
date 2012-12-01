@@ -73,7 +73,6 @@ def arabic2roman(number):
 
 from django.db import models
 from custom_user.models import CustomUser
-from slavdict.directory.models import CategoryValue
 
 class Meaningfull:
     """
@@ -844,7 +843,7 @@ class Etymology(models.Model):
         self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
-        return u'%s %s %s' % (self.language.tag, self.entry, self.translit)
+        return u'%s %s %s' % (self.get_language_display(), self.entry, self.translit)
 
     class Meta:
         verbose_name = u'этимон'
