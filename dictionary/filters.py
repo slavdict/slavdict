@@ -48,6 +48,8 @@ def get_entries(form):
             FILTER_PARAMS[model_property + '__isnull'] = True
         elif value.isdigit():
             FILTER_PARAMS[model_property] = int(value)
+        elif len(value) == 1 and value.isalpha():
+            FILTER_PARAMS[model_property] = value
         else:
             PARSING_ERRORS.append(param)
 

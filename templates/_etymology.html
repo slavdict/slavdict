@@ -6,7 +6,7 @@
         {{ backspace }};{{ space }}
     {% endif %}
 
-    <i>{{ etym.language.tag }}</i>&nbsp;
+    <i>{{ etym.get_language_display() }}</i>&nbsp;
 {% else %}
     {% if not loop.first %}
         {{ backspace }},{{ space }}
@@ -14,11 +14,11 @@
 {% endif %}
 
 {% if etym.text or etym.unitext %}
-{% if etym.language.slug == 'greek' %}
+{% if etym.is_language('greek') %}
         <span{% if etym.corrupted %} class="cinnabar"{% endif %}>{{ etym.unitext }}</span>
         {{ space }}
 {% else %}
-        <span class="{{ etym.language.css_class }}
+        <span class="{{ etym.get_language_css() }}
         {% if etym.corrupted %} cinnabar{% endif %}">{{ etym.text }}</span>
         {{ space }}
 {% endif %}
@@ -27,10 +27,10 @@
 {% if etym.translit %}
     {% if etym.text or etym.unitext %}
         {{ space }}[
-        <span class="{{ etym.language.css_class2 }}">{{ etym.translit }}</span>
+        <span class="{{ etym.get_language_translit_css() }}">{{ etym.translit }}</span>
         ]{{ space }}
     {% else %}
-        <span class="{{ etym.language.css_class2 }}">{{ etym.translit }}</span>
+        <span class="{{ etym.get_language_translit_css() }}">{{ etym.translit }}</span>
         {{ space }}
     {% endif %}
 {% endif %}
@@ -79,14 +79,14 @@
                 <span>{{ loop.index }})</span>&nbsp;
             {% endif %}
 
-            <i>{{ etym2.language.tag }}</i>&nbsp;
+            <i>{{ etym2.get_language_display() }}</i>&nbsp;
 
             {% if etym2.text or etym2.unitext %}
-            {% if etym2.language.slug == 'greek' %}
+            {% if etym2.is_language('greek') %}
                     <span{% if etym2.corrupted %} class="cinnabar"{% endif %}>{{ etym2.unitext }}</span>
                     {{ space }}
             {% else %}
-                    <span class="{{ etym2.language.css_class }}
+                    <span class="{{ etym2.get_language_css() }}
                     {% if etym2.corrupted %} cinnabar{% endif %}">{{ etym2.text }}</span>
                     {{ space }}
             {% endif %}
@@ -95,10 +95,10 @@
             {% if etym2.translit %}
                 {% if etym2.text or etym2.unitext %}
                     {{ space }}[
-                    <span class="{{ etym2.language.css_class2 }}">{{ etym2.translit }}</span>
+                    <span class="{{ etym2.get_language_translit_css() }}">{{ etym2.translit }}</span>
                     ]{{ space }}
                 {% else %}
-                    <span class="{{ etym2.language.css_class2 }}">{{ etym2.translit }}</span>
+                    <span class="{{ etym2.get_language_translit_css() }}">{{ etym2.translit }}</span>
                     {{ space }}
                 {% endif %}
             {% endif %}

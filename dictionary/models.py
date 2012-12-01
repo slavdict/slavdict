@@ -260,26 +260,26 @@ LANGUAGE_MAP = {
         'syriac': 'i',
         }
 LANGUAGE_CSS = {
-        'greek': 'grec',
-        'hebrew': 'hebrew',
-        'akkadian': 'akkadian',
-        'aramaic': 'aramaic',
-        'armenian': 'armenian',
-        'georgian': 'georgian',
-        'coptic': 'coptic',
-        'latin': '',
-        'syriac': 'syriac',
+        LANGUAGE_MAP['greek']:    'grec',
+        LANGUAGE_MAP['hebrew']:   'hebrew',
+        LANGUAGE_MAP['akkadian']: 'akkadian',
+        LANGUAGE_MAP['aramaic']:  'aramaic',
+        LANGUAGE_MAP['armenian']: 'armenian',
+        LANGUAGE_MAP['georgian']: 'georgian',
+        LANGUAGE_MAP['coptic']:   'coptic',
+        LANGUAGE_MAP['latin']:    '',
+        LANGUAGE_MAP['syriac']:   'syriac',
         }
-LANGUAGE_CSS2 = {
-        'greek': '',
-        'hebrew': 'hebrew-translit',
-        'akkadian': '',
-        'aramaic': 'aramaic-translit',
-        'armenian': '',
-        'georgian': '',
-        'coptic': '',
-        'latin': '',
-        'syriac': 'syriac-translit',
+LANGUAGE_TRANSLIT_CSS = {
+        LANGUAGE_MAP['greek']:    '',
+        LANGUAGE_MAP['hebrew']:   'hebrew-translit',
+        LANGUAGE_MAP['akkadian']: '',
+        LANGUAGE_MAP['aramaic']:  'aramaic-translit',
+        LANGUAGE_MAP['armenian']: '',
+        LANGUAGE_MAP['georgian']: '',
+        LANGUAGE_MAP['coptic']:   '',
+        LANGUAGE_MAP['latin']:    '',
+        LANGUAGE_MAP['syriac']:   'syriac-translit',
         }
 
 SUBSTANTIVUS_TYPE_CHOICES = (
@@ -380,6 +380,9 @@ class Entry(models.Model, Meaningfull):
     part_of_speech = models.CharField(u'часть речи', max_length=1,
             choices=PART_OF_SPEECH_CHOICES, default='')
 
+    def is_part_of_speech(self, slug):
+        return PART_OF_SPEECH_MAP[slug] == self.part_of_speech
+
     uninflected = models.BooleanField(
         u'неизменяемое', # Для сущ. и прил.
         default = False,
@@ -395,8 +398,14 @@ class Entry(models.Model, Meaningfull):
     tantum = models.CharField(u'число', choices=TANTUM_CHOICES,
             max_length=1, blank=True, default='')
 
+    def is_tantum(self, slug):
+        return TANTUM_MAP[slug] == self.tantum
+
     gender = models.CharField(u'род', choices=GENDER_CHOICES,
             max_length=1, blank=True, default='')
+
+    def is_gender(self, slug):
+        return GENDER_MAP[slug] == self.gender
 
     genitive = models.CharField(
         u'форма Р. падежа',
@@ -411,6 +420,9 @@ class Entry(models.Model, Meaningfull):
     onym = models.CharField(u'тип имени собственного',
             max_length=1, choices=ONYM_CHOICES,
             blank=True, default='')
+
+    def is_onym(self, slug):
+        return ONYM_MAP[slug] == self.onym
 
     canonical_name = models.BooleanField(
         u'каноническое',
@@ -471,6 +483,9 @@ class Entry(models.Model, Meaningfull):
             max_length=1, choices=TRANSITIVITY_CHOICES,
             blank=True, default='')
 
+    def is_transitivity(self, slug):
+        return TRANSITIVITY_MAP[slug] == self.transitivity
+
     sg1 = models.CharField(
         u'форма 1 ед.',
         max_length = 30,
@@ -500,6 +515,9 @@ class Entry(models.Model, Meaningfull):
     participle_type = models.CharField(u'тип причастия',
         max_length=1, choices=PARTICIPLE_TYPE_CHOICES,
         blank=True, default='')
+
+    def is_participle_type(self, slug):
+        return PARTICIPLE_TYPE_MAP[slug] == self.participle_type
 
     derivation_entry = models.ForeignKey(
         'self',
@@ -614,6 +632,9 @@ class Entry(models.Model, Meaningfull):
     # административная информация
     status = models.CharField(u'статус статьи',
             max_length=1, choices=STATUS_CHOICES, default='c')
+
+    def is_status(self, slug):
+        return STATUS_MAP[slug] == self.status
 
     percent_status = models.PositiveSmallIntegerField(
         u'статус готовности статьи в процентах',
@@ -751,6 +772,15 @@ class Etymology(models.Model):
 
     language = models.CharField(u'язык', max_length=1,
             choices=LANGUAGE_CHOICES, default='')
+
+    def is_language(self, slug):
+        return LANGUAGE_MAP[slug] == self.language
+
+    def get_language_css(self):
+        return LANGUAGE_CSS[self.language]
+
+    def get_language_translit_css(self):
+        return LANGUAGE_TRANSLIT_CSS[self.language]
 
     text = models.CharField(
         u'языковой эквивалент',
@@ -1070,6 +1100,9 @@ class Meaning(models.Model):
     substantivus_type = models.CharField(u'форма субстантива',
             max_length=1, choices=SUBSTANTIVUS_TYPE_CHOICES,
             blank=True, default='')
+
+    def is_substantivus_type(self, slug):
+        return SUBSTANTIVUS_TYPE_MAP[slug] == self.substantivus_type
 
     additional_info = models.TextField(
         u'примечание',

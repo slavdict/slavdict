@@ -22,7 +22,7 @@
             {% endif %}
         {% endif %}
 
-        {% if entry.part_of_speech.slug != 'letter' %}
+        {% if not entry.is_part_of_speech('letter') %}
             <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
         {% else %}
             <span class="cslav headword cinnabar">{{ entry.orth_vars.0.idem_letter_ucs }}</span>
@@ -94,12 +94,13 @@
 
 
         {% if entry.participle_type %}
-            <i>{{ entry.participle_type.tag }}</i>
+            <i>{{ entry.get_participle_type_display() }}</i>
             {{ space }}
         {% else %}
             {% if entry.part_of_speech %}
-                {% if entry.part_of_speech.slug != "letter" and entry.part_of_speech.slug != "number" %}
-                <i>{{ entry.part_of_speech.tag }}</i>
+                {% if not entry.is_part_of_speech("letter") and
+                      not entry.is_part_of_speech("number") %}
+                <i>{{ entry.get_part_of_speech_display() }}</i>
                 {% endif %}
             {% else %}
                 {% if show_additional_info %}
@@ -110,14 +111,14 @@
             {{ space }}
             {% if entry.gender %}
                 {{ backspace }},{{ space }}
-                <i>{{ entry.gender.tag }}</i>
+                <i>{{ entry.get_gender_display() }}</i>
                 {{ space }}
             {% endif %}
         {% endif %}
 
 
         {% if entry.tantum %}
-            <i>{{ entry.tantum.tag }}</i>
+            <i>{{ entry.get_tantum_display() }}</i>
             {{ space }}
         {% endif %}
 
@@ -146,7 +147,7 @@
     </div>
 
 
-    {% if entry.onym.slug == 'ethnonym' %}
+    {% if entry.is_onym('ethnonym') %}
         {% if entry.nom_pl_ucs_wax %}
             <div>
                 <i>И.п. мн.</i>
@@ -171,7 +172,7 @@
             {% for etym in entry.etymologies %}
 
                 {% set prevLang = Lang %}
-                {% set Lang = etym.language.tag %}
+                {% set Lang = etym.get_language_display() %}
                 {% set isLanguageChanged = (Lang != prevLang) %}
 
                 {{ etymology(etym, isLanguageChanged, loop) }}
@@ -181,7 +182,7 @@
     {% endif %}
 
 
-    {% if entry.onym.slug == 'anthroponym' %}
+    {% if entry.is_onym('anthroponym') %}
         <i>имя собств.</i>
         {% if entry.canonical_name %}
             ,{{ space }}
@@ -189,7 +190,7 @@
         {% endif %}
     {% endif %}
 
-    {% if entry.onym.slug == 'toponym' %}
+    {% if entry.is_onym('toponym') %}
         <i>топоним</i>
     {% endif %}
 
