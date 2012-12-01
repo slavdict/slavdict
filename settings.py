@@ -132,7 +132,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
 
     'slavdict.dictionary',
-    'slavdict.directory',
     'slavdict.custom_user',
     'slavdict.django_template_spaces',
 
