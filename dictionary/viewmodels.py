@@ -3,7 +3,6 @@ import json
 
 import dictionary.models
 from custom_user.models import CustomUser
-from directory.models import CategoryValue
 
 def _json(x):
     return json.dumps(x, ensure_ascii=False, separators=(',',':'))
@@ -11,20 +10,19 @@ def _json(x):
 def _tuple(x):
     return tuple((i['id'], i['name']) for i in x)
 
-def category_values(category):
-    return [
-        {'id': str(item.id), 'name': item.tag}
-        for item
-        in CategoryValue.objects.filter(category__slug=category)
-    ]
+def _choices(choices):
+    return tuple(
+        {'id': str(id), 'name': name}
+        for id, name in choices
+    )
 
-authors = [
+authors = (
     {'id': 'all',  'name': u'все авторы'},
-    {'id': 'none', 'name': u'статьи без автора'} ] + [
-
+    {'id': 'none', 'name': u'статьи без автора'}
+) + tuple(
     {'id': str(u.id), 'name': u.__unicode__()}
     for u in CustomUser.objects.filter(groups__name=u'authors')
-]
+)
 
 canonical_name = (
     {'id': 'all', 'name': u'все имена'},
@@ -32,30 +30,28 @@ canonical_name = (
     {'id': '0',   'name': u'только неканонические'},
 )
 
-genders = [
+genders = (
     {'id': 'all',  'name': u'любой'},
     {'id': 'none', 'name': u'где род не указан'},
-] + category_values('gender')
+) + _choices(dictionary.models.GENDER_CHOICES)
 
 greqSortbase = (
     {'id': 'id',   'name': u'в порядке добавления примеров'},
     {'id': 'addr', 'name': u'по адресу примера'},
 )
 
-greqStatuses = [ {'id': 'all', 'name': u'— любой —'}, ] + [
-    dict(id=item[0], name=item[1])
-    for item in dictionary.models.Example.GREEK_EQ_STATUS
-]
+greqStatuses = ({'id': 'all', 'name': u'— любой —'},) \
+        + _choices(dictionary.models.Example.GREEK_EQ_STATUS)
 
-onyms = [
+onyms = (
     {'id': 'all',  'name': u'любой'},
     {'id': 'none', 'name': u'не имя собственное'},
-] + category_values('onym')
+) + _choices(dictionary.models.ONYM_CHOICES)
 
-pos = [
+pos = (
     {'id': 'all',  'name': u'любая'},
     {'id': 'none', 'name': u'где часть речи не указана'},
-] + category_values('partOfSpeech')
+) + _choices(dictionary.models.PART_OF_SPEECH_CHOICES)
 
 possessive = (
     {'id': 'all', 'name': u''},
@@ -73,12 +69,13 @@ sortbase = (
     {'id': 't',    'name': u'времени изменения'},
 )
 
-tantum = [
+tantum = (
     {'id': 'all',  'name': u'любое'},
     {'id': 'none', 'name': u'где число не указано'},
-] + category_values('tantum')
+) + _choices(dictionary.models.TANTUM_CHOICES)
 
-statuses = [ {'id': 'all', 'name': u'любой'}, ] + category_values('entryStatus')
+statuses = ({'id': 'all', 'name': u'любой'},) \
+        + _choices(dictionary.models.STATUS_CHOICES)
 
 
 jsonAuthors = _json(authors)

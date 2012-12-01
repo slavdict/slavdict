@@ -15,7 +15,7 @@
                 <span>(</span>
                 {% for etym in c.etymologies %}
                     {% set prevLang = Lang %}
-                    {% set Lang = etym.language.tag %}
+                    {% set Lang = etym.get_language_display() %}
                     {% set isLanguageChanged = (Lang != prevLang) %}
 
                     {{ etymology(etym, isLanguageChanged, loop) }}

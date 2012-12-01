@@ -18,7 +18,6 @@ from dictionary.models import Etymology
 from dictionary.models import MeaningContext
 from dictionary.models import GreekEquivalentForMeaning
 from dictionary.models import GreekEquivalentForExample
-from directory.models import CategoryValue
 
 class EntryForm(ModelForm):
     class Meta:

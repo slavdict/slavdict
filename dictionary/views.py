@@ -38,7 +38,6 @@ from dictionary.models import GreekEquivalentForMeaning
 from dictionary.models import Meaning
 from dictionary.models import MeaningContext
 from dictionary.models import OrthographicVariant
-from directory.models import CategoryValue
 from unicode_csv import UnicodeReader
 
 
@@ -276,7 +275,7 @@ def import_csv_billet(request):
                             raise NameError(u"Автор, указанный в CSV-файле, не найден среди участников работы над словарём.")
 
                     entry_args = entry_dict.copy() # Поверхностная (!) копия словаря.
-                    entry_args['status'] = CategoryValue.objects.get(pk=26) # 26 -- статус статьи "Статья создана"
+                    entry_args['status'] = 'c' # 'c' -- статус статьи "Статья создана"
                     # Все булевские переменные уже выставлены по умолчанию в False в entry_dict
 
                     # Если поле с гражданским эквивалентом пусто, то берем конвертацию в гражданку заглавного слова.
