@@ -95,6 +95,7 @@ JINJA2_EXTENSIONS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'slavdict.middleware.CookieVersionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
