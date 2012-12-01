@@ -92,15 +92,15 @@
          * unitext. Для греческого поле unitext отображаем всегда, а text
          * только, если там что-нибудь есть. */
         lang2cssclass = {
-            '1': 'grec',
-            '2': 'hebrew',
-            '3': 'akkadian',
-            '4': 'aramaic',
-            '5': 'armenian',
-            '6': 'georgian',
-            '7': 'coptic',
-            '8': 'latin',
-            '9': 'syriac'
+            'a': 'grec',
+            'b': 'hebrew',
+            'c': 'akkadian',
+            'd': 'aramaic',
+            'e': 'armenian',
+            'f': 'georgian',
+            'g': 'coptic',
+            'h': 'latin',
+            'i': 'syriac'
         }
         langclsss1 = 'grec hebrew akkadian aramaic armenian georgian coptic latin syriac'
         langclsss2 = 'grec-translit hebrew-translit akkadian-translit aramaic-translit armenian-translit georgian-translit coptic-translit latin-translit syriac-translit'
@@ -155,17 +155,17 @@
 
         /* Скрываем и отображаем поля в зависимости от выбранной части речи. */
         partsOfSpeech = {
-            "1": 'noun', // отображение id в справочнике значений категорий
+            "a": 'noun', // отображение id в справочнике значений категорий
                          // на названия категорий на английском.
-            "2": 'adjective',
-            "3": 'pronoun',
-            "4": 'verb',
-            "5": 'participle',
-            "6": 'adverb',
-            "7": 'conjunction',
-            "8": 'preposition',
-            "9": 'particle',
-            "10": 'interjection'
+            "b": 'adjective',
+            "c": 'pronoun',
+            "d": 'verb',
+            "e": 'participle',
+            "f": 'adverb',
+            "g": 'conjunction',
+            "h": 'preposition',
+            "i": 'particle',
+            "j": 'interjection'
         };
 
         var v = $('select#id_part_of_speech').val();
@@ -202,10 +202,10 @@
         /* Скрываем или отображаем поля для выбранного типа имени собственного.
          * */
         onyms = {
-            "1": 'canonical_name', // имя
-            "2": '',               // топоним
-            "3": 'nom_sg',         // народ
-            "4": ''                // другое
+            "a": 'canonical_name', // имя
+            "b": '',               // топоним
+            "c": 'nom_sg',         // народ
+            "d": ''                // другое
         }
 
         v = $('select#id_onym').val();
