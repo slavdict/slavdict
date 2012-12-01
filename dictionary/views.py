@@ -78,7 +78,8 @@ def all_entries(request, is_paged=False):
             entries = entries.filter(editor__username=httpGET_AUTHOR)
 
     if httpGET_STATUS=='-created':
-        entries = entries.exclude(status__slug=u'created')
+        entries = entries.exclude(
+                status=dictionary.models.STATUS_MAP['created'])
 
     if httpGET_GOODNESS:
         g = httpGET_GOODNESS
@@ -100,7 +101,9 @@ def all_entries(request, is_paged=False):
             entries = entries.filter(pk__in=httpGET_LIST)
 
     if httpGET_CORRUPTED_GREEK:
-        greek_etymons = Etymology.objects.filter(language__slug='greek', corrupted=True)
+        greek_etymons = Etymology.objects.filter(
+                language=dictionary.models.LANGUAGE_MAP['greek'],
+                corrupted=True)
         greqex = GreekEquivalentForExample.objects.filter(corrupted=True)
         greqm = GreekEquivalentForMeaning.objects.filter(corrupted=True)
 
