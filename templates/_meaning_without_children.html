@@ -38,7 +38,7 @@
     <i>в&nbsp;роли сущ.</i>
     {{ space }}
     {% if m.substantivus_type %}
-        {{ space }}({{ m.substantivus_type.tag }}){{ space }}
+        {{ space }}({{ m.get_substantivus_type_display() }}){{ space }}
     {% endif %}
 {% endif %}
 

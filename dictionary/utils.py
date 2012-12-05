@@ -11,6 +11,7 @@ from .models import Etymology
 from .models import Example
 from .models import GreekEquivalentForExample
 from .models import GreekEquivalentForMeaning
+from .models import LANGUAGE_MAP
 
 ULYSSESMAP = (
     (u'\u2026', u'...'),
@@ -147,7 +148,8 @@ def ulysses2unicode(text, mapping=ULYSSESMAP):
     return text
 
 def greek_data_manipulation(func):
-    greek_etymons = Etymology.objects.filter(language__slug='greek', corrupted=False)
+    greek_etymons = Etymology.objects.filter(language=LANGUAGE_MAP['greek'],
+            corrupted=False)
     greqex = GreekEquivalentForExample.objects.filter(corrupted=False)
     greqm = GreekEquivalentForMeaning.objects.filter(corrupted=False)
 
@@ -181,7 +183,8 @@ def non_unicode_greek(request):
     nowrap = 'nowrap' in request.GET
     already_mapped = 'already-mapped' in request.GET
 
-    greek_etymons = Etymology.objects.filter(language__slug='greek', corrupted=corrupted)
+    greek_etymons = Etymology.objects.filter(language=LANGUAGE_MAP['greek'],
+            corrupted=corrupted)
     greqex = GreekEquivalentForExample.objects.filter(corrupted=corrupted)
     greqm = GreekEquivalentForMeaning.objects.filter(corrupted=corrupted)
 

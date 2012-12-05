@@ -8,45 +8,10 @@ from django.http import HttpResponse
 from dictionary.models import Entry
 from dictionary.models import Example
 from dictionary.models import GreekEquivalentForExample
+from dictionary.models import PART_OF_SPEECH_MAP
 
 def _json(x):
     return json.dumps(x, ensure_ascii=False, separators=(',',':'))
-
-@login_required
-def json_multiselect_entries(request):
-    httpGET_FIND = request.GET.get('find')
-    httpGET_ID = request.GET.get('ids')
-    if httpGET_ID:
-        httpGET_IDS = [httpGET_ID]
-    else:
-        httpGET_IDS = request.GET.getlist('ids[]')
-        httpGET_IDS = [id for id in httpGET_IDS if id]
-    if httpGET_FIND:
-        FIND_LOWER = httpGET_FIND.lower()
-        FIND_CAPZD = httpGET_FIND.capitalize()
-        entries = Entry.objects \
-            .filter(
-                Q(civil_equivalent__startswith=FIND_LOWER)
-                |
-                Q(civil_equivalent__startswith=FIND_CAPZD)
-            ).exclude(pk__in=httpGET_IDS) \
-            .order_by('civil_equivalent', 'homonym_order')[:7]
-        entries = [
-            {
-            'civil': e.civil_equivalent,
-            'headword': e.orth_vars[0].idem_ucs,
-            'pk': e.id,
-            'hom': e.homonym_order_roman,
-            'pos': e.part_of_speech.tag if e.homonym_order else '',
-            'hint': e.homonym_gloss,
-            'index': n,
-            }
-            for n, e in enumerate(entries)]
-        data = _json(entries)
-        response = HttpResponse(data, mimetype='application/json')
-    else:
-        response = HttpResponse(mimetype='application/json', status=400)
-    return response
 
 @login_required
 def json_singleselect_entries_urls(request):
@@ -65,10 +30,12 @@ def json_singleselect_entries_urls(request):
                 'civil': e.civil_equivalent,
                 'headword': e.orth_vars[0].idem_ucs,
                 'hom': e.homonym_order_roman,
-                'pos': e.part_of_speech.tag if e.homonym_order \
-                    and e.part_of_speech \
-                    and e.part_of_speech.slug not in ('letter', 'number')
-                    else '',
+                'pos': e.get_part_of_speech_display() if (e.homonym_order
+                    and e.part_of_speech
+                    and e.part_of_speech
+                        not in (PART_OF_SPEECH_MAP['letter'],
+                                PART_OF_SPEECH_MAP['number'])
+                    ) else '',
                 'hint': e.homonym_gloss,
                 'url': e.get_absolute_url(),
                 }

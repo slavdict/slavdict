@@ -48,6 +48,8 @@ def get_entries(form):
             FILTER_PARAMS[model_property + '__isnull'] = True
         elif value.isdigit():
             FILTER_PARAMS[model_property] = int(value)
+        elif len(value) == 1 and value.isalpha():
+            FILTER_PARAMS[model_property] = value
         else:
             PARSING_ERRORS.append(param)
 
@@ -181,17 +183,17 @@ def get_examples(form):
 
     assert not PARSING_ERRORS, u'Недопустимые значения параметров: %s' % PARSING_ERRORS
 
-    # CategoryValue для статусов статей
+    # dictionary.models.Entry.status
     good_statuses = [
-            48, # поиск греч.
-            46, # импортирована
-            28, # завершена
-            50, # редактируется
-            29, # утверждена
+            'g', # поиск греч.
+            'i', # импортирована
+            'f', # завершена
+            'e', # редактируется
+            'a', # утверждена
             ]
     bad_statuses = [
-            26, # создана
-            27, # в работе
+            'c', # создана
+            'w', # в работе
             ]
     # Примеры не должны попадать к грецисту, если статья имеет статус "создана" или
     # "в работе", за исключением тех случаев когда у примера выставлен

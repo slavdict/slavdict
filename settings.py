@@ -95,7 +95,7 @@ JINJA2_EXTENSIONS = (
 )
 
 MIDDLEWARE_CLASSES = (
-#    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'slavdict.middleware.CookieVersionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -122,18 +122,6 @@ STATICFILES_DIRS = (
     ROOT + 'static/',
 )
 
-## Папка для дампов. Переменная для использования моим приложением dumper.
-#DUMP_DIR = ROOT + '.dumps/'
-#if not os.access(DUMP_DIR, os.F_OK):
-#    os.mkdir(DUMP_DIR)
-#
-## Версия схем БД приложений под надсмотром South.
-## Так же используется приложением dumper.
-#DB_SCHEME_VERSIONS = {
-#    'dictionary': 14,
-#    'directory': 1,
-#}
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -144,18 +132,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
 
     'slavdict.dictionary',
-    'slavdict.directory',
-
     'slavdict.custom_user',
     'slavdict.django_template_spaces',
-    'slavdict.comments',
-#    'slavdict.dumper',
 
     'south',
     'coffin',
-#    'djcelery', # Celery.
-#    'djkombu',  # Нужно для Celery.
-#    'debug_toolbar',
 )
 
 ######################################
@@ -168,38 +149,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 CUSTOM_USER_MODEL = 'custom_user.CustomUser'
-
-# debug_toolbar
-#DEBUG_TOOLBAR_PANELS = (
-#    'debug_toolbar.panels.version.VersionDebugPanel',
-#    'debug_toolbar.panels.timer.TimerDebugPanel',
-#    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-#    'debug_toolbar.panels.headers.HeaderDebugPanel',
-#    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-#    'debug_toolbar.panels.template.TemplateDebugPanel',
-#    'debug_toolbar.panels.sql.SQLDebugPanel',
-#    'debug_toolbar.panels.signals.SignalDebugPanel',
-#    'debug_toolbar.panels.logger.LoggingPanel',
-#)
-#def custom_show_toolbar(request):
-#    return True # Always show toolbar, for example purposes only.
-#
-#DEBUG_TOOLBAR_CONFIG = {
-#    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
-#    'HIDE_DJANGO_SQL': False,
-#}
-
-# Celery
-#BROKER_HOST = "localhost"
-#BROKER_PORT = 5672
-#BROKER_USER = "guest"
-#BROKER_PASSWORD = "guest"
-#BROKER_VHOST = "/"
-#
-#BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
-#import djcelery
-#djcelery.setup_loader()
-
 
 
 # Локальное для компьютера переопределение настроек проекта

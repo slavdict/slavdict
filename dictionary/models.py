@@ -61,7 +61,6 @@ def ucs_affix_or_word(atr):
 
 from django.db import models
 from custom_user.models import CustomUser
-from slavdict.directory.models import CategoryValue
 
 class Meaningfull:
     """
@@ -121,7 +120,164 @@ class Meaningfull:
 #        CustomUser,
 #        editable=False,
 #    )
+PART_OF_SPEECH_CHOICES = (
+        ('a', u'сущ.'),
+        ('b', u'прил.'),
+        ('c', u'мест.'),
+        ('d', u'гл.'),
+        ('e', u'[прич.]'),
+        ('f', u'нареч.'),
+        ('g', u'союз'),
+        ('h', u'предл.'),
+        ('i', u'част.'),
+        ('j', u'межд.'),
+        ('k', u'[число]'),
+        ('l', u'[буква]'),
+        )
+PART_OF_SPEECH_MAP = {
+        'noun': 'a',
+        'adjective': 'b',
+        'pronoun': 'c',
+        'verb': 'd',
+        'participle': 'e',
+        'adverb': 'f',
+        'conjunction': 'g',
+        'adposition': 'h',
+        'particle': 'i',
+        'interjection': 'j',
+        'number': 'k',
+        'letter': 'l',
+        }
 
+TANTUM_CHOICES = (
+        ('s', u'только ед.'),
+        ('d', u'только дв.'),
+        ('p', u'только мн.'),
+        )
+TANTUM_MAP = {
+        'singulareTantum': 's',
+        'dualeTantum': 'd',
+        'pluraleTantum': 'p',
+        }
+
+GENDER_CHOICES = (
+        ('m', u'м.'),
+        ('f', u'ж.'),
+        ('n', u'ср.'),
+        )
+GENDER_MAP = {
+        'masculine': 'm',
+        'feminine': 'f',
+        'neutral': 'n',
+        }
+
+ONYM_CHOICES = (
+        ('a', u'имя'),
+        ('b', u'топоним'),
+        ('c', u'народ/общность людей'),
+        ('d', u'[другое]'),
+        )
+ONYM_MAP = {
+        'anthroponym': 'a',
+        'toponym': 'b',
+        'ethnonym': 'c',
+        'other': 'd',
+        }
+
+TRANSITIVITY_CHOICES = (
+        ('t', u'перех.'),
+        ('i', u'неперех.'),
+        )
+TRANSITIVITY_MAP = {
+        'transitive': 't',
+        'intransitive': 'i',
+        }
+
+PARTICIPLE_TYPE_CHOICES = (
+        ('a', u'действ. прич. наст. вр.'),
+        ('b', u'действ. прич. прош. вр.'),
+        ('c', u'страд. прич. наст. вр.'),
+        ('d', u'страд. прич. прош. вр.'),
+        )
+PARTICIPLE_TYPE_MAP = {
+        'pres_act': 'a',
+        'perf_act': 'b',
+        'pres_pass': 'c',
+        'perf_pass': 'd',
+        }
+
+STATUS_CHOICES = (
+        ('c', u'создана'),
+        ('w', u'в работе'),
+        ('g', u'поиск греч.'),
+        ('f', u'завершена'),
+        ('e', u'редактируется'),
+        ('a', u'утверждена'),
+        ('i', u'импортирована'),
+        )
+STATUS_MAP = {
+        'created': 'c',
+        'inWork': 'w',
+        'greek': 'g',
+        'finished': 'f',
+        'beingEdited': 'e',
+        'approved': 'a',
+        'imported': 'i',
+        }
+
+LANGUAGE_CHOICES = (
+        ('a', u'греч.'),
+        ('b', u'ивр.'),
+        ('c', u'аккад.'),
+        ('d', u'арам.'),
+        ('e', u'арм.'),
+        ('f', u'груз.'),
+        ('g', u'копт.'),
+        ('h', u'лат.'),
+        ('i', u'сир.'),
+        )
+LANGUAGE_MAP = {
+        'greek': 'a',
+        'hebrew': 'b',
+        'akkadian': 'c',
+        'aramaic': 'd',
+        'armenian': 'e',
+        'georgian': 'f',
+        'coptic': 'g',
+        'latin': 'h',
+        'syriac': 'i',
+        }
+LANGUAGE_CSS = {
+        LANGUAGE_MAP['greek']:    'grec',
+        LANGUAGE_MAP['hebrew']:   'hebrew',
+        LANGUAGE_MAP['akkadian']: 'akkadian',
+        LANGUAGE_MAP['aramaic']:  'aramaic',
+        LANGUAGE_MAP['armenian']: 'armenian',
+        LANGUAGE_MAP['georgian']: 'georgian',
+        LANGUAGE_MAP['coptic']:   'coptic',
+        LANGUAGE_MAP['latin']:    '',
+        LANGUAGE_MAP['syriac']:   'syriac',
+        }
+LANGUAGE_TRANSLIT_CSS = {
+        LANGUAGE_MAP['greek']:    '',
+        LANGUAGE_MAP['hebrew']:   'hebrew-translit',
+        LANGUAGE_MAP['akkadian']: '',
+        LANGUAGE_MAP['aramaic']:  'aramaic-translit',
+        LANGUAGE_MAP['armenian']: '',
+        LANGUAGE_MAP['georgian']: '',
+        LANGUAGE_MAP['coptic']:   '',
+        LANGUAGE_MAP['latin']:    '',
+        LANGUAGE_MAP['syriac']:   'syriac-translit',
+        }
+
+SUBSTANTIVUS_TYPE_CHOICES = (
+        ('a', u'ср.ед.'),
+        ('b', u'ср.мн.'),
+        )
+SUBSTANTIVUS_TYPE_MAP = {
+        'n.sg.': 'a',
+        'n.pl.': 'b',
+        }
 
 class Entry(models.Model, Meaningfull):
 
@@ -204,13 +360,11 @@ class Entry(models.Model, Meaningfull):
 
     # lexeme (посредник к граматическим формам и свойствам)
 
-    part_of_speech = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'часть речи',
-        limit_choices_to = {'category__slug': 'partOfSpeech'},
-        related_name = 'entries_of_pos',
-        null = True,
-        )
+    part_of_speech = models.CharField(u'часть речи', max_length=1,
+            choices=PART_OF_SPEECH_CHOICES, default='')
+
+    def is_part_of_speech(self, slug):
+        return PART_OF_SPEECH_MAP[slug] == self.part_of_speech
 
     uninflected = models.BooleanField(
         u'неизменяемое', # Для сущ. и прил.
@@ -224,23 +378,17 @@ class Entry(models.Model, Meaningfull):
         )
 
     # только для существительных
-    tantum = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'число',
-        limit_choices_to = {'category__slug': 'tantum'},
-        related_name = 'entries_of_tantum',
-        blank = True,
-        null = True,
-        )
+    tantum = models.CharField(u'число', choices=TANTUM_CHOICES,
+            max_length=1, blank=True, default='')
 
-    gender = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'род',
-        limit_choices_to = {'category__slug': 'gender'},
-        related_name = 'entries_of_gender',
-        blank = True,
-        null = True,
-        )
+    def is_tantum(self, slug):
+        return TANTUM_MAP[slug] == self.tantum
+
+    gender = models.CharField(u'род', choices=GENDER_CHOICES,
+            max_length=1, blank=True, default='')
+
+    def is_gender(self, slug):
+        return GENDER_MAP[slug] == self.gender
 
     genitive = models.CharField(
         u'форма Р. падежа',
@@ -252,13 +400,12 @@ class Entry(models.Model, Meaningfull):
     def genitive_ucs_wax(self):
         return ucs_affix_or_word(self.genitive)
 
-    onym = models.ForeignKey(
-        CategoryValue,
-        limit_choices_to = {'category__slug': 'onym'},
-        verbose_name = u'тип имени собственного',
-        blank = True,
-        null = True,
-        )
+    onym = models.CharField(u'тип имени собственного',
+            max_length=1, choices=ONYM_CHOICES,
+            blank=True, default='')
+
+    def is_onym(self, slug):
+        return ONYM_MAP[slug] == self.onym
 
     canonical_name = models.BooleanField(
         u'каноническое',
@@ -315,14 +462,12 @@ class Entry(models.Model, Meaningfull):
         )
 
     # только для глаголов
-    transitivity = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'переходность',
-        limit_choices_to = {'category__slug': 'transitivity'},
-        related_name = 'entries_of_transitivity',
-        blank = True,
-        null = True,
-        )
+    transitivity = models.CharField(u'переходность',
+            max_length=1, choices=TRANSITIVITY_CHOICES,
+            blank=True, default='')
+
+    def is_transitivity(self, slug):
+        return TRANSITIVITY_MAP[slug] == self.transitivity
 
     sg1 = models.CharField(
         u'форма 1 ед.',
@@ -350,14 +495,12 @@ class Entry(models.Model, Meaningfull):
     def sg2_ucs_wax(self):
         return ucs_affix_or_word(self.sg2)
 
-    participle_type = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'тип причастия',
-        limit_choices_to = {'category__slug': 'participle_type'},
-        related_name = 'entries_of_parttype',
-        blank = True,
-        null = True,
-        )
+    participle_type = models.CharField(u'тип причастия',
+        max_length=1, choices=PARTICIPLE_TYPE_CHOICES,
+        blank=True, default='')
+
+    def is_participle_type(self, slug):
+        return PARTICIPLE_TYPE_MAP[slug] == self.participle_type
 
     derivation_entry = models.ForeignKey(
         'self',
@@ -470,14 +613,11 @@ class Entry(models.Model, Meaningfull):
         return self.participle_set.all().order_by('order', 'id')
 
     # административная информация
-    status = models.ForeignKey(
-        CategoryValue,
-        verbose_name = u'статус статьи',
-        limit_choices_to = {'category__slug': 'entryStatus'},
-        related_name = 'entries_of_status',
-        blank = True,
-        null = True,
-        )
+    status = models.CharField(u'статус статьи',
+            max_length=1, choices=STATUS_CHOICES, default='c')
+
+    def is_status(self, slug):
+        return STATUS_MAP[slug] == self.status
 
     percent_status = models.PositiveSmallIntegerField(
         u'статус готовности статьи в процентах',
@@ -613,11 +753,17 @@ class Etymology(models.Model):
     def etymons(self):
         return self.etymon_set.filter(etymon_to=self.id).order_by('order', 'id')
 
-    language = models.ForeignKey(
-        CategoryValue,
-        limit_choices_to = {'category__slug': 'language'},
-        verbose_name = u'язык',
-        )
+    language = models.CharField(u'язык', max_length=1,
+            choices=LANGUAGE_CHOICES, default='')
+
+    def is_language(self, slug):
+        return LANGUAGE_MAP[slug] == self.language
+
+    def get_language_css(self):
+        return LANGUAGE_CSS[self.language]
+
+    def get_language_translit_css(self):
+        return LANGUAGE_TRANSLIT_CSS[self.language]
 
     text = models.CharField(
         u'языковой эквивалент',
@@ -710,7 +856,7 @@ class Etymology(models.Model):
         self.host_entry.save(without_mtime=without_mtime) # Сохраняем (!) родительскую словарн.статью
 
     def __unicode__(self):
-        return u'%s %s %s' % (self.language.tag, self.entry, self.translit)
+        return u'%s %s %s' % (self.get_language_display(), self.entry, self.translit)
 
     class Meta:
         verbose_name = u'этимон'
@@ -934,13 +1080,12 @@ class Meaning(models.Model):
 
     substantivus = models.BooleanField(u'в роли сущ.')
 
-    substantivus_type = models.ForeignKey(
-        CategoryValue,
-        limit_choices_to = {'category__slug': 'substantivus'},
-        verbose_name = u'форма субстантива',
-        blank = True,
-        null = True,
-        )
+    substantivus_type = models.CharField(u'форма субстантива',
+            max_length=1, choices=SUBSTANTIVUS_TYPE_CHOICES,
+            blank=True, default='')
+
+    def is_substantivus_type(self, slug):
+        return SUBSTANTIVUS_TYPE_MAP[slug] == self.substantivus_type
 
     additional_info = models.TextField(
         u'примечание',

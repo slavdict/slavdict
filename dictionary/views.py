@@ -26,17 +26,8 @@ import dictionary.viewmodels
 import unicode_csv
 from custom_user.models import CustomUser
 from dictionary.forms import BilletImportForm
-from dictionary.forms import EntryForm
-from dictionary.forms import EtymologyForm
-from dictionary.forms import ExampleForm
 from dictionary.forms import FilterEntriesForm
 from dictionary.forms import FilterExamplesForm
-from dictionary.forms import GrEqForExForm
-from dictionary.forms import GrEqForMnngForm
-from dictionary.forms import MeaningForm
-from dictionary.forms import MnngCntxtForm
-from dictionary.forms import OrthVarForm
-from dictionary.forms import RawValueWidget
 from dictionary.models import civilrus_convert
 from dictionary.models import Entry
 from dictionary.models import entry_dict
@@ -47,7 +38,6 @@ from dictionary.models import GreekEquivalentForMeaning
 from dictionary.models import Meaning
 from dictionary.models import MeaningContext
 from dictionary.models import OrthographicVariant
-from directory.models import CategoryValue
 from unicode_csv import UnicodeReader
 
 
@@ -57,22 +47,6 @@ from unicode_csv import UnicodeReader
 # для сортировки списка словарных статей.
 def entry_key(entry):
     return u'%s %s' % ( entry.civil_equivalent.lower(), entry.homonym_order )
-
-@login_required
-def make_greek_found(request):
-
-    greqlist = GreekEquivalentForExample.objects.all() # Выбираем все греч. параллели для примеров.
-    exlist = [g.for_example for g in greqlist] # Создаём для них список примеров, к которым они относятся.
-    # Присваеваем полю статуса греч. параллелей для каждого примера значение "найдены".
-    # И сохраняем каждый пример из списка.
-    for ex in exlist:
-        if ex.greek_eq_status == u'L':
-            ex.greek_eq_status = u'F'
-            ex.save()
-    # Перенаправляем на ту страницу, с которой пользователь пришёл, либо на заглавную страницу.
-    referer = request.META.get('HTTP_REFERER', '/')
-    response = redirect(referer)
-    return response
 
 
 @login_required
@@ -104,7 +78,8 @@ def all_entries(request, is_paged=False):
             entries = entries.filter(editor__username=httpGET_AUTHOR)
 
     if httpGET_STATUS=='-created':
-        entries = entries.exclude(status__slug=u'created')
+        entries = entries.exclude(
+                status=dictionary.models.STATUS_MAP['created'])
 
     if httpGET_GOODNESS:
         g = httpGET_GOODNESS
@@ -126,7 +101,9 @@ def all_entries(request, is_paged=False):
             entries = entries.filter(pk__in=httpGET_LIST)
 
     if httpGET_CORRUPTED_GREEK:
-        greek_etymons = Etymology.objects.filter(language__slug='greek', corrupted=True)
+        greek_etymons = Etymology.objects.filter(
+                language=dictionary.models.LANGUAGE_MAP['greek'],
+                corrupted=True)
         greqex = GreekEquivalentForExample.objects.filter(corrupted=True)
         greqm = GreekEquivalentForMeaning.objects.filter(corrupted=True)
 
@@ -192,51 +169,6 @@ def all_entries(request, is_paged=False):
 
 
 @login_required
-def test_entries(request):
-    grfexs = GreekEquivalentForExample.objects.filter(~Q(mark=u''))
-    entry_id_list = [grfex.for_example.meaning.entry_container.id for grfex in grfexs]
-    entries = Entry.objects.filter(id__in=entry_id_list).order_by('civil_equivalent', 'homonym_order')
-    context = {
-        'entries': entries,
-        'title': u'Избранные статьи',
-        'show_additional_info': 'ai' in request.COOKIES,
-        'user': request.user,
-        }
-    return render_to_response('all_entries.html', context, RequestContext(request))
-
-
-@login_required
-def greek_to_find(request):
-    # Обеспечиваем то, чтобы поля статуса параллей у примеров с параллелями
-    # были отличны от u'L' (статус "необходимо найти параллели")
-    greqlist = GreekEquivalentForExample.objects.all() # Выбираем все греч. параллели для примеров.
-    ex_list = [g.for_example for g in greqlist] # Создаём для них список примеров, к которым они относятся.
-    # Присваеваем полю статуса греч. параллелей для каждого примера значение "найдены".
-    # И сохраняем каждый пример из списка.
-    for ex in ex_list:
-        if ex.greek_eq_status == u'L':
-            ex.greek_eq_status = u'F'
-            ex.save(without_mtime=True)
-
-    # Выдаём все словарные статьи, для примеров которых найти греч. параллели
-    # необходимо.
-    status_list = (u'L',)
-    #status_list = (u'L', u'A', u'C', u'N')
-    ex_list = Example.objects.filter(greek_eq_status__in=status_list)
-    examples_with_hosts = [(ex.host_entry, ex.host, ex) for ex in ex_list]
-    examples_with_hosts = sorted(examples_with_hosts, key=lambda x: entry_key(x[0]))
-    examples_with_hosts = [(n + 1, e[1], e[2]) for n, e in enumerate(examples_with_hosts)]
-
-    context = {
-        'examples_with_hosts': examples_with_hosts,
-        'title': u'Примеры, для которых необходимо найти греческие параллели',
-        'show_additional_info': 'ai' in request.COOKIES,
-        'user': request.user,
-        }
-    return render_to_response('greek_to_find.html', context, RequestContext(request))
-
-
-@login_required
 def single_entry(request, entry_id, extra_context=None, template='single_entry.html'):
     if not extra_context:
         extra_context = {}
@@ -263,24 +195,6 @@ def single_entry(request, entry_id, extra_context=None, template='single_entry.h
 
 
 @login_required
-def last_entry(request):
-    error = False
-    try:
-        entry = Entry.objects.all().order_by('-id')[0]
-    except IndexError:
-        entry = None
-        error = True
-    context = {
-        'entry': entry,
-        'title': u'Последняя добавленная статья',
-        'show_additional_info': 'ai' in request.COOKIES,
-        'error': error,
-        'user': request.user,
-        }
-    return render_to_response('single_entry.html', context, RequestContext(request))
-
-
-@login_required
 def switch_additional_info(request):
     referer = request.META.get('HTTP_REFERER', '/')
     response = redirect(referer)
@@ -290,257 +204,6 @@ def switch_additional_info(request):
         date_expired = datetime.datetime.now() + datetime.timedelta(days=90)
         response.set_cookie('ai', max_age=7776000, expires=date_expired)
     return response
-
-
-@login_required
-def change_entry(request, entry_id):
-
-    entry = get_object_or_404(Entry, pk=entry_id)
-
-    orthvars = OrthographicVariant.objects.filter(entry=entry).order_by('order','id')
-    # Все этимоны для словарной статьи (в том числе вложенные). NB:
-    # ``entry.etimologies`` возвращает все этимоны, для которых нет других
-    # этимонов. Поэтому здесь это не используется.
-    etymons = Etymology.objects.filter(entry=entry).order_by('order', 'id')
-    meanings = Meaning.objects.filter(entry_container=entry).order_by('order','id')
-    examples = Example.objects.filter(meaning__in=meanings).order_by('meaning','order','id')
-    cntxts = MeaningContext.objects.filter(meaning__in=meanings).order_by('meaning','order','id')
-    grfmnngs = GreekEquivalentForMeaning.objects.filter(for_meaning__in=meanings).order_by('for_meaning','id')
-    grfexs = GreekEquivalentForExample.objects.filter(for_example__in=examples).order_by('for_example','id')
-
-    OrthVarFormSet = modelformset_factory(OrthographicVariant, form=OrthVarForm, extra=0)
-    EtymologyFormSet = modelformset_factory(Etymology, form=EtymologyForm, extra=0)
-    MeaningFormSet = modelformset_factory(Meaning, form=MeaningForm, extra=0)
-    ExampleFormSet = modelformset_factory(Example, form=ExampleForm, extra=0)
-    MnngCntxtFormSet = modelformset_factory(MeaningContext, form=MnngCntxtForm, extra=0)
-    GrEqForMnngFormSet = modelformset_factory(GreekEquivalentForMeaning, form=GrEqForMnngForm, extra=0)
-    GrEqForExFormSet = modelformset_factory(GreekEquivalentForExample, form=GrEqForExForm, extra=0)
-
-    if request.method == "POST":
-
-        # Создаём формы на основе POST-данных
-        entry_form = EntryForm(
-
-            request.POST,
-            instance=entry,
-            prefix="entry"
-
-            )
-
-        orthvar_formset = OrthVarFormSet(
-
-            request.POST,
-            queryset=orthvars,
-            prefix='orthvar'
-
-            )
-
-        etymology_formset = EtymologyFormSet(
-
-            request.POST,
-            queryset=etymons,
-            prefix='etym'
-
-            )
-
-        meaning_formset = MeaningFormSet(
-
-            request.POST,
-            queryset=meanings,
-            prefix='meaning'
-
-            )
-
-        example_formset = ExampleFormSet(
-
-            request.POST,
-            queryset=examples,
-            prefix='example'
-
-            )
-
-        cntxt_formset = MnngCntxtFormSet(
-
-            request.POST,
-            queryset=cntxts,
-            prefix='cntxt'
-
-            )
-
-        grfmnng_formset = GrEqForMnngFormSet(
-
-            request.POST,
-            queryset=grfmnngs,
-            prefix='grfmnng'
-
-            )
-
-        grfex_formset = GrEqForExFormSet(
-
-            request.POST,
-            queryset=grfexs,
-            prefix='grfex'
-
-            )
-
-        # Создаём список всех форм и формсетов, добавляя туда сначала сами
-        # формы и формсеты.
-        _forms = [
-
-            entry_form,
-            orthvar_formset,
-            etymology_formset,
-            meaning_formset,
-            example_formset,
-            cntxt_formset,
-            grfmnng_formset,
-            grfex_formset,
-
-            ]
-
-        # Список правильности заполнения форм.
-        # NB: необходимо, чтобы метод is_valid() был вызван для каждого
-        # элемента списка, иначе не все формы будут проверены. Поэтому,
-        # например, в силу лени операции конкатенации, ``if ...and ...and...``
-        # не подойдёт.
-        forms_validity = [x.is_valid() for x in _forms]
-
-        if all(forms_validity):
-            for x in _forms:
-                # TODO: здесь должен быть учёт зависимостей, чтобы не пытаться
-                # сохранить раньше времени те объекты, которые зависят от
-                # других ещё не существующих.
-                x.save()
-            return redirect( entry.get_absolute_url() )
-
-    else:
-        entry_form = EntryForm(
-
-            instance=entry,
-            prefix='entry'
-
-            )
-
-        orthvar_formset = OrthVarFormSet(
-
-            queryset=orthvars,
-            prefix='orthvar'
-
-            )
-
-        etymology_formset = EtymologyFormSet(
-
-            queryset=etymons,
-            prefix='etym'
-
-            )
-
-        meaning_formset = MeaningFormSet(
-
-            queryset=meanings,
-            prefix='meaning'
-
-            )
-
-        example_formset = ExampleFormSet(
-
-            queryset=examples,
-            prefix='example'
-
-            )
-
-        cntxt_formset = MnngCntxtFormSet(
-
-            queryset=cntxts,
-            prefix='cntxt'
-
-            )
-
-        grfmnng_formset = GrEqForMnngFormSet(
-
-            queryset=grfmnngs,
-            prefix='grfmnng'
-
-            )
-
-        grfex_formset = GrEqForExFormSet(
-
-            queryset=grfexs,
-            prefix='grfex'
-
-            )
-
-
-    meaning_ids = [meaning.id for meaning in meanings]
-    raw_widget = RawValueWidget()
-
-    for example_form in example_formset.forms:
-        #try: mID = example_form.instance.meaning.id
-        #except DoesNotExist:
-
-        #mID = example_form.instance.meaning.id
-        mID = int(example_form['meaning'].as_widget(widget=raw_widget))
-        # Если выдаваемая строка будет содержать нецифровые символы или вообще
-        # не содрежать символов будет вызвано исключение ValueError. Его пока
-        # решено не обрабатывать.
-
-        i = meaning_ids.index(mID)
-        x = meaning_formset.forms[i]
-        if hasattr(x, 'example_forms'):
-            x.example_forms.append(example_form)
-        else:
-            x.example_forms = [example_form,]
-
-    for cntxt_form in cntxt_formset.forms:
-        #mID = cntxt_form.instance.meaning.id
-        mID = int(cntxt_form['meaning'].as_widget(widget=raw_widget))
-        i = meaning_ids.index(mID)
-        x = meaning_formset.forms[i]
-        if hasattr(x, 'cntxt_forms'):
-            x.cntxt_forms.append(cntxt_form)
-        else:
-            x.cntxt_forms = [cntxt_form,]
-
-    for grfmnng_form in grfmnng_formset.forms:
-        #mID = grfmnng_form.instance.for_meaning.id
-        mID = int(grfmnng_form['for_meaning'].as_widget(widget=raw_widget))
-        i = meaning_ids.index(mID)
-        x = meaning_formset.forms[i]
-        if hasattr(x, 'grfmnng_forms'):
-            x.grfmnng_forms.append(grfmnng_form)
-        else:
-            x.grfmnng_forms = [grfmnng_form,]
-
-    example_ids = [example.id for example in examples]
-
-    for grfex_form in grfex_formset.forms:
-        #mID = grfex_form.instance.for_example.id
-        mID = int(grfex_form['for_example'].as_widget(widget=raw_widget))
-        i = example_ids.index(mID)
-        x = example_formset.forms[i]
-        if hasattr(x, 'grfex_forms'):
-            x.grfex_forms.append(grfex_form)
-        else:
-            x.grfex_forms = [grfex_form,]
-
-    context = {
-        'entry_form': entry_form,
-        'orthvar_formset': orthvar_formset,
-        'etymology_formset': etymology_formset,
-        'meaning_formset': meaning_formset,
-
-        'example_management_form': example_formset.management_form,
-        'cntxt_management_form': cntxt_formset.management_form,
-        'grfmnng_management_form': grfmnng_formset.management_form,
-        'grfex_management_form': grfex_formset.management_form,
-
-        'example_empty_form': example_formset.empty_form,
-        'cntxt_empty_form': cntxt_formset.empty_form,
-        'grfmnng_empty_form': grfmnng_formset.empty_form,
-        'grfex_empty_form': grfex_formset.empty_form,
-        }
-    return render_to_response("change_form.html", context, RequestContext(request))
-
 
 
 @login_required
@@ -615,7 +278,7 @@ def import_csv_billet(request):
                             raise NameError(u"Автор, указанный в CSV-файле, не найден среди участников работы над словарём.")
 
                     entry_args = entry_dict.copy() # Поверхностная (!) копия словаря.
-                    entry_args['status'] = CategoryValue.objects.get(pk=26) # 26 -- статус статьи "Статья создана"
+                    entry_args['status'] = 'c' # 'c' -- статус статьи "Статья создана"
                     # Все булевские переменные уже выставлены по умолчанию в False в entry_dict
 
                     # Если поле с гражданским эквивалентом пусто, то берем конвертацию в гражданку заглавного слова.
