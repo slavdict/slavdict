@@ -318,16 +318,15 @@
                             <a href="{{ entry.get_absolute_url() }}" class="manual-entry">
                                  <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
                                  {% if entry.homonym_order %}
-                                     <sup class="serif homonym-number">{{ entry.homonym_order }}</sup>
+                                     <sup class="homonym-number">{{ entry.homonym_order }}</sup>
                                  {% endif %}
                             </a>
 
                             {% if entry.duplicate %}
-                                &nbsp;<span class="noaddress">дубликат</span>
+                                &nbsp;&nbsp;<span class="noaddress">дубликат</span>
                             {% endif %}
 
                             <span class="ss transparent">
-                                &nbsp;&nbsp;&nbsp;
                                 {% if not entry.is_part_of_speech("letter") and
                                       not entry.is_part_of_speech("number") %}
                                     <i>{{ entry.get_part_of_speech_display() }}</i>
@@ -342,8 +341,14 @@
 
                     <a href="{{ entry.get_absolute_url() }}" class="manual-entry invisible">
                         <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
+
+                        {% if entry.duplicate %}
+                            {{ space }}
+                            <span class="noaddress">дубликат</span>
+                        {% endif %}
+
                 {% if entry.homonym_order %}
-                    <sup class="serif homonym-number">{{ entry.homonym_order }}</sup>
+                    <sup class="homonym-number">{{ entry.homonym_order }}</sup>
                     </a>
                         <span class="ss">
                             &nbsp;&nbsp;&nbsp;
