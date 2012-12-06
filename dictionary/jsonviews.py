@@ -29,7 +29,7 @@ def json_singleselect_entries_urls(request):
                 {
                 'civil': e.civil_equivalent,
                 'headword': e.orth_vars[0].idem_ucs,
-                'hom': e.homonym_order_roman,
+                'hom': e.homonym_order,
                 'pos': e.get_part_of_speech_display() if (e.homonym_order
                     and e.part_of_speech
                     and e.part_of_speech
