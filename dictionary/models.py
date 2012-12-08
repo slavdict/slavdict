@@ -2,6 +2,15 @@
 import datetime
 
 from django.db import models
+from django.db.models import BooleanField
+from django.db.models import CharField
+from django.db.models import DateTimeField
+from django.db.models import ForeignKey
+from django.db.models import ManyToManyField
+from django.db.models import PositiveIntegerField
+from django.db.models import PositiveSmallIntegerField
+from django.db.models import SmallIntegerField
+from django.db.models import TextField
 
 from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
@@ -24,10 +33,11 @@ def ucs_convert(text):
 
 def ucs_convert_affix(text):
     """
-    Функции передаётся строка, которая должна содержать строковую запись аффикса
-    в свободной форме -- не важно с дефисом или без. Если начальный дефис есть,
-    он отбрасывается. Всё оставшееся конвертируется из представления AntConc в UCS8
-    без расстановки придыханий перед начальными гласными.
+    Функции передаётся строка, которая должна содержать строковую запись
+    аффикса в свободной форме -- не важно с дефисом или без. Если начальный
+    дефис есть, он отбрасывается. Всё оставшееся конвертируется из
+    представления AntConc в UCS8 без расстановки придыханий перед начальными
+    гласными.
     """
     if text:
         if text[0] == u'-':
@@ -58,9 +68,9 @@ def ucs_affix_or_word(atr):
     Если данная функция используется в другой функции, то последней можно
     давать название с использованием аббревиатуры wax (Word or AffiX).
 
-    Возможно, впоследствии лучше сделать, чтобы функция возвращала не кортеж, а
-    объект. В качестве __unicode__ будет возвращаться сконвертированная строка,
-    а информация о том, аффикс или нет, отдельным свойством.
+    Возможно, впоследствии лучше сделать, чтобы функция возвращала не кортеж,
+    а объект. В качестве __unicode__ будет возвращаться сконвертированная
+    строка, а информация о том, аффикс или нет, отдельным свойством.
     """
     if atr:
         if atr[0] == u'-':
@@ -78,17 +88,17 @@ class Meaningfull:
     """
     @property
     def meanings(self):
-        return self.meaning_set.filter(
-            metaphorical=False,
-            parent_meaning__isnull=True
-        ).order_by('order', 'id')
+        objs = self.meaning_set
+        objs = objs.filter(metaphorical=False, parent_meaning__isnull=True)
+        objs = objs.order_by('order', 'id')
+        return objs
 
     @property
     def metaph_meanings(self):
-        return self.meaning_set.filter(
-            metaphorical=True,
-            parent_meaning__isnull=True,
-        ).order_by('order', 'id')
+        objs = self.meaning_set
+        objs = objs.filter(metaphorical=True, parent_meaning__isnull=True)
+        objs = objs.order_by('order', 'id')
+        return objs
 
     @property
     def all_meanings(self):
@@ -261,10 +271,7 @@ SUBSTANTIVUS_TYPE_MAP = {
 
 class Entry(models.Model, Meaningfull):
 
-    civil_equivalent = models.CharField(
-        u'гражданское написание',
-        max_length=50,
-        )
+    civil_equivalent = CharField(u'гражданское написание', max_length=50)
 
     @property
     def orth_vars(self):
@@ -274,123 +281,77 @@ class Entry(models.Model, Meaningfull):
     def orth_vars_refs(self):
         return self.orthographic_variants.filter(no_ref_entry=False)
 
-    reconstructed_headword = models.BooleanField(
-        u'Заглавное слово реконструировано',
-        default=False,
-        )
+    reconstructed_headword = BooleanField(u'Заглавное слово реконструировано',
+            default=False)
 
-    questionable_headword = models.BooleanField(
-        u'Реконструкция заглавного слова вызывает сомнения',
-        default=False,
-        )
+    questionable_headword = BooleanField(u'''Реконструкция заглавного слова
+            вызывает сомнения''', default=False)
 
-    hidden = models.BooleanField(
-        u'Скрыть лексему',
-        help_text=u'Не отображать лексему в списке словарных статей.',
-        default=False,
-        editable=False,
-        )
+    hidden = BooleanField(u'Скрыть лексему', help_text=u'''Не отображать лексему
+            в списке словарных статей.''', default=False, editable=False)
 
-    homonym_order = models.SmallIntegerField(
-        u'номер омонима',
-        help_text=u'''Арабская цифра, например, 1, 2, 3...
-                        Поле заполняется только при наличии
-                        нескольких омонимов.''',
-        blank=True,
-        null=True,
-        )
+    homonym_order = SmallIntegerField(u'номер омонима', help_text=u'''Арабская
+            цифра, например, 1, 2, 3... Поле заполняется только при наличии
+            нескольких омонимов.''', blank=True, null=True)
 
-    homonym_gloss = models.CharField(
-        u'подсказка',
-        max_length=40,
-        help_text=u'''Пояснение для различения омонимов, например:
-                        «предварять» для ВАРИТИ I или «варить» для ВАРИТИ II.
-                        Предполагается использовать только для служебных
-                        целей, а не для отображения при словарных статьях.''',
-        blank=True,
-        )
+    homonym_gloss = CharField(u'подсказка', max_length=40, help_text=u'''
+            Пояснение для различения омонимов, например: «предварять» для
+            ВАРИТИ I или «варить» для ВАРИТИ II. Предполагается использовать
+            только для служебных целей, а не для отображения при словарных
+            статьях.''', blank=True)
 
-    duplicate = models.BooleanField(
-        u'дубликат',
-        help_text=u'''В нормальном случае дубликатов словарных статей быть
-                        не должно. Они возникают только в результате
-                        недосмотра при создании новый статей вручную или
-                        в результате недостаточно хороших проверок при
-                        автоматизированном импорте заготовок статей.''',
-        default=False,
-        )
+    duplicate = BooleanField(u'дубликат', help_text=u'''В нормальном случае
+            дубликатов словарных статей быть не должно. Они возникают только
+            в результате недосмотра при создании новый статей вручную или в
+            результате недостаточно хороших проверок при автоматизированном
+            импорте заготовок статей.''', default=False)
 
-    part_of_speech = models.CharField(u'часть речи', max_length=1,
+    part_of_speech = CharField(u'часть речи', max_length=1,
             choices=PART_OF_SPEECH_CHOICES, default='')
 
     def is_part_of_speech(self, slug):
         return PART_OF_SPEECH_MAP[slug] == self.part_of_speech
 
-    uninflected = models.BooleanField(
-        u'неизменяемое',  # Для сущ. и прил.
-        default=False,
-        )
+    # Для сущ. и прил.
+    uninflected = BooleanField(u'неизменяемое', default=False)
 
-    word_forms_list = models.TextField(
-        u'список словоформ',
-        help_text=u'Список словоформ через запятую',
-        blank=True,
-        )
+    word_forms_list = TextField(u'список словоформ', help_text=u'''Список
+            словоформ через запятую''', blank=True)
 
     # только для существительных
-    tantum = models.CharField(u'число', choices=TANTUM_CHOICES,
-            max_length=1, blank=True, default='')
+    tantum = CharField(u'число', choices=TANTUM_CHOICES, max_length=1,
+            blank=True, default='')
 
     def is_tantum(self, slug):
         return TANTUM_MAP[slug] == self.tantum
 
-    gender = models.CharField(u'род', choices=GENDER_CHOICES,
-            max_length=1, blank=True, default='')
+    gender = CharField(u'род', choices=GENDER_CHOICES, max_length=1,
+            blank=True, default='')
 
     def is_gender(self, slug):
         return GENDER_MAP[slug] == self.gender
 
-    genitive = models.CharField(
-        u'форма Р. падежа',
-        max_length=10,
-        blank=True,
-        )
+    genitive = CharField(u'форма Р. падежа', max_length=10, blank=True)
 
     @property
     def genitive_ucs_wax(self):
         return ucs_affix_or_word(self.genitive)
 
-    onym = models.CharField(u'тип имени собственного',
-            max_length=1, choices=ONYM_CHOICES,
-            blank=True, default='')
+    onym = CharField(u'тип имени собственного', max_length=1,
+                     choices=ONYM_CHOICES, blank=True, default='')
 
     def is_onym(self, slug):
         return ONYM_MAP[slug] == self.onym
 
-    canonical_name = models.BooleanField(
-        u'каноническое',
-        default=False,
-        )
+    canonical_name = BooleanField(u'каноническое', default=False)
 
-    nom_sg = models.CharField(
-        u'И.ед.м.',
-        help_text=u'''Только для этнонимов
-                        (например, в словарной статье АГАРЯНЕ,
-                        здесь -- АГАРЯНИН).''',
-        max_length=25,
-        blank=True,
-        null=True,
-        )
+    nom_sg = CharField(u'И.ед.м.', help_text=u'''Только для этнонимов
+                       (например, в словарной статье АГАРЯНЕ, здесь --
+                       АГАРЯНИН).''', max_length=25, blank=True, null=True)
 
-    nom_pl = models.CharField(
-        u'И.мн.',
-        help_text=u'''Только для этнонимов
-                        (например, в словарной статье АГАРЯНИН,
-                        здесь -- АГАРЯНЕ).''',
-        max_length=25,
-        blank=True,
-        null=True,
-        )
+    nom_pl = CharField(u'И.мн.', help_text=u'''Только для этнонимов (например,
+                       в словарной статье АГАРЯНИН, здесь -- АГАРЯНЕ).''',
+                       max_length=25, blank=True, null=True)
 
     @property
     def nom_sg_ucs_wax(self):
@@ -401,134 +362,76 @@ class Entry(models.Model, Meaningfull):
         return ucs_affix_or_word(self.nom_pl)
 
     # только для прилагательных
-    short_form = models.CharField(
-        # Это поле, по идее, в последствии должно стать FK
-        # или даже MtM с приявязкой к WordForm.
-        u'краткая форма',
-        help_text=u'''Если Вы указываете не всё слово,
-                        а только его часть, предваряйте её дефисом.''',
-        max_length=30,
-        blank=True,
-        )
+    short_form = CharField(u'краткая форма', help_text=u'''Если Вы указываете
+                           не всё слово, а только его часть, предваряйте её
+                           дефисом.''', max_length=30, blank=True)
 
     @property
     def short_form_ucs_wax(self):
         return ucs_affix_or_word(self.short_form)
 
-    possessive = models.BooleanField(
-        u'притяжательное',
-        default=False,
-        help_text=u'Притяжательное прилагательное.',
-        )
+    possessive = BooleanField(u'притяжательное', default=False,
+                              help_text=u'Притяжательное прилагательное.')
 
     # только для глаголов
-    transitivity = models.CharField(u'переходность',
-            max_length=1, choices=TRANSITIVITY_CHOICES,
-            blank=True, default='')
+    transitivity = CharField(u'переходность', max_length=1,
+                        choices=TRANSITIVITY_CHOICES, blank=True, default='')
 
     def is_transitivity(self, slug):
         return TRANSITIVITY_MAP[slug] == self.transitivity
 
-    sg1 = models.CharField(
-        u'форма 1 ед.',
-        max_length=30,
-        blank=True,
-        help_text=u'''Целая словоформа или окончание.
-                        В случае окончания первым
-                        символом должен идти дефис.''',
-        )
+    sg1 = CharField(u'форма 1 ед.', max_length=30, blank=True,
+                    help_text=u'''Целая словоформа или окончание. В случае
+                    окончания первым символом должен идти дефис.''')
 
     @property
     def sg1_ucs_wax(self):
         return ucs_affix_or_word(self.sg1)
 
-    sg2 = models.CharField(
-        u'форма 2 ед.',
-        max_length=30,
-        blank=True,
-        help_text=u'''Целая словоформа или окончание.
-                        В случае окончания первым
-                        символом должен идти дефис.''',
-        )
+    sg2 = CharField(u'форма 2 ед.', max_length=30, blank=True,
+                    help_text=u'''Целая словоформа или окончание. В случае
+                    окончания первым символом должен идти дефис.''')
 
     @property
     def sg2_ucs_wax(self):
         return ucs_affix_or_word(self.sg2)
 
-    participle_type = models.CharField(u'тип причастия',
-        max_length=1, choices=PARTICIPLE_TYPE_CHOICES,
-        blank=True, default='')
+    participle_type = CharField(u'тип причастия', max_length=1,
+                    choices=PARTICIPLE_TYPE_CHOICES, blank=True, default='')
 
     def is_participle_type(self, slug):
         return PARTICIPLE_TYPE_MAP[slug] == self.participle_type
 
-    derivation_entry = models.ForeignKey(
-        'self',
-        verbose_name=u'образовано от',
-        related_name='derived_entry_set',
-        blank=True,
-        null=True,
-        )
+    derivation_entry = ForeignKey('self', verbose_name=u'образовано от',
+            related_name='derived_entry_set', blank=True, null=True)
 
-    link_to_entry = models.ForeignKey(
-        'self',
-        verbose_name=u'ссылка на другую лексему',
-        help_text=u'''Если вместо значений словарная статья
-                        должна содержать только ссылку
-                        на другую словарную статью,
-                        укажите её в данном поле.''',
-        related_name='ref_entry_set',
-        blank=True,
-        null=True,
-        )
+    link_to_entry = ForeignKey('self', verbose_name=u'ссылка на другую лексему',
+            help_text=u'''Если вместо значений словарная статья должна содержать
+            только ссылку на другую словарную статью, укажите её в данном
+            поле.''', related_name='ref_entry_set', blank=True, null=True)
 
-    link_to_collogroup = models.ForeignKey(
-        'CollocationGroup',
-        verbose_name=u'ссылка на словосочетание',
-        help_text=u'''Если вместо значений словарная статья
-                        должна содержать только ссылку
-                        на словосочетание,
-                        укажите его в данном поле.''',
-        related_name='ref_entry_set',
-        blank=True,
-        null=True,
-        )
+    link_to_collogroup = ForeignKey('CollocationGroup',
+            verbose_name=u'ссылка на словосочетание', help_text=u'''Если вместо
+            значений словарная статья должна содержать только ссылку на
+            словосочетание, укажите его в данном поле.''',
+            related_name='ref_entry_set', blank=True, null=True)
 
-    link_to_meaning = models.ForeignKey(
-        'Meaning',
-        verbose_name=u'ссылка на значение',
-        help_text=u'''Если вместо значений словарная статья должна
-                        содержать только ссылку на опредленное значение лексемы
-                        или словосочетания, укажите его в данном поле.''',
-        related_name='ref_entry_set',
-        blank=True,
-        null=True,
-        )
+    link_to_meaning = ForeignKey('Meaning', verbose_name=u'ссылка на значение',
+            help_text=u'''Если вместо значений словарная статья должна
+            содержать только ссылку на опредленное значение лексемы или
+            словосочетания, укажите его в данном поле.''',
+            related_name='ref_entry_set', blank=True, null=True)
 
-    cf_entries = models.ManyToManyField(
-        'self',
-        verbose_name=u'ср. (лексемы)',
-        related_name='cf_entry_set',
-        symmetrical=False,
-        blank=True,
-        null=True,
-        )
+    cf_entries = ManyToManyField('self', verbose_name=u'ср. (лексемы)',
+            related_name='cf_entry_set', symmetrical=False, blank=True,
+            null=True)
 
-    cf_collogroups = models.ManyToManyField(
-        'CollocationGroup',
-        verbose_name=u'ср. (группы слововосочетаний)',
-        related_name='cf_entry_set',
-        blank=True,
-        null=True,
-        )
+    cf_collogroups = ManyToManyField('CollocationGroup',
+            verbose_name=u'ср. (группы слововосочетаний)',
+            related_name='cf_entry_set', blank=True, null=True)
 
-    cf_meanings = models.ManyToManyField(
-        'Meaning',
-        verbose_name=u'ср. (значения)',
-        related_name='cf_entry_set',
-        blank=True,
-        null=True,
-        )
+    cf_meanings = ManyToManyField('Meaning', verbose_name=u'ср. (значения)',
+            related_name='cf_entry_set', blank=True, null=True)
 
     @property
     def cfmeanings(self):
@@ -542,27 +445,20 @@ class Entry(models.Model, Meaningfull):
     def cfcollogroups(self):
         return self.cf_collogroups.all()
 
-    additional_info = models.TextField(
-        u'примечание к статье',
-        help_text=u'''Любая дополнительная информация по данной ЛЕКСЕМЕ.
-                        Дополнительная информация по значению лексемы или
-                        примеру на значение указывается не здесь,
-                        а в аналогичных полях при значении и примере,
-                        соответственно.''',
-        blank=True,
-        )
+    additional_info = TextField(u'примечание к статье',
+            help_text=u'''Любая дополнительная информация по данной ЛЕКСЕМЕ.
+            Дополнительная информация по значению лексемы или примеру на
+            значение указывается не здесь, а в аналогичных полях при значении
+            и примере, соответственно.''', blank=True)
 
-    examples = models.ManyToManyField(
-        'Example',
-        verbose_name=u'примеры употребления',
-        related_name='entry_set',
-        blank=True,
-        null=True,
-        )
+    examples = ManyToManyField('Example', verbose_name=u'примеры употребления',
+            related_name='entry_set', blank=True, null=True)
 
     @property
     def etymologies(self):
-        return self.etymology_set.filter(etymon_to__isnull=True).order_by('order', 'id')
+        etyms = self.etymology_set
+        etyms = etyms.filter(etymon_to__isnull=True).order_by('order', 'id')
+        return etyms
 
     @property
     def collogroups(self):
@@ -573,48 +469,28 @@ class Entry(models.Model, Meaningfull):
         return self.participle_set.all().order_by('order', 'id')
 
     # административная информация
-    status = models.CharField(u'статус статьи',
-            max_length=1, choices=STATUS_CHOICES, default='c')
+    status = CharField(u'статус статьи', max_length=1, choices=STATUS_CHOICES,
+                       default='c')
 
     def is_status(self, slug):
         return STATUS_MAP[slug] == self.status
 
-    percent_status = models.PositiveSmallIntegerField(
-        u'статус готовности статьи в процентах',
-        default=0,
-        )
+    percent_status = PositiveSmallIntegerField(
+                        u'статус готовности статьи в процентах', default=0)
 
-    editor = models.ForeignKey(
-        CustomUser,
-        verbose_name=u'автор статьи',
-        blank=True,
-        null=True,
-        )
+    editor = ForeignKey(CustomUser, verbose_name=u'автор статьи', blank=True,
+                        null=True)
 
-    antconc_query = models.TextField(
-        u'Запрос для программы AntConc',
-        blank=True,
-        )
+    antconc_query = TextField(u'Запрос для программы AntConc', blank=True)
+    mtime = DateTimeField(editable=False)
+    ctime = DateTimeField(editable=False, auto_now_add=True)
 
-    mtime = models.DateTimeField(
-        editable=False,
-    )
-
-    ctime = models.DateTimeField(
-        editable=False,
-        auto_now_add=True,
-    )
-
-    good = models.TextField(
-        u'Годность статьи для показа',
-        max_length=1,
-        choices=(
-            (u'b', u'не подходит'),  # bad
-            (u's', u'возможно, подходит'),  # so so
-            (u'g', u'подходит'),  # good
-        ),
-        default=u'b',
-    )
+    good = TextField(u'Годность статьи для показа', max_length=1, default=u'b',
+                     choices=(
+                         (u'b', u'не подходит'),  # bad
+                         (u's', u'возможно, подходит'),  # so so
+                         (u'g', u'подходит'),  # good
+                     ))
 
     @models.permalink
     def get_absolute_url(self):
@@ -636,46 +512,27 @@ class Entry(models.Model, Meaningfull):
 
 class Etymology(models.Model):
 
-    entry = models.ForeignKey(
-        # может MtM
-        Entry,
-        verbose_name=u'словарная статья',
-        help_text=u'''Словарная статья, к которой
-                        относится данная этимология.''',
-        blank=True,
-        null=True,
-        )
+    entry = ForeignKey(Entry, verbose_name=u'словарная статья',
+                help_text=u'''Словарная статья, к которой относится данная
+                этимология.''', blank=True, null=True)
 
-    collocation = models.ForeignKey(
-        'Collocation',
-        verbose_name=u'словосочетание',
-        help_text=u'''Словосочетание, к которому
-                        относится данная этимология.''',
-        blank=True,
-        null=True,
-        )
+    collocation = ForeignKey('Collocation', verbose_name=u'словосочетание',
+                help_text=u'''Словосочетание, к которому относится данная
+                этимология.''', blank=True, null=True)
 
-    order = models.SmallIntegerField(
-        u'порядок следования',
-        blank=True,
-        null=True,
-        )
+    order = SmallIntegerField(u'порядок следования', blank=True, null=True)
 
-    etymon_to = models.ForeignKey(
-        'self',
-        verbose_name=u'этимон для',
-        help_text=u'Возможный/несомненный этимон для другого этимона, который и необходимо указать.',
-        related_name='etymon_set',
-        blank=True,
-        null=True,
-        )
+    etymon_to = ForeignKey('self', verbose_name=u'этимон для',
+                help_text=u'''Возможный/несомненный этимон для другого этимона,
+                который и необходимо указать.''', related_name='etymon_set',
+                blank=True, null=True)
 
     @property
     def etymons(self):
         return self.etymon_set.filter(etymon_to=self.id).order_by('order', 'id')
 
-    language = models.CharField(u'язык', max_length=1,
-            choices=LANGUAGE_CHOICES, default='')
+    language = CharField(u'язык', max_length=1, choices=LANGUAGE_CHOICES,
+                         default='')
 
     def is_language(self, slug):
         return LANGUAGE_MAP[slug] == self.language
@@ -686,73 +543,24 @@ class Etymology(models.Model):
     def get_language_translit_css(self):
         return LANGUAGE_TRANSLIT_CSS[self.language]
 
-    text = models.CharField(
-        u'языковой эквивалент',
-        max_length=40,
-        blank=True,
-        )
+    text = CharField(u'языковой эквивалент', max_length=40, blank=True)
 
-    unitext = models.CharField(
-        u'языковой эквивалент (Unicode)',
-        max_length=40,
-        blank=True,
-        )
+    unitext = CharField(u'языковой эквивалент (Unicode)', max_length=40,
+                        blank=True)
 
-    translit = models.CharField(
-        u'транслитерация',
-        max_length=40,
-        blank=True,
-        )
+    translit = CharField(u'транслитерация', max_length=40, blank=True)
+    meaning = CharField(u'перевод', max_length=70, blank=True)
+    gloss = CharField(u'пояснение', max_length=70, blank=True)
 
-    meaning = models.CharField(
-        u'перевод',
-        max_length=70,
-        blank=True,
-        )
+    source = CharField(u'документальный источник',
+                help_text=u'например, Септуагинта', max_length=40, blank=True)
 
-    gloss = models.CharField(
-        u'пояснение',
-        max_length=70,
-        blank=True,
-        )
-
-    source = models.CharField(
-        u'документальный источник',
-        help_text=u'например, Септуагинта',
-        max_length=40,
-        blank=True,
-        )
-
-    unclear = models.BooleanField(
-        u'этимология неясна',
-        default=False,
-        )
-
-    questionable = models.BooleanField(
-        u'этимология спорна',
-        default=False,
-        )
-
-    mark = models.CharField(
-        u'грамматическая помета',
-        max_length=20,
-        blank=True,
-        )
-
-    additional_info = models.TextField(
-        u'примечание',
-        blank=True,
-        )
-
-    corrupted = models.BooleanField(
-        u'текст испорчен',
-        default=False,
-        )
-
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
+    unclear = BooleanField(u'этимология неясна', default=False)
+    questionable = BooleanField(u'этимология спорна', default=False)
+    mark = CharField(u'грамматическая помета', max_length=20, blank=True)
+    additional_info = TextField(u'примечание', blank=True)
+    corrupted = BooleanField(u'текст испорчен', default=False)
+    mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
     def host_entry(self):
@@ -777,7 +585,8 @@ class Etymology(models.Model):
         self.host_entry.save(without_mtime=without_mtime)
 
     def __unicode__(self):
-        return u'%s %s %s' % (self.get_language_display(), self.entry, self.translit)
+        return u'%s %s %s' % (self.get_language_display(), self.entry,
+                              self.translit)
 
     class Meta:
         verbose_name = u'этимон'
@@ -787,57 +596,38 @@ class Etymology(models.Model):
 
 class MeaningContext(models.Model):
 
-    meaning = models.ForeignKey(
-        'Meaning',
-        verbose_name=u'значение',
-        )
+    meaning = ForeignKey('Meaning', verbose_name=u'значение')
+    order = SmallIntegerField(u'порядок следования', blank=True, null=True)
 
-    order = models.SmallIntegerField(
-        u'порядок следования',
-        blank=True,
-        null=True,
-        )
+    left_text = CharField(u'дополнительный текст слева', max_length=50,
+            help_text=u'''Здесь указывается текст на <span class="green"
+            >русском</span> языке. Например, если необходим контекст «<span
+            class="civil">+</span>&nbsp;<span class="cslav">къ</span
+            >&nbsp;<span>class="civil">кому/чему</span>», в данное поле
+            добавляется текст&nbsp;«<span class="typing">+</span>».''',
+            blank=True)
 
-    left_text = models.CharField(
-        u'дополнительный текст слева',
-        max_length=50,
-        help_text=u'''Здесь указывается текст на <span class="green">русском</span> языке.
-                        Например, если необходим контекст «<span class="civil">+</span
-                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
-                        в данное поле добавляется текст&nbsp;«<span class="typing">+</span>».''',
-        blank=True,
-        # пока непонятно будет ли это поле использоваться, т.к.
-        # для правых контекстов плюс слева будет добавляться автоматически.
-        )
-
-    context = models.CharField(
-        u'текст контекста',
-        max_length=40,
-        help_text=u'''Здесь указывается <span class="green">церковнославянский</span> текст.
-                        Например, если необходим контекст «<span class="civil">+</span
-                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
-                        в данное поле добавляется текст&nbsp;«<span class="typing">къ</span>».''',
-        blank=True,
-        )
+    context = CharField(u'текст контекста', max_length=40,
+            help_text=u'''Здесь указывается <span class="green"
+            >церковнославянский</span> текст. Например, если необходим контекст
+            «<span class="civil">+</span>&nbsp;<span class="cslav">къ</span
+            >&nbsp;<span>class="civil">кому/чему</span>», в данное поле
+            добавляется текст&nbsp;«<span class="typing">къ</span>».''',
+            blank=True)
 
     @property
     def context_ucs(self):
         return ucs_convert(self.context)
 
-    right_text = models.CharField(
-        u'дополнительный текст справа',
-        max_length=50,
-        help_text=u'''Здесь указывается текст на <span class="green">русском</span> языке.
-                        Например, если необходим контекст «<span class="civil">+</span
-                        >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
-                        в данное поле добавляется текст&nbsp;«<span class="typing">кому/чему</span>».''',
-        blank=True,
-        )
+    right_text = CharField(u'дополнительный текст справа', max_length=50,
+            help_text=u'''Здесь указывается текст на <span class="green"
+            >русском</span> языке. Например, если необходим контекст «<span
+            class="civil">+</span>&nbsp;<span class="cslav">къ</span
+            >&nbsp;<span>class="civil">кому/чему</span>», в данное поле
+            добавляется текст&nbsp;«<span class="typing">кому/чему</span>».''',
+            blank=True)
 
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
+    mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
     def host_entry(self):
@@ -863,110 +653,50 @@ class MeaningContext(models.Model):
 
 class Meaning(models.Model):
 
-    entry_container = models.ForeignKey(
-        Entry,
-        blank=True,
-        null=True,
-        verbose_name=u'лексема',
-        help_text=u'''Лексема, к которой относится значение.
-                        Выберите, только если значение
-                        не относится к словосочетанию.''',
-        related_name='meaning_set',
-        )
+    entry_container = ForeignKey(Entry, blank=True, null=True,
+            verbose_name=u'лексема', help_text=u'''Лексема, к которой
+            относится значение. Выберите, только если значение не относится
+            к словосочетанию.''', related_name='meaning_set')
 
-    collogroup_container = models.ForeignKey(
-        'CollocationGroup',
-        blank=True,
-        null=True,
-        verbose_name=u'словосочетание',
-        help_text=u'''Словосочетание,
-                        к которому относится значение.
-                        Выберите, только если значение
-                        не относится к конкретной лексеме.''',
-        related_name='meaning_set',
-        )
+    collogroup_container = ForeignKey('CollocationGroup', blank=True, null=True,
+            verbose_name=u'словосочетание', help_text=u'''Словосочетание,
+            к которому относится значение.  Выберите, только если значение не
+            относится к конкретной лексеме.''', related_name='meaning_set')
 
-    order = models.SmallIntegerField(
-        u'порядок следования',
-        blank=True,
-        default=345,
-        )
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
+    parent_meaning = ForeignKey('self', verbose_name=u'родительское значение',
+                    related_name='child_meaning_set', blank=True, null=True)
 
-    parent_meaning = models.ForeignKey(
-        'self',
-        verbose_name=u'родительское значение',
-        related_name='child_meaning_set',
-        blank=True,
-        null=True,
-        )
+    hidden = BooleanField(u'Скрыть значение', help_text=u'''Не отображать
+                          данное значение при выводе словарной статьи.''',
+                          default=False, editable=False)
 
-    hidden = models.BooleanField(
-        u'Скрыть значение',
-        help_text=u'''Не отображать данное значение
-                        при выводе словарной статьи.''',
-        default=False,
-        editable=False,
-        )
+    link_to_meaning = ForeignKey('self', verbose_name=u'ссылка на значение',
+                    help_text=u'''Если значение должно вместо текста содержать
+                    только ссылку на другое значение некоторой лексемы или
+                    словосочетания, укажите её в данном поле.''',
+                    related_name='ref_meaning_set', blank=True, null=True)
 
-    link_to_meaning = models.ForeignKey(
-        'self',
-        verbose_name=u'ссылка на значение',
-        help_text=u'''Если значение должно вместо текста
-                        содержать только ссылку на другое
-                        значение некоторой лексемы или
-                        словосочетания,
-                        укажите её в данном поле.''',
-        related_name='ref_meaning_set',
-        blank=True,
-        null=True,
-        )
+    link_to_entry = ForeignKey(Entry, verbose_name=u'ссылка на лексему',
+                    help_text=u'''Если вместо значения должна быть только ссылка
+                    на другую словарную статью, укажите её в данном поле.''',
+                    related_name='ref_meaning_set', blank=True, null=True)
 
-    link_to_entry = models.ForeignKey(
-        Entry,
-        verbose_name=u'ссылка на лексему',
-        help_text=u'''Если вместо значения
-                        должна быть только ссылка
-                        на другую словарную статью,
-                        укажите её в данном поле.''',
-        related_name='ref_meaning_set',
-        blank=True,
-        null=True,
-        )
+    link_to_collogroup = ForeignKey('CollocationGroup',
+            verbose_name=u'ссылка на словосочетание', help_text=u'''Если вместо
+            значения должна быть только ссылка на целое словосочетание.''',
+            related_name='ref_meaning_set', blank=True, null=True)
 
-    link_to_collogroup = models.ForeignKey(
-        'CollocationGroup',
-        verbose_name=u'ссылка на словосочетание',
-        help_text=u'''Если вместо значения должна быть только ссылка
-                        на целое словосочетание.''',
-        related_name='ref_meaning_set',
-        blank=True,
-        null=True,
-        )
+    cf_entries = ManyToManyField(Entry, verbose_name=u'ср. (лексемы)',
+                        related_name='cf_meaning_set', blank=True, null=True)
 
-    cf_entries = models.ManyToManyField(
-        Entry,
-        verbose_name=u'ср. (лексемы)',
-        related_name='cf_meaning_set',
-        blank=True,
-        null=True,
-        )
+    cf_collogroups = ManyToManyField('CollocationGroup',
+                        verbose_name=u'ср. (группы слововосочетаний)',
+                        related_name='cf_meaning_set', blank=True, null=True)
 
-    cf_collogroups = models.ManyToManyField(
-        'CollocationGroup',
-        verbose_name=u'ср. (группы слововосочетаний)',
-        related_name='cf_meaning_set',
-        blank=True,
-        null=True,
-        )
-
-    cf_meanings = models.ManyToManyField(
-        'self',
-        verbose_name=u'ср. (значения)',
-        related_name='cf_meaning_set',
-        symmetrical=False,
-        blank=True,
-        null=True,
-        )
+    cf_meanings = ManyToManyField('self', verbose_name=u'ср. (значения)',
+                        related_name='cf_meaning_set', symmetrical=False,
+                        blank=True, null=True)
 
     @property
     def cfmeanings(self):
@@ -980,43 +710,27 @@ class Meaning(models.Model):
     def cfcollogroups(self):
         return self.cf_collogroups.all()
 
-    metaphorical = models.BooleanField(
-        u'метафорическое',
-        default=False,
-        )
+    metaphorical = BooleanField(u'метафорическое', default=False)
+    meaning = TextField(u'значение', blank=True)
 
-    meaning = models.TextField(
-        u'значение',
-        blank=True,
-        )
+    gloss = TextField(u'пояснение', help_text=u'''Для неметафорических
+            употреблений/прямых значений здесь указывается энциклопедическая
+            информация. Для метафорических/переносных -- (?) разнообразная
+            дополнительная информация, комментарии к употреблению.''',
+            blank=True)
 
-    gloss = models.TextField(
-        u'пояснение',
-        help_text=u'''Для неметафорических употреблений/прямых значений
-                        здесь указывается энциклопедическая информация.
-                        Для метафорических/переносных -- (?) разнообразная
-                        дополнительная информация, комментарии к употреблению.''',
-        blank=True,
-        )
-
-    substantivus = models.BooleanField(u'в роли сущ.')
-
-    substantivus_type = models.CharField(u'форма субстантива',
-            max_length=1, choices=SUBSTANTIVUS_TYPE_CHOICES,
-            blank=True, default='')
+    substantivus = BooleanField(u'в роли сущ.')
+    substantivus_type = CharField(u'форма субстантива', max_length=1,
+                    choices=SUBSTANTIVUS_TYPE_CHOICES, blank=True, default='')
 
     def is_substantivus_type(self, slug):
         return SUBSTANTIVUS_TYPE_MAP[slug] == self.substantivus_type
 
-    additional_info = models.TextField(
-        u'примечание',
-        help_text=u'''Любая дополнительная информация по данному
-                        ЗНАЧЕНИЮ. Дополнительная информация по примеру
-                        на значение или лексеме указывается не здесь,
-                        а в аналогичных полях при примере и лексеме,
-                        соответственно.''',
-        blank=True,
-        )
+    additional_info = TextField(u'примечание', help_text=u'''Любая
+            дополнительная информация по данному ЗНАЧЕНИЮ. Дополнительная
+            информация по примеру на значение или лексеме указывается не здесь,
+            а в аналогичных полях при примере и лексеме, соответственно.''',
+            blank=True)
 
     @property
     def examples(self):
@@ -1036,18 +750,12 @@ class Meaning(models.Model):
 
     @property
     def child_meanings(self):
-        return self.child_meaning_set \
-            .filter(parent_meaning=self).order_by('order', 'id')
+        meanings = self.child_meaning_set
+        meanings = meanings.filter(parent_meaning=self).order_by('order', 'id')
+        return meanings
 
-    ctime = models.DateTimeField(
-        editable=False,
-        auto_now_add=True,
-    )
-
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
+    ctime = DateTimeField(editable=False, auto_now_add=True)
+    mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
     def host_entry(self):
@@ -1082,44 +790,23 @@ class Meaning(models.Model):
 
 class Example(models.Model):
 
-    meaning = models.ForeignKey(
-        Meaning,
-        verbose_name=u'значение',
-        help_text=u'Значение, к которому относится данный пример.',
-        blank=True,
-        null=True,
-        )
-        # TODO: это должно быть поле ManyToManyField,
-        # а не FK. Соответственно, оно должно
-        # иметь название во мн.ч. (meaning*s*)
+    meaning = ForeignKey(Meaning, verbose_name=u'значение',
+              help_text=u'Значение, к которому относится данный пример.',
+              blank=True, null=True)
 
-    order = models.SmallIntegerField(
-        u'порядок следования',
-        blank=True,
-        default=345,
-        )
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
+    hidden = BooleanField(u'Скрыть пример', help_text=u'''Не отображать данный
+                          пример при выводе словарной статьи.''',
+                          default=False, editable=False)
 
-    hidden = models.BooleanField(
-        u'Скрыть пример',
-        help_text=u'''Не отображать данный пример
-                        при выводе словарной статьи.''',
-        default=False,
-        editable=False,
-        )
-
-    example = models.TextField(
-        u'пример',
-        )
+    example = TextField(u'пример')
 
     @property
     def example_ucs(self):
         return ucs_convert(self.example)
 
-    context = models.TextField(
-        u'широкий контекст',
-        help_text=u'Более широкий контекст для примера',
-        blank=True,
-        )
+    context = TextField(u'широкий контекст',
+                  help_text=u'Более широкий контекст для примера', blank=True)
 
     @property
     def context_ucs(self):
@@ -1134,26 +821,17 @@ class Example(models.Model):
                 return (x, y, z)
         return (u'', e, u'')
 
-    address_text = models.CharField(
-        u'адрес',
-        max_length=300,
-        blank=True,
-        )
+    address_text = CharField(u'адрес', max_length=300, blank=True)
 
     @property
     def greek_equivs(self):
         return self.greekequivalentforexample_set.all().order_by('id')
 
-    additional_info = models.TextField(
-        u'примечание',
-        help_text=u'''Любая дополнительная информация
-                        по данному ПРИМЕРУ. Дополнительная
-                        информация по значению или лексеме
-                        указывается не здесь, а в аналогичных
-                        полях при значении и лексеме,
-                        соответственно.''',
-        blank=True,
-        )
+    additional_info = TextField(u'примечание', help_text=u'''Любая
+            дополнительная информация по данному ПРИМЕРУ. Дополнительная
+            информация по значению или лексеме указывается не здесь,
+            а в аналогичных полях при значении и лексеме, соответственно.''',
+            blank=True)
 
     GREEK_EQ_STATUS = (
         (u'L', u'следует найти'),   # look for
@@ -1165,17 +843,11 @@ class Example(models.Model):
         (u'U', u'срочное'),         # urgent
         )
 
-    greek_eq_status = models.CharField(
-        u'параллели',
-        max_length=1,
-        choices=GREEK_EQ_STATUS,
-        default=u'L',  # 'L' -- статус "следует найти (греч.параллели)"
-        )
+    greek_eq_status = CharField(u'параллели', max_length=1,
+            choices=GREEK_EQ_STATUS, default=u'L')
+            # 'L' -- статус "следует найти (греч.параллели)"
 
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
+    mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
     def host_entry(self):
@@ -1206,76 +878,35 @@ class Example(models.Model):
 
 class CollocationGroup(models.Model, Meaningfull):
 
-    base_entry = models.ForeignKey(
-        Entry,
-        verbose_name=u'лексема',
-        help_text=u'''Лексема, при которой будет стоять
-                        словосочетание. Если есть возможность указать
-                        конкретное значение, лучше указать вместо лексемы
-                        её конкретное значение.''',
-        related_name='collocationgroup_set',
-        blank=True,
-        null=True,
-        )
+    base_entry = ForeignKey(Entry, verbose_name=u'лексема',
+            help_text=u'''Лексема, при которой будет стоять словосочетание.
+            Если есть возможность указать конкретное значение, лучше указать
+            вместо лексемы её конкретное значение.''',
+            related_name='collocationgroup_set', blank=True, null=True)
 
-    base_meaning = models.ForeignKey(
-        Meaning,
-        verbose_name=u'значение',
-        help_text=u'''Значение, при котором будет стоять
-                        словосочетание.''',
-        related_name='collocationgroup_set',
-        blank=True,
-        null=True,
-        )
+    base_meaning = ForeignKey(Meaning, verbose_name=u'значение',
+            help_text=u'''Значение, при котором будет стоять словосочетание.''',
+            related_name='collocationgroup_set', blank=True, null=True)
 
-    link_to_entry = models.ForeignKey(
-        Entry,
-        verbose_name=u'ссылка на лексему',
-        help_text=u'''Если вместо значений словосочетания
-                        должна быть только ссылка
-                        на словарную статью, укажите её
-                        в данном поле.''',
-        related_name='ref_collogroup_set',
-        blank=True,
-        null=True,
-        )
+    link_to_entry = ForeignKey(Entry, verbose_name=u'ссылка на лексему',
+            help_text=u'''Если вместо значений словосочетания должна быть
+            только ссылка на словарную статью, укажите её в данном поле.''',
+            related_name='ref_collogroup_set', blank=True, null=True)
 
-    link_to_meaning = models.ForeignKey(
-        'Meaning',
-        verbose_name=u'ссылка на значение',
-        help_text=u'''Если вместо значений словосочетания должна быть
-                        только ссылка на опредленное значение лексемы
-                        или словосочетания, укажите его в данном поле.''',
-        related_name='ref_collogroup_set',
-        blank=True,
-        null=True,
-        )
+    link_to_meaning = ForeignKey('Meaning', verbose_name=u'ссылка на значение',
+            help_text=u'''Если вместо значений словосочетания должна быть
+            только ссылка на опредленное значение лексемы или словосочетания,
+            укажите его в данном поле.''', related_name='ref_collogroup_set',
+            blank=True, null=True)
 
-    cf_entries = models.ManyToManyField(
-        Entry,
-        verbose_name=u'ср. (лексемы)',
-        related_name='cf_collogroup_set',
-        blank=True,
-        null=True,
-        )
+    cf_entries = ManyToManyField(Entry, verbose_name=u'ср. (лексемы)',
+            related_name='cf_collogroup_set', blank=True, null=True)
 
-    cf_meanings = models.ManyToManyField(
-        Meaning,
-        verbose_name=u'ср. (значения)',
-        related_name='cf_collogroup_set',
-        blank=True,
-        null=True,
-        )
+    cf_meanings = ManyToManyField(Meaning, verbose_name=u'ср. (значения)',
+            related_name='cf_collogroup_set', blank=True, null=True)
 
-    ctime = models.DateTimeField(
-        editable=False,
-        auto_now_add=True,
-    )
-
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
+    ctime = DateTimeField(editable=False, auto_now_add=True)
+    mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
     def collocations(self):
@@ -1283,7 +914,8 @@ class CollocationGroup(models.Model, Meaningfull):
 
     @property
     def host_entry(self):
-        return self.base_entry or self.base_meaning and self.base_meaning.host_entry
+        return (self.base_entry or
+                self.base_meaning and self.base_meaning.host_entry)
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(CollocationGroup, self).save(*args, **kwargs)
@@ -1301,49 +933,30 @@ class CollocationGroup(models.Model, Meaningfull):
 
 class Collocation(models.Model):
 
-    collogroup = models.ForeignKey(
-        CollocationGroup,
-        verbose_name=u'группа словосочетаний',
-        related_name='collocation_set',
-        )
+    collogroup = ForeignKey(CollocationGroup,
+                            verbose_name=u'группа словосочетаний',
+                            related_name='collocation_set')
 
-    collocation = models.CharField(
-        u'словосочетание',
-        max_length=70,
-        )
+    collocation = CharField(u'словосочетание', max_length=70)
 
     @property
     def collocation_ucs(self):
         return ucs_convert(self.collocation)
 
-    civil_equivalent = models.CharField(
-        u'гражданское написание',
-        max_length=50,
-        blank=True,
-        )
+    civil_equivalent = CharField(u'гражданское написание', max_length=50,
+                                 blank=True)
 
-    order = models.SmallIntegerField(
-        u'порядок следования',
-        blank=True,
-        null=True,
-        )
-
-    examples = models.ManyToManyField(
-        Example,
-        verbose_name=u'примеры употребления',
-        related_name='collocation_set',
-        blank=True,
-        null=True,
-        )
+    order = SmallIntegerField(u'порядок следования', blank=True, null=True)
+    examples = ManyToManyField(Example, verbose_name=u'примеры употребления',
+                    related_name='collocation_set', blank=True, null=True)
 
     @property
     def etymologies(self):
-        return self.etymology_set.filter(etymon_to__isnull=True).order_by('order', 'id')
+        etyms = self.etymology_set
+        etyms = etyms.filter(etymon_to__isnull=True).order_by('order', 'id')
+        return etyms
 
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
+    mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
     def host_entry(self):
@@ -1368,51 +981,23 @@ class Collocation(models.Model):
 
 class GreekEquivalentForMeaning(models.Model):
 
-    for_meaning = models.ForeignKey(Meaning)
+    for_meaning = ForeignKey(Meaning)
+    unitext = CharField(u'греч. параллель (Unicode)', max_length=100,
+                        blank=True)
 
-    unitext = models.CharField(
-        u'греч. параллель (Unicode)',
-        max_length=100,
-        blank=True,
-        )
+    text = CharField(u'греч. параллель (устар.)', max_length=100, blank=True)
+    mark = CharField(u'грамматическая помета', max_length=20, blank=True)
 
-    text = models.CharField(
-        u'греч. параллель (устар.)',
-        max_length=100,
-        blank=True,
-        )
+    source = CharField(u'документальный источник', help_text=u'''Например,
+            Септуагинта или, более узко, разные редакции одного текста.''',
+            max_length=40, blank=True)
 
-    mark = models.CharField(
-        u'грамматическая помета',
-        max_length=20,
-        blank=True,
-        )
+    additional_info = TextField(u'примечание', help_text=u'''Любая
+            дополнительная информация по данному греческому эквиваленту.''',
+            blank=True)
 
-    source = models.CharField(
-        u'документальный источник',
-        help_text=u'''Например, Септуагинта или,
-                        более узко, разные редакции
-                        одного текста.''',
-        max_length=40,
-        blank=True,
-        )
-
-    additional_info = models.TextField(
-        u'примечание',
-        help_text=u'Любая дополнительная информация '
-                    u'по данному греческому эквиваленту.',
-        blank=True,
-        )
-
-    corrupted = models.BooleanField(
-        u'текст испорчен',
-        default=False,
-        )
-
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
+    corrupted = BooleanField(u'текст испорчен', default=False)
+    mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
     def host_entry(self):
@@ -1433,64 +1018,29 @@ class GreekEquivalentForMeaning(models.Model):
 
 class GreekEquivalentForExample(models.Model):
 
-    for_example = models.ForeignKey(Example)
+    for_example = ForeignKey(Example)
+    unitext = CharField(u'греч. параллель (Unicode)', max_length=100,
+                        blank=True)
 
-    unitext = models.CharField(
-        u'греч. параллель (Unicode)',
-        max_length=100,
-        blank=True,
-        )
+    text = CharField(u'греч. параллель (устар.)', max_length=100, blank=True)
+    mark = CharField(u'грамматическая помета', max_length=20, blank=True)
 
-    text = models.CharField(
-        u'греч. параллель (устар.)',
-        max_length=100,
-        blank=True,
-        )
+    source = CharField(u'документальный источник', help_text=u'''Например,
+                       Септуагинта или, более узко, разные редакции одного
+                       текста.''', max_length=40, blank=True)
 
-    mark = models.CharField(
-        u'грамматическая помета',
-        max_length=20,
-        blank=True,
-        )
+    position = PositiveIntegerField(u'позиция в примере', help_text=u'''Номер
+                       слова, после которого следует поставить параллель.''',
+                       blank=True, null=True)
 
-    source = models.CharField(
-        u'документальный источник',
-        help_text=u'''Например, Септуагинта или,
-                        более узко, разные редакции
-                        одного текста.''',
-        max_length=40,
-        blank=True,
-        )
+    initial_form = CharField(u'начальная форма', max_length=100, blank=True)
 
-    position = models.PositiveIntegerField(
-        verbose_name=u'позиция в примере',
-        help_text=u'Номер слова, после которого следует поставить параллель.',
-        blank=True,
-        null=True,
-        )
+    additional_info = TextField(u'примечание', help_text=u'''Любая
+                                дополнительная информация по данному греческому
+                                эквиваленту.''', blank=True)
 
-    initial_form = models.CharField(
-        u'начальная форма',
-        max_length=100,
-        blank=True,
-        )
-
-    additional_info = models.TextField(
-        u'примечание',
-        help_text=u'Любая дополнительная информация '
-                    u'по данному греческому эквиваленту.',
-        blank=True,
-        )
-
-    corrupted = models.BooleanField(
-        u'текст испорчен',
-        default=False,
-        )
-
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
+    corrupted = BooleanField(u'текст испорчен', default=False)
+    mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
     def host_entry(self):
@@ -1512,18 +1062,11 @@ class GreekEquivalentForExample(models.Model):
 class OrthographicVariant(models.Model):
 
     # словарная статья, к которой относится данный орф. вариант
-    entry = models.ForeignKey(
-        Entry,
-        related_name='orthographic_variants',
-        blank=True,
-        null=True,
-        )
+    entry = ForeignKey(Entry, related_name='orthographic_variants', blank=True,
+                       null=True)
 
     # сам орфографический вариант
-    idem = models.CharField(
-        u'написание',
-        max_length=50,
-        )
+    idem = CharField(u'написание', max_length=50)
 
     @property
     def idem_ucs(self):
@@ -1533,21 +1076,9 @@ class OrthographicVariant(models.Model):
     def idem_letter_ucs(self):
         return ucs_convert_affix(self.idem.lower())
 
-    order = models.SmallIntegerField(
-        u'порядок следования',
-        blank=True,
-        null=True,
-        )
-
-    no_ref_entry = models.BooleanField(
-        u'Не делать отсылочной статьи',
-        default=False,
-        )
-
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
+    order = SmallIntegerField(u'порядок следования', blank=True, null=True)
+    no_ref_entry = BooleanField(u'Не делать отсылочной статьи', default=False)
+    mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
     def host_entry(self):
@@ -1573,11 +1104,7 @@ class OrthographicVariant(models.Model):
 class Participle(models.Model):
 
     # словарная статья, к которой относится данная словоформа
-    entry = models.ForeignKey(
-        Entry,
-        blank=True,
-        null=True,
-        )
+    entry = ForeignKey(Entry, blank=True, null=True)
 
     PARTICIPLE_CHOICES = (
         ('1', u'действ. прич. наст. вр.'),
@@ -1586,32 +1113,15 @@ class Participle(models.Model):
         ('4', u'страд. прич. прош. вр.'),
     )
 
-    tp = models.CharField(
-        u'тип причастия',
-        max_length=2,
-        choices=PARTICIPLE_CHOICES,
-    )
-
-    # сама словоформа
-    idem = models.CharField(
-        u'словоформа',
-        max_length=50,
-        )
+    tp = CharField(u'тип причастия', max_length=2, choices=PARTICIPLE_CHOICES)
+    idem = CharField(u'словоформа', max_length=50)
 
     @property
     def idem_ucs(self):
         return ucs_convert(self.idem)
 
-    order = models.SmallIntegerField(
-        u'порядок следования',
-        blank=True,
-        null=True,
-        )
-
-    mtime = models.DateTimeField(
-        editable=False,
-        auto_now=True,
-    )
+    order = SmallIntegerField(u'порядок следования', blank=True, null=True)
+    mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
     def host_entry(self):
