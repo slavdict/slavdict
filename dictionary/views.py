@@ -30,7 +30,6 @@ from dictionary.forms import FilterEntriesForm
 from dictionary.forms import FilterExamplesForm
 from dictionary.models import civilrus_convert
 from dictionary.models import Entry
-from dictionary.models import entry_dict
 from dictionary.models import Etymology
 from dictionary.models import Example
 from dictionary.models import GreekEquivalentForExample
@@ -277,10 +276,6 @@ def import_csv_billet(request):
                         else:
                             raise NameError(u"Автор, указанный в CSV-файле, не найден среди участников работы над словарём.")
 
-                    entry_args = entry_dict.copy() # Поверхностная (!) копия словаря.
-                    entry_args['status'] = 'c' # 'c' -- статус статьи "Статья создана"
-                    # Все булевские переменные уже выставлены по умолчанию в False в entry_dict
-
                     # Если поле с гражданским эквивалентом пусто, то берем конвертацию в гражданку заглавного слова.
                     # Если же это поле заполнено, то берём его без изменений. С практической точки зрения это значит,
                     # что в CSV-файле можно не указывать гражданку для слов без титл, они автоматом должны хорошо
@@ -300,14 +295,14 @@ def import_csv_billet(request):
                         'duplicate': bool(duplicate),
                     }
 
+                    entry = Entry()
                     if not intersection or (force == 'add'):
-                        entry_args.update(from_csv)
-                        entry_args.update({
+                        entry.__dict__.update(from_csv)
+                        entry.__dict__.update({
                             'reconstructed_headword': orthvars_list[0][1],
                             'questionable_headword': orthvars_list[0][2],
                             })
 
-                        entry = Entry.objects.create(**entry_args)
                         entry.save()
 
                         for i in orthvars_list:
