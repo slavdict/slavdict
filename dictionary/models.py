@@ -1,17 +1,26 @@
 # -*- coding: UTF-8 -*-
 import datetime
+
+from django.db import models
+
 from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
 from hip2unicode.conversions import antconc_ucs8
 from hip2unicode.conversions import antconc_ucs8_without_aspiration
 from hip2unicode.conversions import antconc_civilrus
 
-compiled_conversion_with_aspiration = compile_conversion(antconc_ucs8.conversion)
-compiled_conversion_without_aspiration = compile_conversion(antconc_ucs8_without_aspiration.conversion)
+from slavdict.custom_user.models import CustomUser
+
+compiled_conversion_with_aspiration = compile_conversion(
+        antconc_ucs8.conversion)
+compiled_conversion_without_aspiration = compile_conversion(
+        antconc_ucs8_without_aspiration.conversion)
 compiled_conversion_civil = compile_conversion(antconc_civilrus.conversion)
+
 
 def ucs_convert(text):
     return convert(text, compiled_conversion_with_aspiration)
+
 
 def ucs_convert_affix(text):
     """
@@ -26,8 +35,10 @@ def ucs_convert_affix(text):
         return convert(text, compiled_conversion_without_aspiration)
     return text
 
+
 def civilrus_convert(word):
     return convert(word, compiled_conversion_civil)
+
 
 def ucs_affix_or_word(atr):
     """
@@ -53,14 +64,12 @@ def ucs_affix_or_word(atr):
     """
     if atr:
         if atr[0] == u'-':
-            return ( True, ucs_convert_affix( atr[1:] ) )
+            return (True, ucs_convert_affix(atr[1:]))
         else:
-            return ( False, ucs_convert(atr) )
+            return (False, ucs_convert(atr))
     else:
         return atr
 
-from django.db import models
-from custom_user.models import CustomUser
 
 class Meaningfull:
     """
@@ -91,169 +100,170 @@ class Meaningfull:
 
 
 PART_OF_SPEECH_CHOICES = (
-        ('a', u'сущ.'),
-        ('b', u'прил.'),
-        ('c', u'мест.'),
-        ('d', u'гл.'),
-        ('e', u'[прич.]'),
-        ('f', u'нареч.'),
-        ('g', u'союз'),
-        ('h', u'предл.'),
-        ('i', u'част.'),
-        ('j', u'межд.'),
-        ('k', u'[число]'),
-        ('l', u'[буква]'),
-        )
+    ('a', u'сущ.'),
+    ('b', u'прил.'),
+    ('c', u'мест.'),
+    ('d', u'гл.'),
+    ('e', u'[прич.]'),
+    ('f', u'нареч.'),
+    ('g', u'союз'),
+    ('h', u'предл.'),
+    ('i', u'част.'),
+    ('j', u'межд.'),
+    ('k', u'[число]'),
+    ('l', u'[буква]'),
+)
 PART_OF_SPEECH_MAP = {
-        'noun': 'a',
-        'adjective': 'b',
-        'pronoun': 'c',
-        'verb': 'd',
-        'participle': 'e',
-        'adverb': 'f',
-        'conjunction': 'g',
-        'adposition': 'h',
-        'particle': 'i',
-        'interjection': 'j',
-        'number': 'k',
-        'letter': 'l',
-        }
+    'noun': 'a',
+    'adjective': 'b',
+    'pronoun': 'c',
+    'verb': 'd',
+    'participle': 'e',
+    'adverb': 'f',
+    'conjunction': 'g',
+    'adposition': 'h',
+    'particle': 'i',
+    'interjection': 'j',
+    'number': 'k',
+    'letter': 'l',
+}
 
 TANTUM_CHOICES = (
-        ('s', u'только ед.'),
-        ('d', u'только дв.'),
-        ('p', u'только мн.'),
-        )
+    ('s', u'только ед.'),
+    ('d', u'только дв.'),
+    ('p', u'только мн.'),
+)
 TANTUM_MAP = {
-        'singulareTantum': 's',
-        'dualeTantum': 'd',
-        'pluraleTantum': 'p',
-        }
+    'singulareTantum': 's',
+    'dualeTantum': 'd',
+    'pluraleTantum': 'p',
+}
 
 GENDER_CHOICES = (
-        ('m', u'м.'),
-        ('f', u'ж.'),
-        ('n', u'ср.'),
-        )
+    ('m', u'м.'),
+    ('f', u'ж.'),
+    ('n', u'ср.'),
+)
 GENDER_MAP = {
-        'masculine': 'm',
-        'feminine': 'f',
-        'neutral': 'n',
-        }
+    'masculine': 'm',
+    'feminine': 'f',
+    'neutral': 'n',
+}
 
 ONYM_CHOICES = (
-        ('a', u'имя'),
-        ('b', u'топоним'),
-        ('c', u'народ/общность людей'),
-        ('d', u'[другое]'),
-        )
+    ('a', u'имя'),
+    ('b', u'топоним'),
+    ('c', u'народ/общность людей'),
+    ('d', u'[другое]'),
+)
 ONYM_MAP = {
-        'anthroponym': 'a',
-        'toponym': 'b',
-        'ethnonym': 'c',
-        'other': 'd',
-        }
+    'anthroponym': 'a',
+    'toponym': 'b',
+    'ethnonym': 'c',
+    'other': 'd',
+}
 
 TRANSITIVITY_CHOICES = (
-        ('t', u'перех.'),
-        ('i', u'неперех.'),
-        )
+    ('t', u'перех.'),
+    ('i', u'неперех.'),
+)
 TRANSITIVITY_MAP = {
-        'transitive': 't',
-        'intransitive': 'i',
-        }
+    'transitive': 't',
+    'intransitive': 'i',
+}
 
 PARTICIPLE_TYPE_CHOICES = (
-        ('a', u'действ. прич. наст. вр.'),
-        ('b', u'действ. прич. прош. вр.'),
-        ('c', u'страд. прич. наст. вр.'),
-        ('d', u'страд. прич. прош. вр.'),
-        )
+    ('a', u'действ. прич. наст. вр.'),
+    ('b', u'действ. прич. прош. вр.'),
+    ('c', u'страд. прич. наст. вр.'),
+    ('d', u'страд. прич. прош. вр.'),
+)
 PARTICIPLE_TYPE_MAP = {
-        'pres_act': 'a',
-        'perf_act': 'b',
-        'pres_pass': 'c',
-        'perf_pass': 'd',
-        }
+    'pres_act': 'a',
+    'perf_act': 'b',
+    'pres_pass': 'c',
+    'perf_pass': 'd',
+}
 
 STATUS_CHOICES = (
-        ('c', u'создана'),
-        ('w', u'в работе'),
-        ('g', u'поиск греч.'),
-        ('f', u'завершена'),
-        ('e', u'редактируется'),
-        ('a', u'утверждена'),
-        ('i', u'импортирована'),
-        )
+    ('c', u'создана'),
+    ('w', u'в работе'),
+    ('g', u'поиск греч.'),
+    ('f', u'завершена'),
+    ('e', u'редактируется'),
+    ('a', u'утверждена'),
+    ('i', u'импортирована'),
+)
 STATUS_MAP = {
-        'created': 'c',
-        'inWork': 'w',
-        'greek': 'g',
-        'finished': 'f',
-        'beingEdited': 'e',
-        'approved': 'a',
-        'imported': 'i',
-        }
+    'created': 'c',
+    'inWork': 'w',
+    'greek': 'g',
+    'finished': 'f',
+    'beingEdited': 'e',
+    'approved': 'a',
+    'imported': 'i',
+}
 
 LANGUAGE_CHOICES = (
-        ('a', u'греч.'),
-        ('b', u'ивр.'),
-        ('c', u'аккад.'),
-        ('d', u'арам.'),
-        ('e', u'арм.'),
-        ('f', u'груз.'),
-        ('g', u'копт.'),
-        ('h', u'лат.'),
-        ('i', u'сир.'),
-        )
+    ('a', u'греч.'),
+    ('b', u'ивр.'),
+    ('c', u'аккад.'),
+    ('d', u'арам.'),
+    ('e', u'арм.'),
+    ('f', u'груз.'),
+    ('g', u'копт.'),
+    ('h', u'лат.'),
+    ('i', u'сир.'),
+)
 LANGUAGE_MAP = {
-        'greek': 'a',
-        'hebrew': 'b',
-        'akkadian': 'c',
-        'aramaic': 'd',
-        'armenian': 'e',
-        'georgian': 'f',
-        'coptic': 'g',
-        'latin': 'h',
-        'syriac': 'i',
-        }
+    'greek': 'a',
+    'hebrew': 'b',
+    'akkadian': 'c',
+    'aramaic': 'd',
+    'armenian': 'e',
+    'georgian': 'f',
+    'coptic': 'g',
+    'latin': 'h',
+    'syriac': 'i',
+}
 LANGUAGE_CSS = {
-        LANGUAGE_MAP['greek']:    'grec',
-        LANGUAGE_MAP['hebrew']:   'hebrew',
+        LANGUAGE_MAP['greek']: 'grec',
+        LANGUAGE_MAP['hebrew']: 'hebrew',
         LANGUAGE_MAP['akkadian']: 'akkadian',
-        LANGUAGE_MAP['aramaic']:  'aramaic',
+        LANGUAGE_MAP['aramaic']: 'aramaic',
         LANGUAGE_MAP['armenian']: 'armenian',
         LANGUAGE_MAP['georgian']: 'georgian',
-        LANGUAGE_MAP['coptic']:   'coptic',
-        LANGUAGE_MAP['latin']:    '',
-        LANGUAGE_MAP['syriac']:   'syriac',
-        }
+        LANGUAGE_MAP['coptic']: 'coptic',
+        LANGUAGE_MAP['latin']: '',
+        LANGUAGE_MAP['syriac']: 'syriac',
+}
 LANGUAGE_TRANSLIT_CSS = {
-        LANGUAGE_MAP['greek']:    '',
-        LANGUAGE_MAP['hebrew']:   'hebrew-translit',
+        LANGUAGE_MAP['greek']: '',
+        LANGUAGE_MAP['hebrew']: 'hebrew-translit',
         LANGUAGE_MAP['akkadian']: '',
-        LANGUAGE_MAP['aramaic']:  'aramaic-translit',
+        LANGUAGE_MAP['aramaic']: 'aramaic-translit',
         LANGUAGE_MAP['armenian']: '',
         LANGUAGE_MAP['georgian']: '',
-        LANGUAGE_MAP['coptic']:   '',
-        LANGUAGE_MAP['latin']:    '',
-        LANGUAGE_MAP['syriac']:   'syriac-translit',
-        }
+        LANGUAGE_MAP['coptic']: '',
+        LANGUAGE_MAP['latin']: '',
+        LANGUAGE_MAP['syriac']: 'syriac-translit',
+}
 
 SUBSTANTIVUS_TYPE_CHOICES = (
-        ('a', u'ср.ед.'),
-        ('b', u'ср.мн.'),
-        )
+    ('a', u'ср.ед.'),
+    ('b', u'ср.мн.'),
+)
 SUBSTANTIVUS_TYPE_MAP = {
-        'n.sg.': 'a',
-        'n.pl.': 'b',
-        }
+    'n.sg.': 'a',
+    'n.pl.': 'b',
+}
+
 
 class Entry(models.Model, Meaningfull):
 
     civil_equivalent = models.CharField(
         u'гражданское написание',
-        max_length = 50,
+        max_length=50,
         )
 
     @property
@@ -266,48 +276,48 @@ class Entry(models.Model, Meaningfull):
 
     reconstructed_headword = models.BooleanField(
         u'Заглавное слово реконструировано',
-        default = False,
+        default=False,
         )
 
     questionable_headword = models.BooleanField(
         u'Реконструкция заглавного слова вызывает сомнения',
-        default = False,
+        default=False,
         )
 
     hidden = models.BooleanField(
         u'Скрыть лексему',
-        help_text = u'Не отображать лексему в списке словарных статей.',
-        default = False,
-        editable = False,
+        help_text=u'Не отображать лексему в списке словарных статей.',
+        default=False,
+        editable=False,
         )
 
     homonym_order = models.SmallIntegerField(
         u'номер омонима',
-        help_text = u'''Арабская цифра, например, 1, 2, 3...
+        help_text=u'''Арабская цифра, например, 1, 2, 3...
                         Поле заполняется только при наличии
                         нескольких омонимов.''',
-        blank = True,
-        null = True,
+        blank=True,
+        null=True,
         )
 
     homonym_gloss = models.CharField(
         u'подсказка',
-        max_length = 40,
-        help_text = u'''Пояснение для различения омонимов, например:
+        max_length=40,
+        help_text=u'''Пояснение для различения омонимов, например:
                         «предварять» для ВАРИТИ I или «варить» для ВАРИТИ II.
                         Предполагается использовать только для служебных
                         целей, а не для отображения при словарных статьях.''',
-        blank = True,
+        blank=True,
         )
 
     duplicate = models.BooleanField(
         u'дубликат',
-        help_text = u'''В нормальном случае дубликатов словарных статей быть
+        help_text=u'''В нормальном случае дубликатов словарных статей быть
                         не должно. Они возникают только в результате
                         недосмотра при создании новый статей вручную или
                         в результате недостаточно хороших проверок при
                         автоматизированном импорте заготовок статей.''',
-        default = False,
+        default=False,
         )
 
     part_of_speech = models.CharField(u'часть речи', max_length=1,
@@ -317,14 +327,14 @@ class Entry(models.Model, Meaningfull):
         return PART_OF_SPEECH_MAP[slug] == self.part_of_speech
 
     uninflected = models.BooleanField(
-        u'неизменяемое', # Для сущ. и прил.
-        default = False,
+        u'неизменяемое',  # Для сущ. и прил.
+        default=False,
         )
 
     word_forms_list = models.TextField(
         u'список словоформ',
-        help_text = u'Список словоформ через запятую',
-        blank = True,
+        help_text=u'Список словоформ через запятую',
+        blank=True,
         )
 
     # только для существительных
@@ -342,8 +352,8 @@ class Entry(models.Model, Meaningfull):
 
     genitive = models.CharField(
         u'форма Р. падежа',
-        max_length = 10,
-        blank = True,
+        max_length=10,
+        blank=True,
         )
 
     @property
@@ -359,27 +369,27 @@ class Entry(models.Model, Meaningfull):
 
     canonical_name = models.BooleanField(
         u'каноническое',
-        default = False,
+        default=False,
         )
 
     nom_sg = models.CharField(
         u'И.ед.м.',
-        help_text = u'''Только для этнонимов
+        help_text=u'''Только для этнонимов
                         (например, в словарной статье АГАРЯНЕ,
                         здесь -- АГАРЯНИН).''',
-        max_length = 25,
-        blank = True,
-        null = True,
+        max_length=25,
+        blank=True,
+        null=True,
         )
 
     nom_pl = models.CharField(
         u'И.мн.',
-        help_text = u'''Только для этнонимов
+        help_text=u'''Только для этнонимов
                         (например, в словарной статье АГАРЯНИН,
                         здесь -- АГАРЯНЕ).''',
-        max_length = 25,
-        blank = True,
-        null = True,
+        max_length=25,
+        blank=True,
+        null=True,
         )
 
     @property
@@ -395,10 +405,10 @@ class Entry(models.Model, Meaningfull):
         # Это поле, по идее, в последствии должно стать FK
         # или даже MtM с приявязкой к WordForm.
         u'краткая форма',
-        help_text = u'''Если Вы указываете не всё слово,
+        help_text=u'''Если Вы указываете не всё слово,
                         а только его часть, предваряйте её дефисом.''',
-        max_length = 30,
-        blank = True,
+        max_length=30,
+        blank=True,
         )
 
     @property
@@ -407,8 +417,8 @@ class Entry(models.Model, Meaningfull):
 
     possessive = models.BooleanField(
         u'притяжательное',
-        default = False,
-        help_text = u'Притяжательное прилагательное.',
+        default=False,
+        help_text=u'Притяжательное прилагательное.',
         )
 
     # только для глаголов
@@ -421,9 +431,9 @@ class Entry(models.Model, Meaningfull):
 
     sg1 = models.CharField(
         u'форма 1 ед.',
-        max_length = 30,
-        blank = True,
-        help_text = u'''Целая словоформа или окончание.
+        max_length=30,
+        blank=True,
+        help_text=u'''Целая словоформа или окончание.
                         В случае окончания первым
                         символом должен идти дефис.''',
         )
@@ -434,9 +444,9 @@ class Entry(models.Model, Meaningfull):
 
     sg2 = models.CharField(
         u'форма 2 ед.',
-        max_length = 30,
-        blank = True,
-        help_text = u'''Целая словоформа или окончание.
+        max_length=30,
+        blank=True,
+        help_text=u'''Целая словоформа или окончание.
                         В случае окончания первым
                         символом должен идти дефис.''',
         )
@@ -454,70 +464,70 @@ class Entry(models.Model, Meaningfull):
 
     derivation_entry = models.ForeignKey(
         'self',
-        verbose_name = u'образовано от',
-        related_name = 'derived_entry_set',
-        blank = True,
-        null = True,
+        verbose_name=u'образовано от',
+        related_name='derived_entry_set',
+        blank=True,
+        null=True,
         )
 
     link_to_entry = models.ForeignKey(
         'self',
-        verbose_name = u'ссылка на другую лексему',
-        help_text = u'''Если вместо значений словарная статья
+        verbose_name=u'ссылка на другую лексему',
+        help_text=u'''Если вместо значений словарная статья
                         должна содержать только ссылку
                         на другую словарную статью,
                         укажите её в данном поле.''',
-        related_name = 'ref_entry_set',
-        blank = True,
-        null = True,
+        related_name='ref_entry_set',
+        blank=True,
+        null=True,
         )
 
     link_to_collogroup = models.ForeignKey(
         'CollocationGroup',
-        verbose_name = u'ссылка на словосочетание',
-        help_text = u'''Если вместо значений словарная статья
+        verbose_name=u'ссылка на словосочетание',
+        help_text=u'''Если вместо значений словарная статья
                         должна содержать только ссылку
                         на словосочетание,
                         укажите его в данном поле.''',
-        related_name = 'ref_entry_set',
-        blank = True,
-        null = True,
+        related_name='ref_entry_set',
+        blank=True,
+        null=True,
         )
 
     link_to_meaning = models.ForeignKey(
         'Meaning',
-        verbose_name = u'ссылка на значение',
-        help_text = u'''Если вместо значений словарная статья должна
+        verbose_name=u'ссылка на значение',
+        help_text=u'''Если вместо значений словарная статья должна
                         содержать только ссылку на опредленное значение лексемы
                         или словосочетания, укажите его в данном поле.''',
-        related_name = 'ref_entry_set',
-        blank = True,
-        null = True,
+        related_name='ref_entry_set',
+        blank=True,
+        null=True,
         )
 
     cf_entries = models.ManyToManyField(
         'self',
-        verbose_name = u'ср. (лексемы)',
-        related_name = 'cf_entry_set',
-        symmetrical = False,
-        blank = True,
-        null = True,
+        verbose_name=u'ср. (лексемы)',
+        related_name='cf_entry_set',
+        symmetrical=False,
+        blank=True,
+        null=True,
         )
 
     cf_collogroups = models.ManyToManyField(
         'CollocationGroup',
-        verbose_name = u'ср. (группы слововосочетаний)',
-        related_name = 'cf_entry_set',
-        blank = True,
-        null = True,
+        verbose_name=u'ср. (группы слововосочетаний)',
+        related_name='cf_entry_set',
+        blank=True,
+        null=True,
         )
 
     cf_meanings = models.ManyToManyField(
         'Meaning',
-        verbose_name = u'ср. (значения)',
-        related_name = 'cf_entry_set',
-        blank = True,
-        null = True,
+        verbose_name=u'ср. (значения)',
+        related_name='cf_entry_set',
+        blank=True,
+        null=True,
         )
 
     @property
@@ -534,20 +544,20 @@ class Entry(models.Model, Meaningfull):
 
     additional_info = models.TextField(
         u'примечание к статье',
-        help_text = u'''Любая дополнительная информация по данной ЛЕКСЕМЕ.
+        help_text=u'''Любая дополнительная информация по данной ЛЕКСЕМЕ.
                         Дополнительная информация по значению лексемы или
                         примеру на значение указывается не здесь,
                         а в аналогичных полях при значении и примере,
                         соответственно.''',
-        blank = True,
+        blank=True,
         )
 
     examples = models.ManyToManyField(
         'Example',
-        verbose_name = u'примеры употребления',
-        related_name = 'entry_set',
-        blank = True,
-        null = True,
+        verbose_name=u'примеры употребления',
+        related_name='entry_set',
+        blank=True,
+        null=True,
         )
 
     @property
@@ -571,19 +581,19 @@ class Entry(models.Model, Meaningfull):
 
     percent_status = models.PositiveSmallIntegerField(
         u'статус готовности статьи в процентах',
-        default = 0,
+        default=0,
         )
 
     editor = models.ForeignKey(
         CustomUser,
-        verbose_name = u'автор статьи',
-        blank = True,
-        null = True,
+        verbose_name=u'автор статьи',
+        blank=True,
+        null=True,
         )
 
     antconc_query = models.TextField(
         u'Запрос для программы AntConc',
-        blank = True,
+        blank=True,
         )
 
     mtime = models.DateTimeField(
@@ -599,9 +609,9 @@ class Entry(models.Model, Meaningfull):
         u'Годность статьи для показа',
         max_length=1,
         choices=(
-            (u'b', u'не подходит'), # bad
-            (u's', u'возможно, подходит'), # so so
-            (u'g', u'подходит'), # good
+            (u'b', u'не подходит'),  # bad
+            (u's', u'возможно, подходит'),  # so so
+            (u'g', u'подходит'),  # good
         ),
         default=u'b',
     )
@@ -612,7 +622,7 @@ class Entry(models.Model, Meaningfull):
 
     def save(self, without_mtime=False, *args, **kwargs):
         if not without_mtime:
-            self.mtime=datetime.datetime.now()
+            self.mtime = datetime.datetime.now()
         super(Entry, self).save(*args, **kwargs)
 
     def __unicode__(self):
@@ -629,35 +639,35 @@ class Etymology(models.Model):
     entry = models.ForeignKey(
         # может MtM
         Entry,
-        verbose_name = u'словарная статья',
-        help_text = u'''Словарная статья, к которой
+        verbose_name=u'словарная статья',
+        help_text=u'''Словарная статья, к которой
                         относится данная этимология.''',
-        blank = True,
-        null = True,
+        blank=True,
+        null=True,
         )
 
     collocation = models.ForeignKey(
         'Collocation',
-        verbose_name = u'словосочетание',
-        help_text = u'''Словосочетание, к которому
+        verbose_name=u'словосочетание',
+        help_text=u'''Словосочетание, к которому
                         относится данная этимология.''',
-        blank = True,
-        null = True,
+        blank=True,
+        null=True,
         )
 
     order = models.SmallIntegerField(
         u'порядок следования',
-        blank = True,
-        null = True,
+        blank=True,
+        null=True,
         )
 
     etymon_to = models.ForeignKey(
         'self',
-        verbose_name = u'этимон для',
-        help_text = u'Возможный/несомненный этимон для другого этимона, который и необходимо указать.',
-        related_name = 'etymon_set',
-        blank = True,
-        null = True,
+        verbose_name=u'этимон для',
+        help_text=u'Возможный/несомненный этимон для другого этимона, который и необходимо указать.',
+        related_name='etymon_set',
+        blank=True,
+        null=True,
         )
 
     @property
@@ -678,65 +688,65 @@ class Etymology(models.Model):
 
     text = models.CharField(
         u'языковой эквивалент',
-        max_length = 40,
-        blank = True,
+        max_length=40,
+        blank=True,
         )
 
     unitext = models.CharField(
         u'языковой эквивалент (Unicode)',
-        max_length = 40,
-        blank = True,
+        max_length=40,
+        blank=True,
         )
 
     translit = models.CharField(
         u'транслитерация',
-        max_length = 40,
-        blank = True,
+        max_length=40,
+        blank=True,
         )
 
     meaning = models.CharField(
         u'перевод',
-        max_length = 70,
-        blank = True,
+        max_length=70,
+        blank=True,
         )
 
     gloss = models.CharField(
         u'пояснение',
-        max_length = 70,
-        blank = True,
+        max_length=70,
+        blank=True,
         )
 
     source = models.CharField(
         u'документальный источник',
-        help_text = u'например, Септуагинта',
-        max_length = 40,
-        blank = True,
+        help_text=u'например, Септуагинта',
+        max_length=40,
+        blank=True,
         )
 
     unclear = models.BooleanField(
         u'этимология неясна',
-        default = False,
+        default=False,
         )
 
     questionable = models.BooleanField(
         u'этимология спорна',
-        default = False,
+        default=False,
         )
 
     mark = models.CharField(
         u'грамматическая помета',
-        max_length = 20,
-        blank = True,
+        max_length=20,
+        blank=True,
         )
 
     additional_info = models.TextField(
         u'примечание',
-        blank = True,
+        blank=True,
         )
 
     corrupted = models.BooleanField(
         u'текст испорчен',
-        default = False,
+        default=False,
         )
 
     mtime = models.DateTimeField(
@@ -779,35 +789,35 @@ class MeaningContext(models.Model):
 
     meaning = models.ForeignKey(
         'Meaning',
-        verbose_name = u'значение',
+        verbose_name=u'значение',
         )
 
     order = models.SmallIntegerField(
         u'порядок следования',
-        blank = True,
-        null = True,
+        blank=True,
+        null=True,
         )
 
     left_text = models.CharField(
         u'дополнительный текст слева',
-        max_length = 50,
-        help_text = u'''Здесь указывается текст на <span class="green">русском</span> языке.
+        max_length=50,
+        help_text=u'''Здесь указывается текст на <span class="green">русском</span> языке.
                         Например, если необходим контекст «<span class="civil">+</span
                         >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
                         в данное поле добавляется текст&nbsp;«<span class="typing">+</span>».''',
-        blank = True,
+        blank=True,
         # пока непонятно будет ли это поле использоваться, т.к.
         # для правых контекстов плюс слева будет добавляться автоматически.
         )
 
     context = models.CharField(
         u'текст контекста',
-        max_length = 40,
-        help_text = u'''Здесь указывается <span class="green">церковнославянский</span> текст.
+        max_length=40,
+        help_text=u'''Здесь указывается <span class="green">церковнославянский</span> текст.
                         Например, если необходим контекст «<span class="civil">+</span
                         >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
                         в данное поле добавляется текст&nbsp;«<span class="typing">къ</span>».''',
-        blank = True,
+        blank=True,
         )
 
     @property
@@ -816,12 +826,12 @@ class MeaningContext(models.Model):
 
     right_text = models.CharField(
         u'дополнительный текст справа',
-        max_length = 50,
-        help_text = u'''Здесь указывается текст на <span class="green">русском</span> языке.
+        max_length=50,
+        help_text=u'''Здесь указывается текст на <span class="green">русском</span> языке.
                         Например, если необходим контекст «<span class="civil">+</span
                         >&nbsp;<span class="cslav">къ</span>&nbsp;<span class="civil">кому/чему</span>»,
                         в данное поле добавляется текст&nbsp;«<span class="typing">кому/чему</span>».''',
-        blank = True,
+        blank=True,
         )
 
     mtime = models.DateTimeField(
@@ -855,107 +865,107 @@ class Meaning(models.Model):
 
     entry_container = models.ForeignKey(
         Entry,
-        blank = True,
-        null = True,
-        verbose_name = u'лексема',
-        help_text = u'''Лексема, к которой относится значение.
+        blank=True,
+        null=True,
+        verbose_name=u'лексема',
+        help_text=u'''Лексема, к которой относится значение.
                         Выберите, только если значение
                         не относится к словосочетанию.''',
-        related_name = 'meaning_set',
+        related_name='meaning_set',
         )
 
     collogroup_container = models.ForeignKey(
         'CollocationGroup',
-        blank = True,
-        null = True,
-        verbose_name = u'словосочетание',
-        help_text = u'''Словосочетание,
+        blank=True,
+        null=True,
+        verbose_name=u'словосочетание',
+        help_text=u'''Словосочетание,
                         к которому относится значение.
                         Выберите, только если значение
                         не относится к конкретной лексеме.''',
-        related_name = 'meaning_set',
+        related_name='meaning_set',
         )
 
     order = models.SmallIntegerField(
         u'порядок следования',
-        blank = True,
-        default = 345,
+        blank=True,
+        default=345,
         )
 
     parent_meaning = models.ForeignKey(
         'self',
-        verbose_name = u'родительское значение',
-        related_name = 'child_meaning_set',
-        blank = True,
-        null = True,
+        verbose_name=u'родительское значение',
+        related_name='child_meaning_set',
+        blank=True,
+        null=True,
         )
 
     hidden = models.BooleanField(
         u'Скрыть значение',
-        help_text = u'''Не отображать данное значение
+        help_text=u'''Не отображать данное значение
                         при выводе словарной статьи.''',
-        default = False,
-        editable = False,
+        default=False,
+        editable=False,
         )
 
     link_to_meaning = models.ForeignKey(
         'self',
-        verbose_name = u'ссылка на значение',
-        help_text = u'''Если значение должно вместо текста
+        verbose_name=u'ссылка на значение',
+        help_text=u'''Если значение должно вместо текста
                         содержать только ссылку на другое
                         значение некоторой лексемы или
                         словосочетания,
                         укажите её в данном поле.''',
-        related_name = 'ref_meaning_set',
-        blank = True,
-        null = True,
+        related_name='ref_meaning_set',
+        blank=True,
+        null=True,
         )
 
     link_to_entry = models.ForeignKey(
         Entry,
-        verbose_name = u'ссылка на лексему',
-        help_text = u'''Если вместо значения
+        verbose_name=u'ссылка на лексему',
+        help_text=u'''Если вместо значения
                         должна быть только ссылка
                         на другую словарную статью,
                         укажите её в данном поле.''',
-        related_name = 'ref_meaning_set',
-        blank = True,
-        null = True,
+        related_name='ref_meaning_set',
+        blank=True,
+        null=True,
         )
 
     link_to_collogroup = models.ForeignKey(
         'CollocationGroup',
-        verbose_name = u'ссылка на словосочетание',
-        help_text = u'''Если вместо значения должна быть только ссылка
+        verbose_name=u'ссылка на словосочетание',
+        help_text=u'''Если вместо значения должна быть только ссылка
                         на целое словосочетание.''',
-        related_name = 'ref_meaning_set',
-        blank = True,
-        null = True,
+        related_name='ref_meaning_set',
+        blank=True,
+        null=True,
         )
 
     cf_entries = models.ManyToManyField(
         Entry,
-        verbose_name = u'ср. (лексемы)',
-        related_name = 'cf_meaning_set',
-        blank = True,
-        null = True,
+        verbose_name=u'ср. (лексемы)',
+        related_name='cf_meaning_set',
+        blank=True,
+        null=True,
         )
 
     cf_collogroups = models.ManyToManyField(
         'CollocationGroup',
-        verbose_name = u'ср. (группы слововосочетаний)',
-        related_name = 'cf_meaning_set',
-        blank = True,
-        null = True,
+        verbose_name=u'ср. (группы слововосочетаний)',
+        related_name='cf_meaning_set',
+        blank=True,
+        null=True,
         )
 
     cf_meanings = models.ManyToManyField(
         'self',
-        verbose_name = u'ср. (значения)',
-        related_name = 'cf_meaning_set',
-        symmetrical = False,
-        blank = True,
-        null = True,
+        verbose_name=u'ср. (значения)',
+        related_name='cf_meaning_set',
+        symmetrical=False,
+        blank=True,
+        null=True,
         )
 
     @property
@@ -972,21 +982,21 @@ class Meaning(models.Model):
 
     metaphorical = models.BooleanField(
         u'метафорическое',
-        default = False,
+        default=False,
         )
 
     meaning = models.TextField(
         u'значение',
-        blank = True,
+        blank=True,
         )
 
     gloss = models.TextField(
         u'пояснение',
-        help_text = u'''Для неметафорических употреблений/прямых значений
+        help_text=u'''Для неметафорических употреблений/прямых значений
                         здесь указывается энциклопедическая информация.
                         Для метафорических/переносных -- (?) разнообразная
                         дополнительная информация, комментарии к употреблению.''',
-        blank = True,
+        blank=True,
         )
 
     substantivus = models.BooleanField(u'в роли сущ.')
@@ -1000,12 +1010,12 @@ class Meaning(models.Model):
 
     additional_info = models.TextField(
         u'примечание',
-        help_text = u'''Любая дополнительная информация по данному
+        help_text=u'''Любая дополнительная информация по данному
                         ЗНАЧЕНИЮ. Дополнительная информация по примеру
                         на значение или лексеме указывается не здесь,
                         а в аналогичных полях при примере и лексеме,
                         соответственно.''',
-        blank = True,
+        blank=True,
         )
 
     @property
@@ -1070,16 +1080,14 @@ class Meaning(models.Model):
         ordering = ('id',)
 
 
-
-
 class Example(models.Model):
 
     meaning = models.ForeignKey(
         Meaning,
-        verbose_name = u'значение',
-        help_text = u'Значение, к которому относится данный пример.',
-        blank = True,
-        null = True,
+        verbose_name=u'значение',
+        help_text=u'Значение, к которому относится данный пример.',
+        blank=True,
+        null=True,
         )
         # TODO: это должно быть поле ManyToManyField,
         # а не FK. Соответственно, оно должно
@@ -1087,16 +1095,16 @@ class Example(models.Model):
 
     order = models.SmallIntegerField(
         u'порядок следования',
-        blank = True,
-        default = 345,
+        blank=True,
+        default=345,
         )
 
     hidden = models.BooleanField(
         u'Скрыть пример',
-        help_text = u'''Не отображать данный пример
+        help_text=u'''Не отображать данный пример
                         при выводе словарной статьи.''',
-        default = False,
-        editable = False,
+        default=False,
+        editable=False,
         )
 
     example = models.TextField(
@@ -1109,8 +1117,8 @@ class Example(models.Model):
 
     context = models.TextField(
         u'широкий контекст',
-        help_text = u'Более широкий контекст для примера',
-        blank = True,
+        help_text=u'Более широкий контекст для примера',
+        blank=True,
         )
 
     @property
@@ -1128,8 +1136,8 @@ class Example(models.Model):
 
     address_text = models.CharField(
         u'адрес',
-        max_length = 300,
-        blank = True,
+        max_length=300,
+        blank=True,
         )
 
     @property
@@ -1138,30 +1146,30 @@ class Example(models.Model):
 
     additional_info = models.TextField(
         u'примечание',
-        help_text = u'''Любая дополнительная информация
+        help_text=u'''Любая дополнительная информация
                         по данному ПРИМЕРУ. Дополнительная
                         информация по значению или лексеме
                         указывается не здесь, а в аналогичных
                         полях при значении и лексеме,
                         соответственно.''',
-        blank = True,
+        blank=True,
         )
 
     GREEK_EQ_STATUS = (
         (u'L', u'следует найти'),   # look for
         (u'S', u'не нужны'),        # stop
         (u'C', u'уточнить адрес'),  # check the address
-        (u'N', u'найти не удалось'),# not found
+        (u'N', u'найти не удалось'),  # not found
         (u'F', u'найдены'),         # found
-        (u'M', u'необходимы для опр-я значения'), # meaning
+        (u'M', u'необходимы для опр-я значения'),  # meaning
         (u'U', u'срочное'),         # urgent
         )
 
     greek_eq_status = models.CharField(
         u'параллели',
-        max_length = 1,
-        choices = GREEK_EQ_STATUS,
-        default = u'L', # 'L' -- статус "следует найти (греч.параллели)"
+        max_length=1,
+        choices=GREEK_EQ_STATUS,
+        default=u'L',  # 'L' -- статус "следует найти (греч.параллели)"
         )
 
     mtime = models.DateTimeField(
@@ -1200,63 +1208,63 @@ class CollocationGroup(models.Model, Meaningfull):
 
     base_entry = models.ForeignKey(
         Entry,
-        verbose_name = u'лексема',
-        help_text = u'''Лексема, при которой будет стоять
+        verbose_name=u'лексема',
+        help_text=u'''Лексема, при которой будет стоять
                         словосочетание. Если есть возможность указать
                         конкретное значение, лучше указать вместо лексемы
                         её конкретное значение.''',
-        related_name = 'collocationgroup_set',
-        blank = True,
-        null = True,
+        related_name='collocationgroup_set',
+        blank=True,
+        null=True,
         )
 
     base_meaning = models.ForeignKey(
         Meaning,
-        verbose_name = u'значение',
-        help_text = u'''Значение, при котором будет стоять
+        verbose_name=u'значение',
+        help_text=u'''Значение, при котором будет стоять
                         словосочетание.''',
-        related_name = 'collocationgroup_set',
-        blank = True,
-        null = True,
+        related_name='collocationgroup_set',
+        blank=True,
+        null=True,
         )
 
     link_to_entry = models.ForeignKey(
         Entry,
-        verbose_name = u'ссылка на лексему',
-        help_text = u'''Если вместо значений словосочетания
+        verbose_name=u'ссылка на лексему',
+        help_text=u'''Если вместо значений словосочетания
                         должна быть только ссылка
                         на словарную статью, укажите её
                         в данном поле.''',
-        related_name = 'ref_collogroup_set',
-        blank = True,
-        null = True,
+        related_name='ref_collogroup_set',
+        blank=True,
+        null=True,
         )
 
     link_to_meaning = models.ForeignKey(
         'Meaning',
-        verbose_name = u'ссылка на значение',
-        help_text = u'''Если вместо значений словосочетания должна быть
+        verbose_name=u'ссылка на значение',
+        help_text=u'''Если вместо значений словосочетания должна быть
                         только ссылка на опредленное значение лексемы
                         или словосочетания, укажите его в данном поле.''',
-        related_name = 'ref_collogroup_set',
-        blank = True,
-        null = True,
+        related_name='ref_collogroup_set',
+        blank=True,
+        null=True,
         )
 
     cf_entries = models.ManyToManyField(
         Entry,
-        verbose_name = u'ср. (лексемы)',
-        related_name = 'cf_collogroup_set',
-        blank = True,
-        null = True,
+        verbose_name=u'ср. (лексемы)',
+        related_name='cf_collogroup_set',
+        blank=True,
+        null=True,
         )
 
     cf_meanings = models.ManyToManyField(
         Meaning,
-        verbose_name = u'ср. (значения)',
-        related_name = 'cf_collogroup_set',
-        blank = True,
-        null = True,
+        verbose_name=u'ср. (значения)',
+        related_name='cf_collogroup_set',
+        blank=True,
+        null=True,
         )
 
     ctime = models.DateTimeField(
@@ -1295,13 +1303,13 @@ class Collocation(models.Model):
 
     collogroup = models.ForeignKey(
         CollocationGroup,
-        verbose_name = u'группа словосочетаний',
+        verbose_name=u'группа словосочетаний',
         related_name='collocation_set',
         )
 
     collocation = models.CharField(
         u'словосочетание',
-        max_length = 70,
+        max_length=70,
         )
 
     @property
@@ -1310,22 +1318,22 @@ class Collocation(models.Model):
 
     civil_equivalent = models.CharField(
         u'гражданское написание',
-        max_length = 50,
-        blank = True,
+        max_length=50,
+        blank=True,
         )
 
     order = models.SmallIntegerField(
         u'порядок следования',
-        blank = True,
-        null = True,
+        blank=True,
+        null=True,
         )
 
     examples = models.ManyToManyField(
         Example,
-        verbose_name = u'примеры употребления',
-        related_name = 'collocation_set',
-        blank = True,
-        null = True,
+        verbose_name=u'примеры употребления',
+        related_name='collocation_set',
+        blank=True,
+        null=True,
         )
 
     @property
@@ -1358,49 +1366,47 @@ class Collocation(models.Model):
         ordering = ('id',)
 
 
-
-
 class GreekEquivalentForMeaning(models.Model):
 
     for_meaning = models.ForeignKey(Meaning)
 
     unitext = models.CharField(
         u'греч. параллель (Unicode)',
-        max_length = 100,
-        blank = True,
+        max_length=100,
+        blank=True,
         )
 
     text = models.CharField(
         u'греч. параллель (устар.)',
-        max_length = 100,
-        blank = True,
+        max_length=100,
+        blank=True,
         )
 
     mark = models.CharField(
         u'грамматическая помета',
-        max_length = 20,
-        blank = True,
+        max_length=20,
+        blank=True,
         )
 
     source = models.CharField(
         u'документальный источник',
-        help_text = u'''Например, Септуагинта или,
+        help_text=u'''Например, Септуагинта или,
                         более узко, разные редакции
                         одного текста.''',
-        max_length = 40,
-        blank = True,
+        max_length=40,
+        blank=True,
         )
 
     additional_info = models.TextField(
         u'примечание',
-        help_text = u'Любая дополнительная информация ' \
+        help_text=u'Любая дополнительная информация '
                     u'по данному греческому эквиваленту.',
-        blank = True,
+        blank=True,
         )
 
     corrupted = models.BooleanField(
         u'текст испорчен',
-        default = False,
+        default=False,
         )
 
     mtime = models.DateTimeField(
@@ -1431,54 +1437,54 @@ class GreekEquivalentForExample(models.Model):
 
     unitext = models.CharField(
         u'греч. параллель (Unicode)',
-        max_length = 100,
-        blank = True,
+        max_length=100,
+        blank=True,
         )
 
     text = models.CharField(
         u'греч. параллель (устар.)',
-        max_length = 100,
-        blank = True,
+        max_length=100,
+        blank=True,
         )
 
     mark = models.CharField(
         u'грамматическая помета',
-        max_length = 20,
-        blank = True,
+        max_length=20,
+        blank=True,
         )
 
     source = models.CharField(
         u'документальный источник',
-        help_text = u'''Например, Септуагинта или,
+        help_text=u'''Например, Септуагинта или,
                         более узко, разные редакции
                         одного текста.''',
-        max_length = 40,
-        blank = True,
+        max_length=40,
+        blank=True,
         )
 
     position = models.PositiveIntegerField(
-        verbose_name = u'позиция в примере',
-        help_text = u'Номер слова, после которого следует поставить параллель.',
-        blank = True,
-        null = True,
+        verbose_name=u'позиция в примере',
+        help_text=u'Номер слова, после которого следует поставить параллель.',
+        blank=True,
+        null=True,
         )
 
     initial_form = models.CharField(
         u'начальная форма',
-        max_length = 100,
-        blank = True,
+        max_length=100,
+        blank=True,
         )
 
     additional_info = models.TextField(
         u'примечание',
-        help_text = u'Любая дополнительная информация ' \
+        help_text=u'Любая дополнительная информация '
                     u'по данному греческому эквиваленту.',
-        blank = True,
+        blank=True,
         )
 
     corrupted = models.BooleanField(
         u'текст испорчен',
-        default = False,
+        default=False,
         )
 
     mtime = models.DateTimeField(
@@ -1503,23 +1509,20 @@ class GreekEquivalentForExample(models.Model):
         verbose_name_plural = u'греческие параллели'
 
 
-
-
-
 class OrthographicVariant(models.Model):
 
     # словарная статья, к которой относится данный орф. вариант
     entry = models.ForeignKey(
         Entry,
-        related_name = 'orthographic_variants',
-        blank = True,
-        null = True,
+        related_name='orthographic_variants',
+        blank=True,
+        null=True,
         )
 
     # сам орфографический вариант
     idem = models.CharField(
         u'написание',
-        max_length = 50,
+        max_length=50,
         )
 
     @property
@@ -1532,18 +1535,19 @@ class OrthographicVariant(models.Model):
 
     order = models.SmallIntegerField(
         u'порядок следования',
-        blank = True,
-        null = True,
+        blank=True,
+        null=True,
         )
 
     # является ли орф. вариант только общей частью словоформ
     # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
     # на конце автоматически добавляется дефис, заносить в базу без дефиса
-    #is_factored_out = models.BooleanField(u'общая часть нескольких слов или словоформ')
+    # is_factored_out = models.BooleanField(u'общая часть нескольких слов или
+    # словоформ')
 
     no_ref_entry = models.BooleanField(
         u'Не делать отсылочной статьи',
-        default = False,
+        default=False,
         )
 
     mtime = models.DateTimeField(
@@ -1569,8 +1573,7 @@ class OrthographicVariant(models.Model):
     class Meta:
         verbose_name = u'вариант'
         verbose_name_plural = u'варианты'
-        ordering = ('order','id')
-
+        ordering = ('order', 'id')
 
 
 class Participle(models.Model):
@@ -1578,8 +1581,8 @@ class Participle(models.Model):
     # словарная статья, к которой относится данная словоформа
     entry = models.ForeignKey(
         Entry,
-        blank = True,
-        null = True,
+        blank=True,
+        null=True,
         )
 
     PARTICIPLE_CHOICES = (
@@ -1598,7 +1601,7 @@ class Participle(models.Model):
     # сама словоформа
     idem = models.CharField(
         u'словоформа',
-        max_length = 50,
+        max_length=50,
         )
 
     @property
@@ -1607,8 +1610,8 @@ class Participle(models.Model):
 
     order = models.SmallIntegerField(
         u'порядок следования',
-        blank = True,
-        null = True,
+        blank=True,
+        null=True,
         )
 
     mtime = models.DateTimeField(
@@ -1634,4 +1637,4 @@ class Participle(models.Model):
     class Meta:
         verbose_name = u'причастие'
         verbose_name_plural = u'причастия'
-        ordering = ('order','id')
+        ordering = ('order', 'id')
