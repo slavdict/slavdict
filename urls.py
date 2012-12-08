@@ -28,7 +28,6 @@ urlpatterns += patterns('',
          'slavdict.dictionary.views.single_entry',
          kwargs={'extra_context': {'show_additional_info': True, 'intermed': True}},
          name="intermediary_change_form_url"),
-    url( r'^entries/(\d+)/edit/$', 'slavdict.dictionary.views.edit_entry' ),
 
     url( r'^materials/$', direct_to_template, {'template': 'materials.html'}),
     url( r'^switch/additional-info/$', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),

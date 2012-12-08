@@ -504,20 +504,3 @@ def antconc2ucs8_converter(request):
     )
     context = { 'convertee': random.choice(examples) }
     return render_to_response('converter.html', context, RequestContext(request))
-
-
-def edit_entry(request, id):
-    entry = Entry.objects.get(pk=id)
-    data = {
-            'id': id,
-            'civil_equivalent': entry.civil_equivalent,
-            'reconstructed': entry.reconstructed_headword,
-            'questionable': entry.questionable_headword,
-            'hidden': entry.hidden,
-            'homonym_order': entry.homonym_order,
-            'homonym_gloss': entry.homonym_gloss,
-            }
-    data = entry.__dict__
-    data = dictionary.viewmodels._json(data)
-    response = HttpResponse(data, mimetype='application/json')
-    return response
