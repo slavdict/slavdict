@@ -1539,12 +1539,6 @@ class OrthographicVariant(models.Model):
         null=True,
         )
 
-    # является ли орф. вариант только общей частью словоформ
-    # (напр., "вонм-" для "вонми", "вонмем" и т.п.)
-    # на конце автоматически добавляется дефис, заносить в базу без дефиса
-    # is_factored_out = models.BooleanField(u'общая часть нескольких слов или
-    # словоформ')
-
     no_ref_entry = models.BooleanField(
         u'Не делать отсылочной статьи',
         default=False,
