@@ -340,24 +340,6 @@ class Entry(models.Model, Meaningfull):
         default = False,
         )
 
-    @property
-    def syns(self):
-        g = self.synonym_in.all()
-        if g:
-            g = g[0]
-        return g.synonyms.exclude(id=self.id)
-
-    @property
-    def base_syn(self):
-        g = self.synonym_in.all()
-        if g:
-            g = g[0]
-        return g.base
-
-    @property
-    def base_syn_bool(self):
-        return self.base_syn.id==self.id
-
     # lexeme (посредник к граматическим формам и свойствам)
 
     part_of_speech = models.CharField(u'часть речи', max_length=1,
