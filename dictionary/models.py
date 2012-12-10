@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import datetime
+import json
 
 from django.db import models
 from django.db.models import BooleanField
@@ -503,6 +504,39 @@ class Entry(models.Model, Meaningfull):
 
     def __unicode__(self):
         return self.orth_vars[0].idem
+
+    def toJSON(self):
+        _fields = [
+            'additional_info',
+            'antconc_query',
+            'canonical_name',
+            'civil_equivalent',
+            'derivation_entry_id',
+            'duplicate',
+            'editor_id',
+            'gender',
+            'genitive',
+            'good',
+            'hidden',
+            'homonym_gloss',
+            'homonym_order',
+            'nom_pl',
+            'nom_sg',
+            'onym',
+            'part_of_speech',
+            'participle_type',
+            'possessive',
+            'questionable_headword',
+            'reconstructed_headword',
+            'sg1',
+            'sg2',
+            'short_form',
+            'status',
+            'tantum',
+            'uninflected',
+        ]
+        data = dict((key, self.__dict__[key]) for key in _fields)
+        return json.dumps(data, ensure_ascii=False, separators=(',',':'))
 
     class Meta:
         verbose_name = u'словарная статья'
