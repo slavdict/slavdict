@@ -348,19 +348,10 @@ class Entry(models.Model, Meaningfull):
 
     nom_sg = CharField(u'И.ед.м.', help_text=u'''Только для этнонимов
                        (например, в словарной статье АГАРЯНЕ, здесь --
-                       АГАРЯНИН).''', max_length=25, blank=True, null=True)
-
-    nom_pl = CharField(u'И.мн.', help_text=u'''Только для этнонимов (например,
-                       в словарной статье АГАРЯНИН, здесь -- АГАРЯНЕ).''',
-                       max_length=25, blank=True, null=True)
-
+                       АГАРЯНИН).''', max_length=25, blank=True, default='')
     @property
     def nom_sg_ucs_wax(self):
         return ucs_affix_or_word(self.nom_sg)
-
-    @property
-    def nom_pl_ucs_wax(self):
-        return ucs_affix_or_word(self.nom_pl)
 
     # только для прилагательных
     short_form = CharField(u'краткая форма', help_text=u'''Если Вы указываете

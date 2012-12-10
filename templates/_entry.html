@@ -150,23 +150,13 @@
     </div>
 
 
-    {% if entry.is_onym('ethnonym') %}
-        {% if entry.nom_pl_ucs_wax %}
-            <div>
-                <i>И.п. мн.</i>
-                {{ space }}
-                {% if entry.nom_pl_ucs_wax.0 %}-{% endif %}
-                <span class="cslav">{{ entry.nom_pl_ucs_wax.1 }}</span>
-            </div>
-        {% endif %}
-        {% if entry.nom_sg_ucs_wax %}
+    {% if entry.is_onym('ethnonym') and entry.nom_sg %}
             <div>
                 <i>м.р. И.п. ед.</i>
                 {{ space }}
                 {% if entry.nom_sg_ucs_wax.0 %}-{%endif %}
                 <span class="cslav">{{ entry.nom_sg_ucs_wax.1 }}</span>
             </div>
-        {% endif %}
     {% endif %}
 
 
