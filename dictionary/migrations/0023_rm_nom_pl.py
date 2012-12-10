@@ -13,6 +13,10 @@ class Migration(SchemaMigration):
 
 
         # Changing field 'Entry.nom_sg'
+        for e in orm['dictionary.Entry'].objects.all():
+            if e.nom_sg is None:
+                e.nom_sg = ''
+                e.save()
         db.alter_column('dictionary_entry', 'nom_sg', self.gf('django.db.models.fields.CharField')(max_length=25))
 
     def backwards(self, orm):
