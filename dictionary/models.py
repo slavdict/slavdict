@@ -497,7 +497,7 @@ class Entry(models.Model, Meaningfull):
         return self.orth_vars[0].idem
 
     def toJSON(self):
-        _fields = [
+        _fields = (
             'additional_info',
             'antconc_query',
             'canonical_name',
@@ -511,7 +511,7 @@ class Entry(models.Model, Meaningfull):
             'hidden',
             'homonym_gloss',
             'homonym_order',
-            'nom_pl',
+            'id',
             'nom_sg',
             'onym',
             'part_of_speech',
@@ -525,7 +525,7 @@ class Entry(models.Model, Meaningfull):
             'status',
             'tantum',
             'uninflected',
-        ]
+        )
         data = dict((key, self.__dict__[key]) for key in _fields)
         return json.dumps(data, ensure_ascii=False, separators=(',',':'))
 
@@ -612,6 +612,28 @@ class Etymology(models.Model):
     def __unicode__(self):
         return u'%s %s %s' % (self.get_language_display(), self.entry,
                               self.translit)
+    def toJSON(self):
+        _fields = (
+            'additional_info',
+            'collocation_id',
+            'corrupted',
+            'entry_id',
+            'etymon_to_id',
+            'gloss',
+            'id',
+            'language',
+            'mark',
+            'meaning',
+            'order',
+            'questionable',
+            'source',
+            'text',
+            'translit',
+            'unclear',
+            'unitext',
+        )
+        data = dict((key, self.__dict__[key]) for key in _fields)
+        return json.dumps(data, ensure_ascii=False, separators=(',',':'))
 
     class Meta:
         verbose_name = u'этимон'
@@ -670,6 +692,18 @@ class MeaningContext(models.Model):
         SPACE = u' '
         _list = (self.left_text, self.context, self.right_text)
         return SPACE.join(_list)
+
+    def toJSON(self):
+        _fields = (
+            'context',
+            'id',
+            'left_text',
+            'meaning_id',
+            'order',
+            'right_text',
+        )
+        data = dict((key, self.__dict__[key]) for key in _fields)
+        return json.dumps(data, ensure_ascii=False, separators=(',',':'))
 
     class Meta:
         verbose_name = u'контекст значения'
@@ -807,6 +841,24 @@ class Meaning(models.Model):
     def __unicode__(self):
         return self.meaning
 
+    def toJSON(self):
+        _fields = (
+            'additional_info',
+            'collogroup_container_id',
+            'entry_container_id',
+            'gloss',
+            'hidden',
+            'id',
+            'meaning',
+            'metaphorical',
+            'order',
+            'parent_meaning_id',
+            'substantivus',
+            'substantivus_type',
+        )
+        data = dict((key, self.__dict__[key]) for key in _fields)
+        return json.dumps(data, ensure_ascii=False, separators=(',',':'))
+
     class Meta:
         verbose_name = u'значение'
         verbose_name_plural = u'ЗНАЧЕНИЯ'
@@ -892,6 +944,20 @@ class Example(models.Model):
         if self.meaning:
             self.host_entry.save(without_mtime=without_mtime)
 
+    def toJSON(self):
+        _fields = (
+            'additional_info',
+            'address_text',
+            'example',
+            'greek_eq_status',
+            'hidden',
+            'id',
+            'meaning_id',
+            'order',
+        )
+        data = dict((key, self.__dict__[key]) for key in _fields)
+        return json.dumps(data, ensure_ascii=False, separators=(',',':'))
+
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
 
@@ -950,6 +1016,15 @@ class CollocationGroup(models.Model, Meaningfull):
         super(CollocationGroup, self).delete(*args, **kwargs)
         self.host_entry.save(without_mtime=without_mtime)
 
+    def toJSON(self):
+        _fields = (
+            'base_entry_id',
+            'base_meaning_id',
+            'id',
+        )
+        data = dict((key, self.__dict__[key]) for key in _fields)
+        return json.dumps(data, ensure_ascii=False, separators=(',',':'))
+
     class Meta:
         verbose_name = u'группа словосочетаний'
         verbose_name_plural = u'ГРУППЫ СЛОВОСОЧЕТАНИЙ'
@@ -998,6 +1073,17 @@ class Collocation(models.Model):
     def __unicode__(self):
         return self.collocation
 
+    def toJSON(self):
+        _fields = (
+            'civil_equivalent',
+            'collocation',
+            'collogroup_id',
+            'id',
+            'order',
+        )
+        data = dict((key, self.__dict__[key]) for key in _fields)
+        return json.dumps(data, ensure_ascii=False, separators=(',',':'))
+
     class Meta:
         verbose_name = u'словосочетание'
         verbose_name_plural = u'ОТДЕЛЬНЫЕ СЛОВОСОЧЕТАНИЯ'
@@ -1035,6 +1121,20 @@ class GreekEquivalentForMeaning(models.Model):
     def delete(self, without_mtime=False, *args, **kwargs):
         super(GreekEquivalentForMeaning, self).delete(*args, **kwargs)
         self.host_entry.save(without_mtime=without_mtime)
+
+    def toJSON(self):
+        _fields = (
+            'additional_info',
+            'corrupted',
+            'for_meaning_id',
+            'id',
+            'mark',
+            'source',
+            'text',
+            'unitext',
+        )
+        data = dict((key, self.__dict__[key]) for key in _fields)
+        return json.dumps(data, ensure_ascii=False, separators=(',',':'))
 
     class Meta:
         verbose_name = u'греческая параллель для значения'
@@ -1079,6 +1179,22 @@ class GreekEquivalentForExample(models.Model):
         super(GreekEquivalentForExample, self).delete(*args, **kwargs)
         self.host_entry.save(without_mtime=without_mtime)
 
+    def toJSON(self):
+        _fields = (
+            'additional_info',
+            'corrupted',
+            'for_example_id',
+            'id',
+            'initial_form',
+            'mark',
+            'position',
+            'source',
+            'text',
+            'unitext',
+        )
+        data = dict((key, self.__dict__[key]) for key in _fields)
+        return json.dumps(data, ensure_ascii=False, separators=(',',':'))
+
     class Meta:
         verbose_name = u'греческая параллель для примера'
         verbose_name_plural = u'греческие параллели'
@@ -1119,6 +1235,16 @@ class OrthographicVariant(models.Model):
 
     def __unicode__(self):
         return self.idem
+
+    def toJSON(self):
+        _fields = (
+            'entry_id',
+            'id',
+            'idem',
+            'order',
+        )
+        data = dict((key, self.__dict__[key]) for key in _fields)
+        return json.dumps(data, ensure_ascii=False, separators=(',',':'))
 
     class Meta:
         verbose_name = u'вариант'
@@ -1162,6 +1288,17 @@ class Participle(models.Model):
 
     def __unicode__(self):
         return self.idem
+
+    def toJSON(self):
+        _fields = (
+            'entry_id',
+            'id',
+            'idem',
+            'order',
+            'tp',
+        )
+        data = dict((key, self.__dict__[key]) for key in _fields)
+        return json.dumps(data, ensure_ascii=False, separators=(',',':'))
 
     class Meta:
         verbose_name = u'причастие'
