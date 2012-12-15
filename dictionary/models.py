@@ -785,6 +785,9 @@ class Example(models.Model):
               help_text=u'Значение, к которому относится данный пример.',
               blank=True, null=True)
 
+    entry = ForeignKey(Entry, blank=True, null=True)
+    collogroup = ForeignKey('CollocationGroup', blank=True, null=True)
+
     order = SmallIntegerField(u'порядок следования', blank=True, default=345)
     hidden = BooleanField(u'Скрыть пример', help_text=u'''Не отображать данный
                           пример при выводе словарной статьи.''',
@@ -842,21 +845,32 @@ class Example(models.Model):
 
     @property
     def host_entry(self):
-        return self.meaning.host_entry
+        if self.entry:
+            return self.entry
+        else:
+            return self.meaning.host_entry
 
     @property
     def host(self):
-        return self.meaning.host
+        if self.collogroup:
+            return self.collogroup
+        elif self.entry:
+            return self.entry
+        else:
+            return self.meaning.host
 
     def save(self, without_mtime=False, *args, **kwargs):
+        host_entry = self.host_entry
+        self.entry = host_entry
+        host = self.host
+        if host is not host_entry:
+            self.collogroup = host
         super(Example, self).save(*args, **kwargs)
-        if self.meaning:
-            self.host_entry.save(without_mtime=without_mtime)
+        host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Example, self).delete(*args, **kwargs)
-        if self.meaning:
-            self.host_entry.save(without_mtime=without_mtime)
+        self.host_entry.save(without_mtime=without_mtime)
 
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
