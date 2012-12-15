@@ -510,7 +510,12 @@ def edit_entry(request, id):
     entry = Entry.objects.get(pk=id)
     data = {
         'entry': entry.forJSON(),
+        'orthvars': [ov.forJSON() for ov in entry.orth_vars],
+        'etymologies': [e.forJSON() for e in entry.etymologies],
+        'meanings': [m.forJSON() for m in entry.all_meanings],
         'examples': [e.forJSON() for e in entry.examples.all()],
+        'collogroups': [cg.forJSON() for cg in entry.collogroups],
+        'participles': [p.forJSON() for p in entry.participles],
     }
     data = dictionary.viewmodels._json(data)
     response = HttpResponse(data, mimetype='application/json')
