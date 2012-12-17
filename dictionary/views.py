@@ -557,7 +557,7 @@ def edit_entry(request, id):
         'orthvars': [ov.forJSON() for ov in entry.orth_vars],
         'etymologies': [e.forJSON() for e in entry.etymologies],
         'meanings': [m.forJSON() for m in entry.all_meanings],
-        'examples': [e.forJSON() for e in entry.examples.all()],
+        'examples': [e.forJSON() for e in Example.objects.filter(entry=entry)],
         'collogroups': [cg.forJSON() for cg in entry.collogroups],
         'participles': [p.forJSON() for p in entry.participles],
     }
