@@ -442,9 +442,6 @@ class Entry(models.Model, Meaningfull):
             значение указывается не здесь, а в аналогичных полях при значении
             и примере, соответственно.''', blank=True)
 
-    examples = ManyToManyField('Example', verbose_name=u'примеры употребления',
-            related_name='entry_set', blank=True, null=True)
-
     @property
     def etymologies(self):
         etyms = self.etymology_set
@@ -953,8 +950,6 @@ class Collocation(models.Model):
                                  blank=True)
 
     order = SmallIntegerField(u'порядок следования', blank=True, default=0)
-    examples = ManyToManyField(Example, verbose_name=u'примеры употребления',
-                    related_name='collocation_set', blank=True, null=True)
 
     @property
     def etymologies(self):
