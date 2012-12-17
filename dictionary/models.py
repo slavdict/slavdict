@@ -952,16 +952,17 @@ class Example(models.Model):
     def host(self):
         if self.collogroup:
             return self.collogroup
-        elif self.entry:
-            return self.entry
         else:
-            return self.meaning.host
+            if self.meaning:
+                return self.meaning.host
+            else:
+                return self.entry
 
     def save(self, without_mtime=False, *args, **kwargs):
         host_entry = self.host_entry
         self.entry = host_entry
         host = self.host
-        if host is not host_entry:
+        if host and 'base_meaning_id' in host.__dict__:
             self.collogroup = host
         super(Example, self).save(*args, **kwargs)
         host_entry.save(without_mtime=without_mtime)
