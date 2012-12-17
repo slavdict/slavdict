@@ -562,5 +562,5 @@ def edit_entry(request, id):
         'participles': [p.forJSON() for p in entry.participles],
     }
     data = dictionary.viewmodels._json(data)
-    response = HttpResponse(data, mimetype='application/json')
+    response = HttpResponse(data, mimetype='application/json; charset=utf-8')
     return response

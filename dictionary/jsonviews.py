@@ -10,6 +10,8 @@ from dictionary.models import Example
 from dictionary.models import GreekEquivalentForExample
 from dictionary.models import PART_OF_SPEECH_MAP
 
+IMT_JSON = 'application/json; charset=utf-8'
+
 def _json(x):
     return json.dumps(x, ensure_ascii=False, separators=(',',':'))
 
@@ -41,9 +43,9 @@ def json_singleselect_entries_urls(request):
                 }
                 for e in entries]
         data = _json(entries)
-        response = HttpResponse(data, mimetype='application/json')
+        response = HttpResponse(data, mimetype=IMT_JSON)
     else:
-        response = HttpResponse(mimetype='application/json', status=400)
+        response = HttpResponse(mimetype=IMT_JSON, status=400)
     return response
 
 
@@ -58,7 +60,7 @@ def json_ex_save(request):
         ex.__dict__.update(exDict)
         ex.save()
         data = _json({ 'action': 'saved' })
-        response = HttpResponse(data, mimetype='application/json', status=200)
+        response = HttpResponse(data, mimetype=IMT_JSON, status=200)
     else:
         response = HttpResponse(status=400)
     return response
@@ -79,7 +81,7 @@ def json_greq_save(request):
             gr.__dict__.update(greq)
             gr.save()
             data = _json({ 'action': 'saved' })
-        response = HttpResponse(data, mimetype='application/json', status=200)
+        response = HttpResponse(data, mimetype=IMT_JSON, status=200)
     else:
         response = HttpResponse(status=400)
     return response
@@ -94,7 +96,7 @@ def json_greq_delete(request):
             gr = GreekEquivalentForExample.objects.get(pk=id)
             gr.delete()
             data = _json({ 'action': 'deleted' })
-            response = HttpResponse(data, mimetype='application/json', status=200)
+            response = HttpResponse(data, mimetype=IMT_JSON, status=200)
         else:
             response = HttpResponse(status=400)
     else:
@@ -109,4 +111,4 @@ def json_goodness_save(request):
     entry = Entry.objects.get(id=entry_id)
     entry.good = goodness
     entry.save(without_mtime=True)
-    return HttpResponse('', mimetype='application/json', status=200)
+    return HttpResponse('', mimetype=IMT_JSON, status=200)
