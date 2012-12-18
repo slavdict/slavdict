@@ -552,14 +552,24 @@ def antconc2ucs8_converter(request):
 
 def edit_entry(request, id):
     entry = Entry.objects.get(pk=id)
+    meanings = []
+    for m in entry.all_meanings:
+        meaning = m.forJSON()
+        meaning['contexts'] = [c.forJSON() for c in m.contexts]
+        meanings.append(meaning)
+    examples = []
+    for e in Example.objects.filter(entry=entry):
+        example = e.forJSON()
+        example['greqs'] = [ge.forJSON() for ge in e.greek_equivs]
+        examples.append(example)
     data = {
         'entry': entry.forJSON(),
         'orthvars': [ov.forJSON() for ov in entry.orth_vars],
         'etymologies': [e.forJSON() for e in entry.etymologies],
-        'meanings': [m.forJSON() for m in entry.all_meanings],
-        'examples': [e.forJSON() for e in Example.objects.filter(entry=entry)],
         'collogroups': [cg.forJSON() for cg in entry.collogroups],
         'participles': [p.forJSON() for p in entry.participles],
+        'meanings': meanings,
+        'examples': examples,
     }
     data = dictionary.viewmodels._json(data)
     response = HttpResponse(data, mimetype='application/json; charset=utf-8')
