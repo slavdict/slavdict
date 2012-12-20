@@ -572,5 +572,6 @@ def edit_entry(request, id):
         'examples': examples,
     }
     data = dictionary.viewmodels._json(data)
-    response = HttpResponse(data, mimetype='application/json; charset=utf-8')
-    return response
+    context = {'entry': data}
+    return render_to_response('single_entry_edit.html', context,
+                              RequestContext(request))

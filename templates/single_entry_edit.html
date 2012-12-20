@@ -1,0 +1,29 @@
+{% extends 'base--hdrSearch.html' %}
+
+{% block header %}
+
+    {{ super() }}
+    {% if not intermed %}
+        {{ space }}
+        <a href="{% url switch_info_url %}"
+           class="header--item{% if show_additional_info %} on{% endif %}">Инфо</a>
+    {% endif %}
+
+{% endblock %}
+
+
+{% block content %}
+
+    <div data-bind="text:orthvars[0].idem"></div>
+
+{% endblock %}
+
+
+{% block javascript %}
+
+    {{ super() }}
+
+    vM.entry = {{ entry }};
+    ko.applyBindings(vM.entry, $('#main').get(0));
+
+{% endblock %}
