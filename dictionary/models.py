@@ -108,6 +108,7 @@ class Meaningfull:
     def has_meanings(self):
         return self.meaning_set.exists()
 
+BLANK_CHOICE = (('',''),)
 
 PART_OF_SPEECH_CHOICES = (
     ('a', u'сущ.'),
@@ -307,7 +308,7 @@ class Entry(models.Model, Meaningfull):
             импорте заготовок статей.''', default=False)
 
     part_of_speech = CharField(u'часть речи', max_length=1,
-            choices=PART_OF_SPEECH_CHOICES, default='')
+            choices=BLANK_CHOICE + PART_OF_SPEECH_CHOICES, default='')
 
     def is_part_of_speech(self, slug):
         return PART_OF_SPEECH_MAP[slug] == self.part_of_speech
@@ -319,14 +320,14 @@ class Entry(models.Model, Meaningfull):
             словоформ через запятую''', blank=True)
 
     # только для существительных
-    tantum = CharField(u'число', choices=TANTUM_CHOICES, max_length=1,
-            blank=True, default='')
+    tantum = CharField(u'число', choices=BLANK_CHOICE + TANTUM_CHOICES,
+                       max_length=1, blank=True, default='')
 
     def is_tantum(self, slug):
         return TANTUM_MAP[slug] == self.tantum
 
-    gender = CharField(u'род', choices=GENDER_CHOICES, max_length=1,
-            blank=True, default='')
+    gender = CharField(u'род', choices=BLANK_CHOICE + GENDER_CHOICES,
+                       max_length=1, blank=True, default='')
 
     def is_gender(self, slug):
         return GENDER_MAP[slug] == self.gender
@@ -337,8 +338,8 @@ class Entry(models.Model, Meaningfull):
     def genitive_ucs_wax(self):
         return ucs_affix_or_word(self.genitive)
 
-    onym = CharField(u'тип имени собственного', max_length=1,
-                     choices=ONYM_CHOICES, blank=True, default='')
+    onym = CharField(u'тип имени собственного', max_length=1, blank=True,
+                     choices=BLANK_CHOICE + ONYM_CHOICES, default='')
 
     def is_onym(self, slug):
         return ONYM_MAP[slug] == self.onym
@@ -366,7 +367,8 @@ class Entry(models.Model, Meaningfull):
 
     # только для глаголов
     transitivity = CharField(u'переходность', max_length=1,
-                        choices=TRANSITIVITY_CHOICES, blank=True, default='')
+                             choices=BLANK_CHOICE + TRANSITIVITY_CHOICES,
+                             blank=True, default='')
 
     def is_transitivity(self, slug):
         return TRANSITIVITY_MAP[slug] == self.transitivity
@@ -388,7 +390,8 @@ class Entry(models.Model, Meaningfull):
         return ucs_affix_or_word(self.sg2)
 
     participle_type = CharField(u'тип причастия', max_length=1,
-                    choices=PARTICIPLE_TYPE_CHOICES, blank=True, default='')
+                                choices=BLANK_CHOICE + PARTICIPLE_TYPE_CHOICES,
+                                blank=True, default='')
 
     def is_participle_type(self, slug):
         return PARTICIPLE_TYPE_MAP[slug] == self.participle_type
@@ -709,7 +712,8 @@ class Meaning(models.Model):
 
     substantivus = BooleanField(u'в роли сущ.')
     substantivus_type = CharField(u'форма субстантива', max_length=1,
-                    choices=SUBSTANTIVUS_TYPE_CHOICES, blank=True, default='')
+                             choices=BLANK_CHOICE + SUBSTANTIVUS_TYPE_CHOICES,
+                             blank=True, default='')
 
     def is_substantivus_type(self, slug):
         return SUBSTANTIVUS_TYPE_MAP[slug] == self.substantivus_type
