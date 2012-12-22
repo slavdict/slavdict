@@ -183,11 +183,19 @@ TRANSITIVITY_MAP = {
     'intransitive': 'i',
 }
 
+# TODO: Должен остаться только один
+# из этих двух списков для причастий.
 PARTICIPLE_TYPE_CHOICES = (
     ('a', u'действ. прич. наст. вр.'),
     ('b', u'действ. прич. прош. вр.'),
     ('c', u'страд. прич. наст. вр.'),
     ('d', u'страд. прич. прош. вр.'),
+)
+PARTICIPLE_CHOICES = (
+    ('1', u'действ. прич. наст. вр.'),
+    ('2', u'действ. прич. прош. вр.'),
+    ('3', u'страд. прич. наст. вр.'),
+    ('4', u'страд. прич. прош. вр.'),
 )
 PARTICIPLE_TYPE_MAP = {
     'pres_act': 'a',
@@ -1109,12 +1117,7 @@ class Participle(models.Model):
     # словарная статья, к которой относится данная словоформа
     entry = ForeignKey(Entry, blank=True, null=True)
 
-    PARTICIPLE_CHOICES = (
-        ('1', u'действ. прич. наст. вр.'),
-        ('2', u'действ. прич. прош. вр.'),
-        ('3', u'страд. прич. наст. вр.'),
-        ('4', u'страд. прич. прош. вр.'),
-    )
+    PARTICIPLE_CHOICES = PARTICIPLE_CHOICES
 
     tp = CharField(u'тип причастия', max_length=2, choices=PARTICIPLE_CHOICES)
     idem = CharField(u'словоформа', max_length=50)
