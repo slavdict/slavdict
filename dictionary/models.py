@@ -523,7 +523,10 @@ class Entry(models.Model, Meaningfull):
             'tantum',
             'uninflected',
         )
-        return dict((key, self.__dict__[key]) for key in _fields)
+        dct = dict((key, self.__dict__[key]) for key in _fields)
+        dct['participles'] = [p.forJSON() for p in self.participles]
+        dct['orthvars'] = [ov.forJSON() for ov in self.orth_vars]
+        return dct
 
     def toJSON(self):
         return json.dumps(self.forJSON(),
@@ -862,7 +865,9 @@ class Meaning(models.Model):
             'substantivus',
             'substantivus_type',
         )
-        return dict((key, self.__dict__[key]) for key in _fields)
+        dct = dict((key, self.__dict__[key]) for key in _fields)
+        dct['contexts'] = [c.forJSON() for c in self.contexts]
+        return dct
 
     def toJSON(self):
         return json.dumps(self.forJSON(),
@@ -981,7 +986,9 @@ class Example(models.Model):
             'meaning_id',
             'order',
         )
-        return dict((key, self.__dict__[key]) for key in _fields)
+        dct = dict((key, self.__dict__[key]) for key in _fields)
+        dct['greqs'] = [ge.forJSON() for ge in self.greek_equivs]
+        return dct
 
     def toJSON(self):
         return json.dumps(self.forJSON(),
@@ -1051,7 +1058,9 @@ class CollocationGroup(models.Model, Meaningfull):
             'base_meaning_id',
             'id',
         )
-        return dict((key, self.__dict__[key]) for key in _fields)
+        dct = dict((key, self.__dict__[key]) for key in _fields)
+        dct['collocations'] = [c.forJSON() for c in self.collocations]
+        return dct
 
     def toJSON(self):
         return json.dumps(self.forJSON(),

@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
+import collections
 import json
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse
 
+import dictionary.viewmodels
+from custom_user.models import CustomUser
+from dictionary.models import Collocation
+from dictionary.models import CollocationGroup
 from dictionary.models import Entry
+from dictionary.models import Etymology
 from dictionary.models import Example
 from dictionary.models import GreekEquivalentForExample
+from dictionary.models import Meaning
+from dictionary.models import MeaningContext
+from dictionary.models import OrthographicVariant
+from dictionary.models import Participle
 from dictionary.models import PART_OF_SPEECH_MAP
 
 IMT_JSON = 'application/json; charset=utf-8'
@@ -112,3 +122,122 @@ def json_goodness_save(request):
     entry.good = goodness
     entry.save(without_mtime=True)
     return HttpResponse('', mimetype=IMT_JSON, status=200)
+
+
+
+def json_entry_get(request, id):
+    data = dictionary.viewmodels.entry_json(id)
+    return HttpResponse(data, mimetype=IMT_JSON, status=200)
+
+
+def json_entry_save(request):
+    model = (
+
+        {'name': 'entry', 'model': Entry, 'terminals':
+            {'orthvars': OrthographicVariant, 'participles': Participle}},
+
+        {'name': 'etymologies', 'model': Etymology},
+
+        {'name': 'collogroups', 'model': CollocationGroup,
+            'terminals': {'collocations': Collocation}},
+
+        {'name': 'meanings', 'model': Meaning,
+            'terminals': {'contexts': MeaningContext}},
+
+        {'name': 'examples', 'model': Example,
+            'terminals': {'greqs': GreekEquivalentForExample}},
+
+    )
+    process_json_model(model, request.POST)
+    return HttpResponse('ok', mimetype=IMT_JSON, status=200)
+
+
+def process_json_model(json_model, post):
+    post = json.loads(post.get('data'))
+    for part in json_model:
+        data = post[part['name']]
+        if isinstance(data, collections.Sequence):
+            part['data'] = data
+        else:
+            part['data'] = (data,)
+
+    smth_to_process = True
+    new_elements = {}
+    deleted_elements = []
+    fields2modelnames = {
+        'base_entry_id': Entry.__name__,
+        'base_meaning_id': Meaning.__name__,
+        'collogroup_container_id': CollocationGroup.__name__,
+        'collogroup_id': CollocationGroup.__name__,
+        'collocation_id': Collocation.__name__,
+        'derivation_entry_id': Entry.__name__,
+        'editor_id': CustomUser.__name__,
+        'entry_container_id': Entry.__name__,
+        'entry_id': Entry.__name__,
+        'etymon_to_id': Etymology.__name__,
+        'for_example_id': Example.__name__,
+        'for_meaning_id': Meaning.__name__,
+        'meaning_id': Meaning.__name__,
+        'parent_meaning_id': Meaning.__name__,
+    }
+
+
+    items_and_models = []
+    for part in json_model:
+        for item in part['data']:
+            items_and_models.append((item, part['model']))
+            for prop, model in part['terminals'].items():
+                for subitem in item[prop]:
+                    items_and_models.append((subitem, model))
+
+    while smth_to_process:
+        for item, ItemModel in items_and_models:
+            if '#status#' in item:
+                if item['#status#'] == 'good':
+                    continue
+            else:
+                item['#status#'] = 'bad'
+                smth_to_process += 1
+
+            item_id = item['id']
+            in_db = isinstance(item_id, int)
+            to_be_destroyed = '_destroy' in item and item['_destroy']
+            bad = False
+
+            for key, value in [(k, v) for k, v in item.items()
+                               if k.endswith('_id')]:
+                if (value in deleted_elements
+                or fields2modelnames[key] + str(value) in deleted_elements):
+                    item['#status#'] = 'good'
+                    smth_to_process -= 1
+                    continue
+                if not isinstance(value, int):
+                    if value in new_elements:
+                        item[key] = new_elements[value]
+                    else:
+                        bad = True
+            if bad:
+                continue
+
+            del item['#status#']
+            del item['id']
+            if in_db:
+                existent_item = ItemModel.objects.get(pk=item_id)
+                if to_be_destroyed:
+                    existent_item.delete()
+                    deleted_elements.append(ItemModel.__name__ + str(item_id))
+                else:
+                    existent_item.__dict__.update(item)
+                    existent_item.save()
+            else:
+                if to_be_destroyed:
+                    deleted_elements.append(item_id)
+                else:
+                    new_item = ItemModel(**item)
+                    new_item.save()
+                    new_elements[item_id] = new_item.id
+            item['#status#'] = 'good'
+            smth_to_process -= 1
+
+        if smth_to_process == 1:
+            smth_to_process = False

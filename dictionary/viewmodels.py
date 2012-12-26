@@ -16,6 +16,20 @@ def _choices(choices):
         for id, name in choices
     )
 
+
+def entry_json(id):
+    entry = dictionary.models.Entry.objects.get(pk=id)
+    data = {
+        'entry': entry.forJSON(),
+        'etymologies': [e.forJSON() for e in entry.etymologies],
+        'collogroups': [cg.forJSON() for cg in entry.collogroups],
+        'meanings': [m.forJSON() for m in entry.all_meanings],
+        'examples': [e.forJSON()
+            for e in dictionary.models.Example.objects.filter(entry=entry)],
+    }
+    return _json(data)
+
+
 authors = (
     {'id': 'all',  'name': u'все авторы'},
     {'id': 'none', 'name': u'статьи без автора'}
