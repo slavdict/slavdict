@@ -26,4 +26,8 @@
     vM.entry = {{ entry }};
     ko.applyBindings(vM.entry, $('#main').get(0));
 
+    if (false){
+        $.post('/entries/save/', {data: JSON.stringify(vM.entry)});
+    }
+
 {% endblock %}
