@@ -14,7 +14,7 @@
 
 {% block content %}
 
-    <div data-bind="text:entry.orthvars[0].idem"></div>
+    <div data-bind="text:data.entry.orthvars[0].idem"></div>
 
 {% endblock %}
 
@@ -23,11 +23,14 @@
 
     {{ super() }}
 
-    vM.entry = {{ entry }};
-    ko.applyBindings(vM.entry, $('#main').get(0));
+    vM.entryEdit = {
+        data: {{ entry }},
+        ui: null
+    };
+    ko.applyBindings(vM.entryEdit, $('#main').get(0));
 
     if (false){
-        $.post('/entries/save/', {data: JSON.stringify(vM.entry)});
+        $.post('/entries/save/', {data: JSON.stringify(vM.entryEdit.data)});
     }
 
 {% endblock %}
