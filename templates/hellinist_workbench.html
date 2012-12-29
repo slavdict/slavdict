@@ -10,6 +10,28 @@
 
     <a href="{% url all_entries_url %}" class="header--item button">Вернуться к статьям</a>
 
+    {% if indicators.meaning %}
+        <span class="header--item indicator"
+            data-bind="click: function(){
+                                  vM.filters.hwStatus('M');
+                                  vM.filters.formSubmit();
+                              }" >
+            Необх. для опр. значения:{{ space }}
+            <span>{{ indicators.meaning }}</span>
+        </span>
+    {% endif %}
+
+    {% if indicators.urgent %}
+        <span class="header--item indicator"
+            data-bind="click: function(){
+                                  vM.filters.hwStatus('U');
+                                  vM.filters.formSubmit();
+                              }" >
+            Срочных греч. парал.:{{ space }}
+            <span>{{ indicators.urgent }}</span>
+        </span>
+    {% endif %}
+
 {% endblock %}
 
 {% block subheader %}
