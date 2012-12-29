@@ -13,6 +13,7 @@
     {% if indicators.meaning %}
         <span class="header--item indicator"
             data-bind="click: function(){
+                                  vM.filters.getDefaultState();
                                   vM.filters.hwStatus('M');
                                   vM.filters.formSubmit();
                               }" >
@@ -24,6 +25,7 @@
     {% if indicators.urgent %}
         <span class="header--item indicator"
             data-bind="click: function(){
+                                  vM.filters.getDefaultState();
                                   vM.filters.hwStatus('U');
                                   vM.filters.formSubmit();
                               }" >
