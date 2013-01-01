@@ -14,7 +14,16 @@
 
 {% block content %}
 
-    <div data-bind="text:data.entry.orthvars[0].idem"></div>
+    <div data-bind="text: data.entry.orthvars()[0].idem"></div>
+
+    <input data-bind="value: data.entry.orthvars()[0].idem"/>
+
+{% endblock %}
+
+
+{% block javascript_links %}
+
+    {% include '_script.knockout.mapping.html' %}
 
 {% endblock %}
 
@@ -22,10 +31,13 @@
 {% block javascript %}
 
     {{ super() }}
+    var data = {{ entry }};
 
     vM.entryEdit = {
-        data: {{ entry }},
-        ui: null
+        data: ko.mapping.fromJS(data),
+        ui: {
+            tabs: {}
+        }
     };
     ko.applyBindings(vM.entryEdit, $('#main').get(0));
 
