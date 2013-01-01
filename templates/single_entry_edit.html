@@ -18,6 +18,8 @@
 
     <input data-bind="value: data.entry.orthvars()[0].idem"/>
 
+    <input type="button" value="Сохранить" data-bind="click: save"/>
+
 {% endblock %}
 
 
@@ -39,10 +41,11 @@
             tabs: {}
         }
     };
-    ko.applyBindings(vM.entryEdit, $('#main').get(0));
 
-    if (false){
-        $.post('/entries/save/', {data: JSON.stringify(vM.entryEdit.data)});
-    }
+    vM.entryEdit.save = function() {
+        $.post('/entries/save/', {data: ko.mapping.toJSON(vM.entryEdit.data)});
+    };
+
+    ko.applyBindings(vM.entryEdit, $('#main').get(0));
 
 {% endblock %}
