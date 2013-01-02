@@ -161,7 +161,6 @@ def process_json_model(json_model, post):
         else:
             part['data'] = (data,)
 
-    smth_to_process = True
     new_elements = {}
     deleted_elements = []
     fields2modelnames = {
@@ -181,23 +180,25 @@ def process_json_model(json_model, post):
         'parent_meaning_id': Meaning.__name__,
     }
 
-
     items_and_models = []
     for part in json_model:
         for item in part['data']:
             items_and_models.append((item, part['model']))
-            for prop, model in part['terminals'].items():
-                for subitem in item[prop]:
-                    items_and_models.append((subitem, model))
+            if 'terminals' in part:
+                for prop, model in part['terminals'].items():
+                    for subitem in item[prop]:
+                        items_and_models.append((subitem, model))
+                    del item[prop]
 
-    while smth_to_process:
+    items_to_process = len(items_and_models)
+    while items_to_process:
+        PREVIOUS_VALUE = items_to_process
         for item, ItemModel in items_and_models:
             if '#status#' in item:
                 if item['#status#'] == 'good':
                     continue
             else:
                 item['#status#'] = 'bad'
-                smth_to_process += 1
 
             item_id = item['id']
             in_db = isinstance(item_id, int)
@@ -206,16 +207,21 @@ def process_json_model(json_model, post):
 
             for key, value in [(k, v) for k, v in item.items()
                                if k.endswith('_id')]:
-                if (value in deleted_elements
-                or fields2modelnames[key] + str(value) in deleted_elements):
-                    item['#status#'] = 'good'
-                    smth_to_process -= 1
-                    continue
-                if not isinstance(value, int):
+                if value is not None and not isinstance(value, int):
                     if value in new_elements:
                         item[key] = new_elements[value]
                     else:
                         bad = True
+                if (value in deleted_elements
+                or fields2modelnames[key] + str(value) in deleted_elements):
+                    if in_db:
+                        deleted_elements.append(ItemModel.__name__ +
+                                                str(item_id))
+                    else:
+                        deleted_elements.append(item_id)
+                    item['#status#'] = 'good'
+                    items_to_process -= 1
+                    continue
             if bad:
                 continue
 
@@ -237,7 +243,9 @@ def process_json_model(json_model, post):
                     new_item.save()
                     new_elements[item_id] = new_item.id
             item['#status#'] = 'good'
-            smth_to_process -= 1
+            items_to_process -= 1
 
-        if smth_to_process == 1:
-            smth_to_process = False
+        assert items_to_process!=PREVIOUS_VALUE, u'''Алгоритм сохранения лексемы
+               работает неверно. Значение переменной items_to_process не
+               меняется, поэтому оно не сможет достигнуть нуля и выход из
+               вечного цикла никогда не произойдет.'''
