@@ -1,0 +1,50 @@
+@charset 'utf-8'
+
+
+nav.tabs ul
+    width: 700px
+    overflow: hidden
+    margin: 0
+    padding: 0
+    height: 25px
+
+    li
+        list-style-type: none
+        height: 26px
+        width: 100px
+        cursor: pointer
+        @include transform(perspective(30px) rotateX(7deg))
+        @include transform-style(preserve-3d)
+        @include border-radius(5px 5px 0 0)
+        background-color: #eee
+        position: relative
+        float: left
+        border: 1px solid #aaa
+        border-bottom: none
+        margin-left: -2px
+        @include user-select(none)
+        @include border-radius(4px)
+        @include box-shadow(0 10px 20px rgba(0,0,0,0.4))
+        text-align: center
+        font-family: Arial
+        font-size: 12px
+        color: #777
+
+        &:first-child
+            margin-left: 15px
+            width: 140px
+        &:hover
+            background-color: #F7E9B0
+        &.current
+            background-color: white
+            z-index: 2
+
+        a
+            display: block
+            color: #777
+            margin-top: 5px
+            @include transform(perspective(30px) rotateX(-7deg))
+
+section.tabcontent
+    width: 700px
+    padding-top: 25px

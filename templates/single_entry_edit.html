@@ -14,9 +14,22 @@
 
 {% block content %}
 
-    <div data-bind="text: data.entry.orthvars()[0].idem"></div>
+    <nav class="tabs">
+    <ul>
+        <li class="current"><a href="#info">Справочная инфо</a></li>
+        <li><a href="#etymology">Этимология</a></li>
+        <li><a href="#meanings">Значения</a></li>
+        <li><a href="#examples">Примеры</a></li>
+        <li><a href="#constructions">Конструкции</a></li>
+    </ul>
+    </nav>
 
-    <input data-bind="value: data.entry.orthvars()[0].idem"/>
+    <section id="info" class="tabcontent">
+
+        <div data-bind="text: data.entry.orthvars()[0].idem"></div>
+        <input data-bind="value: data.entry.orthvars()[0].idem"/>
+
+    </section>
 
     <input type="button" value="Сохранить" data-bind="click: save"/>
 
