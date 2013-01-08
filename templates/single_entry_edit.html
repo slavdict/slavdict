@@ -24,11 +24,23 @@
     </ul>
     </nav>
 
-    <section id="info" class="tabcontent">
+    <section id="info" class="tabcontent current">
 
         <div data-bind="text: data.entry.orthvars()[0].idem"></div>
         <input data-bind="value: data.entry.orthvars()[0].idem"/>
 
+    </section>
+
+    <section id="etymology" class="tabcontent">
+    </section>
+
+    <section id="meanings" class="tabcontent">
+    </section>
+
+    <section id="examples" class="tabcontent">
+    </section>
+
+    <section id="constructions" class="tabcontent">
     </section>
 
     <input type="button" value="Сохранить" data-bind="click: save"/>
@@ -60,5 +72,13 @@
     };
 
     ko.applyBindings(vM.entryEdit, $('#main').get(0));
+
+    $('nav.tabs li').click(function(){
+        $('nav.tabs li.current').removeClass('current');
+        $('section.tabcontent.current').removeClass('current');
+        var x = $(this);
+        x.addClass('current');
+        $(x.find('a').attr('href')).addClass('current');
+    });
 
 {% endblock %}
