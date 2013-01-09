@@ -19,6 +19,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import RequestContext
+from django.views.decorators.cache import never_cache
 
 import dictionary.filters
 import dictionary.models
@@ -549,8 +550,22 @@ def antconc2ucs8_converter(request):
     return render_to_response('converter.html', context,
                               RequestContext(request))
 
-
+@never_cache
 def edit_entry(request, id):
-    context = {'entry': dictionary.viewmodels.entry_json(id)}
+    choices = {
+        'editor': dictionary.viewmodels.editAuthors,
+        'entry_status': dictionary.viewmodels.editStatuses,
+        'part_of_speech': dictionary.models.PART_OF_SPEECH_CHOICES,
+    }
+    maps = {
+        'editor': dict(dictionary.viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
+        'entry_status': dict(dictionary.models.STATUS_CHOICES),
+        'part_of_speech': dict(dictionary.models.PART_OF_SPEECH_CHOICES),
+    }
+    context = {
+        'entry': dictionary.viewmodels.entry_json(id),
+        'choices': dictionary.viewmodels._json(choices),
+        'maps': dictionary.viewmodels._json(maps),
+    }
     return render_to_response('single_entry_edit.html', context,
                               RequestContext(request))
