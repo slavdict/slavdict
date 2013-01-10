@@ -54,8 +54,8 @@
 
     <section id="orthvars" class="tabcontent">
 
-        <ul data-bind="foreach: data.entry.orthvars">
-            <li>
+        <ul data-bind="sortable: data.entry.orthvars">
+            <li style="width: 300px; background-color: #ddd; margin-bottom: 5px;">
                 <input data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
             </li>
         </ul>
@@ -83,6 +83,13 @@
 {% block javascript_links %}
 
     {% include '_script.knockout.mapping.html' %}
+
+    <script src="{{ STATIC_URL }}js/libs/jquery-ui-1.9.2.sortable.min.js"
+        type="text/javascript"></script>
+
+    <script src="{{ STATIC_URL }}js/libs/knockout-sortable.min.js"
+        type="text/javascript"></script>
+
     <script src="{{ STATIC_URL }}js/libs/ac2ucs8.js"
         type="text/javascript"></script>
 
@@ -92,6 +99,20 @@
 {% block javascript %}
 
     {{ super() }}
+
+    ko.bindingHandlers.sortable.options = {
+        axis: 'y',
+        cursor: 'move',
+        placeholder: 'ui-state-highlight',
+        tolerance: 'pointer'
+    };
+
+    ko.bindingHandlers.sortable.afterMove = function(arg) {
+        var i, j, arr = arg.targetParent();
+        for (i=0, j=arr.length; i<j; i++) {
+            arr[i].order(i);
+        }
+    };
 
     var data = {{ entry }},
         ac2ucs8 = antconc_ucs8,
@@ -136,9 +157,8 @@
         }
     }, viewModel);
 
-
     uiModel.save = function() {
-        $.post('/entries/save/', {data: ko.mapping.toJSON(vM.entryEdit.data)});
+        $.post('/entries/save/', {data: ko.mapping.toJSON(dataModel)});
     };
 
     uiModel.addOrthvar = function() {
