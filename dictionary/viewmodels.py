@@ -29,7 +29,9 @@ def entry_json(id):
     }
     return _json(data)
 
-EMPTY_OBJECT = {'id': None, 'name': u''}
+EMPTY_STRING_ID_OBJECT = {'id': '', 'name': u''}
+NONE_ID_OBJECT = {'id': None, 'name': u''}
+
 AUTHOR_CHOICES = tuple(
     (user.id, user.__unicode__())
     for user in CustomUser.objects.filter(groups__name=u'authors')
@@ -43,7 +45,7 @@ authors = (
     for u in CustomUser.objects.filter(groups__name=u'authors')
 )
 
-editAuthors = (EMPTY_OBJECT,) + _choices(AUTHOR_CHOICES)
+editAuthors = (NONE_ID_OBJECT,) + _choices(AUTHOR_CHOICES)
 
 canonical_name = (
     {'id': 'all', 'name': u'все имена'},
@@ -98,7 +100,7 @@ tantum = (
 statuses = ({'id': 'all', 'name': u'любой'},) \
         + _choices(dictionary.models.STATUS_CHOICES)
 
-editStatuses = (EMPTY_OBJECT,) + _choices(dictionary.models.STATUS_CHOICES)
+editStatuses = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.STATUS_CHOICES)
 
 
 jsonAuthors = _json(authors)
