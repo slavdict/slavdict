@@ -58,9 +58,36 @@
             data.entry.part_of_speech() === ui.slugs.part_of_speech['noun'] ||
             data.entry.part_of_speech() === ui.slugs.part_of_speech['adjective']">
             <label>
-                <input type="checkbox" data-bind="value: data.entry.uniflected"/>
                 Неизменяемое
+                <input type="checkbox"
+                       data-bind="checked: data.entry.uninflected"/>
             </label>
+        </div>
+
+        <div data-bind="visible:
+            data.entry.part_of_speech() === ui.slugs.part_of_speech['noun']">
+
+            <label>
+                Форма Р. падежа
+                <input data-bind="value: data.entry.genitive"/>
+            </label>
+
+            <label>
+                Род
+                <select data-bind="options: ui.choices.gender,
+                    value: data.entry.gender, optionsText: 'name',
+                    optionsValue: 'id'">
+                </select>
+            </label>
+
+            <label>
+                Число
+                <select data-bind="options: ui.choices.tantum,
+                    value: data.entry.tantum, optionsText: 'name',
+                    optionsValue: 'id'">
+                </select>
+            </label>
+
         </div>
 
     </section>

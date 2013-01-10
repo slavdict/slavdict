@@ -58,6 +58,8 @@ genders = (
     {'id': 'none', 'name': u'где род не указан'},
 ) + _choices(dictionary.models.GENDER_CHOICES)
 
+editGenders = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.GENDER_CHOICES)
+
 greqSortbase = (
     {'id': 'id',   'name': u'в порядке добавления примеров'},
     {'id': 'addr', 'name': u'по адресу примера'},
@@ -96,6 +98,8 @@ tantum = (
     {'id': 'all',  'name': u'любое'},
     {'id': 'none', 'name': u'где число не указано'},
 ) + _choices(dictionary.models.TANTUM_CHOICES)
+
+editTantum = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.TANTUM_CHOICES)
 
 statuses = ({'id': 'all', 'name': u'любой'},) \
         + _choices(dictionary.models.STATUS_CHOICES)

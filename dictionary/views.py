@@ -555,13 +555,17 @@ def edit_entry(request, id):
     choices = {
         'editor': dictionary.viewmodels.editAuthors,
         'entry_status': dictionary.viewmodels.editStatuses,
+        'gender': dictionary.viewmodels.editGenders,
         'part_of_speech': dictionary.viewmodels._choices(
                                 dictionary.models.PART_OF_SPEECH_CHOICES),
+        'tantum': dictionary.viewmodels.editTantum,
     }
     labels = {
         'editor': dict(dictionary.viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
         'entry_status': dict(dictionary.models.STATUS_CHOICES),
+        'gender': dict(dictionary.models.GENDER_CHOICES),
         'part_of_speech': dict(dictionary.models.PART_OF_SPEECH_CHOICES),
+        'tantum': dict(dictionary.models.TANTUM_CHOICES)
     }
     slugs = {
         'part_of_speech': dictionary.models.PART_OF_SPEECH_MAP,
