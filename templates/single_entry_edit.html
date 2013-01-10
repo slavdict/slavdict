@@ -56,7 +56,11 @@
 
         <ul data-bind="sortable: data.entry.orthvars">
             <li style="width: 300px; background-color: #ddd; margin-bottom: 5px;">
+                <input type="button" value="&times;"
+                    data-bind="click:
+                        $root.ui.destroyOrthvar.bind(null, $data)"/>
                 <input data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
+                <span class="cslav" data-bind="text: idem_ucs"></span>
             </li>
         </ul>
 
@@ -100,6 +104,45 @@
 
     {{ super() }}
 
+    var Orthvar = function(options, entry) {
+            this.idem = ko.observable(options.data && options.data.idem || '')
+            this.idem_ucs = ko.computed(
+                function(){ return ac2ucs8(this.idem(), false); },
+                this
+            );
+            this.order = ko.observable();
+            Orthvar.counter++;
+
+            if (typeof options.data !== 'undefined') {
+                this.entry_id = options.data.entry_id;
+                this.id = options.data.id;
+                this.order(options.data.order);
+            } else {
+                this.entry_id = entry.id;
+                this.id = 'orthvar' + Orthvar.counter;
+                this.order(Orthvar.largestOrder + 1);
+            }
+
+            if (Orthvar.largestOrder < this.order()) {
+                Orthvar.largestOrder = this.order();
+            }
+        },
+
+        mapping = {
+            orthvars: {
+                create: function(options){ return new Orthvar(options); }
+            }
+        },
+
+        ac2ucs8 = antconc_ucs8,
+        ac2cvlr = antconc_civilrus_word,
+        data = {{ entry }};
+
+    Orthvar.counter = 0;
+    Orthvar.largestOrder = 0;
+
+    ko.mapping.defaultOptions().ignore.splice(0, 0, 'idem_ucs');
+
     ko.bindingHandlers.sortable.options = {
         axis: 'y',
         cursor: 'move',
@@ -114,12 +157,10 @@
         }
     };
 
-    var data = {{ entry }},
-        ac2ucs8 = antconc_ucs8,
-        ac2cvlr = antconc_civilrus_word;
+
 
     vM.entryEdit = {
-        data: ko.mapping.fromJS(data),
+        data: ko.mapping.fromJS(data, mapping),
         ui: {
             entry: {},
             maps: {{ maps }},
@@ -131,16 +172,9 @@
         dataModel = viewModel.data,
         uiModel = viewModel.ui,
         dataEntry = dataModel.entry,
-        uiEntry = uiModel.entry,
+        uiEntry = uiModel.entry;
 
-        Orthvar = function(entry) {
-            this.idem = ko.observable('');
-            this.entry_id = entry.id;
-            this.id = 'orthvar' + Orthvar.counter++;
-            this.order = ko.observable(entry.orthvars.length);
-        };
 
-    Orthvar.counter = 1;
 
     uiEntry.headword = ko.computed(function(){
         return ac2ucs8(this.orthvars()[0].idem(), false)
@@ -158,11 +192,19 @@
     }, viewModel);
 
     uiModel.save = function() {
-        $.post('/entries/save/', {data: ko.mapping.toJSON(dataModel)});
+        $.post('/entries/save/', {data: ko.mapping.toJSON(dataModel, mapping)});
     };
 
     uiModel.addOrthvar = function() {
-        this.orthvars.push(new Orthvar(this));
+        this.orthvars.push(new Orthvar({}, this));
+    }.bind(dataEntry);
+
+    uiModel.destroyOrthvar = function(orthvar) {
+        if (typeof orthvar.id === 'number') {
+            this.orthvars.destroy(orthvar);
+        } else {
+            this.orthvars.remove(orthvar);
+        }
     }.bind(dataEntry);
 
     ko.applyBindings(viewModel, $('#main').get(0));
