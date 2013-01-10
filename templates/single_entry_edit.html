@@ -49,6 +49,19 @@
 
     <section id="info" class="tabcontent current">
 
+        <select data-bind="options: ui.choices.part_of_speech,
+            value: data.entry.part_of_speech, optionsText: 'name',
+            optionsValue: 'id'">
+        </select>
+
+        <div data-bind="visible:
+            data.entry.part_of_speech() === ui.slugs.part_of_speech['noun'] ||
+            data.entry.part_of_speech() === ui.slugs.part_of_speech['adjective']">
+            <label>
+                <input type="checkbox" data-bind="value: data.entry.uniflected"/>
+                Неизменяемое
+            </label>
+        </div>
 
     </section>
 
@@ -163,8 +176,9 @@
         data: ko.mapping.fromJS(data, mapping),
         ui: {
             entry: {},
-            maps: {{ maps }},
-            choices: {{ choices }}
+            choices: {{ choices }},
+            labels: {{ labels }},
+            slugs: {{ slugs }}
         }
     };
 
@@ -182,7 +196,7 @@
 
     uiEntry.part_of_speech = ko.computed(function(){
         var x = this.data.entry.part_of_speech(),
-            y = this.ui.maps.part_of_speech;
+            y = this.ui.labels.part_of_speech;
         if (x in y) {
             return y[x];
         } else {

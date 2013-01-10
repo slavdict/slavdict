@@ -555,17 +555,22 @@ def edit_entry(request, id):
     choices = {
         'editor': dictionary.viewmodels.editAuthors,
         'entry_status': dictionary.viewmodels.editStatuses,
-        'part_of_speech': dictionary.models.PART_OF_SPEECH_CHOICES,
+        'part_of_speech': dictionary.viewmodels._choices(
+                                dictionary.models.PART_OF_SPEECH_CHOICES),
     }
-    maps = {
+    labels = {
         'editor': dict(dictionary.viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
         'entry_status': dict(dictionary.models.STATUS_CHOICES),
         'part_of_speech': dict(dictionary.models.PART_OF_SPEECH_CHOICES),
     }
+    slugs = {
+        'part_of_speech': dictionary.models.PART_OF_SPEECH_MAP,
+    }
     context = {
         'entry': dictionary.viewmodels.entry_json(id),
         'choices': dictionary.viewmodels._json(choices),
-        'maps': dictionary.viewmodels._json(maps),
+        'labels': dictionary.viewmodels._json(labels),
+        'slugs': dictionary.viewmodels._json(slugs),
     }
     return render_to_response('single_entry_edit.html', context,
                               RequestContext(request))
