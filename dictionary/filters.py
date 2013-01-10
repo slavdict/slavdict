@@ -39,13 +39,23 @@ def get_entries(form):
         FILTER_PARAMS['civil_equivalent__istartswith'] = find
 
 
-    def _set_enumerable_param(param, model_property=None):
+    def _set_enumerable_param(param, none_value, model_property=None):
+        """ none_value := "NULL" | "EMPTY_STRING" | "DOESNT_HAVE"
+        определяет имеется ли среди значений UI-виджета значение 'none'
+        и, если да, то соответствует ли ему в базе пустая строка или NULL.
+        """
+        assert (none_value == "NULL" or none_value == "EMPTY_STRING"
+                or none_value == "DOESNT_HAVE"), u'Неверное значение параметра'
+
         model_property = model_property or param
         value = form[param] or 'all'
         if value=='all':
             pass
         elif value=='none':
-            FILTER_PARAMS[model_property + '__isnull'] = True
+            if none_value=='NULL':
+                FILTER_PARAMS[model_property + '__isnull'] = True
+            else:
+                FILTER_PARAMS[model_property] = ''
         elif value.isdigit():
             FILTER_PARAMS[model_property] = int(value)
         elif len(value) == 1 and value.isalpha():
@@ -54,28 +64,29 @@ def get_entries(form):
             PARSING_ERRORS.append(param)
 
     # Автор статьи
-    _set_enumerable_param('author', 'editor')
+    _set_enumerable_param('author', none_value='NULL', model_property='editor')
 
     # Статус статьи
-    _set_enumerable_param('status')
+    _set_enumerable_param('status', none_value='DOESNT_HAVE')
 
     # Часть речи
-    _set_enumerable_param('pos', 'part_of_speech')
+    _set_enumerable_param('pos', none_value='EMPTY_STRING',
+                           model_property='part_of_speech')
 
     # Род
-    _set_enumerable_param('gender')
+    _set_enumerable_param('gender', none_value='EMPTY_STRING')
 
     # Число
-    _set_enumerable_param('tantum')
+    _set_enumerable_param('tantum', none_value='EMPTY_STRING')
 
     # Тип имени собственного
-    _set_enumerable_param('onym')
+    _set_enumerable_param('onym', none_value='EMPTY_STRING')
 
     # Каноническое имя
-    _set_enumerable_param('canonical_name')
+    _set_enumerable_param('canonical_name', none_value='DOESNT_HAVE')
 
     # Притяжательность
-    _set_enumerable_param('possessive')
+    _set_enumerable_param('possessive', none_value='DOESNT_HAVE')
 
     # Омонимы
     if form['homonym']:
