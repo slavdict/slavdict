@@ -118,6 +118,23 @@
 
         </div>
 
+        <div data-bind="visible:
+            data.entry.part_of_speech() === ui.slugs.part_of_speech['adjective']">
+
+            <label>
+                Краткая форма
+                <input data-bind="value: data.entry.short_form,
+                                  valueUpdate: 'afterkeydown'"/>
+            </label>
+
+            <span class="cslav" data-bind="text: ui.entry.short_form"></span>
+
+            Притяжательное
+            <input type="checkbox"
+                   data-bind="checked: data.entry.possessive"/>
+
+        </div>
+
     </section>
 
     <section id="orthvars" class="tabcontent">
@@ -252,6 +269,7 @@
     uiEntry.genitive = ko.computed(wax, dataEntry.genitive);
     uiEntry.headword = ko.computed(wax, dataEntry.orthvars()[0].idem);
     uiEntry.nom_sg = ko.computed(wax, dataEntry.nom_sg);
+    uiEntry.short_form = ko.computed(wax, dataEntry.short_form);
 
     uiEntry.part_of_speech = ko.computed(function(){
         var x = this.data.entry.part_of_speech(),
