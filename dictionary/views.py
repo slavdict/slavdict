@@ -562,7 +562,8 @@ def edit_entry(request, id):
         'gender': dictionary.viewmodels.editGenders,
         'onym': dictionary.viewmodels.editOnyms,
         'part_of_speech': dictionary.viewmodels._choices(
-                                dictionary.models.PART_OF_SPEECH_CHOICES),
+                            dictionary.models.PART_OF_SPEECH_CHOICES),
+        'participle_type': dictionary.viewmodels.editParticiples,
         'tantum': dictionary.viewmodels.editTantum,
     }
     labels = {
@@ -571,6 +572,7 @@ def edit_entry(request, id):
         'gender': dict(dictionary.models.GENDER_CHOICES),
         'onym': dict(dictionary.models.ONYM_CHOICES),
         'part_of_speech': dict(dictionary.models.PART_OF_SPEECH_CHOICES),
+        'participle_type': dict(dictionary.models.PARTICIPLE_CHOICES),
         'tantum': dict(dictionary.models.TANTUM_CHOICES)
     }
     slugs = {

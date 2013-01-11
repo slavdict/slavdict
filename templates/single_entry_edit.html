@@ -161,13 +161,26 @@
             <span class="cslav" data-bind="text: ui.entry.sg2"></span>
 
             <ul data-bind="sortable: data.entry.participles">
-                <li style="width: 300px; background-color: #ddd;
+                <li style="width: 600px; background-color: #ddd;
                            margin-bottom: 5px;">
+
                     <input type="button" value="&times;"
                         data-bind="click:
                             $root.ui.destroyParticiple.bind(null, $data)"/>
+
+                    <label>
+                        Тип причастия
+                        <select data-bind="
+                            options: $root.ui.choices.participle_type,
+                            value: tp, optionsText: 'name',
+                            optionsValue: 'id'">
+                        </select>
+                    </label>
+
                     <input data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
+
                     <span class="cslav" data-bind="text: idem_ucs"></span>
+
                 </li>
             </ul>
 
@@ -253,7 +266,6 @@
             this.idem = ko.observable(options.data && options.data.idem || '');
             this.idem_ucs = ko.computed(wax, this.idem);
             this.order = ko.observable();
-            Orthvar.counter++;
 
             if (typeof options.data !== 'undefined') {
                 this.entry_id = options.data.entry_id;
@@ -265,6 +277,8 @@
                 this.order(Orthvar.largestOrder + 1);
             }
 
+            Orthvar.counter++;
+
             if (Orthvar.largestOrder < this.order()) {
                 Orthvar.largestOrder = this.order();
             }
@@ -273,7 +287,7 @@
             this.idem = ko.observable(options.data && options.data.idem || '');
             this.idem_ucs = ko.computed(wax, this.idem);
             this.order = ko.observable();
-            Participle.counter++;
+            this.tp = ko.observable(options.data && options.data.tp || '');
 
             if (typeof options.data !== 'undefined') {
                 this.entry_id = options.data.entry_id;
@@ -284,6 +298,8 @@
                 this.id = 'participle' + Participle.counter;
                 this.order(Participle.largestOrder + 1);
             }
+
+            Participle.counter++;
 
             if (Participle.largestOrder < this.order()) {
                 Participle.largestOrder = this.order();
