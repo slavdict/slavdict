@@ -194,7 +194,7 @@
     <section id="orthvars" class="tabcontent">
 
         <ul data-bind="sortable: data.entry.orthvars">
-            <li style="width: 300px; background-color: #ddd; margin-bottom: 5px;">
+            <li style="width: 600px; background-color: #ddd; margin-bottom: 5px;">
                 <input type="button" value="&times;"
                     data-bind="click:
                         $root.ui.destroyOrthvar.bind(null, $data)"/>
@@ -209,6 +209,15 @@
     </section>
 
     <section id="meanings" class="tabcontent">
+
+        <ul data-bind="sortable: data.meanings">
+            <li style="width: 600px; background-color: #ddd; margin-bottom: 5px;">
+                <span data-bind="visible: metaphorical">►</span>
+                <span data-bind="text: meaning"></span>
+                <i data-bind="text: gloss"></i>
+            </li>
+        </ul>
+
     </section>
 
     <section id="examples" class="tabcontent">
@@ -216,9 +225,6 @@
 
     <section id="constructions" class="tabcontent">
     </section>
-
-    <input type="button" value="Сохранить" data-bind="click: ui.save"
-        style="margin-top: 150px;"/>
 
 {% endblock %}
 
@@ -283,6 +289,7 @@
                 Orthvar.largestOrder = this.order();
             }
         },
+        Meaning = function(options) {},
         Participle = function(options, entry) {
             this.idem = ko.observable(options.data && options.data.idem || '');
             this.idem_ucs = ko.computed(wax, this.idem);
@@ -370,6 +377,10 @@
     uiModel.save = function() {
         $.post('/entries/save/', {data: ko.mapping.toJSON(dataModel, mapping)});
     };
+
+    uiModel.addMeaing = function() {
+        this.meanings.push(new Meaning({}));
+    }.bind(dataModel);
 
     uiModel.addOrthvar = function() {
         this.orthvars.push(new Orthvar({}, this));

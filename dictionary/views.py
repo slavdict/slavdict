@@ -554,6 +554,8 @@ def antconc2ucs8_converter(request):
     return render_to_response('converter.html', context,
                               RequestContext(request))
 
+
+@login_required
 @never_cache
 def edit_entry(request, id):
     choices = {
