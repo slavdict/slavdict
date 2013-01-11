@@ -73,6 +73,8 @@ onyms = (
     {'id': 'none', 'name': u'не имя собственное'},
 ) + _choices(dictionary.models.ONYM_CHOICES)
 
+editOnyms = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.ONYM_CHOICES)
+
 pos = (
     {'id': 'all',  'name': u'любая'},
     {'id': 'none', 'name': u'где часть речи не указана'},

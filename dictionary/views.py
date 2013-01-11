@@ -556,6 +556,7 @@ def edit_entry(request, id):
         'editor': dictionary.viewmodels.editAuthors,
         'entry_status': dictionary.viewmodels.editStatuses,
         'gender': dictionary.viewmodels.editGenders,
+        'onym': dictionary.viewmodels.editOnyms,
         'part_of_speech': dictionary.viewmodels._choices(
                                 dictionary.models.PART_OF_SPEECH_CHOICES),
         'tantum': dictionary.viewmodels.editTantum,
@@ -564,10 +565,12 @@ def edit_entry(request, id):
         'editor': dict(dictionary.viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
         'entry_status': dict(dictionary.models.STATUS_CHOICES),
         'gender': dict(dictionary.models.GENDER_CHOICES),
+        'onym': dict(dictionary.models.ONYM_CHOICES),
         'part_of_speech': dict(dictionary.models.PART_OF_SPEECH_CHOICES),
         'tantum': dict(dictionary.models.TANTUM_CHOICES)
     }
     slugs = {
+        'onym': dictionary.models.ONYM_MAP,
         'part_of_speech': dictionary.models.PART_OF_SPEECH_MAP,
     }
     context = {

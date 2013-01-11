@@ -88,6 +88,34 @@
                 </select>
             </label>
 
+            <label>
+                Тип имени собственного
+                <select data-bind="options: ui.choices.onym,
+                    value: data.entry.onym, optionsText: 'name',
+                    optionsValue: 'id'">
+                </select>
+            </label>
+
+            <label data-bind="visible:
+                data.entry.onym() == ui.slugs.onym['anthroponym']">
+                Каноническое
+                <input type="checkbox"
+                       data-bind="checked: data.entry.canonical_name"/>
+            </label>
+
+            <div data-bind="visible:
+                data.entry.onym() == ui.slugs.onym['ethnonym']">
+
+                <label>
+                    И.ед.м.
+                    <input data-bind="value: data.entry.nom_sg,
+                                      valueUpdate: 'afterkeydown'"/>
+                </label>
+
+                <span class="cslav" data-bind="text: ui.entry.nom_sg"></span>
+
+            </div>
+
         </div>
 
     </section>
@@ -218,7 +246,7 @@
 
 
     uiEntry.headword = ko.computed(function(){
-        return ac2ucs8(this.orthvars()[0].idem(), false)
+        return ac2ucs8(this.orthvars()[0].idem(), false);
     }, dataEntry);
 
     uiEntry.part_of_speech = ko.computed(function(){
@@ -231,6 +259,10 @@
             return '';
         }
     }, viewModel);
+
+    uiEntry.nom_sg = ko.computed(function(){
+        return ac2ucs8(this.nom_sg(), false);
+    }, dataEntry);
 
     uiModel.save = function() {
         $.post('/entries/save/', {data: ko.mapping.toJSON(dataModel, mapping)});
