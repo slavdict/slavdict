@@ -53,3 +53,37 @@ section.tabcontent
 
     &.current
         display: block
+
+
+
+
+
+.edit,
+.edit *
+    font-size: 11px
+    line-height: 18px
+
+.edit
+    @include myFormWidgets
+    background-color: white
+    font-family: $sansFont
+    position: relative
+    text-align: left
+
+    input
+        @include box-sizing(border-box)
+
+    span.headword
+        font-size: 18px !important
+
+    ul[data-bind^="sortable"] li
+        width: 560px
+        padding: 5px
+        margin-bottom: 5px
+        background-color: #ddd
+
+        &.sortable-placeholder
+            background-color: orange
+
+    span.cslav
+        font-size: 16px !important
