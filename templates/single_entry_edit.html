@@ -124,7 +124,8 @@
         </div>
 
         <div data-bind="visible:
-            data.entry.part_of_speech() === ui.slugs.part_of_speech['adjective']">
+                            data.entry.part_of_speech() ===
+                            ui.slugs.part_of_speech['adjective']">
 
             <label>
                 Краткая форма
@@ -137,6 +138,27 @@
             Притяжательное
             <input type="checkbox"
                    data-bind="checked: data.entry.possessive"/>
+
+        </div>
+
+        <div data-bind="visible:
+            data.entry.part_of_speech() === ui.slugs.part_of_speech['verb']">
+
+            <label>
+                Форма 1ед.
+                <input data-bind="value: data.entry.sg1,
+                                  valueUpdate: 'afterkeydown'"/>
+            </label>
+
+            <span class="cslav" data-bind="text: ui.entry.sg1"></span>
+
+            <label>
+                Форма 2ед.
+                <input data-bind="value: data.entry.sg2,
+                                  valueUpdate: 'afterkeydown'"/>
+            </label>
+
+            <span class="cslav" data-bind="text: ui.entry.sg2"></span>
 
         </div>
 
@@ -274,6 +296,8 @@
     uiEntry.genitive = ko.computed(wax, dataEntry.genitive);
     uiEntry.headword = ko.computed(wax, dataEntry.orthvars()[0].idem);
     uiEntry.nom_sg = ko.computed(wax, dataEntry.nom_sg);
+    uiEntry.sg1 = ko.computed(wax, dataEntry.sg1);
+    uiEntry.sg2 = ko.computed(wax, dataEntry.sg2);
     uiEntry.short_form = ko.computed(wax, dataEntry.short_form);
 
     uiEntry.part_of_speech = ko.computed(function(){
