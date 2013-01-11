@@ -160,6 +160,20 @@
 
             <span class="cslav" data-bind="text: ui.entry.sg2"></span>
 
+            <ul data-bind="sortable: data.entry.participles">
+                <li style="width: 300px; background-color: #ddd;
+                           margin-bottom: 5px;">
+                    <input type="button" value="&times;"
+                        data-bind="click:
+                            $root.ui.destroyParticiple.bind(null, $data)"/>
+                    <input data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
+                    <span class="cslav" data-bind="text: idem_ucs"></span>
+                </li>
+            </ul>
+
+            <input type="button" value="Добавить причастие"
+                data-bind="click: ui.addParticiple"/>
+
         </div>
 
     </section>
@@ -219,6 +233,9 @@
     var mapping = {
             orthvars: {
                 create: function(options){ return new Orthvar(options); }
+            },
+            participles: {
+                create: function(options){ return new Participle(options); }
             }
         },
 
@@ -252,11 +269,34 @@
                 Orthvar.largestOrder = this.order();
             }
         },
+        Participle = function(options, entry) {
+            this.idem = ko.observable(options.data && options.data.idem || '');
+            this.idem_ucs = ko.computed(wax, this.idem);
+            this.order = ko.observable();
+            Participle.counter++;
+
+            if (typeof options.data !== 'undefined') {
+                this.entry_id = options.data.entry_id;
+                this.id = options.data.id;
+                this.order(options.data.order);
+            } else {
+                this.entry_id = entry.id;
+                this.id = 'participle' + Participle.counter;
+                this.order(Participle.largestOrder + 1);
+            }
+
+            if (Participle.largestOrder < this.order()) {
+                Participle.largestOrder = this.order();
+            }
+        },
 
         data = {{ entry }};
 
     Orthvar.counter = 0;
     Orthvar.largestOrder = 0;
+
+    Participle.counter = 0;
+    Participle.largestOrder = 0;
 
     ko.mapping.defaultOptions().ignore.splice(0, 0, 'idem_ucs');
 
@@ -324,6 +364,18 @@
             this.orthvars.destroy(orthvar);
         } else {
             this.orthvars.remove(orthvar);
+        }
+    }.bind(dataEntry);
+
+    uiModel.addParticiple = function() {
+        this.participles.push(new Participle({}, this));
+    }.bind(dataEntry);
+
+    uiModel.destroyParticiple = function(item) {
+        if (typeof item.id === 'number') {
+            this.participles.destroy(item);
+        } else {
+            this.participles.remove(item);
         }
     }.bind(dataEntry);
 
