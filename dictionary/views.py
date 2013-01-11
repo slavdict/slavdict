@@ -499,6 +499,10 @@ def hellinist_workbench(request):
         'form': form,
         'jsonExamples': dictionary.viewmodels._json(vM_examples),
         'number_of_examples': paginator.count,
+        'indicators': {
+            'urgent': Example.objects.filter(greek_eq_status=u'U').count(),
+            'meaning': Example.objects.filter(greek_eq_status=u'M').count(),
+            },
         'page': page,
         'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
         'title': u'Греческий кабинет',

@@ -109,6 +109,7 @@ class Meaningfull:
     def has_meanings(self):
         return self.meaning_set.exists()
 
+BLANK_CHOICE = (('',''),)
 
 PART_OF_SPEECH_CHOICES = (
     ('a', u'сущ.'),
@@ -183,11 +184,19 @@ TRANSITIVITY_MAP = {
     'intransitive': 'i',
 }
 
+# TODO: Должен остаться только один
+# из этих двух списков для причастий.
 PARTICIPLE_TYPE_CHOICES = (
     ('a', u'действ. прич. наст. вр.'),
     ('b', u'действ. прич. прош. вр.'),
     ('c', u'страд. прич. наст. вр.'),
     ('d', u'страд. прич. прош. вр.'),
+)
+PARTICIPLE_CHOICES = (
+    ('1', u'действ. прич. наст. вр.'),
+    ('2', u'действ. прич. прош. вр.'),
+    ('3', u'страд. прич. наст. вр.'),
+    ('4', u'страд. прич. прош. вр.'),
 )
 PARTICIPLE_TYPE_MAP = {
     'pres_act': 'a',
@@ -308,7 +317,7 @@ class Entry(models.Model, Meaningfull):
             импорте заготовок статей.''', default=False)
 
     part_of_speech = CharField(u'часть речи', max_length=1,
-            choices=PART_OF_SPEECH_CHOICES, default='')
+            choices=BLANK_CHOICE + PART_OF_SPEECH_CHOICES, default='')
 
     def is_part_of_speech(self, slug):
         return PART_OF_SPEECH_MAP[slug] == self.part_of_speech
@@ -320,14 +329,14 @@ class Entry(models.Model, Meaningfull):
             словоформ через запятую''', blank=True)
 
     # только для существительных
-    tantum = CharField(u'число', choices=TANTUM_CHOICES, max_length=1,
-            blank=True, default='')
+    tantum = CharField(u'число', choices=TANTUM_CHOICES,
+                       max_length=1, blank=True, default='')
 
     def is_tantum(self, slug):
         return TANTUM_MAP[slug] == self.tantum
 
-    gender = CharField(u'род', choices=GENDER_CHOICES, max_length=1,
-            blank=True, default='')
+    gender = CharField(u'род', choices=GENDER_CHOICES,
+                       max_length=1, blank=True, default='')
 
     def is_gender(self, slug):
         return GENDER_MAP[slug] == self.gender
@@ -338,8 +347,8 @@ class Entry(models.Model, Meaningfull):
     def genitive_ucs_wax(self):
         return ucs_affix_or_word(self.genitive)
 
-    onym = CharField(u'тип имени собственного', max_length=1,
-                     choices=ONYM_CHOICES, blank=True, default='')
+    onym = CharField(u'тип имени собственного', max_length=1, blank=True,
+                     choices=ONYM_CHOICES, default='')
 
     def is_onym(self, slug):
         return ONYM_MAP[slug] == self.onym
@@ -366,8 +375,8 @@ class Entry(models.Model, Meaningfull):
                               help_text=u'Притяжательное прилагательное.')
 
     # только для глаголов
-    transitivity = CharField(u'переходность', max_length=1,
-                        choices=TRANSITIVITY_CHOICES, blank=True, default='')
+    transitivity = CharField(u'переходность', max_length=1, blank=True,
+                             choices=TRANSITIVITY_CHOICES, default='')
 
     def is_transitivity(self, slug):
         return TRANSITIVITY_MAP[slug] == self.transitivity
@@ -388,8 +397,8 @@ class Entry(models.Model, Meaningfull):
     def sg2_ucs_wax(self):
         return ucs_affix_or_word(self.sg2)
 
-    participle_type = CharField(u'тип причастия', max_length=1,
-                    choices=PARTICIPLE_TYPE_CHOICES, blank=True, default='')
+    participle_type = CharField(u'тип причастия', max_length=1, blank=True,
+                                choices=PARTICIPLE_TYPE_CHOICES, default='')
 
     def is_participle_type(self, slug):
         return PARTICIPLE_TYPE_MAP[slug] == self.participle_type
@@ -789,7 +798,8 @@ class Meaning(models.Model):
 
     substantivus = BooleanField(u'в роли сущ.')
     substantivus_type = CharField(u'форма субстантива', max_length=1,
-                    choices=SUBSTANTIVUS_TYPE_CHOICES, blank=True, default='')
+                                  choices=SUBSTANTIVUS_TYPE_CHOICES,
+                                  blank=True, default='')
 
     def is_substantivus_type(self, slug):
         return SUBSTANTIVUS_TYPE_MAP[slug] == self.substantivus_type
@@ -1308,12 +1318,7 @@ class Participle(models.Model):
     # словарная статья, к которой относится данная словоформа
     entry = ForeignKey(Entry, blank=True, null=True)
 
-    PARTICIPLE_CHOICES = (
-        ('1', u'действ. прич. наст. вр.'),
-        ('2', u'действ. прич. прош. вр.'),
-        ('3', u'страд. прич. наст. вр.'),
-        ('4', u'страд. прич. прош. вр.'),
-    )
+    PARTICIPLE_CHOICES = PARTICIPLE_CHOICES
 
     tp = CharField(u'тип причастия', max_length=2, choices=PARTICIPLE_CHOICES)
     idem = CharField(u'словоформа', max_length=50)

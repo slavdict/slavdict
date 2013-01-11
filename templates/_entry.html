@@ -103,10 +103,6 @@
                       not entry.is_part_of_speech("number") %}
                 <i>{{ entry.get_part_of_speech_display() }}</i>
                 {% endif %}
-            {% else %}
-                {% if show_additional_info %}
-                <span class="noaddress">Не указана часть речи!</span>
-                {% endif %}
             {% endif %}
 
             {{ space }}
