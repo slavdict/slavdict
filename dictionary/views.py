@@ -19,6 +19,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import RequestContext
+from django.views.decorators.cache import never_cache
 
 import dictionary.filters
 import dictionary.models
@@ -63,11 +64,8 @@ def all_entries(request, is_paged=False):
 
     entries = Entry.objects.all()
     if httpGET_FIND:
-        query = (
-            Q(civil_equivalent__startswith=httpGET_FIND.lower())
-            |
-            Q(civil_equivalent__startswith=httpGET_FIND.capitalize())
-        )
+        query = (Q(civil_equivalent__startswith=httpGET_FIND.lower()) |
+                 Q(civil_equivalent__startswith=httpGET_FIND.capitalize()))
         entries = entries.filter(query)
 
     if httpGET_AUTHOR:
@@ -115,17 +113,19 @@ def all_entries(request, is_paged=False):
         entries = list(entries)
         entries.sort(key=lambda entry: entry.civil_equivalent)
 
-    # Формирование заголовка страницы в зависимости от переданных GET-параметров
+    # Формирование заголовка страницы в зависимости от переданных
+    # GET-параметров
     if httpGET_DUPLICATES:
         title = u'Статьи-дубликаты'
     else:
         if httpGET_AUTHOR:
-            title = u'Статьи автора „%s“' % CustomUser.objects.get(username=httpGET_AUTHOR)
+            title = u'Статьи автора „{0}“'.format(
+                    CustomUser.objects.get(username=httpGET_AUTHOR))
         else:
             title = u'Все статьи'
 
     if httpGET_FIND:
-        title += u', начинающиеся на „%s-“' % httpGET_FIND
+        title += u', начинающиеся на „{0}-“'.format(httpGET_FIND)
 
     entries = sorted(entries, key=entry_key)
     if is_paged:
@@ -142,8 +142,8 @@ def all_entries(request, is_paged=False):
     else:
         page = None
 
-    show_additional_info = httpGET_SHOWAI or \
-        'ai' in request.COOKIES and not httpGET_HIDENUMBERS,
+    show_additional_info = (httpGET_SHOWAI or
+            'ai' in request.COOKIES and not httpGET_HIDENUMBERS)
     if httpGET_HIDEAI:
         show_additional_info = False
 
@@ -164,11 +164,13 @@ def all_entries(request, is_paged=False):
             )
         ),
         }
-    return render_to_response('all_entries.html', context, RequestContext(request))
+    return render_to_response('all_entries.html',
+                              context, RequestContext(request))
 
 
 @login_required
-def single_entry(request, entry_id, extra_context=None, template='single_entry.html'):
+def single_entry(request, entry_id, extra_context=None,
+                 template='single_entry.html'):
     if not extra_context:
         extra_context = {}
     entry = get_object_or_404(Entry, id=entry_id)
@@ -176,9 +178,8 @@ def single_entry(request, entry_id, extra_context=None, template='single_entry.h
 
     if request.path.endswith('intermed/'):
         user_groups = [t[0] for t in user.groups.values_list('name')]
-        if not entry.editor or user.is_superuser \
-        or 'editors' in user_groups or 'admins' in user_groups \
-        or user == entry.editor:
+        if (not entry.editor or user.is_superuser or 'editors' in user_groups
+        or 'admins' in user_groups or user == entry.editori):
             pass
         else:
             return redirect(entry.get_absolute_url())
@@ -213,36 +214,51 @@ def import_csv_billet(request):
         if form.is_valid():
 
             csvfile = request.FILES['csvfile']
-            csv_reader = unicode_csv.UnicodeReader(csvfile, dialect=unicode_csv.calc, encoding='utf-8')
+            csv_reader = unicode_csv.UnicodeReader(csvfile,
+                    dialect=unicode_csv.calc, encoding='utf-8')
 
             output = StringIO.StringIO()
-            csv_writer = unicode_csv.UnicodeWriter(output, dialect=unicode_csv.calc, encoding='utf-8')
+            csv_writer = unicode_csv.UnicodeWriter(output,
+                    dialect=unicode_csv.calc, encoding='utf-8')
 
-            csv_writer.writerow(csv_reader.next()) # Первую строку, в ней обязаны быть заголовки,
-            # упреждающе записываем в возможный файл возврата конфликтующих csv-записей.
+            # Первую строку, -- в ней обязаны быть заголовки, --
+            # упреждающе записываем в возможный файл возврата конфликтующих
+            # csv-записей.
+            csv_writer.writerow(csv_reader.next())
 
-            idems = OrthographicVariant.objects.all().values_list('idem') # Список списков, каждый из которых содержит один элемент.
-            idems = [x[0] for x in idems] # Переходим от списка списков к списку самих элементов (орфографических вариантов).
-            idems = set(idems) # Оформляем орф.варианты в виде множества, а не списка
+            # Список списков, каждый из которых содержит один элемент.
+            idems = OrthographicVariant.objects.all().values_list('idem')
+
+            # Переходим от списка списков к списку самих элементов
+            # (орфографических вариантов).
+            idems = [x[0] for x in idems]
+
+            # Оформляем орф.варианты в виде множества, а не списка
+            idems = set(idems)
+
             authors = CustomUser.objects.all()
 
             orthvar_collisions = False
             csv_authors = {u'': None}
 
-            # Регулярное выражение для отыскания любой черты (прямой, косой, обратной косой),
-            # обрамленной любым количеством пробельного материала.
+            # Регулярное выражение для отыскания любой черты (прямой, косой,
+            # обратной косой), обрамленной любым количеством пробельного
+            # материала.
             bar = re.compile(r"\s*[/\|\\]\s*", re.MULTILINE + re.UNICODE)
 
             for row in csv_reader:
                 # Столбцы в CSV-файле
-                orthvars_info, civil_equivalent, word_forms_list, antconc_query, author_in_csv, \
-                    additional_info, homonym_order, homonym_gloss, duplicate = row
+                (orthvars_info, civil_equivalent, word_forms_list,
+                        antconc_query, author_in_csv, additional_info,
+                        homonym_order, homonym_gloss, duplicate) = row
 
                 # Обработка поля с орфографическими вариантами.
-                # Орфографические варианты разделяются любой чертой (прямой, косой или обратной косой).
-                # Звездочка означает, что орфогр.вариант был реконструирован. Вопросительный знак --
-                # сомнения в правильности реконструкции. Черты и знаки могут отделяться друг от друга
-                # и от орф.вариантов любым количеством пробельного материала.
+                # Орфографические варианты разделяются любой чертой (прямой,
+                # косой или обратной косой).  Звездочка означает, что
+                # орфогр.вариант был реконструирован. Вопросительный знак --
+                # сомнения в правильности реконструкции. Черты и знаки могут
+                # отделяться друг от друга и от орф.вариантов любым количеством
+                # пробельного материала.
                 _list = bar.split(orthvars_info)
                 orthvars_list = [
                         (
@@ -255,8 +271,13 @@ def import_csv_billet(request):
                 orthvars_set = set([i[0] for i in orthvars_list])
 
                 # GET-параметр "force":
-                # =add    -- добавить лексему, даже если похожие лексемы уже есть.
-                # =update -- если похожая лексема всего одна, то дополнить информацию по ней из CSV-файла.
+                #
+                # =add    -- добавить лексему, даже если похожие лексемы
+                #            уже есть.
+                #
+                # =update -- если похожая лексема всего одна, то дополнить
+                #            информацию по ней из CSV-файла.
+                #
                 force = request.GET.get('force', False)
                 intersection = idems.intersection(orthvars_set)
 
@@ -269,18 +290,24 @@ def import_csv_billet(request):
                         author = csv_authors[author_in_csv]
                     else:
                         for au in authors:
-                            if au.last_name and author_in_csv.startswith(au.last_name.lower()):
+                            if au.last_name and author_in_csv.startswith(
+                                                    au.last_name.lower()):
                                 author = au
                                 csv_authors[author_in_csv] = au
                                 break
                         else:
-                            raise NameError(u"Автор, указанный в CSV-файле, не найден среди участников работы над словарём.")
+                            raise NameError(u"""Автор, указанный в CSV-файле,
+                            не найден среди участников работы над словарём.""")
 
-                    # Если поле с гражданским эквивалентом пусто, то берем конвертацию в гражданку заглавного слова.
-                    # Если же это поле заполнено, то берём его без изменений. С практической точки зрения это значит,
-                    # что в CSV-файле можно не указывать гражданку для слов без титл, они автоматом должны хорошо
-                    # преобразовываться. А для слов с титлами или буквотитлами гражданку лучше указывать, чтобы
-                    # впоследствии не надо было её уточнять из форм вроде "бл*годетель".
+                    # Если поле с гражданским эквивалентом пусто, то берем
+                    # конвертацию в гражданку заглавного слова. Если же это
+                    # поле заполнено, то берём его без изменений.
+                    # С практической точки зрения это значит, что в CSV-файле
+                    # можно не указывать гражданку для слов без титл, они
+                    # автоматом должны хорошо преобразовываться. А для слов
+                    # с титлами или буквотитлами гражданку лучше указывать,
+                    # чтобы впоследствии не надо было её уточнять из форм
+                    # вроде "бл*годетель".
                     if not civil_equivalent.strip():
                         civil_equivalent = civilrus_convert(orthvars_list[0][0])
 
@@ -290,7 +317,8 @@ def import_csv_billet(request):
                         'antconc_query': antconc_query,
                         'editor': author,
                         'additional_info': additional_info,
-                        'homonym_order': int(float(homonym_order)) if homonym_order else None,
+                        'homonym_order': (int(float(homonym_order))
+                                          if homonym_order else None),
                         'homonym_gloss': homonym_gloss or u'',
                         'duplicate': bool(duplicate),
                     }
@@ -307,23 +335,29 @@ def import_csv_billet(request):
 
                         for i in orthvars_list:
                             orthvar = i[0]
-                            ov = OrthographicVariant.objects.create(entry=entry, idem=orthvar)
+                            ov = OrthographicVariant.objects.create(
+                                                entry=entry, idem=orthvar)
                             ov.save()
                             idems.add(orthvar)
                     elif intersection and (force=='update'):
-                        raise NameError(u"Поддержка GET-параметра 'force' со значением 'update' ещё не реализована.")
-                        # Вытягиваем из базы все словарные статьи, у которых встречаются хотя бы один из орф.вариантов
-                        # Если их больше одной, выплёвываем строку таблицы в csv-файл.
-                        # Если нет, то заменяем запрос для АнтКонка, дополняем доп.инфо через "||".
-                        # Для каждого орф.варианта если он уже существует обновляем флаги реконструкции и надежности.
-                        # Если нет, добавляем его полностью.
+                        raise NameError(u"""Поддержка GET-параметра 'force'
+                                со значением 'update' ещё не реализована.""")
+                        # Вытягиваем из базы все словарные статьи, у которых
+                        # встречаются хотя бы один из орф.вариантов Если их
+                        # больше одной, выплёвываем строку таблицы в csv-файл.
+                        # Если нет, то заменяем запрос для АнтКонка, дополняем
+                        # доп.инфо через "||". Для каждого орф.варианта если
+                        # он уже существует обновляем флаги реконструкции
+                        # и надежности. Если нет, добавляем его полностью.
                     else:
-                        raise NameError(u"Поддержка GET-параметра 'force' со значением '%s' не реализована." % force)
+                        raise NameError(u"""Поддержка GET-параметра 'force'
+                          со значением '{0}' не реализована.""".format(force))
 
             if 'force' not in request.GET and orthvar_collisions:
                 response = HttpResponse(output.getvalue(), mimetype="text/csv")
-                response['Content-Disposition'] = 'attachment; filename=%s--not.imported.csv' % \
-                    datetime.datetime.strftime(datetime.datetime.now(), format='%Y.%m.%d--%H.%M.%S')
+                response['Content-Disposition'] = ('attachment; '
+                        'filename={:%Y.%m.%d--%H.%M.%S}--not.imported.csv'
+                        .format(datetime.datetime.now()))
             else:
                 response = HttpResponseRedirect('/')
 
@@ -332,7 +366,10 @@ def import_csv_billet(request):
             return response
     else:
         form = BilletImportForm()
-    return render_to_response('csv_import.html', {'form': form, 'get_parameters': '?' + urllib.urlencode(request.GET)})
+
+    get_parameters = '?' + urllib.urlencode(request.GET)
+    return render_to_response('csv_import.html', {'form': form,
+                  'get_parameters': get_parameters})
 
 
 @login_required
@@ -343,15 +380,17 @@ def entry_list(request):
             .decode('utf8')
 
     if request.method == 'POST' and len(request.POST) > 1:
-        data = request.POST.copy() # Сам по себе объект QueryDict, на который указывает request.POST,
-            # является неизменяемым. Метод ``copy()`` делает его полную уже доступную для изменения
-            # копию.
+        # Сам по себе объект QueryDict, на который указывает request.POST,
+        # является неизменяемым. Метод ``copy()`` делает его полную уже
+        # доступную для изменения копию.
+        data = request.POST.copy()
         if request.POST['hdrSearch']:
             data['find'] = request.POST['hdrSearch']
     else:
         data = dict(FilterEntriesForm.default_data)
         data.update(request.COOKIES)
-        if request.method == 'POST' and len(request.POST) == 1 and 'hdrSearch' in request.POST:
+        if (request.method == 'POST' and len(request.POST) == 1
+        and 'hdrSearch' in request.POST):
             data['find'] = request.POST['hdrSearch']
 
     form = FilterEntriesForm(data)
@@ -390,7 +429,8 @@ def entry_list(request):
         'page': page,
         'user': request.user,
         }
-    response = render_to_response('entry_list.html', context, RequestContext(request))
+    response = render_to_response('entry_list.html', context,
+                                  RequestContext(request))
     if request.method == 'POST':
         form.cleaned_data['find'] = base64 \
             .standard_b64encode(form.cleaned_data['find'].encode('utf8'))
@@ -473,7 +513,8 @@ def hellinist_workbench(request):
             'sortbase': dictionary.viewmodels.jsonGreqSortbase,
             },
         }
-    response = render_to_response('hellinist_workbench.html', context, RequestContext(request))
+    response = render_to_response('hellinist_workbench.html', context,
+                                  RequestContext(request))
     if request.method == 'POST':
         form.cleaned_data['hwPrfx'] = base64 \
             .standard_b64encode(form.cleaned_data['hwPrfx'].encode('utf8'))
@@ -490,7 +531,8 @@ def antconc2ucs8_converter(request):
     examples = (
         u"Дрꙋ'гъ дрꙋ'га тѧготы^ носи'те, и та'кѡ испо'лните зако'нъ хрСто'въ.",
 
-        u"Ѿ дне'й же іѡа'нна крСти'телѧ досе'лѣ, црСтвіе нбСное нꙋ'дитсѧ, и нꙋ'ждницы восхища'ютъ є`",
+        u"Ѿ дне'й же іѡа'нна крСти'телѧ досе'лѣ, црСтвіе нбСное нꙋ'дитсѧ, "
+        u"и нꙋ'ждницы восхища'ютъ є`",
 
         u"Пре'жде же всѣ'хъ дрꙋ'гъ ко дрꙋ'гꙋ любо'вь прилѣ'жнꙋ имѣ'йте: "
         u"зане` любо'вь покрыва'етъ мно'жество грѣхѡ'въ. "
@@ -498,13 +540,52 @@ def antconc2ucs8_converter(request):
 
         u"Наказꙋ'ѧ наказа' мѧ гдСь, сме'рти же не предаде' мѧ",
 
-        u"Вни'дите ѹ'зкими враты`, ꙗ'кѡ простра'ннаѧ врата`, и широ'кій пꙋ'ть вводѧ'й въ па'гꙋбꙋ, "
-        u"и мно'зи сꙋ'ть входѧ'щіи и'мъ. Что` ѹ'зкаѧ врата`, и тѣ'сный пꙋ'ть вводѧ'й въ живо'тъ, и ма'лѡ "
-        u"и'хъ є'сть, и`же ѡбрѣта'ютъ єго`",
+        u"Вни'дите ѹ'зкими враты`, ꙗ'кѡ простра'ннаѧ врата`, и широ'кій "
+        u"пꙋ'ть вводѧ'й въ па'гꙋбꙋ, и мно'зи сꙋ'ть входѧ'щіи и'мъ. Что` "
+        u"ѹ'зкаѧ врата`, и тѣ'сный пꙋ'ть вводѧ'й въ живо'тъ, и ма'лѡ и'хъ "
+        u"є'сть, и`же ѡбрѣта'ютъ єго`",
 
-        u"Бꙋ'дите ѹ'бѡ вы` соверше'ни, ꙗ'коже ѻц~ъ ва'шъ нбСный соверше'нъ є'сть.",
+        u"Бꙋ'дите ѹ'бѡ вы` соверше'ни, ꙗ'коже ѻц~ъ ва'шъ нбСный "
+        u"соверше'нъ є'сть.",
 
         u"Возведо'хъ ѻ'чи мои` въ го'ры, ѿню'дꙋже пріи'детъ по'мощь моѧ`",
     )
     context = { 'convertee': random.choice(examples) }
-    return render_to_response('converter.html', context, RequestContext(request))
+    return render_to_response('converter.html', context,
+                              RequestContext(request))
+
+
+@login_required
+@never_cache
+def edit_entry(request, id):
+    choices = {
+        'editor': dictionary.viewmodels.editAuthors,
+        'entry_status': dictionary.viewmodels.editStatuses,
+        'gender': dictionary.viewmodels.editGenders,
+        'onym': dictionary.viewmodels.editOnyms,
+        'part_of_speech': dictionary.viewmodels._choices(
+                            dictionary.models.PART_OF_SPEECH_CHOICES),
+        'participle_type': dictionary.viewmodels.editParticiples,
+        'tantum': dictionary.viewmodels.editTantum,
+    }
+    labels = {
+        'editor': dict(dictionary.viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
+        'entry_status': dict(dictionary.models.STATUS_CHOICES),
+        'gender': dict(dictionary.models.GENDER_CHOICES),
+        'onym': dict(dictionary.models.ONYM_CHOICES),
+        'part_of_speech': dict(dictionary.models.PART_OF_SPEECH_CHOICES),
+        'participle_type': dict(dictionary.models.PARTICIPLE_CHOICES),
+        'tantum': dict(dictionary.models.TANTUM_CHOICES)
+    }
+    slugs = {
+        'onym': dictionary.models.ONYM_MAP,
+        'part_of_speech': dictionary.models.PART_OF_SPEECH_MAP,
+    }
+    context = {
+        'entry': dictionary.viewmodels.entry_json(id),
+        'choices': dictionary.viewmodels._json(choices),
+        'labels': dictionary.viewmodels._json(labels),
+        'slugs': dictionary.viewmodels._json(slugs),
+    }
+    return render_to_response('single_entry_edit.html', context,
+                              RequestContext(request))

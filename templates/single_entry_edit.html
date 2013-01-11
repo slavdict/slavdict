@@ -1,0 +1,439 @@
+{% extends 'base--hdrSearch.html' %}
+
+{% block header %}
+
+    {{ super() }}
+    {% if not intermed %}
+        {{ space }}
+        <a href="{% url switch_info_url %}"
+           class="header--item{% if show_additional_info %} on{% endif %}">Инфо</a>
+    {% endif %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="grid edit"
+     ondblclick="
+         var x = $(this);
+         if (x.hasClass('grid-debug'))
+             x.removeClass('grid-debug');
+         else
+             x.addClass('grid-debug');
+     ">
+
+    <div class="message antconsol" data-bind="text: data.entry.antconc_query,
+        visible: data.entry.antconc_query"></div>
+
+    <span class="cslav headword" data-bind="text: ui.entry.headword"></span>
+    <i data-bind="text: ui.entry.part_of_speech"></i>
+
+    <div style="margin: 30px 0;">
+
+        <label>Заглавное слово</label>
+        <input type="text" data-bind="value: data.entry.orthvars()[0].idem,
+            valueUpdate: 'afterkeydown'"/>
+        <br/><br/>
+
+        <label>Автор</label>
+        <select data-bind="options: ui.choices.editor,
+            value: data.entry.editor_id, optionsText: 'name',
+            optionsValue: 'id'">
+        </select>
+        <br/><br/>
+
+        <label>Статус статьи</label>
+        <select data-bind="options: ui.choices.entry_status,
+            value: data.entry.status, optionsText: 'name',
+            optionsValue: 'id'">
+        </select>
+        <br/><br/>
+
+        <label>Примечание</label>
+        <textarea data-bind="value: data.entry.additional_info"></textarea>
+
+    </div>
+
+    <nav class="tabs">
+    <ul>
+        <li><a href="#orthvars">Варианты</a></li>
+        <li class="current"><a href="#info">Справочная инфо</a></li>
+        <li><a href="#meanings">Значения</a></li>
+        <li><a href="#examples">Примеры</a></li>
+        <li><a href="#constructions">Конструкции</a></li>
+    </ul>
+    </nav>
+
+    <section id="info" class="tabcontent current">
+
+        <select data-bind="options: ui.choices.part_of_speech,
+            value: data.entry.part_of_speech, optionsText: 'name',
+            optionsValue: 'id'">
+        </select>
+
+        <br/><br/>
+        <div data-bind="visible:
+            data.entry.part_of_speech() === ui.slugs.part_of_speech['noun'] ||
+            data.entry.part_of_speech() === ui.slugs.part_of_speech['adjective']">
+            <label>
+                Неизменяемое
+                <input type="checkbox"
+                       data-bind="checked: data.entry.uninflected"/>
+            </label>
+        </div>
+
+        <br/><br/>
+        <div data-bind="visible:
+            data.entry.part_of_speech() === ui.slugs.part_of_speech['noun']">
+
+            <label>
+                Форма Р. падежа
+                <input type="text" data-bind="value: data.entry.genitive"/>
+            </label>
+
+        <br/><br/>
+            <label>
+                Род
+                <select data-bind="options: ui.choices.gender,
+                    value: data.entry.gender, optionsText: 'name',
+                    optionsValue: 'id'">
+                </select>
+            </label>
+
+            <label>
+                Число
+                <select data-bind="options: ui.choices.tantum,
+                    value: data.entry.tantum, optionsText: 'name',
+                    optionsValue: 'id'">
+                </select>
+            </label>
+
+        <br/><br/>
+            <label>
+                Тип имени собственного
+                <select data-bind="options: ui.choices.onym,
+                    value: data.entry.onym, optionsText: 'name',
+                    optionsValue: 'id'">
+                </select>
+            </label>
+
+            <label data-bind="visible:
+                data.entry.onym() == ui.slugs.onym['anthroponym']">
+                Каноническое
+                <input type="checkbox"
+                       data-bind="checked: data.entry.canonical_name"/>
+            </label>
+
+            <div data-bind="visible:
+                data.entry.onym() == ui.slugs.onym['ethnonym']">
+
+                <label>
+                    И.ед.м.
+                    <input type="text" data-bind="value: data.entry.nom_sg,
+                                            valueUpdate: 'afterkeydown'"/>
+                </label>
+
+                <span class="cslav" data-bind="text: ui.entry.nom_sg"></span>
+
+            </div>
+
+        </div>
+
+        <div data-bind="visible:
+                            data.entry.part_of_speech() ===
+                            ui.slugs.part_of_speech['adjective']">
+
+            <label>
+                Краткая форма
+                <input type="text" data-bind="value: data.entry.short_form,
+                                              valueUpdate: 'afterkeydown'"/>
+            </label>
+
+            <span class="cslav" data-bind="text: ui.entry.short_form"></span>
+
+            Притяжательное
+            <input type="checkbox"
+                   data-bind="checked: data.entry.possessive"/>
+
+        </div>
+
+        <div data-bind="visible:
+            data.entry.part_of_speech() === ui.slugs.part_of_speech['verb']">
+
+            <label>
+                Форма 1ед.
+                <input type="text" data-bind="value: data.entry.sg1,
+                                              valueUpdate: 'afterkeydown'"/>
+            </label>
+
+            <span class="cslav" data-bind="text: ui.entry.sg1"></span>
+
+        <br/><br/>
+            <label>
+                Форма 2ед.
+                <input type="text" data-bind="value: data.entry.sg2,
+                                              valueUpdate: 'afterkeydown'"/>
+            </label>
+
+            <span class="cslav" data-bind="text: ui.entry.sg2"></span>
+
+        <br/><br/>
+            <ul data-bind="sortable: data.entry.participles">
+                <li>
+
+                    <input type="button" value="&times;"
+                        data-bind="click:
+                            $root.ui.destroyParticiple.bind(null, $data)"/>
+
+                    <label>
+                        Тип причастия
+                        <select data-bind="
+                            options: $root.ui.choices.participle_type,
+                            value: tp, optionsText: 'name',
+                            optionsValue: 'id'">
+                        </select>
+                    </label>
+
+                    <input type="text"
+                        data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
+
+                    <span class="cslav" data-bind="text: idem_ucs"></span>
+
+                </li>
+            </ul>
+
+            <input type="button" value="Добавить причастие"
+                data-bind="click: ui.addParticiple"/>
+
+        </div>
+
+    </section>
+
+    <section id="orthvars" class="tabcontent">
+
+        <ul data-bind="sortable: data.entry.orthvars">
+            <li>
+                <input type="button" value="&times;"
+                    data-bind="click:
+                        $root.ui.destroyOrthvar.bind(null, $data)"/>
+                <input type="text"
+                    data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
+                <span class="cslav" data-bind="text: idem_ucs"></span>
+            </li>
+        </ul>
+
+        <input type="button" value="Добавить вариант"
+            data-bind="click: ui.addOrthvar"/>
+
+    </section>
+
+    <section id="meanings" class="tabcontent">
+
+        <ul data-bind="sortable: data.meanings">
+            <li>
+                <span data-bind="visible: metaphorical">►</span>
+                <span data-bind="text: meaning"></span>
+                <i data-bind="text: gloss"></i>
+            </li>
+        </ul>
+
+    </section>
+
+    <section id="examples" class="tabcontent">
+    </section>
+
+    <section id="constructions" class="tabcontent">
+    </section>
+
+</div>
+{% endblock %}
+
+
+{% block javascript_links %}
+
+    {% include '_script.knockout.mapping.html' %}
+
+    <script src="{{ STATIC_URL }}js/libs/jquery-ui-1.9.2.sortable.min.js"
+        type="text/javascript"></script>
+
+    <script src="{{ STATIC_URL }}js/libs/knockout-sortable.min.js"
+        type="text/javascript"></script>
+
+    <script src="{{ STATIC_URL }}js/libs/ac2ucs8.js"
+        type="text/javascript"></script>
+
+{% endblock %}
+
+
+{% block javascript %}
+
+    {{ super() }}
+
+    var mapping = {
+            orthvars: {
+                create: function(options){ return new Orthvar(options); }
+            },
+            participles: {
+                create: function(options){ return new Participle(options); }
+            }
+        },
+
+        ac2ucs8 = antconc_ucs8,
+        ac2cvlr = antconc_civilrus_word,
+
+        wax = function wax(field) {
+            var field = this(),
+                isAffix = (field[0] === '-');
+            return ac2ucs8(isAffix? field.slice(1):field,
+                           isAffix? true:false);
+        },
+
+        Orthvar = function(options, entry) {
+            this.idem = ko.observable(options.data && options.data.idem || '');
+            this.idem_ucs = ko.computed(wax, this.idem);
+            this.order = ko.observable();
+
+            if (typeof options.data !== 'undefined') {
+                this.entry_id = options.data.entry_id;
+                this.id = options.data.id;
+                this.order(options.data.order);
+            } else {
+                this.entry_id = entry.id;
+                this.id = 'orthvar' + Orthvar.counter;
+                this.order(Orthvar.largestOrder + 1);
+            }
+
+            Orthvar.counter++;
+
+            if (Orthvar.largestOrder < this.order()) {
+                Orthvar.largestOrder = this.order();
+            }
+        },
+        Meaning = function(options) {},
+        Participle = function(options, entry) {
+            this.idem = ko.observable(options.data && options.data.idem || '');
+            this.idem_ucs = ko.computed(wax, this.idem);
+            this.order = ko.observable();
+            this.tp = ko.observable(options.data && options.data.tp || '');
+
+            if (typeof options.data !== 'undefined') {
+                this.entry_id = options.data.entry_id;
+                this.id = options.data.id;
+                this.order(options.data.order);
+            } else {
+                this.entry_id = entry.id;
+                this.id = 'participle' + Participle.counter;
+                this.order(Participle.largestOrder + 1);
+            }
+
+            Participle.counter++;
+
+            if (Participle.largestOrder < this.order()) {
+                Participle.largestOrder = this.order();
+            }
+        },
+
+        data = {{ entry }};
+
+    Orthvar.counter = 0;
+    Orthvar.largestOrder = 0;
+
+    Participle.counter = 0;
+    Participle.largestOrder = 0;
+
+    ko.mapping.defaultOptions().ignore.splice(0, 0, 'idem_ucs');
+
+    ko.bindingHandlers.sortable.options = {
+        axis: 'y',
+        cursor: 'move',
+        placeholder: 'sortable-placeholder',
+        tolerance: 'pointer'
+    };
+
+    ko.bindingHandlers.sortable.afterMove = function(arg) {
+        var i, j, arr = arg.targetParent();
+        for (i=0, j=arr.length; i<j; i++) {
+            arr[i].order(i);
+        }
+    };
+
+
+
+    vM.entryEdit = {
+        data: ko.mapping.fromJS(data, mapping),
+        ui: {
+            entry: {},
+            choices: {{ choices }},
+            labels: {{ labels }},
+            slugs: {{ slugs }}
+        }
+    };
+
+    var viewModel = vM.entryEdit,
+        dataModel = viewModel.data,
+        uiModel = viewModel.ui,
+        dataEntry = dataModel.entry,
+        uiEntry = uiModel.entry;
+
+
+    uiEntry.genitive = ko.computed(wax, dataEntry.genitive);
+    uiEntry.headword = ko.computed(wax, dataEntry.orthvars()[0].idem);
+    uiEntry.nom_sg = ko.computed(wax, dataEntry.nom_sg);
+    uiEntry.sg1 = ko.computed(wax, dataEntry.sg1);
+    uiEntry.sg2 = ko.computed(wax, dataEntry.sg2);
+    uiEntry.short_form = ko.computed(wax, dataEntry.short_form);
+
+    uiEntry.part_of_speech = ko.computed(function(){
+        var x = this.data.entry.part_of_speech(),
+            y = this.ui.labels.part_of_speech;
+        if (x in y) {
+            return y[x];
+        } else {
+            console.log('Часть речи "', x, '" не найдена среди ', y);
+            return '';
+        }
+    }, viewModel);
+
+    uiModel.save = function() {
+        $.post('/entries/save/', {data: ko.mapping.toJSON(dataModel, mapping)});
+    };
+
+    uiModel.addMeaing = function() {
+        this.meanings.push(new Meaning({}));
+    }.bind(dataModel);
+
+    uiModel.addOrthvar = function() {
+        this.orthvars.push(new Orthvar({}, this));
+    }.bind(dataEntry);
+
+    uiModel.destroyOrthvar = function(orthvar) {
+        if (typeof orthvar.id === 'number') {
+            this.orthvars.destroy(orthvar);
+        } else {
+            this.orthvars.remove(orthvar);
+        }
+    }.bind(dataEntry);
+
+    uiModel.addParticiple = function() {
+        this.participles.push(new Participle({}, this));
+    }.bind(dataEntry);
+
+    uiModel.destroyParticiple = function(item) {
+        if (typeof item.id === 'number') {
+            this.participles.destroy(item);
+        } else {
+            this.participles.remove(item);
+        }
+    }.bind(dataEntry);
+
+    ko.applyBindings(viewModel, $('#main').get(0));
+
+    $('nav.tabs li').click(function(){
+        $('nav.tabs li.current').removeClass('current');
+        $('section.tabcontent.current').removeClass('current');
+        var x = $(this);
+        x.addClass('current');
+        $(x.find('a').attr('href')).addClass('current');
+    });
+
+{% endblock %}

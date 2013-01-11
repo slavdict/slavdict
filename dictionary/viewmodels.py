@@ -12,9 +12,30 @@ def _tuple(x):
 
 def _choices(choices):
     return tuple(
-        {'id': str(id), 'name': name}
+        {'id': id, 'name': name}
         for id, name in choices
     )
+
+
+def entry_json(id):
+    entry = dictionary.models.Entry.objects.get(pk=id)
+    data = {
+        'entry': entry.forJSON(),
+        'etymologies': [e.forJSON() for e in entry.etymologies],
+        'collogroups': [cg.forJSON() for cg in entry.collogroups],
+        'meanings': [m.forJSON() for m in entry.all_meanings],
+        'examples': [e.forJSON()
+            for e in dictionary.models.Example.objects.filter(entry=entry)],
+    }
+    return _json(data)
+
+EMPTY_STRING_ID_OBJECT = {'id': '', 'name': u''}
+NONE_ID_OBJECT = {'id': None, 'name': u''}
+
+AUTHOR_CHOICES = tuple(
+    (user.id, user.__unicode__())
+    for user in CustomUser.objects.filter(groups__name=u'authors')
+)
 
 authors = (
     {'id': 'all',  'name': u'все авторы'},
@@ -23,6 +44,8 @@ authors = (
     {'id': str(u.id), 'name': u.__unicode__()}
     for u in CustomUser.objects.filter(groups__name=u'authors')
 )
+
+editAuthors = (NONE_ID_OBJECT,) + _choices(AUTHOR_CHOICES)
 
 canonical_name = (
     {'id': 'all', 'name': u'все имена'},
@@ -34,6 +57,8 @@ genders = (
     {'id': 'all',  'name': u'любой'},
     {'id': 'none', 'name': u'где род не указан'},
 ) + _choices(dictionary.models.GENDER_CHOICES)
+
+editGenders = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.GENDER_CHOICES)
 
 greqSortbase = (
     {'id': 'id',   'name': u'в порядке добавления примеров'},
@@ -47,6 +72,10 @@ onyms = (
     {'id': 'all',  'name': u'любой'},
     {'id': 'none', 'name': u'не имя собственное'},
 ) + _choices(dictionary.models.ONYM_CHOICES)
+
+editOnyms = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.ONYM_CHOICES)
+
+editParticiples = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.PARTICIPLE_CHOICES)
 
 pos = (
     {'id': 'all',  'name': u'любая'},
@@ -74,8 +103,12 @@ tantum = (
     {'id': 'none', 'name': u'где число не указано'},
 ) + _choices(dictionary.models.TANTUM_CHOICES)
 
+editTantum = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.TANTUM_CHOICES)
+
 statuses = ({'id': 'all', 'name': u'любой'},) \
         + _choices(dictionary.models.STATUS_CHOICES)
+
+editStatuses = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.STATUS_CHOICES)
 
 
 jsonAuthors = _json(authors)
