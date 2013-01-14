@@ -179,7 +179,7 @@ def single_entry(request, entry_id, extra_context=None,
     if request.path.endswith('intermed/'):
         user_groups = [t[0] for t in user.groups.values_list('name')]
         if (not entry.editor or user.is_superuser or 'editors' in user_groups
-        or 'admins' in user_groups or user == entry.editori):
+        or 'admins' in user_groups or user == entry.editor):
             pass
         else:
             return redirect(entry.get_absolute_url())
