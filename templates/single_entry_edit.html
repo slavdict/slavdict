@@ -343,10 +343,17 @@
 
     ko.mapping.defaultOptions().ignore.splice(0, 0, 'idem_ucs');
 
+    var placeholderClass = 'sortable-placeholder';
     ko.bindingHandlers.sortable.options = {
         axis: 'y',
         cursor: 'move',
-        placeholder: 'sortable-placeholder',
+        forcePlaceholderSize: true,
+        opacity: 0.7,
+        placeholder: placeholderClass,
+        start: function(event, ui){
+            var y = ui.helper.outerHeight();
+            $('.' + placeholderClass).height(y);
+        },
         tolerance: 'pointer'
     };
 
