@@ -54,7 +54,7 @@
         /* Переносим всю группу полей орфографических вариантов в расположение
          * перед полем гражданского написания. */
         var x = $('#orthographic_variants-group').detach();
-        var y = $('.civil_equivalent').parent('fieldset');
+        var y = $('.field-civil_equivalent').parent('fieldset');
         x.insertBefore(y);
 
         /* Переносим группу полей словоформ (пока в списке типов только
@@ -67,7 +67,7 @@
         /* Переносим группу полей с этимологиями в расположение после поля
          * "образовано от" (морфолгическая деривация). */
         x = $('#etymology_set-group').detach();
-        y = $('.derivation_entry').parent('fieldset');
+        y = $('.field-derivation_entry').parent('fieldset');
         x.insertAfter(y);
 
         /* Переносим группу полей контекстов значения в расположение
@@ -109,18 +109,18 @@
             if (v){
                 var c1 = lang2cssclass[v];
                 var c2 = c1 + '-translit';
-                x.nextAll('.text').find('input[id$="-text"]')
+                x.nextAll('.field-text').find('input[id$="-text"]')
                     .removeClass( langclsss1 )
                     .addClass( c1 );
-                x.nextAll('.translit').find('input[id$="-translit"]')
+                x.nextAll('.field-translit').find('input[id$="-translit"]')
                     .removeClass( langclsss2 )
                     .addClass( c2 );
             }
         }
         function textAndUnitext(x, v) {
             var isGreek,
-                text = x.nextAll('.text').find('input[id$="-text"]'),
-                unitext = x.nextAll('.unitext').find('input[id$="-unitext"]'),
+                text = x.nextAll('.field-text').find('input[id$="-text"]'),
+                unitext = x.nextAll('.field-unitext').find('input[id$="-unitext"]'),
                 show = function(field) { field.parent().removeClass('hidden'); },
                 hide = function(field) { field.parent().addClass('hidden'); };
             if (v){
@@ -138,15 +138,15 @@
             }
         }
 
-        $('#etymology_set-group .form-row.language').each(function(){
+        $('#etymology_set-group .form-row.field-language').each(function(){
             var x = $(this);
             var v = x.find('select').val();
             changeLangCSSClass(x, v);
             textAndUnitext(x, v);
         });
-        $('#etymology_set-group .form-row.language select').change(function(){
+        $('#etymology_set-group .form-row.field-language select').change(function(){
             var i = $(this);
-            var x = i.closest('.form-row.language');
+            var x = i.closest('.form-row.field-language');
             var v = i.val();
             changeLangCSSClass(x, v);
             textAndUnitext(x, v);
@@ -169,14 +169,14 @@
         };
 
         var v = $('select#id_part_of_speech').val();
-        if (v) {
+        if (v && v !== '.') {
             $('.' + partsOfSpeech[v]).show();
         }
 
         $('select#id_part_of_speech').change(function(){
             var v = $(this).val();
             $('.noun, .verb, .adjective, .adverb, .preposition, .pronoun, .conjunction, .particle, .interjection, .participle').hide();
-            if (v) {
+            if (v && v !== '.') {
                 $('.' + partsOfSpeech[v]).show();
             }
         });
@@ -186,13 +186,13 @@
          * изменяемости/неизменяемости существительного или прилагательного. */
         function checkUninflected() {
             if ( $('#id_uninflected').is(':checked') ) {
-                $('.genitive').hide();
-                $('.tantum').hide();
-                $('.short_form').hide();
+                $('.field-genitive').hide();
+                $('.field-tantum').hide();
+                $('.field-short_form').hide();
             } else {
-                $('.genitive').show();
-                $('.tantum').show();
-                $('.short_form').show();
+                $('.field-genitive').show();
+                $('.field-tantum').show();
+                $('.field-short_form').show();
             }
         }
 
@@ -209,15 +209,15 @@
         }
 
         v = $('select#id_onym').val();
-        if (v) {
-            $('.' + onyms[v]).show();
+        if (v && v !== '.') {
+            $('.field-' + onyms[v]).show();
         }
 
         $('select#id_onym').change(function(){
             var v = $(this).val();
-            $('.canonical_name, .nom_sg').hide();
-            if (v) {
-                $('.' + onyms[v]).show();
+            $('.field-canonical_name, .field-nom_sg').hide();
+            if (v && v !== '.') {
+                $('.field-' + onyms[v]).show();
             }
         });
 
