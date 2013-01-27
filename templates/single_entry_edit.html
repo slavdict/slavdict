@@ -347,7 +347,10 @@
     ko.bindingHandlers.sortable.options = {
         axis: 'y',
         cursor: 'move',
+        cursorAt: { left: 50, bottom: 0 },
+        forceHelperSize: true,
         forcePlaceholderSize: true,
+        helper: 'clone',
         opacity: 0.7,
         placeholder: placeholderClass,
         start: function(event, ui){
