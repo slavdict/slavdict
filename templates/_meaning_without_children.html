@@ -198,7 +198,15 @@
 
 
 {% if m.examples %}
+
+    {% if not intermed %}
+        {% set separator = joiner('{{ backspace }};{{ space }}') %}
+    {% else %}
+        {% set separator = cycler('{{ space }}').next %}
+    {% endif %}
+
     {% for e in m.examples %}
+        {{ separator() }}
         {% include '_example.html' %}
     {% endfor %}
 {% endif %}
