@@ -907,7 +907,15 @@ class Example(models.Model):
 
     @property
     def example_ucs(self):
-        return ucs_convert(self.example)
+        example = self.example
+        first = example[0]
+
+        # Особый случай: Начальное заглавное Е при переводе в строчную букву
+        # должно становиться широким "е", а не узким.
+        if first == u'Е':
+                first = u'є'
+
+        return ucs_convert(first.lower() + example[1:])
 
     context = TextField(u'широкий контекст',
                   help_text=u'Более широкий контекст для примера', blank=True)
