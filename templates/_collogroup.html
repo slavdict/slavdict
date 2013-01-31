@@ -1,5 +1,5 @@
 {% from '_etymology.html'   import etymology    with context %}
-<div style="line-height: 140%;">
+<div style="line-height: 140%; background-color: #eee; padding: 10px;">
     {% if cg.host_entry.has_meanings %}
         □<!-- &#x25A1; -->&nbsp;
     {% else %}
@@ -61,8 +61,10 @@
     {% endif %}
 
 
+        {% set mnumber = '' %}
 
-    <span>
+        {% if intermed %}<div style="margin-left: 50px">{% else %}<span>{% endif %}
+
         {% for m in cg.meanings %}
 
             {% if cg.meanings|length != 1 %}
@@ -80,5 +82,6 @@
             {% include '_meaning_without_children.html' %}
 
         {% endfor %}
-    </span>
+
+        {% if intermed %}</div>{% else %}</span>{% endif %}
 </div>
