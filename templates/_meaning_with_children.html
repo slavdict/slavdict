@@ -3,11 +3,13 @@
 {% set child_meanings = m.child_meanings %}
     {% if child_meanings %}
         {% for m in child_meanings %}
+            {% if intermed %}<div style="{{ meaningsep }}; padding-left: 50px;">{% endif %}
             {% if m.metaphorical %}
                 <span style="color: #777;">►</span>
                 {{ space }}
             {% endif %}
             {% include '_meaning_without_children.html' %}
+            {% if intermed %}</div>{% endif %}
         {% endfor %}
     {% endif %}
 
