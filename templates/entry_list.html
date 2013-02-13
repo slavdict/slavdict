@@ -204,6 +204,11 @@
                                         }"></span>
             </span>
 
+            {{ space }}
+            <span class="button"
+                  data-bind="visible: showResetAll() && notDefaultState(),
+                      click: getDefaultState">сбросить все фильтры</span>
+
         </div></div>
         <div class="f5s--buttons"
              data-bind="visible: notInitialState() || isOperated()"><div
@@ -213,12 +218,6 @@
                 <span class="AA">Применить изменения?</span>
                 <span data-bind="click: formSubmit"
                       class="AB button f5sB--submit">применить</span>
-            </span>
-
-            <span class="A" data-bind="visible: notDefaultState">
-                <span class="AA">Сбросить все выбранные фильтры?</span>
-                <span data-bind="click: getDefaultState"
-                      class="AB button f5sB--reset">сбросить</span>
             </span>
 
         </div></div>
@@ -531,7 +530,8 @@
 
     vM.filters = {
         formSubmit: vM.hdrSearch.formSubmit,
-        isOperated: ko.observable(false),
+        isOperated: ko.observable(false).extend({throttle: 400}),
+        showResetAll: ko.observable(false).extend({throttle: 400}),
         closeFilters: function(){
                 this.isOperated(false);
                 this.getInitialState();
@@ -661,7 +661,7 @@
             if (!defaults[i].hasDefaultValue()) return true;
         }
         return false;
-    }, vM.filters);
+    }, vM.filters).extend({throttle: 400});
 
     vM.filters.notInitialState = ko.computed(function(){
         var initials = vM.meta.initials;
@@ -676,6 +676,7 @@
         for(var i = 0, j = defaults.length; i < j; i++){
             defaults[i].getDefaultValue();
         }
+        vM.filters.showResetAll(false);
     };
 
     vM.filters.getInitialState = function(){

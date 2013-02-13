@@ -45,9 +45,22 @@ ko.observable.fn['index2obj'] = function(value){
 
 ko.observable.fn['rememberDefault'] = function(defaultValue){
     this.defaultValue = defaultValue;
-    this.getDefaultValue = function(){ this(this.defaultValue); return this; };
+    this.getDefaultValue = function(){
+        if (vM.filters && vM.filters.showResetAll) {
+            vM.filters.showResetAll(true);
+        }
+        this(this.defaultValue);
+        return this;
+    };
     this.hasDefaultValue = function(){ return this() === this.defaultValue; };
     vM.meta.defaults.push(this);
+
+    this.subscribe(function(value){
+        if (vM.filters && vM.filters.showResetAll && value !== defaultValue) {
+            vM.filters.showResetAll(false);
+        }
+    }, this);
+
     return this;
 };
 
