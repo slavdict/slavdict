@@ -30,7 +30,8 @@
                 {{ space }}
             </span>
 
-            <strong data-bind="visible: notDefaultState">Выбранные фильтры</strong>
+            <strong data-bind="visible: notDefaultState
+                ">Выбранные фильтры</strong>
             <strong data-bind="visible: !notDefaultState()">Ни один фильтр не выбран</strong>
 
             {{ space }}
@@ -48,7 +49,9 @@
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !author.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !author.hasDefaultValue()">
+
                 <span data-bind="text: author.obj().name"></span>
                 <span class="f5sSI--reset"
                       data-bind="click: function() {
@@ -57,7 +60,9 @@
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !status.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !status.hasDefaultValue()">
+
                 <span data-bind="text: status.obj().name"></span>
                 <span class="f5sSI--reset"
                       data-bind="click: function() {
@@ -66,7 +71,9 @@
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !pos.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !pos.hasDefaultValue()">
+
                 <span data-bind="text: pos.obj().name"></span>
                 <span class="f5sSI--reset"
                       data-bind="click: function() {
@@ -84,7 +91,9 @@
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !gender.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !gender.hasDefaultValue()">
+
                 <span data-bind="text: gender.obj().name"></span>
                 <span class="f5sSI--reset"
                       data-bind="click: function() {
@@ -93,7 +102,9 @@
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !tantum.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !tantum.hasDefaultValue()">
+
                 <span data-bind="text: tantum.obj().name"></span>
                 <span class="f5sSI--reset"
                       data-bind="click: function() {
@@ -102,7 +113,9 @@
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !possessive.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !possessive.hasDefaultValue()">
+
                 <span data-bind="text: possessive.obj().name"></span>
                 <span class="f5sSI--reset"
                       data-bind="click: function() {
@@ -111,7 +124,9 @@
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !onym.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !onym.hasDefaultValue()">
+
                 <span data-bind="text: onym.obj().name"></span>
                 <span class="f5sSI--reset"
                       data-bind="click: function() {
@@ -120,7 +135,9 @@
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !canonical_name.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !canonical_name.hasDefaultValue()">
+
                 <span data-bind="text: canonical_name.obj().name"></span>
                 <span class="f5sSI--reset"
                       data-bind="click: function() {
