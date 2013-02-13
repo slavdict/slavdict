@@ -19,7 +19,9 @@
 
     <div class="filters">
         <div class="f5s--statusbar"
-            data-bind="slide: isOperated() || notDefaultState()"><div class="grid">
+             data-bind="slide: (!notDefaultState() && notInitialState()) ||
+                                isOperated() || notDefaultState()"><div
+                 class="grid">
 
             <span class="f5sS--total"
                 data-bind="visible: !notInitialState()">
@@ -664,7 +666,7 @@
             if (!initials[i].hasInitialValue()) return true;
         }
         return false;
-    }, vM.filters);
+    }, vM.filters).extend({throttle: 400});
 
     vM.filters.getDefaultState = function(){
         var defaults = vM.meta.defaults;
