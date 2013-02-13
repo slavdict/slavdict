@@ -183,6 +183,23 @@
             </span>
 
         </div></div>
+        <div class="f5s--buttons"
+             data-bind="visible: notInitialState() || isOperated()"><div
+                class="grid">
+
+            <span class="A" data-bind="visible: notInitialState">
+                <span class="AA">Применить изменения?</span>
+                <span data-bind="click: formSubmit"
+                      class="AB button f5sB--submit">применить</span>
+            </span>
+
+            <span class="A" data-bind="visible: notDefaultState">
+                <span class="AA">Сбросить все выбранные фильтры?</span>
+                <span data-bind="click: getDefaultState"
+                      class="AB button f5sB--reset">сбросить</span>
+            </span>
+
+        </div></div>
         <div class="f5s--dashboard" data-bind="slide: isOperated"><div class="grid"
                 ondblclick="
                     var x = $(this);
@@ -268,19 +285,6 @@
                     {{ form.duplicate.label_tag() }}
                     </div>
                 </div>
-
-            </div>
-            <div class="f5sD--buttons">
-
-                <span data-bind="click: getDefaultState, visible: notDefaultState"
-                    class="button f5sD--reset">сбросить</span>
-                <span data-bind="visible: !notDefaultState()"
-                    class="button f5sD--reset disabled">сбросить</span>
-
-                <span data-bind="click: formSubmit, visible: notInitialState"
-                    class="button f5sD--submit">применить</span>
-                <span data-bind="visible: !notInitialState()"
-                    class="button f5sD--submit disabled">применить</span>
 
             </div>
 

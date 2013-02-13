@@ -113,7 +113,7 @@ $advertiserColor: #999
         .B
             @include column(21, true)
             margin-top: 3em
-            margin-bottom: 3em
+            margin-bottom: 0.5em
 
             .BA
                 @include column(7)
@@ -166,15 +166,23 @@ $advertiserColor: #999
             width: 98%
 
 
-    .f5sD--buttons
+.f5s--buttons
+    background-color: #eee
+
+    .A
+        @include column(21, true)
+        margin: 5px 0
+    .AA
         @include column(6)
+    .AB
+        @include column(3, true)
 
     .button
         background-color: $advertiserColor
         padding: 0
-    .button.f5sD--reset
+    .button.f5sB--reset
         @include column(3)
-    .button.f5sD--submit
+    .button.f5sB--submit
         @include column(3,true)
 
 .f5s--advertiser
