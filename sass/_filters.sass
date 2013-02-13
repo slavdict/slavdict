@@ -35,13 +35,32 @@ $advertiserColor: #999
         background-color: $yellowBorder
         text-shadow: 0 0 5px white
         font-weight: bold
+        margin-right: 4px
         padding: 0 5px
+        position: relative
         white-space: nowrap
         word-spacing: 1px
 
         .f5sSI--prefix
             text-transform: uppercase
             font-weight: bold
+
+        .f5sSI--reset
+            @include button
+            @include border-radius(3px)
+            position: absolute
+            background-color: $yellowText
+            color: white
+
+        .f5sSI--reset:before
+            content: '\00d7'
+            display: block
+            font-weight: normal
+            line-height: 1em
+            padding: 0 0.2em
+
+        .f5sSI--reset:hover
+            background-color: #a00
 
 .f5s--dashboard
     display: none

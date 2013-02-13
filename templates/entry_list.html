@@ -38,69 +38,149 @@
                 {{ space }}
                 статьи на
                 {{ space }}
-                <span class="f5sSI--prefix"><span data-bind="text: find"></span>...</span>
+                <span class="f5sSI--prefix">
+                    <span data-bind="text: find"></span>...
+                </span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            find.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
             <span class="f5sS--item" data-bind="visible: !author.hasDefaultValue()">
                 <span data-bind="text: author.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            author.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
             <span class="f5sS--item" data-bind="visible: !status.hasDefaultValue()">
                 <span data-bind="text: status.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            status.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
             <span class="f5sS--item" data-bind="visible: !pos.hasDefaultValue()">
                 <span data-bind="text: pos.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            pos.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: uninflected">неизм.</span>
+            <span class="f5sS--item" data-bind="visible: uninflected">
+                неизм.
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            uninflected.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
             <span class="f5sS--item" data-bind="visible: !gender.hasDefaultValue()">
                 <span data-bind="text: gender.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            gender.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
             <span class="f5sS--item" data-bind="visible: !tantum.hasDefaultValue()">
                 <span data-bind="text: tantum.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            tantum.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
             <span class="f5sS--item" data-bind="visible: !possessive.hasDefaultValue()">
                 <span data-bind="text: possessive.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            possessive.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
             <span class="f5sS--item" data-bind="visible: !onym.hasDefaultValue()">
                 <span data-bind="text: onym.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            onym.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
             <span class="f5sS--item" data-bind="visible: !canonical_name.hasDefaultValue()">
                 <span data-bind="text: canonical_name.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            canonical_name.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: etymology">с этимологией</span>
+            <span class="f5sS--item" data-bind="visible: etymology">
+                с этимологией
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            etymology.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: collocations">со словосочетаниями</span>
+            <span class="f5sS--item" data-bind="visible: collocations">
+                со словосочетаниями
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            collocations.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: meaningcontexts">с контекстами значения</span>
+            <span class="f5sS--item" data-bind="visible: meaningcontexts">
+                с контекстами значения
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            meaningcontexts.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: additional_info">с примечаниями</span>
+            <span class="f5sS--item" data-bind="visible: additional_info">
+                с примечаниями
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            additional_info.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: homonym">омонимы</span>
+            <span class="f5sS--item" data-bind="visible: homonym">
+                омонимы
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            homonym.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: duplicate">дубликаты</span>
+            <span class="f5sS--item" data-bind="visible: duplicate">
+                дубликаты
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            duplicate.getDefaultValue();
+                                        }"></span>
+            </span>
 
         </div></div>
         <div class="f5s--dashboard" data-bind="slide: isOperated"><div class="grid"
