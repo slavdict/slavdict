@@ -34,7 +34,10 @@
 
             <strong data-bind="visible: notDefaultState
                 ">Выбранные фильтры</strong>
-            <strong data-bind="visible: !notDefaultState()">Ни один фильтр не выбран</strong>
+            <strong data-bind="visible: !notDefaultState() && !notInitialState()
+                ">Ни один фильтр не выбран</strong>
+            <strong data-bind="visible: !notDefaultState() && notInitialState()
+                ">Все фильтры сброшены</strong>
 
             {{ space }}
             <span class="f5sS--item" data-bind="visible: find">
