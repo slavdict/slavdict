@@ -19,7 +19,9 @@
 
     <div class="filters">
         <div class="f5s--statusbar"
-            data-bind="slide: isOperated() || notDefaultState()"><div class="grid">
+             data-bind="slide: (!notDefaultState() && notInitialState()) ||
+                                isOperated() || notDefaultState()"><div
+                 class="grid">
 
             <span class="f5sS--total"
                 data-bind="visible: !notInitialState()">
@@ -30,77 +32,194 @@
                 {{ space }}
             </span>
 
-            <strong data-bind="visible: notDefaultState">Выбранные фильтры</strong>
-            <strong data-bind="visible: !notDefaultState()">Ни один фильтр не выбран</strong>
+            <strong data-bind="visible: notDefaultState
+                ">Выбранные фильтры</strong>
+            <strong data-bind="visible: !notDefaultState() && !notInitialState()
+                ">Ни один фильтр не выбран</strong>
+            <strong data-bind="visible: !notDefaultState() && notInitialState()
+                ">Все фильтры сброшены</strong>
 
             {{ space }}
             <span class="f5sS--item" data-bind="visible: find">
                 {{ space }}
                 статьи на
                 {{ space }}
-                <span class="f5sSI--prefix"><span data-bind="text: find"></span>...</span>
+                <span class="f5sSI--prefix">
+                    <span data-bind="text: find"></span>...
+                </span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            find.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !author.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !author.hasDefaultValue()">
+
                 <span data-bind="text: author.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            author.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !status.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !status.hasDefaultValue()">
+
                 <span data-bind="text: status.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            status.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !pos.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !pos.hasDefaultValue()">
+
                 <span data-bind="text: pos.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            pos.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: uninflected">неизм.</span>
+            <span class="f5sS--item" data-bind="visible: uninflected">
+                неизм.
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            uninflected.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !gender.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !gender.hasDefaultValue()">
+
                 <span data-bind="text: gender.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            gender.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !tantum.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !tantum.hasDefaultValue()">
+
                 <span data-bind="text: tantum.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            tantum.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !possessive.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !possessive.hasDefaultValue()">
+
                 <span data-bind="text: possessive.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            possessive.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !onym.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !onym.hasDefaultValue()">
+
                 <span data-bind="text: onym.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            onym.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: !canonical_name.hasDefaultValue()">
+            <span class="f5sS--item"
+                  data-bind="visible: !canonical_name.hasDefaultValue()">
+
                 <span data-bind="text: canonical_name.obj().name"></span>
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            canonical_name.getDefaultValue();
+                                        }"></span>
             </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: etymology">с этимологией</span>
+            <span class="f5sS--item" data-bind="visible: etymology">
+                с этимологией
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            etymology.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: collocations">со словосочетаниями</span>
+            <span class="f5sS--item" data-bind="visible: collocations">
+                со словосочетаниями
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            collocations.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: meaningcontexts">с контекстами значения</span>
+            <span class="f5sS--item" data-bind="visible: meaningcontexts">
+                с контекстами значения
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            meaningcontexts.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: additional_info">с примечаниями</span>
+            <span class="f5sS--item" data-bind="visible: additional_info">
+                с примечаниями
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            additional_info.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: homonym">омонимы</span>
+            <span class="f5sS--item" data-bind="visible: homonym">
+                омонимы
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            homonym.getDefaultValue();
+                                        }"></span>
+            </span>
 
             {{ space }}
-            <span class="f5sS--item" data-bind="visible: duplicate">дубликаты</span>
+            <span class="f5sS--item" data-bind="visible: duplicate">
+                дубликаты
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            duplicate.getDefaultValue();
+                                        }"></span>
+            </span>
+
+        </div></div>
+        <div class="f5s--buttons"
+             data-bind="visible: notInitialState() || isOperated()"><div
+                class="grid">
+
+            <span class="A" data-bind="visible: notInitialState">
+                <span class="AA">Применить изменения?</span>
+                <span data-bind="click: formSubmit"
+                      class="AB button f5sB--submit">применить</span>
+            </span>
+
+            <span class="A" data-bind="visible: notDefaultState">
+                <span class="AA">Сбросить все выбранные фильтры?</span>
+                <span data-bind="click: getDefaultState"
+                      class="AB button f5sB--reset">сбросить</span>
+            </span>
 
         </div></div>
         <div class="f5s--dashboard" data-bind="slide: isOperated"><div class="grid"
@@ -188,19 +307,6 @@
                     {{ form.duplicate.label_tag() }}
                     </div>
                 </div>
-
-            </div>
-            <div class="f5sD--buttons">
-
-                <span data-bind="click: getDefaultState, visible: notDefaultState"
-                    class="button f5sD--reset">сбросить</span>
-                <span data-bind="visible: !notDefaultState()"
-                    class="button f5sD--reset disabled">сбросить</span>
-
-                <span data-bind="click: formSubmit, visible: notInitialState"
-                    class="button f5sD--submit">применить</span>
-                <span data-bind="visible: !notInitialState()"
-                    class="button f5sD--submit disabled">применить</span>
 
             </div>
 
@@ -563,7 +669,7 @@
             if (!initials[i].hasInitialValue()) return true;
         }
         return false;
-    }, vM.filters);
+    }, vM.filters).extend({throttle: 400});
 
     vM.filters.getDefaultState = function(){
         var defaults = vM.meta.defaults;
