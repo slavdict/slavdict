@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from coffin.conf.urls.defaults import *
-from coffin.views.generic.simple import direct_to_template
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.views.generic.simple import redirect_to
 
 from slavdict.admin import ui
 admin.autodiscover()
@@ -32,7 +30,8 @@ urlpatterns += patterns('',
     url( r'^entries/(\d+)/get/$', 'slavdict.dictionary.jsonviews.json_entry_get' ),
     url( r'^entries/save/$', 'slavdict.dictionary.jsonviews.json_entry_save' ),
 
-    url( r'^materials/$', direct_to_template, {'template': 'materials.html'}),
+    url(r'^materials/$', 'slavdict.dictionary.views.direct_to_template',
+                         kwargs={'template': 'materials.html'}),
     url( r'^switch/additional-info/$', 'slavdict.dictionary.views.switch_additional_info', name='switch_info_url' ),
     url( r'^converter/$', 'slavdict.dictionary.views.antconc2ucs8_converter', name='converter' ),
 
