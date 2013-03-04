@@ -50,6 +50,12 @@ def entry_key(entry):
 
 
 @login_required
+def direct_to_template(request, template):
+    empty_context = {}
+    return render_to_response(template, empty_context, RequestContext(request))
+
+
+@login_required
 def all_entries(request, is_paged=False):
     httpGET_AUTHOR = request.GET.get('author')
     httpGET_CORRUPTED_GREEK = 'corrupted-greek' in request.GET

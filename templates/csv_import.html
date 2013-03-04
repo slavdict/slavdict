@@ -15,7 +15,7 @@
         enctype="multipart/form-data"
         action="{{ get_parameters }}" class="form">
 
-            {% csrf_token %}
+            <div>{% csrf_token %}</div>
 
             Вы собираетесь создать в базе заготовки словарных статей на основе
             информации из CSV-файла.

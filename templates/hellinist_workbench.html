@@ -4,11 +4,11 @@
 {% set filters = form.cleaned_data %}
 
 {% block css %}hellinist_workbench.css{% endblock %}
-{% block headerFormAddress %}{% url hellinist_workbench %}{% endblock %}
+{% block headerFormAddress %}{% url 'hellinist_workbench' %}{% endblock %}
 
 {% block header %}
 
-    <a href="{% url all_entries_url %}" class="header--item button">Вернуться к статьям</a>
+    <a href="{% url 'all_entries_url' %}" class="header--item button">Вернуться к статьям</a>
 
     {% if indicators.meaning %}
         <span class="header--item indicator"
@@ -323,7 +323,7 @@
             if (this.id()) {
                 this.beingSaved(true);
                 var dataToSend = { 'delete': this.id() }
-                $.post("{% url jsonGreqDeleteURL %}", dataToSend,
+                $.post("{% url 'jsonGreqDeleteURL' %}", dataToSend,
                     function(data) {
                         if (data.action=='deleted') {
                             ex.greqs.remove(this);
@@ -338,7 +338,7 @@
         this.saveMe = function() {
             this.beingSaved(true);
             var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(this)) };
-            $.post("{% url jsonGreqSaveURL %}", dataToSend, function(data) {
+            $.post("{% url 'jsonGreqSaveURL' %}", dataToSend, function(data) {
                 if (data.action=='created') {
                     this.id(data.id);
                 }
@@ -400,7 +400,7 @@
         this.saveMe = function() {
             this.beingSaved(true);
             var dataToSend = { 'ex': ko.toJSON(new ExForJSON(this)) };
-            $.post("{% url jsonExSaveURL %}", dataToSend, function(data) {
+            $.post("{% url 'jsonExSaveURL' %}", dataToSend, function(data) {
                 this.beingSaved(false);
             }.bind(this));
         }.bind(this);

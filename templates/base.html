@@ -17,7 +17,7 @@
         {% block shapka %}
         {% trim %}
         <form class="headerForm" method="post"
-            action="{% block headerFormAddress %}{% url all_entries_url %}{% endblock %}">
+            action="{% block headerFormAddress %}{% url 'all_entries_url' %}{% endblock %}">
 
             <div class="header"><div class="grid without-overflow">
                 {% block header %}{% endblock %}
