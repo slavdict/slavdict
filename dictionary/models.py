@@ -1150,67 +1150,12 @@ class Collocation(models.Model):
         ordering = ('id',)
 
 
-class GreekEquivalentForMeaning(models.Model):
-
-    for_meaning = ForeignKey(Meaning)
-    unitext = CharField(u'греч. параллель (Unicode)', max_length=100,
-                        blank=True)
-
-    text = CharField(u'греч. параллель (устар.)', max_length=100, blank=True)
-    mark = CharField(u'грамматическая помета', max_length=20, blank=True)
-
-    source = CharField(u'документальный источник', help_text=u'''Например,
-            Септуагинта или, более узко, разные редакции одного текста.''',
-            max_length=40, blank=True)
-
-    additional_info = TextField(u'примечание', help_text=u'''Любая
-            дополнительная информация по данному греческому эквиваленту.''',
-            blank=True)
-
-    corrupted = BooleanField(u'текст испорчен', default=False)
-    mtime = DateTimeField(editable=False, auto_now=True)
-
-    @property
-    def host_entry(self):
-        return self.for_meaning.host_entry
-
-    def save(self, without_mtime=False, *args, **kwargs):
-        super(GreekEquivalentForMeaning, self).save(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
-
-    def delete(self, without_mtime=False, *args, **kwargs):
-        super(GreekEquivalentForMeaning, self).delete(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
-
-    def forJSON(self):
-        _fields = (
-            'additional_info',
-            'corrupted',
-            'for_meaning_id',
-            'id',
-            'mark',
-            'source',
-            'text',
-            'unitext',
-        )
-        return dict((key, self.__dict__[key]) for key in _fields)
-
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
-    class Meta:
-        verbose_name = u'греческая параллель для значения'
-        verbose_name_plural = u'греческие параллели'
-
-
 class GreekEquivalentForExample(models.Model):
 
     for_example = ForeignKey(Example)
     unitext = CharField(u'греч. параллель (Unicode)', max_length=100,
                         blank=True)
 
-    text = CharField(u'греч. параллель (устар.)', max_length=100, blank=True)
     mark = CharField(u'грамматическая помета', max_length=20, blank=True)
 
     source = CharField(u'документальный источник', help_text=u'''Например,
@@ -1252,7 +1197,6 @@ class GreekEquivalentForExample(models.Model):
             'mark',
             'position',
             'source',
-            'text',
             'unitext',
         )
         return dict((key, self.__dict__[key]) for key in _fields)

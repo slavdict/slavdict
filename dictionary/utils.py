@@ -10,7 +10,6 @@ from django.template import RequestContext
 from .models import Etymology
 from .models import Example
 from .models import GreekEquivalentForExample
-from .models import GreekEquivalentForMeaning
 from .models import LANGUAGE_MAP
 
 ULYSSESMAP = (
@@ -151,15 +150,11 @@ def greek_data_manipulation(func):
     greek_etymons = Etymology.objects.filter(language=LANGUAGE_MAP['greek'],
             corrupted=False)
     greqex = GreekEquivalentForExample.objects.filter(corrupted=False)
-    greqm = GreekEquivalentForMeaning.objects.filter(corrupted=False)
 
     for i in greek_etymons:
         func(i)
 
     for i in greqex:
-        func(i)
-
-    for i in greqm:
         func(i)
 
 def greek_data_migration():
@@ -186,7 +181,6 @@ def non_unicode_greek(request):
     greek_etymons = Etymology.objects.filter(language=LANGUAGE_MAP['greek'],
             corrupted=corrupted)
     greqex = GreekEquivalentForExample.objects.filter(corrupted=corrupted)
-    greqm = GreekEquivalentForMeaning.objects.filter(corrupted=corrupted)
 
     if already_mapped:
         good = lambda x: x.text and getattr(x, 'unitext', False)
@@ -195,7 +189,6 @@ def non_unicode_greek(request):
 
     words = [(i.text, i.host_entry.id, False, False) for i in greek_etymons if good(i)]
     words.extend([(i.text, i.host_entry.id, False, i.for_example.id) for i in greqex if good(i)])
-    words.extend([(i.text, i.host_entry.id, i.for_meaning.id, False) for i in greqm if good(i)])
 
     chardict = defaultdict(set)
     for word, entry_id, meaning_id, example_id in words:

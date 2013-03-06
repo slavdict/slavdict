@@ -34,7 +34,6 @@ from dictionary.models import Entry
 from dictionary.models import Etymology
 from dictionary.models import Example
 from dictionary.models import GreekEquivalentForExample
-from dictionary.models import GreekEquivalentForMeaning
 from dictionary.models import Meaning
 from dictionary.models import MeaningContext
 from dictionary.models import OrthographicVariant
@@ -108,14 +107,12 @@ def all_entries(request, is_paged=False):
                 language=dictionary.models.LANGUAGE_MAP['greek'],
                 corrupted=True)
         greqex = GreekEquivalentForExample.objects.filter(corrupted=True)
-        greqm = GreekEquivalentForMeaning.objects.filter(corrupted=True)
 
         # WARNING: Переменная entries теперь будет содержать обычный список
         # вместо объекта django.db.models.query.QuerySet, так что теперь на
         # entries больше нельзя нанизывать никаких фильтров.
         entries = set([i.host_entry for i in greek_etymons])
         entries.update([i.host_entry for i in greqex])
-        entries.update([i.host_entry for i in greqm])
         entries = list(entries)
         entries.sort(key=lambda entry: entry.civil_equivalent)
 

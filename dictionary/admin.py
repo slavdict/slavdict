@@ -140,27 +140,6 @@ class EtymologyForCollocation_Inline(admin.StackedInline):
 
 
 
-from slavdict.dictionary.models import GreekEquivalentForMeaning
-class GreekEquivalentForMeaning_Inline(admin.StackedInline):
-    model = GreekEquivalentForMeaning
-    extra = 0
-    fieldsets = (
-        (None, {
-            'fields': (
-                ('unitext', 'corrupted'),
-                'mark',
-                'source',
-                ),
-            }),
-        (u'Примечание к параллели',
-            {'fields': ('additional_info',),
-            'classes': ('collapse',)}
-            ),
-        )
-
-
-
-
 from slavdict.dictionary.models import GreekEquivalentForExample
 class GreekEquivalentForExample_Inline(admin.StackedInline):
     model = GreekEquivalentForExample
@@ -263,9 +242,6 @@ class AdminMeaning(admin.ModelAdmin):
         MeaningContext_Inline,
         Example_Inline,
         )
-    inlines_MAIN = (
-        GreekEquivalentForMeaning_Inline,
-    )
     raw_id_fields = (
         'entry_container',
         'collogroup_container',
@@ -326,15 +302,12 @@ AdminMeaning.has_add_permission = staff_has_add_permission
 AdminMeaning.has_change_permission = staff_has_change_permission
 AdminMeaning.has_delete_permission = staff_has_delete_permission
 
-class AdminMeaningADMIN(AdminMeaning):
-    inlines = AdminMeaning.inlines + AdminMeaning.inlines_MAIN
-
 class AdminMeaningUI(AdminMeaning):
     pass
 AdminMeaningUI.fieldsets = copy.deepcopy(AdminMeaning.fieldsets)
 AdminMeaningUI.fieldsets = AdminMeaningUI.fieldsets[0:1] + AdminMeaningUI.fieldsets[3:]
 
-admin.site.register(Meaning, AdminMeaningADMIN)
+admin.site.register(Meaning, AdminMeaning)
 ui.register(Meaning, AdminMeaningUI)
 
 

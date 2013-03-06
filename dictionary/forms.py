@@ -16,7 +16,6 @@ from dictionary.models import Meaning
 from dictionary.models import Example
 from dictionary.models import Etymology
 from dictionary.models import MeaningContext
-from dictionary.models import GreekEquivalentForMeaning
 from dictionary.models import GreekEquivalentForExample
 
 class EntryForm(ModelForm):
@@ -99,13 +98,6 @@ class MnngCntxtForm(ModelForm):
         widgets = {
             'meaning': HiddenInput,
             'order': HiddenInput,
-        }
-
-class GrEqForMnngForm(ModelForm):
-    class Meta:
-        model = GreekEquivalentForMeaning
-        widgets = {
-            'for_meaning': HiddenInput,
         }
 
 class GrEqForExForm(ModelForm):
