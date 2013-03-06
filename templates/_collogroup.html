@@ -1,10 +1,6 @@
 {% from '_etymology.html'   import etymology    with context %}
 <div style="line-height: 140%; background-color: #eee; padding: 10px;">
-    {% if cg.host_entry.has_meanings %}
-        □<!-- &#x25A1; -->&nbsp;
-    {% else %}
-        ■<!-- &#x25A0; -->&nbsp;
-    {% endif %}
+    &#x2662;<!-- LOZENGE -->&nbsp;
 
     {% for c in cg.collocations %}
 
