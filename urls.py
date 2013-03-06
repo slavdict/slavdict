@@ -45,7 +45,6 @@ urlpatterns += patterns('',
 
     # TODO: В последствии всё это должно быть удалено.
     url( r'^adhoc/csv-import/$', 'slavdict.dictionary.views.import_csv_billet' ),
-    url( r'^utils/non-unicode-greek/$', 'slavdict.dictionary.utils.non_unicode_greek' ),
 )
 
 urlpatterns += staticfiles_urlpatterns()
