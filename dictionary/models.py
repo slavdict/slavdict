@@ -512,7 +512,6 @@ class Entry(models.Model, Meaningfull):
             'civil_equivalent',
             'derivation_entry_id',
             'duplicate',
-            'editor_id',
             'gender',
             'genitive',
             'good',
@@ -537,6 +536,7 @@ class Entry(models.Model, Meaningfull):
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['participles'] = [p.forJSON() for p in self.participles]
         dct['orthvars'] = [ov.forJSON() for ov in self.orth_vars]
+        dct['author_ids'] = [a[0] for a in self.authors.values_list('id')]
         return dct
 
     def toJSON(self):

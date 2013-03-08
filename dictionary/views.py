@@ -75,9 +75,10 @@ def all_entries(request, is_paged=False):
 
     if httpGET_AUTHOR:
         if httpGET_AUTHOR == 'is-not-assigned!':
-            entries = entries.filter(editor__isnull=True)
+            entries = entries.filter(authors__isnull=True)
         else:
-            entries = entries.filter(editor__username=httpGET_AUTHOR)
+            author = CustomUser.objects.get(username=httpGET_AUTHOR)
+            entries = author.entry_set.all()
 
     if httpGET_STATUS=='-created':
         entries = entries.exclude(
@@ -181,8 +182,9 @@ def single_entry(request, entry_id, extra_context=None,
 
     if request.path.endswith('intermed/'):
         user_groups = [t[0] for t in user.groups.values_list('name')]
-        if (not entry.editor or user.is_superuser or 'editors' in user_groups
-        or 'admins' in user_groups or user == entry.editor):
+        if (not entry.authors.exists() or user.is_superuser
+        or 'editors' in user_groups or 'admins' in user_groups
+        or user in entry.authors.all()):
             pass
         else:
             return redirect(entry.get_absolute_url())
@@ -318,13 +320,14 @@ def import_csv_billet(request):
                         'word_forms_list': word_forms_list,
                         'civil_equivalent': civil_equivalent,
                         'antconc_query': antconc_query,
-                        'editor': author,
                         'additional_info': additional_info,
                         'homonym_order': (int(float(homonym_order))
                                           if homonym_order else None),
                         'homonym_gloss': homonym_gloss or u'',
                         'duplicate': bool(duplicate),
                     }
+                    raise NameError(u'''В переменной from_csv необходимо
+                                        учесть новое поле authors.''')
 
                     entry = Entry()
                     if not intersection or (force == 'add'):

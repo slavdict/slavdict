@@ -324,6 +324,8 @@ class Participle_Inline(admin.StackedInline):
 
 from slavdict.dictionary.models import Entry
 Entry.__unicode__ = lambda self: entry_with_orth_variants(self)
+Entry.entry_authors = lambda self: u', '.join([a.__unicode__() for a in
+                                               self.authors.all()])
 class AdminEntry(admin.ModelAdmin):
     raw_id_fields = (
         'derivation_entry',
@@ -392,7 +394,7 @@ class AdminEntry(admin.ModelAdmin):
         'civil_equivalent',
         '__unicode__',
         'duplicate',
-        'editor',
+        'entry_authors',
         'status',
         'part_of_speech',
         )
@@ -402,7 +404,7 @@ class AdminEntry(admin.ModelAdmin):
         '__unicode__',
         )
     list_filter = (
-        'editor',
+        'authors',
         'status',
         'part_of_speech',
         'uninflected',
@@ -416,7 +418,6 @@ class AdminEntry(admin.ModelAdmin):
         )
     list_editable = (
         'duplicate',
-        'editor',
         'status',
         )
     search_fields = ('civil_equivalent',)# 'orthographic_variants__idem')
@@ -447,7 +448,7 @@ class AdminEntryADMIN(AdminEntry):
     pass
 
 AdminEntryADMIN.fieldsets = copy.deepcopy(AdminEntry.fieldsets)
-AdminEntryADMIN.fieldsets[-1][1]['fields'] = ('editor', 'status', 'antconc_query')
+AdminEntryADMIN.fieldsets[-1][1]['fields'] = ('authors', 'status', 'antconc_query')
 
 class AdminEntryUI(AdminEntry):
     pass

@@ -393,7 +393,8 @@
                         <div class="right"></div>
                     </div>
 
-                    {% if not entry.editor or user.is_admeditor or user == entry.editor %}
+                    {% if not entry.authors.exists() or user.is_admeditor
+                    or user in entry.authors.all() %}
                         {% if not entry.duplicate or user.is_admeditor %}
                         <a href="{% url 'intermediary_change_form_url' entry.pk %}" class="icon edit">
                             <img src="{{ STATIC_URL }}transparent.png" alt="e" />
@@ -473,8 +474,16 @@
 
                 <td class="eli-author">
 
-                    {% if entry.editor %}
-                        <span class="ss">{{ entry.editor }}</span>
+                    {% if entry.authors.exists() %}
+                        <span class="ss">
+                            {% set _authors = entry.authors.all() %}
+                            {% if user in _authors %}
+                                {{ user }}
+                            {% else %}
+                                {{ _authors|first }}
+                            {% endif %}
+                            {% if _authors|length > 1 %}и др.{% endif %}
+                        </span>
                     {% else %}
                         <span class="ssn">&lt; Автор не назначен &gt;</span>
                     {% endif %}
