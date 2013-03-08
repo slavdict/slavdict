@@ -51,6 +51,7 @@ migrestart: stop checkout syncdb migrate start
 
 clean:
 	-find -name '*.pyc' -execdir rm {} \;
+	-rm -f static/*.css
 	-rm -fR .sass-cache/
 	-rm -fR .static/*
 
