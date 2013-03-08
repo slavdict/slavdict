@@ -476,8 +476,6 @@ class Entry(models.Model, Meaningfull):
     percent_status = PositiveSmallIntegerField(
                         u'статус готовности статьи в процентах', default=0)
 
-    editor = ForeignKey(CustomUser, verbose_name=u'автор статьи', blank=True,
-                        null=True, related_name='old_editors')
     authors = ManyToManyField(CustomUser, verbose_name=u'автор статьи',
                     blank=True, null=True)
 

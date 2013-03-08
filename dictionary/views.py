@@ -564,7 +564,7 @@ def antconc2ucs8_converter(request):
 @never_cache
 def edit_entry(request, id):
     choices = {
-        'editor': dictionary.viewmodels.editAuthors,
+        'author': dictionary.viewmodels.editAuthors,
         'entry_status': dictionary.viewmodels.editStatuses,
         'gender': dictionary.viewmodels.editGenders,
         'onym': dictionary.viewmodels.editOnyms,
@@ -574,7 +574,7 @@ def edit_entry(request, id):
         'tantum': dictionary.viewmodels.editTantum,
     }
     labels = {
-        'editor': dict(dictionary.viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
+        'author': dict(dictionary.viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
         'entry_status': dict(dictionary.models.STATUS_CHOICES),
         'gender': dict(dictionary.models.GENDER_CHOICES),
         'onym': dict(dictionary.models.ONYM_CHOICES),

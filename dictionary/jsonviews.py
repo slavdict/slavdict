@@ -170,7 +170,6 @@ def process_json_model(json_model, post):
         'collogroup_id': CollocationGroup.__name__,
         'collocation_id': Collocation.__name__,
         'derivation_entry_id': Entry.__name__,
-        'editor_id': CustomUser.__name__,
         'entry_container_id': Entry.__name__,
         'entry_id': Entry.__name__,
         'etymon_to_id': Etymology.__name__,
