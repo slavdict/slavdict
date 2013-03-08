@@ -48,9 +48,3 @@ urlpatterns += patterns('',
 )
 
 urlpatterns += staticfiles_urlpatterns()
-
-try:
-    import local_urls
-    urlpatterns += local_urls.urlpatterns
-except ImportError, AttributeError:
-    pass
