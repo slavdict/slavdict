@@ -474,15 +474,18 @@
                 <td class="eli-author">
 
                     {% if entry.authors.exists() %}
-                        <span class="ss">
-                            {% set _authors = entry.authors.all() %}
-                            {% if user in _authors %}
-                                {{ user }}
-                            {% else %}
-                                {{ _authors|first }}
-                            {% endif %}
-                            {% if _authors|length > 1 %}и др.{% endif %}
-                        </span>
+
+                        {%  set _authors = entry.authors.all()              %}
+                        {%  if user in _authors                             %}
+                        {%      set _author = user                          %}
+                        {%  else                                            %}
+                        {%      set _author = _authors|first                %}
+                        {%  endif                                           %}
+                        {%  if _authors|length > 1                          %}
+                        {%      set _author = _author.last_name ~ ' и др.'  %}
+                        {%  endif                                           %}
+
+                        <span class="ss">{{ _author }}</span>
                     {% else %}
                         <span class="ssn">&lt; Автор не назначен &gt;</span>
                     {% endif %}
