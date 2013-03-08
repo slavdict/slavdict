@@ -488,7 +488,6 @@ def hellinist_workbench(request):
         'greqs': [
             {
                 'unitext': greq.unitext,
-                'text': greq.text,
                 'initial_form': greq.initial_form,
                 'id': greq.id,
                 'additional_info': greq.additional_info
