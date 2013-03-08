@@ -323,7 +323,7 @@ class Participle_Inline(admin.StackedInline):
 
 
 from slavdict.dictionary.models import Entry
-Entry.__unicode__=lambda self: entry_with_orth_variants(self)
+Entry.__unicode__ = lambda self: entry_with_orth_variants(self)
 class AdminEntry(admin.ModelAdmin):
     raw_id_fields = (
         'derivation_entry',
