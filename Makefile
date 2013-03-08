@@ -29,6 +29,16 @@ checkout:
 	chown -R git:www-is /home/git/slavdict.*
 	chmod u+x ./*.sh
 
+revert:
+	@$(IS_PRODUCTION)
+	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
+		reset --hard HEAD^
+	compass compile -e production
+	python ./manage.py collectstatic --noinput
+	chown -R www-data:www-is ./
+	chown -R git:www-is /home/git/slavdict.*
+	chmod u+x ./*.sh
+
 syncdb:
 	python ./manage.py syncdb
 
