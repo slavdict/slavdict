@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Q
 
+from custom_user.models import CustomUser
 from dictionary.models import CollocationGroup
 from dictionary.models import Entry
 from dictionary.models import Etymology
@@ -38,6 +39,18 @@ def get_entries(form):
     if find:
         FILTER_PARAMS['civil_equivalent__istartswith'] = find
 
+    # Автор статьи
+    value = form['author'] or 'all'
+    if value=='all':
+        pass
+    elif value=='none':
+        FILTER_PARAMS['authors__isnull'] = True
+    elif value.isdigit():
+        author = CustomUser.objects.get(pk=int(value))
+        entries = author.entry_set.all()
+    else:
+        PARSING_ERRORS.append('author')
+
 
     def _set_enumerable_param(param, none_value, model_property=None):
         """ none_value := "NULL" | "EMPTY_STRING" | "DOESNT_HAVE"
@@ -62,9 +75,6 @@ def get_entries(form):
             FILTER_PARAMS[model_property] = value
         else:
             PARSING_ERRORS.append(param)
-
-    # Автор статьи
-    _set_enumerable_param('author', none_value='NULL', model_property='editor')
 
     # Статус статьи
     _set_enumerable_param('status', none_value='DOESNT_HAVE')
@@ -166,9 +176,10 @@ def get_examples(form):
     if value == 'all':
         pass
     elif value == 'none':
-        entries = Entry.objects.filter(editor__isnull=True)
+        entries = Entry.objects.filter(authors__isnull=True)
     elif value.isdigit():
-        entries = Entry.objects.filter(editor__id=int(value))
+        author = CustomUser.objects.get(pk=int(value))
+        entries = author.entry_set.all()
     else:
         PARSING_ERRORS.append('hwAuthor')
 
