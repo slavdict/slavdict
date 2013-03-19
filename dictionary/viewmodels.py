@@ -39,7 +39,8 @@ AUTHOR_CHOICES = tuple(
 
 authors = (
     {'id': 'all',  'name': u'все авторы'},
-    {'id': 'none', 'name': u'статьи без автора'}
+    {'id': 'none', 'name': u'статьи без автора'},
+    {'id': 'few',  'name': u'статьи с неск. авторами'},
 ) + tuple(
     {'id': str(u.id), 'name': u.__unicode__()}
     for u in CustomUser.objects.filter(groups__name=u'authors')
