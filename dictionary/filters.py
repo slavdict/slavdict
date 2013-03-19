@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.db.models import Count
 from django.db.models import Q
 
 from custom_user.models import CustomUser
@@ -45,6 +46,9 @@ def get_entries(form):
         pass
     elif value=='none':
         FILTER_PARAMS['authors__isnull'] = True
+    elif value=='few':
+        entries = entries.annotate(Count('authors'))
+        FILTER_PARAMS['authors__count__gt'] = 1
     elif value.isdigit():
         author = CustomUser.objects.get(pk=int(value))
         entries = author.entry_set.all()
