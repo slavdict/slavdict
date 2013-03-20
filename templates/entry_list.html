@@ -5,11 +5,14 @@
 
 {% block header %}
 
+    {# ::ui_myentries #}
     <a class="header--item button"
         data-bind="click: function(){
             var x = vM.filters;
             x.author('{{ user.id }}');
         }">Мои статьи</a>
+    {# :/ui_myentries #}
+
     {{ super() }}
 
 {% endblock %}
@@ -17,6 +20,7 @@
 {% block subheader %}
 
     <div class="filters">
+        {# ::ui_filters_statusbar #}
         <div class="f5s--statusbar"
              data-bind="slide: (!notDefaultState() && notInitialState()) ||
                                 isOperated() || notDefaultState()"><div
@@ -209,14 +213,19 @@
                       click: getDefaultState">сбросить все фильтры</span>
 
         </div></div>
+        {# :/ui_filters_statusbar #}
+
         <div class="f5s--buttons"
              data-bind="visible: notInitialState() || isOperated()"><div
                 class="grid">
 
             <span class="A" data-bind="visible: notInitialState">
                 <span class="AA">Применить изменения?</span>
+
+                {# ::ui_filters_apply #}
                 <span data-bind="click: formSubmit"
                       class="AB button f5sB--submit">применить</span>
+                {# :/ui_filters_apply #}
             </span>
 
         </div></div>
