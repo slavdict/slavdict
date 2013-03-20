@@ -5,11 +5,14 @@
 
 {% block header %}
 
+    {# ::ui_myentries #}
     <a class="header--item button"
         data-bind="click: function(){
             var x = vM.filters;
             x.author('{{ user.id }}');
         }">Мои статьи</a>
+    {# :/ui_myentries #}
+
     {{ super() }}
 
 {% endblock %}
@@ -17,9 +20,9 @@
 {% block subheader %}
 
     <div class="filters">
+        {# ::ui_filters_statusbar #}
         <div class="f5s--statusbar"
-             data-bind="slide: (!notDefaultState() && notInitialState()) ||
-                                isOperated() || notDefaultState()"><div
+             data-bind="slide: shouldShowStatusBar"><div
                  class="grid">
 
             <span class="f5sS--total"
@@ -209,14 +212,19 @@
                       click: getDefaultState">сбросить все фильтры</span>
 
         </div></div>
-        <div class="f5s--buttons"
-             data-bind="visible: notInitialState() || isOperated()"><div
+        {# :/ui_filters_statusbar #}
+
+        <div class="f5s--buttons" style="display: none;"
+             data-bind="slide: shouldShowFiltersButtons"><div
                 class="grid">
 
-            <span class="A" data-bind="visible: notInitialState">
+            <span class="A">
                 <span class="AA">Применить изменения?</span>
+
+                {# ::ui_filters_apply #}
                 <span data-bind="click: formSubmit"
                       class="AB button f5sB--submit">применить</span>
+                {# :/ui_filters_apply #}
             </span>
 
         </div></div>
@@ -697,6 +705,27 @@
             initials[i].getInitialValue();
         }
     };
+
+    vM.filters.shouldShowStatusBar = ko.computed(function(){
+        return (
+            !this.notDefaultState() && this.notInitialState() ||
+            this.isOperated() || this.notDefaultState()
+        );
+    }, vM.filters).extend({throttle: 500}); // ::js_statusbar_throttle
+
+    vM.filters.shouldShowFiltersButtons = ko.computed(
+        function(){ return this.notInitialState(); },
+        vM.filters
+    ).extend({throttle: 500}); /* NOTE: Наличие ``throttle`` здесь обязательно,
+                                  чтобы интерфейс себя вел хорошо в ситуации,
+                    когда автор нажимает кнопку "мои статьи" ##ui_myentries.
+                    Через полсекунды после нажатия (см. ##js_statusbar_throttle)
+                    появится статусная строка ##ui_filters_statusbar, если она
+                    была скрыта. В ней будет указано, что выбран фильтр статьи
+                    такого-то автора. Кнопка "применить изменения"
+                    ##ui_filters_apply без ``throttle`` будет появляться раньше
+                    статусной строки, что в пользовательском интерфейсе
+                    выглядит достаточно странно.  */
 
     $('#id_find')
         .attr('data-bind', 'value: find,' +
