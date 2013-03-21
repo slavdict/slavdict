@@ -714,8 +714,7 @@
     }, vM.filters).extend({throttle: 500}); // ::js_statusbar_throttle
 
     vM.filters.shouldShowFiltersButtons = ko.computed(
-        function(){ return this.notInitialState(); },
-        vM.filters
+        vM.filters.notInitialState
     ).extend({throttle: 500}); /* NOTE: Наличие ``throttle`` здесь обязательно,
                                   чтобы интерфейс себя вел хорошо в ситуации,
                     когда автор нажимает кнопку "мои статьи" ##ui_myentries.
