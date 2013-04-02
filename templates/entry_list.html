@@ -541,10 +541,48 @@
 
     {{ super() }}
 
-    <script src="{{ STATIC_URL }}/js/myKnockoutCommon.js"
+    <script src="{{ STATIC_URL }}js/myKnockoutCommon.js"
         type="application/javascript" charset="utf-8"></script>
 
-    <script src="{{ STATIC_URL }}/js/entryListFilters.js"
+    <script>
+
+        vM.valuesToInitialize = {
+            find: '{{ filters.find }}',
+            author: '{{ filters.author }}',
+            sortbase: '{{ filters.sortbase }}',
+            sortdir: '{{ filters.sortdir }}',
+            status: '{{ filters.status }}',
+            pos: '{{ filters.pos }}',
+            uninflected: {{ 'true' if filters.uninflected else 'false' }},
+            gender: '{{ filters.gender }}',
+            tantum: '{{ filters.tantum }}',
+            possessive: '{{ filters.possessive }}',
+            onym: '{{ filters.onym }}',
+            canonical_name: '{{ filters.canonical_name }}',
+            etymology: {{ 'true' if filters.etymology else 'false' }},
+            collocations: {{ 'true' if filters.collocations else 'false' }},
+            meaningcontexts: {{ 'true' if filters.meaningcontexts else 'false' }},
+            additional_info: {{ 'true' if filters.additional_info else 'false' }},
+            homonym: {{ 'true' if filters.homonym else 'false' }},
+            duplicate: {{ 'true' if filters.duplicate else 'false' }}
+        };
+
+        vM.listsForWidgets = {
+            authors: {{ viewmodel.authors }},
+            sortbase: {{ viewmodel.sortbase }},
+            sortdir: {{ viewmodel.sortdir }},
+            statuses: {{ viewmodel.statuses }},
+            pos: {{ viewmodel.pos }},
+            gender: {{ viewmodel.gender }},
+            tantum: {{ viewmodel.tantum }},
+            possessive: {{ viewmodel.possessive }},
+            onym: {{ viewmodel.onym }},
+            canonical_name: {{ viewmodel.canonical_name }}
+        };
+
+    </script>
+
+    <script src="{{ STATIC_URL }}js/entryListFilters.js"
         type="application/javascript" charset="utf-8"></script>
 
 {% endblock %}

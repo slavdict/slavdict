@@ -34,7 +34,7 @@ function Greq(ex, greq) {
         if (this.id()) {
             this.beingSaved(true);
             var dataToSend = { 'delete': this.id() }
-            $.post("{% url 'jsonGreqDeleteURL' %}", dataToSend,
+            $.post(vM.urls.jsonGreqDeleteURL, dataToSend,
                 function(data) {
                     if (data.action=='deleted') {
                         ex.greqs.remove(this);
@@ -49,7 +49,7 @@ function Greq(ex, greq) {
     this.saveMe = function() {
         this.beingSaved(true);
         var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(this)) };
-        $.post("{% url 'jsonGreqSaveURL' %}", dataToSend, function(data) {
+        $.post(vM.urls.jsonGreqSaveURL, dataToSend, function(data) {
             if (data.action=='created') {
                 this.id(data.id);
             }
@@ -111,62 +111,54 @@ function Example(ex) {
     this.saveMe = function() {
         this.beingSaved(true);
         var dataToSend = { 'ex': ko.toJSON(new ExForJSON(this)) };
-        $.post("{% url 'jsonExSaveURL' %}", dataToSend, function(data) {
+        $.post(vM.urls.jsonExSaveURL, dataToSend, function(data) {
             this.beingSaved(false);
         }.bind(this));
     }.bind(this);
 }
 
-var jsonExamples = ko.utils.arrayMap(
-    {{ jsonExamples|safe }},
-    function(ex) { return new Example(ex); }
-);
 
-var vM = {};
 
-vM.meta = {
-    initials: [],
-    defaults: []
-};
 
 vM.filters = {
-    examples: jsonExamples,
+    examples: ko.utils.arrayMap(vM.jsonExamples, function(ex) {
+        return new Example(ex); }),
 
     formSubmit: function(){ $('.headerForm').submit(); },
 
     hwAuthor: ko.observable()
-        .rememberInitial('{{ filters.hwAuthor }}')
+        .rememberInitial(vM.valuesToInitialize.hwAuthor)
         .rememberDefault('all')
-        .htmlSelect('hwAuthor', {{ viewmodel.authors }}),
+        .htmlSelect('hwAuthor', vM.listsForWidgets.authors),
 
     hwAddress: ko.observable()
-        .rememberInitial('{{ filters.hwAddress }}')
+        .rememberInitial(vM.valuesToInitialize.hwAddress)
         .rememberDefault('')
         .htmlTextInput('hwAddress'),
 
     hwPrfx: ko.observable()
-        .rememberInitial('{{ filters.hwPrfx }}')
+        .rememberInitial(vM.valuesToInitialize.hwPrfx)
         .rememberDefault('')
         .htmlTextInput('hwPrfx'),
 
     hwSortbase: ko.observable()
-        .rememberInitial('{{ filters.hwSortbase }}')
+        .rememberInitial(vM.valuesToInitialize.hwSortbase)
         // .rememberDefault... Значения по умолчанию
         // на клиенте намеренно не определяем,
         // хотя оно есть на сервере
-        .htmlSelect('hwSortbase', {{ viewmodel.sortbase }}),
+        .htmlSelect('hwSortbase', vM.listsForWidgets.sortbase),
 
     hwSortdir: ko.observable()
-        .rememberInitial('{{ filters.hwSortdir }}')
+        .rememberInitial(vM.valuesToInitialize.hwSortdir)
         // .rememberDefault... Значения по умолчанию
         // на клиенте намеренно не определяем,
         // хотя оно есть на сервере
-        .htmlSelect('hwSortdir', {{ viewmodel.sortdir }}),
+        .htmlSelect('hwSortdir', vM.listsForWidgets.sortdir),
 
     hwStatus: ko.observable()
-        .rememberInitial('{{ filters.hwStatus }}')
+        .rememberInitial(vM.valuesToInitialize.hwStatus)
         .rememberDefault('all')
-        .htmlSelect('hwStatus', {{ viewmodel.statuses }})
+        .htmlSelect('hwStatus', vM.listsForWidgets.statuses)
 
 };
 

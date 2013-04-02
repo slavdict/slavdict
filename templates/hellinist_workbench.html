@@ -275,10 +275,45 @@
 
 {% block javascript_links %}
 
-    <script src="{{ STATIC_URL }}/js/myKnockoutCommon.js"
+    <script src="{{ STATIC_URL }}js/myKnockoutCommon.js"
         type="application/javascript" charset="utf-8"></script>
 
-    <script src="{{ STATIC_URL }}/js/hellinistFilters.js"
+    <script>
+
+        var vM = {};
+
+        vM.urls = {
+            jsonGreqDeleteURL: "{% url 'jsonGreqDeleteURL' %}",
+            jsonGreqSaveURL: "{% url 'jsonGreqSaveURL' %}",
+            jsonExSaveURL: "{% url 'jsonExSaveURL' %}"
+        };
+
+        vM.meta = {
+            initials: [],
+            defaults: []
+        };
+
+        vM.valuesToInitialize = {
+            hwAuthor: '{{ filters.hwAuthor }}',
+            hwAddress: '{{ filters.hwAddress }}',
+            hwPrfx: '{{ filters.hwPrfx }}',
+            hwSortbase: '{{ filters.hwSortbase }}',
+            hwSortdir: '{{ filters.hwSortdir }}',
+            hwStatus: '{{ filters.hwStatus }}'
+        };
+
+        vM.listsForWidgets = {
+            authors: {{ viewmodel.authors }},
+            sortbase: {{ viewmodel.sortbase }},
+            sortdir: {{ viewmodel.sortdir }},
+            statuses: {{ viewmodel.statuses }}
+        };
+
+        vM.jsonExamples = {{ jsonExamples|safe }};
+
+    </script>
+
+    <script src="{{ STATIC_URL }}js/hellinistFilters.js"
         type="application/javascript" charset="utf-8"></script>
 
 {% endblock %}

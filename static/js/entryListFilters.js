@@ -13,96 +13,96 @@ vM.filters = {
         },
 
     find: ko.observable()
-        .rememberInitial('{{ filters.find }}')
+        .rememberInitial(vM.valuesToInitialize.find)
         .rememberDefault('')
         .htmlTextInput('find'),
 
     author: ko.observable()
-        .rememberInitial('{{ filters.author }}')
+        .rememberInitial(vM.valuesToInitialize.author)
         .rememberDefault('all')
-        .htmlSelect('author', {{ viewmodel.authors }}),
+        .htmlSelect('author', vM.listsForWidgets.authors),
 
     sortbase: ko.observable()
-        .rememberInitial('{{ filters.sortbase }}')
+        .rememberInitial(vM.valuesToInitialize.sortbase)
         // .rememberDefault... Значения по умолчанию
         // на клиенте намеренно не определяем,
         // хотя оно есть на сервере
-        .htmlSelect('sortbase', {{ viewmodel.sortbase }}),
+        .htmlSelect('sortbase', vM.listsForWidgets.sortbase),
 
     sortdir: ko.observable()
-        .rememberInitial('{{ filters.sortdir }}')
+        .rememberInitial(vM.valuesToInitialize.sortdir)
         // .rememberDefault... Значения по умолчанию
         // на клиенте намеренно не определяем,
         // хотя оно есть на сервере
-        .htmlSelect('sortdir', {{ viewmodel.sortdir }}),
+        .htmlSelect('sortdir', vM.listsForWidgets.sortdir),
 
     status: ko.observable()
-        .rememberInitial('{{ filters.status }}')
+        .rememberInitial(vM.valuesToInitialize.status)
         .rememberDefault('all')
-        .htmlSelect('status', {{ viewmodel.statuses }}),
+        .htmlSelect('status', vM.listsForWidgets.statuses),
 
     pos: ko.observable()
-        .rememberInitial('{{ filters.pos }}')
+        .rememberInitial(vM.valuesToInitialize.pos)
         .rememberDefault('all')
-        .htmlSelect('pos', {{ viewmodel.pos }}),
+        .htmlSelect('pos', vM.listsForWidgets.pos),
 
     uninflected: ko.observable()
-        .rememberInitial({{ 'true' if filters.uninflected else 'false' }})
+        .rememberInitial(vM.valuesToInitialize.uninflected)
         .rememberDefault(false)
         .htmlCheckbox('uninflected'),
 
     gender: ko.observable()
-        .rememberInitial('{{ filters.gender }}')
+        .rememberInitial(vM.valuesToInitialize.gender)
         .rememberDefault('all')
-        .htmlSelect('gender', {{ viewmodel.gender }}),
+        .htmlSelect('gender', vM.listsForWidgets.gender),
 
     tantum: ko.observable()
-        .rememberInitial('{{ filters.tantum }}')
+        .rememberInitial(vM.valuesToInitialize.tantum)
         .rememberDefault('all')
-        .htmlSelect('tantum', {{ viewmodel.tantum }}),
+        .htmlSelect('tantum', vM.listsForWidgets.tantum),
 
     possessive: ko.observable()
-        .rememberInitial('{{ filters.possessive }}')
+        .rememberInitial(vM.valuesToInitialize.possessive)
         .rememberDefault('all')
-        .htmlSelect('possessive', {{ viewmodel.possessive }}),
+        .htmlSelect('possessive', vM.listsForWidgets.possessive),
 
     onym: ko.observable()
-        .rememberInitial('{{ filters.onym }}')
+        .rememberInitial(vM.valuesToInitialize.onym)
         .rememberDefault('all')
-        .htmlSelect('onym', {{ viewmodel.onym }}),
+        .htmlSelect('onym', vM.listsForWidgets.onym),
 
     canonical_name: ko.observable()
-        .rememberInitial('{{ filters.canonical_name }}')
+        .rememberInitial(vM.valuesToInitialize.canonical_name)
         .rememberDefault('all')
-        .htmlSelect('canonical_name', {{ viewmodel.canonical_name }}),
+        .htmlSelect('canonical_name', vM.listsForWidgets.canonical_name),
 
     etymology: ko.observable()
-        .rememberInitial({{ 'true' if filters.etymology else 'false' }})
+        .rememberInitial(vM.valuesToInitialize.etymology)
         .rememberDefault(false)
         .htmlCheckbox('etymology'),
 
     collocations: ko.observable()
-        .rememberInitial({{ 'true' if filters.collocations else 'false' }})
+        .rememberInitial(vM.valuesToInitialize.collocations)
         .rememberDefault(false)
         .htmlCheckbox('collocations'),
 
     meaningcontexts: ko.observable()
-        .rememberInitial({{ 'true' if filters.meaningcontexts else 'false' }})
+        .rememberInitial(vM.valuesToInitialize.meaningcontexts)
         .rememberDefault(false)
         .htmlCheckbox('meaningcontexts'),
 
     additional_info: ko.observable()
-        .rememberInitial({{ 'true' if filters.additional_info else 'false' }})
+        .rememberInitial(vM.valuesToInitialize.additional_info)
         .rememberDefault(false)
         .htmlCheckbox('additional_info'),
 
     homonym: ko.observable()
-        .rememberInitial({{ 'true' if filters.homonym else 'false' }})
+        .rememberInitial(vM.valuesToInitialize.homonym)
         .rememberDefault(false)
         .htmlCheckbox('homonym'),
 
     duplicate: ko.observable()
-        .rememberInitial({{ 'true' if filters.duplicate else 'false' }})
+        .rememberInitial(vM.valuesToInitialize.duplicate)
         .rememberDefault(false)
         .htmlCheckbox('duplicate')
 };
