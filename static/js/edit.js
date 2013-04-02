@@ -10,16 +10,8 @@ var mapping = {
     ac2ucs8 = antconc_ucs8,
     ac2cvlr = antconc_civilrus_word,
 
-    wax = function wax(field) {
-        var field = this(),
-            isAffix = (field[0] === '-');
-        return ac2ucs8(isAffix? field.slice(1):field,
-                       isAffix? true:false);
-    },
-
     Orthvar = function(options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
-        this.idem_ucs = ko.computed(wax, this.idem);
         this.order = ko.observable();
 
         if (typeof options.data !== 'undefined') {
@@ -41,7 +33,6 @@ var mapping = {
     Meaning = function(options) {},
     Participle = function(options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
-        this.idem_ucs = ko.computed(wax, this.idem);
         this.order = ko.observable();
         this.tp = ko.observable(options.data && options.data.tp || '');
 
@@ -94,6 +85,27 @@ ko.bindingHandlers.sortable.afterMove = function(arg) {
     }
 };
 
+ko.bindingHandlers.wax = {
+    init: function(element, valueAccessor, allBindingsAccessor) {
+        var value = valueAccessor(),
+            cssClasses = allBindingsAccessor().waxCss || 'cslav';
+        value.wax = ko.computed(function() {
+                var word = value(),
+                    isAffix = (word[0] === '-'),
+                    dash = isAffix ? '<span>-</span>': '',
+                    text = ('<span class="' + cssClasses + '">' +
+                            ac2ucs8(isAffix ? word.slice(1) : word, isAffix) +
+                            '</span>');
+                    return dash + text;
+            });
+        $(element).html(value.wax());
+    },
+    update: function(element, valueAccessor) {
+        var value = valueAccessor();
+        $(element).html(value.wax());
+    }
+};
+
 
 
 vM.entryEdit = {
@@ -113,12 +125,9 @@ var viewModel = vM.entryEdit,
     uiEntry = uiModel.entry;
 
 
-uiEntry.genitive = ko.computed(wax, dataEntry.genitive);
-uiEntry.headword = ko.computed(wax, dataEntry.orthvars()[0].idem);
-uiEntry.nom_sg = ko.computed(wax, dataEntry.nom_sg);
-uiEntry.sg1 = ko.computed(wax, dataEntry.sg1);
-uiEntry.sg2 = ko.computed(wax, dataEntry.sg2);
-uiEntry.short_form = ko.computed(wax, dataEntry.short_form);
+uiEntry.headword = ko.computed(function() {
+    return dataEntry.orthvars()[0].idem();
+});
 
 uiEntry.part_of_speech = ko.computed(function(){
     var x = this.data.entry.part_of_speech(),

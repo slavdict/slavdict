@@ -25,7 +25,7 @@
     <div class="message antconsol" data-bind="text: data.entry.antconc_query,
         visible: data.entry.antconc_query"></div>
 
-    <span class="cslav headword" data-bind="text: ui.entry.headword"></span>
+    <span data-bind="wax: ui.entry.headword, waxCss: 'headword cslav'"></span>
     <i data-bind="text: ui.entry.part_of_speech"></i>
 
     <div style="margin: 30px 0;">
@@ -133,7 +133,7 @@
                                             valueUpdate: 'afterkeydown'"/>
                 </label>
 
-                <span class="cslav" data-bind="text: ui.entry.nom_sg"></span>
+                <span data-bind="wax: data.entry.nom_sg"></span>
 
             </div>
 
@@ -149,7 +149,7 @@
                                               valueUpdate: 'afterkeydown'"/>
             </label>
 
-            <span class="cslav" data-bind="text: ui.entry.short_form"></span>
+            <span data-bind="wax: data.entry.short_form"></span>
 
             Притяжательное
             <input type="checkbox"
@@ -166,7 +166,7 @@
                                               valueUpdate: 'afterkeydown'"/>
             </label>
 
-            <span class="cslav" data-bind="text: ui.entry.sg1"></span>
+            <span data-bind="wax: data.entry.sg1"></span>
 
         <br/><br/>
             <label>
@@ -175,7 +175,7 @@
                                               valueUpdate: 'afterkeydown'"/>
             </label>
 
-            <span class="cslav" data-bind="text: ui.entry.sg2"></span>
+            <span data-bind="wax: data.entry.sg2"></span>
 
         <br/><br/>
             <ul data-bind="sortable: data.entry.participles">
@@ -197,7 +197,7 @@
                     <input type="text"
                         data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
 
-                    <span class="cslav" data-bind="text: idem_ucs"></span>
+                    <span data-bind="wax: idem"></span>
 
                 </li>
             </ul>
@@ -218,7 +218,7 @@
                         $root.ui.destroyOrthvar.bind(null, $data)"/>
                 <input type="text"
                     data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
-                <span class="cslav" data-bind="text: idem_ucs"></span>
+                <span data-bind="wax: idem"></span>
             </li>
         </ul>
 
