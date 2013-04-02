@@ -69,6 +69,7 @@
 {% endblock %}
 
 {% block javascript %}
+<script type="application/javascript">
 
    $(function(){
       var x = antconc_ucs8($('#antconc-convertee').val(), false);
@@ -81,4 +82,5 @@
       });
    });
 
+</script>
 {% endblock %}
