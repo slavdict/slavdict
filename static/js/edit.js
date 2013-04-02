@@ -60,9 +60,7 @@ var mapping = {
         if (Participle.largestOrder < this.order()) {
             Participle.largestOrder = this.order();
         }
-    },
-
-    data = {{ entry }};
+    };
 
 Orthvar.counter = 0;
 Orthvar.largestOrder = 0;
@@ -99,12 +97,12 @@ ko.bindingHandlers.sortable.afterMove = function(arg) {
 
 
 vM.entryEdit = {
-    data: ko.mapping.fromJS(data, mapping),
+    data: ko.mapping.fromJS(vM.dataToInitialize.entry, mapping),
     ui: {
         entry: {},
-        choices: {{ choices }},
-        labels: {{ labels }},
-        slugs: {{ slugs }}
+        choices: vM.dataToInitialize.choices,
+        labels: vM.dataToInitialize.labels,
+        slugs: vM.dataToInitialize.slugs
     }
 };
 
