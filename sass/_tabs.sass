@@ -76,16 +76,18 @@ section.tabcontent
     span.headword
         font-size: 18px !important
 
-    ul[data-bind^="sortable"] li
+    ul.ko_container.ui-sortable li
         width: 560px
         padding: 5px
         margin-bottom: 5px
-        background-color: #ddd
+        background-color: #eee
+        border: 1px solid #ddd
         @include border-radius(4px)
-        border: 1px solid gray
 
         &.sortable-placeholder
-            background-color: orange
+            background-color: $yellowBackground
+            border-color: $yellowBorder
+
 
     span.cslav
         font-size: 16px !important
