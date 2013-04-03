@@ -59,8 +59,6 @@ Orthvar.largestOrder = 0;
 Participle.counter = 0;
 Participle.largestOrder = 0;
 
-ko.mapping.defaultOptions().ignore.splice(0, 0, 'idem_ucs');
-
 var placeholderClass = 'sortable-placeholder';
 ko.bindingHandlers.sortable.options = {
     axis: 'y',
