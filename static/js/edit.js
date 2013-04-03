@@ -127,7 +127,7 @@ uiEntry.headword = ko.computed(function() {
     return dataEntry.orthvars()[0].idem();
 });
 
-uiEntry.part_of_speech = ko.computed(function(){
+uiEntry.part_of_speech = ko.computed(function() {
     var x = this.data.entry.part_of_speech(),
         y = this.ui.labels.part_of_speech;
     if (x in y) {
@@ -172,6 +172,7 @@ uiModel.destroyParticiple = function(item) {
 
 ko.applyBindings(viewModel, $('#main').get(0));
 
+// Активация работы вкладок
 $('nav.tabs li').click(function(){
     $('nav.tabs li.current').removeClass('current');
     $('section.tabcontent.current').removeClass('current');
