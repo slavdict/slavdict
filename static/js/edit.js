@@ -122,18 +122,19 @@ Meaning.largestOrder = 0;
 
 var placeholderClass = 'sortable-placeholder';
 ko.bindingHandlers.sortable.options = {
+    appendTo: document.body,
     axis: 'y',
     cursor: 'move',
-    cursorAt: { left: 50, bottom: 0 },
-    forceHelperSize: true,
-    forcePlaceholderSize: true,
-    helper: 'clone',
-    opacity: 0.7,
+    opacity: 0.9,
     placeholder: placeholderClass,
     start: function(event, ui){
         var x = $(ui.item),
             y = x.outerHeight();
+        x.addClass('being-dragged');
         $('.' + placeholderClass).height(y);
+    },
+    stop: function(event, ui){
+        $(ui.item).removeClass('being-dragged');
     },
     tolerance: 'pointer'
 };
