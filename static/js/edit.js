@@ -22,6 +22,11 @@ var mapping = {
             this.id = options.data.id;
             this.order(options.data.order);
         } else {
+            if (typeof entry === 'undefined') {
+                throw new Error('Конструктору Orthvar требуется передать ' +
+                                'объект Entry, если в options нет ' +
+                                'достаточного количества данных.');
+            }
             this.entry_id = entry.id;
             this.id = 'orthvar' + Orthvar.counter;
             this.order(Orthvar.largestOrder + 1);
@@ -89,6 +94,11 @@ var mapping = {
             this.id = options.data.id;
             this.order(options.data.order);
         } else {
+            if (typeof entry === 'undefined') {
+                throw new Error('Конструктору Participle требуется передать ' +
+                                'объект Entry, если в options нет ' +
+                                'достаточного количества данных.');
+            }
             this.entry_id = entry.id;
             this.id = 'participle' + Participle.counter;
             this.order(Participle.largestOrder + 1);
