@@ -1,4 +1,7 @@
 var mapping = {
+        meanings: {
+            create: function(options){ return new Meaning(options); }
+        },
         orthvars: {
             create: function(options){ return new Orthvar(options); }
         },
@@ -30,7 +33,52 @@ var mapping = {
             Orthvar.largestOrder = this.order();
         }
     },
-    Meaning = function(options) {},
+    Meaning = function(options, containerType, container, parentMeaning) {
+        var data = options.data;
+        this.meaning = ko.observable(data && data.meaning || '');
+        this.gloss = ko.observable(data && data.gloss || '');
+        this.metaphorical = ko.observable(data && data.metaphorical || false);
+        this.additional_info = ko.observable(data &&
+                                             data.additional_info || '')
+        this.substantivus = ko.observable(data && data.substantivus || false);
+        this.substantivus_type = ko.observable(data &&
+                                               data.substantivus_type || '');
+        this.hidden = ko.observable(data && data.hidden || false);
+
+        if (typeof data !== 'undefined') {
+            this.entry_container_id = data.entry_container_id || null;
+            this.collogroup_container_id = data.collogroup_container_id || null;
+            this.parent_meaning_id = data.parent_meaning_id || null;
+            this.id = data.id;
+            this.order = ko.observable(data.order);
+        } else {
+            if (typeof container === 'undefined' ||
+                typeof containerType === 'undefined') {
+
+                throw new Error('Конструктору Meaning требуется передать ' +
+                                'объект Entry или Collogroup, указав какой ' +
+                                'именно. Это в том случае, если в options ' + 
+                                'нет достаточного количества данных.');
+            }
+            if (containerType === 'entry') {
+                this.entry_container_id = container.id;
+                this.collogroup_container_id = null;
+            }
+            if (containerType === 'collogroup') {
+                this.entry_container_id = null;
+                this.collogroup_container_id = container.id;
+            }
+            this.parent_meaning_id = parentMeaning.id || null;
+            this.id = 'meaning' + Meaning.counter;
+            this.order = ko.observable(Meaning.largestOrder + 1);
+        }
+
+        Meaning.counter++;
+
+        if (Meaning.largestOrder < this.order()) {
+            Meaning.largestOrder = this.order();
+        }
+    },
     Participle = function(options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
         this.order = ko.observable();
@@ -58,6 +106,9 @@ Orthvar.largestOrder = 0;
 
 Participle.counter = 0;
 Participle.largestOrder = 0;
+
+Meaning.counter = 0;
+Meaning.largestOrder = 0;
 
 var placeholderClass = 'sortable-placeholder';
 ko.bindingHandlers.sortable.options = {
