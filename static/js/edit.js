@@ -131,7 +131,8 @@ ko.bindingHandlers.sortable.options = {
     opacity: 0.7,
     placeholder: placeholderClass,
     start: function(event, ui){
-        var y = ui.helper.outerHeight();
+        var x = $(ui.item),
+            y = x.outerHeight();
         $('.' + placeholderClass).height(y);
     },
     tolerance: 'pointer'
