@@ -82,6 +82,7 @@ section.tabcontent
         margin-bottom: 5px
         background-color: #eee
         border: 1px solid #ddd
+        list-style: none
         @include border-radius(4px)
 
         &.sortable-placeholder
@@ -93,6 +94,13 @@ section.tabcontent
             background-color: $greenBackground
             border-color: $greenBorder
             color: $greenText
+
+        ul.ko_container.ui-sortable li
+            width: 93%
+            margin-left: 2em
+
+        ul.ko_container.ui-sortable:not(:empty)
+            margin-top: 1em
 
 
     span.cslav
