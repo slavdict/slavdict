@@ -1,6 +1,8 @@
 var mapping = {
         meanings: {
-            create: function(options){ return new Meaning(options); }
+            create: function(options){ return new Meaning(options); },
+            ignore: ['childMeanings']
+
         },
         orthvars: {
             create: function(options){ return new Orthvar(options); }
@@ -39,21 +41,25 @@ var mapping = {
         }
     },
     Meaning = function(options, containerType, container, parentMeaning) {
-        var data = options.data;
+        var data = options.data,
+            self = this;
         this.meaning = ko.observable(data && data.meaning || '');
         this.gloss = ko.observable(data && data.gloss || '');
         this.metaphorical = ko.observable(data && data.metaphorical || false);
-        this.additional_info = ko.observable(data &&
-                                             data.additional_info || '')
+        this.additional_info =
+                ko.observable(data && data.additional_info || '')
         this.substantivus = ko.observable(data && data.substantivus || false);
-        this.substantivus_type = ko.observable(data &&
-                                               data.substantivus_type || '');
+        this.substantivus_type =
+                ko.observable(data && data.substantivus_type || '');
         this.hidden = ko.observable(data && data.hidden || false);
 
         if (typeof data !== 'undefined') {
-            this.entry_container_id = data.entry_container_id || null;
-            this.collogroup_container_id = data.collogroup_container_id || null;
-            this.parent_meaning_id = data.parent_meaning_id || null;
+            this.entry_container_id =
+                    ko.observable(data.entry_container_id || null);
+            this.collogroup_container_id =
+                    ko.observable(data.collogroup_container_id || null);
+            this.parent_meaning_id =
+                    ko.observable(data.parent_meaning_id || null);
             this.id = data.id;
             this.order = ko.observable(data.order);
         } else {
@@ -66,23 +72,35 @@ var mapping = {
                                 'нет достаточного количества данных.');
             }
             if (containerType === 'entry') {
-                this.entry_container_id = container.id;
-                this.collogroup_container_id = null;
+                this.entry_container_id = ko.observable(container.id);
+                this.collogroup_container_id = ko.observable(null);
             }
             if (containerType === 'collogroup') {
-                this.entry_container_id = null;
-                this.collogroup_container_id = container.id;
+                this.entry_container_id = ko.observable(null);
+                this.collogroup_container_id = ko.observable(container.id);
             }
-            this.parent_meaning_id = parentMeaning.id || null;
+            this.parent_meaning_id = ko.observable(parentMeaning.id || null);
             this.id = 'meaning' + Meaning.counter;
             this.order = ko.observable(Meaning.largestOrder + 1);
         }
+
+        this.childMeanings = ko.observableArray([]);
+        this.childMeanings.subscribe(function(changedArray) {
+            var i = 1;
+            ko.utils.arrayForEach(changedArray, function(item) {
+                item.parent_meaning_id(self.id);
+                item.order(i);
+                i += 1;
+            });
+        });
 
         Meaning.counter++;
 
         if (Meaning.largestOrder < this.order()) {
             Meaning.largestOrder = this.order();
         }
+
+        Meaning.idMap[this.id] = this;
     },
     Participle = function(options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
@@ -119,6 +137,7 @@ Participle.largestOrder = 0;
 
 Meaning.counter = 0;
 Meaning.largestOrder = 0;
+Meaning.idMap = {};
 
 var placeholderClass = 'sortable-placeholder';
 ko.bindingHandlers.sortable.options = {
@@ -137,13 +156,6 @@ ko.bindingHandlers.sortable.options = {
         $(ui.item).removeClass('being-dragged');
     },
     tolerance: 'pointer'
-};
-
-ko.bindingHandlers.sortable.afterMove = function(arg) {
-    var i, j, arr = arg.targetParent();
-    for (i=0, j=arr.length; i<j; i++) {
-        arr[i].order(i);
-    }
 };
 
 ko.bindingHandlers.wax = {
@@ -200,6 +212,58 @@ uiEntry.part_of_speech = ko.computed(function() {
         return '';
     }
 }, viewModel);
+
+uiEntry.meanings = (function() {
+    var allMeanings = dataModel.meanings(),
+        entryMeanings = ko.observableArray([]),
+        cgMeanings = {},
+        i, j, meaning;
+
+    entryMeanings.subscribe(function(changedArray) {
+        var i = 1;
+        ko.utils.arrayForEach(changedArray, function(item) {
+            item.parent_meaning_id(null);
+            item.order(i);
+            i += 1;
+        });
+    });
+    for (i = 0, j = allMeanings.length; i < j; i++) {
+        meaning = allMeanings[i];
+        if (meaning.parent_meaning_id() === null) {
+            if (meaning.entry_container_id !== null) {
+                entryMeanings.push(meaning);
+            } else {
+                if (meaning.collogroup_container_id !== null) {
+                    if (typeof cgMeanings[meaning.collogroup_container_id]
+                        === 'undefined') {
+                            cgMeanings[meaning.collogroup_container_id] =
+                                ko.observableArray([]);
+                            cgMeanings[meaning.collogroup_container_id]
+                                .subscribe(function(changedArray) {
+                                    var i = 1;
+                                    ko.utils.arrayForEach(
+                                        changedArray,
+                                        function(item) {
+                                            item.parent_meaning_id(null);
+                                            item.order(i);
+                                            i += 1;
+                                        }
+                                    );
+                                });
+                    };
+                    cgMeanings[meaning.collogroup_container_id].push(meaning);
+                }
+            }
+        } else {
+            Meaning.idMap[meaning.parent_meaning_id()]
+                .childMeanings.push(meaning);
+        }
+    }
+    return {
+        entryMeanings: entryMeanings,
+        cgMeanings: cgMeanings
+    };
+})();
 
 uiModel.save = function() {
     $.post('/entries/save/', {data: ko.mapping.toJSON(dataModel, mapping)});

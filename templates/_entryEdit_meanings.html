@@ -1,10 +1,21 @@
 <section id="meanings" class="tabcontent">
 
-    <ul data-bind="sortable: data.meanings">
+    <ul data-bind="sortable: ui.entry.meanings.entryMeanings">
         <li>
+            <span data-bind="text: order"></span>
             <span data-bind="visible: metaphorical">►</span>
             <span data-bind="text: meaning"></span>
             <i data-bind="text: gloss"></i>
+
+            <ul data-bind="sortable: childMeanings">
+                <li>
+                    <span data-bind="text: order"></span>
+                    <span data-bind="visible: metaphorical">►</span>
+                    <span data-bind="text: meaning"></span>
+                    <i data-bind="text: gloss"></i>
+                </li>
+            </ul>
+
         </li>
     </ul>
 
