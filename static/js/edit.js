@@ -142,9 +142,8 @@ Meaning.idMap = {};
 var placeholderClass = 'sortable-placeholder';
 ko.bindingHandlers.sortable.options = {
     appendTo: document.body,
-    axis: 'y',
     cursor: 'move',
-    opacity: 0.9,
+    grid: [30, 1],
     placeholder: placeholderClass,
     start: function(event, ui){
         var x = $(ui.item),
@@ -155,7 +154,6 @@ ko.bindingHandlers.sortable.options = {
     stop: function(event, ui){
         $(ui.item).removeClass('being-dragged');
     },
-    tolerance: 'pointer'
 };
 
 ko.bindingHandlers.wax = {

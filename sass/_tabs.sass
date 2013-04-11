@@ -89,18 +89,32 @@ section.tabcontent
             background-color: $yellowBackground
             border-color: $yellowBorder
             padding: 0 5px
+            height: 4em
 
         &.being-dragged
             background-color: $greenBackground
             border-color: $greenBorder
             color: $greenText
+            height: 1.5em !important
+            width: 40em !important
+            overflow: hidden
+            padding: 2px 5px
+            line-height: 10px
+            border-right: 2px dotted $greenBorder
+            border-bottom: 2px dotted $greenBorder
+
+            input
+                display: none
 
         ul.ko_container.ui-sortable li
-            width: 93%
+            width: 97%
+
+        ul.ko_container.ui-sortable
             margin-left: 2em
 
-        ul.ko_container.ui-sortable:not(:empty)
-            margin-top: 1em
+            &:not(:empty)
+                margin-top: 1em
+
 
 
     span.cslav
