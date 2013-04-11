@@ -62,6 +62,7 @@ var mapping = {
                 i += 1;
             });
         });
+        this.meanings.notifySubscribers(this.meanings());
 
         Collogroup.counter++;
 
@@ -153,6 +154,14 @@ var mapping = {
         this.collogroups = ko.mapping.fromJS(
                 { collogroups: options.data.collogroups || [] },
                 mapping)['collogroups'];
+        this.collogroups.subscribe(function(changedArray) {
+            var i = 1;
+            ko.utils.arrayForEach(changedArray, function(item) {
+                item.order(i);
+                i += 1;
+            });
+        });
+        this.collogroups.notifySubscribers(this.collogroups());
 
         Meaning.counter++;
 
