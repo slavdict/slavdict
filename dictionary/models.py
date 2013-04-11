@@ -1050,6 +1050,7 @@ class CollocationGroup(models.Model, Meaningfull):
     cf_meanings = ManyToManyField(Meaning, verbose_name=u'ср. (значения)',
             related_name='cf_collogroup_set', blank=True, null=True)
 
+    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
     ctime = DateTimeField(editable=False, auto_now_add=True)
     mtime = DateTimeField(editable=False, auto_now=True)
 
