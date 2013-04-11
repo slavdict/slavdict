@@ -1,5 +1,8 @@
 var mapping = {
         'ignore': ['childMeanings'],
+        collogroups: {
+            create: function(options){ return new Collogroup(options); }
+        },
         meanings: {
             create: function(options){ return new Meaning(options); }
         },
@@ -14,23 +17,74 @@ var mapping = {
     ac2ucs8 = antconc_ucs8,
     ac2cvlr = antconc_civilrus_word,
 
+    Collogroup = function(options, containerType, container) {
+        var self = this;
+        this.collocations = ko.mapping.fromJS(
+                { collocations: options.data.collocations || [] },
+                mapping)['collocations'];
+
+        if (typeof options.data !== 'undefined') {
+            this.base_entry_id = ko.observable(options.data.base_entry_id);
+            this.base_meaning_id = ko.observable(options.data.base_meaning_id);
+            this.id = options.data.id;
+            this.order = ko.observable(options.data.order);
+        } else {
+            if (typeof container === 'undefined' ||
+                typeof containerType === 'undefined') {
+
+                throw new Error('Конструктору Collogroup требуется передать ' +
+                                'объект Entry или Meaning, указав какой ' +
+                                'именно. Это в том случае, если в options ' + 
+                                'нет достаточного количества данных.');
+            }
+            if (containerType === 'entry') {
+                this.base_entry_id = ko.observable(container.id);
+                this.base_meaning_id = ko.observable(null);
+            }
+            if (containerType === 'meaning') {
+                this.base_entry_id = ko.observable(null);
+                this.base_meaning_id = ko.observable(container.id);
+            }
+            this.id = 'collogroup' + Collogroup.counter;
+            this.order = ko.observable(Collogroup.largestOrder + 1);
+        }
+
+        this.meanings = ko.mapping.fromJS(
+                { meanings: options.data.meanings || [] },
+                mapping)['meanings'];
+        this.meanings.subscribe(function(changedArray) {
+            var i = 1;
+            ko.utils.arrayForEach(changedArray, function(item) {
+                item.parent_meaning_id(null);
+                item.entry_container_id(null);
+                item.collogroup_container_id(self.id);
+                item.order(i);
+                i += 1;
+            });
+        });
+
+        Collogroup.counter++;
+
+        if (Collogroup.largestOrder < this.order()) {
+            Collogroup.largestOrder = this.order();
+        }
+    },
     Orthvar = function(options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
-        this.order = ko.observable();
 
         if (typeof options.data !== 'undefined') {
             this.entry_id = options.data.entry_id;
             this.id = options.data.id;
-            this.order(options.data.order);
+            this.order = ko.observable(options.data.order);
         } else {
             if (typeof entry === 'undefined') {
                 throw new Error('Конструктору Orthvar требуется передать ' +
                                 'объект Entry, если в options нет ' +
                                 'достаточного количества данных.');
             }
-            this.entry_id = entry.id;
+            this.entry_id = entry.id();
             this.id = 'orthvar' + Orthvar.counter;
-            this.order(Orthvar.largestOrder + 1);
+            this.order = ko.observable(Orthvar.largestOrder + 1);
         }
 
         Orthvar.counter++;
@@ -89,10 +143,16 @@ var mapping = {
             var i = 1;
             ko.utils.arrayForEach(changedArray, function(item) {
                 item.parent_meaning_id(self.id);
+                item.entry_container_id(Meaning.idMap[self.id].entry_container_id());
+                item.collogroup_container_id(Meaning.idMap[self.id].collogroup_container_id());
                 item.order(i);
                 i += 1;
             });
         });
+
+        this.collogroups = ko.mapping.fromJS(
+                { collogroups: options.data.collogroups || [] },
+                mapping)['collogroups'];
 
         Meaning.counter++;
 
@@ -104,22 +164,21 @@ var mapping = {
     },
     Participle = function(options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
-        this.order = ko.observable();
         this.tp = ko.observable(options.data && options.data.tp || '');
 
         if (typeof options.data !== 'undefined') {
             this.entry_id = options.data.entry_id;
             this.id = options.data.id;
-            this.order(options.data.order);
+            this.order = ko.observable(options.data.order);
         } else {
             if (typeof entry === 'undefined') {
                 throw new Error('Конструктору Participle требуется передать ' +
                                 'объект Entry, если в options нет ' +
                                 'достаточного количества данных.');
             }
-            this.entry_id = entry.id;
+            this.entry_id = entry.id();
             this.id = 'participle' + Participle.counter;
-            this.order(Participle.largestOrder + 1);
+            this.order = ko.observable(Participle.largestOrder + 1);
         }
 
         Participle.counter++;
@@ -128,6 +187,9 @@ var mapping = {
             Participle.largestOrder = this.order();
         }
     };
+
+Collogroup.counter = 0;
+Collogroup.largestOrder = 0;
 
 Orthvar.counter = 0;
 Orthvar.largestOrder = 0;
@@ -214,53 +276,30 @@ uiEntry.part_of_speech = ko.computed(function() {
 uiEntry.meanings = (function() {
     var allMeanings = dataModel.meanings(),
         entryMeanings = ko.observableArray([]),
-        cgMeanings = {},
         i, j, meaning;
 
     entryMeanings.subscribe(function(changedArray) {
         var i = 1;
         ko.utils.arrayForEach(changedArray, function(item) {
             item.parent_meaning_id(null);
+            item.entry_container_id(dataModel.entry.id());
+            item.collogroup_container_id(null);
             item.order(i);
             i += 1;
         });
     });
+
     for (i = 0, j = allMeanings.length; i < j; i++) {
         meaning = allMeanings[i];
         if (meaning.parent_meaning_id() === null) {
-            if (meaning.entry_container_id !== null) {
-                entryMeanings.push(meaning);
-            } else {
-                if (meaning.collogroup_container_id !== null) {
-                    if (typeof cgMeanings[meaning.collogroup_container_id]
-                        === 'undefined') {
-                            cgMeanings[meaning.collogroup_container_id] =
-                                ko.observableArray([]);
-                            cgMeanings[meaning.collogroup_container_id]
-                                .subscribe(function(changedArray) {
-                                    var i = 1;
-                                    ko.utils.arrayForEach(
-                                        changedArray,
-                                        function(item) {
-                                            item.parent_meaning_id(null);
-                                            item.order(i);
-                                            i += 1;
-                                        }
-                                    );
-                                });
-                    };
-                    cgMeanings[meaning.collogroup_container_id].push(meaning);
-                }
-            }
+            entryMeanings.push(meaning);
         } else {
             Meaning.idMap[meaning.parent_meaning_id()]
                 .childMeanings.push(meaning);
         }
     }
-    return {
-        entryMeanings: entryMeanings,
-        cgMeanings: cgMeanings
-    };
+
+    return entryMeanings;
 })();
 
 uiModel.save = function() {
@@ -294,6 +333,19 @@ uiModel.destroyParticiple = function(item) {
         this.participles.remove(item);
     }
 }.bind(dataEntry);
+
+ko.bindingHandlers.sortable.beforeMove = function (arg, event, ui) {
+    console.log('before: entry(%i), collogroup(%i), parentMeaning(%i)',
+            arg.item.entry_container_id(),
+            arg.item.collogroup_container_id(),
+            arg.item.parent_meaning_id());
+};
+ko.bindingHandlers.sortable.afterMove = function (arg, event, ui) {
+    console.log('after: entry(%i), collogroup(%i), parentMeaning(%i)\n\n',
+            arg.item.entry_container_id(),
+            arg.item.collogroup_container_id(),
+            arg.item.parent_meaning_id());
+};
 
 ko.applyBindings(viewModel, $('#main').get(0));
 

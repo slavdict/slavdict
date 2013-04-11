@@ -76,7 +76,8 @@ section.tabcontent
     span.headword
         font-size: 18px !important
 
-    ul.ko_container.ui-sortable li
+    ul.ko_container.ui-sortable li,
+    ul.meanings.ui-sortable li
         width: 560px
         padding: 5px
         margin-bottom: 5px
@@ -106,11 +107,12 @@ section.tabcontent
             input
                 display: none
 
-        ul.ko_container.ui-sortable li
-            width: 97%
-
-        ul.ko_container.ui-sortable
+        ul.ko_container.ui-sortable,
+        ul.meanings.ui-sortable
             margin-left: 2em
+
+            li
+                width: 97%
 
             &:not(:empty)
                 margin-top: 1em

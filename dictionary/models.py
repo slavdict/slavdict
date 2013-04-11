@@ -460,7 +460,7 @@ class Entry(models.Model, Meaningfull):
 
     @property
     def collogroups(self):
-        return self.collocationgroup_set.all().order_by('id')
+        return self.collocationgroup_set.all().order_by('order', 'id')
 
     @property
     def participles(self):
@@ -824,7 +824,7 @@ class Meaning(models.Model):
 
     @property
     def collogroups(self):
-        return self.collocationgroup_set.all().order_by('id')
+        return self.collocationgroup_set.all().order_by('order', 'id')
 
     @property
     def child_meanings(self):
@@ -877,6 +877,7 @@ class Meaning(models.Model):
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['contexts'] = [c.forJSON() for c in self.contexts]
+        dct['collogroups'] = [c.forJSON() for c in self.collogroups]
         return dct
 
     def toJSON(self):
@@ -1076,9 +1077,11 @@ class CollocationGroup(models.Model, Meaningfull):
             'base_entry_id',
             'base_meaning_id',
             'id',
+            'order',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['collocations'] = [c.forJSON() for c in self.collocations]
+        dct['meanings'] = [m.forJSON() for m in self.meanings]
         return dct
 
     def toJSON(self):
