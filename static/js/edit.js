@@ -1,8 +1,7 @@
 var mapping = {
+        'ignore': ['childMeanings'],
         meanings: {
-            create: function(options){ return new Meaning(options); },
-            ignore: ['childMeanings']
-
+            create: function(options){ return new Meaning(options); }
         },
         orthvars: {
             create: function(options){ return new Orthvar(options); }
@@ -52,6 +51,7 @@ var mapping = {
         this.substantivus_type =
                 ko.observable(data && data.substantivus_type || '');
         this.hidden = ko.observable(data && data.hidden || false);
+        this.contexts = ko.observableArray([]) // FIXME
 
         if (typeof data !== 'undefined') {
             this.entry_container_id =
