@@ -267,6 +267,14 @@ var viewModel = vM.entryEdit,
     uiEntry = uiModel.entry;
 
 
+dataEntry.orthvars.subscribe(function (changedArray) {
+    var i = 1;
+    ko.utils.arrayForEach(changedArray, function (item) {
+        item.order(i++);
+    });
+});
+dataEntry.orthvars.notifySubscribers(dataEntry.orthvars());
+
 uiEntry.headword = ko.computed(function() {
     return dataEntry.orthvars()[0].idem();
 });
