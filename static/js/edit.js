@@ -1,26 +1,26 @@
 var mapping = {
         'ignore': ['childMeanings'],
         collogroups: {
-            create: function(options){ return new Collogroup(options); }
+            create: function (options) { return new Collogroup(options); }
         },
         examples: {
-            create: function(options){ return new Example(options); }
+            create: function (options) { return new Example(options); }
         },
         meanings: {
-            create: function(options){ return new Meaning(options); }
+            create: function (options) { return new Meaning(options); }
         },
         orthvars: {
-            create: function(options){ return new Orthvar(options); }
+            create: function (options) { return new Orthvar(options); }
         },
         participles: {
-            create: function(options){ return new Participle(options); }
+            create: function (options) { return new Participle(options); }
         }
     },
 
     ac2ucs8 = antconc_ucs8,
     ac2cvlr = antconc_civilrus_word,
 
-    Collogroup = function(options, containerType, container) {
+    Collogroup = function (options, containerType, container) {
         var self = this;
         this.collocations = ko.mapping.fromJS(
                 { collocations: options.data.collocations || [] },
@@ -37,7 +37,7 @@ var mapping = {
 
                 throw new Error('Конструктору Collogroup требуется передать ' +
                                 'объект Entry или Meaning, указав какой ' +
-                                'именно. Это в том случае, если в options ' + 
+                                'именно. Это в том случае, если в options ' +
                                 'нет достаточного количества данных.');
             }
             if (containerType === 'entry') {
@@ -55,9 +55,9 @@ var mapping = {
         this.meanings = ko.mapping.fromJS(
                 { meanings: options.data.meanings || [] },
                 mapping)['meanings'];
-        this.meanings.subscribe(function(changedArray) {
+        this.meanings.subscribe(function (changedArray) {
             var i = 1;
-            ko.utils.arrayForEach(changedArray, function(item) {
+            ko.utils.arrayForEach(changedArray, function (item) {
                 item.parent_meaning_id(null);
                 item.entry_container_id(null);
                 item.collogroup_container_id(self.id);
@@ -70,14 +70,14 @@ var mapping = {
         Collogroup.counter++;
 
     },
-    Example = function(options, meaning, entry, collogroup) {
+    Example = function (options, meaning, entry, collogroup) {
         var data = options.data;
 
         this.additional_info =
                 ko.observable(data && data.additional_info || '');
         this.address_text = ko.observable(data && data.address_text || '');
         this.collogroup_id = ko.observable(data && data.collogroup_id ||
-                collogroup && collogroup.id || null); 
+                collogroup && collogroup.id || null);
         this.entry_id = ko.observable(data && data.entry_id ||
                 entry && entry.id());
         this.example = ko.observable(data && data.example || '');
@@ -94,7 +94,7 @@ var mapping = {
 
         Example.counter++;
     },
-    Orthvar = function(options, entry) {
+    Orthvar = function (options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
 
         if (typeof options.data !== 'undefined') {
@@ -114,7 +114,7 @@ var mapping = {
 
         Orthvar.counter++;
     },
-    Meaning = function(options, containerType, container, parentMeaning) {
+    Meaning = function (options, containerType, container, parentMeaning) {
         var data = options.data,
             self = this;
         this.meaning = ko.observable(data && data.meaning || '');
@@ -144,7 +144,7 @@ var mapping = {
 
                 throw new Error('Конструктору Meaning требуется передать ' +
                                 'объект Entry или Collogroup, указав какой ' +
-                                'именно. Это в том случае, если в options ' + 
+                                'именно. Это в том случае, если в options ' +
                                 'нет достаточного количества данных.');
             }
             if (containerType === 'entry') {
@@ -161,20 +161,22 @@ var mapping = {
         }
 
         this.childMeanings = ko.observableArray([]);
-        this.childMeanings.subscribe(function(changedArray) {
+        this.childMeanings.subscribe(function (changedArray) {
             var i = 1;
-            ko.utils.arrayForEach(changedArray, function(item) {
+            ko.utils.arrayForEach(changedArray, function (item) {
                 item.parent_meaning_id(self.id);
-                item.entry_container_id(Meaning.idMap[self.id].entry_container_id());
-                item.collogroup_container_id(Meaning.idMap[self.id].collogroup_container_id());
+                item.entry_container_id(Meaning.idMap[self.id]
+                                        .entry_container_id());
+                item.collogroup_container_id(Meaning.idMap[self.id]
+                                             .collogroup_container_id());
                 item.order(i);
                 i += 1;
             });
         });
         this.examples = ko.observableArray([]);
-        this.examples.subscribe(function(changedArray) {
+        this.examples.subscribe(function (changedArray) {
             var i = 1;
-            ko.utils.arrayForEach(changedArray, function(item) {
+            ko.utils.arrayForEach(changedArray, function (item) {
                 item.meaning_id(self.id);
                 item.collogroup_id(self.collogroup_container_id());
                 item.order(i);
@@ -185,9 +187,9 @@ var mapping = {
         this.collogroups = ko.mapping.fromJS(
                 { collogroups: options.data.collogroups || [] },
                 mapping)['collogroups'];
-        this.collogroups.subscribe(function(changedArray) {
+        this.collogroups.subscribe(function (changedArray) {
             var i = 1;
-            ko.utils.arrayForEach(changedArray, function(item) {
+            ko.utils.arrayForEach(changedArray, function (item) {
                 item.order(i);
                 i += 1;
             });
@@ -197,7 +199,7 @@ var mapping = {
         Meaning.counter++;
         Meaning.idMap[this.id] = this;
     },
-    Participle = function(options, entry) {
+    Participle = function (options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
         this.tp = ko.observable(options.data && options.data.tp || '');
 
@@ -221,10 +223,10 @@ var mapping = {
 
 Collogroup.counter = 0;
 Example.counter = 0;
+Meaning.counter = 0;
 Orthvar.counter = 0;
 Participle.counter = 0;
 
-Meaning.counter = 0;
 Meaning.idMap = {};
 
 var placeholderClass = 'sortable-placeholder';
@@ -233,22 +235,22 @@ ko.bindingHandlers.sortable.options = {
     cursor: 'move',
     grid: [30, 1],
     placeholder: placeholderClass,
-    start: function(event, ui){
+    start: function (event, ui) {
         var x = $(ui.item),
             y = x.outerHeight();
         x.addClass('being-dragged');
         $('.' + placeholderClass).height(y);
     },
-    stop: function(event, ui){
+    stop: function (event, ui) {
         $(ui.item).removeClass('being-dragged');
     },
 };
 
 ko.bindingHandlers.wax = {
-    init: function(element, valueAccessor, allBindingsAccessor) {
+    init: function (element, valueAccessor, allBindingsAccessor) {
         var value = valueAccessor(),
             cssClasses = allBindingsAccessor().waxCss || 'cslav';
-        value.wax = ko.computed(function() {
+        value.wax = ko.computed(function () {
                 var word = value(),
                     isAffix = (word[0] === '-'),
                     dash = isAffix ? '<span>-</span>': '',
@@ -259,7 +261,7 @@ ko.bindingHandlers.wax = {
             });
         $(element).html(value.wax());
     },
-    update: function(element, valueAccessor) {
+    update: function (element, valueAccessor) {
         var value = valueAccessor();
         $(element).html(value.wax());
     }
@@ -292,11 +294,11 @@ dataEntry.orthvars.subscribe(function (changedArray) {
 });
 dataEntry.orthvars.notifySubscribers(dataEntry.orthvars());
 
-uiEntry.headword = ko.computed(function() {
+uiEntry.headword = ko.computed(function () {
     return dataEntry.orthvars()[0].idem();
 });
 
-uiEntry.part_of_speech = ko.computed(function() {
+uiEntry.part_of_speech = ko.computed(function () {
     var x = this.data.entry.part_of_speech(),
         y = this.ui.labels.part_of_speech;
     if (x in y) {
@@ -307,14 +309,14 @@ uiEntry.part_of_speech = ko.computed(function() {
     }
 }, viewModel);
 
-uiEntry.meanings = (function() {
+uiEntry.meanings = (function () {
     var allMeanings = dataModel.meanings(),
         entryMeanings = ko.observableArray([]),
         i, j, meaning;
 
-    entryMeanings.subscribe(function(changedArray) {
+    entryMeanings.subscribe(function (changedArray) {
         var i = 1;
-        ko.utils.arrayForEach(changedArray, function(item) {
+        ko.utils.arrayForEach(changedArray, function (item) {
             item.parent_meaning_id(null);
             item.entry_container_id(dataModel.entry.id());
             item.collogroup_container_id(null);
@@ -352,19 +354,19 @@ uiEntry.meanings = (function() {
     }
 })();
 
-uiModel.save = function() {
+uiModel.save = function () {
     $.post('/entries/save/', {data: ko.mapping.toJSON(dataModel, mapping)});
 };
 
-uiModel.addMeaing = function() {
+uiModel.addMeaing = function () {
     this.meanings.push(new Meaning({}));
 }.bind(dataModel);
 
-uiModel.addOrthvar = function() {
+uiModel.addOrthvar = function () {
     this.orthvars.push(new Orthvar({}, this));
 }.bind(dataEntry);
 
-uiModel.destroyOrthvar = function(orthvar) {
+uiModel.destroyOrthvar = function (orthvar) {
     if (typeof orthvar.id === 'number') {
         this.orthvars.destroy(orthvar);
     } else {
@@ -372,11 +374,11 @@ uiModel.destroyOrthvar = function(orthvar) {
     }
 }.bind(dataEntry);
 
-uiModel.addParticiple = function() {
+uiModel.addParticiple = function () {
     this.participles.push(new Participle({}, this));
 }.bind(dataEntry);
 
-uiModel.destroyParticiple = function(item) {
+uiModel.destroyParticiple = function (item) {
     if (typeof item.id === 'number') {
         this.participles.destroy(item);
     } else {
@@ -404,7 +406,7 @@ ko.bindingHandlers.sortable.afterMove = function (arg, event, ui) {
 ko.applyBindings(viewModel, $('#main').get(0));
 
 // Активация работы вкладок
-$('nav.tabs li').click(function(){
+$('nav.tabs li').click(function () {
     $('nav.tabs li.current').removeClass('current');
     $('section.tabcontent.current').removeClass('current');
     var x = $(this);
