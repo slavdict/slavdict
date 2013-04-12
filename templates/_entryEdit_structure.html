@@ -8,6 +8,14 @@
             <span data-bind="text: meaning"></span>
             <i data-bind="text: gloss"></i>
 
+            <ul class="examples" data-bind="sortable: { data: examples,
+                                                connectClass: 'examples' }">
+                <li>
+                    <span data-bind="wax: example"></span>{{ space }}
+                    (<span data-bind="text: address_text"></span>)
+                </li>
+            </ul>
+
             <ul class="meanings" data-bind="sortable: { data: childMeanings,
                                                 connectClass: 'meanings' }">
                 <li>
@@ -15,7 +23,17 @@
                     <span data-bind="visible: metaphorical">►</span>
                     <span data-bind="text: meaning"></span>
                     <i data-bind="text: gloss"></i>
+
+                    <ul class="examples" data-bind="sortable:
+                            { data: examples, connectClass: 'examples' }">
+                        <li>
+                            <span data-bind="wax: example"></span>{{ space }}
+                            (<span data-bind="text: address_text"></span>)
+                        </li>
+                    </ul>
+
                 </li>
+
             </ul>
 
             <ul data-bind="sortable: collogroups">
@@ -35,6 +53,15 @@
                             <span data-bind="visible: metaphorical">►</span>
                             <span data-bind="text: meaning"></span>
                             <i data-bind="text: gloss"></i>
+
+                            <ul class="examples" data-bind="sortable:
+                                { data: examples, connectClass: 'examples' }">
+                                <li>
+                                    <span data-bind="wax: example"></span>{{ space }}
+                                    (<span data-bind="text: address_text"></span>)
+                                </li>
+                            </ul>
+
                         </li>
                     </ul>
 

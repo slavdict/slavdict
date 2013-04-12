@@ -3,6 +3,9 @@ var mapping = {
         collogroups: {
             create: function(options){ return new Collogroup(options); }
         },
+        examples: {
+            create: function(options){ return new Example(options); }
+        },
         meanings: {
             create: function(options){ return new Meaning(options); }
         },
@@ -66,6 +69,30 @@ var mapping = {
 
         Collogroup.counter++;
 
+    },
+    Example = function(options, meaning, entry, collogroup) {
+        var data = options.data;
+
+        this.additional_info =
+                ko.observable(data && data.additional_info || '');
+        this.address_text = ko.observable(data && data.address_text || '');
+        this.collogroup_id = ko.observable(data && data.collogroup_id ||
+                collogroup && collogroup.id || null); 
+        this.entry_id = ko.observable(data && data.entry_id ||
+                entry && entry.id());
+        this.example = ko.observable(data && data.example || '');
+        this.greek_eq_status =
+                ko.observable(data && data.greek_eq_status || '');
+        this.greqs = ko.mapping.fromJS(
+                { greqs: options.data.greqs || [] },
+                mapping)['greqs'];
+        this.hidden = ko.observable(data && data.hidden || '');
+        this.id = data && data.id || 'example' + Example.counter;
+        this.meaning_id = ko.observable(data && data.meaning_id || meaning.id);
+        this.order = ko.observable(data && data.order || 345);
+                     // 345 -- Порядковый номер по умолчанию.
+
+        Example.counter++;
     },
     Orthvar = function(options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
@@ -144,6 +171,16 @@ var mapping = {
                 i += 1;
             });
         });
+        this.examples = ko.observableArray([]);
+        this.examples.subscribe(function(changedArray) {
+            var i = 1;
+            ko.utils.arrayForEach(changedArray, function(item) {
+                item.meaning_id(self.id);
+                item.collogroup_id(self.collogroup_container_id());
+                item.order(i);
+                i += 1;
+            });
+        });
 
         this.collogroups = ko.mapping.fromJS(
                 { collogroups: options.data.collogroups || [] },
@@ -183,6 +220,7 @@ var mapping = {
     };
 
 Collogroup.counter = 0;
+Example.counter = 0;
 Orthvar.counter = 0;
 Participle.counter = 0;
 
@@ -296,6 +334,22 @@ uiEntry.meanings = (function() {
     }
 
     return entryMeanings;
+})();
+
+// Просматриваем список всех примеров и, если пример должен стоять при
+// определенном значении, а не просто добавлен в мешок примеров при статье,
+// добавляем его в список примеров конкретного значения.
+(function () {
+    var allExamples = dataModel.examples(),
+        i, j, example;
+
+    for (i = 0, j = allExamples.length; i < j; i++) {
+        example = allExamples[i];
+        if (example.meaning_id() !== null) {
+            Meaning.idMap[example.meaning_id()]
+                .examples.push(example);
+        }
+    }
 })();
 
 uiModel.save = function() {
