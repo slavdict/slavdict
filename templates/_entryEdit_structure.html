@@ -8,7 +8,7 @@
             <span data-bind="text: meaning"></span>
             <i data-bind="text: gloss"></i>
 
-            <ul class="examples" data-bind="sortable: { data: examples,
+            <ul class="examples" data-bind="sortable: { data: selfExamples,
                                                 connectClass: 'examples' }">
                 <li>
                     <span data-bind="wax: example"></span>{{ space }}
@@ -25,7 +25,7 @@
                     <i data-bind="text: gloss"></i>
 
                     <ul class="examples" data-bind="sortable:
-                            { data: examples, connectClass: 'examples' }">
+                            { data: selfExamples, connectClass: 'examples' }">
                         <li>
                             <span data-bind="wax: example"></span>{{ space }}
                             (<span data-bind="text: address_text"></span>)
@@ -55,7 +55,7 @@
                             <i data-bind="text: gloss"></i>
 
                             <ul class="examples" data-bind="sortable:
-                                { data: examples, connectClass: 'examples' }">
+                                { data: selfExamples, connectClass: 'examples' }">
                                 <li>
                                     <span data-bind="wax: example"></span>{{ space }}
                                     (<span data-bind="text: address_text"></span>)

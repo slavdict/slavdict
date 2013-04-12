@@ -1,5 +1,5 @@
 var mapping = {
-        'ignore': ['childMeanings'],
+        'ignore': ['childMeanings', 'selfExamples'],
         collogroups: {
             create: function (options) { return new Collogroup(options); }
         },
@@ -173,8 +173,8 @@ var mapping = {
                 i += 1;
             });
         });
-        this.examples = ko.observableArray([]);
-        this.examples.subscribe(function (changedArray) {
+        this.selfExamples = ko.observableArray([]);
+        this.selfExamples.subscribe(function (changedArray) {
             var i = 1;
             ko.utils.arrayForEach(changedArray, function (item) {
                 item.meaning_id(self.id);
@@ -349,7 +349,7 @@ uiEntry.meanings = (function () {
         example = allExamples[i];
         if (example.meaning_id() !== null) {
             Meaning.idMap[example.meaning_id()]
-                .examples.push(example);
+                .selfExamples.push(example);
         }
     }
 })();
