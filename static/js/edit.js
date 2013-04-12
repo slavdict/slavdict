@@ -46,7 +46,7 @@ var mapping = {
                 this.base_meaning_id = ko.observable(container.id);
             }
             this.id = 'collogroup' + Collogroup.counter;
-            this.order = ko.observable(Collogroup.largestOrder + 1);
+            this.order = ko.observable(345); // Порядковый номер по умолчанию.
         }
 
         this.meanings = ko.mapping.fromJS(
@@ -66,9 +66,6 @@ var mapping = {
 
         Collogroup.counter++;
 
-        if (Collogroup.largestOrder < this.order()) {
-            Collogroup.largestOrder = this.order();
-        }
     },
     Orthvar = function(options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
@@ -85,14 +82,10 @@ var mapping = {
             }
             this.entry_id = entry.id();
             this.id = 'orthvar' + Orthvar.counter;
-            this.order = ko.observable(Orthvar.largestOrder + 1);
+            this.order = ko.observable(345); // Порядковый номер по умолчанию.
         }
 
         Orthvar.counter++;
-
-        if (Orthvar.largestOrder < this.order()) {
-            Orthvar.largestOrder = this.order();
-        }
     },
     Meaning = function(options, containerType, container, parentMeaning) {
         var data = options.data,
@@ -136,7 +129,7 @@ var mapping = {
             }
             this.parent_meaning_id = ko.observable(parentMeaning.id || null);
             this.id = 'meaning' + Meaning.counter;
-            this.order = ko.observable(Meaning.largestOrder + 1);
+            this.order = ko.observable(345); // Порядковый номер по умолчанию.
         }
 
         this.childMeanings = ko.observableArray([]);
@@ -164,11 +157,6 @@ var mapping = {
         this.collogroups.notifySubscribers(this.collogroups());
 
         Meaning.counter++;
-
-        if (Meaning.largestOrder < this.order()) {
-            Meaning.largestOrder = this.order();
-        }
-
         Meaning.idMap[this.id] = this;
     },
     Participle = function(options, entry) {
@@ -187,27 +175,17 @@ var mapping = {
             }
             this.entry_id = entry.id();
             this.id = 'participle' + Participle.counter;
-            this.order = ko.observable(Participle.largestOrder + 1);
+            this.order = ko.observable(345); // Порядковый номер по умолчанию.
         }
 
         Participle.counter++;
-
-        if (Participle.largestOrder < this.order()) {
-            Participle.largestOrder = this.order();
-        }
     };
 
 Collogroup.counter = 0;
-Collogroup.largestOrder = 0;
-
 Orthvar.counter = 0;
-Orthvar.largestOrder = 0;
-
 Participle.counter = 0;
-Participle.largestOrder = 0;
 
 Meaning.counter = 0;
-Meaning.largestOrder = 0;
 Meaning.idMap = {};
 
 var placeholderClass = 'sortable-placeholder';
