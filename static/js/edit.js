@@ -99,7 +99,8 @@ var mapping = {
         this.substantivus_type =
                 ko.observable(data && data.substantivus_type || '');
         this.hidden = ko.observable(data && data.hidden || false);
-        this.contexts = ko.observableArray([]) // FIXME
+        this.contexts = ko.mapping.fromJS({ contexts: data.contexts },
+                mapping)['contexts'];
 
         if (typeof data !== 'undefined') {
             this.entry_container_id =
