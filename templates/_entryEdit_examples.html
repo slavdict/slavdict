@@ -1,2 +1,11 @@
 <section id="examples" class="tabcontent">
+
+    <ul data-bind="sortable: dataModel.examples">
+        <li>
+            <span class="cslav" data-bind="wax: example"></span>
+            {{ space }}
+            (<span data-bind="text: address_text"></span>)
+        </li>
+    </ul>
+
 </section>
