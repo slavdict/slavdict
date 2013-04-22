@@ -3,6 +3,12 @@
     <ul class="meanings" data-bind="sortable: { data: ui.entry.meanings,
                                                 connectClass: 'meanings' }">
         <li>
+            <div class="meaning-dashboard">
+                <a href="#">Изменить</a>{{ space }}
+                <a href="#">Удалить</a>{{ space }}
+                <a href="#">Показать примеры</a>{{ space }}
+                <a href="#">Показать словосочетания</a>{{ space }}
+            </div>
             <span data-bind="text: order"></span>
             <span data-bind="visible: metaphorical">►</span>
             <span data-bind="text: meaning"></span>
