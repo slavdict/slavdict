@@ -1,5 +1,6 @@
 var mapping = {
-        'ignore': ['childMeanings', 'selfExamples'],
+        'ignore': ['childMeanings', 'selfExamples', 'expandOrCollapse',
+                   'isExpanded'],
         collogroups: {
             create: function (options) { return new Collogroup(options); }
         },
@@ -52,6 +53,7 @@ var mapping = {
             this.order = ko.observable(345); // Порядковый номер по умолчанию.
         }
 
+        this.isExpanded = ko.observable(false);
         this.meanings = ko.mapping.fromJS(
                 { meanings: options.data.meanings || [] },
                 mapping)['meanings'];
@@ -160,6 +162,7 @@ var mapping = {
             this.order = ko.observable(345); // Порядковый номер по умолчанию.
         }
 
+        this.isExpanded = ko.observable(false);
         this.childMeanings = ko.observableArray([]);
         this.childMeanings.subscribe(function (changedArray) {
             var i = 1;
@@ -228,6 +231,12 @@ Orthvar.counter = 0;
 Participle.counter = 0;
 
 Meaning.idMap = {};
+
+function expandOrCollapse() {
+    this.isExpanded(!this.isExpanded());
+}
+Collogroup.prototype.expandOrCollapse = expandOrCollapse;
+Meaning.prototype.expandOrCollapse = expandOrCollapse;
 
 var placeholderClass = 'sortable-placeholder';
 ko.bindingHandlers.sortable.options = {
