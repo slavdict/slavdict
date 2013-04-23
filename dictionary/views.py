@@ -12,7 +12,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import InvalidPage
-from django.db.models import Q
 from django.forms.models import modelformset_factory
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -69,9 +68,7 @@ def all_entries(request, is_paged=False):
 
     entries = Entry.objects.all()
     if httpGET_FIND:
-        query = (Q(civil_equivalent__startswith=httpGET_FIND.lower()) |
-                 Q(civil_equivalent__startswith=httpGET_FIND.capitalize()))
-        entries = entries.filter(query)
+        entries = entries.filter(civil_equivalent__istartswith=httpGET_FIND)
 
     if httpGET_AUTHOR:
         if httpGET_AUTHOR == 'is-not-assigned!':
