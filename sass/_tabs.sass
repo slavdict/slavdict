@@ -93,29 +93,26 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
             padding: 10px $listElementHorizontalPadding
             margin-top: 10px
             position: relative
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset
+            @include box-shadow(0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset)
 
             &.sortable-placeholder
-                box-shadow: 0 1px 4px rgba(orange, 0.7), 0 0 40px rgba(orange, 0.5) inset
+                @include box-shadow(0 1px 4px rgba(orange, 0.7), 0 0 40px rgba(orange, 0.5) inset)
                 padding-top: 0
                 padding-bottom: 0
-                max-height: 200px
 
             &.being-dragged
-                box-shadow: 0 1px 4px rgba(green, 0.5), 0 0 40px rgba(green, 0.3) inset
+                @include box-shadow(0 1px 4px rgba(green, 0.5), 0 0 40px rgba(green, 0.3) inset)
                 height: 1.5em !important
                 width: percentage($draggedElement) !important
                 line-height: 4em
                 overflow: hidden
+
                 &:first-line
                     line-height: 1em
 
-                input
-                    display: none
-
             &.being-dragged:after,
             &.being-dragged:before
-                box-shadow: none !important
+                @include box-shadow(none !important)
 
             ul
                 width: 90%
@@ -125,7 +122,7 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
         li:first-of-type:before
             content: ' '
             position: absolute
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3)
+            @include box-shadow(0 0 10px rgba(0, 0, 0, 0.3))
             height: 8px
             bottom: 0
             left: 5px
@@ -138,7 +135,7 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
             top: 0
 
         li li:last-of-type:after
-            box-shadow: none
+            @include box-shadow(none)
 
 
 
