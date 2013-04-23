@@ -67,8 +67,6 @@ def all_entries(request, is_paged=False):
     httpGET_STATUS = request.GET.get('status')
 
     entries = Entry.objects.all()
-    if httpGET_FIND:
-        entries = entries.filter(civil_equivalent__istartswith=httpGET_FIND)
 
     if httpGET_AUTHOR:
         if httpGET_AUTHOR == 'is-not-assigned!':
@@ -76,6 +74,9 @@ def all_entries(request, is_paged=False):
         else:
             author = CustomUser.objects.get(username=httpGET_AUTHOR)
             entries = author.entry_set.all()
+
+    if httpGET_FIND:
+        entries = entries.filter(civil_equivalent__istartswith=httpGET_FIND)
 
     if httpGET_STATUS=='-created':
         entries = entries.exclude(
