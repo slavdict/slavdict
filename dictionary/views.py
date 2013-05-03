@@ -171,6 +171,69 @@ def all_entries(request, is_paged=False):
 
 
 @login_required
+def all_examples(request, is_paged=False):
+    httpGET_ADDRESS = request.GET.get('address')
+    httpGET_HIDEAI = 'hide-ai' in request.GET
+    httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
+    httpGET_LIST = request.GET.get('list')
+    httpGET_SHOWAI = 'show-ai' in request.GET
+    httpGET_STATUS = request.GET.get('status')
+
+    examples = Example.objects.all().order_by('address_text')
+
+    if httpGET_ADDRESS:
+        examples = examples.filter(address_text__istartswith=httpGET_ADDRESS)
+
+    if (httpGET_STATUS and httpGET_STATUS in
+                       (status for status, name in Example.GREEK_EQ_STATUS)):
+        examples = examples.filter(greek_eq_status=httpGET_STATUS)
+
+
+    # Формирование заголовка страницы в зависимости от переданных GET-параметров
+    title = u'Примеры'
+    if httpGET_ADDRESS:
+        title += u', с адресом на „{0}...“'.format(httpGET_ADDRESS)
+
+    examples = sorted(examples, key=lambda e: e.address_text)
+    if is_paged:
+        paginator = Paginator(entries, per_page=12, orphans=2)
+        try:
+            pagenum = int(request.GET.get('page', 1))
+        except ValueError:
+            pagenum = 1
+        try:
+            page = paginator.page(pagenum)
+        except (EmptyPage, InvalidPage):
+            page = paginator.page(paginator.num_pages)
+        examples = page.object_list
+    else:
+        page = None
+
+    show_additional_info = (httpGET_SHOWAI or
+            'ai' in request.COOKIES and not httpGET_HIDENUMBERS)
+    if httpGET_HIDEAI:
+        show_additional_info = False
+
+    context = {
+        'examples': examples,
+        'show_numbers': not httpGET_HIDENUMBERS,
+        'title': title,
+        'show_additional_info': show_additional_info,
+        'is_paged': is_paged,
+        'page': page,
+        'params_without_page': urllib.urlencode(
+            dict(
+                (k, unicode(v).encode('utf-8'))
+                for k, v in request.GET.items()
+                if k != 'page'
+            )
+        ),
+        }
+    return render_to_response('all_examples.html',
+                              context, RequestContext(request))
+
+
+@login_required
 def single_entry(request, entry_id, extra_context=None,
                  template='single_entry.html'):
     if not extra_context:

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block shapka %}{% endblock %}
+{% block content %}
+
+{% trim %}
+<div{% if not is_paged %} contenteditable{% endif %}>
+
+    {% for example in examples %}
+    <div style="position: relative; margin: 1.7em">
+
+        {% if show_numbers %}
+            <span style="position: absolute; right: 104%; top: 0.9em;
+             color: #369; font-size: 65%; white-space: nowrap;">
+                {{ loop.index }}-{{ example.id }}
+            </span>
+        {% endif %}
+
+        <span style="margin-right: .3em; color: #070;
+         font-family: 'Old Standard TT';">
+            {{ example.address_text }}
+
+            {% if show_additional_info and example.additional_info %}
+                {{ space }}
+                <span class="ai ai-example">
+                    {{ example.additional_info }}
+                </span>
+            {% endif %}
+
+            {{ backspace }}
+        </span>
+        {{ space }}
+
+        <span class="cslav">{{ example.example_ucs }}</span>
+        {{ space }}
+
+    </div>
+    {% endfor %}
+
+    {% if is_paged %}
+        {% include '_pagination.html' %}
+    {% endif %}
+
+</div>
+{% endtrim %}
+
+{% endblock %}
