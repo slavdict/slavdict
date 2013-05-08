@@ -171,7 +171,7 @@ def all_entries(request, is_paged=False):
 
 
 @login_required
-def all_examples(request, is_paged=False):
+def all_examples(request, is_paged=False, mark_as_audited=False):
     httpGET_ADDRESS = request.GET.get('address')
     httpGET_ADDRESS_REGEX = request.GET.get('address-regex')
     httpGET_EXCLUDE = request.GET.get('exclude')
@@ -244,6 +244,16 @@ def all_examples(request, is_paged=False):
             )
         ),
         }
+
+    if mark_as_audited:
+        for example in examples:
+            example.audited = True
+            example.save(without_mtime=True)
+        url = '/print/examples/'
+        if context['params_without_page']:
+            url += '?' + context['params_without_page']
+        return redirect(url)
+
     return render_to_response('all_examples.html',
                               context, RequestContext(request))
 
