@@ -939,6 +939,8 @@ class Example(models.Model):
     def greek_equivs(self):
         return self.greekequivalentforexample_set.all().order_by('id')
 
+    audited = BooleanField(u'Пример прошел проверку или взят на проверку',
+                           default=False)
     additional_info = TextField(u'примечание', help_text=u'''Любая
             дополнительная информация по данному ПРИМЕРУ. Дополнительная
             информация по значению или лексеме указывается не здесь,
