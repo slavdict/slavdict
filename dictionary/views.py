@@ -195,7 +195,6 @@ def all_examples(request, is_paged=False, mark_as_audited=False):
         examples = examples.filter(audited=False)
 
     if httpGET_ADDRESS_REGEX:
-        print httpGET_ADDRESS_REGEX
         examples = examples.filter(address_text__iregex=httpGET_ADDRESS_REGEX)
     elif httpGET_ADDRESS:
         examples = examples.filter(address_text__istartswith=httpGET_ADDRESS)
