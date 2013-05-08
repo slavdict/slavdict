@@ -174,6 +174,7 @@ def all_entries(request, is_paged=False):
 def all_examples(request, is_paged=False):
     httpGET_ADDRESS = request.GET.get('address')
     httpGET_ADDRESS_REGEX = request.GET.get('address-regex')
+    httpGET_EXCLUDE = request.GET.get('exclude')
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_SHOWAI = 'show-ai' in request.GET
@@ -191,6 +192,9 @@ def all_examples(request, is_paged=False):
                        (status for status, name in Example.GREEK_EQ_STATUS)):
         examples = examples.filter(greek_eq_status=httpGET_STATUS)
 
+    if httpGET_EXCLUDE:
+        excludes = [int(id) for id in httpGET_EXCLUDE.split(',')]
+        examples = examples.exclude(pk__in=excludes)
 
     # Формирование заголовка страницы в зависимости от переданных GET-параметров
     title = u'Примеры'
