@@ -5,18 +5,21 @@
 {% trim %}
 <div{% if not is_paged %} contenteditable{% endif %}>
 
+    <table style="table-layout: fixed;">
     {% for example in examples %}
-    <div style="position: relative; margin: 1.7em">
+    <tr>
 
         {% if show_numbers %}
-            <span style="position: absolute; right: 104%; top: 0.9em;
-             color: #369; font-size: 65%; white-space: nowrap;">
-                {{ loop.index }}-{{ example.id }}
-            </span>
+        <td style="width: 7%; color: #369; font-size: 65%;
+            white-space: nowrap; padding-top: 0.9em;">
+            {{ loop.index }}-{{ example.id }}
+        </td>
         {% endif %}
 
-        <span style="margin-right: .3em; color: #070;
-         font-family: 'Old Standard TT';">
+        <td style="width: {% if show_numbers %}93%{% else %}100%{% endif %};
+                   padding: 0 0 2em 1em">
+        <span style="color: #070; font-family: 'Old Standard TT';
+                     padding-right: 1em;">
             {{ example.address_text }}
 
             {% if show_additional_info and example.additional_info %}
@@ -31,10 +34,11 @@
         {{ space }}
 
         <span class="cslav">{{ example.example_ucs }}</span>
-        {{ space }}
+        </td>
 
-    </div>
+    </tr>
     {% endfor %}
+    </table>
 
     {% if is_paged %}
         {% include '_pagination.html' %}
