@@ -171,6 +171,106 @@ def all_entries(request, is_paged=False):
 
 
 @login_required
+def all_examples(request, is_paged=False, mark_as_audited=False):
+    httpGET_ADDRESS = request.GET.get('address')
+    httpGET_ADDRESS_REGEX = request.GET.get('address-regex')
+    httpGET_AUDITED = request.GET.get('audited') or ('audited' in request.GET)
+    httpGET_EXCLUDE = request.GET.get('exclude')
+    httpGET_HIDEAI = 'hide-ai' in request.GET
+    httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
+    httpGET_SHOWAI = 'show-ai' in request.GET
+    httpGET_STATUS = request.GET.get('status')
+
+    examples = Example.objects.all().order_by('address_text')
+
+    if httpGET_AUDITED:
+        if httpGET_AUDITED == '2':
+            # Отобразить и "проверенные", и "непроверенные" примеры.
+            pass
+        else:
+            # Отобразить только "проверенные" примеры.
+            examples = examples.filter(audited=True)
+    else:
+        # Отобразить только "НЕпроверенные" примеры.
+        examples = examples.filter(audited=False)
+
+    if httpGET_ADDRESS_REGEX:
+        print httpGET_ADDRESS_REGEX
+        examples = examples.filter(address_text__iregex=httpGET_ADDRESS_REGEX)
+    elif httpGET_ADDRESS:
+        examples = examples.filter(address_text__istartswith=httpGET_ADDRESS)
+
+    if (httpGET_STATUS and httpGET_STATUS in
+                       (status for status, name in Example.GREEK_EQ_STATUS)):
+        examples = examples.filter(greek_eq_status=httpGET_STATUS)
+
+    if httpGET_EXCLUDE:
+        excludes = [int(id) for id in httpGET_EXCLUDE.split(',')]
+        examples = examples.exclude(pk__in=excludes)
+
+    # Формирование заголовка страницы в зависимости от переданных GET-параметров
+    title = u'Примеры'
+    if httpGET_ADDRESS:
+        title += u', с адресом на „{0}...“'.format(httpGET_ADDRESS)
+
+    SORT_REGEX = re.compile(ur'[\s\.\,\;\:\-\(\)\!]+', re.UNICODE)
+    def key_emitter(x):
+        x = x.address_text.lower()
+        parts = SORT_REGEX.split(x)
+        parts = [ int(part) if part.isdigit() else part
+                  for part in parts ]
+        return parts
+
+    examples = sorted(examples, key=key_emitter)
+    if is_paged:
+        paginator = Paginator(entries, per_page=12, orphans=2)
+        try:
+            pagenum = int(request.GET.get('page', 1))
+        except ValueError:
+            pagenum = 1
+        try:
+            page = paginator.page(pagenum)
+        except (EmptyPage, InvalidPage):
+            page = paginator.page(paginator.num_pages)
+        examples = page.object_list
+    else:
+        page = None
+
+    show_additional_info = (httpGET_SHOWAI or
+            'ai' in request.COOKIES and not httpGET_HIDENUMBERS)
+    if httpGET_HIDEAI:
+        show_additional_info = False
+
+    context = {
+        'examples': examples,
+        'show_numbers': not httpGET_HIDENUMBERS,
+        'title': title,
+        'show_additional_info': show_additional_info,
+        'is_paged': is_paged,
+        'page': page,
+        'params_without_page': urllib.urlencode(
+            dict(
+                (k, unicode(v).encode('utf-8'))
+                for k, v in request.GET.items()
+                if k != 'page'
+            )
+        ),
+        }
+
+    if mark_as_audited:
+        for example in examples:
+            example.audited = True
+            example.save(without_mtime=True)
+        url = '/print/examples/'
+        if context['params_without_page']:
+            url += '?' + context['params_without_page']
+        return redirect(url)
+
+    return render_to_response('all_examples.html',
+                              context, RequestContext(request))
+
+
+@login_required
 def single_entry(request, entry_id, extra_context=None,
                  template='single_entry.html'):
     if not extra_context:

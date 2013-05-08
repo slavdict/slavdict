@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block shapka %}{% endblock %}
+{% block content %}
+
+{% trim %}
+<div{% if not is_paged %} contenteditable{% endif %}>
+
+    <table style="table-layout: fixed;">
+    {% for example in examples %}
+    <tr>
+
+        {% if show_numbers %}
+        <td style="width: 7%; color: #369; font-size: 65%;
+            white-space: nowrap; padding-top: 0.9em;">
+            {{ loop.index }}-{{ example.id }}
+        </td>
+        {% endif %}
+
+        <td style="width: {% if show_numbers %}93%{% else %}100%{% endif %};
+                   padding: 0 0 2em 1em">
+        <span style="color: #070; font-family: 'Old Standard TT';
+                     padding-right: 1em;">
+            {{ example.address_text }}
+
+            {% if show_additional_info and example.additional_info %}
+                {{ space }}
+                <span class="ai ai-example">
+                    {{ example.additional_info }}
+                </span>
+            {% endif %}
+
+            {{ backspace }}
+        </span>
+        {{ space }}
+
+        <span class="cslav">{{ example.example_ucs }}</span>
+        </td>
+
+    </tr>
+    {% endfor %}
+    </table>
+
+    {% if is_paged %}
+        {% include '_pagination.html' %}
+    {% endif %}
+
+</div>
+{% endtrim %}
+
+{% endblock %}
