@@ -201,7 +201,15 @@ def all_examples(request, is_paged=False):
     if httpGET_ADDRESS:
         title += u', с адресом на „{0}...“'.format(httpGET_ADDRESS)
 
-    examples = sorted(examples, key=lambda e: e.address_text)
+    SORT_REGEX = re.compile(ur'[\s\.\,\;\:\-\(\)\!]+', re.UNICODE)
+    def key_emitter(x):
+        x = x.address_text.lower()
+        parts = SORT_REGEX.split(x)
+        parts = [ int(part) if part.isdigit() else part
+                  for part in parts ]
+        return parts
+
+    examples = sorted(examples, key=key_emitter)
     if is_paged:
         paginator = Paginator(entries, per_page=12, orphans=2)
         try:
