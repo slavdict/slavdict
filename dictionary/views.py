@@ -173,6 +173,7 @@ def all_entries(request, is_paged=False):
 @login_required
 def all_examples(request, is_paged=False):
     httpGET_ADDRESS = request.GET.get('address')
+    httpGET_ADDRESS_REGEX = request.GET.get('address-regex')
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_SHOWAI = 'show-ai' in request.GET
@@ -180,7 +181,10 @@ def all_examples(request, is_paged=False):
 
     examples = Example.objects.all().order_by('address_text')
 
-    if httpGET_ADDRESS:
+    if httpGET_ADDRESS_REGEX:
+        print httpGET_ADDRESS_REGEX
+        examples = examples.filter(address_text__iregex=httpGET_ADDRESS_REGEX)
+    elif httpGET_ADDRESS:
         examples = examples.filter(address_text__istartswith=httpGET_ADDRESS)
 
     if (httpGET_STATUS and httpGET_STATUS in
