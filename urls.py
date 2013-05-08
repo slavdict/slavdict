@@ -3,6 +3,7 @@
 from coffin.conf.urls.defaults import *
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.views.generic.base import RedirectView
 
 from slavdict.admin import ui
 admin.autodiscover()
@@ -18,7 +19,11 @@ urlpatterns += patterns('',
     url( r'^login/$', 'django.contrib.auth.views.login'),
     url( r'^logout/$', 'django.contrib.auth.views.logout_then_login'),
 
-    url( r'^print/$', 'slavdict.dictionary.views.all_entries' ),
+    url( r'^print/$', RedirectView.as_view(url='/print/entries/')),
+    url( r'^print/entries/$', 'slavdict.dictionary.views.all_entries' ),
+    url( r'^print/examples/$', 'slavdict.dictionary.views.all_examples' ),
+    url( r'^print/examples/audit/$', 'slavdict.dictionary.views.all_examples',
+                                      kwargs={'mark_as_audited': True} ),
     url( r'^cherry-pick/$', 'slavdict.dictionary.views.all_entries', kwargs={'is_paged': True} ),
 
     url( r'^entries/(\d+)/$', 'slavdict.dictionary.views.single_entry', name='single_entry_url' ),
