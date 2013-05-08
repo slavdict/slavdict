@@ -175,7 +175,6 @@ def all_examples(request, is_paged=False):
     httpGET_ADDRESS = request.GET.get('address')
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
-    httpGET_LIST = request.GET.get('list')
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STATUS = request.GET.get('status')
 
