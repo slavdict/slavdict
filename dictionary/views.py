@@ -174,6 +174,7 @@ def all_entries(request, is_paged=False):
 def all_examples(request, is_paged=False, mark_as_audited=False):
     httpGET_ADDRESS = request.GET.get('address')
     httpGET_ADDRESS_REGEX = request.GET.get('address-regex')
+    httpGET_AUDITED = request.GET.get('audited') or ('audited' in request.GET)
     httpGET_EXCLUDE = request.GET.get('exclude')
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
@@ -181,6 +182,17 @@ def all_examples(request, is_paged=False, mark_as_audited=False):
     httpGET_STATUS = request.GET.get('status')
 
     examples = Example.objects.all().order_by('address_text')
+
+    if httpGET_AUDITED:
+        if httpGET_AUDITED == '2':
+            # Отобразить и "проверенные", и "непроверенные" примеры.
+            pass
+        else:
+            # Отобразить только "проверенные" примеры.
+            examples = examples.filter(audited=True)
+    else:
+        # Отобразить только "НЕпроверенные" примеры.
+        examples = examples.filter(audited=False)
 
     if httpGET_ADDRESS_REGEX:
         print httpGET_ADDRESS_REGEX
