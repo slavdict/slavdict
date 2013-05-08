@@ -214,7 +214,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False):
 
     SORT_REGEX = re.compile(ur'[\s\.\,\;\:\-\(\)\!]+', re.UNICODE)
     def key_emitter(x):
-        x = x.address_text.lower()
+        x = x.address_text.strip().lower()
         parts = SORT_REGEX.split(x)
         parts = [ int(part) if part.isdigit() else part
                   for part in parts ]
