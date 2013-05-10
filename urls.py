@@ -24,6 +24,8 @@ urlpatterns += patterns('',
     url( r'^print/examples/$', 'slavdict.dictionary.views.all_examples' ),
     url( r'^print/examples/audit/$', 'slavdict.dictionary.views.all_examples',
                                       kwargs={'mark_as_audited': True} ),
+    url( r'^print/examples/unaudit/$', 'slavdict.dictionary.views.all_examples',
+                                        kwargs={'mark_as_unaudited': True} ),
     url( r'^cherry-pick/$', 'slavdict.dictionary.views.all_entries', kwargs={'is_paged': True} ),
 
     url( r'^entries/(\d+)/$', 'slavdict.dictionary.views.single_entry', name='single_entry_url' ),

@@ -171,7 +171,8 @@ def all_entries(request, is_paged=False):
 
 
 @login_required
-def all_examples(request, is_paged=False, mark_as_audited=False):
+def all_examples(request, is_paged=False, mark_as_audited=False,
+                                          mark_as_unaudited=False):
     httpGET_ADDRESS = request.GET.get('address')
     httpGET_ADDRESS_REGEX = request.GET.get('address-regex')
     httpGET_ADDRESS_GREP_V = request.GET.get('address-grep-v')
@@ -260,9 +261,10 @@ def all_examples(request, is_paged=False, mark_as_audited=False):
         ),
         }
 
-    if mark_as_audited:
+    if mark_as_audited or mark_as_unaudited:
+        mark = mark_as_audited #  or not mark_as_unaudited
         for example in examples:
-            example.audited = True
+            example.audited = mark
             example.save(without_mtime=True)
         url = '/print/examples/'
         if context['params_without_page']:
