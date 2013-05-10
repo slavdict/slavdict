@@ -174,6 +174,7 @@ def all_entries(request, is_paged=False):
 def all_examples(request, is_paged=False, mark_as_audited=False):
     httpGET_ADDRESS = request.GET.get('address')
     httpGET_ADDRESS_REGEX = request.GET.get('address-regex')
+    httpGET_ADDRESS_GREP_V = request.GET.get('address-grep-v')
     httpGET_AUDITED = request.GET.get('audited') or ('audited' in request.GET)
     httpGET_EXCLUDE = request.GET.get('exclude')
     httpGET_HIDEAI = 'hide-ai' in request.GET
@@ -198,6 +199,9 @@ def all_examples(request, is_paged=False, mark_as_audited=False):
         examples = examples.filter(address_text__iregex=httpGET_ADDRESS_REGEX)
     elif httpGET_ADDRESS:
         examples = examples.filter(address_text__istartswith=httpGET_ADDRESS)
+
+    if httpGET_ADDRESS_GREP_V:
+        examples = examples.exclude(address_text__iregex=httpGET_ADDRESS_GREP_V)
 
     if (httpGET_STATUS and httpGET_STATUS in
                        (status for status, name in Example.GREEK_EQ_STATUS)):
