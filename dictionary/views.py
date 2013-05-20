@@ -180,6 +180,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
     httpGET_EXCLUDE = request.GET.get('exclude')
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
+    httpGET_INCLUDE_ONLY = request.GET.get('include-only')
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STATUS = request.GET.get('status')
     httpGET_SUBSET_OF = request.GET.get('subset-of')
@@ -210,13 +211,26 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
         examples = examples.filter(greek_eq_status=httpGET_STATUS)
 
     if httpGET_EXCLUDE:
-        excludes = [int(id) for id in httpGET_EXCLUDE.split(',')]
+        excludes = [int(ID)
+                    for ID in [i.strip().split('-')[-1]
+                               for i in httpGET_EXCLUDE.split(',')]
+                    if ID.isdigit()]
         examples = examples.exclude(pk__in=excludes)
+
+    if httpGET_INCLUDE_ONLY:
+        includes = [int(ID)
+                    for ID in [i.strip().split('-')[-1]
+                               for i in httpGET_INCLUDE_ONLY.split(',')]
+                    if ID.isdigit()]
+        examples = Example.objects.filter(pk__in=includes)
 
     is_subset = None
     parts = []
     if httpGET_SUBSET_OF:
-        superset = set(int(i.split('-')[-1]) for i in httpGET_SUBSET_OF.split(','))
+        superset = set(int(ID)
+                       for ID in [i.strip().split('-')[-1]
+                                  for i in httpGET_SUBSET_OF.split(',')]
+                       if ID.isdigit())
         subset = set(example.id for example in examples)
         is_subset = subset.issubset(superset)
 
