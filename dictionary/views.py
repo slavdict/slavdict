@@ -214,10 +214,40 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
         examples = examples.exclude(pk__in=excludes)
 
     is_subset = None
+    parts = []
     if httpGET_SUBSET_OF:
         superset = set(int(i.split('-')[-1]) for i in httpGET_SUBSET_OF.split(','))
         subset = set(example.id for example in examples)
         is_subset = subset.issubset(superset)
+
+        unionset = sorted(superset.union(subset))
+        superset, subset = sorted(superset), sorted(subset)
+
+        cursor = -1
+        kind = None  # 'both' or 'superset' or 'subset'
+        for i in unionset:
+            if i in superset and i in subset:
+                if kind == 'both':
+                    parts[cursor][1].append(i)
+                else:
+                    cursor += 1
+                    kind = 'both'
+                    parts.append((kind, [i]))
+            if i in superset and not i in subset:
+                if kind == 'superset':
+                    parts[cursor][1].append(i)
+                else:
+                    cursor += 1
+                    kind = 'superset'
+                    parts.append((kind, [i]))
+            if not i in superset and i in subset:
+                if kind == 'subset':
+                    parts[cursor][1].append(i)
+                else:
+                    cursor += 1
+                    kind = 'subset'
+                    parts.append((kind, [i]))
+
 
     # Формирование заголовка страницы в зависимости от переданных GET-параметров
     title = u'Примеры'
@@ -267,8 +297,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
             )
         ),
         'is_subset': is_subset,
-        'subset': u', '.join(unicode(i) for i in subset),
-        'superset': u', '.join(unicode(i) for i in superset),
+        'unionset': parts,
         }
 
     if mark_as_audited or mark_as_unaudited:

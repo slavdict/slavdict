@@ -8,8 +8,27 @@
     являются подмножеством множества <code>GET['subset-of']</code>
     </div>
 
-    <div>subset: {{ subset }}.</div>
-    <div>superset: {{ superset }}.</div>
+    <div>
+        {% for kind, group in unionset %}
+
+            <span style="padding: 0 0.5em; color: white; background-color:
+            {% if kind == 'both' %}
+                #0a0
+            {% elif kind == 'superset' %}
+                #00a
+            {% elif kind == 'subset' %}
+                #a00
+            {% endif %}
+            ">
+
+            {% for item in group %}
+                {{ item }},
+            {% endfor %}
+
+            </span>
+
+        {% endfor %}
+    </div>
 {% endif %}
 
 {% trim %}
