@@ -182,6 +182,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STATUS = request.GET.get('status')
+    httpGET_SUBSET_OF = request.GET.get('subset-of')
 
     examples = Example.objects.all().order_by('address_text')
 
@@ -211,6 +212,12 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
     if httpGET_EXCLUDE:
         excludes = [int(id) for id in httpGET_EXCLUDE.split(',')]
         examples = examples.exclude(pk__in=excludes)
+
+    is_subset = None
+    if httpGET_SUBSET_OF:
+        superset = set(int(i.split('-')[-1]) for i in httpGET_SUBSET_OF.split(','))
+        subset = set(example.id for example in examples)
+        is_subset = subset.issubset(superset)
 
     # Формирование заголовка страницы в зависимости от переданных GET-параметров
     title = u'Примеры'
@@ -259,6 +266,9 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
                 if k != 'page'
             )
         ),
+        'is_subset': is_subset,
+        'subset': u', '.join(unicode(i) for i in subset),
+        'superset': u', '.join(unicode(i) for i in superset),
         }
 
     if mark_as_audited or mark_as_unaudited:
