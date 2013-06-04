@@ -111,6 +111,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
+    'slavdict.context_processors.jslibs',
 )
 
 STATICFILES_DIRS = (
@@ -144,6 +145,57 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 CUSTOM_USER_MODEL = 'custom_user.CustomUser'
+
+# Сторонние библиотеки JavaScript
+JSLIBS_VERSION = '2013.06.04'
+JSLIBS_URL = STATIC_URL + 'js/outsourcing/'
+JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
+JSLIBS = {
+    'jquery': {
+        'debug': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js',
+        'map': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.map',
+    },
+    'jqueryUi': {
+        'debug': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js',
+    },
+    'knockout': {
+        'debug': 'http://knockoutjs.com/downloads/knockout-2.2.1.debug.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/knockout/2.2.1/knockout-min.js',
+    },
+    'knockoutMapping': {
+        'debug': '//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.3.5/knockout.mapping.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.3.5/knockout.mapping.min.js',
+    },
+    'knockoutSortable': {
+        'debug': 'https://rawgithub.com/rniemeyer/knockout-sortable/master/build/knockout-sortable.js',
+        'Xmin': 'https://raw.github.com/rniemeyer/knockout-sortable/master/build/knockout-sortable.min.js',
+        # NOTE: Файлы с raw.github.com нельзя отдавать в продакшн. Там
+        # выставляются http-заголовки
+        #
+        #   Content-Type: text/plain; charset=utf-8
+        #   X-Content-Type-Options: nosniff
+        #
+        # что запрещает браузеру распознавать js-файл как js-файл.
+        # Домен rawgithub.com (после raw нету точки!) специально предназначен
+        # в помощь разработчикам для обхода этой проблемы, но расчитан
+        # исключительно для тестирования, отладки, демонстрации. При нагрузке
+        # его трафиком соединения будут скидываться. См. http://rawgithub.com/
+        #
+        # Ключ ``Xmin`` вместо ``min`` использован специально, чтобы этот адрес
+        # не отдавался в продакшн.
+    },
+}
+
+_postfix = 'Local'
+for lib in JSLIBS:
+    for version in JSLIBS[lib].keys():
+        filename = JSLIBS[lib][version].split('/')[-1]
+        if version == 'Xmin':
+            JSLIBS[lib]['min'] = JSLIBS_URL + filename
+            version = 'min'
+        JSLIBS[lib][version + _postfix] = JSLIBS_URL + filename
 
 
 # Локальное для компьютера переопределение настроек проекта
