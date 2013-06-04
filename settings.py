@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Django settings for slavdict project.
 import os
+import sys
 
 slash = '/'
 backslash = '\\'
@@ -211,3 +212,45 @@ from django.utils import safestring
 if not hasattr(safestring, '__html__'):
     safestring.SafeString.__html__ = lambda self: str(self)
     safestring.SafeUnicode.__html__ = lambda self: unicode(self)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '--jslibs':
+            """ Использование аргумента --jslibs
+
+            Данный вывод в stdout используется в цели jslibs из Makefile.
+            Вывод имеет следующий вид:
+
+              [<ссылка на файл в интернете> -O <абс. имя файла в локальной ФС>]*
+
+            Каждая такая тройка предназначена для wget. Он её будет получать
+            следующим образом:
+
+              python settings.py --jslibs | xargs -n3 wget
+
+            От второго элемента тройки ("-O") отказаться не получилось, т.к.
+            аргументы xargs -L или -n и -I не совместимы (см. man xargs /BUGS).
+            Иначе можно было бы вместо троек использовать двойки и писать:
+
+              python settings.py --jslibs | xargs -n2 -I{} wget {} -O {}
+
+            """
+            xargs_wget = []
+            for lib in JSLIBS:
+                for version in [k
+                                for k in JSLIBS[lib]
+                                if not k.endswith(_postfix)]:
+                    url = JSLIBS[lib][version]
+                    if url.startswith('//'):
+                        url = 'http:' + url
+                    xargs_wget.append(url)
+                    xargs_wget.append('-O')
+                    xargs_wget.append(JSLIBS_PATH + url.split('/')[-1])
+            sys.stdout.write(' '.join(xargs_wget))
+
+        elif sys.argv[1] == '--jslibs-path':
+            sys.stdout.write(JSLIBS_PATH)
+
+        elif sys.argv[1] == '--jslibs-version':
+            sys.stdout.write(JSLIBS_VERSION)
