@@ -1,3 +1,5 @@
+SHELL = /bin/bash
+
 GITWORKTREE = /var/www/slavdict
 GITDIR = /home/git/slavdict.www
 SLAVDICT_ENVIRONMENT ?= production
