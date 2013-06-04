@@ -12,11 +12,9 @@ JSLIBS_VERSION_FILE := ${JSLIBS_PATH}version.txt
 JSLIBS_NEW_VERSION := $(shell python settings.py --jslibs-version)
 JSLIBS_OLD_VERSION := $(shell cat ${JSLIBS_VERSION_FILE} 2>/dev/null)
 
-run:
+run: collectstatic
 	@echo "Запуск сервера в тестовом окружении..."
 	@$(IS_DEVELOPMENT)
-	compass compile -e development
-	python ./manage.py collectstatic --noinput
 	python ./manage.py runserver
 
 stop:
@@ -31,21 +29,23 @@ checkout:
 	@$(IS_PRODUCTION)
 	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
 		pull origin master
-	compass compile -e production
-	python ./manage.py collectstatic --noinput
+
+_revert:
+	@$(IS_PRODUCTION)
+	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
+		reset --hard HEAD^
+
+revert: _revert collectstatic fixown
+
+fixown:
+	@$(IS_PRODUCTION)
 	chown -R www-data:www-is ./
 	chown -R git:www-is /home/git/slavdict.*
 	chmod u+x ./*.sh
 
-revert:
-	@$(IS_PRODUCTION)
-	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
-		reset --hard HEAD^
-	compass compile -e production
+collectstatic: jslibs
+	compass compile -e ${SLAVDICT_ENVIRONMENT}
 	python ./manage.py collectstatic --noinput
-	chown -R www-data:www-is ./
-	chown -R git:www-is /home/git/slavdict.*
-	chmod u+x ./*.sh
 
 syncdb:
 	python ./manage.py syncdb
@@ -53,9 +53,9 @@ syncdb:
 migrate:
 	python ./manage.py migrate dictionary
 
-restart: stop checkout syncdb start
+restart: stop checkout collectstatic fixown syncdb start
 
-migrestart: stop checkout syncdb migrate start
+migrestart: stop checkout collectstatic fixown syncdb migrate start
 
 clean:
 	-find -name '*.pyc' -execdir rm {} \;
@@ -75,10 +75,14 @@ jslibs:
 .PHONY: \
     checkout \
     clean \
+    collectstatic \
+    fixown \
     jslibs \
     migrate \
     migrestart \
     restart \
+    revert \
+    _revert \
     run \
     start \
     stop \
