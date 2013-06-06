@@ -387,28 +387,28 @@ uiModel.addMeaing = function () {
 }.bind(dataModel);
 
 uiModel.addOrthvar = function () {
-    this.orthvars.push(new Orthvar({}, this));
-}.bind(dataEntry);
+    dataEntry.orthvars.push(new Orthvar({}, dataEntry));
+};
 
 uiModel.destroyOrthvar = function (orthvar) {
     if (typeof orthvar.id === 'number') {
-        this.orthvars.destroy(orthvar);
+        dataEntry.orthvars.destroy(orthvar);
     } else {
-        this.orthvars.remove(orthvar);
+        dataEntry.orthvars.remove(orthvar);
     }
-}.bind(dataEntry);
+};
 
 uiModel.addParticiple = function () {
-    this.participles.push(new Participle({}, this));
-}.bind(dataEntry);
+    dataEntry.participles.push(new Participle({}, dataEntry));
+};
 
 uiModel.destroyParticiple = function (item) {
     if (typeof item.id === 'number') {
-        this.participles.destroy(item);
+        dataEntry.participles.destroy(item);
     } else {
-        this.participles.remove(item);
+        dataEntry.participles.remove(item);
     }
-}.bind(dataEntry);
+};
 
 ko.bindingHandlers.sortable.beforeMove = function (arg, event, ui) {
     if (arg.item instanceof Meaning) {
