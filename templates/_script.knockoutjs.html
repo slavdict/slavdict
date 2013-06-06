@@ -1,15 +1,7 @@
 {% if debug %}
 
     <script type="text/javascript"
-        src="{{ JSLIBS.knockout.debug }}"></script>
-
-    <script>
-        window.ko || document.write(
-            "<script src='" +
-            "{{ JSLIBS.knockout.debugLocal }}" +
-            "'><\/script>"
-            )
-    </script>
+        src="{{ JSLIBS.knockout.debugLocal }}"></script>
 
 {% else %}
 

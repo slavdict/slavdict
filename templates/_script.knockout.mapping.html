@@ -1,15 +1,7 @@
 {% if debug %}
 
     <script type="text/javascript"
-            src="{{ JSLIBS.knockoutMapping.debug }}"></script>
-
-    <script>
-        window.jQuery || document.write(
-            "<script src='" +
-            "{{ JSLIBS.knockoutMapping.debugLocal }}" +
-            "'><\/script>"
-            )
-    </script>
+            src="{{ JSLIBS.knockoutMapping.debugLocal }}"></script>
 
 {% else %}
 
