@@ -63,8 +63,10 @@ var mapping = {
                 item.parent_meaning_id(null);
                 item.entry_container_id(null);
                 item.collogroup_container_id(self.id);
-                item.order(i);
-                i += 1;
+                if (! item._destroy) {
+                    item.order(i);
+                    i += 1;
+                }
             });
         });
         this.meanings.notifySubscribers(this.meanings());
@@ -172,8 +174,10 @@ var mapping = {
                                         .entry_container_id());
                 item.collogroup_container_id(Meaning.idMap[self.id]
                                              .collogroup_container_id());
-                item.order(i);
-                i += 1;
+                if (! item._destroy) {
+                    item.order(i);
+                    i += 1;
+                }
             });
         });
         this.selfExamples = ko.observableArray([]);
@@ -182,8 +186,10 @@ var mapping = {
             ko.utils.arrayForEach(changedArray, function (item) {
                 item.meaning_id(self.id);
                 item.collogroup_id(self.collogroup_container_id());
-                item.order(i);
-                i += 1;
+                if (! item._destroy) {
+                    item.order(i);
+                    i += 1;
+                }
             });
         });
 
@@ -193,8 +199,10 @@ var mapping = {
         this.collogroups.subscribe(function (changedArray) {
             var i = 1;
             ko.utils.arrayForEach(changedArray, function (item) {
-                item.order(i);
-                i += 1;
+                if (! item._destroy) {
+                    item.order(i);
+                    i += 1;
+                }
             });
         });
         this.collogroups.notifySubscribers(this.collogroups());
@@ -334,8 +342,10 @@ uiEntry.meanings = (function () {
             item.parent_meaning_id(null);
             item.entry_container_id(dataModel.entry.id());
             item.collogroup_container_id(null);
-            item.order(i);
-            i += 1;
+            if (! item._destroy) {
+                item.order(i);
+                i += 1;
+            }
         });
     });
 
