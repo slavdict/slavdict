@@ -382,9 +382,18 @@ uiModel.save = function () {
     $.post('/entries/save/', {data: ko.mapping.toJSON(dataModel, mapping)});
 };
 
-uiModel.addMeaing = function () {
-    this.meanings.push(new Meaning({}));
-}.bind(dataModel);
+uiModel.addMeaning = function (meanings, containerType, container, containerMeaning) {
+    var meaning = new Meaning({}, containerType, container, containerMeaning);
+    meanings.push(meaning);
+};
+
+uiModel.destroyMeaning = function (meanings, meaning) {
+    if (typeof meaning.id === 'number') {
+        meanings.destroy(meaning);
+    } else {
+        meanings.remove(meaning);
+    }
+};
 
 uiModel.addOrthvar = function () {
     dataEntry.orthvars.push(new Orthvar({}, dataEntry));
