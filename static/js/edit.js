@@ -298,13 +298,18 @@ var viewModel = vM.entryEdit,
 dataEntry.orthvars.subscribe(function (changedArray) {
     var i = 1;
     ko.utils.arrayForEach(changedArray, function (item) {
-        item.order(i++);
+        if (! item._destroy) {
+            item.order(i);
+            i += 1;
+        }
     });
 });
 dataEntry.orthvars.notifySubscribers(dataEntry.orthvars());
 
 uiEntry.headword = ko.computed(function () {
-    return dataEntry.orthvars()[0].idem();
+    var orthvars = dataEntry.orthvars(),
+        isNotDestroyed = function (item) { return ! item._destroy; };
+    return ko.utils.arrayFilter(orthvars, isNotDestroyed)[0].idem();
 });
 
 uiEntry.part_of_speech = ko.computed(function () {
