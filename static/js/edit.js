@@ -419,6 +419,8 @@ uiModel.destroyParticiple = function (item) {
     }
 };
 
+uiModel.meaningBeingEdited = ko.observable();
+
 ko.bindingHandlers.sortable.beforeMove = function (arg, event, ui) {
     if (arg.item instanceof Meaning) {
         console.log('before: entry(%i), collogroup(%i), parentMeaning(%i)',

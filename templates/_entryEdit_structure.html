@@ -8,7 +8,9 @@
                    data-bind="click: $root.ui.destroyMeaning.bind(
                                          null, $root.ui.entry.meanings, $data)"
                            >Удалить</a>{{ space }}
-                <a href="#">Изменить</a>{{ space }}
+                <a href="#"
+                   data-bind="click: $root.ui.meaningBeingEdited.bind(null, $data)"
+                           >Изменить</a>{{ space }}
                 <a href="#" data-bind="click: expandOrCollapse"
                            >Раскрыть</a>{{ space }}
             </div>
@@ -35,7 +37,9 @@
                            data-bind="click: $root.ui.destroyMeaning.bind(
                                                 null, $parent.childMeanings, $data)"
                                    >Удалить</a>{{ space }}
-                        <a href="#">Изменить</a>{{ space }}
+                        <a href="#"
+                           data-bind="click: $root.ui.meaningBeingEdited.bind(null, $data)"
+                                   >Изменить</a>{{ space }}
                         <a href="#" data-bind="click: expandOrCollapse"
                                    >Раскрыть</a>{{ space }}
                     </div>
@@ -83,7 +87,9 @@
                                    data-bind="click: $root.ui.destroyMeaning.bind(
                                                         null, $parent.meanings, $data)"
                                            >Удалить</a>{{ space }}
-                                <a href="#">Изменить</a>{{ space }}
+                                <a href="#"
+                                   data-bind="click: $root.ui.meaningBeingEdited.bind(null, $data)"
+                                           >Изменить</a>{{ space }}
                                 <a href="#" data-bind="click: expandOrCollapse"
                                            >Раскрыть</a>{{ space }}
                             </div>
