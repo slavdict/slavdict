@@ -420,6 +420,11 @@ uiModel.destroyParticiple = function (item) {
 };
 
 uiModel.meaningBeingEdited = ko.observable();
+uiModel.showSaveDialogue = ko.observable(false);
+uiModel.doSave = function () {
+    uiModel.save();
+    window.location = '/';
+}
 
 ko.bindingHandlers.sortable.beforeMove = function (arg, event, ui) {
     if (arg.item instanceof Meaning) {
