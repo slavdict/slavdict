@@ -35,6 +35,7 @@ urlpatterns += patterns('',
          name='edit_form_url'),
     url( r'^entries/(\d+)/get/$', 'slavdict.dictionary.jsonviews.json_entry_get' ),
     url( r'^entries/save/$', 'slavdict.dictionary.jsonviews.json_entry_save' ),
+    url( r'^entries/jserror/$', 'slavdict.dictionary.jsonviews.js_error_notify' ),
 
     url(r'^materials/$', 'slavdict.dictionary.views.direct_to_template',
                          kwargs={'template': 'materials.html'}),

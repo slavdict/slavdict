@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 import collections
+import datetime
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from django.core import mail
 from django.db.models import Q
 from django.http import HttpResponse
 
@@ -149,6 +152,23 @@ def json_entry_save(request):
 
     )
     process_json_model(model, request.POST)
+    return HttpResponse('ok', mimetype=IMT_JSON, status=200)
+
+
+def js_error_notify(request):
+    request.POST
+    connection = mail.get_connection()
+    time = datetime.datetime.now().strftime('%Y.%m.%d %H:%M')
+    url = 'http://slavdict.ruslang.ru/entries/%s/edit/' % request.POST['entryId']
+    emails = [email for name, email in settings.ADMINS]
+    message = mail.EmailMessage(
+        '[slavdict JS Error] %s, %s' % (time, url),
+        unicode(request.POST),
+        'jsException@slavdict.ruslang.ru',
+        emails,
+        connection=connection,
+    )
+    message.send()
     return HttpResponse('ok', mimetype=IMT_JSON, status=200)
 
 

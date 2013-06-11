@@ -1,3 +1,7 @@
+try {
+
+
+
 var mapping = {
         'ignore': ['childMeanings', 'selfExamples', 'expandOrCollapse',
                    'isExpanded'],
@@ -456,3 +460,12 @@ $('nav.tabs li').click(function () {
     x.addClass('current');
     $(x.find('a').attr('href')).addClass('current');
 });
+
+
+
+} catch(e) {
+    $.post('/entries/jserror/',
+           {entryId: vM.dataToInitialize.entry.entry.id || 'unknown',
+            errorObj: e});
+    throw e;
+}
