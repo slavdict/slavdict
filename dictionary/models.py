@@ -1083,7 +1083,7 @@ class CollocationGroup(models.Model, Meaningfull):
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['collocations'] = [c.forJSON() for c in self.collocations]
-        dct['meanings'] = [m.forJSON() for m in self.meanings]
+        dct['meanings'] = [m.forJSON() for m in self.all_meanings]
         return dct
 
     def toJSON(self):
