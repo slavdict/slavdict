@@ -14,4 +14,7 @@
     <input type="button" value="Сохранить" 
         data-bind="click: $root.ui.doSave" />
 
+    <input type="button" value="Продолжить редактирование"
+        data-bind="click: $root.ui.showSaveDialogue.bind(null, false)" />
+
 </template>
