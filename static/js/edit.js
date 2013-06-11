@@ -425,6 +425,9 @@ uiModel.doSave = function () {
     uiModel.save();
     window.location = '/';
 }
+uiModel.doNotSave = function () {
+    window.location = '/';
+}
 
 ko.bindingHandlers.sortable.beforeMove = function (arg, event, ui) {
     if (arg.item instanceof Meaning) {
