@@ -403,7 +403,7 @@
                     {% if not entry.authors.exists() or user.is_admeditor
                     or user in entry.authors.all() %}
                         {% if not entry.duplicate or user.is_admeditor %}
-                        <a href="{% url 'intermediary_change_form_url' entry.pk %}" class="icon edit">
+                        <a href="{% url 'edit_form_url' entry.pk %}" class="icon edit">
                             <img src="{{ STATIC_URL }}transparent.png" alt="e" />
                         </a>
                         <span class="hint-container">
