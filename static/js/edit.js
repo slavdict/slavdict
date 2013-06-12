@@ -461,6 +461,8 @@ $('nav.tabs li').click(function () {
     $(x.find('a').attr('href')).addClass('current');
 });
 
+// Поднять занавес
+$('.curtain').fadeOut();
 
 
 } catch(e) {

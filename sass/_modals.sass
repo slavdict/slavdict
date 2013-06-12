@@ -1,9 +1,16 @@
+.curtain,
 .modalBackground
     position: fixed
     top: 0
     right: 0
     bottom: 0
     left: 0
+
+.curtain
+    z-index: 1000
+    background-color: white
+
+.modalBackground
     z-index: 500
     background-color: black
     background-color: rgba(0, 0, 0, 0.8)
@@ -21,3 +28,4 @@
     @include background-clip(padding-box)
     outline: none
     padding: 15px
+
