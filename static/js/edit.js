@@ -134,7 +134,8 @@ var mapping = {
         this.substantivus_type =
                 ko.observable(data && data.substantivus_type || '');
         this.hidden = ko.observable(data && data.hidden || false);
-        this.contexts = ko.mapping.fromJS({ contexts: data.contexts },
+        this.contexts = ko.mapping.fromJS(
+                { contexts: data && data.contexts || []},
                 mapping)['contexts'];
 
         if (typeof data !== 'undefined') {
@@ -198,7 +199,7 @@ var mapping = {
         });
 
         this.collogroups = ko.mapping.fromJS(
-                { collogroups: options.data.collogroups || [] },
+                { collogroups: data && data.collogroups || [] },
                 mapping)['collogroups'];
         this.collogroups.subscribe(function (changedArray) {
             var i = 1;
@@ -389,6 +390,8 @@ uiModel.save = function () {
 uiModel.addMeaning = function (meanings, containerType, container, containerMeaning) {
     var meaning = new Meaning({}, containerType, container, containerMeaning);
     meanings.push(meaning);
+    dataModel.meanings.push(meaning);
+    uiModel.meaningBeingEdited(meaning);
 };
 
 uiModel.destroyMeaning = function (meanings, meaning) {
@@ -423,7 +426,7 @@ uiModel.destroyParticiple = function (item) {
     }
 };
 
-uiModel.meaningBeingEdited = ko.observable();
+uiModel.meaningBeingEdited = ko.observable(null);
 uiModel.showSaveDialogue = ko.observable(false);
 uiModel.doSave = function () {
     uiModel.save();
