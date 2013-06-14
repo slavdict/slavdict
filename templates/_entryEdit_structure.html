@@ -3,7 +3,7 @@
     <ul class="meanings" data-bind="sortable: { data: ui.entry.meanings,
                                                 connectClass: 'meanings' }">
         <li>
-            <div class="item-dashboard">
+            <nav class="item-dashboard">
                 <a href="#"
                    data-bind="click: $root.ui.destroyMeaning.bind(
                                          null, $root.ui.entry.meanings, $data)"
@@ -13,7 +13,7 @@
                            >Изменить</a>{{ space }}
                 <a href="#" data-bind="click: expandOrCollapse"
                            >Раскрыть</a>{{ space }}
-            </div>
+            </nav>
             <span data-bind="text: order"></span>
             <span data-bind="visible: metaphorical">►</span>
             <span data-bind="text: meaning"></span>
@@ -32,7 +32,7 @@
                                                 connectClass: 'meanings' },
                                             visible: isExpanded">
                 <li>
-                    <div class="item-dashboard">
+                    <nav class="item-dashboard">
                         <a href="#"
                            data-bind="click: $root.ui.destroyMeaning.bind(
                                                 null, $parent.childMeanings, $data)"
@@ -42,7 +42,7 @@
                                    >Изменить</a>{{ space }}
                         <a href="#" data-bind="click: expandOrCollapse"
                                    >Раскрыть</a>{{ space }}
-                    </div>
+                    </nav>
                     <span data-bind="text: order"></span>
                     <span data-bind="visible: metaphorical">►</span>
                     <span data-bind="text: meaning"></span>
@@ -64,12 +64,12 @@
             <ul class="collogroups"
                 data-bind="sortable: collogroups, visible: isExpanded">
                 <li>
-                    <div class="item-dashboard">
+                    <nav class="item-dashboard">
                         <a href="#">Удалить</a>{{ space }}
                         <a href="#">Изменить</a>{{ space }}
                         <a href="#" data-bind="click: expandOrCollapse"
                                    >Раскрыть</a>{{ space }}
-                    </div>
+                    </nav>
                     <span data-bind="text: order"></span>
                     <span data-bind="foreach: collocations">
                         {{ backspace }}
@@ -82,7 +82,7 @@
                                   { data: meanings, connectClass: 'meanings' },
                         visible: isExpanded">
                         <li>
-                            <div class="item-dashboard">
+                            <nav class="item-dashboard">
                                 <a href="#"
                                    data-bind="click: $root.ui.destroyMeaning.bind(
                                                         null, $parent.meanings, $data)"
@@ -92,7 +92,7 @@
                                            >Изменить</a>{{ space }}
                                 <a href="#" data-bind="click: expandOrCollapse"
                                            >Раскрыть</a>{{ space }}
-                            </div>
+                            </nav>
                             <span data-bind="text: order"></span>
                             <span data-bind="visible: metaphorical">►</span>
                             <span data-bind="text: meaning"></span>
