@@ -76,7 +76,7 @@ var mapping = {
         this.meanings.notifySubscribers(this.meanings());
 
         Collogroup.counter++;
-
+        vM.entryEdit.ui.allCollogroups.push(this);
     },
     Example = function (options, meaning, entry, collogroup) {
         var data = options.data;
@@ -101,6 +101,7 @@ var mapping = {
                      // 345 -- Порядковый номер по умолчанию.
 
         Example.counter++;
+        vM.entryEdit.ui.allExamples.push(this);
     },
     Orthvar = function (options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
@@ -214,6 +215,7 @@ var mapping = {
 
         Meaning.counter++;
         Meaning.idMap[this.id] = this;
+        vM.entryEdit.ui.allMeanings.push(this);
     },
     Participle = function (options, entry) {
         this.idem = ko.observable(options.data && options.data.idem || '');
@@ -292,14 +294,20 @@ ko.bindingHandlers.wax = {
 
 
 vM.entryEdit = {
-    data: ko.mapping.fromJS(vM.dataToInitialize.entry, mapping),
     ui: {
         entry: {},
         choices: vM.dataToInitialize.choices,
         labels: vM.dataToInitialize.labels,
-        slugs: vM.dataToInitialize.slugs
+        slugs: vM.dataToInitialize.slugs,
+
+        allMeanings: [],
+        allCollogroups: [],
+        allExamples: []
     }
 };
+// NOTE: нельзя объединять с литералом объекта выше, поскольку свойство
+// ``vM.entryEdit.ui.allMeanings`` должно к этому моменту уже существовать.
+vM.entryEdit.data = ko.mapping.fromJS(vM.dataToInitialize.entry, mapping);
 
 var viewModel = vM.entryEdit,
     dataModel = viewModel.data,
@@ -384,13 +392,19 @@ uiEntry.meanings = (function () {
 })();
 
 uiModel.save = function () {
-    $.post('/entries/save/', {data: ko.mapping.toJSON(dataModel, mapping)});
+    var allData = {
+            entry: dataEntry,
+            collogroups: uiModel.allCollogroups,
+            etymologies: dataModel.etymologies,
+            examples: uiModel.allExamples,
+            meanings: uiModel.allMeanings
+    };
+    $.post('/entries/save/', { data: ko.mapping.toJSON(allData, mapping) });
 };
 
 uiModel.addMeaning = function (meanings, containerType, container, containerMeaning) {
     var meaning = new Meaning({}, containerType, container, containerMeaning);
     meanings.push(meaning);
-    dataModel.meanings.push(meaning);
     uiModel.meaningBeingEdited(meaning);
 };
 
@@ -399,6 +413,33 @@ uiModel.destroyMeaning = function (meanings, meaning) {
         meanings.destroy(meaning);
     } else {
         meanings.remove(meaning);
+        uiModel.allMeanings.splice(uiModel.allMeanings.indexOf(meaning), 1);
+    }
+};
+
+uiModel.addExample = function () {
+};
+
+uiModel.destroyExample = function (examples, example) {
+    if (typeof example.id === 'number') {
+        examples.destroy(example);
+    } else {
+        examples.remove(example);
+        uiModel.allExamples.splice(uiModel.allExamples.indexOf(example), 1);
+    }
+};
+
+uiModel.addCollogroup = function () {
+};
+
+uiModel.destroyCollogroup = function (collogroups, collogroup) {
+    if (typeof collogroup.id === 'number') {
+        collogroups.destroy(collogroup);
+    } else {
+        collogroups.remove(collogroup);
+        uiModel.allCollogroups.splice(
+                uiModel.allCollogroups.indexOf(collogroup),
+                1);
     }
 };
 
