@@ -1,4 +1,4 @@
-<template id="editMeaning">
+<script type="text/html" id="editMeaning">
 
     <label>Значение</label>
     <input type="text" data-bind="value: meaning, valueUpdate: 'afterkeydown'"/>
@@ -14,4 +14,5 @@
 
     <input type="button" value="закончить редактирование" 
         data-bind="click: $root.ui.meaningBeingEdited.bind(null, null)" />
-</template>
+
+</script>
