@@ -477,23 +477,6 @@ uiModel.doNotSave = function () {
     window.location = '/';
 }
 
-ko.bindingHandlers.sortable.beforeMove = function (arg, event, ui) {
-    if (arg.item instanceof Meaning) {
-        console.log('before: entry(%i), collogroup(%i), parentMeaning(%i)',
-                arg.item.entry_container_id(),
-                arg.item.collogroup_container_id(),
-                arg.item.parent_meaning_id());
-    }
-};
-ko.bindingHandlers.sortable.afterMove = function (arg, event, ui) {
-    if (arg.item instanceof Meaning) {
-        console.log('after: entry(%i), collogroup(%i), parentMeaning(%i)\n\n',
-                arg.item.entry_container_id(),
-                arg.item.collogroup_container_id(),
-                arg.item.parent_meaning_id());
-    }
-};
-
 ko.applyBindings(viewModel, $('#main').get(0));
 
 // Активация работы вкладок
