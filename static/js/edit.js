@@ -489,10 +489,6 @@ uiModel.exitWithoutSaving = function () {
     window.location = '/';
 }
 
-vM.entryEdit.jsonDump = ko.computed(function () {
-    localStorage.setItem(new Date(), uiModel.jsonData());
-}).extend({ throttle: 1000 });
-
 ko.applyBindings(viewModel, $('#main').get(0));
 
 // Активация работы вкладок
@@ -506,6 +502,11 @@ $('nav.tabs li').click(function () {
 
 // Поднять занавес
 $('.curtain').fadeOut();
+
+// Активация сохранения json-снимков данных в локальном хранилище.
+vM.entryEdit.jsonDump = ko.computed(function () {
+    localStorage.setItem(new Date(), uiModel.jsonData());
+}).extend({ throttle: 1000 });
 
 
 } catch(e) {
