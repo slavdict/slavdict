@@ -473,9 +473,14 @@ uiModel.meaningBeingEdited = ko.observable(null);
 uiModel.showSaveDialogue = ko.observable(false);
 uiModel.saveAndExit = function () {
     var persistingDataPromise = uiModel.save();
-    persistingDataPromise.done(function () { window.location = '/'; });
-    persistingDataPromise.fail(function () {
-        alert('При сохранении статьи произошла непредвиденная ошибка.'); });
+    persistingDataPromise
+        .done(function () { window.location = '/'; })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            console.log('jqXHR: ', jqXHR);
+            console.log('textStatus: ', textStatus);
+            console.log('Error thrown: ', errorThrown);
+            alert('При сохранении статьи произошла непредвиденная ошибка.');
+        });
 }
 uiModel.exitWithoutSaving = function () {
     window.location = '/';
