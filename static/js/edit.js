@@ -391,17 +391,20 @@ uiEntry.meanings = (function () {
     }
 })();
 
-uiModel.save = function () {
+uiModel.jsonData = function () {
     var entryData = {
             entry: dataEntry,
             collogroups: uiModel.allCollogroups,
             etymologies: dataModel.etymologies,
             examples: uiModel.allExamples,
             meanings: uiModel.allMeanings
-        },
-        postData = { 'json': ko.mapping.toJSON(entryData, mapping) },
-        persistingDataPromise = $.post('/entries/save/', postData);
-    return persistingDataPromise;
+        };
+    return ko.mapping.toJSON(entryData, mapping);
+};
+
+uiModel.save = function () {
+    // Возвращаем promise-объект
+    return $.post('/entries/save/', { 'json': uiModel.jsonData() });
 };
 
 uiModel.addMeaning = function (meanings, containerType, container, containerMeaning) {
@@ -485,6 +488,10 @@ uiModel.saveAndExit = function () {
 uiModel.exitWithoutSaving = function () {
     window.location = '/';
 }
+
+vM.entryEdit.jsonDump = ko.computed(function () {
+    localStorage.setItem(new Date(), uiModel.jsonData());
+}).extend({ throttle: 1000 });
 
 ko.applyBindings(viewModel, $('#main').get(0));
 
