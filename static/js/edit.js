@@ -392,14 +392,16 @@ uiEntry.meanings = (function () {
 })();
 
 uiModel.save = function () {
-    var allData = {
+    var entryData = {
             entry: dataEntry,
             collogroups: uiModel.allCollogroups,
             etymologies: dataModel.etymologies,
             examples: uiModel.allExamples,
             meanings: uiModel.allMeanings
-    };
-    $.post('/entries/save/', { data: ko.mapping.toJSON(allData, mapping) });
+        },
+        postData = { data: ko.mapping.toJSON(entryData, mapping) }),
+        persistingDataPromise = $.post('/entries/save/', postData);
+    return persistingDataPromise;
 };
 
 uiModel.addMeaning = function (meanings, containerType, container, containerMeaning) {
@@ -470,8 +472,10 @@ uiModel.destroyParticiple = function (item) {
 uiModel.meaningBeingEdited = ko.observable(null);
 uiModel.showSaveDialogue = ko.observable(false);
 uiModel.doSave = function () {
-    uiModel.save();
-    window.location = '/';
+    var persistingDataPromise = uiModel.save();
+    persistingDataPromise.done(function () { window.location = '/'; });
+    persistingDataPromise.fail(function () {
+        alert('При сохранении статьи произошла непредвиденная ошибка.'); });
 }
 uiModel.doNotSave = function () {
     window.location = '/';
