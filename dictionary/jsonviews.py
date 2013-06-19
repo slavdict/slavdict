@@ -124,7 +124,7 @@ def json_goodness_save(request):
     entry = Entry.objects.get(id=entry_id)
     entry.good = goodness
     entry.save(without_mtime=True)
-    return HttpResponse('', mimetype=IMT_JSON, status=200)
+    return HttpResponse(status=200)
 
 
 
@@ -152,7 +152,7 @@ def json_entry_save(request):
 
     )
     process_json_model(model, request.POST)
-    return HttpResponse('ok', mimetype=IMT_JSON, status=200)
+    return HttpResponse(status=200)
 
 
 def js_error_notify(request):
@@ -169,7 +169,7 @@ def js_error_notify(request):
         connection=connection,
     )
     message.send()
-    return HttpResponse('ok', mimetype=IMT_JSON, status=200)
+    return HttpResponse(status=200)
 
 
 def process_json_model(json_model, post):
