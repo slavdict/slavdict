@@ -471,13 +471,13 @@ uiModel.destroyParticiple = function (item) {
 
 uiModel.meaningBeingEdited = ko.observable(null);
 uiModel.showSaveDialogue = ko.observable(false);
-uiModel.doSave = function () {
+uiModel.saveAndExit = function () {
     var persistingDataPromise = uiModel.save();
     persistingDataPromise.done(function () { window.location = '/'; });
     persistingDataPromise.fail(function () {
         alert('При сохранении статьи произошла непредвиденная ошибка.'); });
 }
-uiModel.doNotSave = function () {
+uiModel.exitWithoutSaving = function () {
     window.location = '/';
 }
 
