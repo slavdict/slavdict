@@ -399,7 +399,7 @@ uiModel.save = function () {
             examples: uiModel.allExamples,
             meanings: uiModel.allMeanings
         },
-        postData = { data: ko.mapping.toJSON(entryData, mapping) },
+        postData = { 'json': ko.mapping.toJSON(entryData, mapping) },
         persistingDataPromise = $.post('/entries/save/', postData);
     return persistingDataPromise;
 };
