@@ -52,6 +52,14 @@
     <input type="button" value="Закончить редактирование"
         data-bind="click: ui.showSaveDialogue.bind(null, true)" />
 
+    <input type="button" value="undo"
+        data-bind="click: undoStorage.undo,
+                   disable: undoStorage.shouldDisableUndo" />
+
+    <input type="button" value="redo"
+        data-bind="click: undoStorage.redo,
+                   disable: undoStorage.shouldDisableRedo" />
+
     <div class="modalContainer" style="display: none;"
         data-bind="visible: ui.meaningBeingEdited">
         <div class="modalBackground"></div>

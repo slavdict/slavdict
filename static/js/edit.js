@@ -477,7 +477,10 @@ uiModel.showSaveDialogue = ko.observable(false);
 uiModel.saveAndExit = function () {
     var persistingDataPromise = uiModel.save();
     persistingDataPromise
-        .done(function () { window.location = '/'; })
+        .done(function () {
+            localStorage.clear();
+            window.location = '/';
+        })
         .fail(function (jqXHR, textStatus, errorThrown) {
             console.log('jqXHR: ', jqXHR);
             console.log('textStatus: ', textStatus);
@@ -489,7 +492,6 @@ uiModel.exitWithoutSaving = function () {
     window.location = '/';
 }
 
-ko.applyBindings(viewModel, $('#main').get(0));
 
 // Активация работы вкладок
 $('nav.tabs li').click(function () {
@@ -500,13 +502,64 @@ $('nav.tabs li').click(function () {
     $(x.find('a').attr('href')).addClass('current');
 });
 
+// Активация сохранения json-снимков данных в локальном хранилище.
+vM.entryEdit.undoStorage = (function () {
+    var uS,  // undoStorage
+        viewModel = vM.entryEdit,
+        _ = null;  // Выражение-пустышка, означающее, что далее в коде
+                   // будет вставлено настоящее значение.
+
+    function load(n) {
+        var jsonData = localStorage.getItem(localStorage.key(n));
+        ko.mapping.fromJSON(jsonData, mapping, viewModel.data);
+    }
+
+    function dump() {
+        var dateISOString = (new Date()).toISOString();
+        if (! uS.shouldSkipDump) {
+            localStorage.setItem(dateISOString, viewModel.ui.jsonData());
+        }
+    }
+
+    function shouldDisableUndo() {
+        var dumpsCount = localStorage.length;
+        return dumpsCount && uS.cursor() == 0;
+    }
+
+    function shouldDisableRedo() {
+        var dumpsCount = localStorage.length;
+        return dumpsCount && dumpsCount == uS.cursor() + 1;
+    }
+
+    function redo() {
+    }
+
+    function undo() {
+    }
+
+    uS = {
+        shouldSkipDump: false,
+        dump: _,
+        load: load,
+
+        cursor: ko.observable(0),
+        shouldDisableRedo: _,
+        shouldDisableUndo: _,
+        redo: redo,
+        undo: undo,
+    };
+
+    uS.dump = ko.computed(dump).extend({ throttle: 1000 });
+    uS.shouldDisableRedo = ko.computed(shouldDisableRedo);
+    uS.shouldDisableUndo = ko.computed(shouldDisableUndo);
+
+    return uS;
+})()
+
+ko.applyBindings(viewModel, $('#main').get(0));
+
 // Поднять занавес
 $('.curtain').fadeOut();
-
-// Активация сохранения json-снимков данных в локальном хранилище.
-vM.entryEdit.jsonDump = ko.computed(function () {
-    localStorage.setItem(new Date(), uiModel.jsonData());
-}).extend({ throttle: 1000 });
 
 
 } catch(e) {
