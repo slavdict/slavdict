@@ -33,8 +33,8 @@ dictionary.seek(0)
 connection = mail.get_connection()
 butime = datetime.datetime.now().strftime('%Y.%m.%d %H:%M')
 attachments = (
-    ('dictionary %s.xml.gz', users.read(), 'application/gzip'),
-    ('users %s.xml.gz', dictionary.read(), 'application/gzip'),
+    ('dictionary %s.xml.gz' % butime, users.read(), 'application/gzip'),
+    ('users %s.xml.gz' % butime, dictionary.read(), 'application/gzip'),
 )
 emails = [email for name, email in settings.BACKUP_MANAGERS]
 message = mail.EmailMessage(
