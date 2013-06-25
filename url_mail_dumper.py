@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import cStringIO
 import datetime
+import gzip
 import os
 import sys
 
@@ -11,22 +12,29 @@ from django.core.management import setup_environ
 from slavdict import settings
 
 setup_environ(settings)
-users_data = cStringIO.StringIO()
-dictionary_data = cStringIO.StringIO()
 
-sys.stdout = users_data
+users = cStringIO.StringIO()
+dictionary = cStringIO.StringIO()
+users_gz = gzip.GzipFile(fileobj=users, mode='wb')
+dictionary_gz = gzip.GzipFile(fileobj=dictionary, mode='wb')
+
+sys.stdout = users_gz
 call_command('dumpdata', 'custom_user', format='xml', indent=2)
-users_data.seek(0)
-sys.stdout = dictionary_data
-call_command('dumpdata', 'dictionary', format='xml', indent=2)
-dictionary_data.seek(0)
 sys.stdout = sys.__stdout__
+users_gz.close()
+users.seek(0)
+
+sys.stdout = dictionary_gz
+call_command('dumpdata', 'dictionary', format='xml', indent=2)
+sys.stdout = sys.__stdout__
+dictionary_gz.close()
+dictionary.seek(0)
 
 connection = mail.get_connection()
 butime = datetime.datetime.now().strftime('%Y.%m.%d %H:%M')
 attachments = (
-    ('dictionary %s.xml', users_data.read(), 'application/xml'),
-    ('users %s.xml', dictionary_data.read(), 'application/xml'),
+    ('dictionary %s.xml.gz', users.read(), 'application/gzip'),
+    ('users %s.xml.gz', dictionary.read(), 'application/gzip'),
 )
 emails = [email for name, email in settings.BACKUP_MANAGERS]
 message = mail.EmailMessage(
