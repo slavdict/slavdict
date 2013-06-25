@@ -750,3 +750,24 @@ def edit_entry(request, id):
     }
     return render_to_response('single_entry_edit.html', context,
                               RequestContext(request))
+
+@login_required
+def dump(request):
+    import os
+    pid = os.fork()
+    if not pid:
+        # NOTE: Избавляемся от процессов-зомби, создавая дочерний процесс
+        # дочернего процесса. См. http://stackoverflow.com/a/16809886
+        # Использовать сигналы ``signal.signal(signal.SIGCHLD,
+        # signal.SIG_IGN)`` не получается, поскольку данная функция сама будет
+        # выполняться джангой не в родительском процессе.
+        pid = os.fork()
+        if not pid:
+            os.execvp('python', ('python', 'url_mail_dumper.py'))
+            raise NameError(u'В параллельном процессе отсылки дампа базы '
+                            u'возникла непредвиденная ошибка.')
+        else:
+            os._exit(0)
+    else:
+        os.wait()
+    return  HttpResponseRedirect('/')

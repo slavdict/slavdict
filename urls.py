@@ -52,6 +52,7 @@ urlpatterns += patterns('',
 
     # TODO: В последствии всё это должно быть удалено.
     url( r'^adhoc/csv-import/$', 'slavdict.dictionary.views.import_csv_billet' ),
+    url( r'^adhoc/dump/$', 'slavdict.dictionary.views.dump' ),
 )
 
 urlpatterns += staticfiles_urlpatterns()
