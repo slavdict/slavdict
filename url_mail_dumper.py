@@ -5,6 +5,8 @@ import gzip
 import os
 import sys
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from django.core import mail
 from django.core.management import call_command
 from django.core.management import setup_environ
