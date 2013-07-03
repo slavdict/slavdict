@@ -537,6 +537,14 @@ vM.entryEdit.undoStorage = (function () {
     function undo() {
     }
 
+    function init() {
+        // TODO: Здесь должна быть обработка случаев, когда страницу изменения
+        // покинули не должным образом и в локальном хранилище что-то осталось.
+        // Пользователю надо предложить восстановить последнее созданное им
+        // состояние для тех статей, которые не были должным образом сохранены.
+        localStorage.clear();
+    }
+
     uS = {
         shouldSkipDump: false,
         dump: _,
@@ -552,6 +560,8 @@ vM.entryEdit.undoStorage = (function () {
     uS.dump = ko.computed(dump).extend({ throttle: 1000 });
     uS.shouldDisableRedo = ko.computed(shouldDisableRedo);
     uS.shouldDisableUndo = ko.computed(shouldDisableUndo);
+
+    init();
 
     return uS;
 })()
