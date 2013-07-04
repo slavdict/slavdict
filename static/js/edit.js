@@ -522,13 +522,11 @@ vM.entryEdit.undoStorage = (function () {
     }
 
     function shouldDisableUndo() {
-        var dumpsCount = localStorage.length;
-        return dumpsCount && uS.cursor() == 0;
+        return localStorage.length && uS.cursor() === 0;
     }
 
     function shouldDisableRedo() {
-        var dumpsCount = localStorage.length;
-        return dumpsCount && dumpsCount == uS.cursor() + 1;
+        return localStorage.length && localStorage.length === uS.cursor() + 1;
     }
 
     function redo() {
