@@ -535,6 +535,10 @@ vM.entryEdit.undoStorage = (function () {
     function undo() {
     }
 
+    function preInit() {
+        localStorage.clear();
+    }
+
     function init() {
         // TODO: Здесь должна быть обработка случаев, когда страницу изменения
         // покинули не должным образом и в локальном хранилище что-то осталось.
@@ -554,6 +558,8 @@ vM.entryEdit.undoStorage = (function () {
         redo: redo,
         undo: undo,
     };
+
+    preInit();
 
     uS.dump = ko.computed(dump).extend({ throttle: 1000 });
     uS.shouldDisableRedo = ko.computed(shouldDisableRedo);
