@@ -478,7 +478,7 @@ uiModel.saveAndExit = function () {
     var persistingDataPromise = uiModel.save();
     persistingDataPromise
         .done(function () {
-            localStorage.clear();
+            viewModel.undoStorage.clear();
             window.location = '/';
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
@@ -504,22 +504,18 @@ $('nav.tabs li').click(function () {
 
 // Активация сохранения json-снимков данных в локальном хранилище.
 vM.entryEdit.undoStorage = (function () {
-    var uS,  // undoStorage
+    var uS,  // uS -- undoStorage
+        snapshotsKey = 'entry.' + ko.utils.unwrapObservable(
+                                             vM.entryEdit.data.entry.id),
+        cursorKey = snapshotsKey + '.cursor',
         viewModel = vM.entryEdit,
         cursor = ko.observable(0),
-        dumpCounter = ko.observable(0),
+        snapshots = ko.observableArray([]),
         shouldSkipDump = false;
 
-    function load(n) {
-        var jsonData = localStorage.getItem(localStorage.key(n));
-        viewModel.data = ko.mapping.fromJSON(jsonData, mapping);
-    }
 
-    function clear() {
-        // Удаление всех дампов
-        localStorage.clear();
-        cursor(0);
-        dumpCounter(0);
+    function load(N) {
+        viewModel.data = ko.mapping.fromJSON(snapshots()[N], mapping);
     }
 
     function dock(N) {
@@ -528,21 +524,16 @@ vM.entryEdit.undoStorage = (function () {
         // внесены дополнительные изменения, поскольку все отменённые дампы
         // становятся после этого ненужными. Напротив, возникает необходимость
         // создания другой ветки дампов.
-        for (var i = localStorage.length - 1; i >= N; i--) {
-            localStorage.removeItem(localStorage.key(i));
-            dumpCounter(i);
-        }
+        snapshots.splice(N);
     }
 
     function dump() {
-        var dateISOString = (new Date()).toISOString();
         if (!shouldSkipDump) {
-            if (cursor.peek() < dumpCounter.peek()) {
+            if (cursor.peek() < snapshots.peek().length) {
                 dock(cursor.peek())
             }
-            localStorage.setItem(dateISOString, viewModel.ui.jsonData());
+            snapshots.push(viewModel.ui.jsonData());
             cursor(cursor.peek() + 1);
-            dumpCounter(dumpCounter.peek() + 1);
         }
     }
 
@@ -551,13 +542,13 @@ vM.entryEdit.undoStorage = (function () {
     }
 
     function mayNotRedo() {
-        return dumpCounter() === cursor();
+        return snapshots().length === cursor();
     }
 
     function redo() {
         if (! mayNotRedo()) {
             var n = cursor();
-            load(localStorage.getItem(localStorage.key(n)));
+            load(snapshots()[n]);
             cursor(n + 1);
         }
     }
@@ -565,9 +556,16 @@ vM.entryEdit.undoStorage = (function () {
     function undo() {
         if (! mayNotUndo()) {
             var n = cursor() - 1;
-            load(localStorage.getItem(localStorage.key(n)));
+            load(snapshots()[n]);
             cursor(n);
         }
+    }
+
+    function clear() {
+        cursor(0);
+        snapshots.removeAll();
+        localStorage.removeItem(snapshotsKey);
+        localStorage.removeItem(cursorKey);
     }
 
     function init() {
@@ -575,10 +573,19 @@ vM.entryEdit.undoStorage = (function () {
         // покинули не должным образом и в локальном хранилище что-то осталось.
         // Пользователю надо предложить восстановить последнее созданное им
         // состояние для тех статей, которые не были должным образом сохранены.
+        snapshots.subscribe(function () {
+            localStorage.setItem(snapshotsKey, JSON.stringify(snapshots()));
+        });
+
+        cursor.subscribe(function (newValue) {
+            localStorage.setItem(cursorKey, newValue);
+        });
+
         clear();
     }
 
     uS = {
+        clear: clear,
         dump: ko.computed(dump).extend({ throttle: 1000 }),
         load: load,
         shouldDisableRedo: ko.computed(mayNotRedo),
