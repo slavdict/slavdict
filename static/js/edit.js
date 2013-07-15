@@ -506,37 +506,68 @@ $('nav.tabs li').click(function () {
 vM.entryEdit.undoStorage = (function () {
     var uS,  // undoStorage
         viewModel = vM.entryEdit,
-        _ = null;  // Выражение-пустышка, означающее, что далее в коде
-                   // будет вставлено настоящее значение.
+        cursor = ko.observable(0),
+        dumpCounter = ko.observable(0),
+        shouldSkipDump = false;
 
     function load(n) {
         var jsonData = localStorage.getItem(localStorage.key(n));
-        ko.mapping.fromJSON(jsonData, mapping, viewModel.data);
+        viewModel.data = ko.mapping.fromJSON(jsonData, mapping);
+    }
+
+    function clear() {
+        // Удаление всех дампов
+        localStorage.clear();
+        cursor(0);
+        dumpCounter(0);
+    }
+
+    function dock(N) {
+        // Удаление всех дампов после N (обрубание хвоста). Необходимо
+        // в том случае, если была произведена операция undo и в статью были
+        // внесены дополнительные изменения, поскольку все отменённые дампы
+        // становятся после этого ненужными. Напротив, возникает необходимость
+        // создания другой ветки дампов.
+        for (var i = localStorage.length - 1; i >= N; i--) {
+            localStorage.removeItem(localStorage.key(i));
+            dumpCounter(i);
+        }
     }
 
     function dump() {
         var dateISOString = (new Date()).toISOString();
-        if (! uS.shouldSkipDump) {
+        if (!shouldSkipDump) {
+            if (cursor.peek() < dumpCounter.peek()) {
+                dock(cursor.peek())
+            }
             localStorage.setItem(dateISOString, viewModel.ui.jsonData());
+            cursor(cursor.peek() + 1);
+            dumpCounter(dumpCounter.peek() + 1);
         }
     }
 
-    function shouldDisableUndo() {
-        return localStorage.length && uS.cursor() === 0;
+    function mayNotUndo() {
+        return cursor() < 2;
     }
 
-    function shouldDisableRedo() {
-        return localStorage.length && localStorage.length === uS.cursor() + 1;
+    function mayNotRedo() {
+        return dumpCounter() === cursor();
     }
 
     function redo() {
+        if (! mayNotRedo()) {
+            var n = cursor();
+            load(localStorage.getItem(localStorage.key(n)));
+            cursor(n + 1);
+        }
     }
 
     function undo() {
-    }
-
-    function preInit() {
-        localStorage.clear();
+        if (! mayNotUndo()) {
+            var n = cursor() - 1;
+            load(localStorage.getItem(localStorage.key(n)));
+            cursor(n);
+        }
     }
 
     function init() {
@@ -544,26 +575,17 @@ vM.entryEdit.undoStorage = (function () {
         // покинули не должным образом и в локальном хранилище что-то осталось.
         // Пользователю надо предложить восстановить последнее созданное им
         // состояние для тех статей, которые не были должным образом сохранены.
-        localStorage.clear();
+        clear();
     }
 
     uS = {
-        shouldSkipDump: false,
-        dump: _,
+        dump: ko.computed(dump).extend({ throttle: 1000 }),
         load: load,
-
-        cursor: ko.observable(0),
-        shouldDisableRedo: _,
-        shouldDisableUndo: _,
+        shouldDisableRedo: ko.computed(mayNotRedo),
+        shouldDisableUndo: ko.computed(mayNotUndo),
         redo: redo,
         undo: undo,
     };
-
-    preInit();
-
-    uS.dump = ko.computed(dump).extend({ throttle: 1000 });
-    uS.shouldDisableRedo = ko.computed(shouldDisableRedo);
-    uS.shouldDisableUndo = ko.computed(shouldDisableUndo);
 
     init();
 
