@@ -513,8 +513,15 @@ vM.entryEdit.undoStorage = (function () {
         snapshots = ko.observableArray([]),
         shouldSkipDump = false;
 
+    ko.computed(function() {
+        console.log(
+            'cursor:', cursor(),
+            'snapshots().length:', snapshots().length
+            );
+    });
 
     function load(N) {
+        console.log('load', N);
         viewModel.data = ko.mapping.fromJSON(snapshots()[N], mapping);
     }
 
@@ -524,6 +531,7 @@ vM.entryEdit.undoStorage = (function () {
         // внесены дополнительные изменения, поскольку все отменённые дампы
         // становятся после этого ненужными. Напротив, возникает необходимость
         // создания другой ветки дампов.
+        console.log('dock', N);
         snapshots.splice(N);
     }
 
@@ -532,6 +540,7 @@ vM.entryEdit.undoStorage = (function () {
             if (cursor.peek() < snapshots.peek().length) {
                 dock(cursor.peek())
             }
+            console.log('dump');
             snapshots.push(viewModel.ui.jsonData());
             cursor(cursor.peek() + 1);
         }
@@ -546,6 +555,7 @@ vM.entryEdit.undoStorage = (function () {
     }
 
     function redo() {
+        console.log('redo');
         if (! mayNotRedo()) {
             var n = cursor();
             load(snapshots()[n]);
@@ -554,6 +564,7 @@ vM.entryEdit.undoStorage = (function () {
     }
 
     function undo() {
+        console.log('undo');
         if (! mayNotUndo()) {
             var n = cursor() - 1;
             load(snapshots()[n]);
@@ -568,11 +579,24 @@ vM.entryEdit.undoStorage = (function () {
         localStorage.removeItem(cursorKey);
     }
 
+    function resumePreviousSession() {
+        // Если в локальном хранилище что-то осталось, предлагает пользователю
+        // восстанавливить предыдущаю сессию правки статьи. В противном случае
+        // молча начинает новую сессию.
+        var prevSnapshots = JSON.parse(localStorage.getItem(snapshotsKey)),
+            prevCursor = JSON.parse(localStorage.getItem(cursorKey));
+        console.log('prev snapshots:', prevSnapshots.length, 'prev cursor:', prevCursor);
+        // TODO: здесь должно выводиться предложение пользователю восстановить
+        // предыдущую сессию, если от неё остались данные.
+    }
+
     function init() {
         // TODO: Здесь должна быть обработка случаев, когда страницу изменения
         // покинули не должным образом и в локальном хранилище что-то осталось.
         // Пользователю надо предложить восстановить последнее созданное им
         // состояние для тех статей, которые не были должным образом сохранены.
+        resumePreviousSession();
+
         snapshots.subscribe(function () {
             localStorage.setItem(snapshotsKey, JSON.stringify(snapshots()));
         });
