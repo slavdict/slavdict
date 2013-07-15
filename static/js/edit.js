@@ -391,17 +391,20 @@ uiEntry.meanings = (function () {
     }
 })();
 
-uiModel.save = function () {
+uiModel.jsonData = function () {
     var entryData = {
             entry: dataEntry,
             collogroups: uiModel.allCollogroups,
             etymologies: dataModel.etymologies,
             examples: uiModel.allExamples,
             meanings: uiModel.allMeanings
-        },
-        postData = { 'json': ko.mapping.toJSON(entryData, mapping) },
-        persistingDataPromise = $.post('/entries/save/', postData);
-    return persistingDataPromise;
+        };
+    return ko.mapping.toJSON(entryData, mapping);
+};
+
+uiModel.save = function () {
+    // Возвращаем promise-объект
+    return $.post('/entries/save/', { 'json': uiModel.jsonData() });
 };
 
 uiModel.addMeaning = function (meanings, containerType, container, containerMeaning) {
@@ -474,7 +477,10 @@ uiModel.showSaveDialogue = ko.observable(false);
 uiModel.saveAndExit = function () {
     var persistingDataPromise = uiModel.save();
     persistingDataPromise
-        .done(function () { window.location = '/'; })
+        .done(function () {
+            viewModel.undoStorage.clear();
+            window.location = '/';
+        })
         .fail(function (jqXHR, textStatus, errorThrown) {
             console.log('jqXHR: ', jqXHR);
             console.log('textStatus: ', textStatus);
@@ -486,7 +492,6 @@ uiModel.exitWithoutSaving = function () {
     window.location = '/';
 }
 
-ko.applyBindings(viewModel, $('#main').get(0));
 
 // Активация работы вкладок
 $('nav.tabs li').click(function () {
@@ -496,6 +501,129 @@ $('nav.tabs li').click(function () {
     x.addClass('current');
     $(x.find('a').attr('href')).addClass('current');
 });
+
+// Активация сохранения json-снимков данных в локальном хранилище.
+vM.entryEdit.undoStorage = (function () {
+    var uS,  // uS -- undoStorage
+        snapshotsKey = 'entry.' + ko.utils.unwrapObservable(
+                                             vM.entryEdit.data.entry.id),
+        cursorKey = snapshotsKey + '.cursor',
+        viewModel = vM.entryEdit,
+        cursor = ko.observable(0),
+        snapshots = ko.observableArray([]),
+        shouldSkipDump = false;
+
+    ko.computed(function() {
+        console.log(
+            'cursor:', cursor(),
+            'snapshots().length:', snapshots().length
+            );
+    });
+
+    function load(N) {
+        console.log('load', N);
+        viewModel.data = ko.mapping.fromJSON(snapshots()[N], mapping);
+    }
+
+    function dock(N) {
+        // Удаление всех дампов после N (обрубание хвоста). Необходимо
+        // в том случае, если была произведена операция undo и в статью были
+        // внесены дополнительные изменения, поскольку все отменённые дампы
+        // становятся после этого ненужными. Напротив, возникает необходимость
+        // создания другой ветки дампов.
+        console.log('dock', N);
+        snapshots.splice(N);
+    }
+
+    function dump() {
+        if (!shouldSkipDump) {
+            if (cursor.peek() < snapshots.peek().length) {
+                dock(cursor.peek())
+            }
+            console.log('dump');
+            snapshots.push(viewModel.ui.jsonData());
+            cursor(cursor.peek() + 1);
+        }
+    }
+
+    function mayNotUndo() {
+        return cursor() < 2;
+    }
+
+    function mayNotRedo() {
+        return snapshots().length === cursor();
+    }
+
+    function redo() {
+        console.log('redo');
+        if (! mayNotRedo()) {
+            var n = cursor();
+            load(snapshots()[n]);
+            cursor(n + 1);
+        }
+    }
+
+    function undo() {
+        console.log('undo');
+        if (! mayNotUndo()) {
+            var n = cursor() - 1;
+            load(snapshots()[n]);
+            cursor(n);
+        }
+    }
+
+    function clear() {
+        cursor(0);
+        snapshots.removeAll();
+        localStorage.removeItem(snapshotsKey);
+        localStorage.removeItem(cursorKey);
+    }
+
+    function resumePreviousSession() {
+        // Если в локальном хранилище что-то осталось, предлагает пользователю
+        // восстанавливить предыдущаю сессию правки статьи. В противном случае
+        // молча начинает новую сессию.
+        var prevSnapshots = JSON.parse(localStorage.getItem(snapshotsKey)),
+            prevCursor = JSON.parse(localStorage.getItem(cursorKey));
+        console.log('prev snapshots:', prevSnapshots.length, 'prev cursor:', prevCursor);
+        // TODO: здесь должно выводиться предложение пользователю восстановить
+        // предыдущую сессию, если от неё остались данные.
+    }
+
+    function init() {
+        // TODO: Здесь должна быть обработка случаев, когда страницу изменения
+        // покинули не должным образом и в локальном хранилище что-то осталось.
+        // Пользователю надо предложить восстановить последнее созданное им
+        // состояние для тех статей, которые не были должным образом сохранены.
+        resumePreviousSession();
+
+        snapshots.subscribe(function () {
+            localStorage.setItem(snapshotsKey, JSON.stringify(snapshots()));
+        });
+
+        cursor.subscribe(function (newValue) {
+            localStorage.setItem(cursorKey, newValue);
+        });
+
+        clear();
+    }
+
+    uS = {
+        clear: clear,
+        dump: ko.computed(dump).extend({ throttle: 1000 }),
+        load: load,
+        shouldDisableRedo: ko.computed(mayNotRedo),
+        shouldDisableUndo: ko.computed(mayNotUndo),
+        redo: redo,
+        undo: undo,
+    };
+
+    init();
+
+    return uS;
+})()
+
+ko.applyBindings(viewModel, $('#main').get(0));
 
 // Поднять занавес
 $('.curtain').fadeOut();
