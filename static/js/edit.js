@@ -1,6 +1,24 @@
 try {
 
 
+ko.dirtyFlag = function(root) {
+    var result = function () {},
+        _initialState = ko.observable(ko.toJSON(root));
+
+    result.isDirty = ko.computed(function () {
+        return _initialState() !== ko.toJSON(root);
+    });
+
+    result.hoist = function () {
+        _initialState(null);
+    }
+
+    result.reset = function () {
+        _initialState(ko.toJSON(root));
+    };
+
+    return result;
+};
 
 var mapping = {
         'ignore': ['childMeanings', 'selfExamples', 'expandOrCollapse',
@@ -245,7 +263,6 @@ Meaning.counter = 0;
 Orthvar.counter = 0;
 Participle.counter = 0;
 
-Meaning.idMap = {};
 
 function expandOrCollapse() {
     this.isExpanded(!this.isExpanded());
@@ -299,108 +316,123 @@ vM.entryEdit = {
         choices: vM.dataToInitialize.choices,
         labels: vM.dataToInitialize.labels,
         slugs: vM.dataToInitialize.slugs,
-
-        allMeanings: [],
-        allCollogroups: [],
-        allExamples: []
     }
 };
-// NOTE: нельзя объединять с литералом объекта выше, поскольку свойство
-// ``vM.entryEdit.ui.allMeanings`` должно к этому моменту уже существовать.
-vM.entryEdit.data = ko.mapping.fromJS(vM.dataToInitialize.entry, mapping);
 
-var viewModel = vM.entryEdit,
-    dataModel = viewModel.data,
-    uiModel = viewModel.ui,
-    dataEntry = dataModel.entry,
-    uiEntry = uiModel.entry;
+// Загрузка данных в модель пользовательского интерфейса и её инициализация
+function viewModelInit(data) {
+
+    vM.entryEdit.ui.allMeanings = [];
+    vM.entryEdit.ui.allCollogroups = [];
+    vM.entryEdit.ui.allExamples = [];
+
+    Meaning.idMap = {};
+
+    vM.entryEdit.data = ko.mapping.fromJS(data, mapping);
+
+    var viewModel = vM.entryEdit,
+        dataModel = viewModel.data,
+        uiModel = viewModel.ui,
+        dataEntry = dataModel.entry,
+        uiEntry = uiModel.entry;
 
 
-dataEntry.orthvars.subscribe(function (changedArray) {
-    var i = 1;
-    ko.utils.arrayForEach(changedArray, function (item) {
-        if (! item._destroy) {
-            item.order(i);
-            i += 1;
-        }
-    });
-});
-dataEntry.orthvars.notifySubscribers(dataEntry.orthvars());
-
-uiEntry.headword = ko.computed(function () {
-    var orthvars = dataEntry.orthvars(),
-        isNotDestroyed = function (item) { return ! item._destroy; };
-    return ko.utils.arrayFilter(orthvars, isNotDestroyed)[0].idem();
-});
-
-uiEntry.part_of_speech = ko.computed(function () {
-    var x = this.data.entry.part_of_speech(),
-        y = this.ui.labels.part_of_speech;
-    if (x in y) {
-        return y[x];
-    } else {
-        console.log('Часть речи "', x, '" не найдена среди ', y);
-        return '';
-    }
-}, viewModel);
-
-uiEntry.meanings = (function () {
-    var allMeanings = dataModel.meanings(),
-        entryMeanings = ko.observableArray([]),
-        i, j, meaning;
-
-    entryMeanings.subscribe(function (changedArray) {
+    dataEntry.orthvars.subscribe(function (changedArray) {
         var i = 1;
         ko.utils.arrayForEach(changedArray, function (item) {
-            item.parent_meaning_id(null);
-            item.entry_container_id(dataModel.entry.id());
-            item.collogroup_container_id(null);
             if (! item._destroy) {
                 item.order(i);
                 i += 1;
             }
         });
     });
+    dataEntry.orthvars.notifySubscribers(dataEntry.orthvars());
 
-    for (i = 0, j = allMeanings.length; i < j; i++) {
-        meaning = allMeanings[i];
-        if (meaning.parent_meaning_id() === null) {
-            entryMeanings.push(meaning);
+    uiEntry.headword = ko.computed(function () {
+        var orthvars = dataEntry.orthvars(),
+            isNotDestroyed = function (item) { return ! item._destroy; };
+        return ko.utils.arrayFilter(orthvars, isNotDestroyed)[0].idem();
+    });
+
+    uiEntry.part_of_speech = ko.computed(function () {
+        var x = this.data.entry.part_of_speech(),
+            y = this.ui.labels.part_of_speech;
+        if (x in y) {
+            return y[x];
         } else {
-            Meaning.idMap[meaning.parent_meaning_id()]
-                .childMeanings.push(meaning);
+            console.log('Часть речи "', x, '" не найдена среди ', y);
+            return '';
         }
-    }
+    }, viewModel);
 
-    return entryMeanings;
-})();
+    uiEntry.meanings = (function () {
+        var allMeanings = dataModel.meanings(),
+            entryMeanings = ko.observableArray([]),
+            i, j, meaning;
 
-// Просматриваем список всех примеров и, если пример должен стоять при
-// определенном значении, а не просто добавлен в мешок примеров при статье,
-// добавляем его в список примеров конкретного значения.
-(function () {
-    var allExamples = dataModel.examples(),
-        i, j, example;
+        entryMeanings.subscribe(function (changedArray) {
+            var i = 1;
+            ko.utils.arrayForEach(changedArray, function (item) {
+                item.parent_meaning_id(null);
+                item.entry_container_id(dataModel.entry.id());
+                item.collogroup_container_id(null);
+                if (! item._destroy) {
+                    item.order(i);
+                    i += 1;
+                }
+            });
+        });
 
-    for (i = 0, j = allExamples.length; i < j; i++) {
-        example = allExamples[i];
-        if (example.meaning_id() !== null) {
-            Meaning.idMap[example.meaning_id()]
-                .selfExamples.push(example);
+        for (i = 0, j = allMeanings.length; i < j; i++) {
+            meaning = allMeanings[i];
+            if (meaning.parent_meaning_id() === null) {
+                entryMeanings.push(meaning);
+            } else {
+                Meaning.idMap[meaning.parent_meaning_id()]
+                    .childMeanings.push(meaning);
+            }
         }
-    }
-})();
 
-uiModel.jsonData = function () {
-    var entryData = {
-            entry: dataEntry,
-            collogroups: uiModel.allCollogroups,
-            etymologies: dataModel.etymologies,
-            examples: uiModel.allExamples,
-            meanings: uiModel.allMeanings
-        };
-    return ko.mapping.toJSON(entryData, mapping);
-};
+        return entryMeanings;
+    })();
+
+    // Просматриваем список всех примеров и, если пример должен стоять при
+    // определенном значении, а не просто добавлен в мешок примеров при статье,
+    // добавляем его в список примеров конкретного значения.
+    (function () {
+        var allExamples = dataModel.examples(),
+            i, j, example;
+
+        for (i = 0, j = allExamples.length; i < j; i++) {
+            example = allExamples[i];
+            if (example.meaning_id() !== null) {
+                Meaning.idMap[example.meaning_id()]
+                    .selfExamples.push(example);
+            }
+        }
+    })();
+
+    uiModel.jsonData = function () {
+        var entryData = {
+                entry: dataEntry,
+                collogroups: uiModel.allCollogroups,
+                etymologies: dataModel.etymologies,
+                examples: uiModel.allExamples,
+                meanings: uiModel.allMeanings
+            };
+        return ko.mapping.toJSON(entryData, mapping);
+    };
+
+    viewModel.dirtyFlag = ko.dirtyFlag(dataModel);
+
+}
+viewModelInit(vM.dataToInitialize.entry);
+
+var viewModel = vM.entryEdit,
+    dataModel = viewModel.data,
+    uiModel = viewModel.ui,
+    dataEntry = dataModel.entry,
+    uiEntry = uiModel.entry;
 
 uiModel.save = function () {
     // Возвращаем promise-объект
@@ -522,7 +554,8 @@ vM.entryEdit.undoStorage = (function () {
 
     function load(N) {
         console.log('load', N);
-        viewModel.data = ko.mapping.fromJSON(snapshots()[N], mapping);
+        var snapshot = JSON.parse(snapshots()[N]);
+        viewModelInit(snapshot);
     }
 
     function dock(N) {
@@ -536,7 +569,8 @@ vM.entryEdit.undoStorage = (function () {
     }
 
     function dump() {
-        if (!shouldSkipDump) {
+        if (!shouldSkipDump && viewModel.dirtyFlag.isDirty()) {
+            viewModel.dirtyFlag.reset();
             if (cursor.peek() < snapshots.peek().length) {
                 dock(cursor.peek())
             }
@@ -558,7 +592,7 @@ vM.entryEdit.undoStorage = (function () {
         console.log('redo');
         if (! mayNotRedo()) {
             var n = cursor();
-            load(snapshots()[n]);
+            load(n);
             cursor(n + 1);
         }
     }
@@ -567,7 +601,7 @@ vM.entryEdit.undoStorage = (function () {
         console.log('undo');
         if (! mayNotUndo()) {
             var n = cursor() - 1;
-            load(snapshots()[n]);
+            load(n);
             cursor(n);
         }
     }
@@ -585,7 +619,7 @@ vM.entryEdit.undoStorage = (function () {
         // молча начинает новую сессию.
         var prevSnapshots = JSON.parse(localStorage.getItem(snapshotsKey)),
             prevCursor = JSON.parse(localStorage.getItem(cursorKey));
-        console.log('prev snapshots:', prevSnapshots.length, 'prev cursor:', prevCursor);
+        console.log('prev snapshots:', prevSnapshots && prevSnapshots.length, 'prev cursor:', prevCursor);
         // TODO: здесь должно выводиться предложение пользователю восстановить
         // предыдущую сессию, если от неё остались данные.
     }
