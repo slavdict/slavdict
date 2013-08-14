@@ -106,6 +106,49 @@
             slugs: {{ slugs }}
         };
 
+
+        // Настройки knockout-sortable
+        var placeholderClass = 'sortable-placeholder';
+        ko.bindingHandlers.sortable.options = {
+            appendTo: document.body,
+            cursor: 'move',
+            grid: [30, 1],
+            placeholder: placeholderClass,
+            start: function (event, ui) {
+                var x = $(ui.item),
+                    y = x.outerHeight();
+                x.addClass('being-dragged');
+                $('.' + placeholderClass).height(y);
+            },
+            stop: function (event, ui) {
+                $(ui.item).removeClass('being-dragged');
+            },
+        };
+
+
+        // Новый binding для отображения полуюникода в цсл виде
+        // с различением слов и частей слова.
+        ko.bindingHandlers.wax = {
+            init: function (element, valueAccessor, allBindingsAccessor) {
+                var value = valueAccessor(),
+                    cssClasses = allBindingsAccessor().waxCss || 'cslav';
+                value.wax = ko.computed(function () {
+                        var word = value(),
+                            isAffix = (word[0] === '-'),
+                            dash = isAffix ? '<span>-</span>': '',
+                            text = ('<span class="' + cssClasses + '">' +
+                                    ac2ucs8(isAffix ? word.slice(1) : word, isAffix) +
+                                    '</span>');
+                            return dash + text;
+                    });
+                $(element).html(value.wax());
+            },
+            update: function (element, valueAccessor) {
+                var value = valueAccessor();
+                $(element).html(value.wax());
+            }
+        };
+
     </script>
 
     <script src="{{ STATIC_URL }}js/edit.js"
