@@ -1,6 +1,7 @@
 try {
 
-function single(object, attrname, data, defaultValue, observable) {
+function upsert(object, attrname, data, defaultValue, observable) {
+    // Upsert property ``attrname`` in the ``object``
     var value = data && data[attrname] || defaultValue;
     observable = observable || ko.observable;
     if (typeof object[attrname] !== 'undefined') {
@@ -54,8 +55,9 @@ function newer(parentObj, data, Constructor, args) {
     }
 }
 
-function multiple(object, attrname,
-                  data, Constructor, args, observableArray) {
+function upsertArray(object, attrname,
+                     data, Constructor, args, observableArray) {
+    // Upsert array property ``attrname`` in the ``object``
 
     var list = data && data[attrname] || [],
         observableArray = observableArray || ko.observableArray;
@@ -66,7 +68,7 @@ function multiple(object, attrname,
             });
     } else {
         object[attrname] = observableArray();
-        multiple(object, attrname, data, Constructor, args, observableArray);
+        upsertArray(object, attrname, data, Constructor, args, observableArray);
     }
 }
 
@@ -88,23 +90,23 @@ var ac2ucs8 = antconc_ucs8,
 
 
 Etymology = function (entry, collocation, etymonTo, data) {
-    single(this, 'additional_info', data, '');
-    single(this, 'collocation_id', data, collocation.id());
-    single(this, 'corrupted', data, false);
-    single(this, 'entry_id', data, entry.id());
-    single(this, 'etymon_to_id', data, etymonTo.id());
-    single(this, 'gloss', data, '');
-    single(this, 'id', data, 'etymon' + Etymology.counter);
-    single(this, 'language', data, 'a' /* греческий */);
-    single(this, 'mark', data, '');
-    single(this, 'meaning', data, '');
-    single(this, 'order', data, 345);
-    single(this, 'questionable', data, false);
-    single(this, 'source', data, '');
-    single(this, 'text', data, '');
-    single(this, 'translit', data, '');
-    single(this, 'unclear', data, false);
-    single(this, 'unitext', data, '');
+    upsert(this, 'additional_info', data, '');
+    upsert(this, 'collocation_id', data, collocation.id());
+    upsert(this, 'corrupted', data, false);
+    upsert(this, 'entry_id', data, entry.id());
+    upsert(this, 'etymon_to_id', data, etymonTo.id());
+    upsert(this, 'gloss', data, '');
+    upsert(this, 'id', data, 'etymon' + Etymology.counter);
+    upsert(this, 'language', data, 'a' /* греческий */);
+    upsert(this, 'mark', data, '');
+    upsert(this, 'meaning', data, '');
+    upsert(this, 'order', data, 345);
+    upsert(this, 'questionable', data, false);
+    upsert(this, 'source', data, '');
+    upsert(this, 'text', data, '');
+    upsert(this, 'translit', data, '');
+    upsert(this, 'unclear', data, false);
+    upsert(this, 'unitext', data, '');
     Etymology.counter++;
 };
 Etymology.counter = 0;
@@ -112,21 +114,21 @@ Etymology.idMap = {};
 
 
 Participle = function (entry, data) {
-    single(this, 'idem', data, '');
-    single(this, 'tp', data, '');
-    single(this, 'order', data, 345);
-    single(this, 'entry_id', data, entry.id(), nonObservable);
-    single(this, 'id', data, 'participle' + Participle.counter, nonObservable);
+    upsert(this, 'idem', data, '');
+    upsert(this, 'tp', data, '');
+    upsert(this, 'order', data, 345);
+    upsert(this, 'entry_id', data, entry.id(), nonObservable);
+    upsert(this, 'id', data, 'participle' + Participle.counter, nonObservable);
     Participle.counter++;
 };
 Participle.counter = 0;
 
 
 Orthvar = function (entry, data) {
-    single(this, 'idem', data, '');
-    single(this, 'order', data, 345);
-    single(this, 'entry_id', data, entry.id(), nonObservable);
-    single(this, 'id', data, 'orthvar' + Orthvar.counter, nonObservable);
+    upsert(this, 'idem', data, '');
+    upsert(this, 'order', data, 345);
+    upsert(this, 'entry_id', data, entry.id(), nonObservable);
+    upsert(this, 'id', data, 'orthvar' + Orthvar.counter, nonObservable);
     Orthvar.counter++;
 };
 Orthvar.counter = 0;
@@ -148,17 +150,17 @@ Greq.counter = 0;
 
 
 Example = function (meaning, entry, collogroup, data) {
-    single(this, 'additional_info', data, '');
-    single(this, 'address_text', data, '');
-    single(this, 'collogroup_id', data, collogroup && collogroup.id || null);
-    single(this, 'entry_id', data, entry.id());
-    single(this, 'example', data, '');
-    single(this, 'greek_eq_status', data, '');
-    multiple(this, 'greqs', data, Greq, [this]);
-    single(this, 'hidden', data, false);
-    single(this, 'id', data, 'example' + Example.counter);
-    single(this, 'meaning_id', data, meaning.id);
-    single(this, 'order', data, 345);
+    upsert(this, 'additional_info', data, '');
+    upsert(this, 'address_text', data, '');
+    upsert(this, 'collogroup_id', data, collogroup && collogroup.id || null);
+    upsert(this, 'entry_id', data, entry.id());
+    upsert(this, 'example', data, '');
+    upsert(this, 'greek_eq_status', data, '');
+    upsertArray(this, 'greqs', data, Greq, [this]);
+    upsert(this, 'hidden', data, false);
+    upsert(this, 'id', data, 'example' + Example.counter);
+    upsert(this, 'meaning_id', data, meaning.id);
+    upsert(this, 'order', data, 345);
     Example.counter++;
     var allExamples = vM.entryEdit.ui.allExamples;
     if (allExamples.indexOf(this) === -1) {
