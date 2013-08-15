@@ -1,20 +1,5 @@
 try {
 
-function upsert(object, attrname, data, defaultValue, observable) {
-    // Upsert property ``attrname`` in the ``object``
-    var value = data && data[attrname] || defaultValue;
-    observable = observable || ko.observable;
-    if (typeof object[attrname] !== 'undefined') {
-        if (ko.isSubscribable(object[attrname])) {
-            object[attrname](value);
-        } else {
-            object[attrname] = value;
-        }
-    } else {
-        object[attrname] = observable(value);
-    }
-}
-
 function newer(parentObj, data, Constructor, args) {
     var allItems = {
             Etymology: parentObj.etymologies,
@@ -52,6 +37,21 @@ function newer(parentObj, data, Constructor, args) {
     } else {
         // Используем функцию конструктор в качестве апдейтера объекта object.
         Constructor.apply(object, args);
+    }
+}
+
+function upsert(object, attrname, data, defaultValue, observable) {
+    // Upsert property ``attrname`` in the ``object``
+    var value = data && data[attrname] || defaultValue;
+    observable = observable || ko.observable;
+    if (typeof object[attrname] !== 'undefined') {
+        if (ko.isSubscribable(object[attrname])) {
+            object[attrname](value);
+        } else {
+            object[attrname] = value;
+        }
+    } else {
+        object[attrname] = observable(value);
     }
 }
 
