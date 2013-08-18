@@ -57,13 +57,11 @@
                 {{ backspace }},{{ space }}
             {% endif %}
 
-        {% else %}
-
-            {% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %}
-                {{ backspace }},{{ space }}
-            {% endif %}
-
         {% endfor %}
+
+        {% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %}
+            {{ backspace }},{{ space }}
+        {% endif %}
 
 
         {% if entry.short_form %}
