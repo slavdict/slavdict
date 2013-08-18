@@ -1,17 +1,17 @@
 try {
 
-function newer(parentObj, data, Constructor, args) {
+function newer(obj, data, Constructor, args) {
     var allItems = {
-            Etymology: parentObj.etymologies,
-            Participle: parentObj.participles,
-            Orthvar: parentObj.orthvars,
-            Collocation: parentObj.collocations,
-            Context: parentObj.contexts,
-            Greq: parentObj.greqs,
+            Etymology: obj && obj.etymologies,
+            Participle: obj && obj.participles,
+            Orthvar: obj && obj.orthvars,
+            Collocation: obj && obj.collocations,
+            Context: obj && obj.contexts,
+            Greq: obj && obj.greqs,
             Example: vM.entryEdit.ui.allExamples,
             Collogroup: vM.entryEdit.ui.allCollogroups,
             Meaning: vM.entryEdit.ui.allMeanings,
-            Entry: [vM.entryEdit.data.entry],
+            Entry: vM.entryEdit.data.entry ? [vM.entryEdit.data.entry]:[],
         }[Constructor],
         id = ko.utils.unwrapObservable(data.id),
         object = Constructor.idMap && Constructor.idMap[id];
@@ -135,16 +135,39 @@ Orthvar.counter = 0;
 
 
 Collocation = function (collogroup, data) {
+    upsert(this, 'civil_equivalent', data, '');
+    upsert(this, 'collocation', data, '');
+    upsert(this, 'collogroup_id', data, collogroup.id);
+    upsert(this, 'id', data, 'collocation' + Collocation.counter, nonObservable);
+    upsert(this, 'order', data, 345);
+    Collocation.counter++;
 };
 Collocation.counter = 0;
 
 
 Context = function (meaning, data) {
+    upsert(this, 'context', data, '');
+    upsert(this, 'id', data, 'context' + Context.counter, nonObservable);
+    upsert(this, 'left_text', data, '');
+    upsert(this, 'meaning_id', data, meaning.id);
+    upsert(this, 'order', data, 345);
+    upsert(this, 'right_text', data, '');
+    Context.counter++;
 };
 Context.counter = 0;
 
 
 Greq = function (example, data) {
+    upsert(this, 'additional_info', data, '');
+    upsert(this, 'corrupted', data, false);
+    upsert(this, 'for_example_id', data, example.id);
+    upsert(this, 'id', data, 'greq' + Greq.counter, nonObservable);
+    upsert(this, 'initial_form', data, '');
+    upsert(this, 'mark', data, '');
+    upsert(this, 'position', data, 0);
+    upsert(this, 'source', data, '');
+    upsert(this, 'unitext', data, '');
+    Greq.counter++;
 };
 Greq.counter = 0;
 
@@ -152,7 +175,7 @@ Greq.counter = 0;
 Example = function (meaning, entry, collogroup, data) {
     upsert(this, 'additional_info', data, '');
     upsert(this, 'address_text', data, '');
-    upsert(this, 'collogroup_id', data, collogroup && collogroup.id || null);
+    upsert(this, 'collogroup_id', data, collogroup ? collogroup.id : null);
     upsert(this, 'entry_id', data, entry.id());
     upsert(this, 'example', data, '');
     upsert(this, 'greek_eq_status', data, '');
@@ -161,170 +184,174 @@ Example = function (meaning, entry, collogroup, data) {
     upsert(this, 'id', data, 'example' + Example.counter);
     upsert(this, 'meaning_id', data, meaning.id);
     upsert(this, 'order', data, 345);
-    Example.counter++;
-    var allExamples = vM.entryEdit.ui.allExamples;
-    if (allExamples.indexOf(this) === -1) {
-        allExamples.push(this);
+    if (vM.entryEdit.ui.allExamples.indexOf(this) === -1) {
+        Example.counter++;
+        vM.entryEdit.ui.allExamples.push(this);
     }
 };
 Example.counter = 0;
 
 
-Collogroup = function (options, containerType, container) {
-    var self = this;
-    this.collocations = ko.mapping.fromJS(
-            { collocations: options.data.collocations || [] },
-            mapping)['collocations'];
+Collogroup = function (containerType, container, data) {
+    // containerType := 'entry' | 'meaning'
+    var defaultBaseEntryId = (containerType === 'entry'? container.id():null),
+        defaultBaseMeaningId = (containerType === 'meaning'? container.id:null),
+        defaultId = 'collogroup' + Collogroup.counter,
+        self = this;
 
-    if (typeof options.data !== 'undefined') {
-        this.base_entry_id = ko.observable(options.data.base_entry_id);
-        this.base_meaning_id = ko.observable(options.data.base_meaning_id);
-        this.id = options.data.id;
-        this.order = ko.observable(options.data.order);
-    } else {
-        if (typeof container === 'undefined' ||
-            typeof containerType === 'undefined') {
+    upsertArray(this, 'collocations', data, Collocation, [this]);
+    upsert(this, 'base_entry_id', data, defaultBaseEntryId);
+    upsert(this, 'base_meaning_id', data, defaultBaseMeaningId);
+    upsert(this, 'id', data, defaultId, nonObservable);
+    upsert(this, 'order', data, 345);
+    upsertArray(this, 'meanings', data, Meaning, ['collogroup', this, null]);
 
-            throw new Error('Конструктору Collogroup требуется передать ' +
-                            'объект Entry или Meaning, указав какой ' +
-                            'именно. Это в том случае, если в options ' +
-                            'нет достаточного количества данных.');
-        }
-        if (containerType === 'entry') {
-            this.base_entry_id = ko.observable(container.id);
-            this.base_meaning_id = ko.observable(null);
-        }
-        if (containerType === 'meaning') {
-            this.base_entry_id = ko.observable(null);
-            this.base_meaning_id = ko.observable(container.id);
-        }
-        this.id = 'collogroup' + Collogroup.counter;
-        this.order = ko.observable(345); // Порядковый номер по умолчанию.
-    }
+    this.isExpanded = this.isExpanded || ko.observable(false);
 
-    this.isExpanded = ko.observable(false);
-    this.meanings = ko.mapping.fromJS(
-            { meanings: options.data.meanings || [] },
-            mapping)['meanings'];
-    this.meanings.subscribe(function (changedArray) {
-        var i = 1;
-        ko.utils.arrayForEach(changedArray, function (item) {
-            item.parent_meaning_id(null);
-            item.entry_container_id(null);
-            item.collogroup_container_id(self.id);
-            if (! item._destroy) {
-                item.order(i);
-                i += 1;
-            }
+    if (vM.entryEdit.ui.allCollogroups.indexOf(this) === -1) {
+        this.meanings.subscribe(function (changedArray) {
+            var i = 1;
+            ko.utils.arrayForEach(changedArray, function (item) {
+                item.parent_meaning_id(null);
+                item.entry_container_id(null);
+                item.collogroup_container_id(self.id);
+                if (! item._destroy) {
+                    item.order(i);
+                    i += 1;
+                }
+            });
         });
-    });
-    this.meanings.notifySubscribers(this.meanings());
+        this.meanings.notifySubscribers(this.meanings());
 
-    Collogroup.counter++;
-    vM.entryEdit.ui.allCollogroups.push(this);
+        Collogroup.counter++;
+        vM.entryEdit.ui.allCollogroups.push(this);
+    }
 };
 Collogroup.counter = 0;
 
 
-Meaning = function (options, containerType, container, parentMeaning) {
-    var data = options.data,
-        self = this;
-    this.meaning = ko.observable(data && data.meaning || '');
-    this.gloss = ko.observable(data && data.gloss || '');
-    this.metaphorical = ko.observable(data && data.metaphorical || false);
-    this.additional_info =
-            ko.observable(data && data.additional_info || '')
-    this.substantivus = ko.observable(data && data.substantivus || false);
-    this.substantivus_type =
-            ko.observable(data && data.substantivus_type || '');
-    this.hidden = ko.observable(data && data.hidden || false);
-    this.contexts = ko.mapping.fromJS(
-            { contexts: data && data.contexts || []},
-            mapping)['contexts'];
+Meaning = function () {
+    var data = {},
+        containerType = '',
+        container = null,
+        parentMeaning = null;
 
-    if (typeof data !== 'undefined') {
-        this.entry_container_id =
-                ko.observable(data.entry_container_id || null);
-        this.collogroup_container_id =
-                ko.observable(data.collogroup_container_id || null);
-        this.parent_meaning_id =
-                ko.observable(data.parent_meaning_id || null);
-        this.id = data.id;
-        this.order = ko.observable(data.order);
-    } else {
-        if (typeof container === 'undefined' ||
-            typeof containerType === 'undefined') {
-
-            throw new Error('Конструктору Meaning требуется передать ' +
-                            'объект Entry или Collogroup, указав какой ' +
-                            'именно. Это в том случае, если в options ' +
-                            'нет достаточного количества данных.');
-        }
-        if (containerType === 'entry') {
-            this.entry_container_id = ko.observable(container.id);
-            this.collogroup_container_id = ko.observable(null);
-        }
-        if (containerType === 'collogroup') {
-            this.entry_container_id = ko.observable(null);
-            this.collogroup_container_id = ko.observable(container.id);
-        }
-        this.parent_meaning_id = ko.observable(parentMeaning.id || null);
-        this.id = 'meaning' + Meaning.counter;
-        this.order = ko.observable(345); // Порядковый номер по умолчанию.
+    switch (arguments.length) {
+    case 1:
+        data = arguments[0];
+        break;
+    case 3:
+        parentMeaning = arguments[2];
+        // проваливаемся ниже, обрабатываем первые два аргумента.
+    case 2:
+        containerType = arguments[0];
+        container = arguments[1];
+        break;
+    default:
+        throw new Error('Неправильное количество аргументов для Meaning');
     }
 
-    this.isExpanded = ko.observable(false);
-    this.childMeanings = ko.observableArray([]);
-    this.childMeanings.subscribe(function (changedArray) {
-        var i = 1;
-        ko.utils.arrayForEach(changedArray, function (item) {
-            item.parent_meaning_id(self.id);
-            item.entry_container_id(Meaning.idMap[self.id]
-                                    .entry_container_id());
-            item.collogroup_container_id(Meaning.idMap[self.id]
-                                         .collogroup_container_id());
-            if (! item._destroy) {
-                item.order(i);
-                i += 1;
-            }
-        });
-    });
-    this.selfExamples = ko.observableArray([]);
-    this.selfExamples.subscribe(function (changedArray) {
-        var i = 1;
-        ko.utils.arrayForEach(changedArray, function (item) {
-            item.meaning_id(self.id);
-            item.collogroup_id(self.collogroup_container_id());
-            if (! item._destroy) {
-                item.order(i);
-                i += 1;
-            }
-        });
-    });
+    var d4ltEntryCntrId = (containerType === 'entry'? container.id():null),
+        d4ltCgCntrId = (containerType === 'collogroup'? container.id:null),
+        self = this;
 
-    this.collogroups = ko.mapping.fromJS(
-            { collogroups: data && data.collogroups || [] },
-            mapping)['collogroups'];
-    this.collogroups.subscribe(function (changedArray) {
-        var i = 1;
-        ko.utils.arrayForEach(changedArray, function (item) {
-            if (! item._destroy) {
-                item.order(i);
-                i += 1;
-            }
-        });
-    });
-    this.collogroups.notifySubscribers(this.collogroups());
+    upsert(this, 'meaning', data, '');
+    upsert(this, 'gloss', data, '');
+    upsert(this, 'metaphorical', data, false);
+    upsert(this, 'additional_info', data, '');
+    upsert(this, 'substantivus', data, false);
+    upsert(this, 'substantivus_type', data, '');
+    upsert(this, 'hidden', data, false);
+    upsertArray(this, 'contexts', data, Context, [this]);
+    upsert(this, 'entry_container_id', data, d4ltEntryCntrId);
+    upsert(this, 'collogroup_container_id', data, d4ltCgCntrId);
+    upsert(this, 'parent_meaning_id', data, parentMeaning.id || null);
+    upsert(this, 'id', data, 'meaning' + Meaning.counter, nonObservable);
+    upsert(this, 'order', data, 345);
+    upsertArray(this, 'collogroups', data, Collogroup, ['meaning', this]);
 
-    Meaning.counter++;
-    Meaning.idMap[this.id] = this;
-    vM.entryEdit.ui.allMeanings.push(this);
+    this.isExpanded = this.isExpanded || ko.observable(false);
+    this.childMeanings = this.childMeanings || ko.observableArray([]);
+    this.selfExamples = this.selfExamples || ko.observableArray([]);
+
+    if () {
+        this.childMeanings.subscribe(function (changedArray) {
+            var i = 1;
+            ko.utils.arrayForEach(changedArray, function (item) {
+                item.parent_meaning_id(self.id);
+                item.entry_container_id(Meaning.idMap[self.id]
+                                        .entry_container_id());
+                item.collogroup_container_id(Meaning.idMap[self.id]
+                                             .collogroup_container_id());
+                if (! item._destroy) {
+                    item.order(i);
+                    i += 1;
+                }
+            });
+        });
+
+        this.selfExamples.subscribe(function (changedArray) {
+            var i = 1;
+            ko.utils.arrayForEach(changedArray, function (item) {
+                item.meaning_id(self.id);
+                item.collogroup_id(self.collogroup_container_id());
+                if (! item._destroy) {
+                    item.order(i);
+                    i += 1;
+                }
+            });
+        });
+
+        this.collogroups.subscribe(function (changedArray) {
+            var i = 1;
+            ko.utils.arrayForEach(changedArray, function (item) {
+                if (! item._destroy) {
+                    item.order(i);
+                    i += 1;
+                }
+            });
+        });
+        this.collogroups.notifySubscribers(this.collogroups());
+
+        Meaning.counter++;
+        Meaning.idMap[this.id] = this;
+        vM.entryEdit.ui.allMeanings.push(this);
+    }
 };
 Meaning.counter = 0;
 Meaning.idMap = {};
 
 
-Entry = function () {
+Entry = function (data) {
+    upsert(this, 'additional_info', data, '');
+    upsert(this, 'antconc_query', data, '');
+    upsert(this, 'canonical_name', data, '');
+    upsert(this, 'civil_equivalent', data, '');
+    upsert(this, 'derivation_entry_id', data, null);
+    upsert(this, 'duplicate', data, false);
+    upsert(this, 'gender', data, '');
+    upsert(this, 'genitive', data, '');
+    upsert(this, 'good', data, 'b' /* статья не подходит */);
+    upsert(this, 'hidden', data, false);
+    upsert(this, 'homonym_gloss', data, '');
+    upsert(this, 'homonym_order', data, null);
+    upsert(this, 'id', data, null);
+    upsert(this, 'nom_sg', data, '');
+    upsert(this, 'onym', data, '');
+    upsert(this, 'part_of_speech', data, '');
+    upsert(this, 'participle_type', data, '');
+    upsert(this, 'possessive', data, false);
+    upsert(this, 'questionable_headword', data, false);
+    upsert(this, 'reconstructed_headword', data, false);
+    upsert(this, 'sg1', data, '');
+    upsert(this, 'sg2', data, '');
+    upsert(this, 'short_form', data, '');
+    upsert(this, 'status', data, 'c' /* Статья создана */);
+    upsert(this, 'tantum', data, '');
+    upsert(this, 'uninflected', data, false);
+    upsertArray(this, 'participles', data, Participle, [this]);
+    upsertArray(this, 'orthvars', data, Orthvar, [this]);
+    upsertArray(this, 'author_ids', data, Number, []);
 };
 
 
@@ -334,6 +361,7 @@ Meaning.prototype.expandOrCollapse = expandOrCollapse;
 
 
 vM.entryEdit = {
+    data: {},
     ui: {
         entry: {},
         choices: vM.dataToInitialize.choices,
@@ -344,12 +372,25 @@ vM.entryEdit = {
 
 // Загрузка данных в модель пользовательского интерфейса и её инициализация
 function viewModelInit(data) {
+    var firstRun = (vM.entryEdit.data.entry ? false:true);
 
+    vM.entryEdit.ui.allEtymologies = vM.entryEdit.ui.allEtymologies || [];
     vM.entryEdit.ui.allMeanings = vM.entryEdit.ui.allMeanings || [];
     vM.entryEdit.ui.allCollogroups = vM.entryEdit.ui.allCollogroups || [];
     vM.entryEdit.ui.allExamples = vM.entryEdit.ui.allExamples || [];
 
-    vM.entryEdit.data = ko.mapping.fromJS(data, mapping);
+    if (firstRun) {
+        vM.entryEdit.data.entry = new Entry(data.entry);
+        data.etymologies.forEach(funtion (item) {
+            vM.entryEdit.ui.allEtymologies.push(new Etymology(item));
+        });
+        data.meanings.forEach(funtion (item) {
+            vM.entryEdit.ui.allMeanings.push(new Meaning(item));
+        });
+    } else {
+        Entry.call(vM.entryEdit.data.entry, data.entry);
+    }
+
 
     var viewModel = vM.entryEdit,
         dataModel = viewModel.data,
@@ -358,33 +399,37 @@ function viewModelInit(data) {
         uiEntry = uiModel.entry;
 
 
-    dataEntry.orthvars.subscribe(function (changedArray) {
-        var i = 1;
-        ko.utils.arrayForEach(changedArray, function (item) {
-            if (! item._destroy) {
-                item.order(i);
-                i += 1;
-            }
+    if (firstRun) {
+
+        dataEntry.orthvars.subscribe(function (changedArray) {
+            var i = 1;
+            ko.utils.arrayForEach(changedArray, function (item) {
+                if (! item._destroy) {
+                    item.order(i);
+                    i += 1;
+                }
+            });
         });
-    });
-    dataEntry.orthvars.notifySubscribers(dataEntry.orthvars());
+        dataEntry.orthvars.notifySubscribers(dataEntry.orthvars());
 
-    uiEntry.headword = ko.computed(function () {
-        var orthvars = dataEntry.orthvars(),
-            isNotDestroyed = function (item) { return ! item._destroy; };
-        return ko.utils.arrayFilter(orthvars, isNotDestroyed)[0].idem();
-    });
+        uiEntry.headword = ko.computed(function () {
+            var orthvars = dataEntry.orthvars(),
+                isNotDestroyed = function (item) { return ! item._destroy; };
+            return ko.utils.arrayFilter(orthvars, isNotDestroyed)[0].idem();
+        });
 
-    uiEntry.part_of_speech = ko.computed(function () {
-        var x = this.data.entry.part_of_speech(),
-            y = this.ui.labels.part_of_speech;
-        if (x in y) {
-            return y[x];
-        } else {
-            console.log('Часть речи "', x, '" не найдена среди ', y);
-            return '';
-        }
-    }, viewModel);
+        uiEntry.part_of_speech = ko.computed(function () {
+            var x = this.data.entry.part_of_speech(),
+                y = this.ui.labels.part_of_speech;
+            if (x in y) {
+                return y[x];
+            } else {
+                console.log('Часть речи "', x, '" не найдена среди ', y);
+                return '';
+            }
+        }, viewModel);
+
+    }
 
     uiEntry.meanings = (function () {
         var allMeanings = dataModel.meanings(),
@@ -461,7 +506,7 @@ uiModel.save = function () {
 };
 
 uiModel.addMeaning = function (meanings, containerType, container, containerMeaning) {
-    var meaning = new Meaning({}, containerType, container, containerMeaning);
+    var meaning = new Meaning(containerType, container, containerMeaning);
     meanings.push(meaning);
     uiModel.meaningBeingEdited(meaning);
 };
