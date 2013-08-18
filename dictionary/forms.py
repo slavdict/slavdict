@@ -54,6 +54,8 @@ class FilterEntriesForm(forms.Form):
             required=False)
     duplicate = forms.BooleanField(label=u'Статьи-дубликаты',
             required=False)
+    variants = forms.BooleanField(label=u'С вар-ми написания',  # C вариантами написания
+            required=False)
     collocations = forms.BooleanField(label=u'Со словосочетаниями',
             required=False)
     meaningcontexts = forms.BooleanField(label=u'С контекстами значения',
@@ -76,6 +78,7 @@ class FilterEntriesForm(forms.Form):
         'homonym': False,
         'duplicate': False,
         'collocations': False,
+        'variants': False,
         'meaningcontexts': False,
     }
 
