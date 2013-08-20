@@ -1,11 +1,17 @@
-function snapshotObservable(value) {
-    return ko.observable(value).publishOn('entry change');
+var topic = 'entry change';
+
+function snapshotObservable(observable) {
+    observable = observable || ko.observable;
+    return function () {
+        return observable.apply(null, arguments).publishOn(topic);
+    }
 }
+
 
 function upsert(object, attrname, data, defaultValue, observable) {
     // Upsert property ``attrname`` in the ``object``
     var value = data && data[attrname] || defaultValue;
-    observable = observable || snapshotObservable;
+    observable = observable || snapshotObservable();
     if (typeof object[attrname] !== 'undefined') {
         if (ko.isSubscribable(object[attrname])) {
             object[attrname](value);
