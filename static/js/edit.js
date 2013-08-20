@@ -18,12 +18,35 @@ function upsert(object, attrname, data, defaultValue, observable) {
 }
 
 // Конструкторы-реставраторы
-function Etymology(entry, collocation, etymonTo, data) {
+function Etymology() {
+    /* Etymology(container[, etymonTo])
+     * Etymology(data)
+     */
+    var data = {},
+        collocation_id = null,
+        entry_id = null,
+        etymonTo_id = null;
+
+    if (arguments[0] instanceof Entry) {
+        entry_id = arguments[0].id();
+    } else if (arguments[0] instanceof Collogroup) {
+        // FIX: Впоследствии Collogroup должно исчезнуть
+        // и быть заменено на Collocation. Словосочетания должны также,
+        // как и лексемы просто иметь разные варианты написания.
+        collocation_id = arguments[0].id();
+    } else {
+        data = arguments[0];
+    }
+
+    if (arguments.length > 1 && arguments[1]) {
+        etymonTo_id = arguments[1].id();
+    }
+
     upsert(this, 'additional_info', data, '');
-    upsert(this, 'collocation_id', data, collocation.id());
+    upsert(this, 'collocation_id', data, collocation_id);
     upsert(this, 'corrupted', data, false);
-    upsert(this, 'entry_id', data, entry.id());
-    upsert(this, 'etymon_to_id', data, etymonTo.id());
+    upsert(this, 'entry_id', data, entry_id);
+    upsert(this, 'etymon_to_id', data, etymonTo_id);
     upsert(this, 'gloss', data, '');
     upsert(this, 'id', data, 'etymon' + Etymology.counter);
     upsert(this, 'language', data, 'a' /* греческий */);
