@@ -104,10 +104,19 @@ function Orthvar() {
 }
 Orthvar.counter = 0;
 
-function Collocation(collogroup, data) {
+function Collocation() {
+    /* Collocation(collogroup)
+     * Collocation(data)
+     */
+    var data = {},
+        collogroup_id = null;
+
+    if (arguments[0] instanceof Collogroup) collogroup_id = arguments[0].id();
+    else data = arguments[0];
+
     upsert(this, 'civil_equivalent', data, '');
     upsert(this, 'collocation', data, '');
-    upsert(this, 'collogroup_id', data, collogroup.id());
+    upsert(this, 'collogroup_id', data, collogroup_id);
     upsert(this, 'id', data, 'collocation' + Collocation.counter);
     upsert(this, 'order', data, 345);
     Collocation.counter++;
