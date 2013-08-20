@@ -7,7 +7,6 @@ function snapshotObservable(observable) {
     }
 }
 
-
 function upsert(object, attrname, data, defaultValue, observable) {
     // Upsert property ``attrname`` in the ``object``
     var value = data && data[attrname] || defaultValue;
@@ -20,6 +19,58 @@ function upsert(object, attrname, data, defaultValue, observable) {
         }
     } else {
         object[attrname] = observable(value);
+    }
+}
+
+function crudArrayItems(voodoo, spec, Constructor) {
+    // Create, update or delete voodoo array items
+    // according to spec.
+
+    if (!Constructor) {
+        var args = [0, voodoo().length].concat(spec);
+        Array.prototype.splice.apply(voodoo, args);
+        return;
+    }
+
+    var all = Constructor.all,
+        bag = Constructor.bag,
+        specItem, voodooItem,
+        id, otherId,
+        object;
+
+    for (var i = 0, j = spec.length; i < j; i++) {
+        specItem = spec[i];
+        id = specItem.id;
+        if (all[id]) {
+            Constructor.call(all[id], specItem);
+            object = all[id];
+        } else {
+            object = new Constructor(specItem);
+        }
+
+        bag.push(object);
+        bag.idMap[id] = object;
+
+        voodooItem = voodoo()[i];
+        otherId = voodooItem && voodooItem.id();
+        if (otherId !== id) {
+            voodoo.splice(i, 1, object);
+        }
+    }
+    voodoo.splice(i);
+}
+
+function upsertArray(object, attrname, Constructor, data, observableArray) {
+    // Upsert array property ``attrname`` in the ``object``
+
+    var spec = data[attrname] || [];
+    observableArray = observableArray || snapshotObservable(ko.observableArray);
+
+    if (!object.hasOwnProperty(attrname)) {
+        object[attrname] = observableArray();
+        upsertArray(object, attrname, Constructor, data, observableArray);
+    } else {
+        crudArrayItems(object[attrname], spec, Constructor);
     }
 }
 
@@ -197,6 +248,7 @@ function Example() {
     upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'example', data, '');
     upsert(this, 'greek_eq_status', data, '');
+    upsertArray(this, 'greqs', Greq, data);
     upsert(this, 'hidden', data, false);
     upsert(this, 'id', data, 'example' + Example.counter);
     upsert(this, 'meaning_id', data, meaning_id);
