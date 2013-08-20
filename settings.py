@@ -190,6 +190,7 @@ JSLIBS = {
     'knockoutPostbox': {
         'debug': 'https://rawgithub.com/rniemeyer/knockout-postbox/master/build/knockout-postbox.js',
         'Xmin': 'https://raw.github.com/rniemeyer/knockout-postbox/master/build/knockout-postbox.min.js',
+    },
 }
 
 _postfix = 'Local'
