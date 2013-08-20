@@ -62,3 +62,38 @@ function Orthvar(entry, data) {
     Orthvar.counter++;
 }
 Orthvar.counter = 0;
+
+function Collocation(collogroup, data) {
+    upsert(this, 'civil_equivalent', data, '');
+    upsert(this, 'collocation', data, '');
+    upsert(this, 'collogroup_id', data, collogroup.id());
+    upsert(this, 'id', data, 'collocation' + Collocation.counter);
+    upsert(this, 'order', data, 345);
+    Collocation.counter++;
+}
+Collocation.counter = 0;
+
+function Context(meaning, data) {
+    upsert(this, 'context', data, '');
+    upsert(this, 'id', data, 'context' + Context.counter);
+    upsert(this, 'left_text', data, '');
+    upsert(this, 'meaning_id', data, meaning.id());
+    upsert(this, 'order', data, 345);
+    upsert(this, 'right_text', data, '');
+    Context.counter++;
+}
+Context.counter = 0;
+
+function Greq(example, data) {
+    upsert(this, 'additional_info', data, '');
+    upsert(this, 'corrupted', data, false);
+    upsert(this, 'for_example_id', data, example.id());
+    upsert(this, 'id', data, 'greq' + Greq.counter);
+    upsert(this, 'initial_form', data, '');
+    upsert(this, 'mark', data, '');
+    upsert(this, 'position', data, 0);
+    upsert(this, 'source', data, '');
+    upsert(this, 'unitext', data, '');
+    Greq.counter++;
+}
+Greq.counter = 0;
