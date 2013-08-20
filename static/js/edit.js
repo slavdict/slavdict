@@ -143,10 +143,19 @@ function Context() {
 }
 Context.counter = 0;
 
-function Greq(example, data) {
+function Greq() {
+    /* Greq(example)
+     * Greq(data)
+     */
+    var data = {},
+        example_id = null;
+
+    if (arguments[0] instanceof Example) example_id = arguments[0].id();
+    else data = arguments[0];
+
     upsert(this, 'additional_info', data, '');
     upsert(this, 'corrupted', data, false);
-    upsert(this, 'for_example_id', data, example.id());
+    upsert(this, 'for_example_id', data, example_id);
     upsert(this, 'id', data, 'greq' + Greq.counter);
     upsert(this, 'initial_form', data, '');
     upsert(this, 'mark', data, '');
