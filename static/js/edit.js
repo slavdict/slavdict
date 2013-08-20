@@ -54,4 +54,11 @@ function Participle(entry, data) {
 }
 Participle.counter = 0;
 
-
+function Orthvar(entry, data) {
+    upsert(this, 'idem', data, '');
+    upsert(this, 'order', data, 345);
+    upsert(this, 'entry_id', data, entry.id());
+    upsert(this, 'id', data, 'orthvar' + Orthvar.counter);
+    Orthvar.counter++;
+}
+Orthvar.counter = 0;
