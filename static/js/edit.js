@@ -123,11 +123,20 @@ function Collocation() {
 }
 Collocation.counter = 0;
 
-function Context(meaning, data) {
+function Context() {
+    /* Context(meaning)
+     * Context(data)
+     */
+    var data = {},
+        meaning_id = null;
+
+    if (arguments[0] instanceof Meaning) meaning_id = arguments[0].id();
+    else data = arguments[0];
+
     upsert(this, 'context', data, '');
     upsert(this, 'id', data, 'context' + Context.counter);
     upsert(this, 'left_text', data, '');
-    upsert(this, 'meaning_id', data, meaning.id());
+    upsert(this, 'meaning_id', data, meaning_id);
     upsert(this, 'order', data, 345);
     upsert(this, 'right_text', data, '');
     Context.counter++;
