@@ -250,6 +250,35 @@ function Example() {
     Example.all.append(this);
 }
 
+function Collogroup() {
+    /* Collogroup(container)
+     * Collogroup(data)
+     */
+    var data = {},
+        entry_id = null,
+        meaning_id = null;
+
+    if (arguments[0] instanceof Entry) {
+        entry_id = arguments[0].id();
+    } else if (arguments[0] instanceof Meaning) {
+        meaning_id = arguments[0].id();
+    } else {
+        data = arguments[0];
+    }
+
+    upsertArray(this, 'collocations', Collocation, data);
+    upsert(this, 'base_entry_id', data, entry_id);
+    upsert(this, 'base_meaning_id', data, meaning_id);
+    upsert(this, 'id', data, 'collogroup' + Collogroup.all.length);
+    upsert(this, 'order', data, 345);
+    upsertArray(this, 'meanings', Meaning, data);
+
+    this.isExpanded = this.isExpanded || ko.observable(false);
+
+    Collogroup.all.append(this);
+}
+
+
 (function () {
     var i, Constructor;
 
@@ -261,6 +290,7 @@ function Example() {
         if (this.doesNtContain(item)) {
             this.push(item);
             this.idMap[item.id()] = item;
+            tune(item);
         }
     }
 
@@ -273,6 +303,29 @@ function Example() {
                             ' обязан присутствовать в массиве.');
         }
         delete this.idMap[item.id()];
+    }
+
+    function tune(item) {
+        var tuner = {
+
+            Collogroup: function (cg) {
+                cg.meanings.subscribe(function (changedArray) {
+                    var i = 1;
+                    ko.utils.arrayForEach(changedArray, function (item) {
+                        item.parent_meaning_id(null);
+                        item.entry_container_id(null);
+                        item.collogroup_container_id(cg.id());
+                        if (! item._destroy) {
+                            item.order(i);
+                            i += 1;
+                        }
+                    });
+                });
+                cg.meanings.notifySubscribers(cg.meanings());
+            }
+
+        }[item.prototype.constructor];
+        tuner && tuner(item);
     }
 
     for (i = constructors.length; i--;) {
