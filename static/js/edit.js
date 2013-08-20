@@ -67,11 +67,20 @@ function Etymology() {
 Etymology.counter = 0;
 Etymology.idMap = {};
 
-function Participle(entry, data) {
+function Participle() {
+    /* Participle(entry)
+     * Participle(data)
+     */
+    var data = {},
+        entry_id = null;
+
+    if (arguments[0] instanceof Entry) entry_id = arguments[0].id();
+    else data = arguments[0];
+
     upsert(this, 'idem', data, '');
     upsert(this, 'tp', data, '');
     upsert(this, 'order', data, 345);
-    upsert(this, 'entry_id', data, entry.id());
+    upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'id', data, 'participle' + Participle.counter);
     Participle.counter++;
 }
