@@ -86,10 +86,19 @@ function Participle() {
 }
 Participle.counter = 0;
 
-function Orthvar(entry, data) {
+function Orthvar() {
+    /* Orthvar(entry)
+     * Orthvar(data)
+     */
+    var data = {},
+        entry_id = null;
+
+    if (arguments[0] instanceof Entry) entry_id = arguments[0].id();
+    else data = arguments[0];
+
     upsert(this, 'idem', data, '');
     upsert(this, 'order', data, 345);
-    upsert(this, 'entry_id', data, entry.id());
+    upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'id', data, 'orthvar' + Orthvar.counter);
     Orthvar.counter++;
 }
