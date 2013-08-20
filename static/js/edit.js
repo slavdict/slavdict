@@ -43,3 +43,15 @@ function Etymology(entry, collocation, etymonTo, data) {
 }
 Etymology.counter = 0;
 Etymology.idMap = {};
+
+function Participle(entry, data) {
+    upsert(this, 'idem', data, '');
+    upsert(this, 'tp', data, '');
+    upsert(this, 'order', data, 345);
+    upsert(this, 'entry_id', data, entry.id());
+    upsert(this, 'id', data, 'participle' + Participle.counter);
+    Participle.counter++;
+}
+Participle.counter = 0;
+
+
