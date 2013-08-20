@@ -323,6 +323,38 @@ function Meaning() {
     Meaning.all.append(this);
 }
 
+function Entry(data) {
+    upsert(this, 'additional_info', data, '');
+    upsert(this, 'antconc_query', data, '');
+    upsert(this, 'canonical_name', data, '');
+    upsert(this, 'civil_equivalent', data, '');
+    upsert(this, 'derivation_entry_id', data, null);
+    upsert(this, 'duplicate', data, false);
+    upsert(this, 'gender', data, '');
+    upsert(this, 'genitive', data, '');
+    upsert(this, 'good', data, 'b' /* статья не подходит */);
+    upsert(this, 'hidden', data, false);
+    upsert(this, 'homonym_gloss', data, '');
+    upsert(this, 'homonym_order', data, null);
+    upsert(this, 'id', data, null);
+    upsert(this, 'nom_sg', data, '');
+    upsert(this, 'onym', data, '');
+    upsert(this, 'part_of_speech', data, '');
+    upsert(this, 'participle_type', data, '');
+    upsert(this, 'possessive', data, false);
+    upsert(this, 'questionable_headword', data, false);
+    upsert(this, 'reconstructed_headword', data, false);
+    upsert(this, 'sg1', data, '');
+    upsert(this, 'sg2', data, '');
+    upsert(this, 'short_form', data, '');
+    upsert(this, 'status', data, 'c' /* Статья создана */);
+    upsert(this, 'tantum', data, '');
+    upsert(this, 'uninflected', data, false);
+    upsertArray(this, 'participles', Participle, data);
+    upsertArray(this, 'orthvars', Orthvar, data);
+    upsertArray(this, 'author_ids', undefined, data);
+}
+
 
 (function () {
     var i, Constructor;
