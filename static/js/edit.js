@@ -278,6 +278,51 @@ function Collogroup() {
     Collogroup.all.append(this);
 }
 
+function Meaning() {
+    /* Meaning(container[, parentMeaning])
+     * Meaning(data)
+     */
+    var data = {},
+        entry_id = null,
+        collogroup_id = null,
+        meaning_id = null;
+
+    if (arguments[0] instanceof Entry) {
+        entry_id = arguments[0].id();
+    } else if (arguments[0] instanceof Collogroup) {
+        collogroup_id = arguments[0].id();
+    } else {
+        data = arguments[0];
+    }
+
+    if (arguments.length > 1 && !data) {
+        meaning_id = arguments[1];
+    } else {
+        throw new Error('Неправильный состав аргументов для Meaning.');
+    }
+
+    upsert(this, 'meaning', data, '');
+    upsert(this, 'gloss', data, '');
+    upsert(this, 'metaphorical', data, false);
+    upsert(this, 'additional_info', data, '');
+    upsert(this, 'substantivus', data, false);
+    upsert(this, 'substantivus_type', data, '');
+    upsert(this, 'hidden', data, false);
+    upsertArray(this, 'contexts', Context, data);
+    upsert(this, 'entry_container_id', data, entry_id);
+    upsert(this, 'collogroup_container_id', data, collogroup_id);
+    upsert(this, 'parent_meaning_id', data, meaning_id);
+    upsert(this, 'id', data, 'meaning' + Meaning.all.length);
+    upsert(this, 'order', data, 345);
+    upsertArray(this, 'collogroups', Collogroup, data);
+    upsertArray(this, 'meanings', Meaning, data);
+    upsertArray(this, 'examples', Example, data);
+
+    this.isExpanded = this.isExpanded || ko.observable(false);
+
+    Meaning.all.append(this);
+}
+
 
 (function () {
     var i, Constructor;
@@ -322,6 +367,44 @@ function Collogroup() {
                     });
                 });
                 cg.meanings.notifySubscribers(cg.meanings());
+            },
+
+            Meaning: function(m) {
+                m.meanings.subscribe(function (changedArray) {
+                    var i = 1;
+                    ko.utils.arrayForEach(changedArray, function (item) {
+                        item.parent_meaning_id(m.id());
+                        item.entry_container_id(m.entry_container_id());
+                        item.collogroup_container_id(m.collogroup_container_id());
+                        if (! item._destroy) {
+                            item.order(i);
+                            i += 1;
+                        }
+                    });
+                });
+
+                m.examples.subscribe(function (changedArray) {
+                    var i = 1;
+                    ko.utils.arrayForEach(changedArray, function (item) {
+                        item.meaning_id(m.id());
+                        item.collogroup_id(m.collogroup_container_id());
+                        if (! item._destroy) {
+                            item.order(i);
+                            i += 1;
+                        }
+                    });
+                });
+
+                m.collogroups.subscribe(function (changedArray) {
+                    var i = 1;
+                    ko.utils.arrayForEach(changedArray, function (item) {
+                        if (! item._destroy) {
+                            item.order(i);
+                            i += 1;
+                        }
+                    });
+                });
+                m.collogroups.notifySubscribers(m.collogroups());
             }
 
         }[item.prototype.constructor];
