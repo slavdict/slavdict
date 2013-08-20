@@ -165,3 +165,42 @@ function Greq() {
     Greq.counter++;
 }
 Greq.counter = 0;
+
+function Example() {
+    /* Example(meaning, entry[, collogroup])
+     * Example(data)
+     */
+    var data = {},
+        meaning_id = null,
+        entry_id = null,
+        collogroup_id = null;
+
+    if (arguments[0] instanceof Meaning) {
+        meaning_id = arguments[0].id();
+        entry_id = arguments[1].id();
+        if (arguments.length > 2) {
+            collogroup_id = arguments[2].id();
+        }
+    } else {
+        data = arguments[0];
+    }
+
+    upsert(this, 'additional_info', data, '');
+    upsert(this, 'address_text', data, '');
+    upsert(this, 'collogroup_id', data, collogroup_id);
+    upsert(this, 'entry_id', data, entry_id);
+    upsert(this, 'example', data, '');
+    upsert(this, 'greek_eq_status', data, '');
+    upsert(this, 'hidden', data, false);
+    upsert(this, 'id', data, 'example' + Example.counter);
+    upsert(this, 'meaning_id', data, meaning_id);
+    upsert(this, 'order', data, 345);
+    if (!Example.idMap.hasOwnProperty(this.id())) {
+        Example.counter++;
+        Example.idMap[this.id()] = this;
+        Example.all.push(this);
+    }
+}
+Example.counter = 0;
+Example.idMap = {};
+Example.all = [];
