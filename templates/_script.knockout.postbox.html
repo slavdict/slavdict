@@ -1,0 +1,11 @@
+{% if debug %}
+
+    <script type="text/javascript"
+            src="{{ JSLIBS.knockoutPostbox.debugLocal }}"></script>
+
+{% else %}
+
+    <script type="text/javascript"
+            src="{{ JSLIBS.knockoutPostbox.minLocal }}"></script>
+
+{% endif %}

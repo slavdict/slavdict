@@ -187,6 +187,9 @@ JSLIBS = {
         # Ключ ``Xmin`` вместо ``min`` использован специально, чтобы этот адрес
         # не отдавался в продакшн.
     },
+    'knockoutPostbox': {
+        'debug': 'https://rawgithub.com/rniemeyer/knockout-postbox/master/build/knockout-postbox.js',
+        'Xmin': 'https://raw.github.com/rniemeyer/knockout-postbox/master/build/knockout-postbox.min.js',
 }
 
 _postfix = 'Local'
