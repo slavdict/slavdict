@@ -1,4 +1,8 @@
-var topic = 'entry change';
+var topic = 'entry change',
+    constructors = [Etymology, Participle, Orthvar,
+                    Collocation, Context, Greq,
+                    Example, Collogroup, Meaning,
+                    Entry];
 
 function snapshotObservable(observable) {
     observable = observable || ko.observable;
@@ -105,7 +109,7 @@ function Etymology() {
     upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'etymon_to_id', data, etymonTo_id);
     upsert(this, 'gloss', data, '');
-    upsert(this, 'id', data, 'etymon' + Etymology.counter);
+    upsert(this, 'id', data, 'etymon' + Etymology.all.length);
     upsert(this, 'language', data, 'a' /* греческий */);
     upsert(this, 'mark', data, '');
     upsert(this, 'meaning', data, '');
@@ -116,13 +120,8 @@ function Etymology() {
     upsert(this, 'translit', data, '');
     upsert(this, 'unclear', data, false);
     upsert(this, 'unitext', data, '');
-    if (!Etymology.idMap.hasOwnProperty(this.id())) {
-        Etymology.counter++;
-        Etymology.idMap[this.id()] = this;
-    }
+    Etymology.all.append(this);
 }
-Etymology.counter = 0;
-Etymology.idMap = {};
 
 function Participle() {
     /* Participle(entry)
@@ -138,10 +137,9 @@ function Participle() {
     upsert(this, 'tp', data, '');
     upsert(this, 'order', data, 345);
     upsert(this, 'entry_id', data, entry_id);
-    upsert(this, 'id', data, 'participle' + Participle.counter);
-    Participle.counter++;
+    upsert(this, 'id', data, 'participle' + Participle.all.length);
+    Participle.all.append(this);
 }
-Participle.counter = 0;
 
 function Orthvar() {
     /* Orthvar(entry)
@@ -156,10 +154,9 @@ function Orthvar() {
     upsert(this, 'idem', data, '');
     upsert(this, 'order', data, 345);
     upsert(this, 'entry_id', data, entry_id);
-    upsert(this, 'id', data, 'orthvar' + Orthvar.counter);
-    Orthvar.counter++;
+    upsert(this, 'id', data, 'orthvar' + Orthvar.all.length);
+    Orthvar.all.append(this);
 }
-Orthvar.counter = 0;
 
 function Collocation() {
     /* Collocation(collogroup)
@@ -174,11 +171,10 @@ function Collocation() {
     upsert(this, 'civil_equivalent', data, '');
     upsert(this, 'collocation', data, '');
     upsert(this, 'collogroup_id', data, collogroup_id);
-    upsert(this, 'id', data, 'collocation' + Collocation.counter);
+    upsert(this, 'id', data, 'collocation' + Collocation.all.length);
     upsert(this, 'order', data, 345);
-    Collocation.counter++;
+    Collocation.all.append(this);
 }
-Collocation.counter = 0;
 
 function Context() {
     /* Context(meaning)
@@ -191,14 +187,13 @@ function Context() {
     else data = arguments[0];
 
     upsert(this, 'context', data, '');
-    upsert(this, 'id', data, 'context' + Context.counter);
+    upsert(this, 'id', data, 'context' + Context.all.length);
     upsert(this, 'left_text', data, '');
     upsert(this, 'meaning_id', data, meaning_id);
     upsert(this, 'order', data, 345);
     upsert(this, 'right_text', data, '');
-    Context.counter++;
+    Context.all.append(this);
 }
-Context.counter = 0;
 
 function Greq() {
     /* Greq(example)
@@ -213,15 +208,14 @@ function Greq() {
     upsert(this, 'additional_info', data, '');
     upsert(this, 'corrupted', data, false);
     upsert(this, 'for_example_id', data, example_id);
-    upsert(this, 'id', data, 'greq' + Greq.counter);
+    upsert(this, 'id', data, 'greq' + Greq.all.length);
     upsert(this, 'initial_form', data, '');
     upsert(this, 'mark', data, '');
     upsert(this, 'position', data, 0);
     upsert(this, 'source', data, '');
     upsert(this, 'unitext', data, '');
-    Greq.counter++;
+    Greq.all.append(this);
 }
-Greq.counter = 0;
 
 function Example() {
     /* Example(meaning, entry[, collogroup])
@@ -250,15 +244,44 @@ function Example() {
     upsert(this, 'greek_eq_status', data, '');
     upsertArray(this, 'greqs', Greq, data);
     upsert(this, 'hidden', data, false);
-    upsert(this, 'id', data, 'example' + Example.counter);
+    upsert(this, 'id', data, 'example' + Example.all.length);
     upsert(this, 'meaning_id', data, meaning_id);
     upsert(this, 'order', data, 345);
-    if (!Example.idMap.hasOwnProperty(this.id())) {
-        Example.counter++;
-        Example.idMap[this.id()] = this;
-        Example.all.push(this);
-    }
+    Example.all.append(this);
 }
-Example.counter = 0;
-Example.idMap = {};
-Example.all = [];
+
+(function () {
+    var i, Constructor;
+
+    function doesNtContain(item) {
+        return !this.idMap[item.id()];
+    }
+
+    function append(item) {
+        if (this.doesNtContain(item)) {
+            this.push(item);
+            this.idMap[item.id()] = item;
+        }
+    }
+
+    function remove(item) {
+        var index = this.indexOf(item);
+        if (index >= 0) {
+            this.splice(index, 1);
+        } else {
+            throw new Error('Элемент ' + item.prototype.constructor.name +
+                            ' обязан присутствовать в массиве.');
+        }
+        delete this.idMap[item.id()];
+    }
+
+    for (i = constructors.length; i--;) {
+        Constructor = constructors[i];
+        Constructor.all = [];
+        Constructor.all.idMap = {};
+        Constructor.all.doesNtContain = doesNtContain;
+        Constructor.all.append = append;
+        Constructor.all.remove = remove;
+    }
+
+})()
