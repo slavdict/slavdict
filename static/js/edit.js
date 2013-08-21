@@ -4,6 +4,8 @@ var topic = 'entry change',
                     Example, Collogroup, Meaning,
                     Entry];
 
+// Функция создающая датчики, оповещающие о том, что словарная статья
+// изменилась.
 function snapshotObservable(observable) {
     observable = observable || ko.observable;
     return function () {
@@ -11,6 +13,7 @@ function snapshotObservable(observable) {
     }
 }
 
+// Вспомогательные для конструкторов-реставраторов функции.
 function upsert(object, attrname, data, defaultValue, observable) {
     // Upsert property ``attrname`` in the ``object``
     var value = data && data[attrname] || defaultValue;
@@ -355,7 +358,7 @@ function Entry(data) {
     upsertArray(this, 'author_ids', undefined, data);
 }
 
-
+// Дополнительная однократная настройка конструкторов
 (function () {
     var i, Constructor;
 
