@@ -418,6 +418,26 @@ function Entry(data) {
                     });
                 }).callback(m.collogroups());
                 m.isExpanded = m.isExpanded || ko.observable(false);
+            },
+
+            Entry: function(e) {
+                e.orthvars.subscribe(function (changedArray) {
+                    changedArray.forEach(function (item, index) {
+                        item.order(index);
+                    });
+                }).callback(e.orthvars());
+
+                e.participles.subscribe(function (changedArray) {
+                    changedArray.forEach(function (item, index) {
+                        item.order(index);
+                    });
+                }).callback(e.participles());
+
+                e.etymologies.subscribe(function (changedArray) {
+                    changedArray.forEach(function (item, index) {
+                        item.order(index);
+                    });
+                }).callback(e.etymologies());
             }
 
         }[item.prototype.constructor];
