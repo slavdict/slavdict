@@ -276,6 +276,7 @@ function Collogroup() {
     upsert(this, 'id', data, 'collogroup' + Collogroup.all.length);
     upsert(this, 'order', data, 345);
     upsertArray(this, 'meanings', Meaning, data);
+    upsertArray(this, 'unsorted_examples', Example, data);
     Collogroup.all.append(this);
 }
 
@@ -351,6 +352,7 @@ function Entry(data) {
     upsertArray(this, 'participles', Participle, data);
     upsertArray(this, 'orthvars', Orthvar, data);
     upsertArray(this, 'author_ids', undefined, data);
+    upsertArray(this, 'unsorted_examples', Example, data);
 }
 
 // Дополнительная однократная настройка конструкторов
@@ -392,6 +394,13 @@ function Entry(data) {
                         item.order(index);
                     });
                 }).callback(cg.meanings());
+
+                cg.unsorted_examples.subscribe(function (changedArray) {
+                    changedArray.forEach(funtcion (item) {
+                        item.meaning_id(null);
+                        item.collogroup_id(cg.id());
+                    });
+                }).callback(cg.unsorted_examples());
                 cg.isExpanded = cg.isExpanded || ko.observable(false);
             },
 
@@ -440,6 +449,14 @@ function Entry(data) {
                         item.order(index);
                     });
                 }).callback(e.etymologies());
+
+                e.unsorted_examples.subscribe(function (changedArray) {
+                    changedArray.forEach(function (item, index) {
+                        item.meaning_id(null);
+                        item.collogroup_id(null);
+                        item.entry_id(e.id());
+                    });
+                }).callback(e.unsorted_examples());
             },
 
             Etymology: function(e) {
