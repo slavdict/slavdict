@@ -390,8 +390,7 @@ function Entry(data) {
                         item.collogroup_container_id(cg.id());
                         item.order(index);
                     });
-                });
-                cg.meanings.notifySubscribers(cg.meanings());
+                }).callback(cg.meanings());
                 cg.isExpanded = cg.isExpanded || ko.observable(false);
             },
 
@@ -403,7 +402,7 @@ function Entry(data) {
                       item.collogroup_container_id(m.collogroup_container_id());
                       item.order(index);
                    });
-                });
+                }).callback(m.meanings());
 
                 m.examples.subscribe(function (changedArray) {
                     changedArray.forEach(function (item, index) {
@@ -411,14 +410,13 @@ function Entry(data) {
                         item.collogroup_id(m.collogroup_container_id());
                         item.order(index);
                     });
-                });
+                }).callback(m.examples());
 
                 m.collogroups.subscribe(function (changedArray) {
                     changedArray.forEach(function (item, index) {
                         item.order(index);
                     });
-                });
-                m.collogroups.notifySubscribers(m.collogroups());
+                }).callback(m.collogroups());
                 m.isExpanded = m.isExpanded || ko.observable(false);
             }
 
