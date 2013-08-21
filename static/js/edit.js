@@ -275,9 +275,6 @@ function Collogroup() {
     upsert(this, 'id', data, 'collogroup' + Collogroup.all.length);
     upsert(this, 'order', data, 345);
     upsertArray(this, 'meanings', Meaning, data);
-
-    this.isExpanded = this.isExpanded || ko.observable(false);
-
     Collogroup.all.append(this);
 }
 
@@ -320,9 +317,6 @@ function Meaning() {
     upsertArray(this, 'collogroups', Collogroup, data);
     upsertArray(this, 'meanings', Meaning, data);
     upsertArray(this, 'examples', Example, data);
-
-    this.isExpanded = this.isExpanded || ko.observable(false);
-
     Meaning.all.append(this);
 }
 
@@ -402,6 +396,7 @@ function Entry(data) {
                     });
                 });
                 cg.meanings.notifySubscribers(cg.meanings());
+                cg.isExpanded = cg.isExpanded || ko.observable(false);
             },
 
             Meaning: function(m) {
@@ -440,6 +435,7 @@ function Entry(data) {
                     });
                 });
                 m.collogroups.notifySubscribers(m.collogroups());
+                m.isExpanded = m.isExpanded || ko.observable(false);
             }
 
         }[item.prototype.constructor];
