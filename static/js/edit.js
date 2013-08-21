@@ -455,4 +455,8 @@ function Entry(data) {
         Constructor.all.remove = remove;
     }
 
+    function toggle() { this.isExpanded(!this.isExpanded()); }
+    Collogroup.prototype.toggle = toggle;
+    Meaning.prototype.toggle = toggle;
+
 })()
