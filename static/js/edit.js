@@ -123,6 +123,7 @@ function Etymology() {
     upsert(this, 'translit', data, '');
     upsert(this, 'unclear', data, false);
     upsert(this, 'unitext', data, '');
+    upsertArray(this, 'etymologies', Etymology, data);
     Etymology.all.append(this);
 }
 
@@ -435,6 +436,15 @@ function Entry(data) {
 
                 e.etymologies.subscribe(function (changedArray) {
                     changedArray.forEach(function (item, index) {
+                        item.order(index);
+                    });
+                }).callback(e.etymologies());
+            },
+
+            Etymology: function(e) {
+                e.etymologies.subscribe(function (changedArray) {
+                    changedArray.forEach(function (item, index) {
+                        item.etymon_to_id(e.id());
                         item.order(index);
                     });
                 }).callback(e.etymologies());
