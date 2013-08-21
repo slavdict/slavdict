@@ -384,15 +384,11 @@ function Entry(data) {
 
             Collogroup: function (cg) {
                 cg.meanings.subscribe(function (changedArray) {
-                    var i = 1;
-                    ko.utils.arrayForEach(changedArray, function (item) {
+                    changedArray.forEach(function (item, index) {
                         item.parent_meaning_id(null);
                         item.entry_container_id(null);
                         item.collogroup_container_id(cg.id());
-                        if (! item._destroy) {
-                            item.order(i);
-                            i += 1;
-                        }
+                        item.order(index);
                     });
                 });
                 cg.meanings.notifySubscribers(cg.meanings());
@@ -401,37 +397,25 @@ function Entry(data) {
 
             Meaning: function(m) {
                 m.meanings.subscribe(function (changedArray) {
-                   var i = 1;
-                   ko.utils.arrayForEach(changedArray, function (item) {
+                   changedArray.forEach(function (item, index) {
                       item.parent_meaning_id(m.id());
                       item.entry_container_id(m.entry_container_id());
                       item.collogroup_container_id(m.collogroup_container_id());
-                      if (! item._destroy) {
-                         item.order(i);
-                         i += 1;
-                      }
+                      item.order(index);
                    });
                 });
 
                 m.examples.subscribe(function (changedArray) {
-                    var i = 1;
-                    ko.utils.arrayForEach(changedArray, function (item) {
+                    changedArray.forEach(function (item, index) {
                         item.meaning_id(m.id());
                         item.collogroup_id(m.collogroup_container_id());
-                        if (! item._destroy) {
-                            item.order(i);
-                            i += 1;
-                        }
+                        item.order(index);
                     });
                 });
 
                 m.collogroups.subscribe(function (changedArray) {
-                    var i = 1;
-                    ko.utils.arrayForEach(changedArray, function (item) {
-                        if (! item._destroy) {
-                            item.order(i);
-                            i += 1;
-                        }
+                    changedArray.forEach(function (item, index) {
+                        item.order(index);
                     });
                 });
                 m.collogroups.notifySubscribers(m.collogroups());
