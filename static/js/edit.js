@@ -403,16 +403,16 @@ function Entry(data) {
 
             Meaning: function(m) {
                 m.meanings.subscribe(function (changedArray) {
-                    var i = 1;
-                    ko.utils.arrayForEach(changedArray, function (item) {
-                        item.parent_meaning_id(m.id());
-                        item.entry_container_id(m.entry_container_id());
-                        item.collogroup_container_id(m.collogroup_container_id());
-                        if (! item._destroy) {
-                            item.order(i);
-                            i += 1;
-                        }
-                    });
+                   var i = 1;
+                   ko.utils.arrayForEach(changedArray, function (item) {
+                      item.parent_meaning_id(m.id());
+                      item.entry_container_id(m.entry_container_id());
+                      item.collogroup_container_id(m.collogroup_container_id());
+                      if (! item._destroy) {
+                         item.order(i);
+                         i += 1;
+                      }
+                   });
                 });
 
                 m.examples.subscribe(function (changedArray) {
