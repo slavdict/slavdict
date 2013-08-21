@@ -436,6 +436,7 @@ function Entry(data) {
 
                 e.etymologies.subscribe(function (changedArray) {
                     changedArray.forEach(function (item, index) {
+                        item.etymon_to_id(null);
                         item.order(index);
                     });
                 }).callback(e.etymologies());
