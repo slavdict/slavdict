@@ -378,7 +378,7 @@ function Entry(data) {
         if (index >= 0) {
             this.splice(index, 1);
         } else {
-            throw new Error('Элемент ' + item.prototype.constructor.name +
+            throw new Error('Элемент ' + item.constructor.name +
                             ' обязан присутствовать в массиве.');
         }
         delete this.idMap[item.id()];
