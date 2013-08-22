@@ -280,6 +280,7 @@ function Collogroup() {
     upsert(this, 'order', data, 345);
     upsertArray(this, 'meanings', Meaning, data);
     upsertArray(this, 'unsorted_examples', Example, data);
+    upsertArray(this, 'etymologies', Etymology, data);
 
     this.isExpanded || (this.isExpanded = ko.observable(false));
     Collogroup.all.append(this);
@@ -362,6 +363,9 @@ function Entry(data) {
     upsertArray(this, 'orthvars', Orthvar, data);
     upsertArray(this, 'author_ids', undefined, data);
     upsertArray(this, 'unsorted_examples', Example, data);
+    upsertArray(this, 'meanings', Meaning, data);
+    upsertArray(this, 'collogroups', Collogroup, data);
+    upsertArray(this, 'etymologies', Etymology, data);
 }
 
 // Гаранты свойств элементов разных списков.
