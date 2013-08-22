@@ -297,10 +297,12 @@ function Meaning() {
         data = arguments[0];
     }
 
-    if (arguments.length > 1 && !data) {
-        meaning_id = arguments[1];
-    } else {
-        throw new Error('Неправильный состав аргументов для Meaning.');
+    if (arguments.length > 1) {
+        if (data) {
+            throw new Error('Неправильный состав аргументов для Meaning.');
+        } else {
+            meaning_id = arguments[1];
+        }
     }
 
     upsert(this, 'meaning', data, '');
