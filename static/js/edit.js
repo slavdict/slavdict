@@ -75,6 +75,9 @@ function upsertArray(object, attrname, Constructor, data, observableArray) {
 
     if (!object.hasOwnProperty(attrname)) {
         object[attrname] = observableArray();
+        if (Constructor && Constructor.guarantor) {
+            Constructor.guarantor(object, attrname);
+        }
         upsertArray(object, attrname, Constructor, data, observableArray);
     } else {
         crudArrayItems(object[attrname], spec, Constructor);
@@ -277,6 +280,8 @@ function Collogroup() {
     upsert(this, 'order', data, 345);
     upsertArray(this, 'meanings', Meaning, data);
     upsertArray(this, 'unsorted_examples', Example, data);
+
+    this.isExpanded || (this.isExpanded = ko.observable(false));
     Collogroup.all.append(this);
 }
 
@@ -321,6 +326,8 @@ function Meaning() {
     upsertArray(this, 'collogroups', Collogroup, data);
     upsertArray(this, 'meanings', Meaning, data);
     upsertArray(this, 'examples', Example, data);
+
+    this.isExpanded || (this.isExpanded = ko.observable(false));
     Meaning.all.append(this);
 }
 
@@ -357,6 +364,111 @@ function Entry(data) {
     upsertArray(this, 'unsorted_examples', Example, data);
 }
 
+// Гаранты свойств элементов разных списков.
+function guarantor(array, func) {
+    array.subscribe(function (changedArray) {
+        changedArray.forEach(func);
+    }).callback(array());
+}
+
+function orderGuarantor(object, attrname) {
+    guarantor(object[attrname], function (item, index) {
+        item.order(index);
+    });
+}
+
+function examplesGuarantor(object, attrname) {
+    var func = {
+
+            'Entry': function (item) {
+                item.meaning_id(null);
+                item.collogroup_id(null);
+                item.entry_id(object.id()); },
+
+            'Collogroup': function (item) {
+                item.meaning_id(null);
+                item.collogroup_id(object.id()); },
+
+            'Meaning': function (item, index) {
+                item.meaning_id(object.id());
+                item.collogroup_id(object.collogroup_container_id());
+                item.order(index); }
+
+        }[object.constructor.name];
+
+    guarantor(object[attrname], func);
+}
+
+function meaningsGuarantor(object, attrname) {
+    var func = {
+
+            'Entry': function (item, index) {
+                item.parent_meaning_id(null);
+                item.entry_container_id(object.id());
+                item.collogroup_container_id(null);
+                item.order(index); },
+
+            'Collogroup': function (item, index) {
+                item.parent_meaning_id(null);
+                item.entry_container_id(null);
+                item.collogroup_container_id(object.id());
+                item.order(index); },
+
+            'Meaning': function (item, index) {
+                item.parent_meaning_id(object.id());
+                item.entry_container_id(object.entry_container_id());
+                item.collogroup_container_id(object.collogroup_container_id());
+                item.order(index); }
+
+        }[object.constructor.name];
+
+    guarantor(object[attrname], func);
+}
+
+function collogroupsGuarantor(object, attrname) {
+    var func = {
+
+            'Meaning': function (item, index) {
+                item.base_entry_id(null);
+                item.base_meaning_id(object.id());
+                item.order(index); },
+
+            'Entry': function (item, index) {
+                item.base_entry_id(object.id());
+                item.base_meaning_id(null);
+                item.order(index); }
+
+        }[object.constructor.name];
+
+    guarantor(object[attrname], func);
+}
+
+function etymologiesGuarantor(object, attrname) {
+    var func = {
+
+            'Etymology': function (item, index) {
+                item.entry_id(null);
+                item.collocation_id(null);
+                item.etymon_to_id(object.id());
+                item.order(index); },
+
+            'Collogroup': function (item, index) {
+                item.entry_id(null);
+                item.collocation_id(object.id());
+                item.etymon_to_id(null);
+                item.order(index); },
+
+            'Entry': function (item, index) {
+                item.entry_id(object.id());
+                item.collocation_id(null);
+                item.etymon_to_id(null);
+                item.order(index); }
+
+        }[object.constructor.name];
+
+    guarantor(object[attrname], func);
+}
+
 // Дополнительная однократная настройка конструкторов
 (function () {
     var i, Constructor;
@@ -369,7 +481,6 @@ function Entry(data) {
         if (this.doesNtContain(item)) {
             this.push(item);
             this.idMap[item.id()] = item;
-            tune(item);
         }
     }
 
@@ -384,96 +495,6 @@ function Entry(data) {
         delete this.idMap[item.id()];
     }
 
-    function tune(item) {
-        var tuner = {
-
-            Collogroup: function (cg) {
-                cg.meanings.subscribe(function (changedArray) {
-                    changedArray.forEach(function (item, index) {
-                        item.parent_meaning_id(null);
-                        item.entry_container_id(null);
-                        item.collogroup_container_id(cg.id());
-                        item.order(index);
-                    });
-                }).callback(cg.meanings());
-
-                cg.unsorted_examples.subscribe(function (changedArray) {
-                    changedArray.forEach(funtcion (item) {
-                        item.meaning_id(null);
-                        item.collogroup_id(cg.id());
-                    });
-                }).callback(cg.unsorted_examples());
-                cg.isExpanded = cg.isExpanded || ko.observable(false);
-            },
-
-            Meaning: function(m) {
-                m.meanings.subscribe(function (changedArray) {
-                   changedArray.forEach(function (item, index) {
-                      item.parent_meaning_id(m.id());
-                      item.entry_container_id(m.entry_container_id());
-                      item.collogroup_container_id(m.collogroup_container_id());
-                      item.order(index);
-                   });
-                }).callback(m.meanings());
-
-                m.examples.subscribe(function (changedArray) {
-                    changedArray.forEach(function (item, index) {
-                        item.meaning_id(m.id());
-                        item.collogroup_id(m.collogroup_container_id());
-                        item.order(index);
-                    });
-                }).callback(m.examples());
-
-                m.collogroups.subscribe(function (changedArray) {
-                    changedArray.forEach(function (item, index) {
-                        item.order(index);
-                    });
-                }).callback(m.collogroups());
-                m.isExpanded = m.isExpanded || ko.observable(false);
-            },
-
-            Entry: function(e) {
-                e.orthvars.subscribe(function (changedArray) {
-                    changedArray.forEach(function (item, index) {
-                        item.order(index);
-                    });
-                }).callback(e.orthvars());
-
-                e.participles.subscribe(function (changedArray) {
-                    changedArray.forEach(function (item, index) {
-                        item.order(index);
-                    });
-                }).callback(e.participles());
-
-                e.etymologies.subscribe(function (changedArray) {
-                    changedArray.forEach(function (item, index) {
-                        item.etymon_to_id(null);
-                        item.order(index);
-                    });
-                }).callback(e.etymologies());
-
-                e.unsorted_examples.subscribe(function (changedArray) {
-                    changedArray.forEach(function (item, index) {
-                        item.meaning_id(null);
-                        item.collogroup_id(null);
-                        item.entry_id(e.id());
-                    });
-                }).callback(e.unsorted_examples());
-            },
-
-            Etymology: function(e) {
-                e.etymologies.subscribe(function (changedArray) {
-                    changedArray.forEach(function (item, index) {
-                        item.etymon_to_id(e.id());
-                        item.order(index);
-                    });
-                }).callback(e.etymologies());
-            }
-
-        }[item.prototype.constructor];
-        tuner && tuner(item);
-    }
-
     for (i = constructors.length; i--;) {
         Constructor = constructors[i];
         Constructor.all = [];
@@ -486,5 +507,16 @@ function Entry(data) {
     function toggle() { this.isExpanded(!this.isExpanded()); }
     Collogroup.prototype.toggle = toggle;
     Meaning.prototype.toggle = toggle;
+
+    Meaning.guarantor = meaningsGuarantor;
+    Collogroup.guarantor = collogroupsGuarantor;
+    Example.guarantor = examplesGuarantor;
+    Etymology.guarantor = etymologiesGuarantor;
+
+    Context.guarantor = orderGuarantor;
+    Collocation.guarantor = orderGuarantor;
+    Greq.guarantor = orderGuarantor;
+    Participle.guarantor = orderGuarantor;
+    Orthvar.guarantor = orderGuarantor;
 
 })()
