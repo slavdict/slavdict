@@ -104,10 +104,10 @@ function itemDestroyer(item) {
     var array = this;
     return {
         do: function () {
+            array.remove(item);
             if (typeof item.id() === 'number') {
-                array.destroy(item);
+                item._destroy = true;
             } else {
-                array.remove(item);
                 array.itemConstructor.all.remove(item);
             }
         }
@@ -694,14 +694,14 @@ var viewModel = vM.entryEdit,
     // Добавлям разные датчики второго порядка
     uiEntry.headword = ko.computed({
         read: function () {
-            var orthvars = dataModel.entry.orthvars(),
-                isNotDestroyed = function (item) { return ! item._destroy; };
-            return ko.utils.arrayFilter(orthvars, isNotDestroyed)[0].idem();
+            var entry = dataModel.entry;
+            if (entry.orthvars().length === 0) {
+                entry.orthvars.unshift(new Orthvar(entry));
+            }
+            return entry.orthvars()[0].idem();
         },
         write: function (value) {
-            var orthvars = dataModel.entry.orthvars(),
-                isNotDestroyed = function (item) { return ! item._destroy; };
-            ko.utils.arrayFilter(orthvars, isNotDestroyed)[0].idem(value);
+            dataModel.entry.orthvars()[0].idem(value);
         }
     });
 
