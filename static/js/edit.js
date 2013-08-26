@@ -536,6 +536,8 @@ function etymologiesGuarantor(object, attrname) {
         Constructor.all.doesNtContain = doesNtContain;
         Constructor.all.append = append;
         Constructor.all.remove = remove;
+        Constructor.bag = [];
+        Constructor.bag.idMap = {};
     }
 
     function toggle() { this.isExpanded(!this.isExpanded()); }
@@ -552,5 +554,149 @@ function etymologiesGuarantor(object, attrname) {
     Greq.guarantor = orderGuarantor;
     Participle.guarantor = orderGuarantor;
     Orthvar.guarantor = orderGuarantor;
+
+})()
+
+// Пространство имен вуду-модели интерфейса редактирования статьи.
+vM.entryEdit = {
+    data: {},
+    ui: {
+        entry: {},
+        choices: vM.dataToInitialize.choices,
+        labels: vM.dataToInitialize.labels,
+        slugs: vM.dataToInitialize.slugs,
+    }
+};
+
+var viewModel = vM.entryEdit,
+    dataModel = viewModel.data,
+    uiModel = viewModel.ui,
+    uiEntry = uiModel.entry;
+
+// Однократная настройка вуду-модели
+(function () {
+    var i, j,
+        meaning,
+        etymology,
+        collogroup,
+        example;
+
+    function buildObjects(dataArray, Constructor) {
+        for (var i = 0, j = dataArray.length; i < j; i++) {
+            new Constructor(dataArray[i]);
+        }
+    }
+
+    // Строим объекты вуду-модели
+    dataModel.entry = new Entry(vM.dataToInitialize.entry.entry);
+    buildObjects(vM.dataToInitialize.entry.etymologies, Etymology);
+    buildObjects(vM.dataToInitialize.entry.collogroups, Collogroup);
+    buildObjects(vM.dataToInitialize.entry.meanings, Meaning);
+    buildObjects(vM.dataToInitialize.entry.examples, Example);
+
+    // Сортируем значения, прикрепляя их к нужным значениям, словосочетаниями
+    // или лексемам.
+    for (i = 0, j = Meaning.all.length; i < j; i++) {
+        meaning = Meaning.all[i];
+        // У meaning возможны следующие сочетания значений полей
+        // entry_container_id (E), collogroup_container_id (C)
+        // и parent_meaning_id (M):
+        //
+        //      E, C, EM, CM.
+        //
+        // Присутствие буквы означает, что соотвествующее поле имеет
+        // значение отличное от null.
+        if (meaning.parent_meaning_id() !== null) {
+            Meaning.all.idMap[meaning.parent_meaning_id()]
+                .meanings.push(meaning);
+        } else {
+            if (meaning.collogroup_container_id() !== null) {
+                Collogroup.all.idMap[meaning.collogroup_container_id()]
+                    .meanings.push(meaning);
+            } else {
+                dataModel.entry.meanings.push(meaning);
+            }
+        }
+    }
+
+    // Сортируем этимоны.
+    for (i = 0, j = Etymology.all.length; i < j; i++) {
+        etymology = Etymology.all[i];
+        // У etymology возможны следующие сочетания значений полей
+        // entry_id (E), collocation_id (C) и etymon_to_id (e):
+        //
+        //      E, C, Ee, Ce.
+        //
+        // Присутствие буквы обозначает, что соответствующее поле имеет
+        // значение отличное от null.
+        if (etymology.etymon_to_id() !== null) {
+            Etymology.all.idMap[etymology.id()].etymologies.push(etymology);
+        } else {
+            if (etymology.collocation_id() !== null) {
+                Collogroup.all.idMap[etymology.collocation_id()]
+                    .etymologies.push(etymology);
+            } else {
+                dataModel.entry.etymologies.push(etymology);
+            }
+        }
+    }
+
+    // Сортируем словосочетания.
+    for (i = 0, j = Collogroup.all.length; i < j; i++) {
+        collogroup = Collogroup.all[i];
+        // У collogroup возможны следующие сочетания значений полей
+        // base_entry_id (E) и base_meaning_id (M):
+        //
+        //      E, M.
+        //
+        // Присутствие буквы обозначает, что соответствующее поле имеет
+        // значение отличное от null.
+        if (collogroup.base_meaning_id() !== null) {
+                Meaning.all.idMap[collogroup.base_meaning_id()]
+                    .collogroups.push(collogroup);
+        } else {
+            dataModel.entry.collogroups.push(collogroup);
+        }
+    }
+
+    // Сортируем примеры.
+    for (i = 0, j = Example.all.length; i < j; i++) {
+        example = Example.all[i];
+        // У example возможны следующие сочетания значений полей
+        // entry_id (E), collogroup_id (C) и meaning_id (M):
+        //
+        //      E, EM, EC, ECM.
+        //
+        // FIX: впоследствии необходимо сделать так:
+        //
+        //      E, EM, C, CM.
+        //
+        // Присутствие буквы обозначает, что соответствующее поле имеет
+        // значение отличное от null.
+        if (example.meaning_id() !== null) {
+            Meaning.all.idMap[example.meaning_id()].examples.push(example);
+        } else {
+            if (example.collogroup_id() !== null) {
+                Collogroup.all.idMap[example.collogroup_id()]
+                    .unsorted_examples.push(example);
+            } else {
+                dataModel.entry.unsorted_examples.push(example);
+            }
+        }
+    }
+
+    // Активация работы вкладок
+    $('nav.tabs li').click(function () {
+        $('nav.tabs li.current').removeClass('current');
+        $('section.tabcontent.current').removeClass('current');
+        var x = $(this);
+        x.addClass('current');
+        $(x.find('a').attr('href')).addClass('current');
+    });
+
+    ko.applyBindings(viewModel, $('#main').get(0));
+
+    // Поднять занавес
+    $('.curtain').fadeOut();
 
 })()
