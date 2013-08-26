@@ -685,6 +685,31 @@ var viewModel = vM.entryEdit,
         }
     }
 
+    // Добавлям разные датчики второго порядка
+    uiEntry.headword = ko.computed({
+        read: function () {
+            var orthvars = dataModel.entry.orthvars(),
+                isNotDestroyed = function (item) { return ! item._destroy; };
+            return ko.utils.arrayFilter(orthvars, isNotDestroyed)[0].idem();
+        },
+        write: function (value) {
+            var orthvars = dataModel.entry.orthvars(),
+                isNotDestroyed = function (item) { return ! item._destroy; };
+            ko.utils.arrayFilter(orthvars, isNotDestroyed)[0].idem(value);
+        }
+    });
+
+    uiEntry.part_of_speech = ko.computed(function () {
+        var x = this.data.entry.part_of_speech(),
+            y = this.ui.labels.part_of_speech;
+        if (x in y) {
+            return y[x];
+        } else {
+            console.log('Часть речи "', x, '" не найдена среди ', y);
+            return '';
+        }
+    }, viewModel);
+
     // Активация работы вкладок
     $('nav.tabs li').click(function () {
         $('nav.tabs li.current').removeClass('current');
