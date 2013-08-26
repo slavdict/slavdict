@@ -529,6 +529,9 @@ function etymologiesGuarantor(object, attrname) {
         delete this.idMap[item.id()];
     }
 
+    function editItem() { this.constructor.itemBeingEdited(this); }
+    function stopEditing() { this.constructor.itemBeingEdited(null); }
+
     for (i = constructors.length; i--;) {
         Constructor = constructors[i];
         Constructor.all = [];
@@ -538,6 +541,9 @@ function etymologiesGuarantor(object, attrname) {
         Constructor.all.remove = remove;
         Constructor.bag = [];
         Constructor.bag.idMap = {};
+        Constructor.itemBeingEdited = ko.observable(null);
+        Constructor.prototype.edit = editItem;
+        Constructor.prototype.stopEditing = stopEditing;
     }
 
     function toggle() { this.isExpanded(!this.isExpanded()); }
