@@ -148,7 +148,7 @@ AUTHENTICATION_BACKENDS = (
 CUSTOM_USER_MODEL = 'custom_user.CustomUser'
 
 # Сторонние библиотеки JavaScript
-JSLIBS_VERSION = '2013.08.20'
+JSLIBS_VERSION = '2013.08.27'
 JSLIBS_URL = STATIC_URL + 'js/outsourcing/'
 JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
 JSLIBS = {
@@ -170,8 +170,8 @@ JSLIBS = {
         'min': '//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.3.5/knockout.mapping.min.js',
     },
     'knockoutSortable': {
-        'debug': 'https://rawgithub.com/rniemeyer/knockout-sortable/master/build/knockout-sortable.js',
-        'Xmin': 'https://raw.github.com/rniemeyer/knockout-sortable/master/build/knockout-sortable.min.js',
+        'debug': 'https://rawgithub.com/rniemeyer/knockout-sortable/v0.8.2/build/knockout-sortable.js',
+        'Xmin': 'https://raw.github.com/rniemeyer/knockout-sortable/v0.8.2/build/knockout-sortable.min.js',
         # NOTE: Файлы с raw.github.com нельзя отдавать в продакшн. Там
         # выставляются http-заголовки
         #
@@ -188,8 +188,8 @@ JSLIBS = {
         # не отдавался в продакшн.
     },
     'knockoutPostbox': {
-        'debug': 'https://rawgithub.com/rniemeyer/knockout-postbox/master/build/knockout-postbox.js',
-        'Xmin': 'https://raw.github.com/rniemeyer/knockout-postbox/master/build/knockout-postbox.min.js',
+        'debug': 'https://rawgithub.com/rniemeyer/knockout-postbox/v0.3.1/build/knockout-postbox.js',
+        'Xmin': 'https://raw.github.com/rniemeyer/knockout-postbox/v0.3.1/build/knockout-postbox.min.js',
     },
 }
 
