@@ -75,13 +75,43 @@ function upsertArray(object, attrname, Constructor, data, observableArray) {
 
     if (!object.hasOwnProperty(attrname)) {
         object[attrname] = observableArray();
-        if (Constructor && Constructor.guarantor) {
-            Constructor.guarantor(object, attrname);
+        if (Constructor) {
+            object[attrname].itemConstructor = Constructor;
+            object[attrname].itemAdder = itemAdder;
+            object[attrname].itemDestroyer = itemDestroyer;
+            Constructor.guarantor && Constructor.guarantor(object, attrname);
         }
         upsertArray(object, attrname, Constructor, data, observableArray);
     } else {
         crudArrayItems(object[attrname], spec, Constructor);
     }
+}
+
+// Общие для всех свойств-массивов методы добавления/удаления элментов
+function itemAdder(args) {
+    var item, array = this;
+    return {
+      do: function () {
+        args = [null].concat(args || []);
+        item = new (Function.prototype.bind.apply(array.itemConstructor, args));
+        array.push(item);
+        item.edit();
+      }
+    };
+}
+
+function itemDestroyer(item) {
+    var array = this;
+    return {
+        do: function () {
+            if (typeof item.id() === 'number') {
+                array.destroy(item);
+            } else {
+                array.remove(item);
+                array.itemConstructor.all.remove(item);
+            }
+        }
+    };
 }
 
 // Конструкторы-реставраторы
