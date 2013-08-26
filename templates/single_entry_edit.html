@@ -128,6 +128,8 @@
 
         // Новый binding для отображения полуюникода в цсл виде
         // с различением слов и частей слова.
+        var ac2ucs8 = antconc_ucs8,
+            ac2cvlr = antconc_civilrus_word;
         ko.bindingHandlers.wax = {
             init: function (element, valueAccessor, allBindingsAccessor) {
                 var value = valueAccessor(),
