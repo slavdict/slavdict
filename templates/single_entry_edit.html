@@ -21,7 +21,7 @@
     <div style="margin: 30px 0;">
 
         <label>Заглавное слово</label>
-        <input type="text" data-bind="value: data.entry.orthvars()[0].idem,
+        <input type="text" data-bind="value: ui.entry.headword,
             valueUpdate: 'afterkeydown'"/>
         <br/><br/>
 
@@ -61,13 +61,13 @@
                    disable: undoStorage.shouldDisableRedo" />
 
     <div class="modalContainer" style="display: none;"
-        data-bind="visible: ui.meaningBeingEdited">
+        data-bind="visible: Meaning.itemBeingEdited">
         <div class="modalBackground"></div>
         <div class="modal"
             data-bind="template: {
                             name: 'editMeaning',
-                            data: ui.meaningBeingEdited,
-                            if: ui.meaningBeingEdited }"></div>
+                            data: Meaning.itemBeingEdited,
+                            if: Meaning.itemBeingEdited }"></div>
     </div>
 
     <div class="modalContainer" style="display: none;"

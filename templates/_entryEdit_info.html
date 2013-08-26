@@ -1,43 +1,43 @@
-<section id="info" class="tabcontent current">
+<section id="info" class="tabcontent current" data-bind="with: data.entry">
 
-    <select data-bind="options: ui.choices.part_of_speech,
-        value: data.entry.part_of_speech, optionsText: 'name',
+    <select data-bind="options: $root.ui.choices.part_of_speech,
+        value: part_of_speech, optionsText: 'name',
         optionsValue: 'id'">
     </select>
 
     <br/><br/>
     <div data-bind="visible:
-        data.entry.part_of_speech() === ui.slugs.part_of_speech['noun'] ||
-        data.entry.part_of_speech() === ui.slugs.part_of_speech['adjective']">
+        part_of_speech() === $root.ui.slugs.part_of_speech['noun'] ||
+        part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
         <label>
             Неизменяемое
             <input type="checkbox"
-                   data-bind="checked: data.entry.uninflected"/>
+                   data-bind="checked: uninflected"/>
         </label>
     </div>
 
     <br/><br/>
     <div data-bind="visible:
-        data.entry.part_of_speech() === ui.slugs.part_of_speech['noun']">
+        part_of_speech() === $root.ui.slugs.part_of_speech['noun']">
 
         <label>
             Форма Р. падежа
-            <input type="text" data-bind="value: data.entry.genitive"/>
+            <input type="text" data-bind="value: genitive"/>
         </label>
 
     <br/><br/>
         <label>
             Род
-            <select data-bind="options: ui.choices.gender,
-                value: data.entry.gender, optionsText: 'name',
+            <select data-bind="options: $root.ui.choices.gender,
+                value: gender, optionsText: 'name',
                 optionsValue: 'id'">
             </select>
         </label>
 
         <label>
             Число
-            <select data-bind="options: ui.choices.tantum,
-                value: data.entry.tantum, optionsText: 'name',
+            <select data-bind="options: $root.ui.choices.tantum,
+                value: tantum, optionsText: 'name',
                 optionsValue: 'id'">
             </select>
         </label>
@@ -45,79 +45,78 @@
     <br/><br/>
         <label>
             Тип имени собственного
-            <select data-bind="options: ui.choices.onym,
-                value: data.entry.onym, optionsText: 'name',
+            <select data-bind="options: $root.ui.choices.onym,
+                value: onym, optionsText: 'name',
                 optionsValue: 'id'">
             </select>
         </label>
 
         <label data-bind="visible:
-            data.entry.onym() == ui.slugs.onym['anthroponym']">
+            onym() == $root.ui.slugs.onym['anthroponym']">
             Каноническое
             <input type="checkbox"
-                   data-bind="checked: data.entry.canonical_name"/>
+                   data-bind="checked: canonical_name"/>
         </label>
 
         <div data-bind="visible:
-            data.entry.onym() == ui.slugs.onym['ethnonym']">
+            onym() == $root.ui.slugs.onym['ethnonym']">
 
             <label>
                 И.ед.м.
-                <input type="text" data-bind="value: data.entry.nom_sg,
+                <input type="text" data-bind="value: nom_sg,
                                         valueUpdate: 'afterkeydown'"/>
             </label>
 
-            <span data-bind="wax: data.entry.nom_sg"></span>
+            <span data-bind="wax: nom_sg"></span>
 
         </div>
 
     </div>
 
     <div data-bind="visible:
-                        data.entry.part_of_speech() ===
-                        ui.slugs.part_of_speech['adjective']">
+        part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
 
         <label>
             Краткая форма
-            <input type="text" data-bind="value: data.entry.short_form,
+            <input type="text" data-bind="value: short_form,
                                           valueUpdate: 'afterkeydown'"/>
         </label>
 
-        <span data-bind="wax: data.entry.short_form"></span>
+        <span data-bind="wax: short_form"></span>
 
         Притяжательное
         <input type="checkbox"
-               data-bind="checked: data.entry.possessive"/>
+               data-bind="checked: possessive"/>
 
     </div>
 
     <div data-bind="visible:
-        data.entry.part_of_speech() === ui.slugs.part_of_speech['verb']">
+        part_of_speech() === $root.ui.slugs.part_of_speech['verb']">
 
         <label>
             Форма 1ед.
-            <input type="text" data-bind="value: data.entry.sg1,
+            <input type="text" data-bind="value: sg1,
                                           valueUpdate: 'afterkeydown'"/>
         </label>
 
-        <span data-bind="wax: data.entry.sg1"></span>
+        <span data-bind="wax: sg1"></span>
 
     <br/><br/>
         <label>
             Форма 2ед.
-            <input type="text" data-bind="value: data.entry.sg2,
+            <input type="text" data-bind="value: sg2,
                                           valueUpdate: 'afterkeydown'"/>
         </label>
 
-        <span data-bind="wax: data.entry.sg2"></span>
+        <span data-bind="wax: sg2"></span>
 
     <br/><br/>
-        <ul data-bind="sortable: data.entry.participles">
+        <ul data-bind="sortable: participles">
             <li>
 
                 <input type="button" value="&times;"
                     data-bind="click:
-                        $root.ui.destroyParticiple.bind(null, $data)"/>
+                        $parent.participles.itemDestroyer($data).do"/>
 
                 <label>
                     Тип причастия
@@ -137,7 +136,7 @@
         </ul>
 
         <input type="button" value="Добавить причастие"
-            data-bind="click: ui.addParticiple"/>
+            data-bind="click: participles.itemAdder($root.data.entry).do"/>
 
     </div>
 

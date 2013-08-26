@@ -1,17 +1,16 @@
-<section id="structure" class="tabcontent">
+<section id="structure" class="tabcontent" data-bind="with: data.entry">
 
-    <ul class="meanings" data-bind="sortable: { data: ui.entry.meanings,
+    <ul class="meanings" data-bind="sortable: { data: meanings,
                                                 connectClass: 'meanings' }">
         <li>
             <nav class="item-dashboard">
                 <a href="#"
-                   data-bind="click: $root.ui.destroyMeaning.bind(
-                                         null, $root.ui.entry.meanings, $data)"
+                   data-bind="click: $parent.meanings.itemDestroyer($data).do"
                            >Удалить</a>{{ space }}
                 <a href="#"
-                   data-bind="click: $root.ui.meaningBeingEdited.bind(null, $data)"
+                   data-bind="click: $data.edit"
                            >Изменить</a>{{ space }}
-                <a href="#" data-bind="click: expandOrCollapse"
+                <a href="#" data-bind="click: toggle"
                            >Раскрыть</a>{{ space }}
             </nav>
             <span data-bind="text: order"></span>
@@ -19,7 +18,7 @@
             <span data-bind="text: meaning"></span>
             <i data-bind="text: gloss"></i>
 
-            <ul class="examples" data-bind="sortable: { data: selfExamples,
+            <ul class="examples" data-bind="sortable: { data: examples,
                                                 connectClass: 'examples' },
                                             visible: isExpanded">
                 <li>
@@ -28,19 +27,18 @@
                 </li>
             </ul>
 
-            <ul class="meanings" data-bind="sortable: { data: childMeanings,
+            <ul class="meanings" data-bind="sortable: { data: meanings,
                                                 connectClass: 'meanings' },
                                             visible: isExpanded">
                 <li>
                     <nav class="item-dashboard">
                         <a href="#"
-                           data-bind="click: $root.ui.destroyMeaning.bind(
-                                                null, $parent.childMeanings, $data)"
+                           data-bind="click: $parent.meanings.itemDestroyer($data).do"
                                    >Удалить</a>{{ space }}
                         <a href="#"
-                           data-bind="click: $root.ui.meaningBeingEdited.bind(null, $data)"
+                           data-bind="click: $data.edit"
                                    >Изменить</a>{{ space }}
-                        <a href="#" data-bind="click: expandOrCollapse"
+                        <a href="#" data-bind="click: toggle"
                                    >Раскрыть</a>{{ space }}
                     </nav>
                     <span data-bind="text: order"></span>
@@ -49,7 +47,7 @@
                     <i data-bind="text: gloss"></i>
 
                     <ul class="examples" data-bind="sortable:
-                            { data: selfExamples, connectClass: 'examples' },
+                            { data: examples, connectClass: 'examples' },
                         visible: isExpanded">
                         <li>
                             <span data-bind="wax: example"></span>{{ space }}
@@ -67,7 +65,7 @@
                     <nav class="item-dashboard">
                         <a href="#">Удалить</a>{{ space }}
                         <a href="#">Изменить</a>{{ space }}
-                        <a href="#" data-bind="click: expandOrCollapse"
+                        <a href="#" data-bind="click: toggle"
                                    >Раскрыть</a>{{ space }}
                     </nav>
                     <span data-bind="text: order"></span>
@@ -84,13 +82,12 @@
                         <li>
                             <nav class="item-dashboard">
                                 <a href="#"
-                                   data-bind="click: $root.ui.destroyMeaning.bind(
-                                                        null, $parent.meanings, $data)"
+                                   data-bind="click: $parent.meanings.itemDestroyer($data).do"
                                            >Удалить</a>{{ space }}
                                 <a href="#"
-                                   data-bind="click: $root.ui.meaningBeingEdited.bind(null, $data)"
+                                   data-bind="click: $data.edit"
                                            >Изменить</a>{{ space }}
-                                <a href="#" data-bind="click: expandOrCollapse"
+                                <a href="#" data-bind="click: toggle"
                                            >Раскрыть</a>{{ space }}
                             </nav>
                             <span data-bind="text: order"></span>
@@ -99,7 +96,7 @@
                             <i data-bind="text: gloss"></i>
 
                             <ul class="examples" data-bind="sortable:
-                                { data: selfExamples, connectClass: 'examples' },
+                                { data: examples, connectClass: 'examples' },
                                 visible: isExpanded">
                                 <li>
                                     <span data-bind="wax: example"></span>{{ space }}
@@ -117,7 +114,6 @@
     </ul>
 
     <input type="button" value="Добавить значение"
-        data-bind="click: ui.addMeaning.bind(
-            null, ui.entry.meanings, 'entry', data.entry)">
+        data-bind="click: meanings.itemAdder($root.data.entry).do">
 
 </section>
