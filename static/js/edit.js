@@ -716,6 +716,16 @@ var viewModel = vM.entryEdit,
         }
     }, viewModel);
 
+    uiModel.saveDialogue = {
+        active: ko.observable(false),
+        show: function () { uiModel.saveDialogue.active(true); },
+        hide: function () { uiModel.saveDialogue.active(false); },
+        saveAndExit: function () {
+        },
+        exitWithoutSaving: function () {
+        }
+    };
+
     // Активация работы вкладок
     $('nav.tabs li').click(function () {
         $('nav.tabs li.current').removeClass('current');

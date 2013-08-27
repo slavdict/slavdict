@@ -13,12 +13,12 @@
     <br/><br/>
 
     <input type="button" value="Сохранить"
-        data-bind="click: $root.ui.saveAndExit" />
+        data-bind="click: $root.ui.saveDialogue.saveAndExit" />
 
     <input type="button" value="Продолжить редактирование"
-        data-bind="click: $root.ui.showSaveDialogue.bind(null, false)" />
+        data-bind="click: $root.ui.saveDialogue.hide" />
 
     <input type="button" value="Выйти без сохранения"
-        data-bind="click: $root.ui.exitWithoutSaving" />
+        data-bind="click: $root.ui.saveDialogue.exitWithoutSaving" />
 
 </script>

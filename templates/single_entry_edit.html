@@ -50,7 +50,7 @@
     {% endtrim %}
 
     <input type="button" value="Закончить редактирование"
-        data-bind="click: ui.showSaveDialogue.bind(null, true)" />
+        data-bind="click: ui.saveDialogue.show" />
 
     <input type="button" value="undo"
         data-bind="click: undoStorage.undo,
@@ -71,12 +71,12 @@
     </div>
 
     <div class="modalContainer" style="display: none;"
-        data-bind="visible: ui.showSaveDialogue">
+        data-bind="visible: ui.saveDialogue.active">
         <div class="modalBackground"></div>
         <div class="modal"
             data-bind="template: {
                             name: 'saveDialogue',
-                            if: ui.showSaveDialogue }"></div>
+                            if: ui.saveDialogue.active }"></div>
     </div>
 
 </div>
