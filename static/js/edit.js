@@ -34,8 +34,7 @@ function crudArrayItems(voodoo, spec, Constructor) {
     // according to spec.
 
     if (!Constructor) {
-        var args = [0, voodoo().length].concat(spec);
-        Array.prototype.splice.apply(voodoo, args);
+        voodoo(spec);
         return;
     }
 
