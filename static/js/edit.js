@@ -734,6 +734,117 @@ var viewModel = vM.entryEdit,
         $(x.find('a').attr('href')).addClass('current');
     });
 
+    // Активация сохранения json-снимков данных в локальном хранилище.
+    viewModel.undoStorage = (function () {
+        var uS,  // uS -- undoStorage
+            snapshotsKey = 'entry.' + dataModel.entry.id(),
+            cursorKey = snapshotsKey + '.cursor',
+            cursor = ko.observable(0),
+            snapshots = ko.observableArray([]);
+
+        function load(N) {
+            var snapshot = JSON.parse(snapshots()[N]);
+            ko.postbox._subscriptions[topic].splice(0);
+            Entry.call(dataModel.entry, snapshot);
+            ko.postbox.subscribe(topic, wait);
+        }
+
+        function dock(N) {
+            // Удаление всех дампов после N (обрубание хвоста). Необходимо
+            // в том случае, если была произведена операция undo и в статью были
+            // внесены дополнительные изменения, поскольку все отменённые дампы
+            // становятся после этого ненужными. Напротив, возникает необходимость
+            // создания другой ветки дампов.
+            snapshots.splice(N);
+        }
+
+        function dump() {
+            if (cursor.peek() < snapshots.peek().length) {
+                dock(cursor.peek())
+            }
+            snapshots.push(ko.toJSON(dataModel.entry));
+            cursor(cursor.peek() + 1);
+        }
+
+        function wait() {
+            clearTimeout(dump.timeoutID);
+            dump.timeoutID = setTimeout(dump, 1000);
+        }
+
+        function mayNotUndo() {
+            return cursor() < 2;
+        }
+
+        function mayNotRedo() {
+            return snapshots().length === cursor();
+        }
+
+        function redo() {
+            if (! mayNotRedo()) {
+                var n = cursor();
+                load(n);
+                cursor(n + 1);
+            }
+        }
+
+        function undo() {
+            if (! mayNotUndo()) {
+                var n = cursor() - 2;
+                load(n);
+                cursor(n + 1);
+            }
+        }
+
+        function clear() {
+            cursor(0);
+            snapshots.removeAll();
+            localStorage.removeItem(snapshotsKey);
+            localStorage.removeItem(cursorKey);
+        }
+
+        function resumePreviousSession() {
+            // Если в локальном хранилище что-то осталось, предлагает пользователю
+            // восстанавливить предыдущаю сессию правки статьи. В противном случае
+            // молча начинает новую сессию.
+            var prevSnapshots = JSON.parse(localStorage.getItem(snapshotsKey)),
+                prevCursor = JSON.parse(localStorage.getItem(cursorKey));
+            // TODO: здесь должно выводиться предложение пользователю восстановить
+            // предыдущую сессию, если от неё остались данные.
+        }
+
+        function init() {
+            // TODO: Здесь должна быть обработка случаев, когда страницу изменения
+            // покинули не должным образом и в локальном хранилище что-то осталось.
+            // Пользователю надо предложить восстановить последнее созданное им
+            // состояние для тех статей, которые не были должным образом сохранены.
+            resumePreviousSession();
+
+            snapshots.subscribe(function () {
+                localStorage.setItem(snapshotsKey, JSON.stringify(snapshots()));
+            });
+
+            cursor.subscribe(function (newValue) {
+                localStorage.setItem(cursorKey, newValue);
+            });
+
+            clear();
+            dump();
+            ko.postbox.subscribe(topic, wait);
+        }
+
+        uS = {
+            shouldDisableRedo: ko.computed(mayNotRedo),
+            shouldDisableUndo: ko.computed(mayNotUndo),
+            redo: redo,
+            undo: undo,
+            clear: clear,
+        };
+
+        init();
+
+        return uS;
+    })();
+
     ko.applyBindings(viewModel, $('#main').get(0));
 
     // Поднять занавес
