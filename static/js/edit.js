@@ -75,7 +75,7 @@ function crudArrayItems(voodoo, spec, Constructor) {
 function upsertArray(object, attrname, Constructor, data, observableArray) {
     // Upsert array property ``attrname`` in the ``object``
 
-    var spec = data[attrname] || [];
+    var spec = data && data[attrname] || [];
     observableArray = observableArray || snapshotObservable(ko.observableArray);
 
     if (!object.hasOwnProperty(attrname)) {
