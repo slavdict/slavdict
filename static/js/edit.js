@@ -9,9 +9,15 @@ var topic = 'entry change',
 function snapshotObservable(observable) {
     observable = observable || ko.observable;
     return function () {
-        return observable.apply(null, arguments).publishOn(topic);
+        var o = observable.apply(null, arguments);
+        o.__$ID$__ = snapshotObservable.counter++;
+        o.subscribe(function (value) {
+            ko.postbox.publish(topic, [o.__$ID$__, value]);
+        });
+        return o;
     }
 }
+snapshotObservable.counter = 0;
 
 // Вспомогательные для конструкторов-реставраторов функции.
 function upsert(object, attrname, data, defaultValue, observable) {
