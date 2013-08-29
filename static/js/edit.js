@@ -673,8 +673,37 @@ var viewModel = vM.entryEdit,
         show: function () { uiModel.saveDialogue.active(true); },
         hide: function () { uiModel.saveDialogue.active(false); },
         saveAndExit: function () {
+            var data, persistingDataPromise;
+
+            data = ko.toJSON({
+                // FIX: Необходимо либо избавиться от collogroups, etymologies,
+                // examples и meanings ниже, и тогда необходимо менять способ
+                // обработки сохраняемых данных на сервере. Либо в entry
+                // вырезАть все свойства, которые уже присутствуют в этих
+                // collogroups, etymologies и т.п.
+                        entry: dataModel.entry,
+                        collogroups: Collogroup.all,
+                        etymologies: Etymology.all,
+                        examples: Example.all,
+                        meanings: Meaning.all,
+                        destroy: {},
+                });
+
+            // Получаем promise-объект
+            persistingDataPromise = $.post('/entries/save/', {'json': data});
+
+            persistingDataPromise
+                .done(uiModel.saveDialogue.exitWithoutSaving)
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    console.log('jqXHR: ', jqXHR);
+                    console.log('textStatus: ', textStatus);
+                    console.log('Error thrown: ', errorThrown);
+                    alert('При сохранении статьи произошла непредвиденная ошибка.');
+                });
         },
         exitWithoutSaving: function () {
+            viewModel.undoStorage.clear();
+            window.location = '/';
         }
     };
 
