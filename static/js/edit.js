@@ -412,7 +412,7 @@ function guarantor(array, func) {
 
 function orderGuarantor(object, attrname) {
     guarantor(object[attrname], function (item, index) {
-        item.order(index);
+        item.order(index + 1);
     });
 }
 
@@ -431,7 +431,7 @@ function examplesGuarantor(object, attrname) {
             'Meaning': function (item, index) {
                 item.meaning_id(object.id());
                 item.collogroup_id(object.collogroup_container_id());
-                item.order(index); }
+                item.order(index + 1); }
 
         }[object.constructor.name];
 
@@ -445,19 +445,19 @@ function meaningsGuarantor(object, attrname) {
                 item.parent_meaning_id(null);
                 item.entry_container_id(object.id());
                 item.collogroup_container_id(null);
-                item.order(index); },
+                item.order(index + 1); },
 
             'Collogroup': function (item, index) {
                 item.parent_meaning_id(null);
                 item.entry_container_id(null);
                 item.collogroup_container_id(object.id());
-                item.order(index); },
+                item.order(index + 1); },
 
             'Meaning': function (item, index) {
                 item.parent_meaning_id(object.id());
                 item.entry_container_id(object.entry_container_id());
                 item.collogroup_container_id(object.collogroup_container_id());
-                item.order(index); }
+                item.order(index + 1); }
 
         }[object.constructor.name];
 
@@ -470,12 +470,12 @@ function collogroupsGuarantor(object, attrname) {
             'Meaning': function (item, index) {
                 item.base_entry_id(null);
                 item.base_meaning_id(object.id());
-                item.order(index); },
+                item.order(index + 1); },
 
             'Entry': function (item, index) {
                 item.base_entry_id(object.id());
                 item.base_meaning_id(null);
-                item.order(index); }
+                item.order(index + 1); }
 
         }[object.constructor.name];
 
@@ -489,19 +489,19 @@ function etymologiesGuarantor(object, attrname) {
                 item.entry_id(null);
                 item.collocation_id(null);
                 item.etymon_to_id(object.id());
-                item.order(index); },
+                item.order(index + 1); },
 
             'Collogroup': function (item, index) {
                 item.entry_id(null);
                 item.collocation_id(object.id());
                 item.etymon_to_id(null);
-                item.order(index); },
+                item.order(index + 1); },
 
             'Entry': function (item, index) {
                 item.entry_id(object.id());
                 item.collocation_id(null);
                 item.etymon_to_id(null);
-                item.order(index); }
+                item.order(index + 1); }
 
         }[object.constructor.name];
 
