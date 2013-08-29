@@ -53,9 +53,9 @@ function crudArrayItems(voodoo, spec, Constructor) {
     for (var i = 0, j = spec.length; i < j; i++) {
         specItem = spec[i];
         id = specItem.id;
-        if (all[id]) {
-            Constructor.call(all[id], specItem);
-            object = all[id];
+        object = all.idMap[id];
+        if (object) {
+            Constructor.call(object, specItem);
         } else {
             object = new Constructor(specItem);
         }
