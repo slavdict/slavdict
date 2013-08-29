@@ -1,3 +1,6 @@
+try {
+
+
 var topic = 'entry change',
     constructors = [Etymology, Participle, Orthvar,
                     Collocation, Context, Greq,
@@ -834,3 +837,11 @@ var viewModel = vM.entryEdit,
     $('.curtain').fadeOut();
 
 })()
+
+
+} catch(e) {
+    $.post('/entries/jserror/',
+           {entryId: vM.dataToInitialize.entry.entry.id || 'unknown',
+            errorObj: e});
+    throw e;
+}
