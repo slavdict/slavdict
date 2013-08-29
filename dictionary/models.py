@@ -535,6 +535,11 @@ class Entry(models.Model, Meaningfull):
         dct['participles'] = [p.forJSON() for p in self.participles]
         dct['orthvars'] = [ov.forJSON() for ov in self.orth_vars]
         dct['author_ids'] = [a[0] for a in self.authors.values_list('id')]
+        dct['etymologies'] = [e.forJSON() for e in self.etymologies]
+        dct['collogroups'] = [cg.forJSON() for cg in self.collogroups]
+        dct['meanings'] = [m.forJSON() for m in self.all_meanings]
+        dct['unsorted_examples'] = [e.forJSON()
+                for e in self.example_set.filter(meaning__isnull=True)]
         return dct
 
     def toJSON(self):
@@ -644,7 +649,10 @@ class Etymology(models.Model):
             'unclear',
             'unitext',
         )
-        return dict((key, self.__dict__[key]) for key in _fields)
+        dct = dict((key, self.__dict__[key]) for key in _fields)
+        dct['etimologies'] = [e
+                for e in Etymology.objects.filter(etymon_to=self)]
+        return dct
 
     def toJSON(self):
         return json.dumps(self.forJSON(),
@@ -878,6 +886,8 @@ class Meaning(models.Model):
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['contexts'] = [c.forJSON() for c in self.contexts]
         dct['collogroups'] = [c.forJSON() for c in self.collogroups]
+        dct['meanings'] = [m.forJSON() for m in self.child_meanings]
+        dct['examples'] = [e.forJSON() for e in self.examples]
         return dct
 
     def toJSON(self):
@@ -1084,6 +1094,8 @@ class CollocationGroup(models.Model, Meaningfull):
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['collocations'] = [c.forJSON() for c in self.collocations]
         dct['meanings'] = [m.forJSON() for m in self.all_meanings]
+        dct['unsorted_examples'] = [e.forJSON()
+                for e in self.example_set.filter(meaning__isnull=True)]
         return dct
 
     def toJSON(self):

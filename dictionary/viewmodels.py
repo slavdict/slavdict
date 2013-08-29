@@ -19,16 +19,7 @@ def _choices(choices):
 
 def entry_json(id):
     entry = dictionary.models.Entry.objects.get(pk=id)
-    data = {
-        'entry': entry.forJSON(),
-        'etymologies': [e.forJSON() for e in entry.etymologies],
-        'collogroups': [cg.forJSON() for cg in entry.collogroups],
-        'meanings': [m.forJSON() for m in entry.all_meanings],
-        'examples': [e.forJSON()
-                     for e in dictionary.models.Example.objects
-                                .filter(entry=entry).order_by('order', 'id')],
-    }
-    return _json(data)
+    return _json(entry.forJSON())
 
 EMPTY_STRING_ID_OBJECT = {'id': '', 'name': u''}
 NONE_ID_OBJECT = {'id': None, 'name': u''}
