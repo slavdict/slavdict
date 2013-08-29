@@ -156,7 +156,6 @@ def json_entry_save(request):
 
 
 def js_error_notify(request):
-    request.POST
     connection = mail.get_connection()
     time = datetime.datetime.now().strftime('%Y.%m.%d %H:%M')
     url = 'http://slavdict.ruslang.ru/entries/%s/edit/' % request.POST['entryId']
