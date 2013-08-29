@@ -119,6 +119,21 @@ function itemDestroyer(item) {
     };
 }
 
+function itemPoolReturner(item) {
+    var array = this;
+    return {
+        do: function () {
+            array.remove(item);
+            if (item.collogroup_id() !== null) {
+                Collogroup.all.idMap[item.collogroup_id()]
+                    .unsorted_examples.push(item);
+            } else {
+                dataModel.entry.unsorted_examples.push(item);
+            }
+        }
+    };
+}
+
 // Конструкторы-реставраторы
 function Etymology() {
     /* Etymology(container[, etymonTo])
@@ -436,6 +451,9 @@ function examplesGuarantor(object, attrname) {
         }[object.constructor.name];
 
     guarantor(object[attrname], func);
+    if (object.constructor.name === 'Meaning') {
+        object[attrname].itemPoolReturner = itemPoolReturner;
+    }
 }
 
 function meaningsGuarantor(object, attrname) {
