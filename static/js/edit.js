@@ -110,12 +110,11 @@ function itemDestroyer(item) {
     var array = this;
     return {
         do: function () {
-            array.remove(item);
             if (typeof item.id() === 'number') {
-                item._destroy = true;
-            } else {
-                array.itemConstructor.all.remove(item);
+                array.itemConstructor.shredder.push(item.id());
             }
+            array.remove(item);
+            array.itemConstructor.all.remove(item);
         }
     };
 }
@@ -547,6 +546,7 @@ function etymologiesGuarantor(object, attrname) {
         Constructor.all.remove = remove;
         Constructor.bag = [];
         Constructor.bag.idMap = {};
+        Constructor.shredder = [];
         Constructor.itemBeingEdited = ko.observable(null);
         Constructor.prototype.edit = editItem;
         Constructor.prototype.stopEditing = stopEditing;
