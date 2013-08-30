@@ -841,7 +841,7 @@ var viewModel = vM.entryEdit,
 
 } catch(e) {
     $.post('/entries/jserror/',
-           {entryId: vM.dataToInitialize.entry.entry.id || 'unknown',
+           {entryId: vM.dataToInitialize.entry.id || 'unknown',
             errorObj: e});
     throw e;
 }
