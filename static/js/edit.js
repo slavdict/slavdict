@@ -677,7 +677,12 @@ var viewModel = vM.entryEdit,
         show: function () { uiModel.saveDialogue.active(true); },
         hide: function () { uiModel.saveDialogue.active(false); },
         saveAndExit: function () {
-            var data, persistingDataPromise;
+            var data, persistingDataPromise,
+                toDestroy = {};
+
+            constructors.forEach(function (item) {
+                toDestroy[item.name] = item.shredder;
+            });
 
             data = ko.toJSON({
                 // FIX: Необходимо либо избавиться от collogroups, etymologies,
@@ -690,7 +695,7 @@ var viewModel = vM.entryEdit,
                         etymologies: Etymology.all,
                         examples: Example.all,
                         meanings: Meaning.all,
-                        destroy: {},
+                        toDestroy: toDestroy,
                 });
 
             // Получаем promise-объект
@@ -731,7 +736,10 @@ var viewModel = vM.entryEdit,
         function load(N) {
             var snapshot = JSON.parse(snapshots()[N]);
             ko.postbox._subscriptions[topic].splice(0);
-            Entry.call(dataModel.entry, snapshot);
+            Entry.call(dataModel.entry, snapshot.entry);
+            constructors.forEach(function (item) {
+                item.shredder = snapshot.toDestroy[item.name];
+            });
             ko.postbox.subscribe(topic, wait);
         }
 
@@ -748,7 +756,11 @@ var viewModel = vM.entryEdit,
             if (cursor.peek() < snapshots.peek().length) {
                 dock(cursor.peek())
             }
-            snapshots.push(ko.toJSON(dataModel.entry));
+            var snapshot = {entry: dataModel.entry, toDestroy: {}};
+            constructors.forEach(function (item) {
+                snapshot.toDestroy[item.name] = item.shredder;
+            });
+            snapshots.push(ko.toJSON(snapshot));
             cursor(cursor.peek() + 1);
         }
 
