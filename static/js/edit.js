@@ -712,7 +712,7 @@ var viewModel = vM.entryEdit,
         },
         exitWithoutSaving: function () {
             viewModel.undoStorage.clear();
-            window.location = '/';
+            window.location = vM.entryURL;
         }
     };
 
