@@ -162,6 +162,15 @@
             </span>
 
             {{ space }}
+            <span class="f5sS--item" data-bind="visible: variants">
+                с вариантами написания
+                <span class="f5sSI--reset"
+                      data-bind="click: function() {
+                                            variants.getDefaultValue();
+                                        }"></span>
+            </span>
+
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: collocations">
                 со словосочетаниями
                 <span class="f5sSI--reset"
@@ -296,6 +305,9 @@
                     <div class="BC">
                     {{ form.etymology }}
                     {{ form.etymology.label_tag() }}
+
+                    {{ form.variants }}
+                    {{ form.variants.label_tag() }}
 
                     {{ form.collocations }}
                     {{ form.collocations.label_tag() }}

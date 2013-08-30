@@ -81,6 +81,11 @@ vM.filters = {
         .rememberDefault(false)
         .htmlCheckbox('etymology'),
 
+    variants: ko.observable()
+        .rememberInitial(vM.valuesToInitialize.variants)
+        .rememberDefault(false)
+        .htmlCheckbox('variants'),
+
     collocations: ko.observable()
         .rememberInitial(vM.valuesToInitialize.collocations)
         .rememberDefault(false)

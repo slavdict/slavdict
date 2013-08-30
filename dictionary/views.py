@@ -171,15 +171,19 @@ def all_entries(request, is_paged=False):
 
 
 @login_required
-def all_examples(request, is_paged=False, mark_as_audited=False):
+def all_examples(request, is_paged=False, mark_as_audited=False,
+                                          mark_as_unaudited=False):
     httpGET_ADDRESS = request.GET.get('address')
     httpGET_ADDRESS_REGEX = request.GET.get('address-regex')
+    httpGET_ADDRESS_GREP_V = request.GET.get('address-grep-v')
     httpGET_AUDITED = request.GET.get('audited') or ('audited' in request.GET)
     httpGET_EXCLUDE = request.GET.get('exclude')
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
+    httpGET_INCLUDE_ONLY = request.GET.get('include-only')
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STATUS = request.GET.get('status')
+    httpGET_SUBSET_OF = request.GET.get('subset-of')
 
     examples = Example.objects.all().order_by('address_text')
 
@@ -195,18 +199,69 @@ def all_examples(request, is_paged=False, mark_as_audited=False):
         examples = examples.filter(audited=False)
 
     if httpGET_ADDRESS_REGEX:
-        print httpGET_ADDRESS_REGEX
         examples = examples.filter(address_text__iregex=httpGET_ADDRESS_REGEX)
     elif httpGET_ADDRESS:
         examples = examples.filter(address_text__istartswith=httpGET_ADDRESS)
+
+    if httpGET_ADDRESS_GREP_V:
+        examples = examples.exclude(address_text__iregex=httpGET_ADDRESS_GREP_V)
 
     if (httpGET_STATUS and httpGET_STATUS in
                        (status for status, name in Example.GREEK_EQ_STATUS)):
         examples = examples.filter(greek_eq_status=httpGET_STATUS)
 
     if httpGET_EXCLUDE:
-        excludes = [int(id) for id in httpGET_EXCLUDE.split(',')]
+        excludes = [int(ID)
+                    for ID in [i.strip().split('-')[-1]
+                               for i in httpGET_EXCLUDE.split(',')]
+                    if ID.isdigit()]
         examples = examples.exclude(pk__in=excludes)
+
+    if httpGET_INCLUDE_ONLY:
+        includes = [int(ID)
+                    for ID in [i.strip().split('-')[-1]
+                               for i in httpGET_INCLUDE_ONLY.split(',')]
+                    if ID.isdigit()]
+        examples = Example.objects.filter(pk__in=includes)
+
+    is_subset = None
+    parts = []
+    if httpGET_SUBSET_OF:
+        superset = set(int(ID)
+                       for ID in [i.strip().split('-')[-1]
+                                  for i in httpGET_SUBSET_OF.split(',')]
+                       if ID.isdigit())
+        subset = set(example.id for example in examples)
+        is_subset = subset.issubset(superset)
+
+        unionset = sorted(superset.union(subset))
+        superset, subset = sorted(superset), sorted(subset)
+
+        cursor = -1
+        kind = None  # 'both' or 'superset' or 'subset'
+        for i in unionset:
+            if i in superset and i in subset:
+                if kind == 'both':
+                    parts[cursor][1].append(i)
+                else:
+                    cursor += 1
+                    kind = 'both'
+                    parts.append((kind, [i]))
+            if i in superset and not i in subset:
+                if kind == 'superset':
+                    parts[cursor][1].append(i)
+                else:
+                    cursor += 1
+                    kind = 'superset'
+                    parts.append((kind, [i]))
+            if not i in superset and i in subset:
+                if kind == 'subset':
+                    parts[cursor][1].append(i)
+                else:
+                    cursor += 1
+                    kind = 'subset'
+                    parts.append((kind, [i]))
+
 
     # Формирование заголовка страницы в зависимости от переданных GET-параметров
     title = u'Примеры'
@@ -215,7 +270,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False):
 
     SORT_REGEX = re.compile(ur'[\s\.\,\;\:\-\(\)\!]+', re.UNICODE)
     def key_emitter(x):
-        x = x.address_text.lower()
+        x = x.address_text.strip().lower()
         parts = SORT_REGEX.split(x)
         parts = [ int(part) if part.isdigit() else part
                   for part in parts ]
@@ -255,11 +310,14 @@ def all_examples(request, is_paged=False, mark_as_audited=False):
                 if k != 'page'
             )
         ),
+        'is_subset': is_subset,
+        'unionset': parts,
         }
 
-    if mark_as_audited:
+    if mark_as_audited or mark_as_unaudited:
+        mark = mark_as_audited #  or not mark_as_unaudited
         for example in examples:
-            example.audited = True
+            example.audited = mark
             example.save(without_mtime=True)
         url = '/print/examples/'
         if context['params_without_page']:
@@ -692,3 +750,24 @@ def edit_entry(request, id):
     }
     return render_to_response('single_entry_edit.html', context,
                               RequestContext(request))
+
+@login_required
+def dump(request):
+    import os
+    pid = os.fork()
+    if not pid:
+        # NOTE: Избавляемся от процессов-зомби, создавая дочерний процесс
+        # дочернего процесса. См. http://stackoverflow.com/a/16809886
+        # Использовать сигналы ``signal.signal(signal.SIGCHLD,
+        # signal.SIG_IGN)`` не получается, поскольку данная функция сама будет
+        # выполняться джангой не в родительском процессе.
+        pid = os.fork()
+        if not pid:
+            os.execvp('python', ('python', 'url_mail_dumper.py'))
+            raise NameError(u'В параллельном процессе отсылки дампа базы '
+                            u'возникла непредвиденная ошибка.')
+        else:
+            os._exit(0)
+    else:
+        os.wait()
+    return  HttpResponseRedirect('/')

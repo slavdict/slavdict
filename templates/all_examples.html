@@ -2,6 +2,35 @@
 {% block shapka %}{% endblock %}
 {% block content %}
 
+{% if is_subset != None %}
+    <div style="color: {% if is_subset %}#0a0{% else %}#a00{% endif %};">
+    Выведенные примеры {% if not is_subset %}не{% endif %}
+    являются подмножеством множества <code>GET['subset-of']</code>
+    </div>
+
+    <div>
+        {% for kind, group in unionset %}
+
+            <span style="padding: 0 0.5em; color: white; background-color:
+            {% if kind == 'both' %}
+                #0a0
+            {% elif kind == 'superset' %}
+                #00a
+            {% elif kind == 'subset' %}
+                #a00
+            {% endif %}
+            ">
+
+            {% for item in group %}
+                {{ item }},
+            {% endfor %}
+
+            </span>
+
+        {% endfor %}
+    </div>
+{% endif %}
+
 {% trim %}
 <div{% if not is_paged %} contenteditable{% endif %}>
 

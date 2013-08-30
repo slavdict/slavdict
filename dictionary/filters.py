@@ -115,6 +115,11 @@ def get_entries(form):
         etyms = Etymology.objects.values_list('entry')
         FILTER_PARAMS['id__in'] = set(item[0] for item in set(etyms))
 
+    # Есть орфографические и т.п. варианты
+    if form['variants']:
+        entries = entries.annotate(orthvar_num=Count('orthographic_variants'))
+        FILTER_PARAMS['orthvar_num__gt'] = 1
+
     # Статьи с словосочетаниями
     if form['collocations']:
         good_entries = set(cg.host_entry.id for cg in CollocationGroup.objects.all() if cg and cg.host_entry)
