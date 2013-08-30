@@ -1192,6 +1192,7 @@ class GreekEquivalentForExample(models.Model):
 
     corrupted = BooleanField(u'текст испорчен', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
 
     @property
     def host_entry(self):
@@ -1216,6 +1217,7 @@ class GreekEquivalentForExample(models.Model):
             'position',
             'source',
             'unitext',
+            'order',
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
@@ -1226,6 +1228,7 @@ class GreekEquivalentForExample(models.Model):
     class Meta:
         verbose_name = u'греческая параллель для примера'
         verbose_name_plural = u'греческие параллели'
+        ordering = ('order', 'id')
 
 
 class OrthographicVariant(models.Model):

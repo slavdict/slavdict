@@ -274,6 +274,7 @@ function Greq() {
     upsert(this, 'position', data, 0);
     upsert(this, 'source', data, '');
     upsert(this, 'unitext', data, '');
+    upsert(this, 'order', data, 345);
     Greq.all.append(this);
 }
 
