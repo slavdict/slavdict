@@ -572,6 +572,7 @@
             onym: '{{ filters.onym }}',
             canonical_name: '{{ filters.canonical_name }}',
             etymology: {{ 'true' if filters.etymology else 'false' }},
+            variants: {{ 'true' if filters.variants else 'false' }},
             collocations: {{ 'true' if filters.collocations else 'false' }},
             meaningcontexts: {{ 'true' if filters.meaningcontexts else 'false' }},
             additional_info: {{ 'true' if filters.additional_info else 'false' }},
