@@ -728,19 +728,39 @@ var viewModel = vM.entryEdit,
     // Активация сохранения json-снимков данных в локальном хранилище.
     viewModel.undoStorage = (function () {
         var uS,  // uS -- undoStorage
+            argus,
             snapshotsKey = 'entry.' + dataModel.entry.id(),
             cursorKey = snapshotsKey + '.cursor',
             cursor = ko.observable(0),
             snapshots = ko.observableArray([]);
 
+        argus = (function () {
+            var io = ko.observable();
+
+            function guard() {
+                if (!io()) {
+                    io(ko.postbox.subscribe(topic, wait));
+                }
+            }
+
+            function doze() {
+                if (io()) {
+                    io().dispose();
+                }
+            }
+
+            return { guard: guard,
+                     doze:  doze };
+        })();
+
         function load(N) {
             var snapshot = JSON.parse(snapshots()[N]);
-            ko.postbox._subscriptions[topic].splice(0);
+            argus.doze();
             Entry.call(dataModel.entry, snapshot.entry);
             constructors.forEach(function (item) {
                 item.shredder = snapshot.toDestroy[item.name];
             });
-            ko.postbox.subscribe(topic, wait);
+            argus.guard();
         }
 
         function dock(N) {
@@ -828,7 +848,7 @@ var viewModel = vM.entryEdit,
 
             clear();
             dump();
-            ko.postbox.subscribe(topic, wait);
+            argus.guard();
         }
 
         uS = {
