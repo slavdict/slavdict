@@ -196,11 +196,11 @@ JSLIBS = {
 _postfix = 'Local'
 for lib in JSLIBS:
     for version in JSLIBS[lib].keys():
-        filename = JSLIBS[lib][version].split('/')[-1]
+        filename = JSLIBS[lib][version].split('/')[-1].split('?')[0]
         if version == 'Xmin':
             JSLIBS[lib]['min'] = JSLIBS_URL + filename
             version = 'min'
-        JSLIBS[lib][version + _postfix] = JSLIBS_URL + filename
+        JSLIBS[lib][version + _postfix] = JSLIBS_URL + filename + '?' + JSLIBS_VERSION
 
 
 # Локальное для компьютера переопределение настроек проекта
@@ -248,6 +248,8 @@ if __name__ == '__main__':
                     url = JSLIBS[lib][version]
                     if url.startswith('//'):
                         url = 'http:' + url
+                    elif not url.startswith('http'):
+                        continue
                     xargs_wget.append(url)
                     xargs_wget.append('-O')
                     xargs_wget.append(JSLIBS_PATH + url.split('/')[-1])
