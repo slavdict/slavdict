@@ -1,0 +1,17 @@
+<section id="orthvars" class="tabcontent" data-bind="with: data.entry">
+
+    <ul data-bind="sortable: orthvars">
+        <li>
+            <input type="button" value="&times;"
+                data-bind="click:
+                    $parent.orthvars.itemDestroyer($data).do"/>
+            <input type="text"
+                data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
+            <span data-bind="wax: idem"></span>
+        </li>
+    </ul>
+
+    <input type="button" value="Добавить вариант"
+        data-bind="click: orthvars.itemAdder($root.data.entry).do"/>
+
+</section>

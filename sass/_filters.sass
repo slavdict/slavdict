@@ -50,6 +50,7 @@ $advertiserColor: #999
             @include button
             @include border-radius(3px)
             position: absolute
+            top: -2px
             background-color: $yellowText
             color: white
 
@@ -62,6 +63,10 @@ $advertiserColor: #999
 
         .f5sSI--reset:hover
             background-color: #a00
+
+@-moz-document url-prefix()
+    .f5s--statusbar .f5sS--item .f5sSI--reset
+        right: -7px
 
 .f5s--dashboard
     display: none

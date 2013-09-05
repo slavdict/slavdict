@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Django settings for slavdict project.
 import os
+import sys
 
 slash = '/'
 backslash = '\\'
@@ -111,6 +112,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
+    'slavdict.context_processors.jslibs',
 )
 
 STATICFILES_DIRS = (
@@ -145,6 +147,61 @@ AUTHENTICATION_BACKENDS = (
 )
 CUSTOM_USER_MODEL = 'custom_user.CustomUser'
 
+# Сторонние библиотеки JavaScript
+JSLIBS_VERSION = '2013.08.27'
+JSLIBS_URL = STATIC_URL + 'js/outsourcing/'
+JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
+JSLIBS = {
+    'jquery': {
+        'debug': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js',
+        'map': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.map',
+    },
+    'jqueryUi': {
+        'debug': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js',
+    },
+    'knockout': {
+        'debug': 'http://knockoutjs.com/downloads/knockout-2.3.0.debug.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js',
+    },
+    'knockoutMapping': {
+        'debug': '//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.3.5/knockout.mapping.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.3.5/knockout.mapping.min.js',
+    },
+    'knockoutSortable': {
+        'debug': 'https://rawgithub.com/rniemeyer/knockout-sortable/v0.8.2/build/knockout-sortable.js',
+        'Xmin': 'https://raw.github.com/rniemeyer/knockout-sortable/v0.8.2/build/knockout-sortable.min.js',
+        # NOTE: Файлы с raw.github.com нельзя отдавать в продакшн. Там
+        # выставляются http-заголовки
+        #
+        #   Content-Type: text/plain; charset=utf-8
+        #   X-Content-Type-Options: nosniff
+        #
+        # что запрещает браузеру распознавать js-файл как js-файл.
+        # Домен rawgithub.com (после raw нету точки!) специально предназначен
+        # в помощь разработчикам для обхода этой проблемы, но расчитан
+        # исключительно для тестирования, отладки, демонстрации. При нагрузке
+        # его трафиком соединения будут скидываться. См. http://rawgithub.com/
+        #
+        # Ключ ``Xmin`` вместо ``min`` использован специально, чтобы этот адрес
+        # не отдавался в продакшн.
+    },
+    'knockoutPostbox': {
+        'debug': 'https://rawgithub.com/rniemeyer/knockout-postbox/v0.3.1/build/knockout-postbox.js',
+        'Xmin': 'https://raw.github.com/rniemeyer/knockout-postbox/v0.3.1/build/knockout-postbox.min.js',
+    },
+}
+
+_postfix = 'Local'
+for lib in JSLIBS:
+    for version in JSLIBS[lib].keys():
+        filename = JSLIBS[lib][version].split('/')[-1]
+        if version == 'Xmin':
+            JSLIBS[lib]['min'] = JSLIBS_URL + filename
+            version = 'min'
+        JSLIBS[lib][version + _postfix] = JSLIBS_URL + filename
+
 
 # Локальное для компьютера переопределение настроек проекта
 try:
@@ -159,3 +216,45 @@ from django.utils import safestring
 if not hasattr(safestring, '__html__'):
     safestring.SafeString.__html__ = lambda self: str(self)
     safestring.SafeUnicode.__html__ = lambda self: unicode(self)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '--jslibs':
+            """ Использование аргумента --jslibs
+
+            Данный вывод в stdout используется в цели jslibs из Makefile.
+            Вывод имеет следующий вид:
+
+              [<ссылка на файл в интернете> -O <абс. имя файла в локальной ФС>]*
+
+            Каждая такая тройка предназначена для wget. Он её будет получать
+            следующим образом:
+
+              python settings.py --jslibs | xargs -n3 wget
+
+            От второго элемента тройки ("-O") отказаться не получилось, т.к.
+            аргументы xargs -L или -n и -I не совместимы (см. man xargs /BUGS).
+            Иначе можно было бы вместо троек использовать двойки и писать:
+
+              python settings.py --jslibs | xargs -n2 -I{} wget {} -O {}
+
+            """
+            xargs_wget = []
+            for lib in JSLIBS:
+                for version in [k
+                                for k in JSLIBS[lib]
+                                if not k.endswith(_postfix)]:
+                    url = JSLIBS[lib][version]
+                    if url.startswith('//'):
+                        url = 'http:' + url
+                    xargs_wget.append(url)
+                    xargs_wget.append('-O')
+                    xargs_wget.append(JSLIBS_PATH + url.split('/')[-1])
+            sys.stdout.write(' '.join(xargs_wget))
+
+        elif sys.argv[1] == '--jslibs-path':
+            sys.stdout.write(JSLIBS_PATH)
+
+        elif sys.argv[1] == '--jslibs-version':
+            sys.stdout.write(JSLIBS_VERSION)

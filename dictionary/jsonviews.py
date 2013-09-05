@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 import collections
+import datetime
 import json
 
+from django.core import mail
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.db.models.loading import get_model
 from django.http import HttpResponse
 
 import dictionary.viewmodels
@@ -121,7 +125,7 @@ def json_goodness_save(request):
     entry = Entry.objects.get(id=entry_id)
     entry.good = goodness
     entry.save(without_mtime=True)
-    return HttpResponse('', mimetype=IMT_JSON, status=200)
+    return HttpResponse(status=200)
 
 
 
@@ -149,11 +153,27 @@ def json_entry_save(request):
 
     )
     process_json_model(model, request.POST)
-    return HttpResponse('ok', mimetype=IMT_JSON, status=200)
+    return HttpResponse(status=200)
+
+
+def js_error_notify(request):
+    connection = mail.get_connection()
+    time = datetime.datetime.now().strftime('%Y.%m.%d %H:%M')
+    url = 'http://slavdict.ruslang.ru/entries/%s/edit/' % request.POST['entryId']
+    emails = [email for name, email in settings.ADMINS]
+    message = mail.EmailMessage(
+        '[slavdict JS Error] %s, %s' % (time, url),
+        unicode(request.POST),
+        'jsException@slavdict.ruslang.ru',
+        emails,
+        connection=connection,
+    )
+    message.send()
+    return HttpResponse(status=200)
 
 
 def process_json_model(json_model, post):
-    post = json.loads(post.get('data'))
+    post = json.loads(post.get('json'))
     for part in json_model:
         data = post[part['name']]
         if isinstance(data, collections.Sequence):
@@ -248,3 +268,11 @@ def process_json_model(json_model, post):
                работает неверно. Значение переменной items_to_process не
                меняется, поэтому оно не сможет достигнуть нуля и выход из
                вечного цикла никогда не произойдет.'''
+
+    to_destroy = post['toDestroy']
+    for model_name in to_destroy:
+        model = get_model('dictionary', {'Greq': 'GreekEquivalentForExample',
+            'Collogroup': 'CollocationGroup', 'Orthvar': 'OrthographicVariant',
+            'Context': 'MeaningContext'}.get(model_name, model_name))
+        for item_id in to_destroy[model_name]:
+            model.objects.get(pk=item_id).delete()

@@ -1,6 +1,6 @@
 #!/bin/bash
 NOW=$(date +"%Y.%m.%d--%H.%M")
-DBS_VERSION=2.34w33
+DBS_VERSION=2.35
 PRJDIR="$( cd "$( dirname "$0" )" && pwd )" # ... dirname "$( readlink -f "$0" )" ...
 DUMPDIR="$PRJDIR/.dumps"
 LASTFILE=$(ls -tA $DUMPDIR/.dictionary*.xml | head -1)

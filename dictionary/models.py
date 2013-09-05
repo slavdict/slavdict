@@ -460,7 +460,7 @@ class Entry(models.Model, Meaningfull):
 
     @property
     def collogroups(self):
-        return self.collocationgroup_set.all().order_by('id')
+        return self.collocationgroup_set.all().order_by('order', 'id')
 
     @property
     def participles(self):
@@ -535,6 +535,11 @@ class Entry(models.Model, Meaningfull):
         dct['participles'] = [p.forJSON() for p in self.participles]
         dct['orthvars'] = [ov.forJSON() for ov in self.orth_vars]
         dct['author_ids'] = [a[0] for a in self.authors.values_list('id')]
+        dct['etymologies'] = [e.forJSON() for e in self.etymologies]
+        dct['collogroups'] = [cg.forJSON() for cg in self.collogroups]
+        dct['meanings'] = [m.forJSON() for m in self.all_meanings]
+        dct['unsorted_examples'] = [e.forJSON()
+                for e in self.example_set.filter(meaning__isnull=True)]
         return dct
 
     def toJSON(self):
@@ -644,7 +649,10 @@ class Etymology(models.Model):
             'unclear',
             'unitext',
         )
-        return dict((key, self.__dict__[key]) for key in _fields)
+        dct = dict((key, self.__dict__[key]) for key in _fields)
+        dct['etimologies'] = [e
+                for e in Etymology.objects.filter(etymon_to=self)]
+        return dct
 
     def toJSON(self):
         return json.dumps(self.forJSON(),
@@ -824,7 +832,7 @@ class Meaning(models.Model):
 
     @property
     def collogroups(self):
-        return self.collocationgroup_set.all().order_by('id')
+        return self.collocationgroup_set.all().order_by('order', 'id')
 
     @property
     def child_meanings(self):
@@ -877,6 +885,9 @@ class Meaning(models.Model):
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['contexts'] = [c.forJSON() for c in self.contexts]
+        dct['collogroups'] = [c.forJSON() for c in self.collogroups]
+        dct['meanings'] = [m.forJSON() for m in self.child_meanings]
+        dct['examples'] = [e.forJSON() for e in self.examples]
         return dct
 
     def toJSON(self):
@@ -1052,6 +1063,7 @@ class CollocationGroup(models.Model, Meaningfull):
     cf_meanings = ManyToManyField(Meaning, verbose_name=u'ср. (значения)',
             related_name='cf_collogroup_set', blank=True, null=True)
 
+    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
     ctime = DateTimeField(editable=False, auto_now_add=True)
     mtime = DateTimeField(editable=False, auto_now=True)
 
@@ -1077,9 +1089,13 @@ class CollocationGroup(models.Model, Meaningfull):
             'base_entry_id',
             'base_meaning_id',
             'id',
+            'order',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['collocations'] = [c.forJSON() for c in self.collocations]
+        dct['meanings'] = [m.forJSON() for m in self.all_meanings]
+        dct['unsorted_examples'] = [e.forJSON()
+                for e in self.example_set.filter(meaning__isnull=True)]
         return dct
 
     def toJSON(self):
@@ -1176,6 +1192,7 @@ class GreekEquivalentForExample(models.Model):
 
     corrupted = BooleanField(u'текст испорчен', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
 
     @property
     def host_entry(self):
@@ -1200,6 +1217,7 @@ class GreekEquivalentForExample(models.Model):
             'position',
             'source',
             'unitext',
+            'order',
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
@@ -1210,6 +1228,7 @@ class GreekEquivalentForExample(models.Model):
     class Meta:
         verbose_name = u'греческая параллель для примера'
         verbose_name_plural = u'греческие параллели'
+        ordering = ('order', 'id')
 
 
 class OrthographicVariant(models.Model):

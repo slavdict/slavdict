@@ -39,11 +39,7 @@
         {% include '_script.knockoutjs.html' %}
 
         {% block javascript_links %}{% endblock %}
-
-        <script type="text/javascript">
-            {% block javascript %}{% endblock %}
-        </script>
-
+        {% block javascript %}{% endblock %}
 
     </body>
 </html>

@@ -1,14 +1,20 @@
+SHELL = /bin/bash
+
 GITWORKTREE = /var/www/slavdict
 GITDIR = /home/git/slavdict.www
+
 SLAVDICT_ENVIRONMENT ?= production
 IS_PRODUCTION = test ${SLAVDICT_ENVIRONMENT} = production || (echo "Окружение не является боевым" && exit 1)
 IS_DEVELOPMENT = test ${SLAVDICT_ENVIRONMENT} = development || (echo "Окружение не являетя тестовым" && exit 1)
 
-run:
+JSLIBS_PATH := $(shell python settings.py --jslibs-path)
+JSLIBS_VERSION_FILE := ${JSLIBS_PATH}version.txt
+JSLIBS_NEW_VERSION := $(shell python settings.py --jslibs-version)
+JSLIBS_OLD_VERSION := $(shell cat ${JSLIBS_VERSION_FILE} 2>/dev/null)
+
+run: collectstatic
 	@echo "Запуск сервера в тестовом окружении..."
 	@$(IS_DEVELOPMENT)
-	compass compile -e development
-	python ./manage.py collectstatic --noinput
 	python ./manage.py runserver
 
 stop:
@@ -23,21 +29,23 @@ checkout:
 	@$(IS_PRODUCTION)
 	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
 		pull origin master
-	compass compile -e production
-	python ./manage.py collectstatic --noinput
+
+_revert:
+	@$(IS_PRODUCTION)
+	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
+		reset --hard HEAD^
+
+revert: _revert collectstatic fixown
+
+fixown:
+	@$(IS_PRODUCTION)
 	chown -R www-data:www-is ./
 	chown -R git:www-is /home/git/slavdict.*
 	chmod u+x ./*.sh
 
-revert:
-	@$(IS_PRODUCTION)
-	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
-		reset --hard HEAD^
-	compass compile -e production
+collectstatic: jslibs
+	compass compile -e ${SLAVDICT_ENVIRONMENT}
 	python ./manage.py collectstatic --noinput
-	chown -R www-data:www-is ./
-	chown -R git:www-is /home/git/slavdict.*
-	chmod u+x ./*.sh
 
 syncdb:
 	python ./manage.py syncdb
@@ -45,22 +53,36 @@ syncdb:
 migrate:
 	python ./manage.py migrate dictionary
 
-restart: stop checkout syncdb start
+restart: stop checkout collectstatic fixown syncdb start
 
-migrestart: stop checkout syncdb migrate start
+migrestart: stop checkout collectstatic fixown syncdb migrate start
 
 clean:
 	-find -name '*.pyc' -execdir rm {} \;
 	-rm -f static/*.css
+	-rm -f ${JSLIBS_PATH}*.{js,map,txt}
 	-rm -fR .sass-cache/
 	-rm -fR .static/*
+
+jslibs:
+	test "${JSLIBS_OLD_VERSION}" == "${JSLIBS_NEW_VERSION}" \
+	|| ( \
+		rm -f ${JSLIBS_PATH}*.{js,map,txt} ; \
+		python settings.py --jslibs | xargs -n3 wget ; \
+		echo ${JSLIBS_NEW_VERSION} > ${JSLIBS_VERSION_FILE} \
+	)
 
 .PHONY: \
     checkout \
     clean \
+    collectstatic \
+    fixown \
+    jslibs \
     migrate \
     migrestart \
     restart \
+    revert \
+    _revert \
     run \
     start \
     stop \

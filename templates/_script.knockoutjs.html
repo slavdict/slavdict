@@ -1,9 +1,19 @@
 {% if debug %}
+
     <script type="text/javascript"
-        src="//cloud.github.com/downloads/SteveSanderson/knockout/knockout-2.2.0.debug.js"></script>
-    <script>window.ko || document.write('<script src="{{ STATIC_URL }}js/libs/knockout-2.2.0.debug.js"><\/script>')</script>
+        src="{{ JSLIBS.knockout.debugLocal }}"></script>
+
 {% else %}
+
     <script type="text/javascript"
-        src="//cdnjs.cloudflare.com/ajax/libs/knockout/2.2.0/knockout-min.js"></script>
-    <script>window.ko || document.write('<script src="{{ STATIC_URL }}js/libs/knockout-2.2.0.js"><\/script>')</script>
+        src="{{ JSLIBS.knockout.min }}"></script>
+
+    <script>
+        window.ko || document.write(
+            "<script src='" +
+            "{{ JSLIBS.knockout.minLocal }}" +
+            "'><\/script>"
+            )
+    </script>
+
 {% endif %}

@@ -1,0 +1,18 @@
+<script type="text/html" id="editMeaning">
+
+    <label>Значение</label>
+    <input type="text" data-bind="value: meaning, valueUpdate: 'afterkeydown'"/>
+    <br/><br/>
+
+    <label>Пояснение</label>
+    <input type="text" data-bind="value: gloss, valueUpdate: 'afterkeydown'"/>
+    <br/><br/>
+
+    <label>Примечание</label>
+    <textarea data-bind="value: additional_info"></textarea>
+    <br/><br/>
+
+    <input type="button" value="закончить редактирование" 
+        data-bind="click: stopEditing" />
+
+</script>

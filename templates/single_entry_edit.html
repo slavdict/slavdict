@@ -1,18 +1,8 @@
-{% extends 'base--hdrSearch.html' %}
-
-{% block header %}
-
-    {{ super() }}
-    {% if not intermed %}
-        {{ space }}
-        <a href="{% url 'switch_info_url' %}"
-           class="header--item{% if show_additional_info %} on{% endif %}">Инфо</a>
-    {% endif %}
-
-{% endblock %}
-
+{% extends 'base.html' %}
 
 {% block content %}
+<div class="curtain"></div>
+
 <div class="grid edit"
      ondblclick="
          var x = $(this);
@@ -25,20 +15,18 @@
     <div class="message antconsol" data-bind="text: data.entry.antconc_query,
         visible: data.entry.antconc_query"></div>
 
-    <span class="cslav headword" data-bind="text: ui.entry.headword"></span>
+    <span data-bind="wax: ui.entry.headword, waxCss: 'headword cslav'"></span>
     <i data-bind="text: ui.entry.part_of_speech"></i>
 
     <div style="margin: 30px 0;">
 
         <label>Заглавное слово</label>
-        <input type="text" data-bind="value: data.entry.orthvars()[0].idem,
+        <input type="text" data-bind="value: ui.entry.headword,
             valueUpdate: 'afterkeydown'"/>
         <br/><br/>
 
         <label>Автор</label>
-        <select data-bind="options: ui.choices.author,
-            value: data.entry.author_ids, optionsText: 'name',
-            optionsValue: 'id'">
+        <select multiple="multiple">
         </select>
         <br/><br/>
 
@@ -50,396 +38,122 @@
         <br/><br/>
 
         <label>Примечание</label>
-        <textarea data-bind="value: data.entry.additional_info"></textarea>
+        <textarea data-bind="value: data.entry.additional_info,
+            valueUpdate: 'afterkeydown'"></textarea>
 
     </div>
 
-    <nav class="tabs">
-    <ul>
-        <li><a href="#orthvars">Варианты</a></li>
-        <li class="current"><a href="#info">Справочная инфо</a></li>
-        <li><a href="#meanings">Значения</a></li>
-        <li><a href="#examples">Примеры</a></li>
-        <li><a href="#constructions">Конструкции</a></li>
-    </ul>
-    </nav>
+    {% trim %}
+    {% include '_entryEdit_tabs.html' %}
+    {% endtrim %}
 
-    <section id="info" class="tabcontent current">
+    <input type="button" value="Закончить редактирование"
+        data-bind="click: ui.saveDialogue.show" />
 
-        <select data-bind="options: ui.choices.part_of_speech,
-            value: data.entry.part_of_speech, optionsText: 'name',
-            optionsValue: 'id'">
-        </select>
+    <input type="button" value="undo"
+        data-bind="click: undoStorage.undo,
+                   disable: undoStorage.shouldDisableUndo" />
 
-        <br/><br/>
-        <div data-bind="visible:
-            data.entry.part_of_speech() === ui.slugs.part_of_speech['noun'] ||
-            data.entry.part_of_speech() === ui.slugs.part_of_speech['adjective']">
-            <label>
-                Неизменяемое
-                <input type="checkbox"
-                       data-bind="checked: data.entry.uninflected"/>
-            </label>
-        </div>
+    <input type="button" value="redo"
+        data-bind="click: undoStorage.redo,
+                   disable: undoStorage.shouldDisableRedo" />
 
-        <br/><br/>
-        <div data-bind="visible:
-            data.entry.part_of_speech() === ui.slugs.part_of_speech['noun']">
+    <div class="modalContainer" style="display: none;"
+        data-bind="visible: Meaning.itemBeingEdited">
+        <div class="modalBackground"></div>
+        <div class="modal"
+            data-bind="template: {
+                            name: 'editMeaning',
+                            data: Meaning.itemBeingEdited,
+                            if: Meaning.itemBeingEdited }"></div>
+    </div>
 
-            <label>
-                Форма Р. падежа
-                <input type="text" data-bind="value: data.entry.genitive"/>
-            </label>
-
-        <br/><br/>
-            <label>
-                Род
-                <select data-bind="options: ui.choices.gender,
-                    value: data.entry.gender, optionsText: 'name',
-                    optionsValue: 'id'">
-                </select>
-            </label>
-
-            <label>
-                Число
-                <select data-bind="options: ui.choices.tantum,
-                    value: data.entry.tantum, optionsText: 'name',
-                    optionsValue: 'id'">
-                </select>
-            </label>
-
-        <br/><br/>
-            <label>
-                Тип имени собственного
-                <select data-bind="options: ui.choices.onym,
-                    value: data.entry.onym, optionsText: 'name',
-                    optionsValue: 'id'">
-                </select>
-            </label>
-
-            <label data-bind="visible:
-                data.entry.onym() == ui.slugs.onym['anthroponym']">
-                Каноническое
-                <input type="checkbox"
-                       data-bind="checked: data.entry.canonical_name"/>
-            </label>
-
-            <div data-bind="visible:
-                data.entry.onym() == ui.slugs.onym['ethnonym']">
-
-                <label>
-                    И.ед.м.
-                    <input type="text" data-bind="value: data.entry.nom_sg,
-                                            valueUpdate: 'afterkeydown'"/>
-                </label>
-
-                <span class="cslav" data-bind="text: ui.entry.nom_sg"></span>
-
-            </div>
-
-        </div>
-
-        <div data-bind="visible:
-                            data.entry.part_of_speech() ===
-                            ui.slugs.part_of_speech['adjective']">
-
-            <label>
-                Краткая форма
-                <input type="text" data-bind="value: data.entry.short_form,
-                                              valueUpdate: 'afterkeydown'"/>
-            </label>
-
-            <span class="cslav" data-bind="text: ui.entry.short_form"></span>
-
-            Притяжательное
-            <input type="checkbox"
-                   data-bind="checked: data.entry.possessive"/>
-
-        </div>
-
-        <div data-bind="visible:
-            data.entry.part_of_speech() === ui.slugs.part_of_speech['verb']">
-
-            <label>
-                Форма 1ед.
-                <input type="text" data-bind="value: data.entry.sg1,
-                                              valueUpdate: 'afterkeydown'"/>
-            </label>
-
-            <span class="cslav" data-bind="text: ui.entry.sg1"></span>
-
-        <br/><br/>
-            <label>
-                Форма 2ед.
-                <input type="text" data-bind="value: data.entry.sg2,
-                                              valueUpdate: 'afterkeydown'"/>
-            </label>
-
-            <span class="cslav" data-bind="text: ui.entry.sg2"></span>
-
-        <br/><br/>
-            <ul data-bind="sortable: data.entry.participles">
-                <li>
-
-                    <input type="button" value="&times;"
-                        data-bind="click:
-                            $root.ui.destroyParticiple.bind(null, $data)"/>
-
-                    <label>
-                        Тип причастия
-                        <select data-bind="
-                            options: $root.ui.choices.participle_type,
-                            value: tp, optionsText: 'name',
-                            optionsValue: 'id'">
-                        </select>
-                    </label>
-
-                    <input type="text"
-                        data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
-
-                    <span class="cslav" data-bind="text: idem_ucs"></span>
-
-                </li>
-            </ul>
-
-            <input type="button" value="Добавить причастие"
-                data-bind="click: ui.addParticiple"/>
-
-        </div>
-
-    </section>
-
-    <section id="orthvars" class="tabcontent">
-
-        <ul data-bind="sortable: data.entry.orthvars">
-            <li>
-                <input type="button" value="&times;"
-                    data-bind="click:
-                        $root.ui.destroyOrthvar.bind(null, $data)"/>
-                <input type="text"
-                    data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
-                <span class="cslav" data-bind="text: idem_ucs"></span>
-            </li>
-        </ul>
-
-        <input type="button" value="Добавить вариант"
-            data-bind="click: ui.addOrthvar"/>
-
-    </section>
-
-    <section id="meanings" class="tabcontent">
-
-        <ul data-bind="sortable: data.meanings">
-            <li>
-                <span data-bind="visible: metaphorical">►</span>
-                <span data-bind="text: meaning"></span>
-                <i data-bind="text: gloss"></i>
-            </li>
-        </ul>
-
-    </section>
-
-    <section id="examples" class="tabcontent">
-    </section>
-
-    <section id="constructions" class="tabcontent">
-    </section>
+    <div class="modalContainer" style="display: none;"
+        data-bind="visible: ui.saveDialogue.active">
+        <div class="modalBackground"></div>
+        <div class="modal"
+            data-bind="template: {
+                            name: 'saveDialogue',
+                            if: ui.saveDialogue.active }"></div>
+    </div>
 
 </div>
+
+
 {% endblock %}
 
 
 {% block javascript_links %}
 
-    {% include '_script.knockout.mapping.html' %}
-
-    {% include '_script.knockout.sortable.html' %}
+    <script src="{{ STATIC_URL }}js/hdrSearch.js"
+        type="application/javascript" charset="utf-8"></script>
 
     <script src="{{ STATIC_URL }}js/libs/ac2ucs8.js"
         type="text/javascript" charset="utf-8"></script>
 
-{% endblock %}
+    {% include '_script.knockout.postbox.html' %}
 
+    {% include '_script.knockout.sortable.html' %}
 
-{% block javascript %}
+    <script>
 
-    {{ super() }}
-
-    var mapping = {
-            orthvars: {
-                create: function(options){ return new Orthvar(options); }
-            },
-            participles: {
-                create: function(options){ return new Participle(options); }
-            }
-        },
-
-        ac2ucs8 = antconc_ucs8,
-        ac2cvlr = antconc_civilrus_word,
-
-        wax = function wax(field) {
-            var field = this(),
-                isAffix = (field[0] === '-');
-            return ac2ucs8(isAffix? field.slice(1):field,
-                           isAffix? true:false);
-        },
-
-        Orthvar = function(options, entry) {
-            this.idem = ko.observable(options.data && options.data.idem || '');
-            this.idem_ucs = ko.computed(wax, this.idem);
-            this.order = ko.observable();
-
-            if (typeof options.data !== 'undefined') {
-                this.entry_id = options.data.entry_id;
-                this.id = options.data.id;
-                this.order(options.data.order);
-            } else {
-                this.entry_id = entry.id;
-                this.id = 'orthvar' + Orthvar.counter;
-                this.order(Orthvar.largestOrder + 1);
-            }
-
-            Orthvar.counter++;
-
-            if (Orthvar.largestOrder < this.order()) {
-                Orthvar.largestOrder = this.order();
-            }
-        },
-        Meaning = function(options) {},
-        Participle = function(options, entry) {
-            this.idem = ko.observable(options.data && options.data.idem || '');
-            this.idem_ucs = ko.computed(wax, this.idem);
-            this.order = ko.observable();
-            this.tp = ko.observable(options.data && options.data.tp || '');
-
-            if (typeof options.data !== 'undefined') {
-                this.entry_id = options.data.entry_id;
-                this.id = options.data.id;
-                this.order(options.data.order);
-            } else {
-                this.entry_id = entry.id;
-                this.id = 'participle' + Participle.counter;
-                this.order(Participle.largestOrder + 1);
-            }
-
-            Participle.counter++;
-
-            if (Participle.largestOrder < this.order()) {
-                Participle.largestOrder = this.order();
-            }
-        },
-
-        data = {{ entry }};
-
-    Orthvar.counter = 0;
-    Orthvar.largestOrder = 0;
-
-    Participle.counter = 0;
-    Participle.largestOrder = 0;
-
-    ko.mapping.defaultOptions().ignore.splice(0, 0, 'idem_ucs');
-
-    var placeholderClass = 'sortable-placeholder';
-    ko.bindingHandlers.sortable.options = {
-        axis: 'y',
-        cursor: 'move',
-        cursorAt: { left: 50, bottom: 0 },
-        forceHelperSize: true,
-        forcePlaceholderSize: true,
-        helper: 'clone',
-        opacity: 0.7,
-        placeholder: placeholderClass,
-        start: function(event, ui){
-            var y = ui.helper.outerHeight();
-            $('.' + placeholderClass).height(y);
-        },
-        tolerance: 'pointer'
-    };
-
-    ko.bindingHandlers.sortable.afterMove = function(arg) {
-        var i, j, arr = arg.targetParent();
-        for (i=0, j=arr.length; i<j; i++) {
-            arr[i].order(i);
-        }
-    };
-
-
-
-    vM.entryEdit = {
-        data: ko.mapping.fromJS(data, mapping),
-        ui: {
-            entry: {},
+        vM.dataToInitialize = {
+            entry: {{ entry }},
             choices: {{ choices }},
             labels: {{ labels }},
             slugs: {{ slugs }}
-        }
-    };
+        };
 
-    var viewModel = vM.entryEdit,
-        dataModel = viewModel.data,
-        uiModel = viewModel.ui,
-        dataEntry = dataModel.entry,
-        uiEntry = uiModel.entry;
+        vM.entryURL = '{{ entryURL }}';
 
 
-    uiEntry.genitive = ko.computed(wax, dataEntry.genitive);
-    uiEntry.headword = ko.computed(wax, dataEntry.orthvars()[0].idem);
-    uiEntry.nom_sg = ko.computed(wax, dataEntry.nom_sg);
-    uiEntry.sg1 = ko.computed(wax, dataEntry.sg1);
-    uiEntry.sg2 = ko.computed(wax, dataEntry.sg2);
-    uiEntry.short_form = ko.computed(wax, dataEntry.short_form);
+        // Настройки knockout-sortable
+        var placeholderClass = 'sortable-placeholder';
+        ko.bindingHandlers.sortable.options = {
+            appendTo: document.body,
+            cursor: 'move',
+            grid: [30, 1],
+            placeholder: placeholderClass,
+            start: function (event, ui) {
+                var x = $(ui.item),
+                    y = x.outerHeight();
+                x.addClass('being-dragged');
+                $('.' + placeholderClass).height(y);
+            },
+            stop: function (event, ui) {
+                $(ui.item).removeClass('being-dragged');
+            },
+        };
 
-    uiEntry.part_of_speech = ko.computed(function(){
-        var x = this.data.entry.part_of_speech(),
-            y = this.ui.labels.part_of_speech;
-        if (x in y) {
-            return y[x];
-        } else {
-            console.log('Часть речи "', x, '" не найдена среди ', y);
-            return '';
-        }
-    }, viewModel);
 
-    uiModel.save = function() {
-        $.post('/entries/save/', {data: ko.mapping.toJSON(dataModel, mapping)});
-    };
+        // Новый binding для отображения полуюникода в цсл виде
+        // с различением слов и частей слова.
+        var ac2ucs8 = antconc_ucs8,
+            ac2cvlr = antconc_civilrus_word;
+        ko.bindingHandlers.wax = {
+            init: function (element, valueAccessor, allBindingsAccessor) {
+                var value = valueAccessor(),
+                    cssClasses = allBindingsAccessor().waxCss || 'cslav';
+                value.wax = ko.computed(function () {
+                        var word = value(),
+                            isAffix = (word[0] === '-'),
+                            dash = isAffix ? '<span>-</span>': '',
+                            text = ('<span class="' + cssClasses + '">' +
+                                    ac2ucs8(isAffix ? word.slice(1) : word, isAffix) +
+                                    '</span>');
+                            return dash + text;
+                    });
+                $(element).html(value.wax());
+            },
+            update: function (element, valueAccessor) {
+                var value = valueAccessor();
+                $(element).html(value.wax());
+            }
+        };
 
-    uiModel.addMeaing = function() {
-        this.meanings.push(new Meaning({}));
-    }.bind(dataModel);
+    </script>
 
-    uiModel.addOrthvar = function() {
-        this.orthvars.push(new Orthvar({}, this));
-    }.bind(dataEntry);
-
-    uiModel.destroyOrthvar = function(orthvar) {
-        if (typeof orthvar.id === 'number') {
-            this.orthvars.destroy(orthvar);
-        } else {
-            this.orthvars.remove(orthvar);
-        }
-    }.bind(dataEntry);
-
-    uiModel.addParticiple = function() {
-        this.participles.push(new Participle({}, this));
-    }.bind(dataEntry);
-
-    uiModel.destroyParticiple = function(item) {
-        if (typeof item.id === 'number') {
-            this.participles.destroy(item);
-        } else {
-            this.participles.remove(item);
-        }
-    }.bind(dataEntry);
-
-    ko.applyBindings(viewModel, $('#main').get(0));
-
-    $('nav.tabs li').click(function(){
-        $('nav.tabs li.current').removeClass('current');
-        $('section.tabcontent.current').removeClass('current');
-        var x = $(this);
-        x.addClass('current');
-        $(x.find('a').attr('href')).addClass('current');
-    });
+    <script src="{{ STATIC_URL }}js/edit.js"
+        type="application/javascript" charset="utf-8"></script>
 
 {% endblock %}

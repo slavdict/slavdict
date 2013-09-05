@@ -1,14 +1,16 @@
 {% extends 'base--hdrSearch.html' %}
 
 {% block content %}
-    <style>
+    <style type="text/css">
         #window-container { position: relative; }
         #antconc-convertee, #ucs8-raw, #ucs8,
             #step1, #step2, #step3 { position: absolute; }
 
         #step1 { top: 25px; }
         #step1, #step2, #step3 { width: 37%; height: 100px; }
-        #step1 .main, #step2 .main, #step3 .main { width: 84%; float: right; display: block; }
+        #step1 .main,
+        #step2 .main,
+        #step3 .main { width: 84%; float: right; display: block; }
         #antconc-convertee { width: 60%; height: 100px; top: 25px; left: 42%; }
 
         #step2 { top: 165px; }
@@ -43,7 +45,8 @@
                 заменив имеющийся там иллюстративный текст.</span>
         </div>
 
-        <textarea id="antconc-convertee" class="antconsol">{{ convertee }}</textarea>
+        <textarea id="antconc-convertee"
+            class="antconsol">{{ convertee }}</textarea>
 
         <div class="message" id="step2">
             <u>Шаг 2</u>.
@@ -57,8 +60,9 @@
             <u>Шаг 3</u>.
             <span class="main">Чтобы текст принял нормальный вид,
             назначьте ему <span class="nobr">в редакторе</span> шрифт
-            наподобие «Irmologion UCS». В&nbsp;названии шрифта должно обязательно фигурировать «UCS», например,
-            «Triodion UCS», «Hirmos UCS», «Akathistos UCS» и т.п.</span>
+            наподобие «Irmologion UCS». В&nbsp;названии шрифта должно
+            обязательно фигурировать «UCS», например, «Triodion UCS»,
+            «Hirmos UCS», «Akathistos UCS» и т.п.</span>
         </div>
 
         <div id="ucs8" class="cslav"></div>
@@ -69,6 +73,7 @@
 {% endblock %}
 
 {% block javascript %}
+<script type="application/javascript">
 
    $(function(){
       var x = antconc_ucs8($('#antconc-convertee').val(), false);
@@ -81,4 +86,5 @@
       });
    });
 
+</script>
 {% endblock %}

@@ -747,6 +747,7 @@ def edit_entry(request, id):
         'choices': dictionary.viewmodels._json(choices),
         'labels': dictionary.viewmodels._json(labels),
         'slugs': dictionary.viewmodels._json(slugs),
+        'entryURL': Entry.objects.get(pk=id).get_absolute_url(),
     }
     return render_to_response('single_entry_edit.html', context,
                               RequestContext(request))
