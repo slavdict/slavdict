@@ -453,9 +453,9 @@ function Entry(data) {
 
 // Гаранты свойств элементов разных списков.
 function guarantor(array, func) {
-    array.subscribe(function (changedArray) {
-        changedArray.forEach(func);
-    }).callback(array());
+    var subscriber = function (changedArray) { changedArray.forEach(func); };
+    array.subscribe(subscriber);
+    subscriber(array());
 }
 
 function orderGuarantor(object, attrname) {
