@@ -1,6 +1,5 @@
-Coffin==0.3.7
-django-tinymce==1.5.1b2
-Django==1.5
+Coffin==0.3.8
+Django==1.5.2
 html5lib==0.95
 Jinja2==2.6
 newrelic==1.7.0.31
