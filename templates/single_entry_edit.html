@@ -1,5 +1,38 @@
 {% extends 'base.html' %}
 
+{% block header %}
+
+    {{ space }}
+    <input type="button" data-bind="click: ui.saveDialogue.show"
+        class="header--item button" value="Закончить редактирование" />
+
+    {{ space }}
+    <input type="button" class="header--item button"
+        data-bind="
+            click: undoStorage.undo,
+            disable: undoStorage.shouldDisableUndo"
+        value="↶" /><!-- или ⟲ -->
+
+    {{ space }}
+    <input type="button" class="header--item button"
+        data-bind="
+            click: undoStorage.redo,
+            disable: undoStorage.shouldDisableRedo"
+        value="↷" /><!-- или ⟳ -->
+
+    <span class="right-justification">
+
+        <a href="http://ruscorpora.ru/search-orthlib.html"
+           class="header--item button" target="_new">НКРЯ (цсл)</a>
+
+        {{ space }}
+        <a href="https://docs.google.com/document/d/1F2vnJpp_J48X49tdwrqefmtNd7wJIiAbuExp5TgZuwE/view?hl=en_US"
+           class="header--item button" target="_new">Инструкция</a>
+
+    </span>
+
+{% endblock %}
+
 {% block content %}
 <div class="curtain"></div>
 
@@ -47,17 +80,6 @@
     {% include '_entryEdit_tabs.html' %}
     {% endtrim %}
 
-    <input type="button" value="Закончить редактирование"
-        data-bind="click: ui.saveDialogue.show" />
-
-    <input type="button" value="undo"
-        data-bind="click: undoStorage.undo,
-                   disable: undoStorage.shouldDisableUndo" />
-
-    <input type="button" value="redo"
-        data-bind="click: undoStorage.redo,
-                   disable: undoStorage.shouldDisableRedo" />
-
     <div class="modalContainer" style="display: none;"
         data-bind="visible: Meaning.itemBeingEdited">
         <div class="modalBackground"></div>
@@ -85,9 +107,6 @@
 
 {% block javascript_links %}
 
-    <script src="{{ STATIC_URL }}js/hdrSearch.js"
-        type="application/javascript" charset="utf-8"></script>
-
     <script src="{{ STATIC_URL }}js/libs/ac2ucs8.js"
         type="text/javascript" charset="utf-8"></script>
 
@@ -96,6 +115,8 @@
     {% include '_script.knockout.sortable.html' %}
 
     <script>
+
+        var vM = {};
 
         vM.dataToInitialize = {
             entry: {{ entry }},

@@ -864,7 +864,7 @@ var viewModel = vM.entryEdit,
         return uS;
     })();
 
-    ko.applyBindings(viewModel, $('#main').get(0));
+    ko.applyBindings(viewModel, $('body').get(0));
 
     // Поднять занавес
     $('.curtain').fadeOut();
