@@ -746,6 +746,7 @@ var viewModel = vM.entryEdit,
             function doze() {
                 if (io()) {
                     io().dispose();
+                    io(null);
                 }
             }
 
