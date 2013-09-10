@@ -774,15 +774,15 @@ var viewModel = vM.entryEdit,
         }
 
         function dump() {
-            if (cursor.peek() < snapshots.peek().length) {
-                dock(cursor.peek())
+            if (cursor() < snapshots().length) {
+                dock(cursor())
             }
             var snapshot = {entry: dataModel.entry, toDestroy: {}};
             constructors.forEach(function (item) {
                 snapshot.toDestroy[item.name] = item.shredder;
             });
             snapshots.push(ko.toJSON(snapshot));
-            cursor(cursor.peek() + 1);
+            cursor(cursor() + 1);
         }
 
         function wait() {
