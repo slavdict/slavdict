@@ -95,6 +95,18 @@ div#main
     width: 40em
     position: relative
 
+#main-flex
+    display: flex
+
+    & > aside
+        order: 1
+        width: 23%
+        border: 1px solid green
+
+    & > article
+        order: 2
+        width: 77%
+        border: 1px solid red
 
 .exgroup
     color: #a00
