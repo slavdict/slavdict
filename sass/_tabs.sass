@@ -7,7 +7,7 @@ nav.tabs ul
     padding: 0
     height: 45px
     display: flex
-    background-color: rgba(240, 240, 240, 0.1)
+    @include background(linear-gradient(top, rgba(252, 243, 208, 0.7) 0%, rgba(210, 146, 22, 0) 100%))
 
     li
         flex: 0 1 auto
@@ -54,7 +54,7 @@ nav.tabs ul
         &:last-child
             flex: 1 1 auto
             margin-top: 45px
-            @include box-shadow(0 -1px 10px rgba(0,0,0,0.2))
+            @include box-shadow(0 -1px 10px rgba(210, 146, 22, 0.2))
         &:hover
             background-color: #F7E9B0
             color: #d29216
