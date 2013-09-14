@@ -722,7 +722,7 @@ var viewModel = vM.entryEdit,
         $('section.tabcontent.current').removeClass('current');
         var x = $(this);
         x.addClass('current');
-        $(x.find('a').attr('href')).addClass('current');
+        $(x.data('href')).addClass('current');
     });
 
     // Активация сохранения json-снимков данных в локальном хранилище.

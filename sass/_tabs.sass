@@ -2,52 +2,68 @@
 
 
 nav.tabs ul
-    width: 700px
     overflow: hidden
     margin: 0
     padding: 0
-    height: 25px
+    height: 35px
+    display: flex
 
     li
-        list-style-type: none
+        flex: 0 1 auto
+        margin-top: 10px
+        padding: 4px 20px 0px 20px
         height: 26px
-        width: 100px
         cursor: pointer
-        @include transform(perspective(30px) rotateX(7deg))
-        @include transform-style(preserve-3d)
-        @include border-radius(5px 5px 0 0)
-        background-color: #eee
-        position: relative
-        float: left
-        border: 1px solid #aaa
+        background-color: #efefef
         border-bottom: none
         margin-left: -2px
         @include user-select(none)
-        @include border-radius(4px)
-        @include box-shadow(0 10px 20px rgba(0,0,0,0.4))
+        @include border-radius(9px, 23px)
+        @include box-shadow(0 10px 20px rgba(0,0,0,0.7), 0px -1px 10px rgba(120,120,120,0.4))
         text-align: center
         font-family: Arial
         font-size: 12px
-        color: #777
+        position: relative
+        color: #888
+
+        &:before
+            content: ''
+            background-color: inherit
+            width: 10px
+            height: 25px
+            display: block
+            position: absolute
+            bottom: 0
+            left: -2px
+            @include rotate(15deg)
+
+        &:after
+            content: ''
+            background-color: inherit
+            width: 10px
+            height: 25px
+            display: block
+            position: absolute
+            bottom: 0
+            right: -2px
+            @include rotate(-15deg)
 
         &:first-child
-            margin-left: 15px
-        &:nth-child(2)
-            width: 140px
+            margin-left: 35px
+        &:last-child
+            flex: 1 1 auto
+            margin-top: 35px
+            @include box-shadow(0 -1px 10px rgba(0,0,0,0.2))
         &:hover
             background-color: #F7E9B0
+            color: #d29216
         &.current
             background-color: white
             z-index: 2
-
-        a
-            display: block
             color: #777
-            margin-top: 5px
-            @include transform(perspective(30px) rotateX(-7deg))
+            @include box-shadow(0 10px 20px rgba(0,0,0,0.7), 0px -1px 10px rgba(0,0,0,0.4))
 
 section.tabcontent
-    width: 700px
     padding-top: 25px
     display: none
 
@@ -66,6 +82,9 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
     font-size: 11px
     line-height: 18px
 
+.edit section .cslav
+    font-size: 16px !important
+
 .edit
     @include myFormWidgets
     background-color: white
@@ -75,9 +94,6 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
     input
         @include box-sizing(border-box)
-
-    span.headword
-        font-size: 18px !important
 
     ul.ko_container,
     ul.meanings,
@@ -140,9 +156,6 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
         li li:last-of-type:after
             @include box-shadow(none)
 
-
-    span.cslav
-        font-size: 16px !important
 
     ul.meanings:before,
     ul.examples:before,

@@ -3,21 +3,25 @@
     <head>
         <meta charset="utf-8">
         <title>{{ title }}</title>
-        <link href="{{ STATIC_URL }}{% block css %}style.css{% endblock %}"
+        <link href="{{ STATIC_URL }}{% block css %}flex.css{% endblock %}"
             rel="stylesheet" type="text/css">
     </head>
     <body>
         <noscript>Для правильной работы данной лексикографической
         системы необходимо, чтобы у Вас были включены скрипты.</noscript>
+    <main>
 
-        <div class="header"><div class="grid without-overflow">
+        <header>
+            <nav>
             {% block header %}{% endblock %}
-        </div></div>
+            </nav>
+        </header>
 
-        <div id="main-flex">
+        <main>
             {% block content %}{% endblock %}
-        </div>
+        </main>
 
+    </main>
 
         {% include '_script.jquery.html' %}
         {% include '_script.knockoutjs.html' %}
