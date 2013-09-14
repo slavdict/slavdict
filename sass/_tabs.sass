@@ -110,6 +110,10 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
             padding: 10px $listElementHorizontalPadding
             margin-top: 10px
             position: relative
+            cursor: move
+            cursor: -moz-grab
+            cursor: -webkit-grab
+            @include user-select(none)
             @include box-shadow(0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset)
 
             &.sortable-placeholder
@@ -123,6 +127,9 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
                 width: percentage($draggedElement) !important
                 line-height: 4em
                 overflow: hidden
+                cursor: move
+                cursor: -moz-grabbing
+                cursor: -webkit-grabbing
 
                 &:first-line
                     line-height: 1em
