@@ -148,7 +148,7 @@ AUTHENTICATION_BACKENDS = (
 CUSTOM_USER_MODEL = 'custom_user.CustomUser'
 
 # Сторонние библиотеки JavaScript
-JSLIBS_VERSION = '2013.08.27'
+JSLIBS_VERSION = '2013.09.14'
 JSLIBS_URL = STATIC_URL + 'js/outsourcing/'
 JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
 JSLIBS = {
@@ -190,6 +190,11 @@ JSLIBS = {
     'knockoutPostbox': {
         'debug': 'https://rawgithub.com/rniemeyer/knockout-postbox/v0.3.1/build/knockout-postbox.js',
         'Xmin': 'https://raw.github.com/rniemeyer/knockout-postbox/v0.3.1/build/knockout-postbox.min.js',
+    },
+    'zeroClipboard': {
+        'debug': 'https://rawgithub.com/zeroclipboard/ZeroClipboard/v1.1.7/ZeroClipboard.js',
+        'Xmin': 'https://raw.github.com/zeroclipboard/ZeroClipboard/v1.1.7/ZeroClipboard.min.js',
+        'swf': 'https://github.com/zeroclipboard/ZeroClipboard/raw/v1.1.7/ZeroClipboard.swf',
     },
 }
 

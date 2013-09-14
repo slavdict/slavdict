@@ -24,6 +24,10 @@
 
 <aside>
 
+    <input type="button" class="header--item button" id="copy_antconc_query"
+        value="Запрос для AntConc" />
+
+    {{ space }}
     <a href="http://ruscorpora.ru/search-orthlib.html"
        class="header--item button" target="_new">НКРЯ (цсл)</a>
 
@@ -104,6 +108,8 @@
 
     <script src="{{ STATIC_URL }}js/libs/ac2ucs8.js"
         type="text/javascript" charset="utf-8"></script>
+
+    {% include '_script.zeroClipboard.html' %}
 
     {% include '_script.knockout.postbox.html' %}
 

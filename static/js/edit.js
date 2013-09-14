@@ -867,6 +867,12 @@ var viewModel = vM.entryEdit,
 
     ko.applyBindings(viewModel, $('body').get(0));
 
+    // Инициализация ZeroClipboard
+    var clip = new ZeroClipboard($('#copy_antconc_query'));
+    clip.on('dataRequested', function (client, args) {
+        client.setText(dataModel.entry.antconc_query());
+    });
+
     // Поднять занавес
     $('.curtain').fadeOut();
 
