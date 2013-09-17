@@ -1,0 +1,15 @@
+<section id="admin" class="tabcontent">
+
+    <div>
+        <label>Автор</label>
+    </div>
+
+    <div>
+        <label>Статус статьи</label>
+        <select data-bind="options: ui.choices.entry_status,
+            value: data.entry.status, optionsText: 'name',
+            optionsValue: 'id'">
+        </select>
+    </div>
+
+</section>
