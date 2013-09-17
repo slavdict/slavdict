@@ -43,7 +43,10 @@ body
             @include background(linear-gradient(top, rgba(252, 243, 208, 0.7) 0%, rgba(210, 146, 22, 0.2) 100%))
 
             & div
-                padding: 1em
+                padding: 12px 30px 0 27px
+            & label
+                font-weight: bold
+                color: sienna
 
         & > article
             width: 77%
@@ -91,3 +94,26 @@ body > header
         &[disabled]
             background-color: $headerBackgroundColor
             color: #727272
+
+#aside--note textarea,
+#aside--headword input
+    transition: all 0.5s
+    width: 100%
+    max-width: 100%
+    border-color: tan
+    color: sienna
+    @include opacity(0.8)
+
+    &:focus,
+    &:hover
+        background-color: white
+        color: #444
+        border: 1px solid #aaa !important
+        @include opacity(1)
+
+#aside--note textarea
+    @include box-sizing(border-box)
+    min-height: 200px
+    padding: .3em .5em
+    background-color: rgba(252, 243, 208, 0.1)
+
