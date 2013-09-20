@@ -2,9 +2,9 @@
 
     <ul data-bind="sortable: orthvars">
         <li>
-            <input type="button" value="&times;"
-                data-bind="click:
-                    $parent.orthvars.itemDestroyer($data).do"/>
+            <input type="image" src="{{ STATIC_URL }}/deleteItem.png"
+                class="deleteOrthvar"
+                data-bind="click: $parent.orthvars.itemDestroyer($data).do"/>
             <input type="text"
                 data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
             <span data-bind="wax: idem"></span>

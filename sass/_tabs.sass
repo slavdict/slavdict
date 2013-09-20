@@ -190,3 +190,20 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
     ul.collogroups ul.meanings ul.meanings:before
         content: 'Употребления'
 
+#orthvars ul li
+    padding-left: 12px
+
+    .deleteOrthvar
+        opacity: 0.3
+        position: absolute
+        top: 30%
+        right: 17px
+
+    &.being-dragged
+        width: percentage($listElementWidth) !important
+
+    input[type="text"]
+        margin-left: 20px
+
+    .cslav
+        margin-left: 10px
