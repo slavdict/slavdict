@@ -868,9 +868,19 @@ var viewModel = vM.entryEdit,
     ko.applyBindings(viewModel, $('body').get(0));
 
     // Инициализация ZeroClipboard
-    var clip = new ZeroClipboard($('#copy_antconc_query'));
+    var copyButton = $('#copy_antconc_query'),
+        clip = new ZeroClipboard(copyButton),
+        tip = new Opentip(copyButton,
+                    'Запрос для AntConc скопирован в буфер обмена.',
+                    { target: true, tipJoint: 'bottom center',
+                      removeElementsOnHide: true, hideEffectDuration: 2.5,
+                      stemLength: 12, stemBase: 15,
+                      background: 'rgb(252, 243, 208)',
+                      borderColor: 'rgb(232, 213, 178)'});
     clip.on('dataRequested', function (client, args) {
         client.setText(dataModel.entry.antconc_query());
+        tip.show();
+        tip.hide();
     });
 
     // Поднять занавес
