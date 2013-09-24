@@ -1,6 +1,8 @@
 <nav class="tabs">
 <ul>
+    {% if user.is_admeditor %}
     <li data-href="#admin">Служебная инф.</li>
+    {% endif %}
     <li data-href="#info" class="current">Справочная инф.</li>
     <li data-href="#orthvars">Варианты</li>
     <li data-href="#structure">Структура</li>
