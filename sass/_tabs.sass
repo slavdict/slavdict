@@ -229,3 +229,107 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
     & > div:last-of-type
         flex: 1 1 auto
+
+#infoTab--uninflected
+    @include column(5)
+    @include append(15)
+    margin-bottom: 1.2em
+
+    & label
+        @include column(5, true)
+
+        & input
+            @include column(1)
+
+        & span
+            @include column(4, true)
+
+#infoTab--genitive
+    @include column(10)
+    @include append(15)
+    margin-bottom: 1.2em
+
+    & label
+        @include column(5)
+        @include pull(1)
+
+        & span
+            @include column(3)
+            text-align: right
+
+        & input
+            @include column(2, true)
+
+    & > span
+        @include column(5, true)
+
+#infoTab--gender
+    @include column(4)
+    margin-bottom: 1.2em
+
+    & > select,
+        @include column(2, true)
+
+    & > span
+        @include column(2)
+        text-align: right
+
+    & > div
+        @include column(2, true)
+
+        & label
+            @include column(2, true)
+
+            & input
+                @include column(1)
+
+            & span
+                @include column(1, true)
+
+#infoTab--number
+    @include column(5)
+
+    & > span
+        @include column(2)
+        text-align: right
+
+    & > select
+        @include column(3, true)
+
+#infoTab--onym
+    @include column(9)
+    clear: left
+    margin-bottom: 1.2em
+
+    & span
+        @include column(2)
+        text-align: right
+        line-height: 10px
+
+    & select
+        @include column(3)
+
+#infoTab--canonical
+    @include column(4)
+    clear: left
+    @include prepend(1)
+
+    & input
+        @include column(1)
+
+    & span
+        @include column(3, true)
+
+#infoTab--nomSg
+    @include column(11)
+    clear: left
+
+    & label input
+        @include column(4)
+
+    & label span
+        @include column(2)
+        text-align: right
+
+    & > span
+        @include column(5, true)

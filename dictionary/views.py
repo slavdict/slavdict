@@ -749,6 +749,7 @@ def edit_entry(request, id):
         'slugs': dictionary.viewmodels._json(slugs),
         'entryURL': Entry.objects.get(pk=id).get_absolute_url(),
         'PARTS_OF_SPEECH': dictionary.models.PART_OF_SPEECH_CHOICES,
+        'GENDERS': dictionary.models.GENDER_CHOICES,
     }
     return render_to_response('single_entry_edit.html', context,
                               RequestContext(request))

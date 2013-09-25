@@ -28,64 +28,76 @@
 
 </div>
 
-<div>
-    <div data-bind="visible:
+<div class="grid">
+
+    <div id="infoTab--uninflected" data-bind="visible:
         part_of_speech() === $root.ui.slugs.part_of_speech['noun'] ||
         part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
         <label>
-            Неизменяемое
-            <input type="checkbox"
-                   data-bind="checked: uninflected"/>
+            <input type="checkbox" data-bind="checked: uninflected"/>
+            <span>Неизменяемое</span>
         </label>
     </div>
 
-    <br/><br/>
     <div data-bind="visible:
         part_of_speech() === $root.ui.slugs.part_of_speech['noun']">
 
-        <label>
-            Форма Р. падежа
-            <input type="text" data-bind="value: genitive"/>
-        </label>
+        <div id="infoTab--genitive">
+            <label>
+                <span>Форма Р.п.</span>
+                <input type="text" data-bind="value: genitive"/>
+            </label>
+            <span data-bind="wax: genitive"></span>
+        </div>
 
-    <br/><br/>
-        <label>
-            Род
+        <label id="infoTab--gender">
+            <span>Род</span>
+
             <select data-bind="options: $root.ui.choices.gender,
                 value: gender, optionsText: 'name',
-                optionsValue: 'id'">
+                optionsValue: 'id', visible: gender">
             </select>
+
+            <div data-bind="visible: !gender()">
+                {% for id, name in GENDERS %}
+                <label data-bind="css: { checked: gender() == '{{ id }}' }">
+                    <input type="radio" name="gender"
+                        value="{{ id }}" data-bind="checked: gender"/>
+                    <span>{{ name }}</span>
+                </label>
+                {% endfor %}
+            </div>
+
         </label>
 
-        <label>
-            Число
+        <label id="infoTab--number">
+            <span>Число</span>
             <select data-bind="options: $root.ui.choices.tantum,
                 value: tantum, optionsText: 'name',
                 optionsValue: 'id'">
             </select>
         </label>
 
-    <br/><br/>
-        <label>
-            Тип имени собственного
+        <label id="infoTab--onym">
+            <span>Тип имени собст.</span>
             <select data-bind="options: $root.ui.choices.onym,
                 value: onym, optionsText: 'name',
                 optionsValue: 'id'">
             </select>
         </label>
 
-        <label data-bind="visible:
+        <label id="infoTab--canonical" data-bind="visible:
             onym() == $root.ui.slugs.onym['anthroponym']">
-            Каноническое
             <input type="checkbox"
                    data-bind="checked: canonical_name"/>
+            <span>Каноническое</span>
         </label>
 
-        <div data-bind="visible:
+        <div id="infoTab--nomSg" data-bind="visible:
             onym() == $root.ui.slugs.onym['ethnonym']">
 
             <label>
-                И.ед.м.
+                <span>И.ед.м.</span>
                 <input type="text" data-bind="value: nom_sg,
                                         valueUpdate: 'afterkeydown'"/>
             </label>
