@@ -66,10 +66,10 @@ nav.tabs ul
 
 section.tabcontent
     padding-top: 25px
-    display: none
+    display: none !important
 
     &.current
-        display: block
+        display: block !important
 
 
 
@@ -190,10 +190,12 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
     ul.collogroups ul.meanings ul.meanings:before
         content: 'Употребления'
 
-#orthvars ul li
+#orthvars ul li,
+#infoTab--participles ul li
     padding-left: 12px
 
-    .deleteOrthvar
+    .deleteOrthvar,
+    .deleteParticiple
         opacity: 0.3
         position: absolute
         top: 30%
@@ -202,33 +204,39 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
     &.being-dragged
         width: percentage($listElementWidth) !important
 
+#orthvars ul li
+
     input[type="text"]
         margin-left: 20px
 
     .cslav
         margin-left: 10px
 
-#info main
+#info
     display: flex
+    flex-direction: column
 
-    & > div:first-of-type
-        flex: 3 0 auto
+    & > section:first-of-type
+        display: flex
 
-        & label
-            padding: 0.5em 0.7em
-            line-height: 2.3em
-            display: block-inline
+        & > section:first-of-type
+            flex: 3 0 auto
 
-            &.checked
-                @include border-radius(5px)
-                background-color: rgb(252, 243, 208)
-                color: sienna
+            & label
+                padding: 0.5em 0.7em
+                line-height: 2.3em
+                display: block-inline
 
-    & > div.n-adj-v:first-of-type
-        flex: 0 0 90px
+                &.checked
+                    @include border-radius(5px)
+                    background-color: rgb(252, 243, 208)
+                    color: sienna
 
-    & > div:last-of-type
-        flex: 1 1 auto
+        & > section.n-adj-v:first-of-type
+            flex: 0 0 90px
+
+        & > section:last-of-type
+            flex: 1 1 auto
 
 #infoTab--uninflected,
 #infoTab--possessive
@@ -344,3 +352,49 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
 #infoTab--nomSg label span
     word-spacing: 0.0005em
+
+#infoTab--sg1,
+#infoTab--sg2
+    @include column(15)
+    clear: left
+    margin-bottom: 1.2em
+
+    & label span
+        @include column(3)
+        text-align: right
+
+    & label input
+        @include column(5)
+
+    & > span
+        @include column(7, true)
+
+#infoTab--participles
+    +column(12)
+    margin-top: 2.4em
+    clear: left
+
+    header
+        color: #777
+        font-weight: bold
+        border-bottom: 1px #777 solid
+        padding-left: 12px
+
+    ul:empty + input[type="button"]
+        margin-left: 12px
+        margin-top: 7px
+
+    ul > li > div
+        padding-left: 5px
+
+        & > label
+
+            & > span
+                +column(1)
+                line-height: 20px
+            & > select
+                +column(3)
+                height: 20px
+
+            & > input[type="text"]
+                +column(4)
