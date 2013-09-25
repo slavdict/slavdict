@@ -1,11 +1,34 @@
 <section id="info" class="tabcontent current" data-bind="with: data.entry">
+<main>
+<div data-bind="css: { 'n-adj-v': $root.ui.nAdjV }">
+
+    <!-- ko ifnot: $root.ui.nAdjV -->
+
+    <div>{% for id, name in PARTS_OF_SPEECH %}
+        {% if loop.index in [1, 6, 11] %}
+            <div style="width: 120px; float: left;">
+        {% endif %}
+        <label data-bind="css: { checked: part_of_speech() == '{{ id }}' }">
+            <input type="radio" name="partofspeech"
+                value="{{ id }}" data-bind="checked: part_of_speech"/>
+            {{ space }}{{ name }}
+        </label>
+        {% if loop.index in [5, 10, 12] %}</div>{% else %}<br />{% endif %}
+    {% endfor %}</div>
+
+    <!-- /ko -->
+    <!-- ko if: $root.ui.nAdjV -->
 
     <select data-bind="options: $root.ui.choices.part_of_speech,
         value: part_of_speech, optionsText: 'name',
         optionsValue: 'id'">
     </select>
 
-    <br/><br/>
+    <!-- /ko -->
+
+</div>
+
+<div>
     <div data-bind="visible:
         part_of_speech() === $root.ui.slugs.part_of_speech['noun'] ||
         part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
@@ -140,4 +163,6 @@
 
     </div>
 
+</div>
+</main>
 </section>

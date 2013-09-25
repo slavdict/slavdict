@@ -865,6 +865,10 @@ var viewModel = vM.entryEdit,
         return uS;
     })();
 
+    uiModel.nAdjV = ko.computed(function () {
+        return uiModel.entry.part_of_speech().match(/^(сущ|прил|гл)\.$/);
+    });
+
     ko.applyBindings(viewModel, $('body').get(0));
 
     // Инициализация ZeroClipboard
