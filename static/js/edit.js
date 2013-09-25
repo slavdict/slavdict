@@ -871,7 +871,8 @@ var viewModel = vM.entryEdit,
 
     ko.applyBindings(viewModel, $('body').get(0));
 
-    // Инициализация ZeroClipboard
+    // Инициализация ZeroClipboard и Opentip для кнопки копирования
+    // AntConc-запроса.
     var copyButton = $('#copy_antconc_query'),
         clip = new ZeroClipboard(copyButton),
         tip = new Opentip(copyButton,
