@@ -30,14 +30,12 @@
 
 <div class="grid">
 
-    <div id="infoTab--uninflected" data-bind="visible:
-        part_of_speech() === $root.ui.slugs.part_of_speech['noun'] ||
-        part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
-        <label>
-            <input type="checkbox" data-bind="checked: uninflected"/>
-            <span>Неизменяемое</span>
-        </label>
-    </div>
+    <label id="infoTab--uninflected" data-bind="visible:
+    part_of_speech() === $root.ui.slugs.part_of_speech['noun'] ||
+    part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
+        <span>Неизменяемое</span>
+        <input type="checkbox" data-bind="checked: uninflected"/>
+    </label>
 
     <div data-bind="visible:
         part_of_speech() === $root.ui.slugs.part_of_speech['noun']">
@@ -45,7 +43,8 @@
         <div id="infoTab--genitive">
             <label>
                 <span>Форма Р.п.</span>
-                <input type="text" data-bind="value: genitive"/>
+                <input type="text" data-bind="value: genitive,
+                                        valueUpdate: 'afterkeydown'"/>
             </label>
             <span data-bind="wax: genitive"></span>
         </div>
@@ -88,16 +87,16 @@
 
         <label id="infoTab--canonical" data-bind="visible:
             onym() == $root.ui.slugs.onym['anthroponym']">
+            <span>Каноническое</span>
             <input type="checkbox"
                    data-bind="checked: canonical_name"/>
-            <span>Каноническое</span>
         </label>
 
         <div id="infoTab--nomSg" data-bind="visible:
             onym() == $root.ui.slugs.onym['ethnonym']">
 
             <label>
-                <span>И.ед.м.</span>
+                <span>И. ед. м.</span>
                 <input type="text" data-bind="value: nom_sg,
                                         valueUpdate: 'afterkeydown'"/>
             </label>
@@ -111,17 +110,21 @@
     <div data-bind="visible:
         part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
 
-        <label>
-            Краткая форма
-            <input type="text" data-bind="value: short_form,
-                                          valueUpdate: 'afterkeydown'"/>
+        <label id="infoTab--possessive">
+            <span>Притяжательное</span>
+            <input type="checkbox"
+                   data-bind="checked: possessive"/>
         </label>
 
-        <span data-bind="wax: short_form"></span>
+        <div id="infoTab--shortForm">
+            <label>
+                <span>Краткая форма</span>
+                <input type="text" data-bind="value: short_form,
+                                              valueUpdate: 'afterkeydown'"/>
+            </label>
 
-        Притяжательное
-        <input type="checkbox"
-               data-bind="checked: possessive"/>
+            <span data-bind="wax: short_form"></span>
+        </div>
 
     </div>
 

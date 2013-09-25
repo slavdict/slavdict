@@ -230,23 +230,24 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
     & > div:last-of-type
         flex: 1 1 auto
 
-#infoTab--uninflected
-    @include column(5)
+#infoTab--uninflected,
+#infoTab--possessive
+    @include column(4)
     @include append(15)
     margin-bottom: 1.2em
 
-    & label
-        @include column(5, true)
+    & input
+        @include column(1, true)
+        margin-top: 2px
+        margin-left: -3px
 
-        & input
-            @include column(1)
-
-        & span
-            @include column(4, true)
+    & span
+        @include column(3)
+        text-align: right
 
 #infoTab--genitive
     @include column(10)
-    @include append(15)
+    @include prepend(1)
     margin-bottom: 1.2em
 
     & label
@@ -265,7 +266,9 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
 #infoTab--gender
     @include column(4)
-    margin-bottom: 1.2em
+    @include prepend(1)
+    margin-bottom: 2.4em
+    clear: left
 
     & > select,
         @include column(2, true)
@@ -282,6 +285,7 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
             & input
                 @include column(1)
+                margin-top: 2px
 
             & span
                 @include column(1, true)
@@ -297,7 +301,8 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
         @include column(3, true)
 
 #infoTab--onym
-    @include column(9)
+    @include column(10)
+    @include prepend(1)
     clear: left
     margin-bottom: 1.2em
 
@@ -307,29 +312,35 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
         line-height: 10px
 
     & select
-        @include column(3)
+        @include column(4)
 
 #infoTab--canonical
     @include column(4)
     clear: left
-    @include prepend(1)
 
     & input
-        @include column(1)
+        @include column(1, true)
+        margin-top: 2px
+        margin-left: -3px
 
     & span
-        @include column(3, true)
+        @include column(3)
+        text-align: right
 
-#infoTab--nomSg
-    @include column(11)
+#infoTab--nomSg,
+#infoTab--shortForm
+    @include column(12)
     clear: left
 
     & label input
         @include column(4)
 
     & label span
-        @include column(2)
+        @include column(3)
         text-align: right
 
     & > span
         @include column(5, true)
+
+#infoTab--nomSg label span
+    word-spacing: 0.0005em
