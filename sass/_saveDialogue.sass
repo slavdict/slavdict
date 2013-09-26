@@ -1,0 +1,67 @@
+@charset 'utf-8'
+
+#sD--entryAdvertisement
+    +prepend(1)
+    margin-bottom: 3em
+    margin-top: 2em
+    padding-bottom: 3em
+    border-bottom: 1px dashed #777
+
+#sD--entryStatus
+    +column(4)
+    +prepend(1)
+
+    & > span
+        font-weight: bold
+        color: #777
+        +column(4, true)
+        margin-bottom: .3em
+
+    & > label
+        +column(4, true)
+        +box-sizing(border-box)
+        line-height: 2.3em
+        padding: 0.1em 0.7em
+        display: block-inline
+
+        &.checked
+            @include border-radius(5px)
+            background-color: rgb(252, 243, 208)
+            color: sienna
+
+#sD--additionalInfo
+    +column(14)
+    +push(1)
+
+    label
+        font-weight: bold
+        color: #777
+        display: block
+        margin-bottom: .4em
+
+    textarea
+        +column(14, true)
+        +box-sizing(border-box)
+        height: 185px
+        padding: 0.2em 0.5em
+
+#sD--buttons
+    margin-top: 5em
+    +column(21)
+
+    a
+        color: steelBlue
+        border-bottom: 1px dotted steelBlue
+        cursor: pointer
+        margin-left: 19px
+        line-height: 22px
+    a:hover
+        color: tomato
+        border-color: tomato
+
+#sD--saveAndExit
+    +column(3, true)
+    +prepend(6)
+
+    input
+        +column(3, true)

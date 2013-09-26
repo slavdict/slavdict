@@ -61,16 +61,15 @@
 
     <article class="edit">
 
-        <header>
-            <span data-bind="wax: ui.entry.headword, waxCss: 'cslav'"
-                style="font-size: 22px"></span>
-            <i data-bind="text: ui.entry.part_of_speech"
-                style="font-size: 13px"></i>
-        </header>
+        <header data-bind="template: { name: 'entryAdvertisement' }"></header>
 
         {% trim %}
         {% include '_entryEdit_tabs.html' %}
         {% endtrim %}
+
+        {% include '_template.editMeaning.html' %}
+        {% include '_template.saveDialogue.html' %}
+        {% include '_template.entryAdvertisement.html' %}
 
         <div class="modalContainer" style="display: none;"
             data-bind="visible: Meaning.itemBeingEdited">
