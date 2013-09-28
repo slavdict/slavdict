@@ -3,16 +3,12 @@
     <ul class="meanings" data-bind="sortable: { data: meanings,
                                                 connectClass: 'meanings' }">
         <li>
-            <nav class="item-dashboard">
-                <a href="#"
-                   data-bind="click: $parent.meanings.itemDestroyer($data).do"
-                           >Удалить</a>{{ space }}
-                <a href="#"
-                   data-bind="click: $data.edit"
-                           >Изменить</a>{{ space }}
-                <a href="#" data-bind="click: toggle"
-                           >Раскрыть</a>{{ space }}
-            </nav>
+            <a type="image" class="deleteItem"
+                data-bind="click: $parent.meanings.itemDestroyer($data).do"></a>
+            <a type="image" class="editItem" data-bind="click: edit"></a>
+            <a type="image" class="expandItem" data-bind="click: toggle,
+                css: { expanded: isExpanded }"></a>
+
             <span data-bind="text: order"></span>
             <span data-bind="visible: metaphorical">►</span>
             <span data-bind="text: meaning"></span>
@@ -31,16 +27,14 @@
                                                 connectClass: 'meanings' },
                                             visible: isExpanded">
                 <li>
-                    <nav class="item-dashboard">
-                        <a href="#"
-                           data-bind="click: $parent.meanings.itemDestroyer($data).do"
-                                   >Удалить</a>{{ space }}
-                        <a href="#"
-                           data-bind="click: $data.edit"
-                                   >Изменить</a>{{ space }}
-                        <a href="#" data-bind="click: toggle"
-                                   >Раскрыть</a>{{ space }}
-                    </nav>
+                    <a type="image" class="deleteItem"
+                        data-bind="click:
+                            $parent.meanings.itemDestroyer($data).do"></a>
+                    <a type="image" class="editItem"
+                        data-bind="click: edit"></a>
+                    <a type="image" class="expandItem" data-bind="click: toggle,
+                        css: { expanded: isExpanded }"></a>
+
                     <span data-bind="text: order"></span>
                     <span data-bind="visible: metaphorical">►</span>
                     <span data-bind="text: meaning"></span>
@@ -62,12 +56,14 @@
             <ul class="collogroups"
                 data-bind="sortable: collogroups, visible: isExpanded">
                 <li>
-                    <nav class="item-dashboard">
-                        <a href="#">Удалить</a>{{ space }}
-                        <a href="#">Изменить</a>{{ space }}
-                        <a href="#" data-bind="click: toggle"
-                                   >Раскрыть</a>{{ space }}
-                    </nav>
+                    <a type="image" class="deleteItem"
+                        data-bind="click:
+                            $parent.collogroups.itemDestroyer($data).do"></a>
+                    <a type="image" class="editItem"
+                        data-bind="click: edit"></a>
+                    <a type="image" class="expandItem" data-bind="click: toggle,
+                        css: { expanded: isExpanded }"></a>
+
                     <span data-bind="text: order"></span>
                     <span data-bind="foreach: collocations">
                         {{ backspace }}
@@ -80,16 +76,15 @@
                                   { data: meanings, connectClass: 'meanings' },
                         visible: isExpanded">
                         <li>
-                            <nav class="item-dashboard">
-                                <a href="#"
-                                   data-bind="click: $parent.meanings.itemDestroyer($data).do"
-                                           >Удалить</a>{{ space }}
-                                <a href="#"
-                                   data-bind="click: $data.edit"
-                                           >Изменить</a>{{ space }}
-                                <a href="#" data-bind="click: toggle"
-                                           >Раскрыть</a>{{ space }}
-                            </nav>
+                            <a type="image" class="deleteItem"
+                                data-bind="click:
+                                $parent.meanings.itemDestroyer($data).do"></a>
+                            <a type="image" class="editItem"
+                                data-bind="click: edit"></a>
+                            <a type="image" class="expandItem"
+                                data-bind="click: toggle,
+                                css: { expanded: isExpanded }"></a>
+
                             <span data-bind="text: order"></span>
                             <span data-bind="visible: metaphorical">►</span>
                             <span data-bind="text: meaning"></span>

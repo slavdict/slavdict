@@ -398,3 +398,40 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
             & > input[type="text"]
                 +column(4)
+
+.expandItem,
+.deleteItem,
+.editItem
+    width: 16px
+    height: 16px
+    opacity: 0.3
+    position: absolute
+    border: none
+    outline: none
+    cursor: pointer
+    display: none
+
+li:hover:not(.being-dragged) > .expandItem,
+li:hover:not(.being-dragged) > .deleteItem,
+li:hover:not(.being-dragged) > .editItem
+    display: block
+
+.expandItem
+    top: 10px
+    left: -8px
+    background: url(expandItem.png)
+    @include transform(rotate(0deg))
+    transition: all 0.4s
+
+.expandItem.expanded
+    @include transform(rotate(90deg))
+
+.deleteItem
+    background: url(deleteItem.png)
+    top: -8px
+    right: -8px
+
+.editItem
+    background: url(editItem.png)
+    top: -8px
+    right: 12px
