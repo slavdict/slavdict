@@ -17,7 +17,8 @@
             <ul class="examples" data-bind="sortable: { data: examples,
                                                 connectClass: 'examples' },
                                             visible: isExpanded">
-                <li>
+                <li data-bind="event: { dblclick: function(){} },
+                        dblclickBubble: false">
                     <span data-bind="wax: example"></span>{{ space }}
                     (<span data-bind="text: address_text"></span>)
                 </li>
@@ -46,7 +47,8 @@
                     <ul class="examples" data-bind="sortable:
                             { data: examples, connectClass: 'examples' },
                         visible: isExpanded">
-                        <li>
+                        <li data-bind="event: { dblclick: function(){} },
+                                dblclickBubble: false">
                             <span data-bind="wax: example"></span>{{ space }}
                             (<span data-bind="text: address_text"></span>)
                         </li>
@@ -102,7 +104,8 @@
                             <ul class="examples" data-bind="sortable:
                                 { data: examples, connectClass: 'examples' },
                                 visible: isExpanded">
-                                <li>
+                                <li data-bind="event: { dblclick: function(){} },
+                                        dblclickBubble: false">
                                     <span data-bind="wax: example"></span>{{ space }}
                                     (<span data-bind="text: address_text"></span>)
                                 </li>
