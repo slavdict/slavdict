@@ -2,7 +2,7 @@
 
     <ul class="meanings" data-bind="sortable: { data: meanings,
                                                 connectClass: 'meanings' }">
-        <li>
+        <li data-bind="event: { dblclick: toggle }, dblclickBubble: false">
             <a class="deleteItem"
                 data-bind="click: $parent.meanings.itemDestroyer($data).do"></a>
             <a class="editItem" data-bind="click: edit"></a>
@@ -28,7 +28,8 @@
             <ul class="meanings" data-bind="sortable: { data: meanings,
                                                 connectClass: 'meanings' },
                                             visible: isExpanded">
-                <li>
+                <li data-bind="event: { dblclick: toggle },
+                    dblclickBubble: false">
                     <a type="image" class="deleteItem"
                         data-bind="click:
                             $parent.meanings.itemDestroyer($data).do"></a>
@@ -61,7 +62,8 @@
 
             <ul class="collogroups"
                 data-bind="sortable: collogroups, visible: isExpanded">
-                <li>
+                <li data-bind="event: { dblclick: toggle },
+                    dblclickBubble: false">
                     <a type="image" class="deleteItem"
                         data-bind="click:
                             $parent.collogroups.itemDestroyer($data).do"></a>
@@ -81,7 +83,8 @@
                     <ul class="meanings" data-bind="sortable:
                                   { data: meanings, connectClass: 'meanings' },
                         visible: isExpanded">
-                        <li>
+                        <li data-bind="event: { dblclick: toggle },
+                            dblclickBubble: false">
                             <a type="image" class="deleteItem"
                                 data-bind="click:
                                 $parent.meanings.itemDestroyer($data).do"></a>
