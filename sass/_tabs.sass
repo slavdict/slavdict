@@ -420,7 +420,7 @@ li:hover:not(.being-dragged) > .addItem
 
 $expandPosition: 28px
 .expandItem
-    left: $expandPosition
+    right: $expandPosition
     background: url(expandItem.png)
     @include transform(rotate(0deg))
     transition: all 0.4s
@@ -430,11 +430,11 @@ $expandPosition: 28px
 
 .deleteItem
     background: url(deleteItem.png)
-    left: -8px
+    right: -8px
 
 .editItem
     background: url(editItem.png)
-    left: $expandPosition + 18px
+    right: $expandPosition + 18px
 
 .addItem
     left: $expandPosition + 18px * 2
