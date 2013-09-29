@@ -3,10 +3,10 @@
     <ul class="meanings" data-bind="sortable: { data: meanings,
                                                 connectClass: 'meanings' }">
         <li>
-            <a type="image" class="deleteItem"
+            <a class="deleteItem"
                 data-bind="click: $parent.meanings.itemDestroyer($data).do"></a>
-            <a type="image" class="editItem" data-bind="click: edit"></a>
-            <a type="image" class="expandItem" data-bind="click: toggle,
+            <a class="editItem" data-bind="click: edit"></a>
+            <a class="expandItem" data-bind="click: toggle,
                 css: { expanded: isExpanded }"></a>
 
             <span data-bind="text: order"></span>
@@ -22,6 +22,8 @@
                     (<span data-bind="text: address_text"></span>)
                 </li>
             </ul>
+            <a class="addItem" data-bind="visible: isExpanded,
+                click: examples.itemAdder($data, $root.data.entry).do"></a>
 
             <ul class="meanings" data-bind="sortable: { data: meanings,
                                                 connectClass: 'meanings' },
@@ -48,10 +50,14 @@
                             (<span data-bind="text: address_text"></span>)
                         </li>
                     </ul>
+                    <a class="addItem" data-bind="visible: isExpanded, click:
+                        examples.itemAdder($data, $root.data.entry).do"></a>
 
                 </li>
 
             </ul>
+            <a class="addItem" data-bind="visible: isExpanded,
+                click: meanings.itemAdder($root.data.entry, $data).do"></a>
 
             <ul class="collogroups"
                 data-bind="sortable: collogroups, visible: isExpanded">
@@ -98,17 +104,26 @@
                                     (<span data-bind="text: address_text"></span>)
                                 </li>
                             </ul>
+                            <a class="addItem"
+                                data-bind="visible: isExpanded,
+                                click: examples.itemAdder($data,
+                                    $root.data.entry, $parent).do"></a>
 
                         </li>
                     </ul>
+                    <a class="addItem"
+                        data-bind="visible: isExpanded,
+                        click: meanings.itemAdder($parent).do"></a>
 
                 </li>
             </ul>
+            <a class="addItem"
+                data-bind="visible: isExpanded,
+                click: collogroups.itemAdder($data).do"></a>
 
         </li>
     </ul>
-
-    <input type="button" value="Добавить значение"
-        data-bind="click: meanings.itemAdder($root.data.entry).do">
+    <a class="addItem" id="addTopMeaning"
+        data-bind="click: meanings.itemAdder($root.data.entry).do"></a>
 
 </section>

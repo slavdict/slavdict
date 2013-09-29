@@ -74,7 +74,7 @@ section.tabcontent
 
 
 $listWidth: 560px
-$listElementHorizontalPadding: 30px
+$listElementHorizontalPadding: 20px
 $listElementWidth: ($listWidth - $listElementHorizontalPadding*2) / $listWidth
 $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
@@ -102,6 +102,16 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
         width: $listWidth
         position: relative
         z-index: 0
+
+        & + a.addItem
+            height: 30px
+            display: block
+            border: 1px dashed black
+            width: percentage($listElementWidth)
+            background: url(addItem.png) 10px 7px no-repeat no-repeat
+            opacity: 0.2
+            cursor: pointer
+            margin-bottom: 12px
 
         li
             width: percentage($listElementWidth)
@@ -138,7 +148,8 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
             &.being-dragged:before
                 @include box-shadow(none !important)
 
-            ul
+            ul,
+            ul + a.addItem
                 width: 90%
                 margin-left: 10%
 
@@ -172,6 +183,8 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
         font-weight: bold
         color: sienna
         border-bottom: 1px dotted sienna
+    ul:empty::before
+        border-bottom: none
 
     ul.meanings:before
         content: 'Значения'
@@ -190,6 +203,10 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
     ul.collogroups ul.meanings ul.meanings:before
         content: 'Употребления'
+
+#addTopMeaning.addItem
+    width: $listWidth - 5px
+
 
 #orthvars ul li,
 #infoTab--participles ul li
@@ -402,8 +419,7 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
 .expandItem,
 .deleteItem,
-.editItem,
-.addItem
+.editItem
     width: 16px
     height: 16px
     opacity: 0.3
@@ -414,8 +430,7 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
 li:hover:not(.being-dragged) > .expandItem,
 li:hover:not(.being-dragged) > .deleteItem,
-li:hover:not(.being-dragged) > .editItem,
-li:hover:not(.being-dragged) > .addItem
+li:hover:not(.being-dragged) > .editItem
     display: block
 
 $expandPosition: 28px
@@ -436,7 +451,3 @@ $expandPosition: 28px
     background: url(editItem.png)
     right: $expandPosition + 18px
 
-.addItem
-    left: $expandPosition + 18px * 2
-    background: url(deleteItem.png)
-    @include transform(rotate(45deg))
