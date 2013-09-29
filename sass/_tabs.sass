@@ -402,24 +402,25 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
 .expandItem,
 .deleteItem,
-.editItem
+.editItem,
+.addItem
     width: 16px
     height: 16px
     opacity: 0.3
     position: absolute
-    border: none
-    outline: none
     cursor: pointer
     display: none
+    top: -8px
 
 li:hover:not(.being-dragged) > .expandItem,
 li:hover:not(.being-dragged) > .deleteItem,
-li:hover:not(.being-dragged) > .editItem
+li:hover:not(.being-dragged) > .editItem,
+li:hover:not(.being-dragged) > .addItem
     display: block
 
+$expandPosition: 28px
 .expandItem
-    top: 10px
-    left: -8px
+    left: $expandPosition
     background: url(expandItem.png)
     @include transform(rotate(0deg))
     transition: all 0.4s
@@ -429,10 +430,13 @@ li:hover:not(.being-dragged) > .editItem
 
 .deleteItem
     background: url(deleteItem.png)
-    top: -8px
-    right: -8px
+    left: -8px
 
 .editItem
     background: url(editItem.png)
-    top: -8px
-    right: 12px
+    left: $expandPosition + 18px
+
+.addItem
+    left: $expandPosition + 18px * 2
+    background: url(deleteItem.png)
+    @include transform(rotate(45deg))
