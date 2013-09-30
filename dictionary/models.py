@@ -103,7 +103,8 @@ class Meaningfull:
 
     @property
     def all_meanings(self):
-        return self.meaning_set.all().order_by('order', 'id')
+        return self.meaning_set.filter(
+                        parent_meaning__isnull=True).order_by('order', 'id')
 
     @property
     def has_meanings(self):
