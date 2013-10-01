@@ -1,9 +1,18 @@
 <script type="text/html" id="entryAdvertisement">
 
-    <span data-bind="wax: ui.entry.headword, waxCss: 'cslav'"
-        style="font-size: 22px"></span>
+{% trim %}
+<div class="entryAdvertisement" data-bind="with: data.entry">
 
-    <i data-bind="text: data.entry.part_of_speech.label"
-        style="font-size: 13px"></i>
+    <span data-bind="wax: $root.ui.entry.headword, waxCss: 'cslav'"
+        class="eA--headword"></span>
+    <sup data-bind="visible: homonym_order, text: homonym_order"
+        class="eA--homonymNumber"></sup>{{ space }}
+
+    <i data-bind="text: part_of_speech.label"></i>{{ space }}
+    <span data-bind="visible: homonym_gloss, text: homonym_gloss"
+        class="eA--gloss"></span>
+
+</div>
+{% endtrim %}
 
 </script>
