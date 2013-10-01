@@ -383,6 +383,8 @@ function Meaning() {
     upsertArray(this, 'examples', Example, data);
 
     this.isExpanded || (this.isExpanded = ko.observable(false));
+    this.substantivus_type.label = ko.computed(
+            Meaning.prototype.substantivus_type_label, this);
     Meaning.all.append(this);
 }
 
@@ -624,6 +626,19 @@ function etymologiesGuarantor(object, attrname) {
     Participle.guarantor = orderGuarantor;
     Orthvar.guarantor = orderGuarantor;
 
+    function label(attrname) {
+        return function () {
+            var x = this[attrname](),
+                y = viewModel.ui.labels[attrname];
+            if (x in y) {
+                return y[x];
+            } else {
+                console.log(attrname, '«' + x + '» is not found among', y);
+                return '';
+            }
+        };
+    }
+    Meaning.prototype.substantivus_type_label = label('substantivus_type');
 })()
 
 // Пространство имен вуду-модели интерфейса редактирования статьи.

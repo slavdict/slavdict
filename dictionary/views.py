@@ -736,6 +736,7 @@ def edit_entry(request, id):
         'onym': dict(dictionary.models.ONYM_CHOICES),
         'part_of_speech': dict(dictionary.models.PART_OF_SPEECH_CHOICES),
         'participle_type': dict(dictionary.models.PARTICIPLE_CHOICES),
+        'substantivus_type': dict(dictionary.models.SUBSTANTIVUS_TYPE_CHOICES),
         'tantum': dict(dictionary.models.TANTUM_CHOICES)
     }
     slugs = {

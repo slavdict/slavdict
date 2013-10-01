@@ -11,6 +11,14 @@
 
             <span data-bind="text: order"></span>.{{ space }}
             <span data-bind="visible: metaphorical">►</span>{{ space }}
+            <span data-bind="visible: substantivus">
+                <span class="substantivus">в роли сущ.</span>
+                <span data-bind="visible: substantivus_type">
+                    {{ space }}
+                    <span class="substantivus"
+                        data-bind="text: substantivus_type.label"></span>
+                </span>
+            </span>{{ space }}
             <span data-bind="text: meaning"></span>
                 <span data-bind="visible:
                     meaning() && gloss()">;{{ space }}</span>
@@ -42,6 +50,14 @@
                         css: { expanded: isExpanded }"></a>
 
                     <span data-bind="visible: metaphorical">►</span>{{ space }}
+                    <span data-bind="visible: substantivus">
+                        <span class="substantivus">в роли сущ.</span>
+                        <span data-bind="visible: substantivus_type">
+                            {{ space }}
+                            <span class="substantivus"
+                                data-bind="text: substantivus_type.label"></span>
+                        </span>
+                    </span>{{ space }}
                     <span data-bind="text: meaning"></span>
                         <span data-bind="visible:
                             meaning() && gloss()">;{{ space }}</span>
@@ -100,6 +116,14 @@
 
                             <span data-bind="text: order"></span>.{{ space }}
                             <span data-bind="visible: metaphorical">►</span>{{ space }}
+                            <span data-bind="visible: substantivus">
+                                <span class="substantivus">в роли сущ.</span>
+                                <span data-bind="visible: substantivus_type">
+                                    {{ space }}
+                                    <span class="substantivus"
+                                        data-bind="text: substantivus_type.label"></span>
+                                </span>
+                            </span>{{ space }}
                             <span data-bind="text: meaning"></span>
                                 <span data-bind="visible:
                                     meaning() && gloss()">;{{ space }}</span>
