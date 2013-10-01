@@ -9,9 +9,11 @@
             <a class="expandItem" data-bind="click: toggle,
                 css: { expanded: isExpanded }"></a>
 
-            <span data-bind="text: order"></span>
-            <span data-bind="visible: metaphorical">►</span>
+            <span data-bind="text: order"></span>.{{ space }}
+            <span data-bind="visible: metaphorical">►</span>{{ space }}
             <span data-bind="text: meaning"></span>
+                <span data-bind="visible:
+                    meaning() && gloss()">;{{ space }}</span>
             <i data-bind="text: gloss"></i>
 
             <ul class="examples" data-bind="sortable: { data: examples,
@@ -39,9 +41,10 @@
                     <a type="image" class="expandItem" data-bind="click: toggle,
                         css: { expanded: isExpanded }"></a>
 
-                    <span data-bind="text: order"></span>
-                    <span data-bind="visible: metaphorical">►</span>
+                    <span data-bind="visible: metaphorical">►</span>{{ space }}
                     <span data-bind="text: meaning"></span>
+                        <span data-bind="visible:
+                            meaning() && gloss()">;{{ space }}</span>
                     <i data-bind="text: gloss"></i>
 
                     <ul class="examples" data-bind="sortable:
@@ -74,7 +77,6 @@
                     <a type="image" class="expandItem" data-bind="click: toggle,
                         css: { expanded: isExpanded }"></a>
 
-                    <span data-bind="text: order"></span>
                     <span data-bind="foreach: collocations">
                         {{ backspace }}
                         <span data-bind="if: $index">,</span>
@@ -96,9 +98,11 @@
                                 data-bind="click: toggle,
                                 css: { expanded: isExpanded }"></a>
 
-                            <span data-bind="text: order"></span>
-                            <span data-bind="visible: metaphorical">►</span>
+                            <span data-bind="text: order"></span>.{{ space }}
+                            <span data-bind="visible: metaphorical">►</span>{{ space }}
                             <span data-bind="text: meaning"></span>
+                                <span data-bind="visible:
+                                    meaning() && gloss()">;{{ space }}</span>
                             <i data-bind="text: gloss"></i>
 
                             <ul class="examples" data-bind="sortable:
