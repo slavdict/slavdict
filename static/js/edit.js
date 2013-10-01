@@ -422,6 +422,9 @@ function Entry(data) {
     upsertArray(this, 'meanings', Meaning, data);
     upsertArray(this, 'collogroups', Collogroup, data);
     upsertArray(this, 'etymologies', Etymology, data);
+
+    this.part_of_speech.label = ko.computed(
+            Entry.prototype.part_of_speech_label, this);
 }
 
 // У meaning возможны следующие сочетания значений полей
@@ -639,6 +642,7 @@ function etymologiesGuarantor(object, attrname) {
         };
     }
     Meaning.prototype.substantivus_type_label = label('substantivus_type');
+    Entry.prototype.part_of_speech_label = label('part_of_speech');
 })()
 
 // Пространство имен вуду-модели интерфейса редактирования статьи.
@@ -675,17 +679,6 @@ var viewModel = vM.entryEdit,
             dataModel.entry.orthvars()[0].idem(value);
         }
     });
-
-    uiEntry.part_of_speech = ko.computed(function () {
-        var x = this.data.entry.part_of_speech(),
-            y = this.ui.labels.part_of_speech;
-        if (x in y) {
-            return y[x];
-        } else {
-            console.log('Часть речи "', x, '" не найдена среди ', y);
-            return '';
-        }
-    }, viewModel);
 
     uiModel.saveDialogue = {
         active: ko.observable(false),
@@ -881,7 +874,8 @@ var viewModel = vM.entryEdit,
     })();
 
     uiModel.nAdjV = ko.computed(function () {
-        return uiModel.entry.part_of_speech().match(/^(сущ|прил|гл)\.$/);
+        return (dataModel.entry
+            .part_of_speech.label().match(/^(сущ|прил|гл)\.$/));
     });
 
     ko.applyBindings(viewModel, $('body').get(0));
