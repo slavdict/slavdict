@@ -18,7 +18,8 @@
         or user in entry.authors.all() %}
             {% if not entry.duplicate or user.is_admeditor %}
             <div style="position: absolute; top: -3px; left: -40px;">
-                <a href="{% url 'edit_form_url' entry.pk %}" class="icon edit">
+                <a class="icon edit" href="javascript:
+                        chromeOnly('{% url 'edit_form_url' entry.pk %}')">
                     <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
                 </a>
             </div>
@@ -28,5 +29,6 @@
 
     {% include '_entry.html' %}
     {% include '_ref_entries_with_header.html' %}
+    {% include '_script.chromeOnly.html' %}
 
 {% endblock %}

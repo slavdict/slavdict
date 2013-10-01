@@ -415,7 +415,8 @@
                     {% if not entry.authors.exists() or user.is_admeditor
                     or user in entry.authors.all() %}
                         {% if not entry.duplicate or user.is_admeditor %}
-                        <a href="{% url 'edit_form_url' entry.pk %}" class="icon edit">
+                        <a class="icon edit" href="javascript:
+                        chromeOnly('{% url 'edit_form_url' entry.pk %}');">
                             <img src="{{ STATIC_URL }}transparent.png" alt="e" />
                         </a>
                         <span class="hint-container">
@@ -597,5 +598,7 @@
 
     <script src="{{ STATIC_URL }}js/entryListFilters.js"
         type="application/javascript" charset="utf-8"></script>
+
+    {% include '_script.chromeOnly.html' %}
 
 {% endblock %}
