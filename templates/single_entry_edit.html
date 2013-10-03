@@ -66,7 +66,7 @@
                 data: data.entry }" class="entryAdvertisement"></div>
 
             <canvas id="eA--separator" width="30" height="80"
-                data-bind="visible: ui.currentCollocation"></canvas>
+                data-bind="visible: Collogroup.itemBeingEdited"></canvas>
             <script type="application/javascript">
                 (function () {
                     var cnvs = document.getElementById('eA--separator'),
@@ -84,10 +84,10 @@
                  })();
             </script>
 
-            <div data-bind="visible: ui.currentCollocation"
+            <div data-bind="visible: Collogroup.itemBeingEdited"
                 class="entryAdvertisement">
                 <span class="eA--collocation"
-                    data-bind="wax: ui.currentCollocation.collocation"></span>
+                    data-bind="wax: Collogroup.itemBeingEdited.slug"></span>
             </div>
         </header>
 

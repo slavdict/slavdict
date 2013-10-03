@@ -680,10 +680,9 @@ var viewModel = vM.entryEdit,
         }
     });
 
-    uiModel.currentCollocation = ko.observable();
-    uiModel.currentCollocation.collocation = ko.computed(function () {
-        var current = uiModel.currentCollocation();
-        return current ? current.collocations()[0].collocation() : '';
+    Collogroup.itemBeingEdited.slug = ko.computed(function () {
+        var x = Collogroup.itemBeingEdited();
+        return x ? x.collocations()[0].collocation() : '';
     });
 
     uiModel.saveDialogue = {
