@@ -680,6 +680,12 @@ var viewModel = vM.entryEdit,
         }
     });
 
+    uiModel.currentCollocation = ko.observable();
+    uiModel.currentCollocation.collocation = ko.computed(function () {
+        var current = uiModel.currentCollocation();
+        return current ? current.collocations()[0].collocation() : '';
+    });
+
     uiModel.saveDialogue = {
         active: ko.observable(false),
         show: function () { uiModel.saveDialogue.active(true); },

@@ -65,7 +65,8 @@
             <div data-bind="template: { name: 'entryAdvertisement',
                 data: data.entry }" class="entryAdvertisement"></div>
 
-            <canvas id="eA--separator" width="30" height="80"></canvas>
+            <canvas id="eA--separator" width="30" height="80"
+                data-bind="visible: ui.currentCollocation"></canvas>
             <script type="application/javascript">
                 (function () {
                     var cnvs = document.getElementById('eA--separator'),
@@ -83,8 +84,11 @@
                  })();
             </script>
 
-            <div data-bind="template: { name: 'collocationAdvertisement',
-                data: data.entry }" class="entryAdvertisement"></div>
+            <div data-bind="visible: ui.currentCollocation"
+                class="entryAdvertisement">
+                <span class="eA--collocation"
+                    data-bind="wax: ui.currentCollocation.collocation"></span>
+            </div>
         </header>
 
         {% trim %}
@@ -94,7 +98,6 @@
         {% include '_template.editMeaning.html' %}
         {% include '_template.saveDialogue.html' %}
         {% include '_template.entryAdvertisement.html' %}
-        {% include '_template.collocationAdvertisement.html' %}
 
         <div class="modalContainer" style="display: none;"
             data-bind="visible: Meaning.itemBeingEdited">
