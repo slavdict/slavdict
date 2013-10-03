@@ -1,0 +1,11 @@
+<nav class="breadCrumbs" data-bind="visible: Meaning.itemBeingEdited">
+<ul>
+    <li>
+        <!-- ko with: Meaning.itemBeingEdited -->
+        <span data-bind="text: order"></span>.{{ space }}
+        <!-- /ko -->
+        <span data-bind="text: Meaning.itemBeingEdited.slug"></span>
+    </li>
+    <li></li>
+</ul>
+</nav>

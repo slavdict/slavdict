@@ -100,22 +100,13 @@
         </header>
 
         {% trim %}
+        {% include '_entryEdit_breadCrumbs.html' %}
         {% include '_entryEdit_tabs.html' %}
         {% endtrim %}
 
         {% include '_template.editMeaning.html' %}
         {% include '_template.saveDialogue.html' %}
         {% include '_template.entryAdvertisement.html' %}
-
-        <div class="modalContainer"
-            data-bind="visible: Meaning.itemBeingEdited">
-            <div class="modalBackground"></div>
-            <div class="modal"
-                data-bind="template: {
-                                name: 'editMeaning',
-                                data: Meaning.itemBeingEdited,
-                                if: Meaning.itemBeingEdited }"></div>
-        </div>
 
         <div class="modalContainer"
             data-bind="visible: ui.saveDialogue.active">
