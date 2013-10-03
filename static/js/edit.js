@@ -685,6 +685,27 @@ var viewModel = vM.entryEdit,
         return x ? x.collocations()[0].collocation() : '';
     });
 
+    Meaning.itemBeingEdited.slug = ko.computed(function () {
+        var x = Meaning.itemBeingEdited(),
+            defaultValue,
+            limit = 2;
+        if (!x) return '';
+        if (x.parent_meaning_id() === null) {
+            defaultValue = '<Новое значение>';
+        } else {
+            defaultValue = '<Новое употребление>';
+        }
+        x = x.meaning() || x.gloss() || defaultValue;
+        x = x.split(/\s+/);
+        if (x.length > 2 && (x[0].length < 3 || x[1].length < 3)) limit = 3;
+        x = x.slice(0, limit).join(' ');
+        if (x.length > 2) {
+            x += '…'
+            x = x.replace(/[\.\,\;\:\?\!…]+$/, '…');
+        }
+        return x;
+    });
+
     uiModel.saveDialogue = {
         active: ko.observable(false),
         show: function () { uiModel.saveDialogue.active(true); },
