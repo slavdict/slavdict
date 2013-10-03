@@ -1,9 +1,66 @@
 <nav class="breadCrumbs" data-bind="visible: Meaning.itemBeingEdited">
 <ul>
-    <li>
-        <!-- ko with: Meaning.itemBeingEdited -->
+    <li data-bind="visible: Meaning.itemBeingEdited.parentMeaning">
+        <!-- ko with: Meaning.itemBeingEdited.parentMeaning -->
         <span data-bind="text: order"></span>.{{ space }}
         <!-- /ko -->
+        <span data-bind="text: Meaning.itemBeingEdited.parentMeaning.slug"></span>
+
+        <canvas id="bC--separator" width="30" height="45"
+            style="position: absolute; right:-10px; top: 0; bottom: 0;"></canvas>
+        <script type="application/javascript">
+            (function () {
+
+                var cnvs = document.getElementById('bC--separator'),
+                    ctx = cnvs.getContext('2d'),
+                    width = cnvs.width,
+                    height = cnvs.height,
+                    alpha = 3,
+                    beta = 1.8;
+
+                ctx.beginPath();
+                ctx.moveTo(width / alpha + 1, 0)
+                ctx.lineTo(width, 0);
+                ctx.lineTo(width, height);
+                ctx.lineTo(width / alpha + 1, height);
+                ctx.lineTo(width / alpha * beta + 1, height / 2);
+                ctx.moveTo(width / alpha + 1, 0)
+                ctx.clip();
+
+                ctx.shadowOffsetY = 7;
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = 'rgba(210, 146, 22, 0.8)';
+                ctx.beginPath();
+                ctx.moveTo(0, 0)
+                ctx.lineTo(width / alpha, 0);
+                ctx.lineTo(width / alpha * beta, height / 2);
+                ctx.lineTo(width / alpha, height);
+                ctx.lineTo(0, height);
+                ctx.lineTo(0, 0);
+                ctx.fill();
+
+             })();
+        </script>
+    </li>
+    <li>
+
+        <!-- ko with: Meaning.itemBeingEdited -->
+            <!-- ko ifnot: Meaning.itemBeingEdited.parentMeaning -->
+                <span data-bind="text: order"></span>.{{ space }}
+            <!-- /ko -->
+            <!-- ko if: Meaning.itemBeingEdited.parentMeaning -->
+                <span data-bind="visible: metaphorical">►</span>{{ space }}
+                <span data-bind="visible: substantivus">
+                    <span class="substantivus">в роли сущ.</span>
+                    <span data-bind="visible: substantivus_type">
+                        {{ space }}
+                        <span class="substantivus"
+                            data-bind="text: substantivus_type.label"></span>
+                    </span>
+                </span>{{ space }}
+            <!-- /ko -->
+        <!-- /ko -->
+
         <span data-bind="text: Meaning.itemBeingEdited.slug"></span>
     </li>
     <li></li>

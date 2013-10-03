@@ -685,25 +685,47 @@ var viewModel = vM.entryEdit,
         return x ? x.collocations()[0].collocation() : '';
     });
 
+    function makeSlug(text) {
+        var wordLimit = 2,
+            toBeChanged;
+        text = text.split(/\s+/);
+        toBeChanged = (text.length > wordLimit);
+        if (toBeChanged && (text[0].length < 3 || text[1].length < 3)) {
+            wordLimit += 1;
+        }
+        text = text.slice(0, wordLimit).join(' ');
+        if (toBeChanged) {
+            text += '…'
+            text = text.replace(/[\.\,\;\:\?\!…]+$/, '…');
+        }
+        return text;
+    }
     Meaning.itemBeingEdited.slug = ko.computed(function () {
-        var x = Meaning.itemBeingEdited(),
-            defaultValue,
-            limit = 2;
+        var x = Meaning.itemBeingEdited(), defaultValue;
         if (!x) return '';
         if (x.parent_meaning_id() === null) {
-            defaultValue = '<Новое значение>';
+            defaultValue = '<Значение>';
         } else {
-            defaultValue = '<Новое употребление>';
+            defaultValue = '<Употребление>';
         }
         x = x.meaning() || x.gloss() || defaultValue;
-        x = x.split(/\s+/);
-        if (x.length > 2 && (x[0].length < 3 || x[1].length < 3)) limit = 3;
-        x = x.slice(0, limit).join(' ');
-        if (x.length > 2) {
-            x += '…'
-            x = x.replace(/[\.\,\;\:\?\!…]+$/, '…');
+        return makeSlug(x);
+    });
+    Meaning.itemBeingEdited.parentMeaning = ko.computed(function () {
+        var x = Meaning.itemBeingEdited();
+        if (!x) return null;
+        if (x.parent_meaning_id() !== null) {
+            return Meaning.all.idMap[x.parent_meaning_id()];
+        } else {
+            return null;
         }
-        return x;
+    });
+    Meaning.itemBeingEdited.parentMeaning.slug = ko.computed(function () {
+        var x = Meaning.itemBeingEdited.parentMeaning(),
+            defaultValue = '<Значение>';
+        if (!x) return '';
+        x = x.meaning() || x.gloss() || defaultValue;
+        return makeSlug(x);
     });
 
     uiModel.saveDialogue = {
