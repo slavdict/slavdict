@@ -66,12 +66,6 @@ nav.tabs ul
 
 section.tabcontent
     padding-top: 25px
-    display: none !important
-
-    &.current
-        display: block !important
-
-
 
 $listWidth: 560px
 $listElementHorizontalPadding: 20px
@@ -208,7 +202,7 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
     width: $listWidth - 5px
 
 
-#orthvars ul li,
+.orthvars ul li,
 #infoTab--participles ul li
     padding-left: 12px
 
@@ -222,7 +216,7 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
     &.being-dragged
         width: percentage($listElementWidth) !important
 
-#orthvars ul li
+.orthvars ul li
 
     input[type="text"]
         margin-left: 20px
@@ -230,7 +224,7 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
     .cslav
         margin-left: 10px
 
-#info
+#infoTab
     display: flex
     flex-direction: column
 

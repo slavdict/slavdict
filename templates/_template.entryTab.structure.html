@@ -1,4 +1,5 @@
-<section id="structure" class="tabcontent" data-bind="with: data.entry">
+<script type="text/html" id="structure">
+<section class="tabcontent" data-bind="with: data.entry">
 
     <ul class="meanings" data-bind="sortable: { data: meanings,
                                                 connectClass: 'meanings' }">
@@ -161,3 +162,4 @@
         data-bind="click: meanings.itemAdder($root.data.entry).do"></a>
 
 </section>
+</script>

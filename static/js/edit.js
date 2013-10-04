@@ -799,12 +799,12 @@ var viewModel = vM.entryEdit,
     };
 
     // Активация работы вкладок
+    uiModel.currentSection = ko.observable('info');
     $('nav.tabs li').click(function () {
         $('nav.tabs li.current').removeClass('current');
-        $('section.tabcontent.current').removeClass('current');
         var x = $(this);
         x.addClass('current');
-        $(x.data('href')).addClass('current');
+        uiModel.currentSection(x.data('href').slice(1));
     });
 
     // Активация сохранения json-снимков данных в локальном хранилище.

@@ -13,10 +13,12 @@
 </ul>
 </nav>
 
-{% include '_entryEdit_admin.html' %}
-{% include '_entryEdit_info.html' %}
-{% include '_entryEdit_orthvars.html' %}
-{% include '_entryEdit_structure.html' %}
-{% include '_entryEdit_examples.html' %}
-{% include '_entryEdit_constructions.html' %}
-{% include '_entryEdit_etym.html' %}
+<!-- ko template: { name: ui.currentSection }--><!-- /ko -->
+
+{% include '_template.entryTab.admin.html' %}
+{% include '_template.entryTab.info.html' %}
+{% include '_template.entryTab.orthvars.html' %}
+{% include '_template.entryTab.structure.html' %}
+{% include '_template.entryTab.examples.html' %}
+{% include '_template.entryTab.constructions.html' %}
+{% include '_template.entryTab.etym.html' %}
