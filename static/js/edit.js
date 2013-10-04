@@ -728,6 +728,31 @@ var viewModel = vM.entryEdit,
         return makeSlug(x);
     });
 
+    // Изменение отступа в навигационной цепочке в зависимости от того,
+    // редактируется ли словосочетание.
+    function breadCrumbsPadder() {
+        var a = $('#firstBreadCrumb'),
+            b = $('#secondBreadCrumb'),
+            collogroup = Collogroup.itemBeingEdited(),
+            meaning = Meaning.itemBeingEdited(),
+            parentMeaning = Meaning.itemBeingEdited.parentMeaning(),
+            width = $('#eA--entry').outerWidth() + 22;
+        if (collogroup) {
+            if (parentMeaning) {
+                a.css('paddingLeft', width);
+                b.css('paddingLeft', '');
+            } else if (meaning) {
+                a.css('paddingLeft', '');
+                b.css('paddingLeft', width);
+            }
+        } else {
+            a.css('paddingLeft', '');
+            b.css('paddingLeft', '');
+        }
+    }
+    Collogroup.itemBeingEdited.subscribe(breadCrumbsPadder);
+    Meaning.itemBeingEdited.subscribe(breadCrumbsPadder);
+
     uiModel.saveDialogue = {
         active: ko.observable(false),
         show: function () { uiModel.saveDialogue.active(true); },

@@ -1,20 +1,21 @@
 <nav class="breadCrumbs" data-bind="visible: Meaning.itemBeingEdited">
 <ul>
-    <li data-bind="visible: Meaning.itemBeingEdited.parentMeaning">
+    <li data-bind="visible: Meaning.itemBeingEdited.parentMeaning"
+            id="firstBreadCrumb">
+
         <!-- ko with: Meaning.itemBeingEdited.parentMeaning -->
         <span data-bind="text: order"></span>.{{ space }}
         <!-- /ko -->
         <span data-bind="text: Meaning.itemBeingEdited.parentMeaning.slug"></span>
 
-        <canvas id="bC--separator" width="30" height="45"
-            style="position: absolute; right:-10px; top: 0; bottom: 0;"></canvas>
+        <canvas id="bC--separator" width="30" height="45"></canvas>
         <script type="application/javascript">
             (function () {
 
                 var cnvs = document.getElementById('bC--separator'),
                     ctx = cnvs.getContext('2d'),
                     width = cnvs.width,
-                    height = cnvs.height,
+                    height = cnvs.height + 3,
                     alpha = 3,
                     beta = 1.8;
 
@@ -39,10 +40,11 @@
                 ctx.lineTo(0, 0);
                 ctx.fill();
 
-             })();
+            })();
+
         </script>
     </li>
-    <li>
+    <li id="secondBreadCrumb">
 
         <!-- ko with: Meaning.itemBeingEdited -->
             <!-- ko ifnot: Meaning.itemBeingEdited.parentMeaning -->
