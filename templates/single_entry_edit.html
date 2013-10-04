@@ -74,27 +74,27 @@
                 data: data.entry }" class="entryAdvertisement"
                 id="eA--entry"></div>
 
-            <canvas id="eA--separator" width="30" height="80"
-                data-bind="visible: Collogroup.itemBeingEdited"></canvas>
-            <script type="application/javascript">
-                (function () {
-                    var cnvs = document.getElementById('eA--separator'),
-                        ctx = cnvs.getContext('2d');
-                    ctx.shadowOffsetY = 5;
-                    ctx.shadowBlur = 20;
-                    ctx.shadowColor = 'rgba(210, 146, 22, 0.8)';
-                    ctx.fillStyle = 'white';
-                    ctx.beginPath();
-                    ctx.moveTo(0, -4)
-                    ctx.lineTo(12, 42);
-                    ctx.lineTo(0, 84);
-                    ctx.lineTo(0, -4);
-                    ctx.fill();
-                 })();
-            </script>
-
             <div data-bind="visible: Collogroup.itemBeingEdited"
                 class="entryAdvertisement">
+
+                <canvas id="eA--separator" width="30" height="80"></canvas>
+                <script type="application/javascript">
+                    (function () {
+                        var cnvs = document.getElementById('eA--separator'),
+                            ctx = cnvs.getContext('2d');
+                        ctx.shadowOffsetY = 5;
+                        ctx.shadowBlur = 20;
+                        ctx.shadowColor = 'rgba(210, 146, 22, 0.8)';
+                        ctx.fillStyle = 'white';
+                        ctx.beginPath();
+                        ctx.moveTo(0, -4)
+                        ctx.lineTo(12, 42);
+                        ctx.lineTo(0, 84);
+                        ctx.lineTo(0, -4);
+                        ctx.fill();
+                     })();
+                </script>
+
                 <span class="eA--collocation"
                     data-bind="wax: Collogroup.itemBeingEdited.slug"></span>
             </div>
