@@ -736,7 +736,8 @@ var viewModel = vM.entryEdit,
             collogroup = Collogroup.itemBeingEdited(),
             meaning = Meaning.itemBeingEdited(),
             parentMeaning = Meaning.itemBeingEdited.parentMeaning(),
-            width = $('#eA--entry').outerWidth() + 22;
+            width = $('#eA--entry').outerWidth() +
+                parseInt($('#eA--collocation').css('paddingLeft').slice(0, -2));
         if (collogroup) {
             if (parentMeaning) {
                 a.css('paddingLeft', width);
