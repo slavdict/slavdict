@@ -327,6 +327,7 @@ function Collogroup() {
         data = arguments[0];
     }
 
+    upsert(this, 'additional_info', data, '');
     upsertArray(this, 'collocations', Collocation, data);
     upsert(this, 'base_entry_id', data, entry_id);
     upsert(this, 'base_meaning_id', data, meaning_id);
