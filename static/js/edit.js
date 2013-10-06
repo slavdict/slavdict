@@ -426,6 +426,7 @@ function Entry(data) {
 
     this.part_of_speech.label = ko.computed(
             Entry.prototype.part_of_speech_label, this);
+    Entry.all.append(this);
 }
 
 // У meaning возможны следующие сочетания значений полей
