@@ -3,6 +3,11 @@
 <section data-bind="with: ui.navigationStack.top"
     id="eM--editMeaning" class="grid">
 
+    <label id="eM--metaphorical" data-bind="visible: $root.ui.hierarchy.usage">
+        <input type="checkbox" data-bind="checked: metaphorical" />
+        <span>Литургический символ</span>
+    </label>
+
     <div id="eM--meaning">
         <label>Значение</label>
         <textarea id="eM--meaning" data-bind="value: meaning,
@@ -14,6 +19,12 @@
         <textarea data-bind="value: gloss,
             valueUpdate: 'afterkeydown'"></textarea>
     </div>
+
+    <label id="eM--substantivus" data-bind="visible:
+     $root.data.entry.part_of_speech() !== $root.ui.slugs.part_of_speech['noun']">
+        <input type="checkbox" data-bind="checked: substantivus" />
+        <span>В роли существительного</span>
+    </label>
 
 </section>
 <!-- /ko -->
