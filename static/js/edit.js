@@ -18,7 +18,7 @@ function snapshotObservable(observable) {
             ko.postbox.publish(topic, [o.__$ID$__, value]);
         });
         return o;
-    }
+    };
 }
 snapshotObservable.counter = 0;
 
