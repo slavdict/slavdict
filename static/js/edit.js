@@ -598,8 +598,11 @@ function etymologiesGuarantor(object, attrname) {
         delete this.idMap[item.id()];
     }
 
-    function editItem() { this.constructor.itemBeingEdited(this); }
-    function stopEditing() { this.constructor.itemBeingEdited(null); }
+    function editItem() {
+        if (['Collogroup', 'Meaning', 'Example']
+                .indexOf(this.constructor.name) > -1)
+            uiModel.navigationStack.push(this);
+    }
 
     for (i = constructors.length; i--;) {
         Constructor = constructors[i];
@@ -611,9 +614,7 @@ function etymologiesGuarantor(object, attrname) {
         Constructor.bag = [];
         Constructor.bag.idMap = {};
         Constructor.shredder = [];
-        Constructor.itemBeingEdited = ko.observable(null);
         Constructor.prototype.edit = editItem;
-        Constructor.prototype.stopEditing = stopEditing;
     }
 
     function toggle() { this.isExpanded(!this.isExpanded()); }
@@ -682,84 +683,193 @@ var viewModel = vM.entryEdit,
         }
     });
 
-    Collogroup.itemBeingEdited.slug = ko.computed(function () {
-        var x = Collogroup.itemBeingEdited();
-        return x ? x.collocations()[0].collocation() : '';
-    });
+    uiModel.currentForm = ko.observable('info');
 
-    function makeSlug(text) {
-        var wordLimit = 2,
-            toBeChanged;
-        text = text.split(/\s+/);
-        toBeChanged = (text.length > wordLimit);
-        if (toBeChanged && (text[0].length < 3 || text[1].length < 3)) {
-            wordLimit += 1;
+    // Навигационный стек
+    uiModel.navigationStack = (function () {
+        var stack = ko.observableArray([dataModel.entry]);
+            entryTab = 'info',
+            collogroupTab = 'collogroupInfo';
+
+        function stackTop() {
+            var s = stack();
+            return s.length ? s[s.length - 1] : null;
         }
-        text = text.slice(0, wordLimit).join(' ');
-        if (toBeChanged) {
-            text += '…'
-            text = text.replace(/[\.\,\;\:\?\!…]+$/, '…');
+
+        function stackTopType() {
+            var x = stack.top();
+            return x ? x.constructor.name : '--exit--';
         }
-        return text;
-    }
-    Meaning.itemBeingEdited.slug = ko.computed(function () {
-        var x = Meaning.itemBeingEdited(), defaultValue;
-        if (!x) return '';
-        if (x.parent_meaning_id() === null) {
-            defaultValue = '<Значение>';
-        } else {
-            defaultValue = '<Употребление>';
+
+        function templateName() {
+            uiModel.currentForm({
+                'Entry': stack.entryTab,
+                'Collogroup': stack.collogroupTab,
+                'Meaning': 'editMeaning',
+                'Example': 'editExample',
+                '--exit--': 'saveDialogue'
+            }[stack.top.type()]);
         }
-        x = x.meaning() || x.gloss() || defaultValue;
-        return makeSlug(x);
-    });
-    Meaning.itemBeingEdited.parentMeaning = ko.computed(function () {
-        var x = Meaning.itemBeingEdited();
-        if (!x) return null;
-        if (x.parent_meaning_id() !== null) {
-            return Meaning.all.idMap[x.parent_meaning_id()];
-        } else {
+
+        function pop() {
+            stack.splice(-1, 1)
+        }
+
+        // общедоступный API стека
+        stack.top = ko.computed(stackTop);
+        stack.top.type = ko.computed(stackTopType);
+
+        stack.entryTab = entryTab;
+        stack.collogroupTab = collogroupTab;
+        stack.subscribe(templateName);
+
+        stack.pop = pop;
+
+        return stack;
+    })();
+
+
+    // Иерархия объектов статьи.
+    uiModel.hierarchy = (function () {
+        var hierarchy = {},
+            stack = uiModel.navigationStack;
+
+        function getParent(x, propertyList) {
+            // propertyList ::=
+            //      [[propName1, Constructor1], [propName2, Constructor2], ...]
+            var i, j, propName, Constructor;
+            for (var i = 0, j = propertyList.length; i < j; i++) {
+            propName = propertyList[i][0];
+                Constructor = propertyList[i][1];
+                if (x[propName]() !== null) {
+                    return Constructor.all.idMap[x[propName]()];
+                }
+            }
+            throw new Error('Ancestor cannot be found!');
+        }
+
+        function getSelfOrUpwardNearest(x, type) {
+            var i, map = {
+                'Meaning': [['parent_meaning_id', Meaning],
+                    ['collogroup_container_id', Collogroup],
+                    ['entry_container_id', Entry]],
+
+                'Example': [['meaning_id', Meaning],
+                    ['collogroup_id', Collogroup],
+                    ['entry_id', Entry]],
+
+                'Collogroup': [['base_meaning_id', Meaning],
+                    ['x.base_entry_id', Entry]] };
+
+            if (!x) return null;
+            if (x.constructor.name === type) return x;
+            do {
+                i = map[x.constructor.name];
+                if (typeof i === 'undefined') return null;
+                x = getParent(x, i)
+            } while (x.constructor.name !== type);
+
+            return x;
+        }
+
+        function collogroup() {
+            return getSelfOrUpwardNearest(stack.top(), 'Collogroup');
+        }
+
+        function meaning() {
+            var x, y;
+            if (stack.top.type() === 'Collogroup') return null;
+            x = getSelfOrUpwardNearest(stack.top(), 'Meaning');
+            if (x) {
+                y = getParent(x, [['parent_meaning_id', Meaning],
+                                  ['collogroup_container_id', Collogroup],
+                                  ['entry_container_id', Entry]]);
+                if (y && y.constructor.name === 'Meaning') return y;
+            }
+            return x;
+        }
+
+        function usage() {
+            var x, y;
+            if (stack.top.type() === 'Collogroup') return null;
+            x = getSelfOrUpwardNearest(stack.top(), 'Meaning');
+            if (x) {
+                y = getParent(x, [['parent_meaning_id', Meaning],
+                                  ['collogroup_container_id', Collogroup],
+                                  ['entry_container_id', Entry]]);
+                if (y && y.constructor.name === 'Meaning') return x;
+            }
             return null;
         }
-    });
-    Meaning.itemBeingEdited.parentMeaning.slug = ko.computed(function () {
-        var x = Meaning.itemBeingEdited.parentMeaning(),
-            defaultValue = '<Значение>';
-        if (!x) return '';
-        x = x.meaning() || x.gloss() || defaultValue;
-        return makeSlug(x);
-    });
+
+        function makeSlug(text) {
+            var wordLimit = 2,
+                toBeChanged;
+            text = text.split(/\s+/);
+            toBeChanged = (text.length > wordLimit);
+            if (toBeChanged && (text[0].length < 3 || text[1].length < 3)) {
+                wordLimit += 1;
+            }
+            text = text.slice(0, wordLimit).join(' ');
+            if (toBeChanged) {
+                text += '…'
+                text = text.replace(/[\.\,\;\:\?\!…]+$/, '…');
+            }
+            return text;
+        }
+
+        function collogroupSlug() {
+            var x = hierarchy.collogroup();
+            return x ? x.collocations()[0].collocation() : '';
+        }
+
+        function makeMeaningSlug(x) {
+            if (x) {
+                if (x.parent_meaning_id() === null) defaultValue = '<Значение>';
+                else defaultValue = '<Употребление>';
+                x = x.meaning() || x.gloss() || defaultValue;
+                return makeSlug(x);
+            } else {
+                return '';
+            }
+        }
+
+        function meaningSlug() { return makeMeaningSlug(hierarchy.meaning()); }
+        function usageSlug() { return makeMeaningSlug(hierarchy.usage()); }
+
+        // Общедоступное API
+        hierarchy.collogroup = ko.computed(collogroup);
+        hierarchy.meaning = ko.computed(meaning);
+        hierarchy.usage = ko.computed(usage);
+
+        hierarchy.collogroupSlug = ko.computed(collogroupSlug);
+        hierarchy.meaningSlug = ko.computed(meaningSlug);
+        hierarchy.usageSlug = ko.computed(usageSlug);
+
+        return hierarchy;
+    })();
+
 
     // Изменение отступа в навигационной цепочке в зависимости от того,
     // редактируется ли словосочетание.
     function breadCrumbsPadder() {
-        var a = $('#firstBreadCrumb'),
-            b = $('#secondBreadCrumb'),
-            collogroup = Collogroup.itemBeingEdited(),
-            meaning = Meaning.itemBeingEdited(),
-            parentMeaning = Meaning.itemBeingEdited.parentMeaning(),
+        var x = $('#firstBreadCrumb'),
+            hierarchy = uiModel.hierarchy,
+            collogroup = hierarchy.collogroup(),
+            meaning = hierarchy.meaning(),
             width = $('#eA--entry').outerWidth() +
                 parseInt($('#eA--collocation').css('paddingLeft').slice(0, -2));
         if (collogroup) {
-            if (parentMeaning) {
-                a.css('paddingLeft', width);
-                b.css('paddingLeft', '');
-            } else if (meaning) {
-                a.css('paddingLeft', '');
-                b.css('paddingLeft', width);
-            }
+            x.css('paddingLeft', width);
         } else {
-            a.css('paddingLeft', '');
-            b.css('paddingLeft', '');
+            x.css('paddingLeft', '');
         }
     }
-    Collogroup.itemBeingEdited.subscribe(breadCrumbsPadder);
-    Meaning.itemBeingEdited.subscribe(breadCrumbsPadder);
+    uiModel.navigationStack.subscribe(breadCrumbsPadder);
 
+
+    // Диалог сохранения.
     uiModel.saveDialogue = {
-        active: ko.observable(false),
-        show: function () { uiModel.saveDialogue.active(true); },
-        hide: function () { uiModel.saveDialogue.active(false); },
         saveAndExit: function () {
             var data, persistingDataPromise,
                 toDestroy = {};
@@ -797,16 +907,18 @@ var viewModel = vM.entryEdit,
         exitWithoutSaving: function () {
             viewModel.undoStorage.clear();
             window.location = vM.entryURL;
-        }
+        },
+        cancel: function () {
+            uiModel.navigationStack.push(viewModel.data.entry)
+        },
     };
 
     // Активация работы вкладок
-    uiModel.currentSection = ko.observable('info');
     $('nav.tabs li').click(function () {
-        $('nav.tabs li.current').removeClass('current');
-        var x = $(this);
-        x.addClass('current');
-        uiModel.currentSection(x.data('href').slice(1));
+        var x = $(this),
+            y = x.data('href').slice(1);
+        uiModel.currentForm(y);
+        uiModel.navigationStack.entryTab = y;
     });
 
     // Активация сохранения json-снимков данных в локальном хранилище.

@@ -1,19 +1,27 @@
-<nav class="tabs" data-bind="visible: !Meaning.itemBeingEdited()">
+<nav class="tabs"
+    data-bind="visible: ui.navigationStack.top.type() === 'Entry'">
 <ul>
     {% if user.is_admeditor %}
-    <!--<li data-href="#admin">Служебная инф.</li>-->
+    <!--<li data-bind="css: { current: ui.currentForm() === 'admin' }
+        data-href="#admin">Служебная инф.</li>-->
     {% endif %}
-    <li data-href="#info" class="current">Справочная инф.</li>
-    <li data-href="#orthvars">Варианты</li>
-    <li data-href="#structure">Структура</li>
-    <!--<li data-href="#examples">Примеры</li>-->
-    <!--<li data-href="#constructions">Конструкции</li>-->
-    <!--<li data-href="#etym">Этимология</li>-->
+    <li data-bind="css: { current: ui.currentForm() === 'info' }"
+        data-href="#info" class="current">Справочная инф.</li>
+    <li data-bind="css: { current: ui.currentForm() === 'orthvars' }"
+        data-href="#orthvars">Варианты</li>
+    <li data-bind="css: { current: ui.currentForm() === 'structure' }"
+        data-href="#structure">Структура</li>
+    <!--<li data-bind="css: { current: ui.currentForm() === 'examples' }"
+        data-href="#examples">Примеры</li>-->
+    <!--<li data-bind="css: { current: ui.currentForm() === 'constructions' }"
+        data-href="#constructions">Конструкции</li>-->
+    <!--<li data-bind="css: { current: ui.currentForm() === 'etym' }"
+        data-href="#etym">Этимология</li>-->
     <li></li>
 </ul>
 </nav>
 
-<!-- ko template: { name: ui.currentSection }--><!-- /ko -->
+<!-- ko template: { name: ui.currentForm }--><!-- /ko -->
 
 {% include '_template.entryTab.admin.html' %}
 {% include '_template.entryTab.info.html' %}

@@ -1,4 +1,6 @@
 <script type="text/html" id="editMeaning">
+<!-- ko if: ui.navigationStack.top.type() === 'Meaning' -->
+<section data-bind="with: ui.navigationStack.top">
 
     <label>Значение</label>
     <input type="text" data-bind="value: meaning, valueUpdate: 'afterkeydown'"/>
@@ -12,7 +14,6 @@
     <textarea data-bind="value: additional_info"></textarea>
     <br/><br/>
 
-    <input type="button" value="закончить редактирование" 
-        data-bind="click: stopEditing" />
-
+</section>
+<!-- /ko -->
 </script>

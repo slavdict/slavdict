@@ -1,14 +1,15 @@
-<nav class="breadCrumbs" data-bind="visible: Meaning.itemBeingEdited">
+<nav class="breadCrumbs" data-bind="visible: ui.hierarchy.meaning">
 <ul>
-    <li data-bind="visible: Meaning.itemBeingEdited.parentMeaning"
-            id="firstBreadCrumb">
+    <li id="firstBreadCrumb" data-bind="visible: ui.hierarchy.meaning">
 
-        <!-- ko with: Meaning.itemBeingEdited.parentMeaning -->
+        <!-- ko with: ui.hierarchy.meaning -->
         <span data-bind="text: order"></span>.{{ space }}
+        <span data-bind="visible: metaphorical">►</span>{{ space }}
         <!-- /ko -->
-        <span data-bind="text: Meaning.itemBeingEdited.parentMeaning.slug"></span>
+        <span data-bind="text: ui.hierarchy.meaningSlug"></span>
 
-        <canvas id="bC--separator" width="30" height="45"></canvas>
+        <canvas id="bC--separator" width="30" height="45"
+            data-bind="visible: ui.hierarchy.usage"></canvas>
         <script type="application/javascript">
             (function () {
 
@@ -44,26 +45,20 @@
 
         </script>
     </li>
-    <li id="secondBreadCrumb">
+    <li id="secondBreadCrumb" data-bind="visible: ui.hierarchy.usage,
+        with: ui.hierarchy.usage">
 
-        <!-- ko with: Meaning.itemBeingEdited -->
-            <!-- ko ifnot: Meaning.itemBeingEdited.parentMeaning -->
-                <span data-bind="text: order"></span>.{{ space }}
-            <!-- /ko -->
-            <!-- ko if: Meaning.itemBeingEdited.parentMeaning -->
-                <span data-bind="visible: metaphorical">►</span>{{ space }}
-                <span data-bind="visible: substantivus">
-                    <span class="substantivus">в роли сущ.</span>
-                    <span data-bind="visible: substantivus_type">
-                        {{ space }}
-                        <span class="substantivus"
-                            data-bind="text: substantivus_type.label"></span>
-                    </span>
-                </span>{{ space }}
-            <!-- /ko -->
-        <!-- /ko -->
+        <span data-bind="visible: metaphorical">►</span>{{ space }}
+        <span data-bind="visible: substantivus">
+            <span class="substantivus">в роли сущ.</span>
+            <span data-bind="visible: substantivus_type">
+                {{ space }}
+                <span class="substantivus"
+                    data-bind="text: substantivus_type.label"></span>
+            </span>
+        </span>{{ space }}
 
-        <span data-bind="text: Meaning.itemBeingEdited.slug"></span>
+        <span data-bind="text: $root.ui.hierarchy.usageSlug"></span>
     </li>
     <li></li>
 </ul>
