@@ -1067,6 +1067,7 @@ class CollocationGroup(models.Model, Meaningfull):
     order = SmallIntegerField(u'порядок следования', blank=True, default=0)
     ctime = DateTimeField(editable=False, auto_now_add=True)
     mtime = DateTimeField(editable=False, auto_now=True)
+    additional_info = TextField(u'примечание', blank=True)
 
     @property
     def collocations(self):
@@ -1091,6 +1092,7 @@ class CollocationGroup(models.Model, Meaningfull):
             'base_meaning_id',
             'id',
             'order',
+            'additional_info',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['collocations'] = [c.forJSON() for c in self.collocations]
