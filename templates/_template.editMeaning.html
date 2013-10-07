@@ -33,10 +33,11 @@
 
             <div >
                 {% for id, name in SUBSTANTIVUS_TYPES %}
-                <label>
+                <label data-bind="css:
+                { checked: substantivus_type() == '{{ id }}' }">
 
-                    <input type="radio" name="substantivusType"
-                        value="{{ id }}" data-bind="checked: substantivus_type"/>
+                    <input type="radio" name="substantivusType" value="{{ id }}"
+                        data-bind="checked: substantivus_type"/>
                     <span>{{ name }}</span>
 
                 </label>
