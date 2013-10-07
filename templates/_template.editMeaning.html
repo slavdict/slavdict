@@ -31,7 +31,12 @@
         <label id="eM--substantivusType" data-bind="visible: substantivus">
             <span>Тип субстантива</span>
 
-            <div >
+            <select data-bind="options: $root.ui.choices.substantivus_type,
+                value: substantivus_type, optionsText: 'name',
+                optionsValue: 'id', visible: substantivus_type">
+            </select>
+
+            <div data-bind="visible: !substantivus_type()">
                 {% for id, name in SUBSTANTIVUS_TYPES %}
                 <label data-bind="css:
                 { checked: substantivus_type() == '{{ id }}' }">

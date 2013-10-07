@@ -91,6 +91,9 @@ sortbase = (
     {'id': 't',    'name': u'времени изменения'},
 )
 
+editSubstantivusTypes = ((EMPTY_STRING_ID_OBJECT,) +
+        _choices(dictionary.models.SUBSTANTIVUS_TYPE_CHOICES))
+
 tantum = (
     {'id': 'all',  'name': u'любое'},
     {'id': 'none', 'name': u'где число не указано'},
