@@ -1,8 +1,7 @@
 @charset 'utf-8'
 
 #eM--editMeaning
-    margin: 0
-    padding-top: 10px
+    margin: -10px 0 0
 
 #eM--meaning,
 #eM--gloss
@@ -18,7 +17,7 @@
 
 #eM--metaphorical,
 #eM--substantivus
-    +column(7)
+    +column(6)
     margin-bottom: 2em
     clear: all
 
@@ -26,3 +25,24 @@
         @include column(1, true)
         margin-top: 2px
         margin-left: -3px
+
+#eM--substantivusGroup
+    +column(15)
+    margin-top: 2em
+    clear: all
+
+#eM--substantivusType
+    +column(7)
+
+    & > span
+        +column(3)
+    & > div
+        +column(4, true)
+
+        & input
+            @include column(1)
+            margin-top: 2px
+            margin-left: -3px
+
+        & label
+            @include column(3, true)

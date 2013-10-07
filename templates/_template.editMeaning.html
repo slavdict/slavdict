@@ -1,7 +1,6 @@
 <script type="text/html" id="editMeaning">
-<!-- ko if: ui.navigationStack.top.type() === 'Meaning' -->
-<section data-bind="with: ui.navigationStack.top"
-    id="eM--editMeaning" class="grid">
+<section data-bind="if: ui.navigationStack.top.type() === 'Meaning'">
+<div id="eM--editMeaning" class="grid" data-bind="with: ui.navigationStack.top">
 
     <label id="eM--metaphorical" data-bind="visible: $root.ui.hierarchy.usage">
         <input type="checkbox" data-bind="checked: metaphorical" />
@@ -20,12 +19,34 @@
             valueUpdate: 'afterkeydown'"></textarea>
     </div>
 
-    <label id="eM--substantivus" data-bind="visible:
-     $root.data.entry.part_of_speech() !== $root.ui.slugs.part_of_speech['noun']">
-        <input type="checkbox" data-bind="checked: substantivus" />
-        <span>В роли существительного</span>
-    </label>
+    <div id="eM--substantivusGroup"
+    data-bind="visible: $root.data.entry.part_of_speech() !==
+    $root.ui.slugs.part_of_speech['noun']">
 
+        <label id="eM--substantivus">
+            <input type="checkbox" data-bind="checked: substantivus" />
+            <span>В роли существительного</span>
+        </label>
+
+        <label id="eM--substantivusType" data-bind="visible: substantivus">
+            <span>Тип субстантива</span>
+
+            <div >
+                {% for id, name in SUBSTANTIVUS_TYPES %}
+                <label>
+
+                    <input type="radio" name="substantivusType"
+                        value="{{ id }}" data-bind="checked: substantivus_type"/>
+                    <span>{{ name }}</span>
+
+                </label>
+                {% endfor %}
+            </div>
+
+        </label>
+
+    </div>
+
+</div>
 </section>
-<!-- /ko -->
 </script>
