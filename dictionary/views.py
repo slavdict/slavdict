@@ -727,6 +727,8 @@ def edit_entry(request, id):
         'part_of_speech': dictionary.viewmodels._choices(
                             dictionary.models.PART_OF_SPEECH_CHOICES),
         'participle_type': dictionary.viewmodels.editParticiples,
+        'substantivus_type': dictionary.viewmodels._choices(
+                            dictionary.models.SUBSTANTIVUS_TYPE_CHOICES),
         'tantum': dictionary.viewmodels.editTantum,
     }
     labels = {
