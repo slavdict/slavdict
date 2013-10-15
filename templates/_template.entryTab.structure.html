@@ -1,5 +1,6 @@
 <script type="text/html" id="structure">
-<section class="tabcontent" data-bind="with: data.entry">
+
+<section class="tabcontent" data-bind="with: ui.navigationStack.top">
 
     <ul class="meanings" data-bind="sortable: { data: meanings,
                                                 connectClass: 'meanings' }">
@@ -82,6 +83,7 @@
             <a class="addItem" data-bind="visible: isExpanded,
                 click: meanings.itemAdder($root.data.entry, $data).do"></a>
 
+            <!-- ko if: $root.ui.navigationStack.top.type() === 'Entry' -->
             <ul class="collogroups"
                 data-bind="sortable: collogroups, visible: isExpanded">
                 <li data-bind="event: { dblclick: toggle },
@@ -156,6 +158,7 @@
                 data-bind="visible: isExpanded,
                 click: collogroups.itemAdder($data).do"></a>
 
+            <!-- /ko -->
         </li>
     </ul>
     <a class="addItem" id="addTopMeaning"
