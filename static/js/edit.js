@@ -689,7 +689,7 @@ var viewModel = vM.entryEdit,
     uiModel.navigationStack = (function () {
         var stack = ko.observableArray([dataModel.entry]);
             entryTab = 'info',
-            collogroupTab = 'collogroupInfo';
+            collogroupTab = {'default': 'variants'};
 
         function stackTop() {
             var s = stack();
@@ -704,7 +704,8 @@ var viewModel = vM.entryEdit,
         function templateName() {
             uiModel.currentForm({
                 'Entry': stack.entryTab,
-                'Collogroup': stack.collogroupTab,
+                'Collogroup': stack.collogroupTab[stack.top().id()]
+                              || stack.collogroupTab['default'],
                 'Meaning': 'editMeaning',
                 'Example': 'editExample',
                 '--exit--': 'saveDialogue'
@@ -918,7 +919,15 @@ var viewModel = vM.entryEdit,
         var x = $(this),
             y = x.data('href').slice(1);
         uiModel.currentForm(y);
-        uiModel.navigationStack.entryTab = y;
+        switch (uiModel.navigationStack.top.type()) {
+        case 'Entry':
+            uiModel.navigationStack.entryTab = y;
+            break;
+        case 'Collogroup':
+            var key = uiModel.navigationStack.top().id();
+            uiModel.navigationStack.collogroupTab[key] = y;
+            break;
+        }
     });
 
     // Активация сохранения json-снимков данных в локальном хранилище.
