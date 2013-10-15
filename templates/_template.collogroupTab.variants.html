@@ -1,0 +1,19 @@
+<script type="text/html" id="variants">
+<section class="tabcontent orthvars" data-bind="with: ui.navigationStack.top">
+
+    <ul data-bind="sortable: collocations">
+        <li>
+            <input type="image" src="{{ STATIC_URL }}/deleteItem.png"
+                class="deleteOrthvar"
+                data-bind="click: $parent.collocations.itemDestroyer($data).do"/>
+            <input type="text"
+                data-bind="value: collocation, valueUpdate: 'afterkeydown'"/>
+            <span data-bind="wax: collocation"></span>
+        </li>
+    </ul>
+
+    <a class="addItem" id="addOrthvar"
+        data-bind="click: collocations.itemAdder($root.navigationStack.top).do"></a>
+
+</section>
+</script>
