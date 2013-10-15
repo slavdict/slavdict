@@ -119,6 +119,16 @@
         {% include '_entryEdit_tabs.html' %}
         {% endtrim %}
 
+        <!-- ko template: { name: ui.currentForm }--><!-- /ko -->
+
+        {% include '_template.entryTab.admin.html' %}
+        {% include '_template.entryTab.info.html' %}
+        {% include '_template.entryTab.orthvars.html' %}
+        {% include '_template.entryTab.structure.html' %}
+        {% include '_template.entryTab.examples.html' %}
+        {% include '_template.entryTab.constructions.html' %}
+        {% include '_template.entryTab.etym.html' %}
+
         {% include '_template.editMeaning.html' %}
         {% include '_template.collogroupInfo.html' %}
         {% include '_template.saveDialogue.html' %}
