@@ -189,8 +189,15 @@
             </div></li>
         </ul>
 
+        <!-- ko ifnot: participles().length -->
         <input type="button" value="Добавить причастие"
             data-bind="click: participles.itemAdder($root.data.entry).do"/>
+        <!-- /ko -->
+
+        <!-- ko if: participles().length -->
+        <a class="addItem" id="addParticiple"
+            data-bind="click: participles.itemAdder($root.data.entry).do"></a>
+        <!-- /ko -->
 
     </div>
 </section>
