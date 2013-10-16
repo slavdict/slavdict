@@ -120,7 +120,8 @@
         {% include '_collocation_tabs.html' %}
         {% endtrim %}
 
-        <!-- ko template: { name: ui.currentForm }--><!-- /ko -->
+        <!-- ko template: { name: ui.currentForm,
+            data: ui.navigationStack.top() || data.entry } --><!-- /ko -->
 
         {% include '_template.entryTab.admin.html' %}
         {% include '_template.entryTab.info.html' %}

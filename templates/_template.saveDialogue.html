@@ -5,17 +5,16 @@
     <div class="modal grid">
 
         <div id="sD--entryAdvertisement"
-            data-bind="template: { name: 'entryAdvertisement',
-                data: data.entry }"></div>
+            data-bind="template: { name: 'entryAdvertisement' }"></div>
 
         <div id="sD--entryStatus">
             <span>Статус статьи</span>
 
             {% for id, name in STATUSES %}
                 <label data-bind="css: {
-                checked: data.entry.status() === '{{ id }}' }">
+                checked: status() === '{{ id }}' }">
                     <input type="radio" name="statuses" value="{{ id }}"
-                        data-bind="checked: data.entry.status"/>
+                        data-bind="checked: status"/>
                     <span>{{ name }}</span>
                 </label>
             {% endfor %}
@@ -23,7 +22,7 @@
 
         <div id="sD--additionalInfo">
             <label>Примечание</label>
-            <textarea data-bind="value: data.entry.additional_info,
+            <textarea data-bind="value: additional_info,
                 valueUpdate: 'afterkeydown'"></textarea>
         </div>
 

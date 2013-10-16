@@ -702,9 +702,10 @@ var viewModel = vM.entryEdit,
         }
 
         function templateName() {
+            var obj = stack.top();
             uiModel.currentForm({
                 'Entry': stack.entryTab,
-                'Collogroup': stack.collogroupTab[stack.top().id()]
+                'Collogroup': stack.collogroupTab[obj && obj.id() || 'default']
                               || stack.collogroupTab['default'],
                 'Meaning': 'editMeaning',
                 'Example': 'editExample',
