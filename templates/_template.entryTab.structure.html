@@ -33,6 +33,9 @@ $root.ui.navigationStack.top.type() === 'Collogroup'">
                                             visible: isExpanded">
                 <li data-bind="event: { dblclick: function(){} },
                         dblclickBubble: false">
+                    <a class="deleteItem" data-bind="click:
+                       $parent.examples.itemPoolReturner($data).do"></a>
+                    <a class="editItem" data-bind="click: edit"></a>
                     <span data-bind="wax: example"></span>{{ space }}
                     (<span data-bind="text: address_text"></span>)
                 </li>
@@ -72,6 +75,9 @@ $root.ui.navigationStack.top.type() === 'Collogroup'">
                         visible: isExpanded">
                         <li data-bind="event: { dblclick: function(){} },
                                 dblclickBubble: false">
+                            <a class="deleteItem" data-bind="click:
+                             $parent.examples.itemPoolReturner($data).do"></a>
+                            <a class="editItem" data-bind="click: edit"></a>
                             <span data-bind="wax: example"></span>{{ space }}
                             (<span data-bind="text: address_text"></span>)
                         </li>
@@ -139,6 +145,9 @@ $root.ui.navigationStack.top.type() === 'Collogroup'">
                                 visible: isExpanded">
                                 <li data-bind="event: { dblclick: function(){} },
                                         dblclickBubble: false">
+                                    <a class="deleteItem" data-bind="click:
+                                     $parent.examples.itemPoolReturner($data).do"></a>
+                                    <a class="editItem" data-bind="click: edit"></a>
                                     <span data-bind="wax: example"></span>{{ space }}
                                     (<span data-bind="text: address_text"></span>)
                                 </li>
