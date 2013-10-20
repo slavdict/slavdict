@@ -1,5 +1,6 @@
 <script type="text/html" id="admin">
-<section class="tabcontent">
+<section class="tabcontent"
+data-bind="if: $root.ui.navigationStack.top.type() === 'Entry'">
 
     <div>
         <label>Автор</label>
