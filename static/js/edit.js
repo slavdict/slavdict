@@ -804,9 +804,13 @@ var viewModel = vM.entryEdit,
             return null;
         }
 
-        function makeSlug(text) {
-            var wordLimit = 2,
-                toBeChanged;
+        function example() {
+            return getSelfOrUpwardNearest(stack.top(), 'Example')
+        }
+
+        function makeSlug(text, wordLimit) {
+            var toBeChanged;
+            wordLimit = wordLimit || 2,
             text = text.split(/\s+/);
             toBeChanged = (text.length > wordLimit);
             if (toBeChanged && (text[0].length < 3 || text[1].length < 3)) {
@@ -839,14 +843,22 @@ var viewModel = vM.entryEdit,
         function meaningSlug() { return makeMeaningSlug(hierarchy.meaning()); }
         function usageSlug() { return makeMeaningSlug(hierarchy.usage()); }
 
+        function exampleSlug() {
+            var x = hierarchy.example();
+            x = (x ? makeSlug(x.example()) : '');
+            return x.replace(/[\.\,\!\?\;\:…]$/, '');
+        }
+
         // Общедоступное API
         hierarchy.collogroup = ko.computed(collogroup);
         hierarchy.meaning = ko.computed(meaning);
         hierarchy.usage = ko.computed(usage);
+        hierarchy.example = ko.computed(example);
 
         hierarchy.collogroupSlug = ko.computed(collogroupSlug);
         hierarchy.meaningSlug = ko.computed(meaningSlug);
         hierarchy.usageSlug = ko.computed(usageSlug);
+        hierarchy.exampleSlug = ko.computed(exampleSlug);
 
         return hierarchy;
     })();

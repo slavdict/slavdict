@@ -1,4 +1,5 @@
-<nav class="breadCrumbs" data-bind="visible: ui.hierarchy.meaning">
+<nav class="breadCrumbs" data-bind="visible: ui.hierarchy.meaning() ||
+    ui.hierarchy.example()">
 <ul>
     <li id="firstBreadCrumb" data-bind="visible: ui.hierarchy.meaning">
 
@@ -8,12 +9,13 @@
         <!-- /ko -->
         <span data-bind="text: ui.hierarchy.meaningSlug"></span>
 
-        <canvas id="bC--separator" width="30" height="45"
-            data-bind="visible: ui.hierarchy.usage"></canvas>
+        <canvas id="meaningSeparator" width="30" height="45"
+            data-bind="visible: ui.hierarchy.usage() ||
+            ui.hierarchy.example()"></canvas>
         <script type="application/javascript">
             (function () {
 
-                var cnvs = document.getElementById('bC--separator'),
+                var cnvs = document.getElementById('meaningSeparator'),
                     ctx = cnvs.getContext('2d'),
                     width = cnvs.width,
                     height = cnvs.height + 3,
@@ -59,6 +61,28 @@
         </span>{{ space }}
 
         <span data-bind="text: $root.ui.hierarchy.usageSlug"></span>
+
+        <canvas id="usageSeparator" width="30" height="45"
+            data-bind="visible: $root.ui.hierarchy.example"></canvas>
+        <script type="application/javascript">
+        (function () {
+
+            // BUG: Ни в хроме, ни в файрфоксе на этом втором канвасе ничего
+            // не получается нарисовать. Даже если полностью скопировать весь
+            // код для предыдущего канваса. Но если код выполнить из консоли
+            // всё рисуется.
+            var x = document.getElementById('usageSeparator'),
+                y = document.getElementById('meaningSeparator');
+            x.width = y.width;
+            x.height = y.height;
+            x.getContext('2d').drawImage(y, 0, 0);
+
+        })();
+        </script>
+    </li>
+    <li id="thirdBreadCrumb" data-bind="visible: ui.hierarchy.example,
+        with: ui.hierarchy.example">
+        <span data-bind="wax: $root.ui.hierarchy.exampleSlug"></span>…
     </li>
     <li></li>
 </ul>
