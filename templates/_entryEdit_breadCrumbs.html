@@ -1,55 +1,20 @@
 <nav class="breadCrumbs" data-bind="visible: ui.hierarchy.meaning() ||
-    ui.hierarchy.example()">
+    ui.hierarchy.example(), with: ui.hierarchy">
 <ul>
-    <li id="firstBreadCrumb" data-bind="visible: ui.hierarchy.meaning">
+    <li id="firstBreadCrumb" data-bind="visible: meaning">
 
-        <!-- ko with: ui.hierarchy.meaning -->
+        <!-- ko with: meaning -->
         <span data-bind="text: order"></span>.{{ space }}
         <span data-bind="visible: metaphorical">►</span>{{ space }}
         <!-- /ko -->
-        <span data-bind="text: ui.hierarchy.meaningSlug"></span>
+        <span data-bind="text: meaningSlug"></span>
 
-        <canvas id="meaningSeparator" width="30" height="45"
-            data-bind="visible: ui.hierarchy.usage() ||
-            ui.hierarchy.example()"></canvas>
-        <script type="application/javascript">
-            (function () {
-
-                var cnvs = document.getElementById('meaningSeparator'),
-                    ctx = cnvs.getContext('2d'),
-                    width = cnvs.width,
-                    height = cnvs.height + 3,
-                    alpha = 3,
-                    beta = 1.8;
-
-                ctx.beginPath();
-                ctx.moveTo(width / alpha + 1, 0)
-                ctx.lineTo(width, 0);
-                ctx.lineTo(width, height);
-                ctx.lineTo(width / alpha + 1, height);
-                ctx.lineTo(width / alpha * beta + 1, height / 2);
-                ctx.moveTo(width / alpha + 1, 0)
-                ctx.clip();
-
-                ctx.shadowOffsetY = 7;
-                ctx.shadowBlur = 20;
-                ctx.shadowColor = 'rgba(210, 146, 22, 0.8)';
-                ctx.beginPath();
-                ctx.moveTo(0, 0)
-                ctx.lineTo(width / alpha, 0);
-                ctx.lineTo(width / alpha * beta, height / 2);
-                ctx.lineTo(width / alpha, height);
-                ctx.lineTo(0, height);
-                ctx.lineTo(0, 0);
-                ctx.fill();
-
-            })();
-
-        </script>
+        <img src="{{ STATIC_URL }}meaningSeparator.png" alt=""
+            data-bind="visible: usage() || example()"/>
     </li>
-    <li id="secondBreadCrumb" data-bind="visible: ui.hierarchy.usage,
-        with: ui.hierarchy.usage">
+    <li id="secondBreadCrumb" data-bind="visible: usage">
 
+        <!-- ko with: usage -->
         <span data-bind="visible: metaphorical">►</span>{{ space }}
         <span data-bind="visible: substantivus">
             <span class="substantivus">в роли сущ.</span>
@@ -59,30 +24,15 @@
                     data-bind="text: substantivus_type.label"></span>
             </span>
         </span>{{ space }}
+        <!-- /ko -->
 
-        <span data-bind="text: $root.ui.hierarchy.usageSlug"></span>
+        <span data-bind="text: usageSlug"></span>
 
-        <canvas id="usageSeparator" width="30" height="45"
-            data-bind="visible: $root.ui.hierarchy.example"></canvas>
-        <script type="application/javascript">
-        (function () {
-
-            // BUG: Ни в хроме, ни в файрфоксе на этом втором канвасе ничего
-            // не получается нарисовать. Даже если полностью скопировать весь
-            // код для предыдущего канваса. Но если код выполнить из консоли
-            // всё рисуется.
-            var x = document.getElementById('usageSeparator'),
-                y = document.getElementById('meaningSeparator');
-            x.width = y.width;
-            x.height = y.height;
-            x.getContext('2d').drawImage(y, 0, 0);
-
-        })();
-        </script>
+        <img src="{{ STATIC_URL }}meaningSeparator.png" alt=""
+            data-bind="visible: example"/>
     </li>
-    <li id="thirdBreadCrumb" data-bind="visible: ui.hierarchy.example,
-        with: ui.hierarchy.example">
-        <span data-bind="wax: $root.ui.hierarchy.exampleSlug"></span>…
+    <li id="thirdBreadCrumb" data-bind="visible: example">
+        <span data-bind="wax: exampleSlug"></span>…
     </li>
     <li></li>
 </ul>
