@@ -339,6 +339,12 @@ function Collogroup() {
     upsertArray(this, 'etymologies', Etymology, data);
 
     this.isExpanded || (this.isExpanded = ko.observable(false));
+    this.collocations.notEmpty = ko.computed(function () {
+        var array = this.collocations();
+        if (array.length === 0) {
+            array.push(new Collocation(this))
+        }
+    }, this);
     Collogroup.all.append(this);
 }
 
