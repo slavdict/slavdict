@@ -3,9 +3,13 @@
 <div id="eE--editExample" class="grid">
 
     <div id="eE--example">
-        <label>Иллюстрация</label>
-        <textarea data-bind="value: example,
-            valueUpdate: 'afterkeydown'"></textarea>
+        <div>
+            <label>Иллюстрация</label>
+            <textarea data-bind="value: example,
+                valueUpdate: 'afterkeydown'"></textarea>
+        </div>
+
+        <div id="eE--exampleWax" data-bind="wax: example"></div>
     </div>
 
     <div id="eE--address">
