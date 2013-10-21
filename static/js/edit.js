@@ -831,22 +831,28 @@ var viewModel = vM.entryEdit,
 
         function makeMeaningSlug(x) {
             if (x) {
-                if (x.parent_meaning_id() === null) defaultValue = '<Значение>';
-                else defaultValue = '<Употребление>';
-                x = x.meaning() || x.gloss() || defaultValue;
+                x = x.meaning() || x.gloss() || '';
                 return makeSlug(x);
             } else {
                 return '';
             }
         }
 
-        function meaningSlug() { return makeMeaningSlug(hierarchy.meaning()); }
-        function usageSlug() { return makeMeaningSlug(hierarchy.usage()); }
+        function meaningSlug() {
+            var x = makeMeaningSlug(hierarchy.meaning());
+            return x || '‹значение›';
+        }
+
+        function usageSlug() {
+            var x = makeMeaningSlug(hierarchy.usage());
+            return x || '‹употребление›';
+        }
 
         function exampleSlug() {
             var x = hierarchy.example();
             x = (x ? makeSlug(x.example()) : '');
-            return x.replace(/[\.\,\!\?\;\:…]$/, '');
+            x = x.replace(/[\.\,\!\?\;\:…]$/, '');
+            return x || '‹иллюстрация›';
         }
 
         // Общедоступное API
