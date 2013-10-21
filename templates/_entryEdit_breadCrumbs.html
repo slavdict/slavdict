@@ -7,7 +7,8 @@
         <span data-bind="text: order"></span>.{{ space }}
         <span data-bind="visible: metaphorical">►</span>{{ space }}
         <!-- /ko -->
-        <span data-bind="text: meaningSlug"></span>
+        <span data-bind="if: meaningSlug, text: meaningSlug"></span>
+        <span data-bind="ifnot: meaningSlug">&lt;Значение&gt;</span>
 
         <!-- NOTE: Реализацию разделителей на основе canvas
             см. commit c3f1d323ff0e02ff01a65e3dfe1820b5c370dd73 -->
@@ -28,7 +29,8 @@
         </span>{{ space }}
         <!-- /ko -->
 
-        <span data-bind="text: usageSlug"></span>
+        <span data-bind="if: usageSlug, text: usageSlug"></span>
+        <span data-bind="ifnot: usageSlug">&lt;Употребление&gt;</span>
 
         <!-- NOTE: Реализацию разделителей на основе canvas
             см. commit c3f1d323ff0e02ff01a65e3dfe1820b5c370dd73 -->
@@ -36,7 +38,10 @@
             data-bind="visible: example"/>
     </li>
     <li id="thirdBreadCrumb" data-bind="visible: example">
-        <span data-bind="wax: exampleSlug"></span>…
+        <span data-bind="if: exampleSlug">
+            <span data-bind="wax: exampleSlug"></span>…
+        </span>
+        <span data-bind="ifnot: exampleSlug">&lt;Иллюстрация&gt;</span>
     </li>
     <li></li>
 </ul>

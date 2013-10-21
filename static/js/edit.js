@@ -839,21 +839,13 @@ var viewModel = vM.entryEdit,
             }
         }
 
-        function meaningSlug() {
-            var x = makeMeaningSlug(hierarchy.meaning());
-            return x || '‹значение›';
-        }
-
-        function usageSlug() {
-            var x = makeMeaningSlug(hierarchy.usage());
-            return x || '‹употребление›';
-        }
+        function meaningSlug() { return makeMeaningSlug(hierarchy.meaning()); }
+        function usageSlug() { return makeMeaningSlug(hierarchy.usage()); }
 
         function exampleSlug() {
             var x = hierarchy.example();
             x = (x ? makeSlug(x.example()) : '');
-            x = x.replace(/[\.\,\!\?\;\:…]$/, '');
-            return x || '‹иллюстрация›';
+            return x.replace(/[\.\,\!\?\;\:…]$/, '');
         }
 
         // Общедоступное API
