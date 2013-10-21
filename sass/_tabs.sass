@@ -1,15 +1,35 @@
 @charset 'utf-8'
 
 
-nav.tabs ul
+nav.breadTabs ul
     overflow: hidden
     margin: 0
     padding: 0
     height: 45px
     display: flex
     @include background(linear-gradient(top, rgba(252, 243, 208, 0.7) 0%, rgba(210, 146, 22, 0) 100%))
+    position: relative
 
-    li
+    li.breadCrumb
+        flex: 0 1 auto
+        height: 26px
+        cursor: pointer
+        @include user-select(none)
+        padding: 15px 37px 15px 30px
+        position: relative
+
+        img
+            position: absolute
+            top: 0
+            bottom: 0
+            right: -10px
+
+        span
+            font-size: 13px
+            color: sienna
+            opacity: 0.8
+
+    li.tab
         flex: 0 1 auto
         margin-top: 20px
         padding: 4px 20px 0px 20px
@@ -51,10 +71,6 @@ nav.tabs ul
 
         &:first-child
             margin-left: 35px
-        &:last-child
-            flex: 1 1 auto
-            margin-top: 45px
-            @include box-shadow(0 -1px 10px rgba(210, 146, 22, 0.2))
         &:hover
             background-color: #F7E9B0
             color: #d29216
@@ -63,6 +79,22 @@ nav.tabs ul
             z-index: 2
             color: #777
             @include box-shadow(0 10px 20px rgba(0,0,0,0.7), 0px -1px 10px rgba(0,0,0,0.4))
+
+#tabShadow,
+#breadCrumbShadow
+    @include box-shadow(0 -1px 10px rgba(210, 146, 22, 0.2))
+
+#breadCrumbShadow
+    content: ''
+    display: block
+    top: 45px
+    left: 45px
+    right: 0
+    position: absolute
+
+#tabShadow
+    flex: 1 1 auto
+    margin-top: 45px
 
 section.tabcontent
     padding-top: 25px

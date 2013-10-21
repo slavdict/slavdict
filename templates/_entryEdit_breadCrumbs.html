@@ -1,7 +1,7 @@
-<nav class="breadCrumbs" data-bind="visible: ui.hierarchy.meaning() ||
-    ui.hierarchy.example(), with: ui.hierarchy">
-<ul>
-    <li id="firstBreadCrumb" data-bind="visible: meaning">
+<!-- ko if: ui.hierarchy.meaning() || ui.hierarchy.example() -->
+<!-- ko with: ui.hierarchy -->
+
+    <li class="breadCrumb" id="firstBreadCrumb" data-bind="visible: meaning">
 
         <!-- ko with: meaning -->
         <span data-bind="text: order"></span>.{{ space }}
@@ -15,7 +15,7 @@
         <img src="{{ STATIC_URL }}meaningSeparator.png" alt=""
             data-bind="visible: usage() || example()"/>
     </li>
-    <li id="secondBreadCrumb" data-bind="visible: usage">
+    <li class="breadCrumb" id="secondBreadCrumb" data-bind="visible: usage">
 
         <!-- ko with: usage -->
         <span data-bind="visible: metaphorical">►</span>{{ space }}
@@ -37,12 +37,14 @@
         <img src="{{ STATIC_URL }}meaningSeparator.png" alt=""
             data-bind="visible: example"/>
     </li>
-    <li id="thirdBreadCrumb" data-bind="visible: example">
+    <li class="breadCrumb" id="thirdBreadCrumb" data-bind="visible: example">
         <span data-bind="if: exampleSlug">
             <span data-bind="wax: exampleSlug"></span>…
         </span>
         <span data-bind="ifnot: exampleSlug">&lt;Иллюстрация&gt;</span>
     </li>
-    <li></li>
-</ul>
-</nav>
+
+    <li id="breadCrumbShadow" class="breadCrumb"></li>
+
+<!-- /ko -->
+<!-- /ko -->

@@ -933,7 +933,7 @@ var viewModel = vM.entryEdit,
     };
 
     // Активация работы вкладок
-    $('nav.tabs li').click(function () {
+    $('nav.breadTabs li.tab').click(function () {
         var x = $(this),
             y = x.data('href').slice(1);
         uiModel.currentForm(y);

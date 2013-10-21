@@ -1,23 +1,40 @@
-<nav class="tabs"
-    data-bind="visible: ui.navigationStack.top.type() === 'Entry'">
+<nav class="breadTabs">
 <ul>
+
+{% include '_entryEdit_breadCrumbs.html' %}
+
+<!-- ko if: ui.navigationStack.top.type() === 'Entry' -->
     {% if user.is_admeditor %}
-    <!--<li data-bind="css: { current: ui.currentForm() === 'admin' }
+    <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'admin' }
         data-href="#admin">Служебная инф.</li>-->
     {% endif %}
-    <li data-bind="css: { current: ui.currentForm() === 'info' }"
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'info' }"
         data-href="#info" class="current">Справочная инф.</li>
-    <li data-bind="css: { current: ui.currentForm() === 'orthvars' }"
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'orthvars' }"
         data-href="#orthvars">Варианты</li>
-    <li data-bind="css: { current: ui.currentForm() === 'structure' }"
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'structure' }"
         data-href="#structure">Структура</li>
-    <!--<li data-bind="css: { current: ui.currentForm() === 'examples' }"
+    <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'examples' }"
         data-href="#examples">Иллюстрации</li>-->
-    <!--<li data-bind="css: { current: ui.currentForm() === 'constructions' }"
+    <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'constructions' }"
         data-href="#constructions">Конструкции</li>-->
-    <!--<li data-bind="css: { current: ui.currentForm() === 'etym' }"
+    <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'etym' }"
         data-href="#etym">Этимология</li>-->
-    <li></li>
+    <li id="tabShadow" class="tab"></li>
+<!-- /ko -->
+
+<!-- ko if: ui.navigationStack.top.type() === 'Collogroup' -->
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'variants' }"
+        data-href="#variants">Варианты</li>
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'structure' }"
+        data-href="#structure">Структура</li>
+    <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'examples' }"
+        data-href="#examples">Иллюстрации</li>-->
+    <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'etym' }"
+        data-href="#etym">Этимология</li>-->
+    <li id="tabShadow" class="tab"></li>
+<!-- /ko -->
+
 </ul>
 </nav>
 
