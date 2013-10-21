@@ -9,6 +9,8 @@
         <!-- /ko -->
         <span data-bind="text: meaningSlug"></span>
 
+        <!-- NOTE: Реализацию разделителей на основе canvas
+            см. commit c3f1d323ff0e02ff01a65e3dfe1820b5c370dd73 -->
         <img src="{{ STATIC_URL }}meaningSeparator.png" alt=""
             data-bind="visible: usage() || example()"/>
     </li>
@@ -28,6 +30,8 @@
 
         <span data-bind="text: usageSlug"></span>
 
+        <!-- NOTE: Реализацию разделителей на основе canvas
+            см. commit c3f1d323ff0e02ff01a65e3dfe1820b5c370dd73 -->
         <img src="{{ STATIC_URL }}meaningSeparator.png" alt=""
             data-bind="visible: example"/>
     </li>
