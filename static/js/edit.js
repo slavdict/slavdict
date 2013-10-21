@@ -96,8 +96,9 @@ function upsertArray(object, attrname, Constructor, data, observableArray) {
 }
 
 // Общие для всех свойств-массивов методы добавления/удаления элментов
-function itemAdder(constructorArguments) {
-    var array = this;
+function itemAdder() {
+    var array = this,
+        constructorArguments = arguments;
     return {
         do: function () {
             var args = [null].concat(constructorArguments || []),
