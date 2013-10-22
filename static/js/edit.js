@@ -889,7 +889,7 @@ var viewModel = vM.entryEdit,
             collogroup = hierarchy.collogroup(),
             meaning = hierarchy.meaning(),
             width = $('#eA--entry').outerWidth() +
-                parseInt($('#eA--collocation').css('paddingLeft').slice(0, -2));
+                parseInt($('#eA--collocation').css('paddingLeft'));
         if (collogroup) {
             x.css('paddingLeft', width);
         } else {
