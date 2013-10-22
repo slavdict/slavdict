@@ -183,6 +183,7 @@ function Etymology() {
     upsertArray(this, 'etymologies', Etymology, data);
     Etymology.all.append(this);
 }
+Etymology.hideFromServer = ['etymologies'];
 
 function Participle() {
     /* Participle(entry)
@@ -347,6 +348,8 @@ function Collogroup() {
     }, this);
     Collogroup.all.append(this);
 }
+Collogroup.hideFromServer = ['meanings', 'unsorted_examples', 'etymologies',
+    'isExpanded'];
 
 function Meaning() {
     /* Meaning(container[, parentMeaning])
@@ -395,6 +398,7 @@ function Meaning() {
             Meaning.prototype.substantivus_type_label, this);
     Meaning.all.append(this);
 }
+Meaning.hideFromServer = ['collogroups', 'meanings', 'examples', 'isExpanded'];
 
 function Entry(data) {
     upsert(this, 'additional_info', data, '');
@@ -435,6 +439,8 @@ function Entry(data) {
             Entry.prototype.part_of_speech_label, this);
     Entry.all.append(this);
 }
+Entry.hideFromServer = ['unsorted_examples', 'meanings', 'collogroups',
+    'etymologies', 'author_ids'];
 
 // У meaning возможны следующие сочетания значений полей
 // entry_container_id (E), collogroup_container_id (C)
@@ -903,17 +909,37 @@ var viewModel = vM.entryEdit,
                 toDestroy[item.name] = item.shredder;
             });
 
+            function prepareOne(x, Constructor) {
+                var array = Constructor.hideFromServer, i, j;
+                x = ko.toJS(x);
+                if (array) {
+                    for (i=0, j=array.length; i<j; i++) {
+                        delete x[array[i]];
+                    }
+                }
+                return x;
+            }
+
+            function prepareAll(Constructor) {
+                var i, j, x, array = [], all = Constructor.all;
+                for (i=0, j=all.length; i<j; i++) {
+                    x = prepareOne(all[i], Constructor);
+                    array.push(x);
+                }
+                return array;
+            }
+
             data = ko.toJSON({
                 // FIX: Необходимо либо избавиться от collogroups, etymologies,
                 // examples и meanings ниже, и тогда необходимо менять способ
                 // обработки сохраняемых данных на сервере. Либо в entry
                 // вырезАть все свойства, которые уже присутствуют в этих
                 // collogroups, etymologies и т.п.
-                        entry: dataModel.entry,
-                        collogroups: Collogroup.all,
-                        etymologies: Etymology.all,
-                        examples: Example.all,
-                        meanings: Meaning.all,
+                        entry: prepareOne(dataModel.entry, Entry),
+                        collogroups: prepareAll(Collogroup),
+                        etymologies: prepareAll(Etymology),
+                        examples: prepareAll(Example),
+                        meanings: prepareAll(Meaning),
                         toDestroy: toDestroy,
                 });
 
