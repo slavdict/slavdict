@@ -50,9 +50,8 @@ $root.ui.navigationStack.top.type() === 'Collogroup'">
                     dblclickBubble: false">
                     <a class="deleteItem" data-bind="click:
                             $parent.meanings.itemDestroyer($data).do"></a>
-                    <a type="image" class="editItem"
-                        data-bind="click: edit"></a>
-                    <a type="image" class="expandItem" data-bind="click: toggle,
+                    <a class="editItem" data-bind="click: edit"></a>
+                    <a class="expandItem" data-bind="click: toggle,
                         css: { expanded: isExpanded }"></a>
 
                     <span data-bind="visible: metaphorical">►</span>{{ space }}
