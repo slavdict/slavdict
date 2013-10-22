@@ -1,8 +1,6 @@
 <script type="text/html" id="constructions">
-<section class="tabcontent" data-bind="if:
-    $root.ui.navigationStack.top.type() === 'Entry' ||
-   ($root.ui.navigationStack.top.type() === 'Meaning' &&
-        !$root.ui.hierarchy.usage())">
+<section class="tabcontent" data-bind="if: constructor.name === 'Entry' ||
+   (constructor.name === 'Meaning' && !$root.ui.hierarchy.usage())">
 
     <ul class="collogroups" data-bind="sortable: collogroups">
 

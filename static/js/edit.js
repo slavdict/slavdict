@@ -710,13 +710,9 @@ var viewModel = vM.entryEdit,
             return s.length ? s[s.length - 1] : null;
         }
 
-        function stackTopType() {
-            var x = stack.top();
-            return x ? x.constructor.name : '--exit--';
-        }
-
         function templateName() {
             var obj = stack.top(),
+                type = obj && obj.constructor.name || 'none'
                 key = obj && obj.id() || 'default';
             uiModel.currentForm({
                 'Entry': stack.entryTab,
@@ -727,8 +723,8 @@ var viewModel = vM.entryEdit,
                     // ничего в словаре найдено не будет.
                 'Meaning': stack.meaningTab[key] || stack.meaningTab['default'],
                 'Example': 'editExample',
-                '--exit--': 'saveDialogue'
-            }[stack.top.type()]);
+                'none': 'saveDialogue'
+            }[type]);
         }
 
         function pop() {
@@ -737,7 +733,6 @@ var viewModel = vM.entryEdit,
 
         // общедоступный API стека
         stack.top = ko.computed(stackTop);
-        stack.top.type = ko.computed(stackTopType);
 
         stack.entryTab = entryTab;
         stack.collogroupTab = collogroupTab;
@@ -798,9 +793,9 @@ var viewModel = vM.entryEdit,
         }
 
         function meaning() {
-            var x, y;
-            if (stack.top.type() === 'Collogroup') return null;
-            x = getSelfOrUpwardNearest(stack.top(), 'Meaning');
+            var x, y, top = stack.top();
+            if (!top || top.constructor.name === 'Collogroup') return null;
+            x = getSelfOrUpwardNearest(top, 'Meaning');
             if (x) {
                 y = getParent(x, [['parent_meaning_id', Meaning],
                                   ['collogroup_container_id', Collogroup],
@@ -811,8 +806,8 @@ var viewModel = vM.entryEdit,
         }
 
         function usage() {
-            var x, y;
-            if (stack.top.type() === 'Collogroup') return null;
+            var x, y, top = stack.top();
+            if (!top || top.constructor.name === 'Collogroup') return null;
             x = getSelfOrUpwardNearest(stack.top(), 'Meaning');
             if (x) {
                 y = getParent(x, [['parent_meaning_id', Meaning],
@@ -824,7 +819,11 @@ var viewModel = vM.entryEdit,
         }
 
         function example() {
-            return (stack.top.type() === 'Example') ? stack.top() : null;
+            var top = stack.top();
+            if (top && top.constructor.name === 'Example')
+                return top;
+            else
+                return null;
         }
 
         function makeSlug(text, wordLimit) {
@@ -979,9 +978,10 @@ var viewModel = vM.entryEdit,
         var x = $(this),
             y = x.data('href').slice(1),
             stack = uiModel.navigationStack,
-            key = stack.top() && stack.top().id();
+            top = stack.top(),
+            key = top && top.id();
         uiModel.currentForm(y);
-        switch (stack.top.type()) {
+        switch (top && top.constructor.name) {
         case 'Entry':
             stack.entryTab = y;
             break;

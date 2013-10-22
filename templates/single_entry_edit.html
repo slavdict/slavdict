@@ -51,18 +51,19 @@
                 valueUpdate: 'afterkeydown'"/>
         </div>
 
+        <!-- ko if: ui.navigationStack.top -->
         <div class="aside--note"
          data-bind="with: ui.navigationStack.top">
 
-            <!-- ko if: $root.ui.navigationStack.top.type() === 'Entry' -->
+            <!-- ko if: constructor.name === 'Entry' -->
             <label>Примечание к статье</label>
             <!-- /ko -->
 
-            <!-- ko if: $root.ui.navigationStack.top.type() === 'Collogroup' -->
+            <!-- ko if: constructor.name === 'Collogroup' -->
             <label>Примечание к словосочетанию</label>
             <!-- /ko -->
 
-            <!-- ko if: $root.ui.navigationStack.top.type() === 'Meaning' -->
+            <!-- ko if: constructor.name === 'Meaning' -->
                 <!-- ko ifnot: $root.ui.hierarchy.usage -->
                 <label>Примечание к значению</label>
                 <!-- /ko -->
@@ -71,13 +72,14 @@
                 <!-- /ko -->
             <!-- /ko -->
 
-            <!-- ko if: $root.ui.navigationStack.top.type() === 'Example' -->
+            <!-- ko if: constructor.name === 'Example' -->
             <label>Примечание к иллюстрации</label>
             <!-- /ko -->
 
             <textarea data-bind="value: additional_info,
                 valueUpdate: 'afterkeydown'"></textarea>
         </div>
+        <!-- /ko -->
 
     </aside>
 
@@ -124,8 +126,11 @@
         {% include '_entryEdit_tabs.html' %}
         {% endtrim %}
 
-        <!-- ko template: { name: ui.currentForm,
-            data: ui.navigationStack.top() || data.entry } --><!-- /ko -->
+        <!-- ko template: { name: ui.currentForm, data: ui.navigationStack.top,
+            if: ui.navigationStack.top } --><!-- /ko -->
+
+        <!-- ko template: { name: 'saveDialogue', data: data.entry,
+            if: !ui.navigationStack.top() } --><!-- /ko -->
 
         {% include '_template.entryTab.admin.html' %}
         {% include '_template.entryTab.info.html' %}

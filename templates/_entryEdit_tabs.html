@@ -1,11 +1,11 @@
-<nav class="breadTabs">
+<nav class="breadTabs" data-bind="if: ui.navigationStack.top">
 <ul>
 
 
 {% include '_entryEdit_breadCrumbs.html' %}
 
 
-<!-- ko if: ui.navigationStack.top.type() === 'Entry' -->
+<!-- ko if: ui.navigationStack.top().constructor.name === 'Entry' -->
 
     {% if user.is_admeditor %}
     <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'admin' }
@@ -34,7 +34,7 @@
 <!-- /ko -->
 
 
-<!-- ko if: ui.navigationStack.top.type() === 'Collogroup' -->
+<!-- ko if: ui.navigationStack.top().constructor.name === 'Collogroup' -->
 
     <li class="tab" data-bind="css: { current: ui.currentForm() === 'variants' }"
         data-href="#variants">Варианты</li>
@@ -51,7 +51,7 @@
 <!-- /ko -->
 
 
-<!-- ko if: ui.navigationStack.top.type() === 'Meaning' &&
+<!-- ko if: ui.navigationStack.top().constructor.name === 'Meaning' &&
             !ui.hierarchy.usage() -->
 
     <li class="tab" data-bind="css: { current: ui.currentForm() === 'editMeaning' }"
@@ -72,8 +72,8 @@
 <!-- /ko -->
 
 
-<!-- ko if: ui.navigationStack.top.type() === 'Entry' ||
-            ui.navigationStack.top.type() === 'Collogroup' -->
+<!-- ko if: ui.navigationStack.top().constructor.name === 'Entry' ||
+            ui.navigationStack.top().constructor.name === 'Collogroup' -->
     <li id="tabShadow" class="tab"></li>
 <!-- /ko -->
 
