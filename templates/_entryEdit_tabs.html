@@ -1,37 +1,54 @@
 <nav class="breadTabs">
 <ul>
 
+
 {% include '_entryEdit_breadCrumbs.html' %}
 
+
 <!-- ko if: ui.navigationStack.top.type() === 'Entry' -->
+
     {% if user.is_admeditor %}
     <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'admin' }
         data-href="#admin">Служебная инф.</li>-->
     {% endif %}
+
     <li class="tab" data-bind="css: { current: ui.currentForm() === 'info' }"
         data-href="#info" class="current">Справочная инф.</li>
+
     <li class="tab" data-bind="css: { current: ui.currentForm() === 'orthvars' }"
         data-href="#orthvars">Варианты</li>
+
     <li class="tab" data-bind="css: { current: ui.currentForm() === 'structure' }"
         data-href="#structure">Значения</li>
+
     <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'examples' }"
         data-href="#examples">Иллюстрации</li>-->
+
     <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'constructions' }"
         data-href="#constructions">Конструкции</li>-->
+
     <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'etym' }"
         data-href="#etym">Этимология</li>-->
+
 <!-- /ko -->
 
+
 <!-- ko if: ui.navigationStack.top.type() === 'Collogroup' -->
+
     <li class="tab" data-bind="css: { current: ui.currentForm() === 'variants' }"
         data-href="#variants">Варианты</li>
+
     <li class="tab" data-bind="css: { current: ui.currentForm() === 'structure' }"
         data-href="#structure">Значения</li>
+
     <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'examples' }"
         data-href="#examples">Иллюстрации</li>-->
+
     <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'etym' }"
         data-href="#etym">Этимология</li>-->
+
 <!-- /ko -->
+
 
 <!-- ko if: ui.navigationStack.top.type() === 'Meaning' -->
 
@@ -48,6 +65,7 @@
         data-href="#examples">Иллюстрации</li>
 
 <!-- /ko -->
+
 
 <!-- ko if: ui.navigationStack.top.type() === 'Entry' ||
             ui.navigationStack.top.type() === 'Collogroup' -->
