@@ -236,6 +236,7 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
     width: $listWidth - 5px !important
 
 #infoTab--participles > .addItem,
+#usageExamples .addItem
     width: $listWidth - 15px
 
 .orthvars ul li,
@@ -503,7 +504,10 @@ $expandPosition: 28px
 .examples > li > .editItem
     right: $expandPosition - 8px
 
-
+#usageExamples
+    +column(20)
+    clear: all
+    margin-top: 2.4em
 
 .substantivus
     +border-radius(3px)
