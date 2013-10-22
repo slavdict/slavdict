@@ -824,7 +824,7 @@ var viewModel = vM.entryEdit,
         }
 
         function example() {
-            return getSelfOrUpwardNearest(stack.top(), 'Example')
+            return (stack.top.type() === 'Example') ? stack.top() : null;
         }
 
         function makeSlug(text, wordLimit) {
