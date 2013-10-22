@@ -20,7 +20,6 @@
         data-href="#constructions">Конструкции</li>-->
     <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'etym' }"
         data-href="#etym">Этимология</li>-->
-    <li id="tabShadow" class="tab"></li>
 <!-- /ko -->
 
 <!-- ko if: ui.navigationStack.top.type() === 'Collogroup' -->
@@ -32,6 +31,10 @@
         data-href="#examples">Иллюстрации</li>-->
     <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'etym' }"
         data-href="#etym">Этимология</li>-->
+<!-- /ko -->
+
+<!-- ko if: ui.navigationStack.top.type() === 'Entry' ||
+            ui.navigationStack.top.type() === 'Collogroup' -->
     <li id="tabShadow" class="tab"></li>
 <!-- /ko -->
 
