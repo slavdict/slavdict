@@ -88,8 +88,8 @@
                 data: data.entry }" class="entryAdvertisement"
                 id="eA--entry"></div>
 
-            <div data-bind="visible: ui.hierarchy.collogroup"
-                class="entryAdvertisement" id="eA--collocation">
+            <!-- ko if: ui.hierarchy.collogroup -->
+            <div class="entryAdvertisement" id="eA--collocation">
 
                 <canvas id="eA--separator" width="30" height="80"></canvas>
                 <script type="application/javascript">
@@ -117,6 +117,7 @@
                 <span>&lt;Словосочетание&gt;</span>
                 <!-- /ko -->
             </div>
+            <!-- /ko -->
         </header>
 
         {% trim %}
