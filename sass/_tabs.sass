@@ -232,14 +232,14 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
 .tabcontent > .addItem,
 .orthvars > .addItem,
-.meaningContexts > .addItem
+.meaningContexts ~ .addItem
     width: $listWidth - 5px !important
 
 #infoTab--participles > .addItem,
     width: $listWidth - 15px
 
 .orthvars ul li,
-.meaningContexts ul li,
+ul.meaningContexts li,
 #infoTab--participles ul li
     padding-left: 12px
 
@@ -260,6 +260,24 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 
     .cslav
         margin-left: 10px
+
+.meaningContexts *
+    overflow: visible 
+
+.meaningContexts li
+    label
+        +column(2)
+        position: relative
+        margin-top: 2px
+
+        input[type="text"]
+            +column(2, true)
+
+        span
+            top: -14px
+            font-size: 9px
+            position: absolute
+            z-index: 300
 
 #infoTab
     display: flex
