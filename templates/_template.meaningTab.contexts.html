@@ -6,9 +6,8 @@
     <ul class="meaningContexts" data-bind="sortable: contexts">
         <li><div class="grid">
 
-            <input type="image" src="{{ STATIC_URL }}/deleteItem.png"
-                class="deleteItem" data-bind="click:
-                    $parent.contexts.itemDestroyer($data).do"/>
+            <a class="deleteItem" data-bind="click:
+                $parent.contexts.itemDestroyer($data).do"></a>
 
             <label>
                 <span>гражд.</span>

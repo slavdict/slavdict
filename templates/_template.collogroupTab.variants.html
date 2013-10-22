@@ -4,9 +4,8 @@
 
     <ul data-bind="sortable: collocations">
         <li>
-            <input type="image" src="{{ STATIC_URL }}/deleteItem.png"
-                class="deleteItem"
-                data-bind="click: $parent.collocations.itemDestroyer($data).do"/>
+            <a class="deleteItem" data-bind="click:
+                $parent.collocations.itemDestroyer($data).do"></a>
             <input type="text"
                 data-bind="value: collocation, valueUpdate: 'afterkeydown'"/>
             <span data-bind="wax: collocation"></span>
