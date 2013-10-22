@@ -50,7 +50,8 @@
 <!-- /ko -->
 
 
-<!-- ko if: ui.navigationStack.top.type() === 'Meaning' -->
+<!-- ko if: ui.navigationStack.top.type() === 'Meaning' &&
+            !ui.hierarchy.usage() -->
 
     <li class="tab" data-bind="css: { current: ui.currentForm() === 'editMeaning' }"
         data-href="#editMeaning">vīs</li>
