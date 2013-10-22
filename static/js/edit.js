@@ -900,34 +900,35 @@ var viewModel = vM.entryEdit,
 
 
     // Диалог сохранения.
-    uiModel.saveDialogue = {
-        saveAndExit: function () {
+    uiModel.saveDialogue = (function () {
+
+        function prepareOne(x, Constructor) {
+            var array = Constructor.hideFromServer, i, j;
+            x = ko.toJS(x);
+            if (array) {
+                for (i=0, j=array.length; i<j; i++) {
+                    delete x[array[i]];
+                }
+            }
+            return x;
+        }
+
+        function prepareAll(Constructor) {
+            var i, j, x, array = [], all = Constructor.all;
+            for (i=0, j=all.length; i<j; i++) {
+                x = prepareOne(all[i], Constructor);
+                array.push(x);
+            }
+            return array;
+        }
+
+        function saveAndExit() {
             var data, persistingDataPromise,
                 toDestroy = {};
 
             constructors.forEach(function (item) {
                 toDestroy[item.name] = item.shredder;
             });
-
-            function prepareOne(x, Constructor) {
-                var array = Constructor.hideFromServer, i, j;
-                x = ko.toJS(x);
-                if (array) {
-                    for (i=0, j=array.length; i<j; i++) {
-                        delete x[array[i]];
-                    }
-                }
-                return x;
-            }
-
-            function prepareAll(Constructor) {
-                var i, j, x, array = [], all = Constructor.all;
-                for (i=0, j=all.length; i<j; i++) {
-                    x = prepareOne(all[i], Constructor);
-                    array.push(x);
-                }
-                return array;
-            }
 
             data = ko.toJSON({
                 // FIX: Необходимо либо избавиться от collogroups, etymologies,
@@ -954,15 +955,24 @@ var viewModel = vM.entryEdit,
                     console.log('Error thrown: ', errorThrown);
                     alert('При сохранении статьи произошла непредвиденная ошибка.');
                 });
-        },
-        exitWithoutSaving: function () {
+        }
+
+        function exitWithoutSaving() {
             viewModel.undoStorage.clear();
             window.location = vM.entryURL;
-        },
-        cancel: function () {
+        }
+
+        function cancel() {
             uiModel.navigationStack.push(viewModel.data.entry)
-        },
-    };
+        }
+
+        // saveDialogue API
+        return {
+            saveAndExit: saveAndExit,
+            exitWithoutSaving: exitWithoutSaving,
+            cancel: cancel,
+        };
+    })();
 
     // Активация работы вкладок
     $('nav.breadTabs').on('click', 'li.tab', function () {
