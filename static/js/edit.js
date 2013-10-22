@@ -696,7 +696,8 @@ var viewModel = vM.entryEdit,
     uiModel.navigationStack = (function () {
         var stack = ko.observableArray([dataModel.entry]);
             entryTab = 'info',
-            collogroupTab = {'default': 'variants'};
+            collogroupTab = {'default': 'variants'},
+            meaningTab = {'default': 'editMeaning'};
 
         function stackTop() {
             var s = stack();
@@ -709,12 +710,16 @@ var viewModel = vM.entryEdit,
         }
 
         function templateName() {
-            var obj = stack.top();
+            var obj = stack.top(),
+                key = obj && obj.id() || 'default';
             uiModel.currentForm({
                 'Entry': stack.entryTab,
-                'Collogroup': stack.collogroupTab[obj && obj.id() || 'default']
-                              || stack.collogroupTab['default'],
-                'Meaning': 'editMeaning',
+                'Collogroup': stack.collogroupTab[key] ||
+                    stack.collogroupTab['default'],
+                    // NOTE: Второй дизъюнкт нужен на тот случай, если id
+                    // найдется, но при использовании его в качестве ключа
+                    // ничего в словаре найдено не будет.
+                'Meaning': stack.meaningTab[key] || stack.meaningTab['default'],
                 'Example': 'editExample',
                 '--exit--': 'saveDialogue'
             }[stack.top.type()]);
@@ -730,6 +735,7 @@ var viewModel = vM.entryEdit,
 
         stack.entryTab = entryTab;
         stack.collogroupTab = collogroupTab;
+        stack.meaningTab = meaningTab;
         stack.subscribe(templateName);
 
         stack.pop = pop;
@@ -933,17 +939,21 @@ var viewModel = vM.entryEdit,
     };
 
     // Активация работы вкладок
-    $('nav.breadTabs li.tab').click(function () {
+    $('nav.breadTabs').on('click', 'li.tab', function () {
         var x = $(this),
-            y = x.data('href').slice(1);
+            y = x.data('href').slice(1),
+            stack = uiModel.navigationStack,
+            key = stack.top() && stack.top().id();
         uiModel.currentForm(y);
-        switch (uiModel.navigationStack.top.type()) {
+        switch (stack.top.type()) {
         case 'Entry':
-            uiModel.navigationStack.entryTab = y;
+            stack.entryTab = y;
             break;
         case 'Collogroup':
-            var key = uiModel.navigationStack.top().id();
-            uiModel.navigationStack.collogroupTab[key] = y;
+            stack.collogroupTab[key] = y;
+            break;
+        case 'Meaning':
+            stack.meaningTab[key] = y;
             break;
         }
     });
