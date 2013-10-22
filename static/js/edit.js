@@ -652,7 +652,9 @@ function etymologiesGuarantor(object, attrname) {
             if (x in y) {
                 return y[x];
             } else {
-                console.log(attrname, '«' + x + '» is not found among', y);
+                if (x !== '') {
+                    console.log(attrname, '«' + x + '» is not found among', y);
+                }
                 return '';
             }
         };
