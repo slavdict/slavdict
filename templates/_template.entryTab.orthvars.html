@@ -5,7 +5,7 @@ data-bind="if: $root.ui.navigationStack.top.type() === 'Entry'">
     <ul data-bind="sortable: orthvars">
         <li>
             <input type="image" src="{{ STATIC_URL }}/deleteItem.png"
-                class="deleteOrthvar"
+                class="deleteItem"
                 data-bind="click: $parent.orthvars.itemDestroyer($data).do"/>
             <input type="text"
                 data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
@@ -13,8 +13,7 @@ data-bind="if: $root.ui.navigationStack.top.type() === 'Entry'">
         </li>
     </ul>
 
-    <a class="addItem" id="addOrthvar"
-        data-bind="click: orthvars.itemAdder($data).do"></a>
+    <a class="addItem" data-bind="click: orthvars.itemAdder($data).do"></a>
 
 </section>
 </script>

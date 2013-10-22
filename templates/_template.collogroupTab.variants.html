@@ -5,7 +5,7 @@
     <ul data-bind="sortable: collocations">
         <li>
             <input type="image" src="{{ STATIC_URL }}/deleteItem.png"
-                class="deleteOrthvar"
+                class="deleteItem"
                 data-bind="click: $parent.collocations.itemDestroyer($data).do"/>
             <input type="text"
                 data-bind="value: collocation, valueUpdate: 'afterkeydown'"/>
@@ -13,7 +13,7 @@
         </li>
     </ul>
 
-    <a class="addItem" id="addOrthvar"
+    <a class="addItem"
         data-bind="click: collocations.itemAdder($data).do"></a>
 
 </section>

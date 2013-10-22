@@ -230,22 +230,23 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
     ul.collogroups ul.meanings ul.meanings:before
         content: 'Употребления'
 
-#addTopMeaning.addItem,
-#addOrthvar.addItem
-    width: $listWidth - 5px
+.tabcontent > .addItem,
+.orthvars > .addItem,
+.meaningContexts > .addItem
+    width: $listWidth - 5px !important
 
-#addParticiple.addItem
+#infoTab--participles > .addItem,
     width: $listWidth - 15px
-    margin-top: 5px
 
 .orthvars ul li,
+.meaningContexts ul li,
 #infoTab--participles ul li
     padding-left: 12px
 
-    .deleteOrthvar,
-    .deleteParticiple
+    .deleteItem
         opacity: 0.3
         position: absolute
+        display: block
         top: 30%
         right: 17px
 
