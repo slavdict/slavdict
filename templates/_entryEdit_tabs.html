@@ -33,6 +33,22 @@
         data-href="#etym">Этимология</li>-->
 <!-- /ko -->
 
+<!-- ko if: ui.navigationStack.top.type() === 'Meaning' -->
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'editMeaning' }"
+        data-href="#editMeaning">vīs</li>
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'meaningContexts' }"
+        data-href="#meaningContexts">Сочетаемость</li>
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'uses' }"
+        data-href="#uses">Употребления</li>
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'examples' }"
+        data-href="#examples">Иллюстрации</li>
+
+<!-- /ko -->
+
 <!-- ko if: ui.navigationStack.top.type() === 'Entry' ||
             ui.navigationStack.top.type() === 'Collogroup' -->
     <li id="tabShadow" class="tab"></li>
