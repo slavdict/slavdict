@@ -594,14 +594,25 @@ function etymologiesGuarantor(object, attrname) {
 (function () {
     var i, Constructor;
 
-    function doesNtContain(item) {
-        return !this.idMap[item.id()];
+    function append(item) {
+        if (uiModel.vMUpdateTransaction) {
+            if (this.cache.indexOf(item) === -1) {
+                this.cache.push(item);
+                this.idMap[item.id()] = item;
+            }
+        } else {
+            if (this.indexOf(item) === -1) {
+                this.push(item);
+                this.idMap[item.id()] = item;
+            }
+        }
     }
 
-    function append(item) {
-        if (this.doesNtContain(item)) {
-            this.push(item);
-            this.idMap[item.id()] = item;
+    function cacheCommit() {
+        if (uiModel.vMUpdateTransaction) {
+            Array.prototype.splice.apply(this,
+                    [0, this.length].concat(this.cache));
+            this.cache.splice(0, this.cache.length);
         }
     }
 
@@ -625,10 +636,11 @@ function etymologiesGuarantor(object, attrname) {
     for (i = constructors.length; i--;) {
         Constructor = constructors[i];
         Constructor.all = [];
+        Constructor.all.cache = [];
         Constructor.all.idMap = {};
-        Constructor.all.doesNtContain = doesNtContain;
         Constructor.all.append = append;
         Constructor.all.remove = remove;
+        Constructor.all.cacheCommit = cacheCommit;
         Constructor.bag = [];
         Constructor.bag.idMap = {};
         Constructor.shredder = [];
@@ -687,7 +699,12 @@ var viewModel = vM.entryEdit,
 // Однократная настройка вуду-модели
 (function () {
     // Строим объекты вуду-модели
+    uiModel.vMUpdateTransaction = true;
     dataModel.entry = new Entry(vM.dataToInitialize.entry);
+    constructors.forEach(function (Constructor) {
+        Constructor.all.cacheCommit();
+    });
+    uiModel.vMUpdateTransaction = false;
 
     // Добавлям разные датчики второго порядка
     uiEntry.headword = ko.computed({
@@ -749,23 +766,35 @@ var viewModel = vM.entryEdit,
 
         function load(array) {
             var i, j, item, stackItem, Constructor;
+            // Просматриваем массив с уликами объектов, которые были в стеке,
+            // и заменяем улики самими объектами.
             for (i=0, j=array.length; i<j; i++) {
                 Constructor = constructors.nameMap[array[i][0]];
                 array[i] = Constructor.all.idMap[array[i][1]];
             }
+            // Сравниваем полученные объекты с теми, что сейчас в стеке.
+            // На основе этого производим обновление стека.
             for (i=0, j=array.length; i<j; i++) {
                 item = array[i];
                 stackItem = stack()[i];
-                if (typeof stackItem === 'undefined' ||
-                item.constructor.name !== stackItem.constructor.name ||
-                item.id() !== stackItem.id()) {
-                    ko.observableArray.prototype.splice.apply(stack,
+                if (typeof stackItem === 'undefined' || item !== stackItem) {
+                    ko.observableArray.fn.splice.apply(stack,
                             [i, stack().length].concat(array.slice(i)));
-                    break;
+                    return;
                 }
             }
             // Если в стеке что-то ещё осталось, всё это удаляем.
             stack.splice(i, stack().length);
+        }
+
+        function removeZombies() {
+            var i, item;
+            for (i = stack().length - 1; i>=0; i--) {
+                item = stack()[i];
+                if (item.constructor.all.indexOf(item) === -1) {
+                    stack.splice(i, stack().length);
+                }
+            }
         }
 
         // общедоступный API стека
@@ -779,6 +808,7 @@ var viewModel = vM.entryEdit,
         stack.pop = pop;
         stack.dump = dump;
         stack.load = load;
+        stack.removeZombies = removeZombies;
 
         return stack;
     })();
@@ -1049,6 +1079,7 @@ var viewModel = vM.entryEdit,
                 if (!io()) {
                     io(ko.postbox.subscribe(topic, wait));
                 }
+                uiModel.vMUpdateTransaction = false;
             }
 
             function doze() {
@@ -1056,21 +1087,27 @@ var viewModel = vM.entryEdit,
                     io().dispose();
                     io(null);
                 }
+                uiModel.vMUpdateTransaction = true;
             }
 
             return { guard: guard,
                      doze:  doze };
         })();
 
-        function load(N) {
+        function load(N, backToTheFuture) {
             var snapshot = JSON.parse(snapshots()[N]);
             argus.doze();
             Entry.call(dataModel.entry, snapshot.entry);
             constructors.forEach(function (item) {
                 item.shredder = snapshot.toDestroy[item.name];
+                item.all.cacheCommit();
             });
-            uiModel.navigationStack.load(snapshot.stack);
-            uiModel.currentForm(snapshot.currentForm);
+            if (backToTheFuture) {
+                uiModel.navigationStack.load(snapshot.stack);
+                uiModel.currentForm(snapshot.currentForm);
+            } else {
+                uiModel.navigationStack.removeZombies();
+            }
             argus.guard();
         }
 
@@ -1114,7 +1151,7 @@ var viewModel = vM.entryEdit,
         function redo() {
             if (! mayNotRedo()) {
                 var n = cursor();
-                load(n);
+                load(n, true);
                 cursor(n + 1);
             }
         }
