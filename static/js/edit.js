@@ -354,7 +354,7 @@ function Meaning() {
     /* Meaning(container[, parentMeaning])
      * Meaning(data)
      */
-    var data = {},
+    var data = null,
         entry_id = null,
         collogroup_id = null,
         meaning_id = null;
@@ -371,9 +371,10 @@ function Meaning() {
         if (data) {
             throw new Error('Неправильный состав аргументов для Meaning.');
         } else {
-            meaning_id = arguments[1];
+            meaning_id = arguments[1].id();
         }
     }
+    data = data || {};
 
     upsert(this, 'meaning', data, '');
     upsert(this, 'gloss', data, '');
