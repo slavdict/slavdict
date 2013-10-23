@@ -149,6 +149,53 @@
                                 click: examples.itemAdder($data,
                                     $root.data.entry, $parent).do"></a>
 
+                            <ul class="meanings" data-bind="sortable:
+                                { data: meanings, connectClass: 'meanings' },
+                                visible: isExpanded">
+
+                                <li data-bind="event: { dblclick: toggle },
+                                    dblclickBubble: false">
+                                    <a class="deleteItem" data-bind="click:
+                                     $parent.meanings.itemDestroyer($data).do"></a>
+                                    <a class="editItem" data-bind="click: edit"></a>
+                                    <a class="expandItem" data-bind="click: toggle,
+                                        css: { expanded: isExpanded }"></a>
+
+                                    <span data-bind="visible: metaphorical">►</span>{{ space }}
+                                    <span data-bind="visible: substantivus">
+                                        <span class="substantivus">в роли сущ.</span>
+                                        <span data-bind="visible: substantivus_type">
+                                            {{ space }}
+                                            <span class="substantivus"
+                                                data-bind="text: substantivus_type.label"></span>
+                                        </span>
+                                    </span>{{ space }}
+                                    <span data-bind="text: meaning"></span>
+                                        <span data-bind="visible:
+                                            meaning() && gloss()">;{{ space }}</span>
+                                    <i data-bind="text: gloss"></i>
+
+                                    <ul class="examples" data-bind="sortable:
+                                            { data: examples, connectClass: 'examples' },
+                                        visible: isExpanded">
+                                        <li data-bind="event: { dblclick: function(){} },
+                                                dblclickBubble: false">
+                                            <a class="deleteItem" data-bind="click:
+                                             $parent.examples.itemPoolReturner($data).do"></a>
+                                            <a class="editItem" data-bind="click: edit"></a>
+                                            <span data-bind="wax: example"></span>{{ space }}
+                                            (<span data-bind="text: address_text"></span>)
+                                        </li>
+                                    </ul>
+                                    <a class="addItem" data-bind="visible: isExpanded, click:
+                                        examples.itemAdder($data, $root.data.entry).do"></a>
+
+                                </li>
+
+                            </ul>
+                            <a class="addItem" data-bind="visible: isExpanded,
+                                click: meanings.itemAdder($parent, $data).do"></a>
+
                         </li>
                     </ul>
                     <a class="addItem"
@@ -227,6 +274,55 @@
                         data-bind="visible: isExpanded,
                         click: examples.itemAdder($data,
                             $root.data.entry, $parent).do"></a>
+
+                    <ul class="meanings" data-bind="sortable:
+                        { data: meanings, connectClass: 'meanings' },
+                        visible: isExpanded">
+
+                        <li data-bind="event: { dblclick: toggle },
+                            dblclickBubble: false">
+                            <a class="deleteItem" data-bind="click:
+                             $parent.meanings.itemDestroyer($data).do"></a>
+                            <a class="editItem" data-bind="click: edit"></a>
+                            <a class="expandItem" data-bind="click: toggle,
+                                css: { expanded: isExpanded }"></a>
+
+                            <span data-bind="visible: metaphorical">►</span>{{ space }}
+                            <span data-bind="visible: substantivus">
+                                <span class="substantivus">в роли сущ.</span>
+                                <span data-bind="visible: substantivus_type">
+                                    {{ space }}
+                                    <span class="substantivus"
+                                        data-bind="text: substantivus_type.label"></span>
+                                </span>
+                            </span>{{ space }}
+                            <span data-bind="text: meaning"></span>
+                                <span data-bind="visible:
+                                    meaning() && gloss()">;{{ space }}</span>
+                            <i data-bind="text: gloss"></i>
+
+                            <ul class="examples" data-bind="sortable:
+                                    { data: examples, connectClass: 'examples' },
+                                visible: isExpanded">
+                                <li data-bind="event: { dblclick: function(){} },
+                                        dblclickBubble: false">
+                                    <a class="deleteItem" data-bind="click:
+                                     $parent.examples.itemPoolReturner($data).do"></a>
+                                    <a class="editItem" data-bind="click: edit"></a>
+                                    <span data-bind="wax: example"></span>{{ space }}
+                                    (<span data-bind="text: address_text"></span>)
+                                </li>
+                            </ul>
+                            <a class="addItem" data-bind="visible: isExpanded, click:
+                                examples.itemAdder($data, $root.data.entry, $parent).do"></a>
+
+                        </li>
+
+                    </ul>
+                    <a class="addItem" data-bind="visible: isExpanded,
+                        click: meanings.itemAdder($parent, $data).do"></a>
+
+
 
                 </li>
             </ul>
