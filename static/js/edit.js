@@ -1169,6 +1169,7 @@ var viewModel = vM.entryEdit,
 } catch(e) {
     $.post('/entries/jserror/',
            {entryId: vM.dataToInitialize.entry.id || 'unknown',
-            errorObj: e});
+            errorObj: e,
+            userAgent: window.navigator.userAgent});
     throw e;
 }
