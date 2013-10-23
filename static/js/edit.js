@@ -98,12 +98,11 @@ function upsertArray(object, attrname, Constructor, data, observableArray) {
 // Общие для всех свойств-массивов методы добавления/удаления элментов
 function itemAdder() {
     var array = this,
-        constructorArguments = arguments;
+        constructorArguments = Array.prototype.slice.call(arguments);
     return {
         do: function () {
-            var args = [null].concat(constructorArguments || []),
-                item = new (Function.prototype.bind.apply(
-                                                array.itemConstructor, args));
+            var item = new (Function.prototype.bind.apply(
+                array.itemConstructor, [null].concat(constructorArguments)));
             array.push(item);
             item.edit();
         }
