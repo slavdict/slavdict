@@ -95,7 +95,7 @@ function upsertArray(object, attrname, Constructor, data, observableArray) {
     }
 }
 
-// Общие для всех свойств-массивов методы добавления/удаления элментов
+// Общие для всех свойств-массивов методы добавления/удаления элементов
 function itemAdder() {
     var array = this,
         constructorArguments = Array.prototype.slice.call(arguments);
