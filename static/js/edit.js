@@ -7,6 +7,11 @@ var topic = 'entry change',
                     Example, Collogroup, Meaning,
                     Entry];
 
+constructors.nameMap = {'Etymology': Etymology, 'Participle': Participle,
+    'Orthvar': Orthvar, 'Collocation': Collocation, 'Context': Context,
+    'Greq': Greq, 'Example': Example, 'Collogroup': Collogroup,
+    'Meaning': Meaning, 'Entry': Entry};
+
 // Функция создающая датчики, оповещающие о том, что словарная статья
 // изменилась.
 function snapshotObservable(observable) {
@@ -733,6 +738,36 @@ var viewModel = vM.entryEdit,
             stack.splice(-1, 1)
         }
 
+        function dump() {
+            var i, j, array = [], item, S = stack();
+            for (i=0, j=S.length; i<j; i++) {
+                item = S[i];
+                array.push([item.constructor.name, item.id()]);
+            }
+            return array;
+        }
+
+        function load(array) {
+            var i, j, item, stackItem, Constructor;
+            for (i=0, j=array.length; i<j; i++) {
+                Constructor = constructors.nameMap[array[i][0]];
+                array[i] = Constructor.all.idMap[array[i][1]];
+            }
+            for (i=0, j=array.length; i<j; i++) {
+                item = array[i];
+                stackItem = stack()[i];
+                if (typeof stackItem === 'undefined' ||
+                item.constructor.name !== stackItem.constructor.name ||
+                item.id() !== stackItem.id()) {
+                    ko.observableArray.prototype.splice.apply(stack,
+                            [i, stack().length].concat(array.slice(i)));
+                    break;
+                }
+            }
+            // Если в стеке что-то ещё осталось, всё это удаляем.
+            stack.splice(i, stack().length);
+        }
+
         // общедоступный API стека
         stack.top = ko.computed(stackTop);
 
@@ -742,6 +777,8 @@ var viewModel = vM.entryEdit,
         stack.subscribe(templateName);
 
         stack.pop = pop;
+        stack.dump = dump;
+        stack.load = load;
 
         return stack;
     })();
@@ -1032,6 +1069,8 @@ var viewModel = vM.entryEdit,
             constructors.forEach(function (item) {
                 item.shredder = snapshot.toDestroy[item.name];
             });
+            uiModel.navigationStack.load(snapshot.stack);
+            uiModel.currentForm(snapshot.currentForm);
             argus.guard();
         }
 
@@ -1048,7 +1087,10 @@ var viewModel = vM.entryEdit,
             if (cursor() < snapshots().length) {
                 dock(cursor())
             }
-            var snapshot = {entry: dataModel.entry, toDestroy: {}};
+            var snapshot = { entry: dataModel.entry,
+                             stack: uiModel.navigationStack.dump(),
+                             currentForm: uiModel.currentForm(),
+                             toDestroy: {} }
             constructors.forEach(function (item) {
                 snapshot.toDestroy[item.name] = item.shredder;
             });
