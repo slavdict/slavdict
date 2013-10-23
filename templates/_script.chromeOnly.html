@@ -1,0 +1,20 @@
+<script>
+
+    function chromeOnly(url) {
+        if (window.navigator.vendor === 'Google Inc.'
+        &&  window.navigator.userAgent.match(/Chrome/)
+        && !window.navigator.userAgent.match(/Chromium/)) {
+            var version = window.navigator.userAgent.match(/Chrome\/(\d+)/)[1];
+            version = parseInt(version);
+            if (version >= 29) {
+                window.location = url;
+            }
+        } else {
+            alert('В данный момент редактировать статьи\n' +
+                  'можно только из браузера Google Chrome.\n' +
+                  'Пожалуйста, используйте Google Chrome\n' +
+                  'для работы над статьями.')
+        }
+    }
+
+</script>

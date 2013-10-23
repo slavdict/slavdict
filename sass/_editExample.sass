@@ -1,0 +1,33 @@
+@charset 'utf-8'
+
+#eE--editExample
+    margin: -10px 0 0
+
+#eE--example
+    +column(21, true)
+
+#eE--example div,
+#eE--address
+    +column(10)
+    margin-bottom: 1em
+    clear: all
+
+    label,
+    textarea
+        +column(10, true)
+        box-sizing: border-box
+    textarea
+        height: 5em
+        padding: 0 0.5em
+
+#eE--example div textarea,
+#eE--exampleWax
+    min-height: 10em
+
+#eE--exampleWax
+    +column(10)
+    margin-top: 1.6em
+
+#eE--address
+    margin-top: 2em
+    +push(0)

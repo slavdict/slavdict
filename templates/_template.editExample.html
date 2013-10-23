@@ -1,0 +1,23 @@
+<script type="text/html" id="editExample">
+<section data-bind="if: constructor.name === 'Example'">
+<div id="eE--editExample" class="grid">
+
+    <div id="eE--example">
+        <div>
+            <label>Иллюстрация</label>
+            <textarea data-bind="value: example,
+                valueUpdate: 'afterkeydown'"></textarea>
+        </div>
+
+        <div id="eE--exampleWax" data-bind="wax: example"></div>
+    </div>
+
+    <div id="eE--address">
+        <label>Адрес</label>
+        <textarea data-bind="value: address_text,
+            valueUpdate: 'afterkeydown'"></textarea>
+    </div>
+
+</div>
+</section>
+</script>

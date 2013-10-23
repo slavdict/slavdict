@@ -1,0 +1,205 @@
+<script type="text/html" id="info">
+<section class="tabcontent" id="infoTab"
+    data-bind="if: constructor.name === 'Entry'">
+
+<section>
+<section data-bind="css: { 'n-adj-v': $root.ui.nAdjV }">
+
+    <!-- ko ifnot: $root.ui.nAdjV -->
+
+    <div>{% for id, name in PARTS_OF_SPEECH %}
+        {% if loop.index in [1, 6, 11] %}
+            <div style="width: 120px; float: left;">
+        {% endif %}
+        <label data-bind="css: { checked: part_of_speech() == '{{ id }}' }">
+            <input type="radio" name="partofspeech"
+                value="{{ id }}" data-bind="checked: part_of_speech"/>
+            {{ space }}{{ name }}
+        </label>
+        {% if loop.index in [5, 10, 12] %}</div>{% else %}<br />{% endif %}
+    {% endfor %}</div>
+
+    <!-- /ko -->
+    <!-- ko if: $root.ui.nAdjV -->
+
+    <select data-bind="options: $root.ui.choices.part_of_speech,
+        value: part_of_speech, optionsText: 'name',
+        optionsValue: 'id'">
+    </select>
+
+    <!-- /ko -->
+
+</section>
+
+<section class="grid">
+
+    <label id="infoTab--uninflected" data-bind="visible:
+    part_of_speech() === $root.ui.slugs.part_of_speech['noun'] ||
+    part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
+        <span>Неизменяемое</span>
+        <input type="checkbox" data-bind="checked: uninflected"/>
+    </label>
+
+    <div data-bind="visible:
+        part_of_speech() === $root.ui.slugs.part_of_speech['noun']">
+
+        <div id="infoTab--genitive">
+            <label>
+                <span>Форма Р.п.</span>
+                <input type="text" data-bind="value: genitive,
+                                        valueUpdate: 'afterkeydown'"/>
+            </label>
+            <span data-bind="wax: genitive"></span>
+        </div>
+
+        <label id="infoTab--gender">
+            <span>Род</span>
+
+            <select data-bind="options: $root.ui.choices.gender,
+                value: gender, optionsText: 'name',
+                optionsValue: 'id', visible: gender">
+            </select>
+
+            <div data-bind="visible: !gender()">
+                {% for id, name in GENDERS %}
+                <label data-bind="css: { checked: gender() == '{{ id }}' }">
+                    <input type="radio" name="gender"
+                        value="{{ id }}" data-bind="checked: gender"/>
+                    <span>{{ name }}</span>
+                </label>
+                {% endfor %}
+            </div>
+
+        </label>
+
+        <label id="infoTab--number">
+            <span>Число</span>
+            <select data-bind="options: $root.ui.choices.tantum,
+                value: tantum, optionsText: 'name',
+                optionsValue: 'id'">
+            </select>
+        </label>
+
+        <label id="infoTab--onym">
+            <span>Тип имени собст.</span>
+            <select data-bind="options: $root.ui.choices.onym,
+                value: onym, optionsText: 'name',
+                optionsValue: 'id'">
+            </select>
+        </label>
+
+        <label id="infoTab--canonical" data-bind="visible:
+            onym() == $root.ui.slugs.onym['anthroponym']">
+            <span>Каноническое</span>
+            <input type="checkbox"
+                   data-bind="checked: canonical_name"/>
+        </label>
+
+        <div id="infoTab--nomSg" data-bind="visible:
+            onym() == $root.ui.slugs.onym['ethnonym']">
+
+            <label>
+                <span>И. ед. м.</span>
+                <input type="text" data-bind="value: nom_sg,
+                                        valueUpdate: 'afterkeydown'"/>
+            </label>
+
+            <span data-bind="wax: nom_sg"></span>
+
+        </div>
+
+    </div>
+
+    <div data-bind="visible:
+        part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
+
+        <label id="infoTab--possessive">
+            <span>Притяжательное</span>
+            <input type="checkbox"
+                   data-bind="checked: possessive"/>
+        </label>
+
+        <div id="infoTab--shortForm">
+            <label>
+                <span>Краткая форма</span>
+                <input type="text" data-bind="value: short_form,
+                                              valueUpdate: 'afterkeydown'"/>
+            </label>
+
+            <span data-bind="wax: short_form"></span>
+        </div>
+
+    </div>
+
+    <div data-bind="visible:
+        part_of_speech() === $root.ui.slugs.part_of_speech['verb']">
+
+        <div id="infoTab--sg1">
+            <label>
+                <span>Форма 1ед.</span>
+                <input type="text" data-bind="value: sg1,
+                                              valueUpdate: 'afterkeydown'"/>
+            </label>
+
+            <span data-bind="wax: sg1"></span>
+        </div>
+
+        <div id="infoTab--sg2">
+            <label>
+                <span>Форма 2ед.</span>
+                <input type="text" data-bind="value: sg2,
+                                              valueUpdate: 'afterkeydown'"/>
+            </label>
+
+            <span data-bind="wax: sg2"></span>
+        </div>
+
+    </div>
+
+</section>
+</section>
+<section>
+    <div id="infoTab--participles" data-bind="visible:
+    part_of_speech() === $root.ui.slugs.part_of_speech['verb']">
+        <header>Причастия</header>
+
+        <ul data-bind="sortable: participles">
+            <li><div class="grid">
+
+                <a class="deleteItem" data-bind="click:
+                    $parent.participles.itemDestroyer($data).do"></a>
+
+                <label>
+                    <span>Тип</span>
+                    <select data-bind="
+                        options: $root.ui.choices.participle_type,
+                        value: tp, optionsText: 'name',
+                        optionsValue: 'id'">
+                    </select>
+                </label>
+
+                <label>
+                    <input type="text"
+                        data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
+                </label>
+
+                <span data-bind="wax: idem"></span>
+
+            </div></li>
+        </ul>
+
+        <!-- ko ifnot: participles().length -->
+        <input type="button" value="Добавить причастие"
+            data-bind="click: participles.itemAdder($root.data.entry).do"/>
+        <!-- /ko -->
+
+        <!-- ko if: participles().length -->
+        <a class="addItem" data-bind="click:
+            participles.itemAdder($root.data.entry).do"></a>
+        <!-- /ko -->
+
+    </div>
+</section>
+
+</section>
+</script>

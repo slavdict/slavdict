@@ -1,18 +1,82 @@
-<nav class="tabs">
+<nav class="breadTabs" data-bind="if: ui.navigationStack.top">
 <ul>
-    <li><a href="#orthvars">Варианты</a></li>
-    <li class="current"><a href="#info">Справочная инфо</a></li>
-    <li><a href="#structure">Структура</a></li>
-    <li><a href="#examples">Примеры</a></li>
-    <li><a href="#constructions">Конструкции</a></li>
+
+
+{% include '_entryEdit_breadCrumbs.html' %}
+
+
+<!-- ko if: ui.navigationStack.top().constructor.name === 'Entry' -->
+
+    {% if user.is_admeditor %}
+    <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'admin' }
+        data-href="#admin">Служебная инф.</li>-->
+    {% endif %}
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'info' }"
+        data-href="#info" class="current">Справочная инф.</li>
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'orthvars' }"
+        data-href="#orthvars">Варианты</li>
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'structure' }"
+        data-href="#structure">Значения</li>
+
+    <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'examples' }"
+        data-href="#examples">Иллюстрации</li>-->
+
+    <li class="tab" data-bind="visible: data.entry.collogroups().length > 0,
+        css: { current: ui.currentForm() === 'constructions' }"
+        data-href="#constructions">Словосочетания</li>
+
+    <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'etym' }"
+        data-href="#etym">Этимология</li>-->
+
+<!-- /ko -->
+
+
+<!-- ko if: ui.navigationStack.top().constructor.name === 'Collogroup' -->
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'variants' }"
+        data-href="#variants">Варианты</li>
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'structure' }"
+        data-href="#structure">Значения</li>
+
+    <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'examples' }"
+        data-href="#examples">Иллюстрации</li>-->
+
+    <!--<li class="tab" data-bind="css: { current: ui.currentForm() === 'etym' }"
+        data-href="#etym">Этимология</li>-->
+
+<!-- /ko -->
+
+
+<!-- ko if: ui.navigationStack.top().constructor.name === 'Meaning' &&
+            !ui.hierarchy.usage() -->
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'editMeaning' }"
+        data-href="#editMeaning">vīs</li>
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'meaningContexts' }"
+        data-href="#meaningContexts">Контексты</li>
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'uses' }"
+        data-href="#uses">Употребления</li>
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'meaningExamples' }"
+        data-href="#meaningExamples">Иллюстрации</li>
+
+    <li class="tab" data-bind="css: { current: ui.currentForm() === 'constructions' }"
+        data-href="#constructions">Словосочетания</li>
+
+<!-- /ko -->
+
+
+<!-- ko if: ui.navigationStack.top().constructor.name === 'Entry' ||
+            ui.navigationStack.top().constructor.name === 'Collogroup' -->
+    <li id="tabShadow" class="tab"></li>
+<!-- /ko -->
+
 </ul>
 </nav>
 
-{% include '_entryEdit_info.html' %}
-{% include '_entryEdit_orthvars.html' %}
-{% include '_entryEdit_structure.html' %}
-{% include '_entryEdit_examples.html' %}
-{% include '_entryEdit_constructions.html' %}
-
-{% include '_template.editMeaning.html' %}
-{% include '_template.saveDialogue.html' %}

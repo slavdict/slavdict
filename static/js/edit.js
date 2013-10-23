@@ -18,7 +18,7 @@ function snapshotObservable(observable) {
             ko.postbox.publish(topic, [o.__$ID$__, value]);
         });
         return o;
-    }
+    };
 }
 snapshotObservable.counter = 0;
 
@@ -96,8 +96,9 @@ function upsertArray(object, attrname, Constructor, data, observableArray) {
 }
 
 // Общие для всех свойств-массивов методы добавления/удаления элментов
-function itemAdder(constructorArguments) {
-    var array = this;
+function itemAdder() {
+    var array = this,
+        constructorArguments = arguments;
     return {
         do: function () {
             var args = [null].concat(constructorArguments || []),
@@ -182,6 +183,7 @@ function Etymology() {
     upsertArray(this, 'etymologies', Etymology, data);
     Etymology.all.append(this);
 }
+Etymology.hideFromServer = ['etymologies'];
 
 function Participle() {
     /* Participle(entry)
@@ -327,6 +329,7 @@ function Collogroup() {
         data = arguments[0];
     }
 
+    upsert(this, 'additional_info', data, '');
     upsertArray(this, 'collocations', Collocation, data);
     upsert(this, 'base_entry_id', data, entry_id);
     upsert(this, 'base_meaning_id', data, meaning_id);
@@ -337,8 +340,16 @@ function Collogroup() {
     upsertArray(this, 'etymologies', Etymology, data);
 
     this.isExpanded || (this.isExpanded = ko.observable(false));
+    this.collocations.notEmpty = ko.computed(function () {
+        var array = this.collocations();
+        if (array.length === 0) {
+            array.push(new Collocation(this))
+        }
+    }, this);
     Collogroup.all.append(this);
 }
+Collogroup.hideFromServer = ['meanings', 'unsorted_examples', 'etymologies',
+    'isExpanded'];
 
 function Meaning() {
     /* Meaning(container[, parentMeaning])
@@ -383,8 +394,11 @@ function Meaning() {
     upsertArray(this, 'examples', Example, data);
 
     this.isExpanded || (this.isExpanded = ko.observable(false));
+    this.substantivus_type.label = ko.computed(
+            Meaning.prototype.substantivus_type_label, this);
     Meaning.all.append(this);
 }
+Meaning.hideFromServer = ['collogroups', 'meanings', 'examples', 'isExpanded'];
 
 function Entry(data) {
     upsert(this, 'additional_info', data, '');
@@ -420,7 +434,13 @@ function Entry(data) {
     upsertArray(this, 'meanings', Meaning, data);
     upsertArray(this, 'collogroups', Collogroup, data);
     upsertArray(this, 'etymologies', Etymology, data);
+
+    this.part_of_speech.label = ko.computed(
+            Entry.prototype.part_of_speech_label, this);
+    Entry.all.append(this);
 }
+Entry.hideFromServer = ['unsorted_examples', 'meanings', 'collogroups',
+    'etymologies', 'author_ids'];
 
 // У meaning возможны следующие сочетания значений полей
 // entry_container_id (E), collogroup_container_id (C)
@@ -591,8 +611,11 @@ function etymologiesGuarantor(object, attrname) {
         delete this.idMap[item.id()];
     }
 
-    function editItem() { this.constructor.itemBeingEdited(this); }
-    function stopEditing() { this.constructor.itemBeingEdited(null); }
+    function editItem() {
+        if (['Collogroup', 'Meaning', 'Example']
+                .indexOf(this.constructor.name) > -1)
+            uiModel.navigationStack.push(this);
+    }
 
     for (i = constructors.length; i--;) {
         Constructor = constructors[i];
@@ -604,9 +627,7 @@ function etymologiesGuarantor(object, attrname) {
         Constructor.bag = [];
         Constructor.bag.idMap = {};
         Constructor.shredder = [];
-        Constructor.itemBeingEdited = ko.observable(null);
         Constructor.prototype.edit = editItem;
-        Constructor.prototype.stopEditing = stopEditing;
     }
 
     function toggle() { this.isExpanded(!this.isExpanded()); }
@@ -624,6 +645,22 @@ function etymologiesGuarantor(object, attrname) {
     Participle.guarantor = orderGuarantor;
     Orthvar.guarantor = orderGuarantor;
 
+    function label(attrname) {
+        return function () {
+            var x = this[attrname](),
+                y = viewModel.ui.labels[attrname];
+            if (x in y) {
+                return y[x];
+            } else {
+                if (x !== '') {
+                    console.log(attrname, '«' + x + '» is not found among', y);
+                }
+                return '';
+            }
+        };
+    }
+    Meaning.prototype.substantivus_type_label = label('substantivus_type');
+    Entry.prototype.part_of_speech_label = label('part_of_speech');
 })()
 
 // Пространство имен вуду-модели интерфейса редактирования статьи.
@@ -661,22 +698,232 @@ var viewModel = vM.entryEdit,
         }
     });
 
-    uiEntry.part_of_speech = ko.computed(function () {
-        var x = this.data.entry.part_of_speech(),
-            y = this.ui.labels.part_of_speech;
-        if (x in y) {
-            return y[x];
-        } else {
-            console.log('Часть речи "', x, '" не найдена среди ', y);
-            return '';
-        }
-    }, viewModel);
+    uiModel.currentForm = ko.observable('info');
 
-    uiModel.saveDialogue = {
-        active: ko.observable(false),
-        show: function () { uiModel.saveDialogue.active(true); },
-        hide: function () { uiModel.saveDialogue.active(false); },
-        saveAndExit: function () {
+    // Навигационный стек
+    uiModel.navigationStack = (function () {
+        var stack = ko.observableArray([dataModel.entry]);
+            entryTab = 'info',
+            collogroupTab = {'default': 'variants'},
+            meaningTab = {'default': 'editMeaning'};
+
+        function stackTop() {
+            var s = stack();
+            return s.length ? s[s.length - 1] : null;
+        }
+
+        function templateName() {
+            var obj = stack.top(),
+                type = obj && obj.constructor.name || 'none'
+                key = obj && obj.id() || 'default';
+            uiModel.currentForm({
+                'Entry': stack.entryTab,
+                'Collogroup': stack.collogroupTab[key] ||
+                    stack.collogroupTab['default'],
+                    // NOTE: Второй дизъюнкт нужен на тот случай, если id
+                    // найдется, но при использовании его в качестве ключа
+                    // ничего в словаре найдено не будет.
+                'Meaning': stack.meaningTab[key] || stack.meaningTab['default'],
+                'Example': 'editExample',
+                'none': 'saveDialogue'
+            }[type]);
+        }
+
+        function pop() {
+            stack.splice(-1, 1)
+        }
+
+        // общедоступный API стека
+        stack.top = ko.computed(stackTop);
+
+        stack.entryTab = entryTab;
+        stack.collogroupTab = collogroupTab;
+        stack.meaningTab = meaningTab;
+        stack.subscribe(templateName);
+
+        stack.pop = pop;
+
+        return stack;
+    })();
+
+
+    // Иерархия объектов статьи.
+    uiModel.hierarchy = (function () {
+        var hierarchy = {},
+            stack = uiModel.navigationStack;
+
+        function getParent(x, propertyList) {
+            // propertyList ::=
+            //      [[propName1, Constructor1], [propName2, Constructor2], ...]
+            var i, j, propName, Constructor;
+            for (var i = 0, j = propertyList.length; i < j; i++) {
+            propName = propertyList[i][0];
+                Constructor = propertyList[i][1];
+                if (x[propName]() !== null) {
+                    return Constructor.all.idMap[x[propName]()];
+                }
+            }
+            throw new Error('Ancestor cannot be found!');
+        }
+
+        function getSelfOrUpwardNearest(x, type) {
+            var i, map = {
+                'Meaning': [['parent_meaning_id', Meaning],
+                    ['collogroup_container_id', Collogroup],
+                    ['entry_container_id', Entry]],
+
+                'Example': [['meaning_id', Meaning],
+                    ['collogroup_id', Collogroup],
+                    ['entry_id', Entry]],
+
+                'Collogroup': [['base_meaning_id', Meaning],
+                    ['x.base_entry_id', Entry]] };
+
+            if (!x) return null;
+            if (x.constructor.name === type) return x;
+            do {
+                i = map[x.constructor.name];
+                if (typeof i === 'undefined') return null;
+                x = getParent(x, i)
+            } while (x.constructor.name !== type);
+
+            return x;
+        }
+
+        function collogroup() {
+            return getSelfOrUpwardNearest(stack.top(), 'Collogroup');
+        }
+
+        function meaning() {
+            var x, y, top = stack.top();
+            if (!top || top.constructor.name === 'Collogroup') return null;
+            x = getSelfOrUpwardNearest(top, 'Meaning');
+            if (x) {
+                y = getParent(x, [['parent_meaning_id', Meaning],
+                                  ['collogroup_container_id', Collogroup],
+                                  ['entry_container_id', Entry]]);
+                if (y && y.constructor.name === 'Meaning') return y;
+            }
+            return x;
+        }
+
+        function usage() {
+            var x, y, top = stack.top();
+            if (!top || top.constructor.name === 'Collogroup') return null;
+            x = getSelfOrUpwardNearest(stack.top(), 'Meaning');
+            if (x) {
+                y = getParent(x, [['parent_meaning_id', Meaning],
+                                  ['collogroup_container_id', Collogroup],
+                                  ['entry_container_id', Entry]]);
+                if (y && y.constructor.name === 'Meaning') return x;
+            }
+            return null;
+        }
+
+        function example() {
+            var top = stack.top();
+            if (top && top.constructor.name === 'Example')
+                return top;
+            else
+                return null;
+        }
+
+        function makeSlug(text, wordLimit) {
+            var toBeChanged;
+            wordLimit = wordLimit || 2,
+            text = text.split(/\s+/);
+            toBeChanged = (text.length > wordLimit);
+            if (toBeChanged && (text[0].length < 3 || text[1].length < 3)) {
+                wordLimit += 1;
+            }
+            text = text.slice(0, wordLimit).join(' ');
+            if (toBeChanged) {
+                text += '…'
+                text = text.replace(/[\.\,\;\:\?\!…]+$/, '…');
+            }
+            return text;
+        }
+
+        function collogroupSlug() {
+            var x = hierarchy.collogroup();
+            return x ? x.collocations()[0].collocation() : '';
+        }
+
+        function makeMeaningSlug(x) {
+            if (x) {
+                x = x.meaning() || x.gloss() || '';
+                return makeSlug(x);
+            } else {
+                return '';
+            }
+        }
+
+        function meaningSlug() { return makeMeaningSlug(hierarchy.meaning()); }
+        function usageSlug() { return makeMeaningSlug(hierarchy.usage()); }
+
+        function exampleSlug() {
+            var x = hierarchy.example();
+            x = (x ? makeSlug(x.example()) : '');
+            return x.replace(/[\.\,\!\?\;\:…]$/, '');
+        }
+
+        // Общедоступное API
+        hierarchy.collogroup = ko.computed(collogroup);
+        hierarchy.meaning = ko.computed(meaning);
+        hierarchy.usage = ko.computed(usage);
+        hierarchy.example = ko.computed(example);
+
+        hierarchy.collogroupSlug = ko.computed(collogroupSlug);
+        hierarchy.meaningSlug = ko.computed(meaningSlug);
+        hierarchy.usageSlug = ko.computed(usageSlug);
+        hierarchy.exampleSlug = ko.computed(exampleSlug);
+
+        return hierarchy;
+    })();
+
+
+    // Изменение отступа в навигационной цепочке в зависимости от того,
+    // редактируется ли словосочетание.
+    function breadCrumbsPadder() {
+        var x = $('#firstBreadCrumb'),
+            hierarchy = uiModel.hierarchy,
+            collogroup = hierarchy.collogroup(),
+            meaning = hierarchy.meaning(),
+            width = $('#eA--entry').outerWidth() +
+                parseInt($('#eA--collocation').css('paddingLeft'));
+        if (collogroup) {
+            x.css('paddingLeft', width);
+        } else {
+            x.css('paddingLeft', '');
+        }
+    }
+    uiModel.navigationStack.subscribe(breadCrumbsPadder);
+
+
+    // Диалог сохранения.
+    uiModel.saveDialogue = (function () {
+
+        function prepareOne(x, Constructor) {
+            var array = Constructor.hideFromServer, i, j;
+            x = ko.toJS(x);
+            if (array) {
+                for (i=0, j=array.length; i<j; i++) {
+                    delete x[array[i]];
+                }
+            }
+            return x;
+        }
+
+        function prepareAll(Constructor) {
+            var i, j, x, array = [], all = Constructor.all;
+            for (i=0, j=all.length; i<j; i++) {
+                x = prepareOne(all[i], Constructor);
+                array.push(x);
+            }
+            return array;
+        }
+
+        function saveAndExit() {
             var data, persistingDataPromise,
                 toDestroy = {};
 
@@ -690,11 +937,11 @@ var viewModel = vM.entryEdit,
                 // обработки сохраняемых данных на сервере. Либо в entry
                 // вырезАть все свойства, которые уже присутствуют в этих
                 // collogroups, etymologies и т.п.
-                        entry: dataModel.entry,
-                        collogroups: Collogroup.all,
-                        etymologies: Etymology.all,
-                        examples: Example.all,
-                        meanings: Meaning.all,
+                        entry: prepareOne(dataModel.entry, Entry),
+                        collogroups: prepareAll(Collogroup),
+                        etymologies: prepareAll(Etymology),
+                        examples: prepareAll(Example),
+                        meanings: prepareAll(Meaning),
                         toDestroy: toDestroy,
                 });
 
@@ -709,20 +956,44 @@ var viewModel = vM.entryEdit,
                     console.log('Error thrown: ', errorThrown);
                     alert('При сохранении статьи произошла непредвиденная ошибка.');
                 });
-        },
-        exitWithoutSaving: function () {
+        }
+
+        function exitWithoutSaving() {
             viewModel.undoStorage.clear();
             window.location = vM.entryURL;
         }
-    };
+
+        function cancel() {
+            uiModel.navigationStack.push(viewModel.data.entry)
+        }
+
+        // saveDialogue API
+        return {
+            saveAndExit: saveAndExit,
+            exitWithoutSaving: exitWithoutSaving,
+            cancel: cancel,
+        };
+    })();
 
     // Активация работы вкладок
-    $('nav.tabs li').click(function () {
-        $('nav.tabs li.current').removeClass('current');
-        $('section.tabcontent.current').removeClass('current');
-        var x = $(this);
-        x.addClass('current');
-        $(x.find('a').attr('href')).addClass('current');
+    $('nav.breadTabs').on('click', 'li.tab', function () {
+        var x = $(this),
+            y = x.data('href').slice(1),
+            stack = uiModel.navigationStack,
+            top = stack.top(),
+            key = top && top.id();
+        uiModel.currentForm(y);
+        switch (top && top.constructor.name) {
+        case 'Entry':
+            stack.entryTab = y;
+            break;
+        case 'Collogroup':
+            stack.collogroupTab[key] = y;
+            break;
+        case 'Meaning':
+            stack.meaningTab[key] = y;
+            break;
+        }
     });
 
     // Активация сохранения json-снимков данных в локальном хранилище.
@@ -746,6 +1017,7 @@ var viewModel = vM.entryEdit,
             function doze() {
                 if (io()) {
                     io().dispose();
+                    io(null);
                 }
             }
 
@@ -773,15 +1045,15 @@ var viewModel = vM.entryEdit,
         }
 
         function dump() {
-            if (cursor.peek() < snapshots.peek().length) {
-                dock(cursor.peek())
+            if (cursor() < snapshots().length) {
+                dock(cursor())
             }
             var snapshot = {entry: dataModel.entry, toDestroy: {}};
             constructors.forEach(function (item) {
                 snapshot.toDestroy[item.name] = item.shredder;
             });
             snapshots.push(ko.toJSON(snapshot));
-            cursor(cursor.peek() + 1);
+            cursor(cursor() + 1);
         }
 
         function wait() {
@@ -864,7 +1136,29 @@ var viewModel = vM.entryEdit,
         return uS;
     })();
 
-    ko.applyBindings(viewModel, $('#main').get(0));
+    uiModel.nAdjV = ko.computed(function () {
+        return (dataModel.entry
+            .part_of_speech.label().match(/^(сущ|прил|гл)\.$/));
+    });
+
+    ko.applyBindings(viewModel, $('body').get(0));
+
+    // Инициализация ZeroClipboard и Opentip для кнопки копирования
+    // AntConc-запроса.
+    var copyButton = $('#copy_antconc_query'),
+        clip = new ZeroClipboard(copyButton),
+        tip = new Opentip(copyButton,
+                    'Запрос для AntConc скопирован в буфер обмена.',
+                    { target: true, tipJoint: 'bottom center',
+                      removeElementsOnHide: true, hideEffectDuration: 2.5,
+                      stemLength: 12, stemBase: 15,
+                      background: 'rgb(252, 243, 208)',
+                      borderColor: 'rgb(232, 213, 178)'});
+    clip.on('dataRequested', function (client, args) {
+        client.setText(dataModel.entry.antconc_query());
+        tip.show();
+        tip.hide();
+    });
 
     // Поднять занавес
     $('.curtain').fadeOut();

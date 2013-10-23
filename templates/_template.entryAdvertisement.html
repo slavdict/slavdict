@@ -1,0 +1,12 @@
+<script type="text/html" id="entryAdvertisement">
+
+    <span data-bind="wax: $root.ui.entry.headword"
+        class="eA--headword"></span>
+    <sup data-bind="visible: homonym_order, text: homonym_order"
+        class="eA--homonymNumber"></sup>{{ space }}
+
+    <i data-bind="text: part_of_speech.label"></i>{{ space }}
+    <span data-bind="visible: homonym_gloss, text: homonym_gloss"
+        class="eA--gloss"></span>
+
+</script>

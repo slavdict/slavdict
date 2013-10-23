@@ -1,0 +1,18 @@
+<script type="text/html" id="orthvars">
+<section class="tabcontent orthvars"
+    data-bind="if: constructor.name === 'Entry'">
+
+    <ul data-bind="sortable: orthvars">
+        <li>
+            <a class="deleteItem" data-bind="click:
+                $parent.orthvars.itemDestroyer($data).do"></a>
+            <input type="text"
+                data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
+            <span data-bind="wax: idem"></span>
+        </li>
+    </ul>
+
+    <a class="addItem" data-bind="click: orthvars.itemAdder($data).do"></a>
+
+</section>
+</script>

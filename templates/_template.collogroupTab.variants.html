@@ -1,0 +1,19 @@
+<script type="text/html" id="variants">
+<section class="tabcontent orthvars"
+    data-bind="if: constructor.name === 'Collogroup'">
+
+    <ul data-bind="sortable: collocations">
+        <li>
+            <a class="deleteItem" data-bind="click:
+                $parent.collocations.itemDestroyer($data).do"></a>
+            <input type="text"
+                data-bind="value: collocation, valueUpdate: 'afterkeydown'"/>
+            <span data-bind="wax: collocation"></span>
+        </li>
+    </ul>
+
+    <a class="addItem"
+        data-bind="click: collocations.itemAdder($data).do"></a>
+
+</section>
+</script>

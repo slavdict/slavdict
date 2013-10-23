@@ -1,18 +1,78 @@
 <script type="text/html" id="editMeaning">
+<section data-bind="if: constructor.name === 'Meaning'">
+<div id="eM--editMeaning" class="grid">
 
-    <label>Значение</label>
-    <input type="text" data-bind="value: meaning, valueUpdate: 'afterkeydown'"/>
-    <br/><br/>
+    <label id="eM--metaphorical" data-bind="visible: $root.ui.hierarchy.usage">
+        <input type="checkbox" data-bind="checked: metaphorical" />
+        <span>Литургический символ</span>
+    </label>
 
-    <label>Пояснение</label>
-    <input type="text" data-bind="value: gloss, valueUpdate: 'afterkeydown'"/>
-    <br/><br/>
+    <div id="eM--meaning">
+        <label>Значение</label>
+        <textarea data-bind="value: meaning,
+            valueUpdate: 'afterkeydown'"></textarea>
+    </div>
 
-    <label>Примечание</label>
-    <textarea data-bind="value: additional_info"></textarea>
-    <br/><br/>
+    <div id="eM--gloss">
+        <label>Пояснение</label>
+        <textarea data-bind="value: gloss,
+            valueUpdate: 'afterkeydown'"></textarea>
+    </div>
 
-    <input type="button" value="закончить редактирование" 
-        data-bind="click: stopEditing" />
+    <div id="eM--substantivusGroup"
+    data-bind="visible: $root.data.entry.part_of_speech() !==
+    $root.ui.slugs.part_of_speech['noun']">
 
+        <label id="eM--substantivus">
+            <input type="checkbox" data-bind="checked: substantivus" />
+            <span>В роли существительного</span>
+        </label>
+
+        <label id="eM--substantivusType" data-bind="visible: substantivus">
+            <span>Тип субстантива</span>
+
+            <select data-bind="options: $root.ui.choices.substantivus_type,
+                value: substantivus_type, optionsText: 'name',
+                optionsValue: 'id', visible: substantivus_type">
+            </select>
+
+            <div data-bind="visible: !substantivus_type()">
+                {% for id, name in SUBSTANTIVUS_TYPES %}
+                <label data-bind="css:
+                { checked: substantivus_type() == '{{ id }}' }">
+
+                    <input type="radio" name="substantivusType" value="{{ id }}"
+                        data-bind="checked: substantivus_type"/>
+                    <span>{{ name }}</span>
+
+                </label>
+                {% endfor %}
+            </div>
+
+        </label>
+
+    </div>
+
+    <div data-bind="if: $root.ui.hierarchy.usage" id="usageExamples">
+
+        <ul class="examples" data-bind="sortable:
+            { data: examples, connectClass: 'examples' }">
+
+            <li data-bind="event: { dblclick: function(){} },
+                    dblclickBubble: false">
+                <a class="deleteItem" data-bind="click:
+                 $parent.examples.itemPoolReturner($data).do"></a>
+                <a class="editItem" data-bind="click: edit"></a>
+                <span data-bind="wax: example"></span>{{ space }}
+                (<span data-bind="text: address_text"></span>)
+            </li>
+
+        </ul>
+
+        <a class="addItem" data-bind="click:
+            examples.itemAdder($data, $root.data.entry).do"></a>
+    </div>
+
+</div>
+</section>
 </script>

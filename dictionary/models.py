@@ -103,7 +103,8 @@ class Meaningfull:
 
     @property
     def all_meanings(self):
-        return self.meaning_set.all().order_by('order', 'id')
+        return self.meaning_set.filter(
+                        parent_meaning__isnull=True).order_by('order', 'id')
 
     @property
     def has_meanings(self):
@@ -193,10 +194,10 @@ PARTICIPLE_TYPE_CHOICES = (
     ('d', u'страд. прич. прош. вр.'),
 )
 PARTICIPLE_CHOICES = (
-    ('1', u'действ. прич. наст. вр.'),
-    ('2', u'действ. прич. прош. вр.'),
-    ('3', u'страд. прич. наст. вр.'),
-    ('4', u'страд. прич. прош. вр.'),
+    ('1', u'действ. наст.'),
+    ('2', u'действ. прош.'),
+    ('3', u'страд. наст.'),
+    ('4', u'страд. прош.'),
 )
 PARTICIPLE_TYPE_MAP = {
     'pres_act': 'a',
@@ -1066,6 +1067,7 @@ class CollocationGroup(models.Model, Meaningfull):
     order = SmallIntegerField(u'порядок следования', blank=True, default=0)
     ctime = DateTimeField(editable=False, auto_now_add=True)
     mtime = DateTimeField(editable=False, auto_now=True)
+    additional_info = TextField(u'примечание', blank=True)
 
     @property
     def collocations(self):
@@ -1090,6 +1092,7 @@ class CollocationGroup(models.Model, Meaningfull):
             'base_meaning_id',
             'id',
             'order',
+            'additional_info',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['collocations'] = [c.forJSON() for c in self.collocations]

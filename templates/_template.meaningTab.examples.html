@@ -1,0 +1,22 @@
+<script type="text/html" id="meaningExamples">
+<section class="tabcontent" data-bind="if: constructor.name === 'Meaning'">
+
+    <ul class="examples" data-bind="sortable:
+        { data: examples, connectClass: 'examples' }">
+
+        <li data-bind="event: { dblclick: function(){} },
+                dblclickBubble: false">
+            <a class="deleteItem" data-bind="click:
+             $parent.examples.itemPoolReturner($data).do"></a>
+            <a class="editItem" data-bind="click: edit"></a>
+            <span data-bind="wax: example"></span>{{ space }}
+            (<span data-bind="text: address_text"></span>)
+        </li>
+
+    </ul>
+
+    <a class="addItem" data-bind="click:
+        examples.itemAdder($data, $root.data.entry).do"></a>
+
+</section>
+</script>

@@ -727,6 +727,7 @@ def edit_entry(request, id):
         'part_of_speech': dictionary.viewmodels._choices(
                             dictionary.models.PART_OF_SPEECH_CHOICES),
         'participle_type': dictionary.viewmodels.editParticiples,
+        'substantivus_type': dictionary.viewmodels.editSubstantivusTypes,
         'tantum': dictionary.viewmodels.editTantum,
     }
     labels = {
@@ -736,6 +737,7 @@ def edit_entry(request, id):
         'onym': dict(dictionary.models.ONYM_CHOICES),
         'part_of_speech': dict(dictionary.models.PART_OF_SPEECH_CHOICES),
         'participle_type': dict(dictionary.models.PARTICIPLE_CHOICES),
+        'substantivus_type': dict(dictionary.models.SUBSTANTIVUS_TYPE_CHOICES),
         'tantum': dict(dictionary.models.TANTUM_CHOICES)
     }
     slugs = {
@@ -748,6 +750,10 @@ def edit_entry(request, id):
         'labels': dictionary.viewmodels._json(labels),
         'slugs': dictionary.viewmodels._json(slugs),
         'entryURL': Entry.objects.get(pk=id).get_absolute_url(),
+        'PARTS_OF_SPEECH': dictionary.models.PART_OF_SPEECH_CHOICES,
+        'GENDERS': dictionary.models.GENDER_CHOICES,
+        'STATUSES': dictionary.models.STATUS_CHOICES,
+        'SUBSTANTIVUS_TYPES': dictionary.models.SUBSTANTIVUS_TYPE_CHOICES,
     }
     return render_to_response('single_entry_edit.html', context,
                               RequestContext(request))

@@ -1,0 +1,17 @@
+<script type="text/html" id="admin">
+<section class="tabcontent" data-bind="if: constructor.name === 'Entry'">
+
+    <div>
+        <label>Автор</label>
+    </div>
+
+    <div>
+        <label>Статус статьи</label>
+        <select data-bind="options: $root.ui.choices.entry_status,
+            value: $root.data.entry.status, optionsText: 'name',
+            optionsValue: 'id'">
+        </select>
+    </div>
+
+</section>
+</script>
