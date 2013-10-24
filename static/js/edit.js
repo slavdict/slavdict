@@ -1,7 +1,7 @@
 try {
 
 
-var topic = 'entry change',
+var topic = 'entry_change',
     constructors = [Etymology, Participle, Orthvar,
                     Collocation, Context, Greq,
                     Example, Collogroup, Meaning,
@@ -727,7 +727,36 @@ var viewModel = vM.entryEdit,
         var stack = ko.observableArray([dataModel.entry]);
             entryTab = 'info',
             collogroupTab = {'default': 'variants'},
-            meaningTab = {'default': 'editMeaning'};
+            meaningTab = {'default': 'editMeaning'},
+            previousStack = stack(),
+            previousForm = entryTab,
+            currentStack = previousStack,
+            currentForm = previousForm,
+            uiChangeTopic = 'ui_change';
+
+        function rememberUI() {
+            previousForm = currentForm;
+            previousStack = currentStack;
+            currentForm = uiModel.currentForm();
+            currentStack = stack.slice(); // NOTE: Вызов метода slice необходим,
+            // иначе currentStack и previousStack будут всегда совпадать, т.к.
+            // обе переменные будут содержать ссылку на один и тот же массив
+            // из недр вудушного массива stack.
+
+            function ix(i) { return i.constructor.name + ' ' + i.id(); }
+            console.log(previousStack.map(ix), previousForm, currentStack.map(ix), currentForm);
+
+        }
+
+        function wait() {
+            clearTimeout(rememberUI.timeoutID);
+            rememberUI.timeoutID = setTimeout(rememberUI, 300);
+        }
+
+        ko.postbox.subscribe(topic, wait);
+        ko.postbox.subscribe(uiChangeTopic, wait);
+        stack.publishOn(uiChangeTopic);
+        uiModel.currentForm.publishOn(uiChangeTopic);
 
         function stackTop() {
             var s = stack();
@@ -756,12 +785,18 @@ var viewModel = vM.entryEdit,
         }
 
         function dump() {
-            var i, j, array = [], item, S = stack();
-            for (i=0, j=S.length; i<j; i++) {
-                item = S[i];
-                array.push([item.constructor.name, item.id()]);
+            var i, j, item,
+                pSDump = [], cSDump = [];
+            for (i=0, j=currentStack.length; i<j; i++) {
+                item = currentStack[i];
+                cSDump.push([item.constructor.name, item.id()]);
             }
-            return array;
+            for (i=0, j=previousStack.length; i<j; i++) {
+                item = previousStack[i];
+                pSDump.push([item.constructor.name, item.id()]);
+            }
+            return { previousStack: pSDump, currentStack: cSDump,
+                     previousForm: previousForm, currentForm: currentForm };
         }
 
         function load(array) {
@@ -787,16 +822,6 @@ var viewModel = vM.entryEdit,
             stack.splice(i, stack().length);
         }
 
-        function removeZombies() {
-            var i, item;
-            for (i = stack().length - 1; i>=0; i--) {
-                item = stack()[i];
-                if (item.constructor.all.indexOf(item) === -1) {
-                    stack.splice(i, stack().length);
-                }
-            }
-        }
-
         // общедоступный API стека
         stack.top = ko.computed(stackTop);
 
@@ -808,7 +833,6 @@ var viewModel = vM.entryEdit,
         stack.pop = pop;
         stack.dump = dump;
         stack.load = load;
-        stack.removeZombies = removeZombies;
 
         return stack;
     })();
@@ -1094,7 +1118,7 @@ var viewModel = vM.entryEdit,
                      doze:  doze };
         })();
 
-        function load(N, backToTheFuture) {
+        function load(N, M) {
             var snapshot = JSON.parse(snapshots()[N]);
             argus.doze();
             Entry.call(dataModel.entry, snapshot.entry);
@@ -1102,11 +1126,13 @@ var viewModel = vM.entryEdit,
                 item.shredder = snapshot.toDestroy[item.name];
                 item.all.cacheCommit();
             });
-            if (backToTheFuture) {
-                uiModel.navigationStack.load(snapshot.stack);
-                uiModel.currentForm(snapshot.currentForm);
+            if (M === N) {
+                uiModel.navigationStack.load(snapshot.view.currentStack);
+                uiModel.currentForm(snapshot.view.currentForm);
             } else {
-                uiModel.navigationStack.removeZombies();
+                snapshot = JSON.parse(snapshots()[M]);
+                uiModel.navigationStack.load(snapshot.view.previousStack);
+                uiModel.currentForm(snapshot.view.previousForm);
             }
             argus.guard();
         }
@@ -1125,8 +1151,7 @@ var viewModel = vM.entryEdit,
                 dock(cursor())
             }
             var snapshot = { entry: dataModel.entry,
-                             stack: uiModel.navigationStack.dump(),
-                             currentForm: uiModel.currentForm(),
+                             view: uiModel.navigationStack.dump(),
                              toDestroy: {} }
             constructors.forEach(function (item) {
                 snapshot.toDestroy[item.name] = item.shredder;
@@ -1151,7 +1176,7 @@ var viewModel = vM.entryEdit,
         function redo() {
             if (! mayNotRedo()) {
                 var n = cursor();
-                load(n, true);
+                load(n, n);
                 cursor(n + 1);
             }
         }
@@ -1159,7 +1184,7 @@ var viewModel = vM.entryEdit,
         function undo() {
             if (! mayNotUndo()) {
                 var n = cursor() - 2;
-                load(n);
+                load(n, n + 1);
                 cursor(n + 1);
             }
         }
