@@ -93,32 +93,10 @@
             <!-- ko if: ui.hierarchy.collogroup -->
             <div class="entryAdvertisement" id="eA--collocation">
 
-                <canvas id="eA--separator" width="30" height="80"></canvas>
-                <script type="application/javascript">
-                    (function () {
-                        var cnvs = document.getElementById('eA--separator'),
-                            ctx = cnvs.getContext('2d');
-                        ctx.beginPath();
-                        ctx.moveTo(1, -4);
-                        ctx.lineTo(13, 42);
-                        ctx.lineTo(1, 84);
-                        ctx.lineTo(30, 84)
-                        ctx.lineTo(30, -4)
-                        ctx.lineTo(1, -4);
-                        ctx.clip();
-
-                        ctx.shadowOffsetY = 5;
-                        ctx.shadowBlur = 20;
-                        ctx.shadowColor = 'rgba(210, 146, 22, 0.8)';
-                        ctx.fillStyle = 'white';
-                        ctx.beginPath();
-                        ctx.moveTo(0, -4)
-                        ctx.lineTo(12, 42);
-                        ctx.lineTo(0, 84);
-                        ctx.lineTo(0, -4);
-                        ctx.fill();
-                     })();
-                </script>
+                <!-- NOTE: Реализацию разделителя на основе canvas
+                     см. commit 17c19b1e12b424bddd2a5b123a130d1fd9841462 -->
+                <img id="eA--separator" width="30" height="80"
+                    src="{{ STATIC_URL }}collogroupSeparator.png"/>
 
                 <!-- ko if: ui.hierarchy.collogroupSlug -->
                 <span class="eA--collocation"
