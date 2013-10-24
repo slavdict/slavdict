@@ -742,10 +742,6 @@ var viewModel = vM.entryEdit,
             // иначе currentStack и previousStack будут всегда совпадать, т.к.
             // обе переменные будут содержать ссылку на один и тот же массив
             // из недр вудушного массива stack.
-
-            function ix(i) { return i.constructor.name + ' ' + i.id(); }
-            console.log(previousStack.map(ix), previousForm, currentStack.map(ix), currentForm);
-
         }
 
         function wait() {
