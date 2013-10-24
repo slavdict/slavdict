@@ -98,6 +98,15 @@
                     (function () {
                         var cnvs = document.getElementById('eA--separator'),
                             ctx = cnvs.getContext('2d');
+                        ctx.beginPath();
+                        ctx.moveTo(1, -4);
+                        ctx.lineTo(13, 42);
+                        ctx.lineTo(1, 84);
+                        ctx.lineTo(30, 84)
+                        ctx.lineTo(30, -4)
+                        ctx.lineTo(1, -4);
+                        ctx.clip();
+
                         ctx.shadowOffsetY = 5;
                         ctx.shadowBlur = 20;
                         ctx.shadowColor = 'rgba(210, 146, 22, 0.8)';
