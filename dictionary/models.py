@@ -651,7 +651,7 @@ class Etymology(models.Model):
             'unitext',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
-        dct['etimologies'] = [e
+        dct['etimologies'] = [e.forJSON()
                 for e in Etymology.objects.filter(etymon_to=self)]
         return dct
 
