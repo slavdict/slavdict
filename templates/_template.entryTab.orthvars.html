@@ -2,6 +2,11 @@
 <section class="tabcontent orthvars"
     data-bind="if: constructor.name === 'Entry'">
 
+    <label id="orthvars--reconstructedHeadword">
+        <input type="checkbox" data-bind="checked: reconstructed_headword">
+        <span>Заглавное слов реконструировано</span>
+    </label>
+
     <ul data-bind="sortable: orthvars">
         <li>
             <a class="deleteItem" data-bind="click:
