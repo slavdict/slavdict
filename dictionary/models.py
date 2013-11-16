@@ -1010,6 +1010,7 @@ class Example(models.Model):
             'additional_info',
             'address_text',
             'collogroup_id',
+            'context',
             'entry_id',
             'example',
             'greek_eq_status',

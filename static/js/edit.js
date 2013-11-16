@@ -308,12 +308,15 @@ function Example() {
     upsert(this, 'collogroup_id', data, collogroup_id);
     upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'example', data, '');
+    upsert(this, 'context', data, '');
     upsert(this, 'greek_eq_status', data, '');
     upsertArray(this, 'greqs', Greq, data);
     upsert(this, 'hidden', data, false);
     upsert(this, 'id', data, 'example' + Example.all.length);
     upsert(this, 'meaning_id', data, meaning_id);
     upsert(this, 'order', data, 345);
+
+    this.context.isVisible || (this.context.isVisible = ko.observable(false));
     Example.all.append(this);
 }
 

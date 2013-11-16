@@ -2,20 +2,37 @@
 <section data-bind="if: constructor.name === 'Example'">
 <div id="eE--editExample" class="grid">
 
-    <div id="eE--example">
+    <div class="eE--example">
         <div>
             <label>Иллюстрация</label>
             <textarea data-bind="value: example,
                 valueUpdate: 'afterkeydown'"></textarea>
         </div>
 
-        <div id="eE--exampleWax" data-bind="wax: example"></div>
+        <div class="eE--exampleWax" data-bind="wax: example"></div>
     </div>
 
     <div id="eE--address">
         <label>Адрес</label>
         <textarea data-bind="value: address_text,
             valueUpdate: 'afterkeydown'"></textarea>
+    </div>
+
+    <nav data-bind="visible: !context.isVisible()">
+        <a data-bind="click: context.isVisible.bind($data, true)">
+            Более широкий контекст (для грециста)
+        </a>
+    </nav>
+
+    <div class="eE--example" data-bind="visible: context.isVisible">
+        <div>
+            <label>Более широкий контекст (для грециста)</label>
+            <textarea data-bind="value: context, valueUpdate: 'afterkeydown',
+             hasFocus: context.isVisible, event: {
+                blur: context.isVisible.bind($data, false) }"></textarea>
+        </div>
+
+        <div class="eE--exampleWax" data-bind="wax: context"></div>
     </div>
 
 </div>
