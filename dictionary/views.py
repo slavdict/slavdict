@@ -753,6 +753,7 @@ def edit_entry(request, id):
         'PARTS_OF_SPEECH': dictionary.models.PART_OF_SPEECH_CHOICES,
         'GENDERS': dictionary.models.GENDER_CHOICES,
         'STATUSES': dictionary.models.STATUS_CHOICES,
+        'GREEK_EQ_STATUSES': dictionary.models.Example.GREEK_EQ_STATUS,
         'SUBSTANTIVUS_TYPES': dictionary.models.SUBSTANTIVUS_TYPE_CHOICES,
     }
     return render_to_response('single_entry_edit.html', context,

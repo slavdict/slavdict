@@ -35,6 +35,17 @@
         <div class="eE--exampleWax" data-bind="wax: context"></div>
     </div>
 
+    <div class="eE--status">
+        <label>Статус греческих параллелей</label>
+        <div>{% for id, name in GREEK_EQ_STATUSES %}
+        <label data-bind="css: { checked: greek_eq_status() == '{{ id }}' }">
+            <input type="radio" name="greekeqstatus"
+                value="{{ id }}" data-bind="checked: greek_eq_status"/>
+            {{ space }}{{ name }}
+        </label>
+        {% endfor %}</div>
+    </div>
+
 </div>
 </section>
 </script>

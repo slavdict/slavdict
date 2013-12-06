@@ -309,7 +309,8 @@ function Example() {
     upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'example', data, '');
     upsert(this, 'context', data, '');
-    upsert(this, 'greek_eq_status', data, '');
+    upsert(this, 'greek_eq_status', data, 'L');  // NOTE: По умолчанию ставить
+                  // статус 'L' -- "необходимо найти греческие параллели".
     upsertArray(this, 'greqs', Greq, data);
     upsert(this, 'hidden', data, false);
     upsert(this, 'id', data, 'example' + Example.all.length);
