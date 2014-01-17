@@ -25,6 +25,10 @@
 
     {% endfor %}
 
+    {% if cg.additional_info and (show_additional_info or intermed) %}
+        <span class="ai ai-entry">{{ cg.additional_info }}</span>
+    {% endif %}
+
     {% if cg.meanings or cg.metaph_meanings %}
         {{ backspace }}&nbsp;&mdash;{{ space }}
     {% endif %}
