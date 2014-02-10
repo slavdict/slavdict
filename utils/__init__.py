@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__all__ = ('p', 's')
+__all__ = ('p', 's', 'd')
 
 import re
 
@@ -21,3 +21,12 @@ def s(x, y, without_mtime=True):
             e.save(without_mtime=without_mtime)
             counter += 1
     print u'Исправлено адресов: %i' % counter
+
+def d(x, y, without_mtime=True):
+    counter = 0
+    for e in Example.objects.all():
+        if re.search(x, e.address_text):
+            dummy = re.sub(x, y, e.address_text)
+            print '%s --> %s' % (e.address_text, dummy)
+            counter += 1
+    print u'Будет исправлено адресов: %i' % counter
