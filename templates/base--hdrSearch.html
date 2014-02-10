@@ -65,7 +65,8 @@
            class="header--item button">Материалы</a>
 
         {{ space }}
-        <a href="https://docs.google.com/document/d/1F2vnJpp_J48X49tdwrqefmtNd7wJIiAbuExp5TgZuwE/view?hl=en_US"
+        <a href="https://docs.google.com/document/d/1F2vnJpp_J48X49tdwrqefmtNd7wJIiAbuExp5TgZuwE/{%
+                if user.is_admeditor %}edit{% else %}view?hl=en_US{% endif %}"
            class="header--item button">Инструкция</a>
 
     </span>
