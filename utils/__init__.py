@@ -54,6 +54,17 @@ class DataChangeShell(cmd.Cmd):
         print u'\n%s\n%i\n' % (self.pattern.pattern, count)
 
     def do_try(self, arg):
+        try:
+            # NOTE:qSeF4: В шаблоне замены могут быть подстановочные знаки
+            # вроде \1, при том что в шаблоне поиска не будет никаких групп.
+            # Если подстрока для замены в этом случае будет найдена, то
+            # возникнет исключение.
+            self.pattern.sub(self.replacement, self.pattern.pattern)
+        except re.error as err:
+            self.replacement = None
+            print (u'Шаблон замены сброшен '
+                   u'из-за несовместимости с шаблоном поиска: %s' % err)
+            return
         count = 0
         for item in self.model.objects.all():
             if self.pattern.search(getattr(item, self.attrname)):
@@ -64,6 +75,14 @@ class DataChangeShell(cmd.Cmd):
         print u'\n? %s --> %s ?\n%i\n' % (self.pattern.pattern, self.replacement, count)
 
     def do_replace(self, arg):
+        try:
+            # SEE:qSeF4:
+            self.pattern.sub(self.replacement, self.pattern.pattern)
+        except re.error as err:
+            self.replacement = None
+            print (u'Шаблон замены сброшен '
+                   u'из-за несовместимости с шаблоном поиска: %s' % err)
+            return
         count = 0
         for item in self.model.objects.all():
             if self.pattern.search(getattr(item, self.attrname)):
