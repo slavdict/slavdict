@@ -125,3 +125,6 @@ class DataChangeShell(cmd.Cmd):
             self.onecmd('find')
         elif self.state == 'replace':
             self.onecmd('try')
+
+def shell(model=_Example, attrname='address_text'):
+    DataChangeShell(model=model, attrname=attrname).cmdloop()
