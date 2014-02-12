@@ -15,7 +15,7 @@ class DataChangeShell(cmd.Cmd):
         self.attrname = attrname
         self.intro = self.intro + '%s().%s\n' % (self.model.__name__,
                                                  self.attrname)
-        self.pattern = ''
+        self.pattern = re.compile('', re.UNICODE)
         self.replacement = None
         self.change_prompt()
 
@@ -37,43 +37,43 @@ class DataChangeShell(cmd.Cmd):
         return True
 
     def do_pattern(self, arg):
-        self.pattern = self.prepare(arg)
+        self.pattern = re.compile(self.prepare(arg), re.UNICODE)
 
     def do_replacement(self, arg):
         self.replacement = self.prepare(arg)
 
     def do_show(self, arg):
-        print u'\nfind: %s\nreplace: %s\n' % (self.pattern, self.replacement)
+        print u'\nfind: %s\nreplace: %s\n' % (self.pattern.pattern, self.replacement)
 
     def do_find(self, arg):
         count = 0
         for item in self.model.objects.all():
-            if re.search(self.pattern, getattr(item, self.attrname)):
+            if self.pattern.search(getattr(item, self.attrname)):
                 print getattr(item, self.attrname)
                 count += 1
-        print u'\n%s\n%i\n' % (self.pattern, count)
+        print u'\n%s\n%i\n' % (self.pattern.pattern, count)
 
     def do_try(self, arg):
         count = 0
         for item in self.model.objects.all():
-            if re.search(self.pattern, getattr(item, self.attrname)):
+            if self.pattern.search(getattr(item, self.attrname)):
                 initial = getattr(item, self.attrname)
-                final = re.sub(self.pattern, self.replacement, initial)
+                final = self.pattern.sub(self.replacement, initial)
                 count += 1
                 print u'%s\n%s\n' % (initial, final)
-        print u'\n? %s --> %s ?\n%i\n' % (self.pattern, self.replacement, count)
+        print u'\n? %s --> %s ?\n%i\n' % (self.pattern.pattern, self.replacement, count)
 
     def do_replace(self, arg):
         count = 0
         for item in self.model.objects.all():
-            if re.search(self.pattern, getattr(item, self.attrname)):
+            if self.pattern.search(getattr(item, self.attrname)):
                 initial = getattr(item, self.attrname)
                 final = re.sub(self.pattern, self.replacement, initial)
                 setattr(item, self.attrname, final)
                 item.save(without_mtime=True)
                 count += 1
                 print u'%s\n%s\n' % (initial, final)
-        print u'\n! %s --> %s !\n%i\n' % (self.pattern, self.replacement, count)
+        print u'\n! %s --> %s !\n%i\n' % (self.pattern.pattern, self.replacement, count)
 
 
     def default(self, arg):
