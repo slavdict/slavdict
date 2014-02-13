@@ -54,40 +54,37 @@ class DataChangeShell(cmd.Cmd):
         print u'\n%s\n%i\n' % (self.pattern.pattern, count)
 
     def do_try(self, arg):
-        try:
-            # NOTE:qSeF4: В шаблоне замены могут быть подстановочные знаки
-            # вроде \1, при том что в шаблоне поиска не будет никаких групп.
-            # Если подстрока для замены в этом случае будет найдена, то
-            # возникнет исключение.
-            self.pattern.sub(self.replacement, self.pattern.pattern)
-        except re.error as err:
-            self.replacement = None
-            print (u'Шаблон замены сброшен '
-                   u'из-за несовместимости с шаблоном поиска: %s' % err)
-            return
         count = 0
         for item in self.model.objects.all():
             if self.pattern.search(getattr(item, self.attrname)):
                 initial = getattr(item, self.attrname)
-                final = self.pattern.sub(self.replacement, initial)
+                try:
+                    # NOTE:qSeF4: В шаблоне замены могут быть подстановочные
+                    # знаки вроде \1, при том что в шаблоне поиска не будет
+                    # никаких групп. Если подстрока для замены в этом случае
+                    # будет найдена, то возникнет исключение.
+                    final = self.pattern.sub(self.replacement, initial)
+                except re.error as err:
+                    self.replacement = None
+                    print (u'Шаблон замены сброшен '
+                           u'из-за несовместимости с шаблоном поиска: %s' % err)
+                    return
                 count += 1
                 print u'%s\n%s\n' % (initial, final)
         print u'\n? %s --> %s ?\n%i\n' % (self.pattern.pattern, self.replacement, count)
 
     def do_replace(self, arg):
-        try:
-            # SEE:qSeF4:
-            self.pattern.sub(self.replacement, self.pattern.pattern)
-        except re.error as err:
-            self.replacement = None
-            print (u'Шаблон замены сброшен '
-                   u'из-за несовместимости с шаблоном поиска: %s' % err)
-            return
         count = 0
         for item in self.model.objects.all():
             if self.pattern.search(getattr(item, self.attrname)):
                 initial = getattr(item, self.attrname)
-                final = re.sub(self.pattern, self.replacement, initial)
+                try:  # SEE:qSeF4:
+                    final = self.pattern.sub(self.replacement, initial)
+                except re.error as err:
+                    self.replacement = None
+                    print (u'Шаблон замены сброшен '
+                           u'из-за несовместимости с шаблоном поиска: %s' % err)
+                    return
                 setattr(item, self.attrname, final)
                 item.save(without_mtime=True)
                 count += 1
