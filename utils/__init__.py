@@ -111,11 +111,19 @@ class DataChangeShell(cmd.Cmd):
             self.change_prompt()
         else:
             if self.state == 'find':
-                self.onecmd('pattern %s' % arg)
-                self.onecmd('find')
+                try:
+                    self.onecmd('pattern %s' % arg)
+                except re.error as err:
+                    print u'Шаблон поиска некорректен: %s' % err
+                else:
+                    self.onecmd('find')
             elif self.state == 'replace':
-                self.onecmd('replacement %s' % arg)
-                self.onecmd('try')
+                try:
+                    self.onecmd('replacement %s' % arg)
+                except re.error as err:
+                    print u'Шаблон замены некорректен: %s' % err
+                else:
+                    self.onecmd('try')
 
     def emptyline(self):
         if self.state == 'find':
