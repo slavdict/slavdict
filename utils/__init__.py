@@ -118,12 +118,8 @@ class DataChangeShell(cmd.Cmd):
                 else:
                     self.onecmd('find')
             elif self.state == 'replace':
-                try:
-                    self.onecmd('replacement %s' % arg)
-                except re.error as err:
-                    print u'Шаблон замены некорректен: %s' % err
-                else:
-                    self.onecmd('try')
+                self.onecmd('replacement %s' % arg)
+                self.onecmd('try')
 
     def emptyline(self):
         if self.state == 'find':
