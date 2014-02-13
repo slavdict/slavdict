@@ -54,6 +54,9 @@ class DataChangeShell(cmd.Cmd):
         print u'\n%s\n%i\n' % (self.pattern.pattern, count)
 
     def do_try(self, arg):
+        if self.replacement is None:
+            print u'Установите шаблон замены'
+            return
         count = 0
         for item in self.model.objects.all():
             if self.pattern.search(getattr(item, self.attrname)):
@@ -74,6 +77,9 @@ class DataChangeShell(cmd.Cmd):
         print u'\n? %s --> %s ?\n%i\n' % (self.pattern.pattern, self.replacement, count)
 
     def do_replace(self, arg):
+        if self.replacement is None:
+            print u'Установите шаблон замены'
+            return
         count = 0
         for item in self.model.objects.all():
             if self.pattern.search(getattr(item, self.attrname)):
@@ -118,12 +124,8 @@ class DataChangeShell(cmd.Cmd):
                 else:
                     self.onecmd('find')
             elif self.state == 'replace':
-                try:
-                    self.onecmd('replacement %s' % arg)
-                except re.error as err:
-                    print u'Шаблон замены некорректен: %s' % err
-                else:
-                    self.onecmd('try')
+                self.onecmd('replacement %s' % arg)
+                self.onecmd('try')
 
     def emptyline(self):
         if self.state == 'find':
