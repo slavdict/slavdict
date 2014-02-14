@@ -154,7 +154,7 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
                 ),
             }),
         (u'Примечание к параллели',
-            {'fields': ('additional_info',),
+            {'fields': ('additional_info', 'note'),
             'classes': ('collapse',)}
             ),
         )
@@ -177,7 +177,7 @@ Example.entry_for_example = funcTemp
 
 EXAMPLE_FIELDSETS = (
         (None, {'fields': (('example', 'context'), 'address_text', 'greek_eq_status')}),
-        (u'Примечание к примеру', {'fields': ('additional_info',), 'classes': ('collapse',)}),
+        (u'Примечание к примеру', {'fields': ('additional_info', 'note'), 'classes': ('collapse',)}),
     )
 
 class Example_Inline(admin.StackedInline):

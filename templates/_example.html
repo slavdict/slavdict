@@ -1,4 +1,4 @@
-<span class="cslav">{{ e.example_ucs }}</span>
+<span class="entry-example">{{ e.example_ucs|cslav_words }}</span>
 {{ space }}
 
 
@@ -47,6 +47,11 @@
         {% endif %}
         ){{ space }}
     {% endif %}
+{% endif %}
+
+
+{% if e.note %}
+    <i>{{ e.note }}</i>
 {% endif %}
 
 

@@ -80,6 +80,8 @@ from django.utils.encoding import force_unicode
 from jinja2 import nodes
 from jinja2.ext import Extension
 
+from coffin import template
+register = template.Library()
 
 def strip_spaces_between_tags_and_text(value):
     value = re.sub(ur'>\s+', u'>', force_unicode(value.strip()))
@@ -121,3 +123,10 @@ class TrimExtension(Extension):
         return source
 
 trim = TrimExtension
+
+@register.filter
+def cslav_words(value):
+    value = value.replace(u'...', u'<span>...</span>')
+    pattern = u'<span class="cslav nobr">%s</span>'
+    words = (pattern % word for word in value.split())
+    return u'&#32;'.join(words)

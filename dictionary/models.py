@@ -953,6 +953,11 @@ class Example(models.Model):
 
     audited = BooleanField(u'Пример прошел проверку или взят на проверку',
                            default=False)
+
+    note = TextField(u'комментарий', help_text=u'''Дополнительная
+            информация по данному примеру, которая будет видна рядовому
+            пользователю словаря''', blank=True)
+
     additional_info = TextField(u'примечание', help_text=u'''Любая
             дополнительная информация по данному ПРИМЕРУ. Дополнительная
             информация по значению или лексеме указывается не здесь,
@@ -1017,6 +1022,7 @@ class Example(models.Model):
             'hidden',
             'id',
             'meaning_id',
+            'note',
             'order',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
@@ -1190,9 +1196,15 @@ class GreekEquivalentForExample(models.Model):
 
     initial_form = CharField(u'начальная форма', max_length=100, blank=True)
 
+    note = TextField(u'комментарий', help_text=u'''Любая дополнительная
+                     информация по данному греческому эквиваленту, которая
+                     будет включена в текст статьи.''',
+                     blank=True)
+
     additional_info = TextField(u'примечание', help_text=u'''Любая
-                                дополнительная информация по данному греческому
-                                эквиваленту.''', blank=True)
+                                дополнительная информация по данному
+                                греческому эквиваленту, которая в текст
+                                статьи не войдет''', blank=True)
 
     corrupted = BooleanField(u'текст испорчен', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
@@ -1218,6 +1230,7 @@ class GreekEquivalentForExample(models.Model):
             'id',
             'initial_form',
             'mark',
+            'note',
             'position',
             'source',
             'unitext',

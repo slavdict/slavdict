@@ -277,6 +277,7 @@ function Greq() {
     upsert(this, 'id', data, 'greq' + Greq.all.length);
     upsert(this, 'initial_form', data, '');
     upsert(this, 'mark', data, '');
+    upsert(this, 'note', data, '');
     upsert(this, 'position', data, 0);
     upsert(this, 'source', data, '');
     upsert(this, 'unitext', data, '');
@@ -315,6 +316,7 @@ function Example() {
     upsert(this, 'hidden', data, false);
     upsert(this, 'id', data, 'example' + Example.all.length);
     upsert(this, 'meaning_id', data, meaning_id);
+    upsert(this, 'note', data, '');
     upsert(this, 'order', data, 345);
 
     this.context.isVisible || (this.context.isVisible = ko.observable(false));

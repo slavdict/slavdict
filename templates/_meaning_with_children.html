@@ -1,17 +1,36 @@
 {% include '_meaning_without_children.html' %}
 
 {% set child_meanings = m.child_meanings %}
-    {% if child_meanings %}
-        {% for m in child_meanings %}
-            {% if intermed %}<div style="{{ meaningsep }}; padding-left: 50px;">{% endif %}
-            {% if m.metaphorical %}
+
+{% if child_meanings %}
+    {% for m in child_meanings %}
+
+        {% if m.metaphorical %}
+            {{ backspace }}.{{ space }}
+            <div style="margin-top: 10px;
+            {% if intermed %}{{ meaningsep }}; padding-left: 50px;{% endif %}
+            ">
                 <span style="color: #777;">►</span>
+        {% else %}
+                <span class="exgroup">||</span>
+        {% endif %}
+
                 {{ space }}
+                {% include '_meaning_without_children.html' %}
+
+        {% if m.metaphorical %}
+                {{ backspace }}.
+            </div>
+        {% else %}
+            {% if loop.last %}
+                {{ backspace }}.
             {% endif %}
-            {% include '_meaning_without_children.html' %}
-            {% if intermed %}</div>{% endif %}
-        {% endfor %}
-    {% endif %}
+        {% endif %}
+
+    {% endfor %}
+{% else %}
+    {{ backspace }}.
+{% endif %}
 
 {% if intermed and not m.parent_meaning and m.examples and not m.collogroup_container %}
     <div class="edit-controls">
