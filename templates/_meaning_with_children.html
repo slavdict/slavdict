@@ -3,10 +3,13 @@
 {% set child_meanings = m.child_meanings %}
 
 {% if child_meanings %}
+    {% if (child_meanings|first).metaphorical %}
+        {{ backspace }}.
+    {% endif %}
+
     {% for m in child_meanings %}
 
         {% if m.metaphorical %}
-            {{ backspace }}.{{ space }}
             <div style="margin-top: 10px;
             {% if intermed %}{{ meaningsep }}; padding-left: 50px;{% endif %}
             ">
