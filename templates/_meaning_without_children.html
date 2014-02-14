@@ -42,55 +42,6 @@
     {% endif %}
 {% endif %}
 
-{% if m.link_to_entry or m.link_to_collogroup or m.link_to_meaning %}
-    <i>см.</i>
-    {{ space }}
-
-    {% if m.link_to_meaning %}
-
-        {% if m.link_to_meaning.entry_container %}
-            <a href="{{ m.link_to_meaning.entry_container.get_absolute_url() }}">
-                <span class="cslav">
-                    {{ m.link_to_meaning.entry_container.orth_vars.0.idem_ucs }}
-                </span>
-                {% if m.link_to_meaning.entry_container.homonym_order %}
-                    <sup class="homonym-number">{{ m.link_to_meaning.entry_container.homonym_order }}</sup>
-                {% endif %}
-            </a>
-            {{ space }}
-        {% endif %}
-
-        {% if m.link_to_meaning.collogroup_container %}
-            <span class="cslav">
-                {{ m.link_to_meaning.collogroup_container.collocations.0.collocation_ucs }}
-            </span>
-            {{ space }}
-        {% endif %}
-
-    {% endif %}
-
-    {% if m.link_to_entry %}
-        <a href="{{ m.link_to_entry.get_absolute_url() }}">
-            <span class="cslav">
-                {{ m.link_to_entry.orth_vars.0.idem_ucs }}
-            </span>
-            {% if m.link_to_entry.homonym_order %}
-                <sup class="homonym-number">{{ m.link_to_entry.homonym_order }}</sup>
-            {% endif %}
-        </a>
-        {{ space }}
-    {% endif %}
-
-    {% if m.link_to_collogroup %}
-        <span class="cslav">{{ m.link_to_collogroup.collocations.0.collocation_ucs }}</span>
-        {{ space }}
-    {% endif %}
-
-    {% if m.meaning or m.gloss %}
-        {{ backspace }};{{ space }}
-    {% endif %}
-{% endif %}
-
 
 {% if m.meaning %}
     <span>{{ m.meaning|capfirst }}</span>
@@ -136,8 +87,58 @@
 {% endif %}
 
 
-{% if m.cfentries or m.cfcollogroups or m.cfmeanings %}
+{% if m.link_to_entry or m.link_to_collogroup or m.link_to_meaning %}
     {% if m.meaning or m.gloss %}
+        {{ backspace }},{{ space }}
+    {% endif %}
+
+    <i>см.&nbsp;</i>
+
+    {% if m.link_to_meaning %}
+
+        {% if m.link_to_meaning.entry_container %}
+            <a href="{{ m.link_to_meaning.entry_container.get_absolute_url() }}">
+                <span class="cslav">
+                    {{ m.link_to_meaning.entry_container.orth_vars.0.idem_ucs }}
+                </span>
+                {% if m.link_to_meaning.entry_container.homonym_order %}
+                    <sup class="homonym-number">{{ m.link_to_meaning.entry_container.homonym_order }}</sup>
+                {% endif %}
+            </a>
+            {{ space }}
+        {% endif %}
+
+        {% if m.link_to_meaning.collogroup_container %}
+            <span class="cslav">
+                {{ m.link_to_meaning.collogroup_container.collocations.0.collocation_ucs }}
+            </span>
+            {{ space }}
+        {% endif %}
+
+    {% endif %}
+
+    {% if m.link_to_entry %}
+        <a href="{{ m.link_to_entry.get_absolute_url() }}">
+            <span class="cslav">
+                {{ m.link_to_entry.orth_vars.0.idem_ucs }}
+            </span>
+            {% if m.link_to_entry.homonym_order %}
+                <sup class="homonym-number">{{ m.link_to_entry.homonym_order }}</sup>
+            {% endif %}
+        </a>
+        {{ space }}
+    {% endif %}
+
+    {% if m.link_to_collogroup %}
+        <span class="cslav">{{ m.link_to_collogroup.collocations.0.collocation_ucs }}</span>
+        {{ space }}
+    {% endif %}
+
+{% endif %}
+
+{% if m.cfentries or m.cfcollogroups or m.cfmeanings %}
+    {% if m.link_to_meaning or m.link_to_entry or m.link_to_collogroup
+    or m.meaning or m.gloss %}
         {{ backspace }},{{ space }}
     {% endif %}
 
