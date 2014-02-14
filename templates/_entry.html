@@ -316,15 +316,15 @@
 
         </div>
 
-        <div style="margin-top: 0.7em; line-height: 140%;">
 
-            {% if m.collogroups %}
+        {% if m.collogroups %}
+            <div class="entry-collogroups">
                 {% for cg in m.collogroups %}
                     {% include '_collogroup.html' %}
                 {% endfor %}
-            {% endif %}
+            </div>
+        {% endif %}
 
-        </div>
 
     {% endfor %}
 
@@ -339,21 +339,23 @@
 
         </div>
 
-        <div style="margin-top: 0.7em; line-height: 140%;">
-
-            {% if m.collogroups %}
+        {% if m.collogroups %}
+            <div class="entry-collogroups">
                 {% for cg in m.collogroups %}
                     {% include '_collogroup.html' %}
                 {% endfor %}
-            {% endif %}
+            </div>
+        {% endif %}
 
+    {% endfor %}
+
+    {% if entry.collogroups %}
+        <div class="entry-collogroups">
+            {% for cg in entry.collogroups %}
+                {% include '_collogroup.html' %}
+            {% endfor %}
         </div>
-
-    {% endfor %}
-
-    {% for cg in entry.collogroups %}
-        {% include '_collogroup.html' %}
-    {% endfor %}
+    {% endif %}
 
 </div>
 

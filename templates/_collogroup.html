@@ -1,5 +1,10 @@
 {% from '_etymology.html'   import etymology    with context %}
-<div style="line-height: 140%; background-color: #eee; padding: 10px;">
+
+{% if cg.meanings or cg.metaph_meanings %}
+<div style="margin: 10px 0 0 10px;">
+{% else %}
+<span style="margin: 10px 0 0 10px; display: inline-block">
+{% endif %}
     &#x2662;<!-- LOZENGE -->&nbsp;
 
     {% for c in cg.collocations %}
@@ -84,4 +89,9 @@
         {% endfor %}
 
         {% if intermed %}</div>{% else %}</span>{% endif %}
+
+{% if cg.meanings or cg.metaph_meanings %}
 </div>
+{% else %}
+</span>
+{% endif %}
