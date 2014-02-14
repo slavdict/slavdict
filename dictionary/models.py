@@ -1190,9 +1190,15 @@ class GreekEquivalentForExample(models.Model):
 
     initial_form = CharField(u'начальная форма', max_length=100, blank=True)
 
+    note = TextField(u'комментарий', help_text=u'''Любая дополнительная
+                     информация по данному греческому эквиваленту, которая
+                     будет включена в текст статьи.''',
+                     blank=True)
+
     additional_info = TextField(u'примечание', help_text=u'''Любая
-                                дополнительная информация по данному греческому
-                                эквиваленту.''', blank=True)
+                                дополнительная информация по данному
+                                греческому эквиваленту, которая в текст
+                                статьи не войдет''', blank=True)
 
     corrupted = BooleanField(u'текст испорчен', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
