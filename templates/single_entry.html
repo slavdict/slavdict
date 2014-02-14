@@ -22,6 +22,12 @@
                         chromeOnly('{% url 'edit_form_url' entry.pk %}')">
                     <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
                 </a>
+                {% if user.is_superuser %}
+                <br />
+                <a class="icon" href="/entries/{{ entry.pk }}/intermed/">
+                    <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
+                </a>
+                {% endif %}
             </div>
             {% endif %}
         {% endif %}
