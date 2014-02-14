@@ -316,6 +316,7 @@ function Example() {
     upsert(this, 'hidden', data, false);
     upsert(this, 'id', data, 'example' + Example.all.length);
     upsert(this, 'meaning_id', data, meaning_id);
+    upsert(this, 'note', data, '');
     upsert(this, 'order', data, 345);
 
     this.context.isVisible || (this.context.isVisible = ko.observable(false));

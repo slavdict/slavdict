@@ -1022,6 +1022,7 @@ class Example(models.Model):
             'hidden',
             'id',
             'meaning_id',
+            'note',
             'order',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
