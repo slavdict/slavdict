@@ -71,6 +71,8 @@ x/html-тегами, а также x/html-тэгами и текстом.
 Помещать внутрь таких тегов его нельзя. Впоследствии его надо будет каким-то
 образом переделать.
 
+{{ ! }} -- Непарный вспомогательный тэг для использования внутри {% trim %}.
+Мешает удалять пробелы вокруг x/html-тэгов.
 """
 import re
 
@@ -79,9 +81,13 @@ from django.utils.encoding import force_unicode
 
 from jinja2 import nodes
 from jinja2.ext import Extension
-
 from coffin import template
+
+from slavdict.dictionary.models import ucs_convert
+from slavdict.dictionary.models import ucs_convert_affix
+
 register = template.Library()
+EXCLAM = u'\u1991'
 
 def strip_spaces_between_tags_and_text(value):
     value = re.sub(ur'>\s+', u'>', force_unicode(value.strip()))
@@ -95,6 +101,7 @@ def strip_spaces_between_tags_and_text(value):
     # {{ punct }}
     value = re.sub(ur'\u1900(<[^>]+>)([\.,:;\!\?])', ur'\1\2', value)
     value = re.sub(ur'\u1900', u' ', value)
+    value = re.sub(EXCLAM, u'', value)
     return value
 strip_spaces_between_tags_and_text = allow_lazy(strip_spaces_between_tags_and_text, unicode)
 
@@ -120,6 +127,8 @@ class TrimExtension(Extension):
         source = re.sub(ur'{{\s*backspace\s*}}', ur'\u0008', source)
         # {{ punct }}
         source = re.sub(ur'{{\s*punct\s*}}', ur'\u1900', source)
+        # {{ ! }}
+        source = re.sub(ur'{{\s*!\s*}}', EXCLAM, source)
         return source
 
 trim = TrimExtension
@@ -131,7 +140,18 @@ def cslav_words(value):
     words = (pattern % word for word in value.split())
     return u'&#32;'.join(words)
 
+def wrapper(func):
+    return lambda x: ur'%s<span class="cslav">%s</span>%s' % (
+                                            EXCLAM, func(x.group(1)), EXCLAM)
+
 @register.filter
 def cslav_injection(value):
-    return re.sub(ur'##(.*?)##',
-            ur'&#32;<span class="cslav">\1</span>&#32;', value)
+    """ Заменяет текст вида ``## <text::antconc> ##``
+    и ``#& <text::antconc> &#`` на ``<text::ucs8>``.
+    В первом случае перед начальными гласными автоматически
+    расставлюятся придыхания, во втором случае -- нет.
+
+    """
+    value = re.sub(ur'##(.*?)##', wrapper(ucs_convert), value)
+    value = re.sub(ur'#&(.*?)&#', wrapper(ucs_convert_affix), value)
+    return value
