@@ -154,7 +154,7 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
                 ),
             }),
         (u'Примечание к параллели',
-            {'fields': ('additional_info',),
+            {'fields': ('additional_info', 'note'),
             'classes': ('collapse',)}
             ),
         )
