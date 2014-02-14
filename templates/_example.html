@@ -17,10 +17,22 @@
         <span class="unigrec{% if ge.corrupted %} cinnabar{% endif %}">{{ ge.unitext }}</span>
         {{ space }}
 
-        {%if ge.mark %}
-            <i>{{ ge.mark }}</i>
+        {% for x in (ge.mark, ge.source, ge.note)|reject('equalto', '') %}
+
+            {% if loop.first %}
+                <span>[</span>
+            {% else %}
+                {{ backspace }},{{ space }}
+            {% endif %}
+
+            <i>{{ x }}</i>
             {{ space }}
-        {% endif %}
+
+            {% if loop.last %}
+                {{ backspace }}<span>]</span>{{ space }}
+            {% endif %}
+
+        {% endfor %}
 
         {% if ADDITIONAL_INFO %}
             <span class="ai ai-grfex">{{ ge.additional_info }}</span>
