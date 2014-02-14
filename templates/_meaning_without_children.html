@@ -39,7 +39,7 @@
 
 
 {% if m.meaning %}
-    <span>{{ m.meaning|capfirst }}</span>
+    <span>{{ m.meaning|capfirst|cslav_injection }}</span>
 {% endif %}
 
 {% if m.greek_equivs %}
@@ -77,7 +77,7 @@
     {% if m.meaning or m.greek_equivs %}
         {{ backspace }};{{ space }}
     {% endif %}
-    <i>{{ m.gloss }}</i>
+    <i>{{ m.gloss|cslav_injection }}</i>
     {{ space }}
 {% endif %}
 

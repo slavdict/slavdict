@@ -130,3 +130,8 @@ def cslav_words(value):
     pattern = u'<span class="cslav nobr">%s</span>'
     words = (pattern % word for word in value.split())
     return u'&#32;'.join(words)
+
+@register.filter
+def cslav_injection(value):
+    return re.sub(ur'##(.*?)##',
+            ur'&#32;<span class="cslav">\1</span>&#32;', value)
