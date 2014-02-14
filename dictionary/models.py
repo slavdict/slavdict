@@ -1224,6 +1224,7 @@ class GreekEquivalentForExample(models.Model):
             'id',
             'initial_form',
             'mark',
+            'note',
             'position',
             'source',
             'unitext',

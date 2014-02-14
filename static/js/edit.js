@@ -277,6 +277,7 @@ function Greq() {
     upsert(this, 'id', data, 'greq' + Greq.all.length);
     upsert(this, 'initial_form', data, '');
     upsert(this, 'mark', data, '');
+    upsert(this, 'note', data, '');
     upsert(this, 'position', data, 0);
     upsert(this, 'source', data, '');
     upsert(this, 'unitext', data, '');
