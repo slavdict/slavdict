@@ -135,7 +135,12 @@ trim = TrimExtension
 
 @register.filter
 def cslav_words(value):
-    value = value.replace(u'...', u'<span>...</span>')
+    """ Все слова в переданном тексте делает неразрывными, чтобы браузер их
+    случайно не порвал посередине. Всё кроме многоточий и скобок помечает
+    для отображения цсл графикой, а многоточия и скобки -- гражданской.
+
+    """
+    value = re.sub(ur'(\.\.\.|[\(\)\[\]])', ur'<span>\1</span>', value)
     pattern = u'<span class="cslav nobr">%s</span>'
     words = (pattern % word for word in value.split())
     return u'&#32;'.join(words)
