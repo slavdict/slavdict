@@ -32,7 +32,11 @@
 
     {% endfor %}
 {% else %}
-    {{ backspace }}.
+    {% if m.meaning or m.gloss or m.examples
+    or m.link_to_entry or m.link_to_collogroup or m.link_to_meaning
+    or m.cfentries or m.cfcollogroups or m.cfmeanings %}
+        {{ backspace }}.
+    {% endif %}
 {% endif %}
 
 {% if intermed and not m.parent_meaning and m.examples and not m.collogroup_container %}
