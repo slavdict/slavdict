@@ -318,7 +318,8 @@ class Entry(models.Model, Meaningfull):
             импорте заготовок статей.''', default=False)
 
     part_of_speech = CharField(u'часть речи', max_length=1,
-            choices=BLANK_CHOICE + PART_OF_SPEECH_CHOICES, default='')
+            choices=BLANK_CHOICE + PART_OF_SPEECH_CHOICES, default='',
+            blank=True)
 
     def is_part_of_speech(self, slug):
         return PART_OF_SPEECH_MAP[slug] == self.part_of_speech
