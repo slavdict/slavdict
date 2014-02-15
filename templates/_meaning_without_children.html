@@ -100,16 +100,15 @@
                     <sup class="homonym-number">{{ m.link_to_meaning.entry_container.homonym_order }}</sup>
                 {% endif %}
             </a>
-            {{ space }}
         {% endif %}
 
         {% if m.link_to_meaning.collogroup_container %}
             <span class="cslav">
                 {{ m.link_to_meaning.collogroup_container.collocations.0.collocation_ucs }}
             </span>
-            {{ space }}
         {% endif %}
 
+        {{ space }}<i>знач.</i>{{ space }}{{ m.link_to_meaning.order }}
     {% endif %}
 
     {% if m.link_to_entry %}
@@ -157,6 +156,7 @@
                 {{ cfm.collogroup_container.collocations.0.collocation_ucs }}
             </span>
         {% endif %}
+        {{ space }}<i>знач.</i>{{ space }}{{ cfm.order }}
     {% endfor %}
 
     {% for cfe in m.cfentries %}
