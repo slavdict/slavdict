@@ -30,11 +30,7 @@
             {% endif %}
         {% endif %}
 
-        {% if not entry.is_part_of_speech('letter') %}
-            <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
-        {% else %}
-            <span class="cslav headword cinnabar">{{ entry.orth_vars.0.idem_letter_ucs }}</span>
-        {% endif %}
+        <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
         {{ space }}
 
         {% if entry.homonym_order %}
