@@ -151,12 +151,7 @@ def wrapper(func):
 
 @register.filter
 def cslav_injection(value):
-    """ Заменяет текст вида ``## <text::antconc> ##``
-    и ``#& <text::antconc> &#`` на ``<text::ucs8>``.
-    В первом случае перед начальными гласными автоматически
-    расставлюятся придыхания, во втором случае -- нет.
-
+    """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
     value = re.sub(ur'##(.*?)##', wrapper(ucs_convert), value)
-    value = re.sub(ur'#&(.*?)&#', wrapper(ucs_convert_affix), value)
     return value
