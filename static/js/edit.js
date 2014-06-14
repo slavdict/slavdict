@@ -390,6 +390,7 @@ function Meaning() {
     upsert(this, 'meaning', data, '');
     upsert(this, 'gloss', data, '');
     upsert(this, 'metaphorical', data, false);
+    upsert(this, 'figurative', data, false);
     upsert(this, 'additional_info', data, '');
     upsert(this, 'substantivus', data, false);
     upsert(this, 'substantivus_type', data, '');

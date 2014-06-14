@@ -798,6 +798,7 @@ class Meaning(models.Model):
         return self.cf_collogroups.all()
 
     metaphorical = BooleanField(u'метафорическое', default=False)
+    figurative = BooleanField(u'переносное', default=False)
     meaning = TextField(u'значение', blank=True)
 
     gloss = TextField(u'пояснение', help_text=u'''Для неметафорических
@@ -875,6 +876,7 @@ class Meaning(models.Model):
             'additional_info',
             'collogroup_container_id',
             'entry_container_id',
+            'figurative',
             'gloss',
             'hidden',
             'id',

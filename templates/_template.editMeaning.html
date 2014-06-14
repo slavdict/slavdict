@@ -2,6 +2,11 @@
 <section data-bind="if: constructor.name === 'Meaning'">
 <div id="eM--editMeaning" class="grid">
 
+    <label id="eM--figurative" data-bind="visible: $root.ui.hierarchy.usage">
+        <input type="checkbox" data-bind="checked: metaphorical" />
+        <span>Переносное значение</span>
+    </label>
+
     <label id="eM--metaphorical" data-bind="visible: $root.ui.hierarchy.usage">
         <input type="checkbox" data-bind="checked: metaphorical" />
         <span>Литургический символ</span>
