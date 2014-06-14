@@ -237,7 +237,8 @@
             </span>
 
         </div></div>
-        <div class="f5s--dashboard" data-bind="slide: isOperated"><div class="grid"
+        <div class="f5s--dashboard" data-bind="slide: isOperated"><div
+                class="grid"
                 ondblclick="
                     var x = $(this);
                     if (x.hasClass('grid-debug'))
@@ -352,11 +353,13 @@
         <div class="message">
         {% if filters.find %}
             К сожалению, ни одной словарной статьи, начинающейся <span
-            class="nowrap">с <b class="red caps">{{ filters.find.lower() }}...</b>, не найдено.</span>
-            Пожалуйста, проверьте Ваш запрос на наличие опечаток или измените его
-            в целях поиска другого слова. Поиск производится без учёта регистра символов.
+            class="nowrap">с <b class="red caps">{{ filters.find.lower() }}...</b>,
+            не найдено.</span> Пожалуйста, проверьте Ваш запрос на наличие
+            опечаток или измените его в целях поиска другого слова. Поиск
+            производится без учёта регистра символов.
         {% else %}
-            К сожалению, ни одной словарной статьи, удовлетворяющей Вашему запросу, не найдено.
+            К сожалению, ни одной словарной статьи, удовлетворяющей Вашему
+            запросу, не найдено.
         {% endif %}
         </div>
     {% endif %}
@@ -383,7 +386,8 @@
                           data-bind="css: { on: sort() === '-alph' },
                                    click: doSort.bind($data, '-alph')"
                           title="Упорядочить по убыванию">↑</span>
-                    <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по алфавиту</span>
+                    <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по
+                        алфавиту</span>
                 </td>
                 <td class="eli-author"></td>
                 <td class="eli-mtime">
@@ -395,7 +399,8 @@
                           data-bind="css: { on: sort() === '-t' },
                                    click: doSort.bind($data, '-t')"
                           title="Упорядочить по убыванию">↑</span>
-                    <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по вр. изм.</span>
+                    <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по
+                        вр. изм.</span>
                 </td>
                 <td class="eli-status"></td>
             </tr>
@@ -459,13 +464,15 @@
                                 {% endif %}
                                 {% if entry.homonym_gloss %}
                                     {{ space }}
-                                    <span class="caps" title="{{ entry.homonym_gloss }}">{{ entry.homonym_gloss }}</span>
+                                    <span class="caps"
+                                        title="{{ entry.homonym_gloss }}">{{ entry.homonym_gloss }}</span>
                                 {% endif %}
                             </span>
                         </div>
                     </div>
 
-                    <a href="{{ entry.get_absolute_url() }}" class="manual-entry invisible">
+                    <a href="{{ entry.get_absolute_url() }}"
+                       class="manual-entry invisible">
                         <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
 
                         {% if entry.duplicate %}
@@ -484,7 +491,7 @@
                             {% endif %}
                             {% if entry.homonym_gloss %}
                                 {{ space }}
-                                <span class="caps">{{ entry.homonym_gloss }}</span>
+                                <span class="caps homonym-gloss">{{ entry.homonym_gloss }}</span>
                             {% endif %}
                         </span>
                 {% else %}
