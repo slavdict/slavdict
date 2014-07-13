@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 
-def jslibs(request):
-    return { 'JSLIBS': settings.JSLIBS }
+def staticfiles(request):
+    return { 'JSLIBS': settings.JSLIBS,
+             'STATIC_RESOURCES_VERSION': settings.STATIC_RESOURCES_VERSION }

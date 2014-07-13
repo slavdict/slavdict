@@ -70,6 +70,7 @@ MEDIA_URL = '/u/'
 
 STATIC_ROOT = ROOT + '.static/'
 STATIC_URL = '/static/'
+STATIC_RESOURCES_VERSION='2014.07.13'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'td2+2t^tz-)^j^%@4_^c8ds#6-po3sfoqbwaa2u*i3rj3y%hs1'
@@ -112,7 +113,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
-    'slavdict.context_processors.jslibs',
+    'slavdict.context_processors.staticfiles',
 )
 
 STATICFILES_DIRS = (
@@ -213,7 +214,7 @@ for lib in JSLIBS:
         if version == 'Xmin':
             JSLIBS[lib]['min'] = JSLIBS_URL + filename
             version = 'min'
-        JSLIBS[lib][version + _postfix] = JSLIBS_URL + filename + '?' + JSLIBS_VERSION
+        JSLIBS[lib][version + _postfix] = JSLIBS_URL + filename + '?' + STATIC_RESOURCES_VERSION
 
 
 # Локальное для компьютера переопределение настроек проекта

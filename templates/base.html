@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>{{ title }}</title>
-        <link href="{{ STATIC_URL }}{% block css %}style.css{% endblock %}"
+        <link href="{{ STATIC_URL }}{% block css %}style.css?{{ STATIC_RESOURCES_VERSION }}{% endblock %}"
             rel="stylesheet" type="text/css">
         <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>

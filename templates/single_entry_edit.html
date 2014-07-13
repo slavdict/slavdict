@@ -150,7 +150,7 @@
 
 {% block javascript_links %}
 
-    <script src="{{ STATIC_URL }}js/libs/ac2ucs8.js"
+    <script src="{{ STATIC_URL }}js/libs/ac2ucs8.js?{{ STATIC_RESOURCES_VERSION }}"
         type="text/javascript" charset="utf-8"></script>
 
     {% include '_script.zeroClipboard.html' %}
@@ -220,7 +220,7 @@
 
     </script>
 
-    <script src="{{ STATIC_URL }}js/edit.js"
+    <script src="{{ STATIC_URL }}js/edit.js?{{ STATIC_RESOURCES_VERSION }}"
         type="application/javascript" charset="utf-8"></script>
 
 {% endblock %}

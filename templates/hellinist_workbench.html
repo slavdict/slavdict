@@ -275,7 +275,7 @@
 
 {% block javascript_links %}
 
-    <script src="{{ STATIC_URL }}js/myKnockoutCommon.js"
+<script src="{{ STATIC_URL }}js/myKnockoutCommon.js?{{ STATIC_RESOURCES_VERSION }}"
         type="application/javascript" charset="utf-8"></script>
 
     <script>
@@ -313,7 +313,7 @@
 
     </script>
 
-    <script src="{{ STATIC_URL }}js/hellinistFilters.js"
+    <script src="{{ STATIC_URL }}js/hellinistFilters.js?{{ STATIC_RESOURCES_VERSION }}"
         type="application/javascript" charset="utf-8"></script>
 
 {% endblock %}
