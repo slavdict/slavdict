@@ -141,6 +141,11 @@ vM.filters = {
         .rememberDefault('')
         .htmlTextInput('hwPrfx'),
 
+    hwExamplesIds: ko.observable()
+        .rememberInitial(vM.valuesToInitialize.hwExamplesIds)
+        .rememberDefault('')
+        .htmlTextInput('hwExamplesIds'),
+
     hwSortbase: ko.observable()
         .rememberInitial(vM.valuesToInitialize.hwSortbase)
         // .rememberDefault... Значения по умолчанию

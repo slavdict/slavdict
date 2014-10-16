@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+
 from django.db.models import Count
 from django.db.models import Q
 
@@ -7,7 +9,6 @@ from dictionary.models import CollocationGroup
 from dictionary.models import Entry
 from dictionary.models import Etymology
 from dictionary.models import Example
-from dictionary.models import Meaning
 from dictionary.models import MeaningContext
 
 def get_entries(form):
@@ -243,6 +244,22 @@ def get_examples(form):
                 )
         else:
             examples = examples.none()
+
+    examples_ids = form.get('hwExamplesIds')
+    if examples_ids:
+        examples_ids = re.compile(r'[\s,]+').split(examples_ids)
+        # Когда примеры раздавались для проверки в напечатанном виде, перед
+        # каждым примером указывался составной номер вида ``N-ID``. N -- номер
+        # примера по порядку в распечатанном списке, ID -- идентификатор
+        # примера в базе данных. Если пользователь указывает в фильтре
+        # составные номера, то нам необходимо учесть только идентификаторы,
+        examples_ids = [eid.split('-')[-1] for eid in examples_ids]
+        examples_ids = [int(eid) for eid in examples_ids if eid.isdigit()]
+        if examples_ids:
+            # Если переданы идентификаторы примеров, все оставльные параметры
+            # фильтров обнуляем.
+            FILTER_PARAMS.clear()
+            FILTER_PARAMS['id__in'] = examples_ids
 
     examples = examples.filter(**FILTER_PARAMS)
     examples = examples.order_by(*SORT_PARAMS)

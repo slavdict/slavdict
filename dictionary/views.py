@@ -641,6 +641,7 @@ def hellinist_workbench(request):
         'id': e.id,
         'triplet': e.context_ucs,
         'antconc': e.context.strip() or e.example,
+        'example': e.example,
         'address': e.address_text,
         'status': e.greek_eq_status,
         'comment': e.additional_info,

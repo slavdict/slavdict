@@ -54,6 +54,14 @@
             <strong data-bind="visible: !notDefaultState()">Ни один фильтр не выбран</strong>
 
             {{ space }}
+            <span class="f5sS--item" data-bind="visible: hwExamplesIds">
+                {{ space }}
+                Идентификаторы иллюстраций:
+                {{ space }}
+                <span data-bind="text: hwExamplesIds"></span>
+            </span>
+
+            {{ space }}
             <span class="f5sS--item" data-bind="visible: !hwStatus.hasDefaultValue()">
                 Статус &laquo;<span data-bind="text: hwStatus.obj().name"></span>&raquo;
             </span>
@@ -117,6 +125,11 @@
 
                 {{ form.hwPrfx.label_tag() }}
                 {{ form.hwPrfx }}
+                </div>
+
+                <div class="P">
+                {{ form.hwExamplesIds.label_tag() }}
+                {{ form.hwExamplesIds }}
                 </div>
 
             </div>
@@ -297,6 +310,7 @@
             hwAuthor: '{{ filters.hwAuthor }}',
             hwAddress: '{{ filters.hwAddress }}',
             hwPrfx: '{{ filters.hwPrfx }}',
+            hwExamplesIds: '{{ filters.hwExamplesIds }}',
             hwSortbase: '{{ filters.hwSortbase }}',
             hwSortdir: '{{ filters.hwSortdir }}',
             hwStatus: '{{ filters.hwStatus }}'
