@@ -91,3 +91,15 @@ ko.bindingHandlers.show = {
         }
     }
 };
+
+ko.bindingHandlers.editableHTML = {
+    update: function(element, valueAccessor) {
+        var initialValue = ko.utils.unwrapObservable(valueAccessor());
+        element = $(element);
+        element.html(initialValue);
+        element.on('keyup', function() {
+            observable = valueAccessor();
+            observable(element.html());
+        });
+    }
+};

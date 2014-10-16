@@ -63,9 +63,11 @@ function ExForJSON(ex) {
     this.greek_eq_status = ex.status;
     this.additional_info = ex.comment;
     this.address_text = ex.address;
+    this.example = ex.example;
 }
 
 function Example(ex) {
+    var self = this;
 
     this.id = ex.id;
     this.status = ko.observable(ex.status);
@@ -76,12 +78,16 @@ function Example(ex) {
     this.comment = ko.observable(ex.comment);
     this.commentEditable = ko.observable(false);
 
-    this.leftContext = ex.triplet[0];
-    this.text = ex.triplet[1];
-    this.rightContext = ex.triplet[2];
+    this.leftContext = ko.observable(ex.triplet[0]);
+    this.text = ko.observable(ex.triplet[1]);
+    this.rightContext = ko.observable(ex.triplet[2]);
 
-    this.antconc = ex.antconc;
+    this.antconc = ko.observable(ex.antconc);
     this.antconcVisible = ko.observable(false);
+
+    this.initialExample = ex.example;
+    this.example = ko.observable(ex.example);
+    this.exampleEditable = ko.observable(false);
 
     this.greqs = ko.observableArray(
         ko.utils.arrayMap(
@@ -106,6 +112,18 @@ function Example(ex) {
     this.toggleAntconc = this.TOGGLE(this.antconcVisible);
     this.toggleAddress = this.TOGGLE(this.addressEditable);
     this.toggleComment = this.TOGGLE(this.commentEditable);
+    this.editExample = function () { self.exampleEditable(true); };
+    this.saveExample = function () {
+        self.exampleEditable(false);
+        self.antconc(self.example());
+        self.leftContext('');
+        self.text(antconc_ucs8(self.example(), false /* is affix */));
+        self.rightContext('');
+        self.saveMe();
+    };
+    this.cancelExample = function () {
+        self.example(self.initialExample);
+    };
 
     this.beingSaved = ko.observable(false);
     this.saveMe = function() {
