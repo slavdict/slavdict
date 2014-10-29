@@ -177,9 +177,11 @@
 
         // Настройки knockout-sortable
         var placeholderClass = 'sortable-placeholder';
+        ko.bindingHandlers.sortable.allowDrop = false;
         ko.bindingHandlers.sortable.options = {
             appendTo: document.body,
             grid: [30, 1],
+            handle: '.dragItem',
             placeholder: placeholderClass,
             start: function (event, ui) {
                 var x = $(ui.item),

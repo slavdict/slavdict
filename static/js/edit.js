@@ -155,8 +155,8 @@ function Etymology() {
     if (arguments[0] instanceof Entry) {
         entry_id = arguments[0].id();
     } else if (arguments[0] instanceof Collogroup) {
-        // FIX: Впоследствии Collogroup должно исчезнуть
-        // и быть заменено на Collocation. Словосочетания должны также,
+        // FIX: Впоследствии Collogroup должно исчезнуть,
+        // будучи заменено на Collocation. Словосочетания должны также,
         // как и лексемы просто иметь разные варианты написания.
         collocation_id = arguments[0].id();
     } else {

@@ -3,9 +3,10 @@
 <section class="tabcontent" data-bind="if:
     constructor.name === 'Entry' || constructor.name === 'Collogroup'">
 
-    <ul class="meanings" data-bind="sortable: { data: meanings,
-                                                connectClass: 'meanings' }">
+    <ul class="meanings" data-bind="sortable: { data: meanings }">
         <li data-bind="event: { dblclick: toggle }, dblclickBubble: false">
+            <a class="dragItem" data-bind="visible:
+                !isExpanded() && $parent.meanings().length > 1"></a>
             <a class="deleteItem"
                 data-bind="click: $parent.meanings.itemDestroyer($data).do"></a>
             <a class="editItem" data-bind="click: edit"></a>
@@ -28,11 +29,12 @@
                     meaning() && gloss()">;{{ space }}</span>
             <i data-bind="text: gloss"></i>
 
-            <ul class="examples" data-bind="sortable: { data: examples,
-                                                connectClass: 'examples' },
+            <ul class="examples" data-bind="sortable: { data: examples },
                                             visible: isExpanded">
                 <li data-bind="event: { dblclick: function(){} },
                         dblclickBubble: false">
+                    <a class="dragItem" data-bind="visible:
+                       $parent.examples().length > 1"></a>
                     <a class="deleteItem" data-bind="click:
                        $parent.examples.itemPoolReturner($data).do"></a>
                     <a class="editItem" data-bind="click: edit"></a>
@@ -43,11 +45,12 @@
             <a class="addItem" data-bind="visible: isExpanded,
                 click: examples.itemAdder($data, $root.data.entry).do"></a>
 
-            <ul class="meanings" data-bind="sortable: { data: meanings,
-                                                connectClass: 'meanings' },
+            <ul class="meanings" data-bind="sortable: { data: meanings },
                                             visible: isExpanded">
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
+                    <a class="dragItem" data-bind="visible:
+                            !isExpanded() && $parent.meanings().length > 1"></a>
                     <a class="deleteItem" data-bind="click:
                             $parent.meanings.itemDestroyer($data).do"></a>
                     <a class="editItem" data-bind="click: edit"></a>
@@ -70,10 +73,12 @@
                     <i data-bind="text: gloss"></i>
 
                     <ul class="examples" data-bind="sortable:
-                            { data: examples, connectClass: 'examples' },
+                            { data: examples },
                         visible: isExpanded">
                         <li data-bind="event: { dblclick: function(){} },
                                 dblclickBubble: false">
+                            <a class="dragItem" data-bind="visible:
+                             $parent.examples().length > 1"></a>
                             <a class="deleteItem" data-bind="click:
                              $parent.examples.itemPoolReturner($data).do"></a>
                             <a class="editItem" data-bind="click: edit"></a>
@@ -95,6 +100,8 @@
                 data-bind="sortable: collogroups, visible: isExpanded">
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
+                    <a class="dragItem" data-bind="visible:
+                       !isExpanded() && $parent.collogroups().length > 1"></a>
                     <a class="deleteItem" data-bind="click:
                             $parent.collogroups.itemDestroyer($data).do"></a>
                     <a class="editItem" data-bind="click: edit"></a>
@@ -109,10 +116,12 @@
                     </span>
 
                     <ul class="meanings" data-bind="sortable:
-                                  { data: meanings, connectClass: 'meanings' },
+                                  { data: meanings },
                         visible: isExpanded">
                         <li data-bind="event: { dblclick: toggle },
                             dblclickBubble: false">
+                            <a class="dragItem" data-bind="visible:
+                             !isExpanded() && $parent.meanings().length > 1"></a>
                             <a class="deleteItem" data-bind="click:
                                 $parent.meanings.itemDestroyer($data).do"></a>
                             <a class="editItem" data-bind="click: edit"></a>
@@ -136,10 +145,12 @@
                             <i data-bind="text: gloss"></i>
 
                             <ul class="examples" data-bind="sortable:
-                                { data: examples, connectClass: 'examples' },
+                                { data: examples },
                                 visible: isExpanded">
                                 <li data-bind="event: { dblclick: function(){} },
                                         dblclickBubble: false">
+                                    <a class="dragItem" data-bind="visible:
+                                     $parent.examples().length > 1"></a>
                                     <a class="deleteItem" data-bind="click:
                                      $parent.examples.itemPoolReturner($data).do"></a>
                                     <a class="editItem" data-bind="click: edit"></a>
@@ -153,11 +164,14 @@
                                     $root.data.entry, $parent).do"></a>
 
                             <ul class="meanings" data-bind="sortable:
-                                { data: meanings, connectClass: 'meanings' },
+                                { data: meanings },
                                 visible: isExpanded">
 
                                 <li data-bind="event: { dblclick: toggle },
                                     dblclickBubble: false">
+                                    <a class="dragItem" data-bind="visible:
+                                     !isExpanded() &&
+                                     $parent.meanings().length > 1"></a>
                                     <a class="deleteItem" data-bind="click:
                                      $parent.meanings.itemDestroyer($data).do"></a>
                                     <a class="editItem" data-bind="click: edit"></a>
@@ -180,10 +194,12 @@
                                     <i data-bind="text: gloss"></i>
 
                                     <ul class="examples" data-bind="sortable:
-                                            { data: examples, connectClass: 'examples' },
+                                            { data: examples },
                                         visible: isExpanded">
                                         <li data-bind="event: { dblclick: function(){} },
                                                 dblclickBubble: false">
+                                            <a class="dragItem" data-bind="visible:
+                                             $parent.examples().length > 1"></a>
                                             <a class="deleteItem" data-bind="click:
                                              $parent.examples.itemPoolReturner($data).do"></a>
                                             <a class="editItem" data-bind="click: edit"></a>
@@ -223,6 +239,8 @@
 
         <li data-bind="event: { dblclick: toggle }, dblclickBubble: false">
 
+            <a class="dragItem" data-bind="visible:
+                    !isExpanded() && $parent.collogroups().length > 1"></a>
             <a class="deleteItem" data-bind="click:
                     $parent.collogroups.itemDestroyer($data).do"></a>
             <a class="editItem" data-bind="click: edit"></a>
@@ -237,10 +255,12 @@
             </span>
 
             <ul class="meanings" data-bind="sortable:
-                          { data: meanings, connectClass: 'meanings' },
+                          { data: meanings },
                 visible: isExpanded">
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
+                    <a class="dragItem" data-bind="visible:
+                        !isExpanded() && $parent.meanings().length > 1"></a>
                     <a class="deleteItem" data-bind="click:
                         $parent.meanings.itemDestroyer($data).do"></a>
                     <a class="editItem" data-bind="click: edit"></a>
@@ -264,10 +284,12 @@
                     <i data-bind="text: gloss"></i>
 
                     <ul class="examples" data-bind="sortable:
-                        { data: examples, connectClass: 'examples' },
+                        { data: examples },
                         visible: isExpanded">
                         <li data-bind="event: { dblclick: function(){} },
                                 dblclickBubble: false">
+                            <a class="dragItem" data-bind="visible:
+                             $parent.examples().length > 1"></a>
                             <a class="deleteItem" data-bind="click:
                              $parent.examples.itemPoolReturner($data).do"></a>
                             <a class="editItem" data-bind="click: edit"></a>
@@ -281,11 +303,13 @@
                             $root.data.entry, $parent).do"></a>
 
                     <ul class="meanings" data-bind="sortable:
-                        { data: meanings, connectClass: 'meanings' },
+                        { data: meanings },
                         visible: isExpanded">
 
                         <li data-bind="event: { dblclick: toggle },
                             dblclickBubble: false">
+                            <a class="dragItem" data-bind="visible:
+                             !isExpanded() && $parent.meanings().length > 1"></a>
                             <a class="deleteItem" data-bind="click:
                              $parent.meanings.itemDestroyer($data).do"></a>
                             <a class="editItem" data-bind="click: edit"></a>
@@ -308,10 +332,12 @@
                             <i data-bind="text: gloss"></i>
 
                             <ul class="examples" data-bind="sortable:
-                                    { data: examples, connectClass: 'examples' },
+                                    { data: examples },
                                 visible: isExpanded">
                                 <li data-bind="event: { dblclick: function(){} },
                                         dblclickBubble: false">
+                                    <a class="dragItem" data-bind="visible:
+                                     $parent.examples().length > 1"></a>
                                     <a class="deleteItem" data-bind="click:
                                      $parent.examples.itemPoolReturner($data).do"></a>
                                     <a class="editItem" data-bind="click: edit"></a>

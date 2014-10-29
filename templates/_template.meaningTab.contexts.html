@@ -5,6 +5,8 @@
     <ul class="meaningContexts" data-bind="sortable: contexts">
         <li><div class="grid">
 
+            <a class="dragItem" data-bind="visible:
+                $parent.contexts().length > 1"></a>
             <a class="deleteItem" data-bind="click:
                 $parent.contexts.itemDestroyer($data).do"></a>
 

@@ -70,7 +70,7 @@ MEDIA_URL = '/u/'
 
 STATIC_ROOT = ROOT + '.static/'
 STATIC_URL = '/static/'
-STATIC_RESOURCES_VERSION='2014.07.13'
+STATIC_RESOURCES_VERSION='2014.10.27'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'td2+2t^tz-)^j^%@4_^c8ds#6-po3sfoqbwaa2u*i3rj3y%hs1'
@@ -149,30 +149,36 @@ AUTHENTICATION_BACKENDS = (
 CUSTOM_USER_MODEL = 'custom_user.CustomUser'
 
 # Сторонние библиотеки JavaScript
-JSLIBS_VERSION = '2013.09.24'
+JSLIBS_VERSION = '2014.10.27'
 JSLIBS_URL = STATIC_URL + 'js/outsourcing/'
 JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
 JSLIBS = {
     'jquery': {
-        'debug': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js',
-        'map': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.map',
+        'debug': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+        'map': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.map',
     },
     'jqueryUi': {
-        'debug': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js',
+        'debug': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js',
     },
     'knockout': {
         'debug': 'http://knockoutjs.com/downloads/knockout-2.3.0.debug.js',
         'min': '//cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js',
     },
     'knockoutMapping': {
-        'debug': '//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.3.5/knockout.mapping.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.3.5/knockout.mapping.min.js',
+        'debug': 'https://raw.githubusercontent.com/SteveSanderson/'
+                 'knockout.mapping/2.4.1/build/output/'
+                 'knockout.mapping-latest.debug.js',
+         'Xmin': 'https://raw.githubusercontent.com/SteveSanderson/'
+                 'knockout.mapping/2.4.1/build/output/'
+                 'knockout.mapping-latest.js',
     },
     'knockoutSortable': {
-        'debug': 'https://rawgithub.com/rniemeyer/knockout-sortable/v0.8.2/build/knockout-sortable.js',
-        'Xmin': 'https://raw.github.com/rniemeyer/knockout-sortable/v0.8.2/build/knockout-sortable.min.js',
+        'debug': 'https://rawgithub.com/rniemeyer/knockout-sortable/'
+                 'v0.9.2/build/knockout-sortable.js',
+         'Xmin': 'https://raw.github.com/rniemeyer/knockout-sortable/'
+                 'v0.9.2/build/knockout-sortable.min.js',
         # NOTE: Файлы с raw.github.com нельзя отдавать в продакшн. Там
         # выставляются http-заголовки
         #
@@ -189,13 +195,18 @@ JSLIBS = {
         # не отдавался в продакшн.
     },
     'knockoutPostbox': {
-        'debug': 'https://rawgithub.com/rniemeyer/knockout-postbox/v0.3.1/build/knockout-postbox.js',
-        'Xmin': 'https://raw.github.com/rniemeyer/knockout-postbox/v0.3.1/build/knockout-postbox.min.js',
+        'debug': 'https://raw.githubusercontent.com/rniemeyer/knockout-postbox/'
+                 'v0.4.2/build/knockout-postbox.js',
+         'Xmin': 'https://raw.githubusercontent.com/rniemeyer/knockout-postbox/'
+                 'v0.4.2/build/knockout-postbox.min.js',
     },
     'zeroClipboard': {
-        'debug': 'https://rawgithub.com/zeroclipboard/ZeroClipboard/v1.1.7/ZeroClipboard.js',
-        'Xmin': 'https://raw.github.com/zeroclipboard/ZeroClipboard/v1.1.7/ZeroClipboard.min.js',
-        'swf': 'https://github.com/zeroclipboard/ZeroClipboard/raw/v1.1.7/ZeroClipboard.swf',
+        'debug': 'https://rawgithub.com/zeroclipboard/ZeroClipboard/'
+                 'v1.1.7/ZeroClipboard.js',
+         'Xmin': 'https://raw.github.com/zeroclipboard/ZeroClipboard/'
+                 'v1.1.7/ZeroClipboard.min.js',
+          'swf': 'https://github.com/zeroclipboard/ZeroClipboard/raw/'
+                 'v1.1.7/ZeroClipboard.swf',
     },
     'opentip': {
         'debug': 'https://rawgithub.com/enyo/opentip/v2.4.6/downloads/opentip-jquery.js',

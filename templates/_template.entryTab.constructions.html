@@ -6,6 +6,8 @@
 
         <li data-bind="event: { dblclick: toggle }, dblclickBubble: false">
 
+            <a class="dragItem" data-bind="visible:
+                    !isExpanded() && $parent.collogroups().length > 1"></a>
             <a class="deleteItem" data-bind="click:
                     $parent.collogroups.itemDestroyer($data).do"></a>
             <a class="editItem" data-bind="click: edit"></a>
@@ -19,12 +21,13 @@
                 <span class="cslav" data-bind="wax: collocation"></span>
             </span>
 
-            <ul class="meanings" data-bind="sortable:
-                          { data: meanings, connectClass: 'meanings' },
-                visible: isExpanded">
+            <ul class="meanings" data-bind="sortable: { data: meanings },
+                                            visible: isExpanded">
 
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
+                    <a class="dragItem" data-bind="visible:
+                        !isExpanded() && $parent.meanings().length > 1"></a>
                     <a class="deleteItem" data-bind="click:
                         $parent.meanings.itemDestroyer($data).do"></a>
                     <a class="editItem" data-bind="click: edit"></a>
@@ -46,11 +49,12 @@
                             meaning() && gloss()">;{{ space }}</span>
                     <i data-bind="text: gloss"></i>
 
-                    <ul class="examples" data-bind="sortable:
-                        { data: examples, connectClass: 'examples' },
-                        visible: isExpanded">
+                    <ul class="examples" data-bind="sortable: { data: examples },
+                                                    visible: isExpanded">
                         <li data-bind="event: { dblclick: function(){} },
                                 dblclickBubble: false">
+                            <a class="dragItem" data-bind="visible:
+                             $parent.examples().length > 1"></a>
                             <a class="deleteItem" data-bind="click:
                              $parent.examples.itemPoolReturner($data).do"></a>
                             <a class="editItem" data-bind="click: edit"></a>

@@ -146,9 +146,6 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
             padding: 10px $listElementHorizontalPadding
             margin-top: 10px
             position: relative
-            cursor: move
-            cursor: -moz-grab
-            cursor: -webkit-grab
             @include user-select(none)
             @include box-shadow(0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset)
 
@@ -488,7 +485,20 @@ ul.meaningContexts li,
     display: none
     top: -8px
 
+.dragItem
+    width: 7px
+    height: 33px
+    position: absolute
+    cursor: move
+    cursor: -moz-grab
+    cursor: -webkit-grab
+    display: none
+    top: 3px
+    left: 4px
+    background: url(dragItem.png)
+
 li:hover:not(.being-dragged) > .expandItem,
+li:hover:not(.being-dragged) > .dragItem,
 li:hover:not(.being-dragged) > .deleteItem,
 li:hover:not(.being-dragged) > .editItem
     display: block

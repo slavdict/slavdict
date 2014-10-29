@@ -166,6 +166,8 @@
         <ul data-bind="sortable: participles">
             <li><div class="grid">
 
+                <a class="dragItem" data-bind="visible:
+                    $parent.participles().length > 1"></a>
                 <a class="deleteItem" data-bind="click:
                     $parent.participles.itemDestroyer($data).do"></a>
 

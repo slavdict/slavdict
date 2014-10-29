@@ -9,6 +9,8 @@
 
     <ul data-bind="sortable: orthvars">
         <li>
+            <a class="dragItem"
+               data-bind="visible: $parent.orthvars().length > 1"></a>
             <a class="deleteItem" data-bind="click:
                 $parent.orthvars.itemDestroyer($data).do"></a>
             <input type="text"

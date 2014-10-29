@@ -60,11 +60,12 @@
 
     <div data-bind="if: $root.ui.hierarchy.usage" id="usageExamples">
 
-        <ul class="examples" data-bind="sortable:
-            { data: examples, connectClass: 'examples' }">
+        <ul class="examples" data-bind="sortable: { data: examples }">
 
             <li data-bind="event: { dblclick: function(){} },
                     dblclickBubble: false">
+                <a class="dragItem" data-bind="visible:
+                 $parent.examples().length > 1"></a>
                 <a class="deleteItem" data-bind="click:
                  $parent.examples.itemPoolReturner($data).do"></a>
                 <a class="editItem" data-bind="click: edit"></a>
