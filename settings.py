@@ -149,7 +149,7 @@ AUTHENTICATION_BACKENDS = (
 CUSTOM_USER_MODEL = 'custom_user.CustomUser'
 
 # Сторонние библиотеки JavaScript
-JSLIBS_VERSION = '2014.10.27'
+JSLIBS_VERSION = '2014.10.31'
 JSLIBS_URL = STATIC_URL + 'js/outsourcing/'
 JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
 JSLIBS = {
@@ -163,8 +163,8 @@ JSLIBS = {
         'min': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js',
     },
     'knockout': {
-        'debug': 'http://knockoutjs.com/downloads/knockout-2.3.0.debug.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js',
+        'debug': 'http://knockoutjs.com/downloads/knockout-3.2.0.debug.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js',
     },
     'knockoutMapping': {
         'debug': 'https://raw.githubusercontent.com/SteveSanderson/'
