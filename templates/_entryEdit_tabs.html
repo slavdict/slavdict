@@ -1,9 +1,9 @@
 <nav class="breadTabs" data-bind="if: ui.navigationStack.top">
 <ul>
 
-
-{% include '_entryEdit_breadCrumbs.html' %}
-
+<!-- ko if: ui.hierarchy.meaning() || ui.hierarchy.example() -->
+    {% include '_entryEdit_breadCrumbs.html' %}
+<!-- /ko -->
 
 <!-- ko if: ui.navigationStack.top().constructor.name === 'Entry' -->
 
