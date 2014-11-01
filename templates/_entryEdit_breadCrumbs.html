@@ -1,4 +1,3 @@
-<!-- ko if: ui.hierarchy.meaning() || ui.hierarchy.example() -->
 <!-- ko with: ui.hierarchy -->
 
     <li class="breadCrumb" id="firstBreadCrumb" data-bind="visible: meaning">
@@ -7,7 +6,9 @@
         <span data-bind="text: order"></span>.{{ space }}
         <span data-bind="visible: metaphorical">►</span>{{ space }}
         <!-- /ko -->
-        <span data-bind="if: meaningSlug, text: meaningSlug"></span>
+        <!-- ko if: meaningSlug -->
+        <span data-bind="text: meaningSlug"></span>
+        <!-- /ko -->
         <span data-bind="ifnot: meaningSlug">&lt;Значение&gt;</span>
 
         <!-- NOTE: Реализацию разделителей на основе canvas
@@ -29,7 +30,9 @@
         </span>{{ space }}
         <!-- /ko -->
 
-        <span data-bind="if: usageSlug, text: usageSlug"></span>
+        <!-- ko if: usageSlug -->
+        <span data-bind="text: usageSlug"></span>
+        <!-- /ko -->
         <span data-bind="ifnot: usageSlug">&lt;Употребление&gt;</span>
 
         <!-- NOTE: Реализацию разделителей на основе canvas
@@ -46,5 +49,4 @@
 
     <li id="breadCrumbShadow" class="breadCrumb"></li>
 
-<!-- /ko -->
 <!-- /ko -->

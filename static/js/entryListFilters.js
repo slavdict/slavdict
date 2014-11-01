@@ -5,8 +5,10 @@ vM.meta = {
 
 vM.filters = {
     formSubmit: vM.hdrSearch.formSubmit,
-    isOperated: ko.observable(false).extend({throttle: 400}),
-    showResetAll: ko.observable(false).extend({throttle: 400}),
+    isOperated: ko.observable(false)
+        .extend({ rateLimit: { method: 'notifyWhenChangesStop', delay: 400 } }),
+    showResetAll: ko.observable(false)
+        .extend({ rateLimit: { method: 'notifyWhenChangesStop', delay: 400 } }),
     closeFilters: function(){
             this.isOperated(false);
             this.getInitialState();
@@ -141,7 +143,8 @@ vM.filters.notDefaultState = ko.computed(function(){
         if (!defaults[i].hasDefaultValue()) return true;
     }
     return false;
-}, vM.filters).extend({throttle: 400});
+}, vM.filters).extend(
+    { rateLimit: { method: 'notifyWhenChangesStop', delay: 400 } });
 
 vM.filters.notInitialState = ko.computed(function(){
     var initials = vM.meta.initials;
@@ -149,7 +152,8 @@ vM.filters.notInitialState = ko.computed(function(){
         if (!initials[i].hasInitialValue()) return true;
     }
     return false;
-}, vM.filters).extend({throttle: 400});
+}, vM.filters).extend(
+    { rateLimit: { method: 'notifyWhenChangesStop', delay: 400 } });
 
 vM.filters.getDefaultState = function(){
     var defaults = vM.meta.defaults;
@@ -171,18 +175,18 @@ vM.filters.shouldShowStatusBar = ko.computed(function(){
         !this.notDefaultState() && this.notInitialState() ||
         this.isOperated() || this.notDefaultState()
     );
-}, vM.filters).extend({throttle: 500}); // ::js_statusbar_throttle
+}, vM.filters).extend({rateLimit: 500}); // ::js_statusbar_rateLimit
 
 vM.filters.shouldShowFiltersButtons = ko.computed(
     vM.filters.notInitialState
-).extend({throttle: 500}); /* NOTE: Наличие ``throttle`` здесь обязательно,
+).extend({rateLimit: 500}); /* NOTE: Наличие ``rateLimit`` здесь обязательно,
                               чтобы интерфейс себя вел хорошо в ситуации,
                 когда автор нажимает кнопку "мои статьи" ##ui_myentries.
-                Через полсекунды после нажатия (см. ##js_statusbar_throttle)
+                Через полсекунды после нажатия (см. ##js_statusbar_rateLimit)
                 появится статусная строка ##ui_filters_statusbar, если она
                 была скрыта. В ней будет указано, что выбран фильтр статьи
                 такого-то автора. Кнопка "применить изменения"
-                ##ui_filters_apply без ``throttle`` будет появляться раньше
+                ##ui_filters_apply без ``rateLimit`` будет появляться раньше
                 статусной строки, что в пользовательском интерфейсе
                 выглядит достаточно странно.  */
 

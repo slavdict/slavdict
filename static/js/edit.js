@@ -406,7 +406,7 @@ function Meaning() {
     upsertArray(this, 'examples', Example, data);
 
     this.isExpanded || (this.isExpanded = ko.observable(false));
-    this.substantivus_type.label = ko.computed(
+    this.substantivus_type.label = ko.pureComputed(
             Meaning.prototype.substantivus_type_label, this);
     Meaning.all.append(this);
 }
@@ -447,7 +447,7 @@ function Entry(data) {
     upsertArray(this, 'collogroups', Collogroup, data);
     upsertArray(this, 'etymologies', Etymology, data);
 
-    this.part_of_speech.label = ko.computed(
+    this.part_of_speech.label = ko.pureComputed(
             Entry.prototype.part_of_speech_label, this);
     Entry.all.append(this);
 }
@@ -714,7 +714,7 @@ var viewModel = vM.entryEdit,
     uiModel.vMUpdateTransaction = false;
 
     // Добавлям разные датчики второго порядка
-    uiEntry.headword = ko.computed({
+    uiEntry.headword = ko.pureComputed({
         read: function () {
             var entry = dataModel.entry;
             if (entry.orthvars().length === 0) {
@@ -736,8 +736,8 @@ var viewModel = vM.entryEdit,
             collogroupTab = {'default': 'variants'},
             meaningTab = {'default': 'editMeaning'},
             previousStack = stack(),
-            previousForm = entryTab,
             currentStack = previousStack,
+            previousForm = entryTab,
             currentForm = previousForm,
             uiChangeTopic = 'ui_change';
 
@@ -773,10 +773,10 @@ var viewModel = vM.entryEdit,
             uiModel.currentForm({
                 'Entry': stack.entryTab,
                 'Collogroup': stack.collogroupTab[key] ||
-                    stack.collogroupTab['default'],
-                    // NOTE: Второй дизъюнкт нужен на тот случай, если id
-                    // найдется, но при использовании его в качестве ключа
-                    // ничего в словаре найдено не будет.
+                    stack.collogroupTab['default'],  // NOTE: Второй дизъюнкт
+                    // нужен на тот случай, если id найдется, но при
+                    // использовании его в качестве ключа ничего в словаре
+                    // найдено не будет.
                 'Meaning': stack.meaningTab[key] || stack.meaningTab['default'],
                 'Example': 'editExample',
                 'none': 'saveDialogue'
@@ -962,15 +962,15 @@ var viewModel = vM.entryEdit,
         }
 
         // Общедоступное API
-        hierarchy.collogroup = ko.computed(collogroup);
-        hierarchy.meaning = ko.computed(meaning);
-        hierarchy.usage = ko.computed(usage);
-        hierarchy.example = ko.computed(example);
+        hierarchy.collogroup = ko.pureComputed(collogroup);
+        hierarchy.meaning = ko.pureComputed(meaning);
+        hierarchy.usage = ko.pureComputed(usage);
+        hierarchy.example = ko.pureComputed(example);
 
-        hierarchy.collogroupSlug = ko.computed(collogroupSlug);
-        hierarchy.meaningSlug = ko.computed(meaningSlug);
-        hierarchy.usageSlug = ko.computed(usageSlug);
-        hierarchy.exampleSlug = ko.computed(exampleSlug);
+        hierarchy.collogroupSlug = ko.pureComputed(collogroupSlug);
+        hierarchy.meaningSlug = ko.pureComputed(meaningSlug);
+        hierarchy.usageSlug = ko.pureComputed(usageSlug);
+        hierarchy.exampleSlug = ko.pureComputed(exampleSlug);
 
         return hierarchy;
     })();
@@ -1243,7 +1243,7 @@ var viewModel = vM.entryEdit,
         return uS;
     })();
 
-    uiModel.nAdjV = ko.computed(function () {
+    uiModel.nAdjV = ko.pureComputed(function () {
         return (dataModel.entry
             .part_of_speech.label().match(/^(сущ|прил|гл)\.$/));
     });
