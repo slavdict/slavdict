@@ -91,14 +91,17 @@ ko.bindingHandlers.show = {
     }
 };
 
-ko.bindingHandlers.editableHTML = {
-    update: function(element, valueAccessor) {
-        var initialValue = ko.utils.unwrapObservable(valueAccessor());
+ko.bindingHandlers.contenteditable = {
+    init: function (element, valueAccessor) {
+        var observable = valueAccessor();
         element = $(element);
-        element.html(initialValue);
-        element.on('keyup', function() {
-            observable = valueAccessor();
-            observable(element.html());
+        element.attr('contenteditable', 'true')
+        element.on('keyup input cut paste drag dragdrop', function() {
+            observable(element.text());
         });
+    },
+    update: function(element, valueAccessor) {
+        var value = ko.utils.unwrapObservable(valueAccessor());
+        $(element).html(value);
     }
 };
