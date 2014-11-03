@@ -73,8 +73,6 @@ function Example(ex) {
     this.status = ko.observable(ex.status);
 
     this.address = ko.observable(ex.address);
-    this.addressEditable = ko.observable(false);
-
     this.comment = ko.observable(ex.comment);
     this.commentEditable = ko.observable(false);
 
@@ -110,7 +108,6 @@ function Example(ex) {
     };
 
     this.toggleAntconc = this.TOGGLE(this.antconcVisible);
-    this.toggleAddress = this.TOGGLE(this.addressEditable);
     this.toggleComment = this.TOGGLE(this.commentEditable);
     this.editExample = function () { self.exampleEditable(true); };
     this.saveExample = function () {
@@ -125,8 +122,15 @@ function Example(ex) {
         self.example(self.initialExample);
     };
 
+    this.timeoutId = null;
     this.beingSaved = ko.observable(false);
-    this.saveMe = function() {
+    this.saveMe = function () {
+        if (this.timeoutId !== null) {
+            clearTimeout(this.timeoutId);
+        }
+        this.timeoutId = setTimeout(this.doSave, 500);
+    }.bind(this);
+    this.doSave = function () {
         this.beingSaved(true);
         var dataToSend = { 'ex': ko.toJSON(new ExForJSON(this)) };
         $.post(vM.urls.jsonExSaveURL, dataToSend, function(data) {

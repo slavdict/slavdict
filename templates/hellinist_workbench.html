@@ -190,14 +190,10 @@
 
                 <span class="example--id">[<span data-bind="text: id"></span>]</span>
 
-                <span class="example--address" data-bind="text: address, visible: !addressEditable(),
-                                                          click: toggleAddress"></span>
-                <input class="example--address" data-bind="
-                    textInput: address, visibleActive: addressEditable(),
-                    event: {
-                        change: function() { $data.toggleAddress(); $data.saveMe(); },
-                        blur: toggleAddress
-                    }" />
+                <span class="example--address" data-bind="
+                    contenteditable: address,
+                    event: { change: $data.saveMe }
+                    "></span>
 
                 {{ space }}
                 <span data-bind="visible: comment() || commentEditable()">

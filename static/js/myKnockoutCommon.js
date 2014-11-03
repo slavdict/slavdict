@@ -96,8 +96,9 @@ ko.bindingHandlers.contenteditable = {
         var observable = valueAccessor();
         element = $(element);
         element.attr('contenteditable', 'true')
-        element.on('keyup input cut paste drag dragdrop', function() {
+        element.on('input cut paste drag dragdrop', function() {
             observable(element.text());
+            element.trigger('change');
         });
     },
     update: function(element, valueAccessor) {
