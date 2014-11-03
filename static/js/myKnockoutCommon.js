@@ -22,8 +22,7 @@ ko.observable.fn['htmlCheckbox'] = function(name){
 
 ko.observable.fn['htmlTextInput'] = function(name){
     $('#id_' + name)
-        .attr('data-bind', 'value: ' + name + ', ' +
-            'valueUpdate: "afterkeydown"')
+        .attr('data-bind', 'textInput: ' + name)
         .attr('autocomplete', 'off')
         .attr('spellcheck', 'false')
         .wrap('<div class="textinput for_id_' + name + '"/>');

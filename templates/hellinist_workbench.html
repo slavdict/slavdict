@@ -193,7 +193,7 @@
                 <span class="example--address" data-bind="text: address, visible: !addressEditable(),
                                                           click: toggleAddress"></span>
                 <input class="example--address" data-bind="
-                    value: address, visibleActive: addressEditable(),
+                    textInput: address, visibleActive: addressEditable(),
                     event: {
                         change: function() { $data.toggleAddress(); $data.saveMe(); },
                         blur: toggleAddress
@@ -204,7 +204,7 @@
                     <span class="example--comment" data-bind="
                         text: comment, visible: !commentEditable(), click: toggleComment"></span>
                     <input class="example--comment" data-bind="
-                        value: comment, visibleActive: commentEditable(),
+                        textInput: comment, visibleActive: commentEditable(),
                         event: {
                             change: function() { $data.toggleComment(); $data.saveMe(); },
                             blur: toggleComment
@@ -257,17 +257,23 @@
 
                         <span class="greqFieldContainer">
                             <label>греч. параллель</label>
-                            <input type="text" data-bind="value: unitext, event: { change: saveMe }" />
+                            <input type="text" data-bind="
+                                textInput: unitext,
+                                event: { change: saveMe }" />
                         </span>
 
                         <span class="greqFieldContainer">
                             <label>начальная форма</label>
-                            <input type="text" data-bind="value: initial_form, event: { change: saveMe }" />
+                            <input type="text" data-bind="
+                                textInput: initial_form,
+                                event: { change: saveMe }" />
                         </span>
 
                         <span class="greqFieldContainer">
                             <label>примечание</label>
-                            <input type="text" data-bind="value: additional_info, event: { change: saveMe }" />
+                            <input type="text" data-bind="
+                                textInput: additional_info,
+                                event: { change: saveMe }" />
                         </span>
 
                         <span class="button greqFieldButton" data-bind="click: removeMe">&#x2716;</span>

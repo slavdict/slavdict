@@ -5,8 +5,7 @@
     <div class="eE--example">
         <div>
             <label>Иллюстрация</label>
-            <textarea data-bind="value: example,
-                valueUpdate: 'afterkeydown'"></textarea>
+            <textarea data-bind="textInput: example"></textarea>
         </div>
 
         <div class="eE--exampleWax" data-bind="wax: example"></div>
@@ -14,8 +13,7 @@
 
     <div id="eE--address">
         <label>Адрес</label>
-        <textarea data-bind="value: address_text,
-            valueUpdate: 'afterkeydown'"></textarea>
+        <textarea data-bind="textInput: address_text"></textarea>
     </div>
 
     <nav data-bind="visible: !context.isVisible()">
@@ -27,7 +25,7 @@
     <div class="eE--example" data-bind="visible: context.isVisible">
         <div>
             <label>Более широкий контекст (для грециста)</label>
-            <textarea data-bind="value: context, valueUpdate: 'afterkeydown',
+            <textarea data-bind="textInput: context,
              hasFocus: context.isVisible, event: {
                 blur: context.isVisible.bind($data, false) }"></textarea>
         </div>

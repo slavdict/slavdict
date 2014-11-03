@@ -15,10 +15,9 @@
     <span style="position: relative;">
 
         {{ space }}
-        <input type="text" name="hdrSearch" class="header--item-left header--item-block search"
-           data-bind="
-                value: searchPrefix,
-                valueUpdate: 'afterkeydown',
+        <input type="text" name="hdrSearch"
+           class="header--item-left header--item-block search"
+           data-bind="textInput: searchPrefix,
                 event: { keydown: navigateFoundItems, blur: flushItems }"
            autocomplete="off"
            spellcheck="false"

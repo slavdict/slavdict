@@ -46,8 +46,7 @@
         <div id="infoTab--genitive">
             <label>
                 <span>Форма Р.п.</span>
-                <input type="text" data-bind="value: genitive,
-                                        valueUpdate: 'afterkeydown'"/>
+                <input type="text" data-bind="textInput: genitive"/>
             </label>
             <span data-bind="wax: genitive"></span>
         </div>
@@ -100,8 +99,7 @@
 
             <label>
                 <span>И. ед. м.</span>
-                <input type="text" data-bind="value: nom_sg,
-                                        valueUpdate: 'afterkeydown'"/>
+                <input type="text" data-bind="textInput: nom_sg"/>
             </label>
 
             <span data-bind="wax: nom_sg"></span>
@@ -122,8 +120,7 @@
         <div id="infoTab--shortForm">
             <label>
                 <span>Краткая форма</span>
-                <input type="text" data-bind="value: short_form,
-                                              valueUpdate: 'afterkeydown'"/>
+                <input type="text" data-bind="textInput: short_form"/>
             </label>
 
             <span data-bind="wax: short_form"></span>
@@ -137,8 +134,7 @@
         <div id="infoTab--sg1">
             <label>
                 <span>Форма 1ед.</span>
-                <input type="text" data-bind="value: sg1,
-                                              valueUpdate: 'afterkeydown'"/>
+                <input type="text" data-bind="textInput: sg1"/>
             </label>
 
             <span data-bind="wax: sg1"></span>
@@ -147,8 +143,7 @@
         <div id="infoTab--sg2">
             <label>
                 <span>Форма 2ед.</span>
-                <input type="text" data-bind="value: sg2,
-                                              valueUpdate: 'afterkeydown'"/>
+                <input type="text" data-bind="textInput: sg2"/>
             </label>
 
             <span data-bind="wax: sg2"></span>
@@ -181,8 +176,7 @@
                 </label>
 
                 <label>
-                    <input type="text"
-                        data-bind="value: idem, valueUpdate: 'afterkeydown'"/>
+                    <input type="text" data-bind="textInput: idem"/>
                 </label>
 
                 <span data-bind="wax: idem"></span>

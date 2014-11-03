@@ -52,8 +52,7 @@
 
         <div id="aside--headword">
             <label>Заглавное слово</label>
-            <input type="text" data-bind="value: ui.entry.headword,
-                valueUpdate: 'afterkeydown'"/>
+            <input type="text" data-bind="textInput: ui.entry.headword"/>
         </div>
 
         <!-- ko if: ui.navigationStack.top -->
@@ -81,8 +80,7 @@
             <label>Примечание к иллюстрации</label>
             <!-- /ko -->
 
-            <textarea data-bind="value: additional_info,
-                valueUpdate: 'afterkeydown'"></textarea>
+            <textarea data-bind="textInput: additional_info"></textarea>
         </div>
         <!-- /ko -->
 

@@ -191,8 +191,7 @@ vM.filters.shouldShowFiltersButtons = ko.computed(
                 выглядит достаточно странно.  */
 
 $('#id_find')
-    .attr('data-bind', 'value: find,' +
-        'valueUpdate: "afterkeydown"')
+    .attr('data-bind', 'textInput: find')
     .attr('autocomplete', 'off')
     .attr('spellcheck', 'false');
 
