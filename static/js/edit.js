@@ -729,9 +729,69 @@ var viewModel = vM.entryEdit,
 
     uiModel.currentForm = ko.observable('info');
 
+    // Буфер для перемещения значений, примеров, словосочетаний
+    uiModel.cutBuffer = (function () {
+        var buffer = ko.observableArray(),
+            kopC = ko.pureComputed,
+            contentType = function () {
+                var x = buffer();
+                if (x.length === 0) {
+                    return '';
+                } else {
+                    return x[0].constructor.name;
+                }
+            },
+            contains = function (constructor) {
+                return function () {
+                    return buffer.contentType() === constructor.name;
+                };
+            },
+            emptyOrContains = function (constructor) {
+                return function () {
+                    var x = buffer.contentType();
+                    return x === '' || x === constructor.name;
+                };
+            },
+            containsCollogroups = contains(Collogroup),
+            containsMeanings = contains(Meaning),
+            containsExamples = contains(Example),
+            emptyOrContainsCollogroups = emptyOrContains(Collogroup),
+            emptyOrContainsMeanings = emptyOrContains(Meaning),
+            emptyOrContainsExamples = emptyOrContains(Example),
+            cutFrom = function (list) {
+                return function (item) {
+                    if (emptyOrContains(item.constructor)) {
+                        list.remove(item);
+                        buffer.push(item);
+                    } else {
+                        console.log(item.constructor.name + ' не может быть ' +
+                                    'помещено в буфер обмена, так как он уже ' +
+                                    'содержит "' + contentType() + '".');
+                    }
+                };
+            },
+            pasteInto = function (list) {
+                return function (item) {
+                    if (list.itemConstructor.name === contentType()) {
+                        list.push.apply(list, buffer.removeAll());
+                    }
+                };
+            };
+        buffer.contentType = ko.computed(contentType);
+        buffer.containsCollogroups = kopC(containsCollogroups);
+        buffer.containsMeanings = kopC(containsMeanings);
+        buffer.containsExamples = kopC(containsExamples);
+        buffer.emptyOrContainsCollogroups = kopC(emptyOrContainsCollogroups);
+        buffer.emptyOrContainsMeanings = kopC(emptyOrContainsMeanings);
+        buffer.emptyOrContainsExamples = kopC(emptyOrContainsExamples);
+        buffer.cutFrom = cutFrom;
+        buffer.pasteInto = pasteInto;
+        return buffer;
+    })();
+
     // Навигационный стек
     uiModel.navigationStack = (function () {
-        var stack = ko.observableArray([dataModel.entry]);
+        var stack = ko.observableArray([dataModel.entry]),
             entryTab = 'info',
             collogroupTab = {'default': 'variants'},
             meaningTab = {'default': 'editMeaning'},
