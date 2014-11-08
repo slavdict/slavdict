@@ -13,6 +13,10 @@
             <a class="editItem" data-bind="click: edit"></a>
             <a class="expandItem" data-bind="click: toggle,
                 css: { expanded: isExpanded }"></a>
+            <a class="cutItem" data-bind="
+                click: $root.ui.cutBuffer.cutFrom($parent.collogroups),
+                css: { cutItemNonFirst: $root.ui.cutBuffer.containsCollogroups },
+                visible: $root.ui.cutBuffer.emptyOrContainsCollogroups"></a>
 
             <span data-bind="foreach: collocations">
                 {{ backspace }}
