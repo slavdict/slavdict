@@ -130,8 +130,10 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
         position: relative
         z-index: 0
 
-        & + a.pasteItems,
-        & + a.addItem
+        & ~ a.pasteItems,
+        & ~ a.addItem,
+        & + div > a.pasteItems,
+        & + div > a.addItem
             height: 30px
             display: block
             border: 1px dashed black
@@ -141,7 +143,8 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
             cursor: pointer
             margin-bottom: 12px
 
-        & + a.pasteItems
+        & ~ a.pasteItems,
+        & + div > a.pasteItems
             background-image: url(paste.png)
 
         li
@@ -177,8 +180,10 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
                 @include box-shadow(none !important)
 
             ul,
-            ul + a.pasteItems,
-            ul + a.addItem
+            ul ~ a.pasteItems,
+            ul ~ a.addItem,
+            ul + div > a.pasteItems,
+            ul + div > a.addItem
                 width: 90%
                 margin-left: 10%
 
@@ -234,12 +239,16 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
         content: 'Употребления'
 
 .tabcontent > .addItem,
+.tabcontent > div > .addItem,
 .tabcontent > .pasteItems,
+.tabcontent > div > .pasteItems,
 .orthvars > .addItem,
+.orthvars > div > .addItem,
 .meaningContexts ~ .addItem
     width: $listWidth - 5px !important
 
 #infoTab--participles > .addItem,
+#infoTab--participles > div > .addItem,
 #usageExamples .pasteItems,
 #usageExamples .addItem
     width: $listWidth - 15px
@@ -536,6 +545,8 @@ $expandPosition: 28px
     top: auto
     bottom: -8px
     background: url(scissors.png)
+.cutItem.cutItemNonFirst
+    background: url(scissorsPlus.png)
 
 .examples > li > .editItem
     right: $expandPosition - 8px

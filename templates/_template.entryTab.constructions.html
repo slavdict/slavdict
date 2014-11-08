@@ -21,7 +21,7 @@
                 <span class="cslav" data-bind="wax: collocation"></span>
             </span>
 
-            <ul class="meanings" data-bind="sortable: { data: meanings },
+            <ul class="meanings" data-bind="sortable: meanings,
                                             visible: isExpanded">
 
                 <li data-bind="event: { dblclick: toggle },
@@ -33,6 +33,10 @@
                     <a class="editItem" data-bind="click: edit"></a>
                     <a class="expandItem" data-bind="click: toggle,
                         css: { expanded: isExpanded }"></a>
+                    <a class="cutItem" data-bind="
+                        click: $root.ui.cutBuffer.cutFrom($parent.meanings),
+                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
+                        visible: $root.ui.cutBuffer.emptyOrContainsMeanings"></a>
 
                     <span data-bind="text: order"></span>.{{ space }}
                     <span data-bind="visible: metaphorical">►</span>{{ space }}
@@ -70,8 +74,13 @@
                 </li>
             </ul>
 
-            <a class="addItem" data-bind="visible: isExpanded,
-                click: meanings.itemAdder($parent).do"></a>
+            <div data-bind="visible: isExpanded">
+                <a class="pasteItems" data-bind="
+                    click: $root.ui.cutBuffer.pasteInto(meanings),
+                    visible: $root.ui.cutBuffer.containsMeanings"></a>
+                <a class="addItem"
+                   data-bind="click: meanings.itemAdder($parent).do"></a>
+            </div>
 
         </li>
     </ul>

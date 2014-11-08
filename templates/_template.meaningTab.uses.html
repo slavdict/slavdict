@@ -12,6 +12,10 @@
             <a class="editItem" data-bind="click: edit"></a>
             <a class="expandItem" data-bind="click: toggle,
                 css: { expanded: isExpanded }"></a>
+            <a class="cutItem" data-bind="
+                click: $root.ui.cutBuffer.cutFrom($parent.meanings),
+                css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
+                visible: $root.ui.cutBuffer.emptyOrContainsMeanings"></a>
 
             <span data-bind="visible: metaphorical">►</span>{{ space }}
             <span data-bind="visible: substantivus">
@@ -50,6 +54,9 @@
 
     </ul>
 
+    <a class="pasteItems"
+        data-bind="click: $root.ui.cutBuffer.pasteInto(meanings),
+                   visible: $root.ui.cutBuffer.containsMeanings"></a>
     <a class="addItem" data-bind="click:
         meanings.itemAdder($root.data.entry, $data).do"></a>
 
