@@ -1,8 +1,7 @@
 <script type="text/html" id="meaningExamples">
 <section class="tabcontent" data-bind="if: constructor.name === 'Meaning'">
 
-    <ul class="examples" data-bind="sortable:
-        { data: examples }">
+    <ul class="examples" data-bind="sortable: examples">
 
         <li data-bind="event: { dblclick: function(){} },
                 dblclickBubble: false">
@@ -11,12 +10,19 @@
             <a class="deleteItem" data-bind="click:
              $parent.examples.itemPoolReturner($data).do"></a>
             <a class="editItem" data-bind="click: edit"></a>
+            <a class="cutItem" data-bind="
+                click: $root.ui.cutBuffer.cutFrom($parent.examples),
+                css: { cutItemNonFirst: $root.ui.cutBuffer.containsExamples },
+                visible: $root.ui.cutBuffer.emptyOrContainsExamples"></a>
             <span data-bind="wax: example"></span>{{ space }}
             (<span data-bind="text: address_text"></span>)
         </li>
 
     </ul>
 
+    <a class="pasteItems" data-bind="
+        click: $root.ui.cutBuffer.pasteInto(examples),
+        visible: $root.ui.cutBuffer.containsExamples"></a>
     <a class="addItem" data-bind="click:
         examples.itemAdder($data, $root.data.entry).do"></a>
 

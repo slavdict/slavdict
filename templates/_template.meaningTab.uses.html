@@ -41,14 +41,23 @@
                     <a class="deleteItem" data-bind="click:
                      $parent.examples.itemPoolReturner($data).do"></a>
                     <a class="editItem" data-bind="click: edit"></a>
+                    <a class="cutItem" data-bind="
+                        click: $root.ui.cutBuffer.cutFrom($parent.examples),
+                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsExamples },
+                        visible: $root.ui.cutBuffer.emptyOrContainsExamples"></a>
                     <span data-bind="wax: example"></span>{{ space }}
                     (<span data-bind="text: address_text"></span>)
                 </li>
 
             </ul>
 
-            <a class="addItem" data-bind="visible: isExpanded, click:
-                examples.itemAdder($data, $root.data.entry).do"></a>
+            <div data-bind="visible: isExpanded">
+                <a class="pasteItems" data-bind="
+                    click: $root.ui.cutBuffer.pasteInto(examples),
+                    visible: $root.ui.cutBuffer.containsExamples"></a>
+                <a class="addItem" data-bind="click:
+                    examples.itemAdder($data, $root.data.entry).do"></a>
+            </div>
 
         </li>
 
