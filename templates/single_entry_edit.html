@@ -20,6 +20,16 @@
             disable: undoStorage.shouldDisableRedo"
         value="↷" /><!-- или ⟳ -->
 
+    <!-- ko with: $root.ui -->
+    <span class="header--item"
+        data-bind="visible: cutBuffer().length > 0">
+        <span data-bind="text: cutBuffer().length"></span>
+        <span data-bind="visible: cutBuffer.containsCollogroups">сс.</span>
+        <span data-bind="visible: cutBuffer.containsMeanings">зн.</span>
+        <span data-bind="visible: cutBuffer.containsExamples">ил.</span>
+    </span>
+    <!-- /ko -->
+
 </div>
 
 <aside>
