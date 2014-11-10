@@ -758,6 +758,14 @@ var viewModel = vM.entryEdit,
             emptyOrContainsCollogroups = emptyOrContains(Collogroup),
             emptyOrContainsMeanings = emptyOrContains(Meaning),
             emptyOrContainsExamples = emptyOrContains(Example),
+            dump = function () {
+                var x = buffer();
+                if (x.length > 0) {
+                    return [x[0].constructor.name, x];
+                } else {
+                    return null;
+                }
+            },
             cutFrom = function (list) {
                 return function (item) {
                     if (emptyOrContains(item.constructor)) {
@@ -786,6 +794,7 @@ var viewModel = vM.entryEdit,
         buffer.emptyOrContainsExamples = kopC(emptyOrContainsExamples);
         buffer.cutFrom = cutFrom;
         buffer.pasteInto = pasteInto;
+        buffer.dump = dump;
         return buffer;
     })();
 
@@ -1181,21 +1190,38 @@ var viewModel = vM.entryEdit,
                      doze:  doze };
         })();
 
-        function load(N, M) {
-            var snapshot = JSON.parse(snapshots()[N]);
+        function load(snapshotIndex, shouldGoUpstream) {
+            var snapshot = JSON.parse(snapshots()[snapshotIndex]),
+                snapshot2, cutBuffer, constructor, i, j,
+                list = [];
             argus.doze();
             Entry.call(dataModel.entry, snapshot.entry);
             constructors.forEach(function (item) {
                 item.shredder = snapshot.toDestroy[item.name];
                 item.all.cacheCommit();
             });
-            if (M === N) {
+            cutBuffer = snapshot.cutBuffer;
+            if (cutBuffer !== null) {
+                constructor = {
+                    'Collogroup': Collogroup,
+                    'Meaning': Meaning,
+                    'Example': Example
+                }[cutBuffer[0]];
+                cutBuffer = cutBuffer[1];
+                if (constructor) {
+                    for (i=0, j=cutBuffer.length; i<j; i++) {
+                        list.push(new constructor(cutBuffer[i]));
+                    }
+                }
+            }
+            uiModel.cutBuffer(list);
+            if (shouldGoUpstream) {
+                snapshot2 = JSON.parse(snapshots()[snapshotIndex + 1]);
+                uiModel.navigationStack.load(snapshot2.view.previousStack);
+                uiModel.currentForm(snapshot2.view.previousForm);
+            } else {
                 uiModel.navigationStack.load(snapshot.view.currentStack);
                 uiModel.currentForm(snapshot.view.currentForm);
-            } else {
-                snapshot = JSON.parse(snapshots()[M]);
-                uiModel.navigationStack.load(snapshot.view.previousStack);
-                uiModel.currentForm(snapshot.view.previousForm);
             }
             argus.guard();
         }
@@ -1215,6 +1241,7 @@ var viewModel = vM.entryEdit,
             }
             var snapshot = { entry: dataModel.entry,
                              view: uiModel.navigationStack.dump(),
+                             cutBuffer: uiModel.cutBuffer.dump(),
                              toDestroy: {} }
             constructors.forEach(function (item) {
                 snapshot.toDestroy[item.name] = item.shredder;
@@ -1239,7 +1266,7 @@ var viewModel = vM.entryEdit,
         function redo() {
             if (! mayNotRedo()) {
                 var n = cursor();
-                load(n, n);
+                load(n, false);
                 cursor(n + 1);
             }
         }
@@ -1247,7 +1274,7 @@ var viewModel = vM.entryEdit,
         function undo() {
             if (! mayNotUndo()) {
                 var n = cursor() - 2;
-                load(n, n + 1);
+                load(n, true);
                 cursor(n + 1);
             }
         }
