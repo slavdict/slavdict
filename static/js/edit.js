@@ -766,6 +766,18 @@ var viewModel = vM.entryEdit,
                     return null;
                 }
             },
+            showTip = function (value) {
+                buffer.once.dispose();
+                buffer.once = buffer.subscribe(checkIfWasEmpty, null, 'beforeChange');
+                alert('!!');
+            },
+            checkIfWasEmpty = function (value) {
+                console.log(')))', value);
+                if (value.length === 0) {
+                    buffer.once.dispose();
+                    buffer.once = buffer.subscribe(showTip);
+                }
+            },
             cutFrom = function (list) {
                 return function (item) {
                     if (emptyOrContains(item.constructor)) {
@@ -785,6 +797,7 @@ var viewModel = vM.entryEdit,
                     }
                 };
             };
+        buffer.once = buffer.subscribe(checkIfWasEmpty, null, 'beforeChange');
         buffer.contentType = ko.computed(contentType);
         buffer.containsCollogroups = kopC(containsCollogroups);
         buffer.containsMeanings = kopC(containsMeanings);
