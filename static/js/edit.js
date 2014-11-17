@@ -2,10 +2,16 @@ try {
 
 
 var topic = 'entry_change',
+    otStyle = 'slavdictOpentip',
     constructors = [Etymology, Participle, Orthvar,
                     Collocation, Context, Greq,
                     Example, Collogroup, Meaning,
                     Entry];
+
+Opentip.styles[otStyle] = { target: true, showOn: null, hideOn: 'click',
+    tipJoint: 'bottom center', removeElementsOnHide: true,
+    hideEffectDuration: 2.5, stemLength: 12, stemBase: 15,
+    background: '#fcf3d0', borderColor: '#e8d5b2' };
 
 constructors.nameMap = {'Etymology': Etymology, 'Participle': Participle,
     'Orthvar': Orthvar, 'Collocation': Collocation, 'Context': Context,
@@ -729,9 +735,113 @@ var viewModel = vM.entryEdit,
 
     uiModel.currentForm = ko.observable('info');
 
+    // Буфер для перемещения значений, примеров, словосочетаний
+    uiModel.cutBuffer = (function () {
+        var buffer = ko.observableArray(),
+            kopC = ko.pureComputed,
+            contentType = function () {
+                var x = buffer();
+                if (x.length === 0) {
+                    return '';
+                } else {
+                    return x[0].constructor.name;
+                }
+            },
+            contains = function (constructor) {
+                return function () {
+                    return buffer.contentType() === constructor.name;
+                };
+            },
+            emptyOrContains = function (constructor) {
+                return function () {
+                    var x = buffer.contentType();
+                    return x === '' || x === constructor.name;
+                };
+            },
+            containsCollogroups = contains(Collogroup),
+            containsMeanings = contains(Meaning),
+            containsExamples = contains(Example),
+            emptyOrContainsCollogroups = emptyOrContains(Collogroup),
+            emptyOrContainsMeanings = emptyOrContains(Meaning),
+            emptyOrContainsExamples = emptyOrContains(Example),
+            dump = function () {
+                var x = buffer();
+                if (x.length > 0) {
+                    return [x[0].constructor.name, x];
+                } else {
+                    return null;
+                }
+            },
+            showTip = function (value) {
+                var br = '<br/>',
+                    pasteImg = '<img class="tipIcon" src="/static/paste.png"/>',
+                    cutImg = '<img class="tipIcon" src="/static/scissorsPlus.png"/>',
+                    variables = {
+                        'Collogroup': {
+                            a: 'Словосочетание вырезано и помещено',
+                            b: 'словосочетаний', c: 'словосочетания'},
+                        'Meaning': {
+                            a: 'Значение/употребление вырезано и помещено',
+                            b: 'значений/употреблений',
+                            c: 'значения/употребления'},
+                        'Example': {
+                            a: 'Иллюстрация вырезана и помещена',
+                            b: 'иллюстраций', c: 'иллюстрации'}
+                    }[value],
+                    text = variables.a + br +
+                        'в промежуточный буфер. Для вклейки' + br +
+                        'используйте одну из кнопок ' + pasteImg + '. Чтобы' + br +
+                        'вклеить сразу несколько ' + variables.b + ',' + br +
+                        'добавьте остальные ' + variables.c + br +
+                        'с помощью кнопок ' + cutImg + '.' + br + ' ',
+                    tip = new Opentip($('.cutBufferIndicator'), text,
+                                      { style: otStyle });
+                buffer.once.dispose();
+                tip.show();
+                tip.hide();
+            },
+            checkIfWasEmpty = function (value) {
+                if (value.length === 0) {
+                    buffer.once.dispose();
+                    buffer.once = buffer.contentType.subscribe(showTip);
+                }
+            },
+            cutFrom = function (list) {
+                return function (item) {
+                    if (emptyOrContains(item.constructor)) {
+                        list.remove(item);
+                        buffer.push(item);
+                    } else {
+                        console.log(item.constructor.name + ' не может быть ' +
+                                    'помещено в буфер обмена, так как он уже ' +
+                                    'содержит "' + contentType() + '".');
+                    }
+                };
+            },
+            pasteInto = function (list) {
+                return function (item) {
+                    if (list.itemConstructor.name === contentType()) {
+                        list.push.apply(list, buffer.removeAll());
+                    }
+                };
+            };
+        buffer.once = buffer.subscribe(checkIfWasEmpty, null, 'beforeChange');
+        buffer.contentType = ko.computed(contentType);
+        buffer.containsCollogroups = kopC(containsCollogroups);
+        buffer.containsMeanings = kopC(containsMeanings);
+        buffer.containsExamples = kopC(containsExamples);
+        buffer.emptyOrContainsCollogroups = kopC(emptyOrContainsCollogroups);
+        buffer.emptyOrContainsMeanings = kopC(emptyOrContainsMeanings);
+        buffer.emptyOrContainsExamples = kopC(emptyOrContainsExamples);
+        buffer.cutFrom = cutFrom;
+        buffer.pasteInto = pasteInto;
+        buffer.dump = dump;
+        return buffer;
+    })();
+
     // Навигационный стек
     uiModel.navigationStack = (function () {
-        var stack = ko.observableArray([dataModel.entry]);
+        var stack = ko.observableArray([dataModel.entry]),
             entryTab = 'info',
             collogroupTab = {'default': 'variants'},
             meaningTab = {'default': 'editMeaning'},
@@ -784,7 +894,24 @@ var viewModel = vM.entryEdit,
         }
 
         function pop() {
-            stack.splice(-1, 1)
+            var cutBufferContent = uiModel.cutBuffer.contentType(),
+                cuts = {
+                    'Collogroup': 'словосочетания',
+                    'Meaning': 'значения/употребления',
+                    'Example': 'иллюстрации'
+                }[cutBufferContent],
+                tip,
+                tipText = 'Имеются вырезанные ' + cuts + '.<br>' +
+                    'Перед завершающим сохранением их<br>' +
+                    'необходимо вклеить.';
+            if (cutBufferContent && stack().length == 1) {
+                tip = new Opentip($('.cutBufferIndicator'), tipText,
+                                  { style: otStyle });
+                tip.show();
+                tip.hide();
+            } else {
+                stack.splice(-1, 1)
+            }
         }
 
         function dump() {
@@ -1121,21 +1248,38 @@ var viewModel = vM.entryEdit,
                      doze:  doze };
         })();
 
-        function load(N, M) {
-            var snapshot = JSON.parse(snapshots()[N]);
+        function load(snapshotIndex, shouldGoUpstream) {
+            var snapshot = JSON.parse(snapshots()[snapshotIndex]),
+                snapshot2, cutBuffer, constructor, i, j,
+                list = [];
             argus.doze();
             Entry.call(dataModel.entry, snapshot.entry);
             constructors.forEach(function (item) {
                 item.shredder = snapshot.toDestroy[item.name];
                 item.all.cacheCommit();
             });
-            if (M === N) {
+            cutBuffer = snapshot.cutBuffer;
+            if (cutBuffer !== null) {
+                constructor = {
+                    'Collogroup': Collogroup,
+                    'Meaning': Meaning,
+                    'Example': Example
+                }[cutBuffer[0]];
+                cutBuffer = cutBuffer[1];
+                if (constructor) {
+                    for (i=0, j=cutBuffer.length; i<j; i++) {
+                        list.push(new constructor(cutBuffer[i]));
+                    }
+                }
+            }
+            uiModel.cutBuffer(list);
+            if (shouldGoUpstream) {
+                snapshot2 = JSON.parse(snapshots()[snapshotIndex + 1]);
+                uiModel.navigationStack.load(snapshot2.view.previousStack);
+                uiModel.currentForm(snapshot2.view.previousForm);
+            } else {
                 uiModel.navigationStack.load(snapshot.view.currentStack);
                 uiModel.currentForm(snapshot.view.currentForm);
-            } else {
-                snapshot = JSON.parse(snapshots()[M]);
-                uiModel.navigationStack.load(snapshot.view.previousStack);
-                uiModel.currentForm(snapshot.view.previousForm);
             }
             argus.guard();
         }
@@ -1155,6 +1299,7 @@ var viewModel = vM.entryEdit,
             }
             var snapshot = { entry: dataModel.entry,
                              view: uiModel.navigationStack.dump(),
+                             cutBuffer: uiModel.cutBuffer.dump(),
                              toDestroy: {} }
             constructors.forEach(function (item) {
                 snapshot.toDestroy[item.name] = item.shredder;
@@ -1179,7 +1324,7 @@ var viewModel = vM.entryEdit,
         function redo() {
             if (! mayNotRedo()) {
                 var n = cursor();
-                load(n, n);
+                load(n, false);
                 cursor(n + 1);
             }
         }
@@ -1187,7 +1332,7 @@ var viewModel = vM.entryEdit,
         function undo() {
             if (! mayNotUndo()) {
                 var n = cursor() - 2;
-                load(n, n + 1);
+                load(n, true);
                 cursor(n + 1);
             }
         }
@@ -1254,17 +1399,12 @@ var viewModel = vM.entryEdit,
     // AntConc-запроса.
     var copyButton = $('#copy_antconc_query'),
         clip = new ZeroClipboard(copyButton),
-        tip = new Opentip(copyButton,
-                    'Запрос для AntConc скопирован в буфер обмена.',
-                    { target: true, tipJoint: 'bottom center',
-                      removeElementsOnHide: true, hideEffectDuration: 2.5,
-                      stemLength: 12, stemBase: 15,
-                      background: 'rgb(252, 243, 208)',
-                      borderColor: 'rgb(232, 213, 178)'});
+        aqTipText = 'Запрос для AntConc скопирован в буфер обмена.'
+        aqTip = new Opentip(copyButton, aqTipText, { style: otStyle });
     clip.on('dataRequested', function (client, args) {
         client.setText(dataModel.entry.antconc_query());
-        tip.show();
-        tip.hide();
+        aqTip.show();
+        aqTip.hide();
     });
 
     // Поднять занавес

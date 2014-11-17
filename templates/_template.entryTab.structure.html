@@ -12,6 +12,10 @@
             <a class="editItem" data-bind="click: edit"></a>
             <a class="expandItem" data-bind="click: toggle,
                 css: { expanded: isExpanded }"></a>
+            <a class="cutItem" data-bind="
+                click: $root.ui.cutBuffer.cutFrom($parent.meanings),
+                css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
+                visible: $root.ui.cutBuffer.emptyOrContainsMeanings"></a>
 
             <span data-bind="text: order"></span>.{{ space }}
             <span data-bind="visible: metaphorical">►</span>{{ space }}
@@ -38,12 +42,21 @@
                     <a class="deleteItem" data-bind="click:
                        $parent.examples.itemPoolReturner($data).do"></a>
                     <a class="editItem" data-bind="click: edit"></a>
+                    <a class="cutItem" data-bind="
+                        click: $root.ui.cutBuffer.cutFrom($parent.examples),
+                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsExamples },
+                        visible: $root.ui.cutBuffer.emptyOrContainsExamples"></a>
                     <span data-bind="wax: example"></span>{{ space }}
                     (<span data-bind="text: address_text"></span>)
                 </li>
             </ul>
-            <a class="addItem" data-bind="visible: isExpanded,
-                click: examples.itemAdder($data, $root.data.entry).do"></a>
+            <div data-bind="visible: isExpanded">
+                <a class="pasteItems" data-bind="
+                    click: $root.ui.cutBuffer.pasteInto(examples),
+                    visible: $root.ui.cutBuffer.containsExamples"></a>
+                <a class="addItem" data-bind="visible: isExpanded,
+                    click: examples.itemAdder($data, $root.data.entry).do"></a>
+            </div>
 
             <ul class="meanings" data-bind="sortable: { data: meanings },
                                             visible: isExpanded">
@@ -56,6 +69,11 @@
                     <a class="editItem" data-bind="click: edit"></a>
                     <a class="expandItem" data-bind="click: toggle,
                         css: { expanded: isExpanded }"></a>
+                    <a class="cutItem" data-bind="
+                        click: $root.ui.cutBuffer.cutFrom($parent.meanings),
+                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
+                        visible: $root.ui.cutBuffer.emptyOrContainsMeanings"
+                        ></a>
 
                     <span data-bind="visible: metaphorical">►</span>{{ space }}
                     <span data-bind="visible: substantivus">
@@ -72,9 +90,8 @@
                             meaning() && gloss()">;{{ space }}</span>
                     <i data-bind="text: gloss"></i>
 
-                    <ul class="examples" data-bind="sortable:
-                            { data: examples },
-                        visible: isExpanded">
+                    <ul class="examples" data-bind="sortable: examples,
+                                                    visible: isExpanded">
                         <li data-bind="event: { dblclick: function(){} },
                                 dblclickBubble: false">
                             <a class="dragItem" data-bind="visible:
@@ -82,18 +99,32 @@
                             <a class="deleteItem" data-bind="click:
                              $parent.examples.itemPoolReturner($data).do"></a>
                             <a class="editItem" data-bind="click: edit"></a>
+                            <a class="cutItem" data-bind="
+                                click: $root.ui.cutBuffer.cutFrom($parent.examples),
+                                css: { cutItemNonFirst: $root.ui.cutBuffer.containsExamples },
+                                visible: $root.ui.cutBuffer.emptyOrContainsExamples"></a>
                             <span data-bind="wax: example"></span>{{ space }}
                             (<span data-bind="text: address_text"></span>)
                         </li>
                     </ul>
-                    <a class="addItem" data-bind="visible: isExpanded, click:
-                        examples.itemAdder($data, $root.data.entry).do"></a>
+                    <div data-bind="visible: isExpanded">
+                        <a class="pasteItems" data-bind="
+                            click: $root.ui.cutBuffer.pasteInto(examples),
+                            visible: $root.ui.cutBuffer.containsExamples"></a>
+                        <a class="addItem" data-bind="click:
+                            examples.itemAdder($data, $root.data.entry).do"></a>
+                    </div>
 
                 </li>
 
             </ul>
-            <a class="addItem" data-bind="visible: isExpanded,
-                click: meanings.itemAdder($root.data.entry, $data).do"></a>
+            <div data-bind="visible: isExpanded">
+                <a class="pasteItems" data-bind="
+                    click: $root.ui.cutBuffer.pasteInto(meanings),
+                    visible: $root.ui.cutBuffer.containsMeanings"></a>
+                <a class="addItem" data-bind="
+                    click: meanings.itemAdder($root.data.entry, $data).do"></a>
+            </div>
 
             <!-- ko if: $root.ui.navigationStack.top().constructor.name === 'Entry' -->
             <ul class="collogroups"
@@ -107,6 +138,10 @@
                     <a class="editItem" data-bind="click: edit"></a>
                     <a class="expandItem" data-bind="click: toggle,
                         css: { expanded: isExpanded }"></a>
+                    <a class="cutItem" data-bind="
+                        click: $root.ui.cutBuffer.cutFrom($parent.collogroups),
+                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsCollogroups },
+                        visible: $root.ui.cutBuffer.emptyOrContainsCollogroups"></a>
 
                     <span data-bind="foreach: collocations">
                         {{ backspace }}
@@ -115,8 +150,8 @@
                         <span class="cslav" data-bind="wax: collocation"></span>
                     </span>
 
-                    <ul class="meanings" data-bind="sortable:
-                                  { data: meanings },
+                    <ul class="meanings" data-bind="
+                        sortable: meanings,
                         visible: isExpanded">
                         <li data-bind="event: { dblclick: toggle },
                             dblclickBubble: false">
@@ -127,6 +162,10 @@
                             <a class="editItem" data-bind="click: edit"></a>
                             <a class="expandItem" data-bind="click: toggle,
                                 css: { expanded: isExpanded }"></a>
+                            <a class="cutItem" data-bind="click:
+                                $root.ui.cutBuffer.cutFrom($parent.meanings),
+                                css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
+                                visible: $root.ui.cutBuffer.emptyOrContainsMeanings"></a>
 
                             <span data-bind="text: order"></span>.{{ space }}
                             <span data-bind="visible: metaphorical">►</span>{{ space }}
@@ -154,17 +193,25 @@
                                     <a class="deleteItem" data-bind="click:
                                      $parent.examples.itemPoolReturner($data).do"></a>
                                     <a class="editItem" data-bind="click: edit"></a>
+                                    <a class="cutItem" data-bind="
+                                        click: $root.ui.cutBuffer.cutFrom($parent.examples),
+                                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsExamples },
+                                        visible: $root.ui.cutBuffer.emptyOrContainsExamples"></a>
                                     <span data-bind="wax: example"></span>{{ space }}
                                     (<span data-bind="text: address_text"></span>)
                                 </li>
                             </ul>
-                            <a class="addItem"
-                                data-bind="visible: isExpanded,
-                                click: examples.itemAdder($data,
-                                    $root.data.entry, $parent).do"></a>
+                            <div data-bind="visible: isExpanded">
+                                <a class="pasteItems" data-bind="
+                                    click: $root.ui.cutBuffer.pasteInto(examples),
+                                    visible: $root.ui.cutBuffer.containsExamples"></a>
+                                <a class="addItem" data-bind="
+                                    click: examples.itemAdder($data,
+                                        $root.data.entry, $parent).do"></a>
+                            </div>
 
-                            <ul class="meanings" data-bind="sortable:
-                                { data: meanings },
+                            <ul class="meanings" data-bind="
+                                sortable: meanings,
                                 visible: isExpanded">
 
                                 <li data-bind="event: { dblclick: toggle },
@@ -177,6 +224,11 @@
                                     <a class="editItem" data-bind="click: edit"></a>
                                     <a class="expandItem" data-bind="click: toggle,
                                         css: { expanded: isExpanded }"></a>
+                                    <a class="cutItem" data-bind="
+                                        click: $root.ui.cutBuffer.cutFrom($parent.meanings),
+                                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
+                                        visible: $root.ui.cutBuffer.emptyOrContainsMeanings
+                                        "></a>
 
                                     <span data-bind="visible: metaphorical">►</span>{{ space }}
                                     <span data-bind="visible: substantivus">
@@ -203,34 +255,60 @@
                                             <a class="deleteItem" data-bind="click:
                                              $parent.examples.itemPoolReturner($data).do"></a>
                                             <a class="editItem" data-bind="click: edit"></a>
+                                            <a class="cutItem" data-bind="
+                                                click: $root.ui.cutBuffer.cutFrom($parent.examples),
+                                                css: { cutItemNonFirst: $root.ui.cutBuffer.containsExamples },
+                                                visible: $root.ui.cutBuffer.emptyOrContainsExamples"></a>
                                             <span data-bind="wax: example"></span>{{ space }}
                                             (<span data-bind="text: address_text"></span>)
                                         </li>
                                     </ul>
-                                    <a class="addItem" data-bind="visible: isExpanded, click:
-                                        examples.itemAdder($data, $root.data.entry).do"></a>
+                                    <div data-bind="visible: isExpanded">
+                                        <a class="pasteItems" data-bind="
+                                            click: $root.ui.cutBuffer.pasteInto(examples),
+                                            visible: $root.ui.cutBuffer.containsExamples"></a>
+                                        <a class="addItem" data-bind="click:
+                                            examples.itemAdder($data, $root.data.entry).do"></a>
+                                    </div>
 
                                 </li>
 
                             </ul>
-                            <a class="addItem" data-bind="visible: isExpanded,
-                                click: meanings.itemAdder($parent, $data).do"></a>
+                            <div data-bind="visible: isExpanded">
+                                <a class="pasteItems" data-bind="
+                                    click: $root.ui.cutBuffer.pasteInto(meanings),
+                                    visible: $root.ui.cutBuffer.containsMeanings"></a>
+                                <a class="addItem" data-bind="
+                                    click: meanings.itemAdder($parent, $data).do"></a>
+                            </div>
 
                         </li>
                     </ul>
-                    <a class="addItem"
-                        data-bind="visible: isExpanded,
-                        click: meanings.itemAdder($data).do"></a>
+                    <div data-bind="visible: isExpanded">
+                        <a class="pasteItems" data-bind="
+                            click: $root.ui.cutBuffer.pasteInto(meanings),
+                            visible: $root.ui.cutBuffer.containsMeanings"></a>
+                        <a class="addItem"
+                           data-bind="click: meanings.itemAdder($data).do"></a>
+                    </div>
 
                 </li>
             </ul>
-            <a class="addItem"
-                data-bind="visible: isExpanded,
-                click: collogroups.itemAdder($data).do"></a>
+            <div data-bind="visible: isExpanded">
+                <a class="pasteItems" data-bind="
+                    click: $root.ui.cutBuffer.pasteInto(collogroups),
+                    visible: $root.ui.cutBuffer.containsCollogroups"></a>
+                <a class="addItem"
+                    data-bind="
+                    click: collogroups.itemAdder($data).do"></a>
+            </div>
 
             <!-- /ko -->
         </li>
     </ul>
+    <a class="pasteItems"
+        data-bind="click: $root.ui.cutBuffer.pasteInto(meanings),
+                   visible: $root.ui.cutBuffer.containsMeanings"></a>
     <a class="addItem"
         data-bind="click: meanings.itemAdder($root.data.entry).do"></a>
 
@@ -246,6 +324,10 @@
             <a class="editItem" data-bind="click: edit"></a>
             <a class="expandItem" data-bind="click: toggle,
                 css: { expanded: isExpanded }"></a>
+            <a class="cutItem" data-bind="
+                click: $root.ui.cutBuffer.cutFrom($parent.collogroups),
+                css: { cutItemNonFirst: $root.ui.cutBuffer.containsCollogroups },
+                visible: $root.ui.cutBuffer.emptyOrContainsCollogroups"></a>
 
             <span data-bind="foreach: collocations">
                 {{ backspace }}
@@ -254,9 +336,8 @@
                 <span class="cslav" data-bind="wax: collocation"></span>
             </span>
 
-            <ul class="meanings" data-bind="sortable:
-                          { data: meanings },
-                visible: isExpanded">
+            <ul class="meanings" data-bind="sortable: meanings,
+                                            visible: isExpanded">
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
                     <a class="dragItem" data-bind="visible:
@@ -266,6 +347,10 @@
                     <a class="editItem" data-bind="click: edit"></a>
                     <a class="expandItem" data-bind="click: toggle,
                         css: { expanded: isExpanded }"></a>
+                    <a class="cutItem" data-bind="
+                        click: $root.ui.cutBuffer.cutFrom($parent.meanings),
+                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
+                        visible: $root.ui.cutBuffer.emptyOrContainsMeanings"></a>
 
                     <span data-bind="text: order"></span>.{{ space }}
                     <span data-bind="visible: metaphorical">►</span>{{ space }}
@@ -293,18 +378,25 @@
                             <a class="deleteItem" data-bind="click:
                              $parent.examples.itemPoolReturner($data).do"></a>
                             <a class="editItem" data-bind="click: edit"></a>
+                            <a class="cutItem" data-bind="
+                                click: $root.ui.cutBuffer.cutFrom($parent.examples),
+                                css: { cutItemNonFirst: $root.ui.cutBuffer.containsExamples },
+                                visible: $root.ui.cutBuffer.emptyOrContainsExamples"></a>
                             <span data-bind="wax: example"></span>{{ space }}
                             (<span data-bind="text: address_text"></span>)
                         </li>
                     </ul>
-                    <a class="addItem"
-                        data-bind="visible: isExpanded,
-                        click: examples.itemAdder($data,
-                            $root.data.entry, $parent).do"></a>
+                    <div data-bind="visible: isExpanded">
+                        <a class="pasteItems" data-bind="
+                            click: $root.ui.cutBuffer.pasteInto(examples),
+                            visible: $root.ui.cutBuffer.containsExamples"></a>
+                        <a class="addItem" data-bind="click:
+                            examples.itemAdder($data, $root.data.entry,
+                            $parent).do"></a>
+                    </div>
 
-                    <ul class="meanings" data-bind="sortable:
-                        { data: meanings },
-                        visible: isExpanded">
+                    <ul class="meanings" data-bind="sortable: meanings,
+                                                    visible: isExpanded">
 
                         <li data-bind="event: { dblclick: toggle },
                             dblclickBubble: false">
@@ -315,6 +407,10 @@
                             <a class="editItem" data-bind="click: edit"></a>
                             <a class="expandItem" data-bind="click: toggle,
                                 css: { expanded: isExpanded }"></a>
+                            <a class="cutItem" data-bind="
+                                click: $root.ui.cutBuffer.cutFrom($parent.meanings),
+                                css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
+                                visible: $root.ui.cutBuffer.emptyOrContainsMeanings"></a>
 
                             <span data-bind="visible: metaphorical">►</span>{{ space }}
                             <span data-bind="visible: substantivus">
@@ -341,29 +437,51 @@
                                     <a class="deleteItem" data-bind="click:
                                      $parent.examples.itemPoolReturner($data).do"></a>
                                     <a class="editItem" data-bind="click: edit"></a>
+                                    <a class="cutItem" data-bind="
+                                        click: $root.ui.cutBuffer.cutFrom($parent.examples),
+                                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsExamples },
+                                        visible: $root.ui.cutBuffer.emptyOrContainsExamples"></a>
                                     <span data-bind="wax: example"></span>{{ space }}
                                     (<span data-bind="text: address_text"></span>)
                                 </li>
                             </ul>
-                            <a class="addItem" data-bind="visible: isExpanded, click:
-                                examples.itemAdder($data, $root.data.entry, $parent).do"></a>
+                            <div data-bind="visible: isExpanded">
+                                <a class="pasteItems" data-bind="
+                                    click: $root.ui.cutBuffer.pasteInto(examples),
+                                    visible: $root.ui.cutBuffer.containsExamples"></a>
+                                <a class="addItem" data-bind="click:
+                                    examples.itemAdder($data, $root.data.entry,
+                                    $parent).do"></a>
+                            </div>
 
                         </li>
 
                     </ul>
-                    <a class="addItem" data-bind="visible: isExpanded,
-                        click: meanings.itemAdder($parent, $data).do"></a>
+                    <div data-bind="visible: isExpanded">
+                        <a class="pasteItems" data-bind="
+                            click: $root.ui.cutBuffer.pasteInto(meanings),
+                            visible: $root.ui.cutBuffer.containsMeanings"></a>
+                        <a class="addItem" data-bind="
+                            click: meanings.itemAdder($parent, $data).do"></a>
+                    </div>
 
 
 
                 </li>
             </ul>
-            <a class="addItem"
-                data-bind="visible: isExpanded,
-                click: meanings.itemAdder($parent).do"></a>
+            <div data-bind="visible: isExpanded">
+                <a class="pasteItems" data-bind="
+                    click: $root.ui.cutBuffer.pasteInto(meanings),
+                    visible: $root.ui.cutBuffer.containsMeanings"></a>
+                <a class="addItem" data-bind="
+                    click: meanings.itemAdder($parent).do"></a>
+            </div>
 
         </li>
     </ul>
+    <a class="pasteItems" data-bind="
+        click: $root.ui.cutBuffer.pasteInto(collogroups),
+        visible: $root.ui.cutBuffer.containsCollogroups"></a>
     <a class="addItem"
         data-bind="click: collogroups.itemAdder($data).do"></a>
 

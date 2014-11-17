@@ -13,6 +13,10 @@
             <a class="editItem" data-bind="click: edit"></a>
             <a class="expandItem" data-bind="click: toggle,
                 css: { expanded: isExpanded }"></a>
+            <a class="cutItem" data-bind="
+                click: $root.ui.cutBuffer.cutFrom($parent.collogroups),
+                css: { cutItemNonFirst: $root.ui.cutBuffer.containsCollogroups },
+                visible: $root.ui.cutBuffer.emptyOrContainsCollogroups"></a>
 
             <span data-bind="foreach: collocations">
                 {{ backspace }}
@@ -21,7 +25,7 @@
                 <span class="cslav" data-bind="wax: collocation"></span>
             </span>
 
-            <ul class="meanings" data-bind="sortable: { data: meanings },
+            <ul class="meanings" data-bind="sortable: meanings,
                                             visible: isExpanded">
 
                 <li data-bind="event: { dblclick: toggle },
@@ -33,6 +37,10 @@
                     <a class="editItem" data-bind="click: edit"></a>
                     <a class="expandItem" data-bind="click: toggle,
                         css: { expanded: isExpanded }"></a>
+                    <a class="cutItem" data-bind="
+                        click: $root.ui.cutBuffer.cutFrom($parent.meanings),
+                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
+                        visible: $root.ui.cutBuffer.emptyOrContainsMeanings"></a>
 
                     <span data-bind="text: order"></span>.{{ space }}
                     <span data-bind="visible: metaphorical">►</span>{{ space }}
@@ -49,7 +57,7 @@
                             meaning() && gloss()">;{{ space }}</span>
                     <i data-bind="text: gloss"></i>
 
-                    <ul class="examples" data-bind="sortable: { data: examples },
+                    <ul class="examples" data-bind="sortable: examples,
                                                     visible: isExpanded">
                         <li data-bind="event: { dblclick: function(){} },
                                 dblclickBubble: false">
@@ -58,20 +66,34 @@
                             <a class="deleteItem" data-bind="click:
                              $parent.examples.itemPoolReturner($data).do"></a>
                             <a class="editItem" data-bind="click: edit"></a>
+                            <a class="cutItem" data-bind="
+                                click: $root.ui.cutBuffer.cutFrom($parent.examples),
+                                css: { cutItemNonFirst: $root.ui.cutBuffer.containsExamples },
+                                visible: $root.ui.cutBuffer.emptyOrContainsExamples"></a>
                             <span data-bind="wax: example"></span>{{ space }}
                             (<span data-bind="text: address_text"></span>)
                         </li>
                     </ul>
 
-                    <a class="addItem" data-bind="visible: isExpanded,
-                        click: examples.itemAdder($data,
-                            $root.data.entry, $parent).do"></a>
+                    <div data-bind="visible: isExpanded">
+                        <a class="pasteItems" data-bind="
+                            click: $root.ui.cutBuffer.pasteInto(examples),
+                            visible: $root.ui.cutBuffer.containsExamples"></a>
+                        <a class="addItem" data-bind="
+                            click: examples.itemAdder($data,
+                                $root.data.entry, $parent).do"></a>
+                    </div>
 
                 </li>
             </ul>
 
-            <a class="addItem" data-bind="visible: isExpanded,
-                click: meanings.itemAdder($parent).do"></a>
+            <div data-bind="visible: isExpanded">
+                <a class="pasteItems" data-bind="
+                    click: $root.ui.cutBuffer.pasteInto(meanings),
+                    visible: $root.ui.cutBuffer.containsMeanings"></a>
+                <a class="addItem"
+                   data-bind="click: meanings.itemAdder($parent).do"></a>
+            </div>
 
         </li>
     </ul>
