@@ -22,7 +22,10 @@
 
     <!-- ko with: $root.ui -->
     <span class="cutBufferIndicator header--item"
-        data-bind="visible: cutBuffer().length > 0">
+        data-bind="css: { hidden: cutBuffer().length < 1 }">
+        <!-- Использовать ``data-bind="visible: cutBuffer().lenght > 0"``
+        нельзя, так как всплывающая подсказка Opentip будет выскакивать
+        не под этим индикатором, в верхнем левом углу вьюпорта браузера. -->
         <span data-bind="text: cutBuffer().length"></span>
         <span data-bind="visible: cutBuffer.containsCollogroups">сс.</span>
         <span data-bind="visible: cutBuffer.containsMeanings">зн.</span>

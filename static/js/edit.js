@@ -2,10 +2,16 @@ try {
 
 
 var topic = 'entry_change',
+    otStyle = 'slavdictOpentip',
     constructors = [Etymology, Participle, Orthvar,
                     Collocation, Context, Greq,
                     Example, Collogroup, Meaning,
                     Entry];
+
+Opentip.styles[otStyle] = { target: true, showOn: null, hideOn: 'click',
+    tipJoint: 'bottom center', removeElementsOnHide: true,
+    hideEffectDuration: 2.5, stemLength: 12, stemBase: 15,
+    background: '#fcf3d0', borderColor: '#e8d5b2' };
 
 constructors.nameMap = {'Etymology': Etymology, 'Participle': Participle,
     'Orthvar': Orthvar, 'Collocation': Collocation, 'Context': Context,
@@ -767,15 +773,37 @@ var viewModel = vM.entryEdit,
                 }
             },
             showTip = function (value) {
+                var br = '<br/>',
+                    pasteImg = '<img class="tipIcon" src="/static/paste.png"/>',
+                    cutImg = '<img class="tipIcon" src="/static/scissorsPlus.png"/>',
+                    variables = {
+                        'Collogroup': {
+                            a: 'Словосочетание вырезано и помещено',
+                            b: 'словосочетаний', c: 'словосочетания'},
+                        'Meaning': {
+                            a: 'Значение/употребление вырезано и помещено',
+                            b: 'значений/употреблений',
+                            c: 'значения/употребления'},
+                        'Example': {
+                            a: 'Иллюстрация вырезана и помещена',
+                            b: 'иллюстраций', c: 'иллюстрации'}
+                    }[value],
+                    text = variables.a + br +
+                        'в промежуточный буфер. Для вклейки' + br +
+                        'используйте одну из кнопок ' + pasteImg + '. Чтобы' + br +
+                        'вклеить сразу несколько ' + variables.b + ',' + br +
+                        'добавьте остальные ' + variables.c + br +
+                        'с помощью кнопок ' + cutImg + '.' + br + ' ',
+                    tip = new Opentip($('.cutBufferIndicator'), text,
+                                      { style: otStyle });
                 buffer.once.dispose();
-                buffer.once = buffer.subscribe(checkIfWasEmpty, null, 'beforeChange');
-                alert('!!');
+                tip.show();
+                tip.hide();
             },
             checkIfWasEmpty = function (value) {
-                console.log(')))', value);
                 if (value.length === 0) {
                     buffer.once.dispose();
-                    buffer.once = buffer.subscribe(showTip);
+                    buffer.once = buffer.contentType.subscribe(showTip);
                 }
             },
             cutFrom = function (list) {
@@ -1354,17 +1382,12 @@ var viewModel = vM.entryEdit,
     // AntConc-запроса.
     var copyButton = $('#copy_antconc_query'),
         clip = new ZeroClipboard(copyButton),
-        tip = new Opentip(copyButton,
-                    'Запрос для AntConc скопирован в буфер обмена.',
-                    { target: true, tipJoint: 'bottom center',
-                      removeElementsOnHide: true, hideEffectDuration: 2.5,
-                      stemLength: 12, stemBase: 15,
-                      background: 'rgb(252, 243, 208)',
-                      borderColor: 'rgb(232, 213, 178)'});
+        aqTipText = 'Запрос для AntConc скопирован в буфер обмена.'
+        aqTip = new Opentip(copyButton, aqTipText, { style: otStyle });
     clip.on('dataRequested', function (client, args) {
         client.setText(dataModel.entry.antconc_query());
-        tip.show();
-        tip.hide();
+        aqTip.show();
+        aqTip.hide();
     });
 
     // Поднять занавес
