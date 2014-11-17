@@ -795,7 +795,7 @@ var viewModel = vM.entryEdit,
                         'добавьте остальные ' + variables.c + br +
                         'с помощью кнопок ' + cutImg + '.' + br + ' ',
                     tip = new Opentip($('.cutBufferIndicator'), text,
-                                      { style: otStyle });
+                                      { style: otStyle, hideEffectDuration: 15 });
                 buffer.once.dispose();
                 tip.show();
                 tip.hide();
