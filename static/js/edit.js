@@ -894,7 +894,24 @@ var viewModel = vM.entryEdit,
         }
 
         function pop() {
-            stack.splice(-1, 1)
+            var cutBufferContent = uiModel.cutBuffer.contentType(),
+                cuts = {
+                    'Collogroup': 'словосочетания',
+                    'Meaning': 'значения/употребления',
+                    'Example': 'иллюстрации'
+                }[cutBufferContent],
+                tip,
+                tipText = 'Имеются вырезанные ' + cuts + '.<br>' +
+                    'Перед завершающим сохранением их<br>' +
+                    'необходимо вклеить.';
+            if (cutBufferContent && stack().length == 1) {
+                tip = new Opentip($('.cutBufferIndicator'), tipText,
+                                  { style: otStyle });
+                tip.show();
+                tip.hide();
+            } else {
+                stack.splice(-1, 1)
+            }
         }
 
         function dump() {
