@@ -22,13 +22,10 @@ except ImportError:
 # либо от которых не зависят другие настройки.
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
-    ('khitrov', 'a.n.khitrov@gmail.com'),
-)
+ADMINS = ()
 MANAGERS = ADMINS
-BACKUP_MANAGERS = MANAGERS + (
-    ('imperfect', 'imperfect@yandex.ru'),
-)
+BACKUP_MANAGERS = MANAGERS
+
 SERVER_EMAIL = 'no-reply@slavdict.ruslang.ru'
 INTERNAL_IPS = ('127.0.0.1',)
 
