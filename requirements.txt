@@ -1,6 +1,5 @@
 Coffin==0.3.8
-Django==1.5.5
+Django==1.7.2
 Jinja2>=2.8.0
 newrelic==2.4.0.4
 psycopg2==2.5.1
-South==0.8.2
