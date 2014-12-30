@@ -12,6 +12,8 @@ JSLIBS_VERSION_FILE := ${JSLIBS_PATH}version.txt
 JSLIBS_NEW_VERSION := $(shell python settings.py --jslibs-version)
 JSLIBS_OLD_VERSION := $(shell cat ${JSLIBS_VERSION_FILE} 2>/dev/null)
 
+restart: stop checkout collectstatic fixown migrate start
+
 run: collectstatic
 	@echo "Запуск сервера в тестовом окружении..."
 	@$(IS_DEVELOPMENT)
@@ -47,15 +49,8 @@ collectstatic: jslibs
 	compass compile -e ${SLAVDICT_ENVIRONMENT}
 	python ./manage.py collectstatic --noinput
 
-syncdb:
-	python ./manage.py syncdb
-
 migrate:
-	python ./manage.py migrate dictionary
-
-restart: stop checkout collectstatic fixown syncdb start
-
-migrestart: stop checkout collectstatic fixown syncdb migrate start
+	python ./manage.py migrate
 
 clean:
 	-find -name '*.pyc' -execdir rm {} \;
@@ -86,6 +81,5 @@ jslibs:
     run \
     start \
     stop \
-    syncdb \
 
 
