@@ -1,10 +1,9 @@
 import os
 import sys
 
-import django.core.handlers.wsgi
+import django.core.wsgi
 
-sys.path.append('/var/www/')
 sys.path.append('/var/www/slavdict/')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'slavdict.settings'
 
-application = django.core.handlers.wsgi.WSGIHandler()
+application = django.core.wsgi.get_wsgi_application()
