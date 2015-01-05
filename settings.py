@@ -1,5 +1,13 @@
 # -*- coding: UTF-8 -*-
-# Django settings for slavdict project.
+"""
+Django settings for slavdict project.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/1.7/topics/settings/
+
+For the full list of settings and their values, see
+https://docs.djangoproject.com/en/1.7/ref/settings/
+"""
 import os
 import sys
 
@@ -9,7 +17,8 @@ backslash = '\\'
 # Базовые настройки проекта,
 # от которых могут зависеть другие настройки
 DEBUG = False
-ROOT = os.path.normpath( os.path.abspath( os.path.dirname( __file__ ) ) ).replace( backslash, slash ) + slash
+ROOT = os.path.normpath(os.path.abspath(os.path.dirname(__file__))) \
+              .replace(backslash, slash) + slash
 
 # Локальное переопределение базовых настроек,
 # если оно имеется.
@@ -48,9 +57,8 @@ USE_TZ = False
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'ru'
 
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
 USE_I18N = True
+USE_L10N = True
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -90,13 +98,18 @@ JINJA2_EXTENSIONS = (
 
 MIDDLEWARE_CLASSES = (
     'slavdict.middleware.CookieVersionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 ROOT_URLCONF = 'slavdict.urls'
+
+WSGI_APPLICATION = 'slavdict.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -118,13 +131,12 @@ STATICFILES_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.admin',
-    'django.contrib.admindocs',
-    'django.contrib.staticfiles',
     'django.contrib.messages',
+    'django.contrib.staticfiles',
 
     'slavdict.dictionary',
     'slavdict.custom_user',
