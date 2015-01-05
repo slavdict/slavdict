@@ -516,7 +516,7 @@ def import_csv_billet(request):
                           со значением '{0}' не реализована.""".format(force))
 
             if 'force' not in request.GET and orthvar_collisions:
-                response = HttpResponse(output.getvalue(), mimetype="text/csv")
+                response = HttpResponse(output.getvalue(), content_type="text/csv")
                 response['Content-Disposition'] = ('attachment; '
                         'filename={:%Y.%m.%d--%H.%M.%S}--not.imported.csv'
                         .format(datetime.datetime.now()))

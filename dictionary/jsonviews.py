@@ -57,9 +57,9 @@ def json_singleselect_entries_urls(request):
                 }
                 for e in entries]
         data = _json(entries)
-        response = HttpResponse(data, mimetype=IMT_JSON)
+        response = HttpResponse(data, content_type=IMT_JSON)
     else:
-        response = HttpResponse(mimetype=IMT_JSON, status=400)
+        response = HttpResponse(content_type=IMT_JSON, status=400)
     return response
 
 
@@ -74,7 +74,7 @@ def json_ex_save(request):
         ex.__dict__.update(exDict)
         ex.save()
         data = _json({ 'action': 'saved' })
-        response = HttpResponse(data, mimetype=IMT_JSON, status=200)
+        response = HttpResponse(data, content_type=IMT_JSON, status=200)
     else:
         response = HttpResponse(status=400)
     return response
@@ -95,7 +95,7 @@ def json_greq_save(request):
             gr.__dict__.update(greq)
             gr.save()
             data = _json({ 'action': 'saved' })
-        response = HttpResponse(data, mimetype=IMT_JSON, status=200)
+        response = HttpResponse(data, content_type=IMT_JSON, status=200)
     else:
         response = HttpResponse(status=400)
     return response
@@ -110,7 +110,7 @@ def json_greq_delete(request):
             gr = GreekEquivalentForExample.objects.get(pk=id)
             gr.delete()
             data = _json({ 'action': 'deleted' })
-            response = HttpResponse(data, mimetype=IMT_JSON, status=200)
+            response = HttpResponse(data, content_type=IMT_JSON, status=200)
         else:
             response = HttpResponse(status=400)
     else:
@@ -131,7 +131,7 @@ def json_goodness_save(request):
 
 def json_entry_get(request, id):
     data = dictionary.viewmodels.entry_json(id)
-    return HttpResponse(data, mimetype=IMT_JSON, status=200)
+    return HttpResponse(data, content_type=IMT_JSON, status=200)
 
 
 def json_entry_save(request):
