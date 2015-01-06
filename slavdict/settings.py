@@ -8,17 +8,15 @@ https://docs.djangoproject.com/en/1.7/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
-import os
+from os.path import abspath
+from os.path import dirname
+from os.path import normpath
 import sys
-
-slash = '/'
-backslash = '\\'
 
 # Базовые настройки проекта,
 # от которых могут зависеть другие настройки
 DEBUG = False
-ROOT = os.path.normpath(os.path.abspath(os.path.dirname(__file__))) \
-              .replace(backslash, slash) + slash
+ROOT = normpath(abspath(dirname(dirname(__file__)))).replace('\\', '/') + '/'
 
 # Локальное переопределение базовых настроек,
 # если оно имеется.
