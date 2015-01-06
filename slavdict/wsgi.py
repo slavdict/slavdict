@@ -1,9 +1,20 @@
-import os
+# -*- coding: utf-8 -*-
+"""
+WSGI config for slavdict project.
+
+It exposes the WSGI callable as a module-level variable named ``application``.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
+"""
+
 import sys
+PATH = '/var/www/slavdict'
+if PATH not in sys.path:
+    sys.path.append(PATH)
 
-import django.core.wsgi
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 
-sys.path.append('/var/www/slavdict/')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'slavdict.settings'
-
-application = django.core.wsgi.get_wsgi_application()
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
