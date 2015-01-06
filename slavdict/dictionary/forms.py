@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 
-import dictionary.viewmodels
+from slavdict.dictionary import viewmodels
 
 
 class BilletImportForm(forms.Form):
@@ -16,18 +16,18 @@ class BilletImportForm(forms.Form):
         return cleaned_data
 
 
-AUTHOR_CHOICES = dictionary.viewmodels.tupleAuthors
-CANONNAME_CHOICES = dictionary.viewmodels.tupleCanonicalName
-GENDER_CHOICES = dictionary.viewmodels.tupleGenders
-GREQSORTBASE_CHOICES = dictionary.viewmodels.tupleGreqSortbase
-GREQSTATUS_CHOICES = dictionary.viewmodels.tupleGreqStatuses
-ONYM_CHOICES = dictionary.viewmodels.tupleOnyms
-POS_CHOICES = dictionary.viewmodels.tuplePos
-POSSESSIVE_CHOICES = dictionary.viewmodels.tuplePossessive
-SORTDIR_CHOICES = dictionary.viewmodels.tupleSortdir
-SORTBASE_CHOICES = dictionary.viewmodels.tupleSortbase
-STATUS_CHOICES = dictionary.viewmodels.tupleStatuses
-TANTUM_CHOICES = dictionary.viewmodels.tupleTantum
+AUTHOR_CHOICES = viewmodels.tupleAuthors
+CANONNAME_CHOICES = viewmodels.tupleCanonicalName
+GENDER_CHOICES = viewmodels.tupleGenders
+GREQSORTBASE_CHOICES = viewmodels.tupleGreqSortbase
+GREQSTATUS_CHOICES = viewmodels.tupleGreqStatuses
+ONYM_CHOICES = viewmodels.tupleOnyms
+POS_CHOICES = viewmodels.tuplePos
+POSSESSIVE_CHOICES = viewmodels.tuplePossessive
+SORTDIR_CHOICES = viewmodels.tupleSortdir
+SORTBASE_CHOICES = viewmodels.tupleSortbase
+STATUS_CHOICES = viewmodels.tupleStatuses
+TANTUM_CHOICES = viewmodels.tupleTantum
 
 class FilterEntriesForm(forms.Form):
     sortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)

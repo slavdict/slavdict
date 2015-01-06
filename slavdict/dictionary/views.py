@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
 import datetime
-import json
 import random
 import re
 import StringIO
@@ -12,7 +11,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import InvalidPage
-from django.forms.models import modelformset_factory
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -20,24 +18,20 @@ from django.shortcuts import redirect
 from django.template import RequestContext
 from django.views.decorators.cache import never_cache
 
-import dictionary.filters
-import dictionary.models
-import dictionary.viewmodels
-import unicode_csv
-from custom_user.models import CustomUser
-from dictionary.forms import BilletImportForm
-from dictionary.forms import FilterEntriesForm
-from dictionary.forms import FilterExamplesForm
-from dictionary.models import civilrus_convert
-from dictionary.models import Entry
-from dictionary.models import Etymology
-from dictionary.models import Example
-from dictionary.models import GreekEquivalentForExample
-from dictionary.models import Meaning
-from dictionary.models import MeaningContext
-from dictionary.models import OrthographicVariant
-from unicode_csv import UnicodeReader
-
+from slavdict import unicode_csv
+from slavdict.dictionary import filters
+from slavdict.dictionary import models
+from slavdict.dictionary import viewmodels
+from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary.forms import BilletImportForm
+from slavdict.dictionary.forms import FilterEntriesForm
+from slavdict.dictionary.forms import FilterExamplesForm
+from slavdict.dictionary.models import civilrus_convert
+from slavdict.dictionary.models import Entry
+from slavdict.dictionary.models import Etymology
+from slavdict.dictionary.models import Example
+from slavdict.dictionary.models import GreekEquivalentForExample
+from slavdict.dictionary.models import OrthographicVariant
 
 
 
@@ -80,7 +74,7 @@ def all_entries(request, is_paged=False):
 
     if httpGET_STATUS=='-created':
         entries = entries.exclude(
-                status=dictionary.models.STATUS_MAP['created'])
+                status=models.STATUS_MAP['created'])
 
     if httpGET_GOODNESS:
         g = httpGET_GOODNESS
@@ -103,7 +97,7 @@ def all_entries(request, is_paged=False):
 
     if httpGET_CORRUPTED_GREEK:
         greek_etymons = Etymology.objects.filter(
-                language=dictionary.models.LANGUAGE_MAP['greek'],
+                language=models.LANGUAGE_MAP['greek'],
                 corrupted=True)
         greqex = GreekEquivalentForExample.objects.filter(corrupted=True)
 
@@ -557,7 +551,7 @@ def entry_list(request):
 
     form = FilterEntriesForm(data)
     assert form.is_valid(), u'Форма заполнена неправильно'
-    entries = dictionary.filters.get_entries(form.cleaned_data)
+    entries = filters.get_entries(form.cleaned_data)
 
     paginator = Paginator(entries, per_page=12, orphans=2)
     if request.method == 'POST':
@@ -574,16 +568,16 @@ def entry_list(request):
 
     context = {
         'viewmodel': {
-            'authors': dictionary.viewmodels.jsonAuthors,
-            'canonical_name': dictionary.viewmodels.jsonCanonicalName,
-            'gender': dictionary.viewmodels.jsonGenders,
-            'onym': dictionary.viewmodels.jsonOnyms,
-            'pos': dictionary.viewmodels.jsonPos,
-            'possessive': dictionary.viewmodels.jsonPossessive,
-            'statuses': dictionary.viewmodels.jsonStatuses,
-            'sortdir': dictionary.viewmodels.jsonSortdir,
-            'sortbase': dictionary.viewmodels.jsonSortbase,
-            'tantum': dictionary.viewmodels.jsonTantum,
+            'authors': viewmodels.jsonAuthors,
+            'canonical_name': viewmodels.jsonCanonicalName,
+            'gender': viewmodels.jsonGenders,
+            'onym': viewmodels.jsonOnyms,
+            'pos': viewmodels.jsonPos,
+            'possessive': viewmodels.jsonPossessive,
+            'statuses': viewmodels.jsonStatuses,
+            'sortdir': viewmodels.jsonSortdir,
+            'sortbase': viewmodels.jsonSortbase,
+            'tantum': viewmodels.jsonTantum,
             },
         'entries': page.object_list,
         'number_of_entries': paginator.count,
@@ -621,7 +615,7 @@ def hellinist_workbench(request):
 
     form = FilterExamplesForm(data)
     assert form.is_valid(), u'Форма FilterExamplesForm заполнена неправильно'
-    examples = dictionary.filters.get_examples(form.cleaned_data)
+    examples = filters.get_examples(form.cleaned_data)
 
     paginator = Paginator(examples, per_page=4, orphans=2)
     if request.method == 'POST':
@@ -659,20 +653,20 @@ def hellinist_workbench(request):
     context = {
         'examples': page.object_list,
         'form': form,
-        'jsonExamples': dictionary.viewmodels._json(vM_examples),
+        'jsonExamples': viewmodels._json(vM_examples),
         'number_of_examples': paginator.count,
         'indicators': {
             'urgent': Example.objects.filter(greek_eq_status=u'U').count(),
             'meaning': Example.objects.filter(greek_eq_status=u'M').count(),
             },
         'page': page,
-        'statusList': dictionary.models.Example.GREEK_EQ_STATUS,
+        'statusList': models.Example.GREEK_EQ_STATUS,
         'title': u'Греческий кабинет',
         'viewmodel': {
-            'authors': dictionary.viewmodels.jsonAuthors,
-            'statuses': dictionary.viewmodels.jsonGreqStatuses,
-            'sortdir': dictionary.viewmodels.jsonSortdir,
-            'sortbase': dictionary.viewmodels.jsonGreqSortbase,
+            'authors': viewmodels.jsonAuthors,
+            'statuses': viewmodels.jsonGreqStatuses,
+            'sortdir': viewmodels.jsonSortdir,
+            'sortbase': viewmodels.jsonGreqSortbase,
             },
         }
     response = render_to_response('hellinist_workbench.html', context,
@@ -721,41 +715,41 @@ def antconc2ucs8_converter(request):
 @never_cache
 def edit_entry(request, id):
     choices = {
-        'author': dictionary.viewmodels.editAuthors,
-        'entry_status': dictionary.viewmodels.editStatuses,
-        'gender': dictionary.viewmodels.editGenders,
-        'onym': dictionary.viewmodels.editOnyms,
-        'part_of_speech': dictionary.viewmodels._choices(
-                            dictionary.models.PART_OF_SPEECH_CHOICES),
-        'participle_type': dictionary.viewmodels.editParticiples,
-        'substantivus_type': dictionary.viewmodels.editSubstantivusTypes,
-        'tantum': dictionary.viewmodels.editTantum,
+        'author': viewmodels.editAuthors,
+        'entry_status': viewmodels.editStatuses,
+        'gender': viewmodels.editGenders,
+        'onym': viewmodels.editOnyms,
+        'part_of_speech': viewmodels._choices(
+                            models.PART_OF_SPEECH_CHOICES),
+        'participle_type': viewmodels.editParticiples,
+        'substantivus_type': viewmodels.editSubstantivusTypes,
+        'tantum': viewmodels.editTantum,
     }
     labels = {
-        'author': dict(dictionary.viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
-        'entry_status': dict(dictionary.models.STATUS_CHOICES),
-        'gender': dict(dictionary.models.GENDER_CHOICES),
-        'onym': dict(dictionary.models.ONYM_CHOICES),
-        'part_of_speech': dict(dictionary.models.PART_OF_SPEECH_CHOICES),
-        'participle_type': dict(dictionary.models.PARTICIPLE_CHOICES),
-        'substantivus_type': dict(dictionary.models.SUBSTANTIVUS_TYPE_CHOICES),
-        'tantum': dict(dictionary.models.TANTUM_CHOICES)
+        'author': dict(viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
+        'entry_status': dict(models.STATUS_CHOICES),
+        'gender': dict(models.GENDER_CHOICES),
+        'onym': dict(models.ONYM_CHOICES),
+        'part_of_speech': dict(models.PART_OF_SPEECH_CHOICES),
+        'participle_type': dict(models.PARTICIPLE_CHOICES),
+        'substantivus_type': dict(models.SUBSTANTIVUS_TYPE_CHOICES),
+        'tantum': dict(models.TANTUM_CHOICES)
     }
     slugs = {
-        'onym': dictionary.models.ONYM_MAP,
-        'part_of_speech': dictionary.models.PART_OF_SPEECH_MAP,
+        'onym': models.ONYM_MAP,
+        'part_of_speech': models.PART_OF_SPEECH_MAP,
     }
     context = {
-        'entry': dictionary.viewmodels.entry_json(id),
-        'choices': dictionary.viewmodels._json(choices),
-        'labels': dictionary.viewmodels._json(labels),
-        'slugs': dictionary.viewmodels._json(slugs),
+        'entry': viewmodels.entry_json(id),
+        'choices': viewmodels._json(choices),
+        'labels': viewmodels._json(labels),
+        'slugs': viewmodels._json(slugs),
         'entryURL': Entry.objects.get(pk=id).get_absolute_url(),
-        'PARTS_OF_SPEECH': dictionary.models.PART_OF_SPEECH_CHOICES,
-        'GENDERS': dictionary.models.GENDER_CHOICES,
-        'STATUSES': dictionary.models.STATUS_CHOICES,
-        'GREEK_EQ_STATUSES': dictionary.models.Example.GREEK_EQ_STATUS,
-        'SUBSTANTIVUS_TYPES': dictionary.models.SUBSTANTIVUS_TYPE_CHOICES,
+        'PARTS_OF_SPEECH': models.PART_OF_SPEECH_CHOICES,
+        'GENDERS': models.GENDER_CHOICES,
+        'STATUSES': models.STATUS_CHOICES,
+        'GREEK_EQ_STATUSES': models.Example.GREEK_EQ_STATUS,
+        'SUBSTANTIVUS_TYPES': models.SUBSTANTIVUS_TYPE_CHOICES,
     }
     return render_to_response('single_entry_edit.html', context,
                               RequestContext(request))

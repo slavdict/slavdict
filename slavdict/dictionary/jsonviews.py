@@ -10,19 +10,18 @@ from django.db.models import Q
 from django.db.models.loading import get_model
 from django.http import HttpResponse
 
-import dictionary.viewmodels
-from custom_user.models import CustomUser
-from dictionary.models import Collocation
-from dictionary.models import CollocationGroup
-from dictionary.models import Entry
-from dictionary.models import Etymology
-from dictionary.models import Example
-from dictionary.models import GreekEquivalentForExample
-from dictionary.models import Meaning
-from dictionary.models import MeaningContext
-from dictionary.models import OrthographicVariant
-from dictionary.models import Participle
-from dictionary.models import PART_OF_SPEECH_MAP
+from slavdict.dictionary import viewmodels
+from slavdict.dictionary.models import Collocation
+from slavdict.dictionary.models import CollocationGroup
+from slavdict.dictionary.models import Entry
+from slavdict.dictionary.models import Etymology
+from slavdict.dictionary.models import Example
+from slavdict.dictionary.models import GreekEquivalentForExample
+from slavdict.dictionary.models import Meaning
+from slavdict.dictionary.models import MeaningContext
+from slavdict.dictionary.models import OrthographicVariant
+from slavdict.dictionary.models import Participle
+from slavdict.dictionary.models import PART_OF_SPEECH_MAP
 
 IMT_JSON = 'application/json; charset=utf-8'
 
@@ -130,7 +129,7 @@ def json_goodness_save(request):
 
 
 def json_entry_get(request, id):
-    data = dictionary.viewmodels.entry_json(id)
+    data = viewmodels.entry_json(id)
     return HttpResponse(data, content_type=IMT_JSON, status=200)
 
 

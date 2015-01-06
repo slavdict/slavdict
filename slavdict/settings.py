@@ -138,11 +138,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'coffin',
+
     'slavdict.dictionary',
     'slavdict.custom_user',
     'slavdict.django_template_spaces',
-
-    'coffin',
 )
 
 ######################################
@@ -154,7 +154,7 @@ AUTHENTICATION_BACKENDS = (
     'slavdict.auth_backends.CustomUserModelBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
-CUSTOM_USER_MODEL = 'custom_user.CustomUser'
+CUSTOM_USER_MODEL = 'slavdict.custom_user.CustomUser'
 
 # Сторонние библиотеки JavaScript
 JSLIBS_VERSION = '2014.10.31'
