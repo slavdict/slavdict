@@ -86,7 +86,7 @@ class FilterExamplesForm(forms.Form):
     hwAddress = forms.CharField(required=False, label=u'Адрес начинается на')
     hwAuthor = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор статьи')
     hwPrfx = forms.CharField(required=False, label=u'Статья начинается на')
-    hwExamplesIds = forms.CharField(required=False, label='Идентификаторы иллюстраций')
+    hwExamplesIds = forms.CharField(required=False, label=u'Идентификаторы иллюстраций')
     hwSortbase = forms.ChoiceField(choices=GREQSORTBASE_CHOICES)
     hwSortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
     hwStatus = forms.ChoiceField(choices=GREQSTATUS_CHOICES,
