@@ -10,19 +10,18 @@ from django.db.models import Q
 from django.db.models.loading import get_model
 from django.http import HttpResponse
 
-import dictionary.viewmodels
-from custom_user.models import CustomUser
-from dictionary.models import Collocation
-from dictionary.models import CollocationGroup
-from dictionary.models import Entry
-from dictionary.models import Etymology
-from dictionary.models import Example
-from dictionary.models import GreekEquivalentForExample
-from dictionary.models import Meaning
-from dictionary.models import MeaningContext
-from dictionary.models import OrthographicVariant
-from dictionary.models import Participle
-from dictionary.models import PART_OF_SPEECH_MAP
+from slavdict.dictionary import viewmodels
+from slavdict.dictionary.models import Collocation
+from slavdict.dictionary.models import CollocationGroup
+from slavdict.dictionary.models import Entry
+from slavdict.dictionary.models import Etymology
+from slavdict.dictionary.models import Example
+from slavdict.dictionary.models import GreekEquivalentForExample
+from slavdict.dictionary.models import Meaning
+from slavdict.dictionary.models import MeaningContext
+from slavdict.dictionary.models import OrthographicVariant
+from slavdict.dictionary.models import Participle
+from slavdict.dictionary.models import PART_OF_SPEECH_MAP
 
 IMT_JSON = 'application/json; charset=utf-8'
 
@@ -57,9 +56,9 @@ def json_singleselect_entries_urls(request):
                 }
                 for e in entries]
         data = _json(entries)
-        response = HttpResponse(data, mimetype=IMT_JSON)
+        response = HttpResponse(data, content_type=IMT_JSON)
     else:
-        response = HttpResponse(mimetype=IMT_JSON, status=400)
+        response = HttpResponse(content_type=IMT_JSON, status=400)
     return response
 
 
@@ -74,7 +73,7 @@ def json_ex_save(request):
         ex.__dict__.update(exDict)
         ex.save()
         data = _json({ 'action': 'saved' })
-        response = HttpResponse(data, mimetype=IMT_JSON, status=200)
+        response = HttpResponse(data, content_type=IMT_JSON, status=200)
     else:
         response = HttpResponse(status=400)
     return response
@@ -95,7 +94,7 @@ def json_greq_save(request):
             gr.__dict__.update(greq)
             gr.save()
             data = _json({ 'action': 'saved' })
-        response = HttpResponse(data, mimetype=IMT_JSON, status=200)
+        response = HttpResponse(data, content_type=IMT_JSON, status=200)
     else:
         response = HttpResponse(status=400)
     return response
@@ -110,7 +109,7 @@ def json_greq_delete(request):
             gr = GreekEquivalentForExample.objects.get(pk=id)
             gr.delete()
             data = _json({ 'action': 'deleted' })
-            response = HttpResponse(data, mimetype=IMT_JSON, status=200)
+            response = HttpResponse(data, content_type=IMT_JSON, status=200)
         else:
             response = HttpResponse(status=400)
     else:
@@ -130,8 +129,8 @@ def json_goodness_save(request):
 
 
 def json_entry_get(request, id):
-    data = dictionary.viewmodels.entry_json(id)
-    return HttpResponse(data, mimetype=IMT_JSON, status=200)
+    data = viewmodels.entry_json(id)
+    return HttpResponse(data, content_type=IMT_JSON, status=200)
 
 
 def json_entry_save(request):

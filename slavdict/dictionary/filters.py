@@ -4,12 +4,12 @@ import re
 from django.db.models import Count
 from django.db.models import Q
 
-from custom_user.models import CustomUser
-from dictionary.models import CollocationGroup
-from dictionary.models import Entry
-from dictionary.models import Etymology
-from dictionary.models import Example
-from dictionary.models import MeaningContext
+from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary.models import CollocationGroup
+from slavdict.dictionary.models import Entry
+from slavdict.dictionary.models import Etymology
+from slavdict.dictionary.models import Example
+from slavdict.dictionary.models import MeaningContext
 
 def get_entries(form):
     entries = Entry.objects
@@ -215,7 +215,7 @@ def get_examples(form):
 
     assert not PARSING_ERRORS, u'Недопустимые значения параметров: %s' % PARSING_ERRORS
 
-    # dictionary.models.Entry.status
+    # slavdict.dictionary.models.Entry.status
     good_statuses = [
             'g', # поиск греч.
             'i', # импортирована
