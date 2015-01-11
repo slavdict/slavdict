@@ -14,35 +14,13 @@ from slavdict import settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
-def check_output(*popenargs, **kwargs):
-    r"""Run command with arguments and return its output as a byte string.
-
-    Backported from Python 2.7 as it's implemented as pure python on stdlib.
-
-    >>> output = check_output(['/usr/bin/python', '--version'])
-    >>> output.startswith('Python 2.6')
-    True
-    """
-    process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
-    output, unused_err = process.communicate()
-    retcode = process.poll()
-    if retcode:
-        cmd = kwargs.get("args")
-        if cmd is None:
-            cmd = popenargs[0]
-        error = subprocess.CalledProcessError(retcode, cmd)
-        error.output = output
-        raise error
-    return output
-
-if not hasattr(subprocess, 'check_output'):
-    subprocess.check_output = check_output
-
 DUMP_SCRIPT = join(dirname(abspath(__file__)), 'dump.sh')
 BACKUP_DIR = settings.BACKUP_DIR
 GREP_SIGNATURE = ':::: '
+
 output = subprocess.check_output([DUMP_SCRIPT, BACKUP_DIR], shell=True)
-filepaths = [line[len(GREP_SIGNATURE):].strip() for line in output.splitlines()
+filepaths = [line[len(GREP_SIGNATURE):].strip()
+             for line in output.splitlines()
              if line.startswith(GREP_SIGNATURE)]
 
 if filepaths:
