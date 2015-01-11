@@ -11,6 +11,7 @@ from django.core import mail
 
 from slavdict import settings
 
+sys.path.append('/var/www/slavdict')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
