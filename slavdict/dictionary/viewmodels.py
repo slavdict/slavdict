@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 
-import dictionary.models
-from custom_user.models import CustomUser
+from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary import models
 
 def _json(x):
     return json.dumps(x, ensure_ascii=False, separators=(',',':'))
@@ -18,7 +18,7 @@ def _choices(choices):
 
 
 def entry_json(id):
-    entry = dictionary.models.Entry.objects.get(pk=id)
+    entry = models.Entry.objects.get(pk=id)
     return _json(entry.forJSON())
 
 EMPTY_STRING_ID_OBJECT = {'id': '', 'name': u''}
@@ -49,9 +49,9 @@ canonical_name = (
 genders = (
     {'id': 'all',  'name': u'любой'},
     {'id': 'none', 'name': u'где род не указан'},
-) + _choices(dictionary.models.GENDER_CHOICES)
+) + _choices(models.GENDER_CHOICES)
 
-editGenders = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.GENDER_CHOICES)
+editGenders = (EMPTY_STRING_ID_OBJECT,) + _choices(models.GENDER_CHOICES)
 
 greqSortbase = (
     {'id': 'id',   'name': u'в порядке добавления примеров'},
@@ -59,21 +59,21 @@ greqSortbase = (
 )
 
 greqStatuses = ({'id': 'all', 'name': u'— любой —'},) \
-        + _choices(dictionary.models.Example.GREEK_EQ_STATUS)
+        + _choices(models.Example.GREEK_EQ_STATUS)
 
 onyms = (
     {'id': 'all',  'name': u'любой'},
     {'id': 'none', 'name': u'не имя собственное'},
-) + _choices(dictionary.models.ONYM_CHOICES)
+) + _choices(models.ONYM_CHOICES)
 
-editOnyms = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.ONYM_CHOICES)
+editOnyms = (EMPTY_STRING_ID_OBJECT,) + _choices(models.ONYM_CHOICES)
 
-editParticiples = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.PARTICIPLE_CHOICES)
+editParticiples = (EMPTY_STRING_ID_OBJECT,) + _choices(models.PARTICIPLE_CHOICES)
 
 pos = (
     {'id': 'all',  'name': u'любая'},
     {'id': 'none', 'name': u'где часть речи не указана'},
-) + _choices(dictionary.models.PART_OF_SPEECH_CHOICES)
+) + _choices(models.PART_OF_SPEECH_CHOICES)
 
 possessive = (
     {'id': 'all', 'name': u''},
@@ -92,19 +92,19 @@ sortbase = (
 )
 
 editSubstantivusTypes = ((EMPTY_STRING_ID_OBJECT,) +
-        _choices(dictionary.models.SUBSTANTIVUS_TYPE_CHOICES))
+        _choices(models.SUBSTANTIVUS_TYPE_CHOICES))
 
 tantum = (
     {'id': 'all',  'name': u'любое'},
     {'id': 'none', 'name': u'где число не указано'},
-) + _choices(dictionary.models.TANTUM_CHOICES)
+) + _choices(models.TANTUM_CHOICES)
 
-editTantum = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.TANTUM_CHOICES)
+editTantum = (EMPTY_STRING_ID_OBJECT,) + _choices(models.TANTUM_CHOICES)
 
 statuses = ({'id': 'all', 'name': u'любой'},) \
-        + _choices(dictionary.models.STATUS_CHOICES)
+        + _choices(models.STATUS_CHOICES)
 
-editStatuses = (EMPTY_STRING_ID_OBJECT,) + _choices(dictionary.models.STATUS_CHOICES)
+editStatuses = (EMPTY_STRING_ID_OBJECT,) + _choices(models.STATUS_CHOICES)
 
 
 jsonAuthors = _json(authors)

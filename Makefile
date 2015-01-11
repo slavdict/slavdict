@@ -2,15 +2,18 @@ SHELL = /bin/bash
 
 GITWORKTREE = /var/www/slavdict
 GITDIR = /home/git/slavdict.www
+SETTINGS_FILE = slavdict/settings.py
 
 SLAVDICT_ENVIRONMENT ?= production
 IS_PRODUCTION = test ${SLAVDICT_ENVIRONMENT} = production || (echo "Окружение не является боевым" && exit 1)
 IS_DEVELOPMENT = test ${SLAVDICT_ENVIRONMENT} = development || (echo "Окружение не являетя тестовым" && exit 1)
 
-JSLIBS_PATH := $(shell python settings.py --jslibs-path)
+JSLIBS_PATH := $(shell python ${SETTINGS_FILE} --jslibs-path)
 JSLIBS_VERSION_FILE := ${JSLIBS_PATH}version.txt
-JSLIBS_NEW_VERSION := $(shell python settings.py --jslibs-version)
+JSLIBS_NEW_VERSION := $(shell python ${SETTINGS_FILE} --jslibs-version)
 JSLIBS_OLD_VERSION := $(shell cat ${JSLIBS_VERSION_FILE} 2>/dev/null)
+
+restart: stop checkout collectstatic fixown migrate start
 
 run: collectstatic
 	@echo "Запуск сервера в тестовом окружении..."
@@ -47,30 +50,23 @@ collectstatic: jslibs
 	compass compile -e ${SLAVDICT_ENVIRONMENT}
 	python ./manage.py collectstatic --noinput
 
-syncdb:
-	python ./manage.py syncdb
-
 migrate:
-	python ./manage.py migrate dictionary
-
-restart: stop checkout collectstatic fixown syncdb start
-
-migrestart: stop checkout collectstatic fixown syncdb migrate start
+	python ./manage.py migrate
 
 clean:
-	-find -name '*.pyc' -execdir rm {} \;
+	-find -name '*.pyc' -execdir rm '{}' \;
 	-rm -f static/*.css
 	-rm -f ${JSLIBS_PATH}*.{js,map,txt}
 	-rm -fR .sass-cache/
 	-rm -fR .static/*
 
 jslibs:
-	test "${JSLIBS_OLD_VERSION}" == "${JSLIBS_NEW_VERSION}" \
-	|| ( \
+	if [ "${JSLIBS_OLD_VERSION}" != "${JSLIBS_NEW_VERSION}" ];\
+	then \
 		rm -f ${JSLIBS_PATH}*.{js,map,txt} ; \
-		python settings.py --jslibs | xargs -n3 wget ; \
-		echo ${JSLIBS_NEW_VERSION} > ${JSLIBS_VERSION_FILE} \
-	)
+		python ${SETTINGS_FILE} --jslibs | xargs -n3 wget ; \
+		echo ${JSLIBS_NEW_VERSION} > ${JSLIBS_VERSION_FILE} ; \
+	fi
 
 .PHONY: \
     checkout \
@@ -86,6 +82,5 @@ jslibs:
     run \
     start \
     stop \
-    syncdb \
 
 

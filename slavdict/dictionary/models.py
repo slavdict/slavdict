@@ -81,34 +81,25 @@ def ucs_affix_or_word(atr):
     else:
         return atr
 
+def meanings(self):
+    objs = self.meaning_set
+    objs = objs.filter(metaphorical=False, parent_meaning__isnull=True)
+    objs = objs.order_by('order', 'id')
+    return objs
 
-class Meaningfull:
-    """
-    У экземпляров класса должен иметься менеджер запросов
-    с названием meaning_set.
-    """
-    @property
-    def meanings(self):
-        objs = self.meaning_set
-        objs = objs.filter(metaphorical=False, parent_meaning__isnull=True)
-        objs = objs.order_by('order', 'id')
-        return objs
+def metaph_meanings(self):
+    objs = self.meaning_set
+    objs = objs.filter(metaphorical=True, parent_meaning__isnull=True)
+    objs = objs.order_by('order', 'id')
+    return objs
 
-    @property
-    def metaph_meanings(self):
-        objs = self.meaning_set
-        objs = objs.filter(metaphorical=True, parent_meaning__isnull=True)
-        objs = objs.order_by('order', 'id')
-        return objs
+def all_meanings(self):
+    objs = self.meaning_set
+    return objs.filter(parent_meaning__isnull=True).order_by('order', 'id')
 
-    @property
-    def all_meanings(self):
-        return self.meaning_set.filter(
-                        parent_meaning__isnull=True).order_by('order', 'id')
+def has_meanings(self):
+    return self.meaning_set.exists()
 
-    @property
-    def has_meanings(self):
-        return self.meaning_set.exists()
 
 BLANK_CHOICE = (('',''),)
 
@@ -280,7 +271,7 @@ SUBSTANTIVUS_TYPE_MAP = {
 }
 
 
-class Entry(models.Model, Meaningfull):
+class Entry(models.Model):
 
     civil_equivalent = CharField(u'гражданское написание', max_length=50)
 
@@ -491,6 +482,11 @@ class Entry(models.Model, Meaningfull):
                          (u's', u'возможно, подходит'),  # so so
                          (u'g', u'подходит'),  # good
                      ))
+
+    meanings = property(meanings)
+    metaph_meanings = property(metaph_meanings)
+    all_meanings = property(all_meanings)
+    has_meanings = property(has_meanings)
 
     @models.permalink
     def get_absolute_url(self):
@@ -1045,7 +1041,7 @@ class Example(models.Model):
         ordering = ('id',)
 
 
-class CollocationGroup(models.Model, Meaningfull):
+class CollocationGroup(models.Model):
 
     base_entry = ForeignKey(Entry, verbose_name=u'лексема',
             help_text=u'''Лексема, при которой будет стоять словосочетание.
@@ -1087,6 +1083,11 @@ class CollocationGroup(models.Model, Meaningfull):
     def host_entry(self):
         return (self.base_entry or
                 self.base_meaning and self.base_meaning.host_entry)
+
+    meanings = property(meanings)
+    metaph_meanings = property(metaph_meanings)
+    all_meanings = property(all_meanings)
+    has_meanings = property(has_meanings)
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(CollocationGroup, self).save(*args, **kwargs)

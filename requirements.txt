@@ -1,6 +1,8 @@
-Coffin==0.3.8
-Django==1.5.5
-Jinja2>=2.8.0
-newrelic==2.4.0.4
-psycopg2==2.5.1
-South==0.8.2
+Django==1.7.2
+psycopg2==2.5.4
+
+# Jinja2>=2.8.0
+https://github.com/mitsuhiko/jinja2/archive/85820fceb83569df62fa5e6b9b0f2f76b7c6a3cf.zip
+
+# Coffin>0.3.8
+https://github.com/coffin/coffin/archive/7b5d514238f44fa0fbc30e198b7405d38dacb626.zip

@@ -1,15 +1,22 @@
 # -*- coding: UTF-8 -*-
-# Django settings for slavdict project.
-import os
-import sys
+"""
+Django settings for slavdict project.
 
-slash = '/'
-backslash = '\\'
+For more information on this file, see
+https://docs.djangoproject.com/en/1.7/topics/settings/
+
+For the full list of settings and their values, see
+https://docs.djangoproject.com/en/1.7/ref/settings/
+"""
+from os.path import abspath
+from os.path import dirname
+from os.path import normpath
+import sys
 
 # Базовые настройки проекта,
 # от которых могут зависеть другие настройки
 DEBUG = False
-ROOT = os.path.normpath( os.path.abspath( os.path.dirname( __file__ ) ) ).replace( backslash, slash ) + slash
+ROOT = normpath(abspath(dirname(dirname(__file__)))).replace('\\', '/') + '/'
 
 # Локальное переопределение базовых настроек,
 # если оно имеется.
@@ -25,6 +32,7 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = ()
 MANAGERS = ADMINS
 BACKUP_MANAGERS = MANAGERS
+BACKUP_DIR = ROOT + '.dumps/'
 
 SERVER_EMAIL = 'no-reply@slavdict.ruslang.ru'
 INTERNAL_IPS = ('127.0.0.1',)
@@ -48,9 +56,8 @@ USE_TZ = False
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'ru'
 
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
 USE_I18N = True
+USE_L10N = True
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -90,13 +97,18 @@ JINJA2_EXTENSIONS = (
 
 MIDDLEWARE_CLASSES = (
     'slavdict.middleware.CookieVersionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 ROOT_URLCONF = 'slavdict.urls'
+
+WSGI_APPLICATION = 'slavdict.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -118,20 +130,18 @@ STATICFILES_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.admin',
-    'django.contrib.admindocs',
-    'django.contrib.staticfiles',
     'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    'coffin',
 
     'slavdict.dictionary',
     'slavdict.custom_user',
     'slavdict.django_template_spaces',
-
-    'south',
-    'coffin',
 )
 
 ######################################
@@ -143,7 +153,7 @@ AUTHENTICATION_BACKENDS = (
     'slavdict.auth_backends.CustomUserModelBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
-CUSTOM_USER_MODEL = 'custom_user.CustomUser'
+CUSTOM_USER_MODEL = 'slavdict.custom_user.CustomUser'
 
 # Сторонние библиотеки JavaScript
 JSLIBS_VERSION = '2014.10.31'
@@ -151,17 +161,19 @@ JSLIBS_URL = STATIC_URL + 'js/outsourcing/'
 JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
 JSLIBS = {
     'jquery': {
-        'debug': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js',
+      'debug': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js',
         'min': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js',
         'map': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.map',
     },
     'jqueryUi': {
-        'debug': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js',
+      'debug': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/'
+               'jqueryui/1.10.4/jquery-ui.min.js',
     },
     'knockout': {
         'debug': 'http://knockoutjs.com/downloads/knockout-3.2.0.debug.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js',
+        'min': '//cdnjs.cloudflare.com/ajax/libs/'
+               'knockout/3.2.0/knockout-min.js',
     },
     'knockoutMapping': {
         'debug': 'https://raw.githubusercontent.com/SteveSanderson/'
@@ -172,46 +184,50 @@ JSLIBS = {
                  'knockout.mapping-latest.js',
     },
     'knockoutSortable': {
-        'debug': 'https://rawgithub.com/rniemeyer/knockout-sortable/'
-                 'v0.9.2/build/knockout-sortable.js',
-         'Xmin': 'https://raw.github.com/rniemeyer/knockout-sortable/'
-                 'v0.9.2/build/knockout-sortable.min.js',
-        # NOTE: Файлы с raw.github.com нельзя отдавать в продакшн. Там
-        # выставляются http-заголовки
+        'debug': 'https://rawgit.com/rniemeyer/'
+                 'knockout-sortable/v0.9.2/build/knockout-sortable.js',
+         'Xmin': 'https://raw.githubusercontent.com/rniemeyer/'
+                 'knockout-sortable/v0.9.2/build/knockout-sortable.min.js',
+        # NOTE: Файлы с raw.githubusercontent.com нельзя отдавать в продакшн.
+        # Там выставляются http-заголовки
         #
         #   Content-Type: text/plain; charset=utf-8
         #   X-Content-Type-Options: nosniff
         #
         # что запрещает браузеру распознавать js-файл как js-файл.
-        # Домен rawgithub.com (после raw нету точки!) специально предназначен
-        # в помощь разработчикам для обхода этой проблемы, но расчитан
-        # исключительно для тестирования, отладки, демонстрации. При нагрузке
-        # его трафиком соединения будут скидываться. См. http://rawgithub.com/
+        # Домен rawgit.com специально предназначен в помощь разработчикам для
+        # обхода этой проблемы, но расчитан исключительно для тестирования,
+        # отладки, демонстрации. При нагрузке его трафиком соединения будут
+        # скидываться. См. http://rawgit.com/
         #
         # Ключ ``Xmin`` вместо ``min`` использован специально, чтобы этот адрес
         # не отдавался в продакшн.
     },
     'knockoutPostbox': {
-        'debug': 'https://raw.githubusercontent.com/rniemeyer/knockout-postbox/'
-                 'v0.4.2/build/knockout-postbox.js',
-         'Xmin': 'https://raw.githubusercontent.com/rniemeyer/knockout-postbox/'
-                 'v0.4.2/build/knockout-postbox.min.js',
+        'debug': 'https://raw.githubusercontent.com/rniemeyer/'
+                 'knockout-postbox/v0.4.2/build/knockout-postbox.js',
+         'Xmin': 'https://raw.githubusercontent.com/rniemeyer/'
+                 'knockout-postbox/v0.4.2/build/knockout-postbox.min.js',
     },
     'zeroClipboard': {
-        'debug': 'https://rawgithub.com/zeroclipboard/ZeroClipboard/'
-                 'v1.1.7/ZeroClipboard.js',
-         'Xmin': 'https://raw.github.com/zeroclipboard/ZeroClipboard/'
-                 'v1.1.7/ZeroClipboard.min.js',
-          'swf': 'https://github.com/zeroclipboard/ZeroClipboard/raw/'
-                 'v1.1.7/ZeroClipboard.swf',
+        'debug': 'https://rawgit.com/zeroclipboard/'
+                 'ZeroClipboard/v1.1.7/ZeroClipboard.js',
+         'Xmin': 'https://raw.githubusercontent.com/zeroclipboard/'
+                 'ZeroClipboard/v1.1.7/ZeroClipboard.min.js',
+          'swf': 'https://raw.githubusercontent.com/zeroclipboard/'
+                 'ZeroClipboard/v1.1.7/ZeroClipboard.swf',
     },
     'opentip': {
-        'debug': 'https://rawgithub.com/enyo/opentip/v2.4.6/downloads/opentip-jquery.js',
-        'Xmin': 'https://raw.github.com/enyo/opentip/v2.4.6/downloads/opentip-jquery.min.js',
+        'debug': 'https://rawgit.com/enyo/opentip/'
+                 'v2.4.6/downloads/opentip-jquery.js',
+         'Xmin': 'https://raw.githubusercontent.com/enyo/opentip/'
+                 'v2.4.6/downloads/opentip-jquery.min.js',
     },
     'opentipExCanvas': {
-        'debug': 'https://rawgithub.com/enyo/opentip/v2.4.6/downloads/opentip-jquery-excanvas.js',
-        'Xmin': 'https://raw.github.com/enyo/opentip/v2.4.6/downloads/opentip-jquery-excanvas.min.js',
+        'debug': 'https://rawgit.com/enyo/opentip/'
+                 'v2.4.6/downloads/opentip-jquery-excanvas.js',
+         'Xmin': 'https://raw.githubusercontent.com/enyo/opentip/'
+                 'v2.4.6/downloads/opentip-jquery-excanvas.min.js',
     },
 }
 
