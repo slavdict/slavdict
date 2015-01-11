@@ -44,7 +44,7 @@ fixown:
 	@$(IS_PRODUCTION)
 	chown -R www-data:www-is ./
 	chown -R git:www-is /home/git/slavdict.*
-	chmod u+x ./*.sh
+	chmod u+x bin/*.sh
 
 collectstatic: jslibs
 	compass compile -e ${SLAVDICT_ENVIRONMENT}
