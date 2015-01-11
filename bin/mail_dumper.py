@@ -1,12 +1,18 @@
 #!/usr/bin/env python2
 # -*- coding: UTF-8 -*-
-import os
-import sys
-import subprocess
 import datetime
-from django.core import mail, management
-import settings
-management.setup_environ(settings)
+import os
+import subprocess
+import sys
+from os.path import basename, dirname, abspath, join
+
+import django
+from django.core import mail
+
+from slavdict import settings
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
+django.setup()
 
 def check_output(*popenargs, **kwargs):
     r"""Run command with arguments and return its output as a byte string.
@@ -32,22 +38,24 @@ def check_output(*popenargs, **kwargs):
 if not hasattr(subprocess, 'check_output'):
     subprocess.check_output = check_output
 
-output = subprocess.check_output('./dump.sh', shell=True)
-filepaths = [L[2:].strip() for L in output.splitlines() if L.startswith('::')]
+DUMP_SCRIPT = join(dirname(abspath(__file__)), 'dump.sh')
+BACKUP_DIR = settings.BACKUP_DIR
+GREP_SIGNATURE = ':::: '
+output = subprocess.check_output([DUMP_SCRIPT, BACKUP_DIR], shell=True)
+filepaths = [line[len(GREP_SIGNATURE):].strip() for line in output.splitlines()
+             if line.startswith(GREP_SIGNATURE)]
 
 if filepaths:
     connection = mail.get_connection()
     butime = datetime.datetime.now().strftime('%Y.%m.%d %H:%M')
-    attachments = [(os.path.basename(path), open(path, 'rb').read(), None) for path in filepaths]
-    emails = [email for name, email in settings.BACKUP_MANAGERS]
-    message = mail.EmailMessage(
-        '[slavdict backup] %s' % butime,
-        '',
-        'autobackup@slavdict.ruslang.ru',
-        emails,
-        attachments=attachments,
-        connection=connection,
-    )
+    attachments = [(basename(path), open(path, 'rb').read(), None)
+                   for path in filepaths]
+    src_mail = 'autobackup@slavdict.ruslang.ru'
+    dst_mails = [email for name, email in settings.BACKUP_MANAGERS]
+    subject = '[slavdict backup] %s' % butime
+    message = mail.EmailMessage(subject=subject, body='', from_email=src_mail,
+                                to=dst_mails, attachments=attachments,
+                                connection=connection)
     message.send()
 
 sys.exit(0)

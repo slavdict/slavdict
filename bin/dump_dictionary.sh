@@ -1,25 +1,34 @@
 #!/bin/bash
-NOW=$(date +"%Y.%m.%d--%H.%M")
 DBS_VERSION=4.00
-PRJDIR=$(dirname "$(readlink -m "$0")")
-DUMPDIR="$PRJDIR/.dumps"
+GREP_SIGNATURE=::::
+NOW=$(date +"%Y.%m.%d--%H.%M")
+PRJDIR=$(dirname "$(dirname "$(readlink -e "$0")")")
+DUMPDIR="${1:-$PRJDIR/.dumps}"
 LASTFILE=$(ls -tA $DUMPDIR/.dictionary*.xml | head -1)
 FILE="$DUMPDIR/.dictionary--$NOW---$DBS_VERSION.xml"
 
 python $PRJDIR/manage.py dumpdata dictionary --format=xml --indent=4 > $FILE
 
-if [ "$LASTFILE" -a "$FILE" != "$LASTFILE" ]
+if [ "$LASTFILE" ]
 then
-    x=$(diff $FILE $LASTFILE)
+    if [ "$FILE" != "$LASTFILE" ]
+    then
+        x=$(diff $FILE $LASTFILE)
 
-    if [ -z "$x" ]
-    then rm $FILE
-    else
-        gzip -c $FILE > $FILE.gz
-        echo "::$FILE.gz"
+        if [ -z "$x" ]
+        then
+            rm $FILE
+        else
+            gzip -c $FILE > $FILE.gz
+            echo "$GREP_SIGNATURE $FILE.gz"
 
-        if [ -a $LASTFILE.gz ]
-        then rm $LASTFILE
+            if [ -a $LASTFILE.gz ]
+            then
+                rm $LASTFILE
+            fi
         fi
     fi
+else
+    gzip -c $FILE > $FILE.gz
+    echo "$GREP_SIGNATURE $FILE.gz"
 fi
