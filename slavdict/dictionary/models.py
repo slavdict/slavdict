@@ -264,10 +264,18 @@ LANGUAGE_TRANSLIT_CSS = {
 SUBSTANTIVUS_TYPE_CHOICES = (
     ('a', u'ср.ед.'),
     ('b', u'ср.мн.'),
+    ('c', u'м.ед.'),
+    ('d', u'м.мн.'),
+    ('e', u'ж.ед.'),
+    ('f', u'ж.мн.'),
 )
 SUBSTANTIVUS_TYPE_MAP = {
     'n.sg.': 'a',
     'n.pl.': 'b',
+    'm.sg.': 'c',
+    'm.pl.': 'd',
+    'f.sg.': 'e',
+    'f.pl.': 'f',
 }
 
 
