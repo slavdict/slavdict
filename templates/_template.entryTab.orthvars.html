@@ -13,7 +13,8 @@
                data-bind="visible: $parent.orthvars().length > 1"></a>
             <a class="deleteItem" data-bind="click:
                 $parent.orthvars.itemDestroyer($data).do"></a>
-            <input type="text" data-bind="textInput: idem"/>
+            <input type="text" data-bind="textInput: idem"
+                   maxlength="{{ MAX_LENGTHS.OrthographicVariant.idem }}"/>
             <span data-bind="wax: idem"></span>
         </li>
     </ul>

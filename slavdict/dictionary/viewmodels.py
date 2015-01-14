@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 
+from django.db.models.fields import CharField
+
 from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary import models
 

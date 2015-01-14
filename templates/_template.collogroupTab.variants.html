@@ -8,7 +8,8 @@
                 $parent.collocations().length > 1"></a>
             <a class="deleteItem" data-bind="click:
                 $parent.collocations.itemDestroyer($data).do"></a>
-            <input type="text" data-bind="textInput: collocation" />
+            <input type="text" data-bind="textInput: collocation"
+                   maxlength="{{ MAX_LENGTHS.Collocation.collocation }}"/>
             <span data-bind="wax: collocation"></span>
         </li>
     </ul>

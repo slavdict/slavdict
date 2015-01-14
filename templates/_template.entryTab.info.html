@@ -46,7 +46,8 @@
         <div id="infoTab--genitive">
             <label>
                 <span>Форма Р.п.</span>
-                <input type="text" data-bind="textInput: genitive"/>
+                <input type="text" data-bind="textInput: genitive"
+                       maxlength="{{ MAX_LENGTHS.Entry.genitive }}"/>
             </label>
             <span data-bind="wax: genitive"></span>
         </div>
@@ -99,7 +100,8 @@
 
             <label>
                 <span>И. ед. м.</span>
-                <input type="text" data-bind="textInput: nom_sg"/>
+                <input type="text" data-bind="textInput: nom_sg"
+                       maxlength="{{ MAX_LENGTHS.Entry.nom_sg }}"/>
             </label>
 
             <span data-bind="wax: nom_sg"></span>
@@ -120,7 +122,8 @@
         <div id="infoTab--shortForm">
             <label>
                 <span>Краткая форма</span>
-                <input type="text" data-bind="textInput: short_form"/>
+                <input type="text" data-bind="textInput: short_form"
+                       maxlength="{{ MAX_LENGTHS.Entry.short_form }}"/>
             </label>
 
             <span data-bind="wax: short_form"></span>
@@ -134,7 +137,8 @@
         <div id="infoTab--sg1">
             <label>
                 <span>Форма 1ед.</span>
-                <input type="text" data-bind="textInput: sg1"/>
+                <input type="text" data-bind="textInput: sg1"
+                       maxlength="{{ MAX_LENGTHS.Entry.sg1 }}"/>
             </label>
 
             <span data-bind="wax: sg1"></span>
@@ -143,7 +147,8 @@
         <div id="infoTab--sg2">
             <label>
                 <span>Форма 2ед.</span>
-                <input type="text" data-bind="textInput: sg2"/>
+                <input type="text" data-bind="textInput: sg2"
+                       maxlength="{{ MAX_LENGTHS.Entry.sg2 }}"/>
             </label>
 
             <span data-bind="wax: sg2"></span>
@@ -176,7 +181,8 @@
                 </label>
 
                 <label>
-                    <input type="text" data-bind="textInput: idem"/>
+                    <input type="text" data-bind="textInput: idem"
+                           maxlength="{{ MAX_LENGTHS.Participle.idem }}"/>
                 </label>
 
                 <span data-bind="wax: idem"></span>
