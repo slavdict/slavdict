@@ -12,17 +12,20 @@
 
             <label>
                 <span>гражд.</span>
-                <input type="text" data-bind="textInput: left_text"/>
+                <input type="text" data-bind="textInput: left_text"
+                       maxlength="{{ MAX_LENGTHS.MeaningContext.left_text }}"/>
             </label>
 
             <label>
                 <span>цсл.</span>
-                <input type="text" data-bind="textInput: context"/>
+                <input type="text" data-bind="textInput: context"
+                       maxlength="{{ MAX_LENGTHS.MeaningContext.context }}"/>
             </label>
 
             <label>
                 <span>гражд.</span>
-                <input type="text" data-bind="textInput: right_text"/>
+                <input type="text" data-bind="textInput: right_text"
+                    maxlength="{{ MAX_LENGTHS.MeaningContext.right_text }}"/>
             </label>
 
             <div>

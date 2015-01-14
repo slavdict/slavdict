@@ -750,6 +750,7 @@ def edit_entry(request, id):
         'STATUSES': models.STATUS_CHOICES,
         'GREEK_EQ_STATUSES': models.Example.GREEK_EQ_STATUS,
         'SUBSTANTIVUS_TYPES': models.SUBSTANTIVUS_TYPE_CHOICES,
+        'MAX_LENGTHS': models.MAX_LENGTHS,
     }
     return render_to_response('single_entry_edit.html', context,
                               RequestContext(request))
