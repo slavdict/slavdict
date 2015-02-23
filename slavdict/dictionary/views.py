@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import InvalidPage
+from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -49,28 +50,78 @@ def direct_to_template(request, template):
 
 @login_required
 def all_entries(request, is_paged=False):
-    httpGET_AUTHOR = request.GET.get('author')
+    if not request.GET:
+        text = u'''
+Отображение статей как бы для печати. Для фильтрации статей используйте
+параметры адреса данной страницы, например:
+
+    %s?authors=Калужнина & startswith=В
+
+Данный запрос найдет все статьи Калужниной, начинающиеся с буквы «В».
+
+
+Допустимые параметры
+====================
+
+?authors=Петрова,Корнилаева    Статьи соответствующих авторов. Для статей без
+                               авторства используйте сочетание "без автора",
+                               для авторских статей — фамилию автора.
+
+?startswith=Ав                 Отображать только статьи, начинающиеся
+                               на «Ав» без учета регистра символов.
+
+?duplicates                    Отображать только статьи-дубликаты.
+
+?corrupted-greek               Статьи, где есть примеры с испорченными
+                               греческими соответствиями.
+
+?goodness                      Отображать только "хорошие" статьи.
+
+?hide-ai                       При отображении статей не показывать рабочие
+                               примечания-комментарии.
+
+?show-ai                       При отображении статей обязательно показывать
+                               рабочие примечания-комментарии.
+
+?hide-numbers                  Не нумеровать статьи.
+
+?list=1324,3345,22             Отображать только статьи с указанными
+                               числовыми идентификаторами.
+
+?status=в работе,создана       Отображать только статьи с перечиленными
+                               значениями поля "статус статьи".
+
+
+        ''' % request.path
+        response = HttpResponse(text, content_type="text/plain; charset=utf-8")
+        return response
+
+    httpGET_AUTHORS = urllib.unquote(request.GET.get('authors', ''))
     httpGET_CORRUPTED_GREEK = 'corrupted-greek' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
-    httpGET_FIND = request.GET.get('find')
     httpGET_GOODNESS = request.GET.get('goodness')
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_LIST = request.GET.get('list')
     httpGET_SHOWAI = 'show-ai' in request.GET
+    httpGET_STARTSWITH = request.GET.get('startswith')
     httpGET_STATUS = request.GET.get('status')
 
+    COMMA = re.compile(ur'\s*\,\s*')
     entries = Entry.objects.all()
 
-    if httpGET_AUTHOR:
-        if httpGET_AUTHOR == 'is-not-assigned!':
-            entries = entries.filter(authors__isnull=True)
-        else:
-            author = CustomUser.objects.get(username=httpGET_AUTHOR)
-            entries = author.entry_set.all()
+    if httpGET_AUTHORS:
+        httpGET_AUTHORS = COMMA.split(httpGET_AUTHORS)
+        wo_author_re = re.compile(ur'без\s+автора')
+        wo_author = any(wo_author_re.match(i) for i in httpGET_AUTHORS)
+        query = Q(authors__last_name__in=httpGET_AUTHORS)
+        if wo_author:
+            query = query | Q(authors__isnull=True)
+        entries = entries.filter(query)
 
-    if httpGET_FIND:
-        entries = entries.filter(civil_equivalent__istartswith=httpGET_FIND)
+    if httpGET_STARTSWITH:
+        entries = entries.filter(
+                civil_equivalent__istartswith=httpGET_STARTSWITH)
 
     if httpGET_STATUS=='-created':
         entries = entries.exclude(
@@ -114,14 +165,13 @@ def all_entries(request, is_paged=False):
     if httpGET_DUPLICATES:
         title = u'Статьи-дубликаты'
     else:
-        if httpGET_AUTHOR:
-            title = u'Статьи автора „{0}“'.format(
-                    CustomUser.objects.get(username=httpGET_AUTHOR))
+        if httpGET_AUTHORS:
+            title = u'Статьи авторов %s' % u', '.join(httpGET_AUTHORS)
         else:
             title = u'Все статьи'
 
-    if httpGET_FIND:
-        title += u', начинающиеся на „{0}-“'.format(httpGET_FIND)
+    if httpGET_STARTSWITH:
+        title += u', начинающиеся на „{0}-“'.format(httpGET_STARTSWITH)
 
     entries = sorted(entries, key=entry_key)
     if is_paged:
