@@ -55,7 +55,7 @@ def all_entries(request, is_paged=False):
 Отображение статей как бы для печати. Для фильтрации статей используйте
 параметры адреса данной страницы, например:
 
-    %s?authors=Калужнина & startswith=В
+    %s?authors=Калужнина&startswith=В
 
 Данный запрос найдет все статьи Калужниной, начинающиеся с буквы «В».
 
@@ -110,23 +110,27 @@ def all_entries(request, is_paged=False):
     httpGET_STATUS = urllib.unquote(request.GET.get('status', ''))
 
     COMMA = re.compile(ur'\s*\,\s*')
+    SPACE = re.compile(ur'\s+')
     entries = Entry.objects.all()
 
     if httpGET_AUTHORS:
-        httpGET_AUTHORS = COMMA.split(httpGET_AUTHORS)
-        wo_author_re = re.compile(ur'без\s+автора')
-        wo_author = any(wo_author_re.match(i) for i in httpGET_AUTHORS)
+        httpGET_AUTHORS = [a.strip() for a in COMMA.split(httpGET_AUTHORS)]
+        httpGET_AUTHORS = [SPACE.sub(u' ', a) for a in httpGET_AUTHORS]
+        httpGET_AUTHORS = [a[:1].upper() + a[1:].lower() for a in httpGET_AUTHORS]
         query = Q(authors__last_name__in=httpGET_AUTHORS)
-        if wo_author:
+        if u'Без автора' in httpGET_AUTHORS:
             query = query | Q(authors__isnull=True)
         entries = entries.filter(query)
 
     if httpGET_STARTSWITH:
+        httpGET_STARTSWITH = httpGET_STARTSWITH.strip()
         entries = entries.filter(
                 civil_equivalent__istartswith=httpGET_STARTSWITH)
 
     if httpGET_STATUS:
         httpGET_STATUS = COMMA.split(httpGET_STATUS)
+        httpGET_STATUS = [SPACE.sub(u' ', s.strip()) for s in httpGET_STATUS]
+        httpGET_STATUS = [s.lower() for s in httpGET_STATUS]
         statuus = []
         exclude_statuus = []
         for status in httpGET_STATUS:
