@@ -63,33 +63,35 @@ def all_entries(request, is_paged=False):
 Допустимые параметры
 ====================
 
-?authors=Петрова,Корнилаева    Статьи соответствующих авторов. Для статей без
-                               авторства используйте сочетание "без автора",
-                               для авторских статей — фамилию автора.
+?authors=Петрова,Корнилаева     Статьи соответствующих авторов. Для статей без
+                                авторства используйте сочетание "без автора",
+                                для авторских статей — фамилию автора.
 
-?startswith=Ав                 Отображать только статьи, начинающиеся
-                               на «Ав» без учета регистра символов.
+?startswith=Ав                  Отображать только статьи, начинающиеся
+                                на «Ав» без учета регистра символов.
 
-?duplicates                    Отображать только статьи-дубликаты.
+?duplicates                     Отображать только статьи-дубликаты.
 
-?corrupted-greek               Статьи, где есть примеры с испорченными
-                               греческими соответствиями.
+?corrupted-greek                Статьи, где есть примеры с испорченными
+                                греческими соответствиями.
 
-?goodness                      Отображать только "хорошие" статьи.
+?goodness                       Отображать только "хорошие" статьи.
 
-?hide-ai                       При отображении статей не показывать рабочие
-                               примечания-комментарии.
+?hide-ai                        При отображении статей не показывать рабочие
+                                примечания-комментарии.
 
-?show-ai                       При отображении статей обязательно показывать
-                               рабочие примечания-комментарии.
+?show-ai                        При отображении статей обязательно показывать
+                                рабочие примечания-комментарии.
 
-?hide-numbers                  Не нумеровать статьи.
+?hide-numbers                   Не нумеровать статьи.
 
-?list=1324,3345,22             Отображать только статьи с указанными
-                               числовыми идентификаторами.
+?list=1324,3345,22              Отображать только статьи с указанными
+                                числовыми идентификаторами.
 
-?status=в работе,создана       Отображать только статьи с перечиленными
-                               значениями поля "статус статьи".
+?status=в работе,импортирована  Отображать только статьи с перечиленными
+?status=-создана                значениями поля "статус статьи". При постановке
+                                перед наименованием статуса знака минус статьи
+                                с данным статусом будут исключены из выборки.
 
 
         ''' % request.path
@@ -105,7 +107,7 @@ def all_entries(request, is_paged=False):
     httpGET_LIST = request.GET.get('list')
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STARTSWITH = request.GET.get('startswith')
-    httpGET_STATUS = request.GET.get('status')
+    httpGET_STATUS = urllib.unquote(request.GET.get('status', ''))
 
     COMMA = re.compile(ur'\s*\,\s*')
     entries = Entry.objects.all()
@@ -123,9 +125,23 @@ def all_entries(request, is_paged=False):
         entries = entries.filter(
                 civil_equivalent__istartswith=httpGET_STARTSWITH)
 
-    if httpGET_STATUS=='-created':
-        entries = entries.exclude(
-                status=models.STATUS_MAP['created'])
+    if httpGET_STATUS:
+        httpGET_STATUS = COMMA.split(httpGET_STATUS)
+        statuus = []
+        exclude_statuus = []
+        for status in httpGET_STATUS:
+            for value, label in models.STATUS_CHOICES:
+                if status[0] == u'-':
+                    status = status[1:]
+                    lst = exclude_statuus
+                else:
+                    lst = statuus
+                if label.startswith(status):
+                    lst.append(value)
+        if exclude_statuus:
+            entries = entries.exclude(status__in=exclude_statuus)
+        if statuus:
+            entries = entries.filter(status__in=statuus)
 
     if httpGET_GOODNESS:
         g = httpGET_GOODNESS
