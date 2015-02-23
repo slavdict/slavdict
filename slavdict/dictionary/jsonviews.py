@@ -274,4 +274,9 @@ def process_json_model(json_model, post):
             'Collogroup': 'CollocationGroup', 'Orthvar': 'OrthographicVariant',
             'Context': 'MeaningContext'}.get(model_name, model_name))
         for item_id in to_destroy[model_name]:
-            model.objects.get(pk=item_id).delete()
+            try:
+                item = model.objects.get(pk=item_id)
+            except model.DoesNotExist:
+                pass
+            else:
+                item.delete()
