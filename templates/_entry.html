@@ -308,6 +308,8 @@
 
             {% if not entry.meanings|length == 1 %}
                 <b>{{ mnumber }}</b>.{{ space }}
+            {% else %}
+                {% set entryOnlyMeaning = true %}
             {% endif %}
 
             {% include '_meaning_with_children.html' %}

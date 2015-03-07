@@ -43,11 +43,11 @@
 {% endif %}
 
 {% if m.meaning %}
-    {% if collogroupOnlyMeaning %}
-        {% set collogroupOnlyMeaning = False %}
-        <span class="eM--meaning">{{ m.meaning|cslav_injection }}</span>
-    {% else %}
+    {% if entryOnlyMeaning %}
+        {% set entryOnlyMeaning = false %}
         <span class="eM--meaning">{{ m.meaning|capfirst|cslav_injection }}</span>
+    {% else %}
+        <span class="eM--meaning">{{ m.meaning|cslav_injection }}</span>
     {% endif %}
 {% endif %}
 

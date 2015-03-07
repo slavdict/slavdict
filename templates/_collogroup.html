@@ -71,15 +71,10 @@
         {% if intermed %}<div style="margin-left: 50px">{% else %}<span>{% endif %}
 
         {% for m in cg.meanings %}
-
             {% if cg.meanings|length != 1 %}
                 {{ loop.index }}.{{ space }}
-            {% else %}
-                {% set collogroupOnlyMeaning = True %}
             {% endif %}
-
             {% include '_meaning_with_children.html' %}
-
         {% endfor %}
 
 
