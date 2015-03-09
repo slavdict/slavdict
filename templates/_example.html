@@ -4,13 +4,11 @@
 
 {% if e.greek_equivs %}
 
-    {% set DASH = cycler('&nbsp;&mdash;', '', '', '') %}
     {% set COMMA = joiner(',') %}
     {% for ge in e.greek_equivs %}
 
         {% set ADDITIONAL_INFO = show_additional_info and ge.additional_info %}
         {% if ge.unitext or ADDITIONAL_INFO %}
-            {{ backspace }}{{ DASH.next() }}{{ space }}
             {{ backspace }}{{ COMMA() }}{{ space }}
         {% endif %}
 
