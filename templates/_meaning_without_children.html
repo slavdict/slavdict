@@ -207,8 +207,7 @@
     {% if not intermed %}
         {% set separator = joiner(
                 '{{ backspace }}' +
-                '<span class="example-address">;</span>' +
-                '<span class="em-space">{{ space }}</span>'
+                '<span class="example-address">;</span>&emsp;'
            ) %}
     {% else %}
         {% set separator = cycler('{{ space }}').next %}
