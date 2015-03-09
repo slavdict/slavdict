@@ -43,12 +43,7 @@
 {% endif %}
 
 {% if m.meaning %}
-    {% if collogroupOnlyMeaning %}
-        {% set collogroupOnlyMeaning = False %}
-        <span class="eM--meaning">{{ m.meaning|cslav_injection }}</span>
-    {% else %}
-        <span class="eM--meaning">{{ m.meaning|capfirst|cslav_injection }}</span>
-    {% endif %}
+    <span class="eM--meaning">{{ m.meaning|cslav_injection }}</span>
 {% endif %}
 
 {% if m.greek_equivs %}

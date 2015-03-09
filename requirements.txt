@@ -1,5 +1,5 @@
-Django==1.7.2
-psycopg2==2.5.4
+Django>1.7,<1.8
+psycopg2>=2.6
 
 # Jinja2>=2.8.0
 https://github.com/mitsuhiko/jinja2/archive/85820fceb83569df62fa5e6b9b0f2f76b7c6a3cf.zip
