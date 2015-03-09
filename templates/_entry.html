@@ -1,13 +1,5 @@
 {% from '_etymology.html'   import etymology    with context %}
 
-
-{% if intermed %}
-    {% set meaningsep = 'border-top: 1px dashed orange; padding-top: 30px;' %}
-{% else %}
-    {% set meaningsep = '' %}
-{% endif %}
-
-
 {% trim %}
 
 {% if intermed and entry.antconc_query %}<div class="message antconsol">{{ entry.antconc_query }}</div>{% endif %}
@@ -303,7 +295,9 @@
 
     {% for m in entry.meanings %}
 
-        <div style="margin-top: 0.7em; line-height: 140%; {{ meaningsep }}">
+        <div class="eM--meaning
+         {% if intermed %}eM--meaning-intermed{% endif %}"
+         >
             {% set mnumber = loop.index %}
 
             {% if not entry.meanings|length == 1 %}
@@ -329,7 +323,7 @@
 
     {% for m in entry.metaph_meanings %}
 
-        <div style="margin-top: 0.7em; line-height: 140%;">
+        <div class=".eM--meaning">
 
             <span style="color: #777;">►</span>
             {{ space }}
