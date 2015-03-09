@@ -205,7 +205,9 @@
 {% if m.examples %}
 
     {% if not intermed %}
-        {% set separator = joiner('{{ backspace }};{{ space }}') %}
+        {% set separator = joiner(
+                '{{ backspace }};<span class="em-space">{{ space }}</span>'
+           ) %}
     {% else %}
         {% set separator = cycler('{{ space }}').next %}
     {% endif %}

@@ -45,19 +45,18 @@
 
 
 {% if e.address_text %}
-    ({{ e.address_text }}
+    <span class="example-address">{{ e.address_text }}</span>
     {% if show_additional_info and e.additional_info %}
         {{ space }}<span class="ai ai-example">{{ e.additional_info }}</span>
     {% endif %}
-    {{ backspace }}){{ space }}
+    {{ backspace }}{{ space }}
 {% else %}
     {% if show_additional_info %}
-        (
         <span class="noaddress">Нет адреса!</span>
         {% if show_additional_info and e.additional_info %}
             <span class="ai ai-example">{{ e.additional_info }}</span>
         {% endif %}
-        ){{ space }}
+        {{ space }}
     {% endif %}
 {% endif %}
 
