@@ -73,6 +73,10 @@ x/html-тегами, а также x/html-тэгами и текстом.
 
 {{ ! }} -- Непарный вспомогательный тэг для использования внутри {% trim %}.
 Мешает удалять пробелы вокруг x/html-тэгов.
+
+{{ onlyDot }} -- Непарный вспомогательный тэг, позволяющий поставить точку,
+только если перед ним нет точки или многоточия.
+
 """
 import re
 
@@ -84,7 +88,6 @@ from jinja2.ext import Extension
 from coffin import template
 
 from slavdict.dictionary.models import ucs_convert
-from slavdict.dictionary.models import ucs_convert_affix
 
 register = template.Library()
 EXCLAM = u'\u1991'
@@ -102,6 +105,8 @@ def strip_spaces_between_tags_and_text(value):
     value = re.sub(ur'\u1900(<[^>]+>)([\.,:;\!\?])', ur'\1\2', value)
     value = re.sub(ur'\u1900', u' ', value)
     value = re.sub(EXCLAM, u'', value)
+    value = re.sub(ur'([\.…])((\s)|(&nbsp;))*\u1902', ur'\1', value)
+    value = re.sub(ur'((\s)|(&nbsp;))*\u1902', ur'.', value)
     return value
 strip_spaces_between_tags_and_text = allow_lazy(strip_spaces_between_tags_and_text, unicode)
 
@@ -129,6 +134,8 @@ class TrimExtension(Extension):
         source = re.sub(ur'{{\s*punct\s*}}', ur'\u1900', source)
         # {{ ! }}
         source = re.sub(ur'{{\s*!\s*}}', EXCLAM, source)
+        # {{ onlyDot }}
+        source = re.sub(ur'{{\s*onlyDot\s*}}', ur'\u1902', source)
         return source
 
 trim = TrimExtension

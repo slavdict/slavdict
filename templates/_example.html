@@ -1,16 +1,16 @@
+{% macro example(e, examples_loop, peer_meanings_loop) %}
+
 <span class="entry-example">{{ e.example_ucs|cslav_words }}</span>
 {{ space }}
 
 
 {% if e.greek_equivs %}
 
-    {% set DASH = cycler('&nbsp;&mdash;', '', '', '') %}
     {% set COMMA = joiner(',') %}
     {% for ge in e.greek_equivs %}
 
         {% set ADDITIONAL_INFO = show_additional_info and ge.additional_info %}
         {% if ge.unitext or ADDITIONAL_INFO %}
-            {{ backspace }}{{ DASH.next() }}{{ space }}
             {{ backspace }}{{ COMMA() }}{{ space }}
         {% endif %}
 
@@ -21,8 +21,7 @@
 
             {% if loop.first %}
                 <span>[</span>
-            {% else %}
-                {{ backspace }},{{ space }}
+            {% else %} {{ backspace }},{{ space }}
             {% endif %}
 
             <i>{{ x }}</i>
@@ -45,20 +44,28 @@
 
 
 {% if e.address_text %}
-    ({{ e.address_text }}
-    {% if show_additional_info and e.additional_info %}
-        {{ space }}<span class="ai ai-example">{{ e.additional_info }}</span>
-    {% endif %}
-    {{ backspace }}){{ space }}
+    <span class="example-address">
+        {{ e.address_text }}
+        {% if not examples_loop.last %}
+            {{ backspace }};&emsp;
+        {% else %}
+            {% if peer_meanings_loop.last or not parent_meanings_loop %}
+                {{ backspace }}{{ onlyDot }}&emsp;
+            {% else %}
+                {{ backspace }};&emsp;
+            {% endif %}
+        {% endif %}
+    </span>
 {% else %}
     {% if show_additional_info %}
-        (
         <span class="noaddress">Нет адреса!</span>
-        {% if show_additional_info and e.additional_info %}
-            <span class="ai ai-example">{{ e.additional_info }}</span>
-        {% endif %}
-        ){{ space }}
     {% endif %}
+{% endif %}
+
+{% if show_additional_info and e.additional_info %}
+    {{ space }}
+    <span class="ai ai-example">{{ e.additional_info }}</span>
+    {{ space }}
 {% endif %}
 
 
@@ -78,4 +85,5 @@
 
 {% endif %}
 
+{% endmacro %}
 {# vim: set ft=django.html: #}
