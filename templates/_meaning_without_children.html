@@ -1,3 +1,6 @@
+{% macro meaning(m, peer_meanings_loop, parent_meanings_loop, child_meanings) %}
+{% from '_example.html' import example with context %}
+
 {% if m.contexts %}
     {% for mc in m.contexts %}
 
@@ -190,41 +193,26 @@
     <span class="ai ai-meaning">{{ m.additional_info }}</span>
 {% endif %}
 
-{% if m.meaning or m.gloss or m.greek_equivs or m.link_to_entry
-   or m.link_to_collogroup or m.link_to_meaning or m.cfentries
-   or m.cfcollogroups or m.cfmeanings
-   or show_additional_info and m.additional_info %}
-
-    {% if m.examples %}
-        {{ backspace }}:{{ space }}
-    {% endif %}
-
-{% endif %}
-
 
 {% if m.examples %}
-
-    {% if not intermed %}
-        {% set separator = joiner(
-                '{{ backspace }}' +
-                '<span class="example-address">;</span>&emsp;'
-           ) %}
+    {% if parent_meanings_loop %}
+        {{ backspace }}&nbsp;&mdash;{{ space }}
     {% else %}
-        {% set separator = cycler('{{ space }}').next %}
+        {% if m.meaning or m.gloss or m.greek_equivs or m.link_to_entry
+        or m.link_to_collogroup or m.link_to_meaning or m.cfentries
+        or m.cfcollogroups or m.cfmeanings
+        or show_additional_info and m.additional_info %}
+            {{ backspace }}:{{ space }}
+        {% endif %}
     {% endif %}
-
-    {% for e in m.examples %}
-
-        {% if intermed %}<div style="margin-top: 10px;">{% endif %}
-
-        {{ separator() }}
-        {% include '_example.html' %}
-
-        {% if intermed %}</div>{% endif %}
-
-    {% endfor %}
-
 {% endif %}
+
+
+{% for e in m.examples %}
+    {% if intermed %}<div style="margin-top: 10px;">{% endif %}
+    {{ example(e, examples_loop=loop, peer_meanings_loop=peer_meanings_loop) }}
+    {% if intermed %}</div>{% endif %}
+{% endfor %}
 
 
 {% if intermed %}
@@ -256,4 +244,5 @@
 
 {% endif %}
 
+{% endmacro %}
 {# vim: set ft=django.html: #}

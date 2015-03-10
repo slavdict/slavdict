@@ -1,43 +1,31 @@
-{% include '_meaning_without_children.html' %}
-
+{% from '_meaning_without_children.html' import meaning with context %}
 {% set child_meanings = m.child_meanings %}
+{% set parent_meanings_loop = loop %}
 
-{% if child_meanings %}
-    {% if (child_meanings|first).metaphorical %}
-        {{ backspace }}<span class="example-address">.</span>
+{{ meaning(m, peer_meanings_loop=loop,
+              parent_meanings_loop=none,
+              child_meanings=child_meanings) }}
+
+{% for m in child_meanings %}
+
+    {% if m.metaphorical %}
+        <div style="margin-top: 10px;
+        {% if intermed %}{{ meaningsep }}; padding-left: 50px;{% endif %}
+        ">
+            <span style="color: #777;">►</span>&nbsp;
+    {% else %}
+        ¶&nbsp;
     {% endif %}
 
-    {% for m in child_meanings %}
+        {{ meaning(m, peer_meanings_loop=loop,
+                      parent_meanings_loop=parent_meanings_loop,
+                      child_meanings=none) }}
 
-        {% if m.metaphorical %}
-            <div style="margin-top: 10px;
-            {% if intermed %}{{ meaningsep }}; padding-left: 50px;{% endif %}
-            ">
-                <span style="color: #777;">►</span>
-        {% else %}
-                <span class="exgroup">||</span>
-        {% endif %}
-
-                {{ space }}
-                {% include '_meaning_without_children.html' %}
-
-        {% if m.metaphorical %}
-                {{ backspace }}<span class="example-address">.</span>
-            </div>
-        {% else %}
-            {% if loop.last %}
-                {{ backspace }}<span class="example-address">.</span>
-            {% endif %}
-        {% endif %}
-
-    {% endfor %}
-{% else %}
-    {% if m.meaning or m.gloss or m.examples
-    or m.link_to_entry or m.link_to_collogroup or m.link_to_meaning
-    or m.cfentries or m.cfcollogroups or m.cfmeanings %}
-        {{ backspace }}<span class="example-address">.</span>
+    {% if m.metaphorical %}
+        </div>
     {% endif %}
-{% endif %}
+
+{% endfor %}
 
 {% if intermed and not m.parent_meaning and m.examples and not m.collogroup_container %}
     <div class="edit-controls">
