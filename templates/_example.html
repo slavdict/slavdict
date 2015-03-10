@@ -49,8 +49,8 @@
         {% if not examples_loop.last %}
             {{ backspace }};&emsp;
         {% else %}
-            {% if peer_meanings_loop.last %}
-                {{ backspace }}.&emsp;
+            {% if peer_meanings_loop.last or not parent_meanings_loop %}
+                {{ backspace }}{{ onlyDot }}&emsp;
             {% else %}
                 {{ backspace }};&emsp;
             {% endif %}
