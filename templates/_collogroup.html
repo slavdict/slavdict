@@ -1,4 +1,5 @@
 {% from '_etymology.html'   import etymology    with context %}
+{% from '_meaning_without_children.html' import meaning with context %}
 
 {% if cg.meanings or cg.metaph_meanings %}
 <div style="margin: 10px 0 0 10px;">
@@ -81,7 +82,10 @@
         {% for m in cg.metaph_meanings %}
 
             <span style="color: #777;">►</span>
-            {% include '_meaning_without_children.html' %}
+            {{ space }}
+            {{ meaning(m, peer_meanings_loop=loop,
+                          parent_meanings_loop=none,
+                          child_meanings=none) }}
 
         {% endfor %}
 

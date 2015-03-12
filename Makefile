@@ -18,6 +18,7 @@ restart: stop checkout collectstatic fixown migrate start
 run: collectstatic
 	@echo "Запуск сервера в тестовом окружении..."
 	@$(IS_DEVELOPMENT)
+	compass watch &
 	python ./manage.py runserver
 
 stop:

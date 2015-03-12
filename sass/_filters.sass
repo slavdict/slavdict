@@ -154,8 +154,17 @@ $advertiserColor: #999
                 @include column(5, true)
                 margin-top: -0.3em
 
-                .checkbox-group,
+                .checkbox-group
                     @include column(6, true)
+
+        .D
+            @include push(2)
+            @include column(21, true)
+            margin-top: 0
+            margin-bottom: 0
+
+            .checkbox-group label
+                @include column(20, true)
 
         .checkbox-group label
             @include column(5, true)

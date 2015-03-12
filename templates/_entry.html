@@ -1,4 +1,5 @@
 {% from '_etymology.html'   import etymology    with context %}
+{% from '_meaning_without_children.html' import meaning with context %}
 
 {% trim %}
 
@@ -304,7 +305,7 @@
                 <b>{{ mnumber }}</b>.{{ space }}
             {% endif %}
 
-            {% include '_meaning_with_children.html' %}
+            {% include '_meaning_with_children.html' with context %}
 
         </div>
 
@@ -327,7 +328,11 @@
 
             <span style="color: #777;">►</span>
             {{ space }}
-            {% include '_meaning_with_children.html' %}
+            {{ meaning(m, peer_meanings_loop=loop,
+                          parent_meanings_loop=none,
+                          child_meanings=none) }}
+
+
 
         </div>
 
