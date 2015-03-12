@@ -14,6 +14,11 @@ vM.filters = {
             this.getInitialState();
         },
 
+    per_se: ko.observable()
+        .rememberInitial(vM.valuesToInitialize.per_se)
+        .rememberDefault(false)
+        .htmlCheckbox('per_se'),
+
     find: ko.observable()
         .rememberInitial(vM.valuesToInitialize.find)
         .rememberDefault('')

@@ -30,6 +30,8 @@ STATUS_CHOICES = viewmodels.tupleStatuses
 TANTUM_CHOICES = viewmodels.tupleTantum
 
 class FilterEntriesForm(forms.Form):
+    per_se = forms.BooleanField(label=u'Отображать помимо заголовочных '
+            u'слов сами статьи', required=False)
     sortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
     sortbase = forms.ChoiceField(choices=SORTBASE_CHOICES)
     find = forms.CharField(required=False, label=u'Начинается с')
@@ -61,6 +63,7 @@ class FilterEntriesForm(forms.Form):
     meaningcontexts = forms.BooleanField(label=u'С контекстами значения',
             required=False)
     default_data = {
+        'per_se': False,
         'sortdir':  '-',
         'sortbase': 't',
         'find': u'',

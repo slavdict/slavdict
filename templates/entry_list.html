@@ -327,6 +327,11 @@
                     </div>
                 </div>
 
+                <div class="D">
+                    {{ form.per_se }}
+                    {{ form.per_se.label_tag(label_suffix='') }}
+                </div>
+
             </div>
 
         </div></div>
@@ -364,8 +369,34 @@
         </div>
     {% endif %}
 
-    {% trim %}
     {% if entries %}
+    {% if filters.per_se %}
+        {% for entry in entries %}
+            <div style="position: relative;">
+            {% if not entry.authors.exists() or user.is_admeditor
+            or user in entry.authors.all() %}
+                {% if not entry.duplicate or user.is_admeditor %}
+                <div style="position: absolute; top: -3px; left: -40px;">
+                    <a class="icon edit" href="javascript:
+                            chromeOnly('{% url 'edit_form_url' entry.pk %}')">
+                        <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
+                    </a>
+                    {% if user.is_superuser %}
+                    <br />
+                    <a class="icon" href="/entries/{{ entry.pk }}/intermed/">
+                        <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endif %}
+            {% include '_entry.html' %}
+            {% include '_ref_entries.html' %}
+            </div>
+        {% endfor %}
+        {% include '_script.chromeOnly.html' %}
+    {% else %}
+        {% trim %}
         <table class="entry-list">
             <col class="eli-control" />
             <col class="eli-entry" />
@@ -552,10 +583,11 @@
             </tr>
 
         </table>
+        {% endtrim %}
+    {% endif %}
     {% endif %}
 
     {% include '_pagination.html' %}
-    {% endtrim %}
 {% endblock %}
 {% block javascript_links %}
 
@@ -567,6 +599,7 @@
     <script>
 
         vM.valuesToInitialize = {
+            per_se: {{ 'true' if filters.per_se else 'false' }},
             find: '{{ filters.find }}',
             author: '{{ filters.author }}',
             sortbase: '{{ filters.sortbase }}',

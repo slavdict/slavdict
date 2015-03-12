@@ -3,7 +3,7 @@ from django import http
 
 class CookieVersionMiddleware(object):
     def process_request(self, request):
-        current_version = '1'
+        current_version = '2'
         cookie_version = request.COOKIES.get('cookieversion')
         if cookie_version and cookie_version == current_version:
             return None
