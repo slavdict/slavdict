@@ -47,12 +47,12 @@
     <span class="example-address">
         {{ e.address_text }}
         {% if not examples_loop.last %}
-            {{ backspace }};&emsp;
+            {{ backspace }};{{ space }}
         {% else %}
             {% if peer_meanings_loop.last or not parent_meanings_loop %}
-                {{ backspace }}{{ onlyDot }}&emsp;
+                {{ backspace }}{{ onlyDot }}{{ space }}
             {% else %}
-                {{ backspace }};&emsp;
+                {{ backspace }};{{ space }}
             {% endif %}
         {% endif %}
     </span>
