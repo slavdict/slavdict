@@ -218,7 +218,6 @@ def get_examples(form):
     # slavdict.dictionary.models.Entry.status
     good_statuses = [
             'g', # поиск греч.
-            'i', # импортирована
             'f', # завершена
             'e', # редактируется
             'a', # утверждена

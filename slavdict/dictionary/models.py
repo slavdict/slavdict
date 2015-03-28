@@ -204,7 +204,6 @@ STATUS_CHOICES = (
     ('f', u'завершена'),
     ('e', u'редактируется'),
     ('a', u'утверждена'),
-    ('i', u'импортирована'),
 )
 STATUS_MAP = {
     'created': 'c',
@@ -213,7 +212,6 @@ STATUS_MAP = {
     'finished': 'f',
     'beingEdited': 'e',
     'approved': 'a',
-    'imported': 'i',
 }
 
 LANGUAGE_CHOICES = (
