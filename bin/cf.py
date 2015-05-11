@@ -5,19 +5,20 @@ from slavdict.dictionary.models import *
 
 
 def cf(civil_equivalents):
-    ''' Расстановка взаимных ссылок вида "ср." между словарными статьями.'''
+    u'''Расстановка взаимных ссылок вида "ср." между словарными статьями.'''
     entries = []
+    civil_equivalents = [x.strip() for x in civil_equivalents.split() if x.strip()]
     for ce in civil_equivalents:
-        _entries = Entry.objects.filter(civil_equivalents=ce).order_by('homonym_number')
+        _entries = Entry.objects.filter(civil_equivalent=ce).order_by('homonym_order')
         if _entries.count() > 1:
             for e in _entries:
                 print '%s %s [%s] %s' % (
-                        e.civil_equivalent, e.homonym_number, e.homonym_gloss,
+                        e.civil_equivalent, e.homonym_order, e.homonym_gloss,
                         e.get_part_of_speech_display())
             x = raw_input('\nIndicate homonym indices you want to use,'
                           'e.g. "1, 3": ').split(',')
-            x = [int(i) for i in x] or [e.homonym_number for e in _entries]
-            _entries = [e for e in _entries if e.homonym_number in x]
+            x = [int(i) for i in x] or [e.homonym_order for e in _entries]
+            _entries = [e for e in _entries if e.homonym_order in x]
         entries.extend(_entries)
     print 'Found %d entries for %d civil equivalents' % (
            len(entries), len(civil_equivalents))
