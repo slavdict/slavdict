@@ -30,7 +30,7 @@ def cf(civil_equivalents):
                 entry.additional_info)
     with transaction.atomic():
         for entry in entries:
-            entry.cf_entries = [e for e in entries if e.pk != entry.pk]
+            entry.cf_entries = set(entry.cf_entries) | set(e for e in entries if e.pk != entry.pk)
             print '\n\n%d %s\n    %s' % (
                     entry.pk, entry.civil_equivalent, entry.additional_info)
             x = raw_input('\nDelete [d], change [c] or do nothing [N]\n'
