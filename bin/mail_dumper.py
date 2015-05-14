@@ -9,9 +9,9 @@ from os.path import basename, dirname, abspath, join
 import django
 from django.core import mail
 
+sys.path.append('/var/www/slavdict')
 from slavdict import settings
 
-sys.path.append('/var/www/slavdict')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
