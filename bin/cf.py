@@ -16,9 +16,9 @@ def cf(civil_equivalents):
                         e.civil_equivalent, e.homonym_order, e.homonym_gloss,
                         e.get_part_of_speech_display())
             x = raw_input('\nIndicate homonym indices you want to use,'
-                          'e.g. "1, 3": ').strip().split(',')
+                          'e.g. "1, 3": ').strip()
             if x:
-                x = [int(i) for i in x]
+                x = [int(i) for i in x.split(',')]
             else:
                 x = [e.homonym_order for e in _entries]
             _entries = [e for e in _entries if e.homonym_order in x]
