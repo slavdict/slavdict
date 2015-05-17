@@ -23,16 +23,16 @@ def cf(civil_equivalents):
                 x = [e.homonym_order for e in _entries]
             _entries = [e for e in _entries if e.homonym_order in x]
         entries.extend(_entries)
-    if len(entries) != len(civil_equivalents):
-        print ('\033[0;31mFound %d entries '
-               'for %d civil equivalents\033[0m' % (
-                                    len(entries), len(civil_equivalents)))
     print 'Entries:', [e.pk for e in entries]
     for entry in entries:
         print '%d %s --> %r\n    %s' % (
                 entry.pk, entry.civil_equivalent,
                 [e.pk for e in entry.cf_entries.all()],
                 entry.additional_info)
+    if len(entries) != len(civil_equivalents):
+        print ('\033[0;31mFound %d entries '
+               'for %d civil equivalents\033[0m' % (
+                                    len(entries), len(civil_equivalents)))
     with transaction.atomic():
         for entry in entries:
             entry.cf_entries = set(entry.cf_entries.all()) | set(
