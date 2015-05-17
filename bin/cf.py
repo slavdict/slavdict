@@ -37,11 +37,12 @@ def cf(civil_equivalents):
             print '\n\n%d %s\n    %s' % (
                     entry.pk, entry.civil_equivalent, entry.additional_info)
             x = raw_input('\nDelete [d], change [c] or do nothing [N]\n'
-                          'with ``additional_info``: ').lower() or 'n'
-            if x == 'd':
+                          'with ``additional_info``: ')
+            x = x.decode('utf-8').lower() or u'n'
+            if x in (u'd', u'в'):
                 entry.additional_info = u''
                 entry.save()
-            elif x == 'c':
+            elif x in (u'c', u'с'):
                 x = raw_input('Input new ``additional_info``: ').decode('utf-8')
                 entry.additional_info = x
                 entry.save()
