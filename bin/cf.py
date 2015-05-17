@@ -20,8 +20,10 @@ def cf(civil_equivalents):
             x = [int(i) for i in x] or [e.homonym_order for e in _entries]
             _entries = [e for e in _entries if e.homonym_order in x]
         entries.extend(_entries)
-    print 'Found %d entries for %d civil equivalents' % (
-           len(entries), len(civil_equivalents))
+    if len(entries) != len(civil_equivalents):
+        print ('\033[0;31mFound %d entries '
+               'for %d civil equivalents\033[0m' % (
+                                    len(entries), len(civil_equivalents)))
     print 'Entries:', [e.pk for e in entries]
     for entry in entries:
         print '%d %s --> %r\n    %s' % (
