@@ -236,6 +236,10 @@ LANGUAGE_MAP = {
     'latin': 'h',
     'syriac': 'i',
 }
+ETYMOLOGY_LANGUAGES = [
+    LANGUAGE_MAP['greek'],
+    LANGUAGE_MAP['latin'],
+]
 LANGUAGE_CSS = {
         LANGUAGE_MAP['greek']: 'grec',
         LANGUAGE_MAP['hebrew']: 'hebrew',
@@ -453,7 +457,7 @@ class Entry(models.Model):
 
     @property
     def etymologies(self):
-        etyms = self.etymology_set
+        etyms = self.etymology_set.filter(language__in=ETYMOLOGY_LANGUAGES)
         etyms = etyms.filter(etymon_to__isnull=True).order_by('order', 'id')
         return etyms
 
@@ -1147,7 +1151,7 @@ class Collocation(models.Model):
 
     @property
     def etymologies(self):
-        etyms = self.etymology_set
+        etyms = self.etymology_set.filter(language__in=ETYMOLOGY_LANGUAGES)
         etyms = etyms.filter(etymon_to__isnull=True).order_by('order', 'id')
         return etyms
 
