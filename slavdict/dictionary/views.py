@@ -93,6 +93,8 @@ def all_entries(request, is_paged=False):
                                 перед наименованием статуса знака минус статьи
                                 с данным статусом будут исключены из выборки.
 
+?hide-refentries                Не отображать отсылочные статьи.
+
 
         ''' % request.path
         response = HttpResponse(text, content_type="text/plain; charset=utf-8")
@@ -108,6 +110,7 @@ def all_entries(request, is_paged=False):
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STARTSWITH = request.GET.get('startswith')
     httpGET_STATUS = urllib.unquote(request.GET.get('status', ''))
+    httpGET_HIDEREFENTRIES = 'hide-refentries' in request.GET
 
     COMMA = re.compile(ur'\s*\,\s*')
     SPACE = re.compile(ur'\s+')
@@ -216,6 +219,7 @@ def all_entries(request, is_paged=False):
     context = {
         'entries': entries,
         'show_numbers': not httpGET_HIDENUMBERS,
+        'show_refentries': not httpGET_HIDEREFENTRIES,
         'title': title,
         'show_additional_info': show_additional_info,
         'show_duplicates_warning': False if httpGET_DUPLICATES else True,

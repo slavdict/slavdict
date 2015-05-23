@@ -46,7 +46,9 @@
 
 
             {% include '_entry.html' %}
-            {% include '_ref_entries.html' %}
+            {% if show_refentries %}
+                {% include '_ref_entries.html' %}
+            {% endif %}
 
 
         {% if is_paged %}
