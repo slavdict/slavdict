@@ -54,12 +54,14 @@ class DataChangeShell(cmd.Cmd):
                 count = 0
                 for item in model.objects.all():
                     if self.pattern.search(getattr(item, attrname)):
-                        print getattr(item, attrname)
+                        txt = getattr(item, attrname)
+                        print self.pattern.sub('\033[0;36m\g<0>\033[0m', txt)
                         count += 1
                 tcount[model.__name__][attrname] = count
-        print u'\n  %r\n  \033[0;31m%i\033[0m   %s\n' % (
-                tcount, sum(sum(v.values()) for v in tcount.values()),
+        print u'\n   /\033[1;36m%s\033[0m/  \033[1;33m%i\033[0m %r\n' % (
                 self.pattern.pattern,
+                sum(sum(v.values()) for v in tcount.values()),
+                tcount,
                 )
 
     def do_try(self, arg):
@@ -80,7 +82,7 @@ class DataChangeShell(cmd.Cmd):
                             # в шаблоне поиска не будет никаких групп.
                             # Если подстрока для замены в этом случае
                             # будет найдена, то возникнет исключение.
-                            final = self.pattern.sub(self.replacement, initial)
+                            self.pattern.sub(self.replacement, initial)
                         except re.error as err:
                             self.replacement = None
                             print (u'Шаблон замены сброшен '
@@ -88,12 +90,17 @@ class DataChangeShell(cmd.Cmd):
                                    u'с шаблоном поиска: %s' % err)
                             return
                         count += 1
-                        print u'%s\n%s\n' % (initial, final)
+                        print u'%s\n%s\n' % (
+                                self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
+                                self.pattern.sub('\033[0;31m%s\033[0m' % self.replacement, initial))
                 tcount[model.__name__][attrname] = count
-        print u'\n  %r\n  \033[0;31m%i\033[0m   ? %s --> %s ?\n' % (
-                tcount, sum(sum(v.values()) for v in tcount.values()),
-                self.pattern.pattern, self.replacement,
-                )
+        print (u'  ? \033[1;36m%s\033[0m --> \033[1;31m%s\033[0m ?   '
+               u'\033[1;33m%i\033[0m %r\n' % (
+                    self.pattern.pattern,
+                    self.replacement,
+                    sum(sum(v.values()) for v in tcount.values()),
+                    tcount,
+                    ))
 
     def do_replace(self, arg):
         if self.replacement is None:
@@ -118,12 +125,17 @@ class DataChangeShell(cmd.Cmd):
                         setattr(item, attrname, final)
                         item.save(without_mtime=True)
                         count += 1
-                        print u'%s\n%s\n' % (initial, final)
+                        print u'%s\n%s\n' % (
+                                self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
+                                self.pattern.sub('\033[0;32m%s\033[0m' % self.replacement, initial))
                 tcount[model.__name__][attrname] = count
-        print u'\n  %r\n  \033[0;31m%i\033[0m   ? %s --> %s ?\n' % (
-                tcount, sum(sum(v.values()) for v in tcount.values()),
-                self.pattern.pattern, self.replacement,
-                )
+        print (u'  ! \033[1;36m%s\033[0m --> \033[1;32m%s\033[0m !   '
+               u'\033[1;33m%i\033[0m %r\n' % (
+                    self.pattern.pattern,
+                    self.replacement,
+                    sum(sum(v.values()) for v in tcount.values()),
+                    tcount,
+                    ))
 
 
     def default(self, arg):
