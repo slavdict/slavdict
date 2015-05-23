@@ -1369,6 +1369,10 @@ class Participle(models.Model):
         ordering = ('order', 'id')
 
 
+class WordForm(models.Model):
+    pass
+
+
 
 def get_max_lengths(Model):
     return {f.name:f.max_length
@@ -1386,7 +1390,8 @@ Models = (
     Meaning,
     MeaningContext,
     OrthographicVariant,
-    Participle
+    Participle,
+    WordForm,
 )
 for Model in Models:
     x = get_max_lengths(Model)
