@@ -9,10 +9,12 @@
 {% for m in child_meanings %}
 
     {% if m.metaphorical %}
-        <div style="margin-top: 10px;
-        {% if intermed %}padding-left: 50px;{% endif %}
-        ">
+        <div class="eM--meaning"
+        {% if intermed %}style="margin-top: 10px; padding-left: 50px;"{% endif %}
+        >
             <span style="color: #777;">►</span>&nbsp;
+    {% elif loop.first and not m.metaphorical and not m.parent_meaning.examples %}
+        {{ backspace }}.&nbsp;&mdash;{{ space }}
     {% endif %}
 
         {{ meaning(m, peer_meanings_loop=loop,

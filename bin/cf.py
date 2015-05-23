@@ -16,18 +16,23 @@ def cf(civil_equivalents):
                         e.civil_equivalent, e.homonym_order, e.homonym_gloss,
                         e.get_part_of_speech_display())
             x = raw_input('\nIndicate homonym indices you want to use,'
-                          'e.g. "1, 3": ').split(',')
-            x = [int(i) for i in x] or [e.homonym_order for e in _entries]
+                          'e.g. "1, 3": ').strip()
+            if x:
+                x = [int(i) for i in x.split(',')]
+            else:
+                x = [e.homonym_order for e in _entries]
             _entries = [e for e in _entries if e.homonym_order in x]
         entries.extend(_entries)
-    print 'Found %d entries for %d civil equivalents' % (
-           len(entries), len(civil_equivalents))
     print 'Entries:', [e.pk for e in entries]
     for entry in entries:
         print '%d %s --> %r\n    %s' % (
                 entry.pk, entry.civil_equivalent,
                 [e.pk for e in entry.cf_entries.all()],
                 entry.additional_info)
+    if len(entries) != len(civil_equivalents):
+        print ('\033[0;31mFound %d entries '
+               'for %d civil equivalents\033[0m' % (
+                                    len(entries), len(civil_equivalents)))
     with transaction.atomic():
         for entry in entries:
             entry.cf_entries = set(entry.cf_entries.all()) | set(
@@ -35,11 +40,12 @@ def cf(civil_equivalents):
             print '\n\n%d %s\n    %s' % (
                     entry.pk, entry.civil_equivalent, entry.additional_info)
             x = raw_input('\nDelete [d], change [c] or do nothing [N]\n'
-                          'with ``additional_info``: ').lower() or 'n'
-            if x == 'd':
+                          'with ``additional_info``: ')
+            x = x.decode('utf-8').lower() or u'n'
+            if x in (u'd', u'в'):
                 entry.additional_info = u''
                 entry.save()
-            elif x == 'c':
+            elif x in (u'c', u'с'):
                 x = raw_input('Input new ``additional_info``: ').decode('utf-8')
                 entry.additional_info = x
                 entry.save()
