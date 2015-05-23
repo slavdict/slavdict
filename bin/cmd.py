@@ -8,13 +8,13 @@ class DataChangeShell(cmd.Cmd):
     intro = 'Slavdict shell for data change :)\n'
     prompt = '> '
 
-    def __init__(self, model=_Example, attrname='address_text'):
+    def __init__(self, model_attrs=[(_Example, ['address_text'])]):
         cmd.Cmd.__init__(self)
         self.state = 'find'
-        self.model = model
-        self.attrname = attrname
-        self.intro = self.intro + '%s().%s\n' % (self.model.__name__,
-                                                 self.attrname)
+        self.model_attrs = model_attrs
+        self.intro = self.intro + '\n'.join(
+                '%s %s' % (model.__name__, attrs)
+                for model, attrs in self.model_attrs)
         self.pattern = re.compile('', re.UNICODE)
         self.replacement = None
         self.change_prompt()
@@ -43,59 +43,87 @@ class DataChangeShell(cmd.Cmd):
         self.replacement = self.prepare(arg)
 
     def do_show(self, arg):
-        print u'\nfind: %s\nreplace: %s\n' % (self.pattern.pattern, self.replacement)
+        print u'\nfind: %s\nreplace: %s\n' % (self.pattern.pattern,
+                                              self.replacement)
 
     def do_find(self, arg):
-        count = 0
-        for item in self.model.objects.all():
-            if self.pattern.search(getattr(item, self.attrname)):
-                print getattr(item, self.attrname)
-                count += 1
-        print u'\n%s\n%i\n' % (self.pattern.pattern, count)
+        tcount = {}
+        for model, attrs in self.model_attrs:
+            tcount[model.__name__] = {}
+            for attrname in attrs:
+                count = 0
+                for item in model.objects.all():
+                    if self.pattern.search(getattr(item, attrname)):
+                        print getattr(item, attrname)
+                        count += 1
+                tcount[model.__name__][attrname] = count
+        print u'\n  %r\n  \033[0;31m%i\033[0m   %s\n' % (
+                tcount, sum(sum(v.values()) for v in tcount.values()),
+                self.pattern.pattern,
+                )
 
     def do_try(self, arg):
         if self.replacement is None:
             print u'Установите шаблон замены'
             return
-        count = 0
-        for item in self.model.objects.all():
-            if self.pattern.search(getattr(item, self.attrname)):
-                initial = getattr(item, self.attrname)
-                try:
-                    # NOTE:qSeF4: В шаблоне замены могут быть подстановочные
-                    # знаки вроде \1, при том что в шаблоне поиска не будет
-                    # никаких групп. Если подстрока для замены в этом случае
-                    # будет найдена, то возникнет исключение.
-                    final = self.pattern.sub(self.replacement, initial)
-                except re.error as err:
-                    self.replacement = None
-                    print (u'Шаблон замены сброшен '
-                           u'из-за несовместимости с шаблоном поиска: %s' % err)
-                    return
-                count += 1
-                print u'%s\n%s\n' % (initial, final)
-        print u'\n? %s --> %s ?\n%i\n' % (self.pattern.pattern, self.replacement, count)
+        tcount = {}
+        for model, attrs in self.model_attrs:
+            tcount[model.__name__] = {}
+            for attrname in attrs:
+                count = 0
+                for item in model.objects.all():
+                    if self.pattern.search(getattr(item, attrname)):
+                        initial = getattr(item, attrname)
+                        try:
+                            # NOTE:qSeF4: В шаблоне замены могут быть
+                            # подстановочные знаки вроде \1, при том что
+                            # в шаблоне поиска не будет никаких групп.
+                            # Если подстрока для замены в этом случае
+                            # будет найдена, то возникнет исключение.
+                            final = self.pattern.sub(self.replacement, initial)
+                        except re.error as err:
+                            self.replacement = None
+                            print (u'Шаблон замены сброшен '
+                                   u'из-за несовместимости '
+                                   u'с шаблоном поиска: %s' % err)
+                            return
+                        count += 1
+                        print u'%s\n%s\n' % (initial, final)
+                tcount[model.__name__][attrname] = count
+        print u'\n  %r\n  \033[0;31m%i\033[0m   ? %s --> %s ?\n' % (
+                tcount, sum(sum(v.values()) for v in tcount.values()),
+                self.pattern.pattern, self.replacement,
+                )
 
     def do_replace(self, arg):
         if self.replacement is None:
             print u'Установите шаблон замены'
             return
-        count = 0
-        for item in self.model.objects.all():
-            if self.pattern.search(getattr(item, self.attrname)):
-                initial = getattr(item, self.attrname)
-                try:  # SEE:qSeF4:
-                    final = self.pattern.sub(self.replacement, initial)
-                except re.error as err:
-                    self.replacement = None
-                    print (u'Шаблон замены сброшен '
-                           u'из-за несовместимости с шаблоном поиска: %s' % err)
-                    return
-                setattr(item, self.attrname, final)
-                item.save(without_mtime=True)
-                count += 1
-                print u'%s\n%s\n' % (initial, final)
-        print u'\n! %s --> %s !\n%i\n' % (self.pattern.pattern, self.replacement, count)
+        tcount = {}
+        for model, attrs in self.model_attrs:
+            tcount[model.__name__] = {}
+            for attrname in attrs:
+                count = 0
+                for item in model.objects.all():
+                    if self.pattern.search(getattr(item, attrname)):
+                        initial = getattr(item, attrname)
+                        try:  # SEE:qSeF4:
+                            final = self.pattern.sub(self.replacement, initial)
+                        except re.error as err:
+                            self.replacement = None
+                            print (u'Шаблон замены сброшен '
+                                   u'из-за несовместимости '
+                                   u'с шаблоном поиска: %s' % err)
+                            return
+                        setattr(item, attrname, final)
+                        item.save(without_mtime=True)
+                        count += 1
+                        print u'%s\n%s\n' % (initial, final)
+                tcount[model.__name__][attrname] = count
+        print u'\n  %r\n  \033[0;31m%i\033[0m   ? %s --> %s ?\n' % (
+                tcount, sum(sum(v.values()) for v in tcount.values()),
+                self.pattern.pattern, self.replacement,
+                )
 
 
     def default(self, arg):
@@ -133,5 +161,5 @@ class DataChangeShell(cmd.Cmd):
         elif self.state == 'replace':
             self.onecmd('try')
 
-def shell(model=_Example, attrname='address_text'):
-    DataChangeShell(model=model, attrname=attrname).cmdloop()
+def shell(model_attrs=[(_Example, ['address_text'])]):
+    DataChangeShell(model_attrs=model_attrs).cmdloop()
