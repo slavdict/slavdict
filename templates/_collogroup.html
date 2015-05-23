@@ -1,11 +1,8 @@
 {% from '_etymology.html'   import etymology    with context %}
 {% from '_meaning_without_children.html' import meaning with context %}
 
-{% if cg.meanings or cg.metaph_meanings %}
-<div style="margin: 10px 0 0 10px;">
-{% else %}
-<span style="margin: 10px 0 0 10px; display: inline-block">
-{% endif %}
+{% if cg.meanings or cg.metaph_meanings %}<div{% else %}<span{% endif %}
+    class="entry-collogroup">
     &#x2662;<!-- LOZENGE -->&nbsp;
 
     {% for c in cg.collocations %}

@@ -96,6 +96,14 @@ div#main
     width: 40em
     position: relative
 
+@media print
+    @page
+        margin: 1cm
+        @top-right-corner
+            content: counter(page)
+    div#main
+        width: 100%
+
 #main-flex
     display: flex
 

@@ -7,6 +7,9 @@
 div.entry, div.refheader
     margin-top: 4em
 
+    @media print
+        margin-top: 1.5em
+
 div.entry sup.homonym-number
     font-family: $sansFont
     font-size: 10px
@@ -91,12 +94,31 @@ span.edit-controls a
     // NOTE: Последнее необходимо, чтобы не колапсились
        вертикальные маргины у его деток на границе с родителем.
 
+    @media print
+        margin: 0
+        padding: 0
+        background-color: transparent
+        border: none
+
+.entry-collogroup
+    margin: 10px 0 0 10px
+
+    @media print
+        margin: 0.4em 0 0 0
+
+span.entry-collogroup
+    display: inline-block
+
 .entry-example
     color: #686868
 
 .eM--meaning
     margin-top: 0.7em
     line-height: 140%
+
+    @media print
+        margin: 0.4em 0 0 0
+        padding: 0
 
 .eM--meaning-intermed
     border-top: 1px dashed orange
@@ -107,3 +129,13 @@ span.edit-controls a
 
 .example-address
     font-size: 14px
+
+.etymology
+    margin-top: 0.4em
+    line-height: 1em
+
+.meaning-context
+    color: #070
+
+    @media print
+        color: inherit
