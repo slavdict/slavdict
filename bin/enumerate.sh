@@ -1,8 +1,6 @@
 #!/bin/bash
-echo "Let's enumerate the pages of your pdf."
-sleep 2
 
-echo "Checking for dependencies"
+# Checking for dependencies
 OS=$(lsb_release -si)
 if ! which pdftk > /dev/null; then
     echo "Dependencies not met: pdftk not found"
@@ -13,17 +11,17 @@ if ! which pdftk > /dev/null; then
             sudo apt-get install pdftk
             if ! which pdftk > /dev/null; then
                 echo "Problem with automatic installation, please install manually and try again"
-                return
+                exit 1
             else
                 echo "pdftk successfully installed"
             fi
         else
             echo "Please install pdftk and try again"
-            return
+            exit 1
         fi
     else
         echo "Please install pdftk and try again"
-        return
+        exit 1
     fi
 fi
 
@@ -36,57 +34,87 @@ if ! which pdflatex > /dev/null; then
             sudo apt-get install texlive
             if ! which pdflatex > /dev/null; then
                 echo "Problem with automatic installation, please install manually and try again"
-                return
+                exit 1
             else
                 echo "pdftk successfully installed"
             fi
         else
             echo "Please install pdflatex and try again"
-            return
+            exit 1
         fi
     else
         echo "Please install pdflatex and try again"
-        return
+        exit 1
     fi
 fi
 
-echo "Preparing System"
-mkdir .temp
+INPUT_FILE=$(readlink -f "$1")
+OUTPUT_FILE=$(readlink -f "$2")
 
-echo "Calculating Page Numbers"
-#If you want to have some pages to not be numbered simply have this script move them to .temp at this point
+test -z $INPUT_FILE && exit 1
+if [ -z $OUTPUT_FILE ]
+then
+    OUTPUT_FILE=${INPUT_FILE%.pdf}-numbered.pdf
+fi
+echo 'Input file:'  $INPUT_FILE
+echo 'Output file:' $OUTPUT_FILE
 
-PAGES=$(pdfinfo $1 | grep "Pages" | sed s/[^0-9]//g)
+# Preparing System
+TEMPDIR=.temp-ZsD2hqRRu
+mkdir -p $TEMPDIR
+cd $TEMPDIR
 
-echo "Creating Page Number file for "$PAGES" pages"
-(
-printf '\\documentclass[12pt,a4]{article}\n'
-printf '\\usepackage{multido}\n'
-printf '\\usepackage[hmargin=.8cm,vmargin=.8cm,nohead,nofoot]{geometry}\n'
-printf '\\begin{document}\n'
-printf '\\multido{}{'$PAGES'}{\\vphantom{x}\\newpage}\n'
-printf '\\end{document}'
-) >.temp/numbers.tex
+# Calculating Page Numbers
+PAGES=$(pdfinfo "$INPUT_FILE" | grep "Pages" | sed s/[^0-9]//g)
 
-pdflatex -interaction=batchmode .temp/numbers.tex 1>/dev/null
+# Creating Page Number file for "$PAGES" pages
+cat >numbers.tex <<EOF
+\documentclass[12pt,a4]{article}
+\usepackage{multido}
+\usepackage[hmargin=.8cm,vmargin=0cm,nohead,nofoot]{geometry}
+\pagestyle{myheadings}
+\begin{document}
+\multido{}{$PAGES}{\vphantom{x}\newpage}
+\end{document}
+EOF
 
-echo "Bursting PDF's"
-pdftk $1 burst output .temp/prenumb_burst_%03d.pdf
-pdftk .temp/numbers.pdf burst output .temp/number_burst_%03d.pdf
+echo
+echo Bursting original PDF
+pdftk "$INPUT_FILE" burst output orig_burst_%0${#PAGES}d.pdf 2>/dev/null
 
-echo "Adding Page Numbers"
+echo Generating PDF with page numbers on blank pages
+pdflatex -interaction=batchmode numbers.tex >/dev/null
 
-for i in {001..$PAGES}; do \
-pdftk .temp/prenumb_burst_$i.pdf background .temp/number_burst_$i.pdf output .temp/numbered-$i.pdf ; done
+echo Bursting blank PDF
+pdftk numbers.pdf burst output number_burst_%0${#PAGES}d.pdf
 
-echo "Merging .pdf files"
-cd .temp
+# Adding Page Numbers
+echo Merging pages with text and blank pages with numbers
+for i in $(seq -w $PAGES)
+do
+    pdftk orig_burst_$i.pdf \
+        background number_burst_$i.pdf \
+        output numbered_$i.pdf
+done
 
-pdftk .temp/numbered-{001..$PAGES}.pdf cat output .temp/book_bloat.pdf
+echo Concatenating pages into single PDF
+pdftk $(for i in $(seq -w $PAGES); do echo numbered_$i.pdf; done) cat output book_bloat.pdf
 
-echo "Optimizing PDF file"
-gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/printer -dNOPAUSE \-dQUIET -dBATCH -sOutputFile=$2 .temp/book_bloat.pdf 2>/dev/null
+echo Optimizing PDF file
+gs 2>/dev/null \
+    -sDEVICE=pdfwrite \
+    -dCompatibilityLevel=1.4 \
+    -dPDFSETTINGS=/printer \
+    -dNOPAUSE \
+    -dQUIET \
+    -dBATCH \
+    -sOutputFile="$OUTPUT_FILE" book_bloat.pdf
+#mv book_bloat.pdf "$OUTPUT_FILE"
 
-echo "Cleaning Up"
-rm -fr .temp
-echo "The pages of PDF are enumerated."
+cd ..
+# Cleaning Up
+rm -fr $TEMPDIR
+
+echo Done.
+# The pages of PDF are enumerated.
+exit 0
