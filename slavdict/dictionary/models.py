@@ -1370,7 +1370,59 @@ class Participle(models.Model):
 
 
 class WordForm(models.Model):
-    pass
+    entry = ForeignKey(Entry, blank=True, null=True)
+    idem = CharField(u'словоформа', max_length=50)
+    civil_equivalent = CharField(
+            u'гражданское написание', max_length=50, blank=True)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=20)
+    mtime = DateTimeField(editable=False, auto_now=True)
+
+    #number (n, adj, v)
+    #case (n, adj)
+    #gender (adj)
+    #shortness (adj)
+    #comparison (adj, adv)
+    #voice (v, v-adj)
+    #mood (v)
+    #person (v, n-pron, adj-pron)
+
+    @property
+    def idem_ucs(self):
+        return ucs_convert(self.idem)
+
+    @property
+    def host_entry(self):
+        return self.entry
+
+    def save(self, without_mtime=False, *args, **kwargs):
+        super(WordForm, self).save(*args, **kwargs)
+        self.host_entry.save(without_mtime=without_mtime)
+
+    def delete(self, without_mtime=False, *args, **kwargs):
+        super(WordForm, self).delete(*args, **kwargs)
+        self.host_entry.save(without_mtime=without_mtime)
+
+    def __unicode__(self):
+        return self.civil_equivalent
+
+    def forJSON(self):
+        _fields = (
+            'entry_id',
+            'id',
+            'idem',
+            'civil_equivalent',
+            'order',
+        )
+        return dict((key, self.__dict__[key]) for key in _fields)
+
+    def toJSON(self):
+        return json.dumps(self.forJSON(),
+                          ensure_ascii=False, separators=(',',':'))
+
+    class Meta:
+        verbose_name = u'словоформа'
+        verbose_name_plural = u'словоформы'
+        ordering = ('order', 'id')
 
 
 
