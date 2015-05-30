@@ -1376,6 +1376,8 @@ class WordForm(models.Model):
             u'гражданское написание', max_length=50, blank=True)
     order = SmallIntegerField(u'порядок следования', blank=True, default=20)
     mtime = DateTimeField(editable=False, auto_now=True)
+    reconstructed = BooleanField(u'отсутствует в корпусе', default=False)
+    questionable = BooleanField(u'реконструкция ненадёжна', default=False)
 
     number = CharField(u'число', max_length=1,
                 help_text=u'для сущ., прил., прич. и гл.')
@@ -1412,11 +1414,21 @@ class WordForm(models.Model):
 
     def forJSON(self):
         _fields = (
+            'case',
+            'civil_equivalent',
+            'comparison',
             'entry_id',
+            'gender',
             'id',
             'idem',
-            'civil_equivalent',
+            'mood',
+            'number',
             'order',
+            'person',
+            'questionable',
+            'reconstructed',
+            'shortness',
+            'voice',
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
