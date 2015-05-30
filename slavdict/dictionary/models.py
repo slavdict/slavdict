@@ -1377,14 +1377,19 @@ class WordForm(models.Model):
     order = SmallIntegerField(u'порядок следования', blank=True, default=20)
     mtime = DateTimeField(editable=False, auto_now=True)
 
-    #number (n, adj, v)
-    #case (n, adj)
-    #gender (adj)
-    #shortness (adj)
-    #comparison (adj, adv)
-    #voice (v, v-adj)
-    #mood (v)
-    #person (v, n-pron, adj-pron)
+    number = CharField(u'число', max_length=1,
+                help_text=u'для сущ., прил., прич. и гл.')
+    case = CharField(u'падеж', max_length=1,
+                help_text=u'для сущ., прил и прич.')
+    gender = CharField(u'род', max_length=1, help_text=u'для прил. и прич.')
+    shortness = CharField(u'краткость', max_length=1,
+                help_text=u'для прил. и прич.')
+    comparison = CharField(u'степень сравнения', max_length=1,
+                help_text=u'для прил., прич. и нар.')
+    voice = CharField(u'залог', max_length=1, help_text=u'для гл. и прич.')
+    mood = CharField(u'наклонение', max_length=1, help_text=u'только для гл.')
+    person = CharField(u'лицо', max_length=1,
+                help_text=u'для гл., мест. сущ. и мест. прил.')
 
     @property
     def idem_ucs(self):
