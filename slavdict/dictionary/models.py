@@ -344,7 +344,7 @@ class Entry(models.Model):
     def is_gender(self, slug):
         return GENDER_MAP[slug] == self.gender
 
-    genitive = CharField(u'форма Р. падежа', max_length=10, blank=True)
+    genitive = CharField(u'форма Р. падежа', max_length=50, blank=True)
 
     @property
     def genitive_ucs_wax(self):
@@ -360,7 +360,7 @@ class Entry(models.Model):
 
     nom_sg = CharField(u'И.ед.м.', help_text=u'''Только для этнонимов
                        (например, в словарной статье АГАРЯНЕ, здесь --
-                       АГАРЯНИН).''', max_length=25, blank=True, default='')
+                       АГАРЯНИН).''', max_length=50, blank=True, default='')
     @property
     def nom_sg_ucs_wax(self):
         return ucs_affix_or_word(self.nom_sg)
@@ -368,7 +368,7 @@ class Entry(models.Model):
     # только для прилагательных
     short_form = CharField(u'краткая форма', help_text=u'''Если Вы указываете
                            не всё слово, а только его часть, предваряйте её
-                           дефисом.''', max_length=30, blank=True)
+                           дефисом.''', max_length=50, blank=True)
 
     @property
     def short_form_ucs_wax(self):
@@ -384,7 +384,7 @@ class Entry(models.Model):
     def is_transitivity(self, slug):
         return TRANSITIVITY_MAP[slug] == self.transitivity
 
-    sg1 = CharField(u'форма 1 ед.', max_length=30, blank=True,
+    sg1 = CharField(u'форма 1 ед.', max_length=50, blank=True,
                     help_text=u'''Целая словоформа или окончание. В случае
                     окончания первым символом должен идти дефис.''')
 
@@ -392,7 +392,7 @@ class Entry(models.Model):
     def sg1_ucs_wax(self):
         return ucs_affix_or_word(self.sg1)
 
-    sg2 = CharField(u'форма 2 ед.', max_length=30, blank=True,
+    sg2 = CharField(u'форма 2 ед.', max_length=50, blank=True,
                     help_text=u'''Целая словоформа или окончание. В случае
                     окончания первым символом должен идти дефис.''')
 
