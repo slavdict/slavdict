@@ -280,6 +280,42 @@ SUBSTANTIVUS_TYPE_MAP = {
     'f.pl.': 'f',
 }
 
+INFL_NUMBER = (
+    ('1', u'ед.ч.'),
+    ('2', u'дв.ч.'),
+    ('8', u'мн.ч.'),
+)
+INFL_CASE = (
+    ('v', u'Зват.'),
+    ('n', u'Им.'),
+    ('g', u'Род.'),
+    ('d', u'Дат.'),
+    ('a', u'Вин.'),
+    ('i', u'Твор.'),
+    ('p', u'Предл.'),
+)
+INFL_GENDER = GENDER_CHOICES
+
+INFL_SHORTNESS = (
+    ('s', u'краткая форма'),
+    ('f', u'полная форма'),
+)
+INFL_COMPARISON = (
+    ('p', u'положит.'),
+    ('c', u'компар.'),
+    ('s', u'превосх.'),
+)
+INFL_MOOD = (
+    ('f', u'инфинитив'),
+    ('i', u'изъявит.'),
+    ('c', u'сослагат.'),
+    ('m', u'повелит.'),
+)
+INFL_PERSON = (
+    ('1', u'1-е лицо'),
+    ('2', u'2-е лицо'),
+    ('3', u'3-е лицо'),
+)
 
 class Entry(models.Model):
 
@@ -1374,23 +1410,28 @@ class WordForm(models.Model):
     idem = CharField(u'словоформа', max_length=50)
     civil_equivalent = CharField(
             u'гражданское написание', max_length=50, blank=True)
+    transcription = CharField(
+            u'транскрипция', max_length=50, blank=True, default=u'')
     order = SmallIntegerField(u'порядок следования', blank=True, default=20)
     mtime = DateTimeField(editable=False, auto_now=True)
     reconstructed = BooleanField(u'отсутствует в корпусе', default=False)
     questionable = BooleanField(u'реконструкция ненадёжна', default=False)
 
-    number = CharField(u'число', max_length=1,
+    number = CharField(u'число', max_length=1, choices=INFL_NUMBER,
                 help_text=u'для сущ., прил., прич. и гл.')
-    case = CharField(u'падеж', max_length=1,
+    case = CharField(u'падеж', max_length=1, choices=INFL_CASE,
                 help_text=u'для сущ., прил и прич.')
-    gender = CharField(u'род', max_length=1, help_text=u'для прил. и прич.')
-    shortness = CharField(u'краткость', max_length=1,
+    gender = CharField(u'род', max_length=1, choices=INFL_GENDER,
+                help_text=u'для прил. и прич.')
+    shortness = CharField(u'краткость', max_length=1, choices=INFL_SHORTNESS,
                 help_text=u'для прил. и прич.')
     comparison = CharField(u'степень сравнения', max_length=1,
-                help_text=u'для прил., прич. и нар.')
-    voice = CharField(u'залог', max_length=1, help_text=u'для гл. и прич.')
-    mood = CharField(u'наклонение', max_length=1, help_text=u'только для гл.')
-    person = CharField(u'лицо', max_length=1,
+                choices=INFL_COMPARISON, help_text=u'для прил., прич. и нар.')
+    voice = CharField(u'залог', max_length=1, choices=INFL_VOICE,
+                help_text=u'для гл. и прич.')
+    mood = CharField(u'наклонение', max_length=1, choices=INFL_MOOD,
+                help_text=u'только для гл.')
+    person = CharField(u'лицо', max_length=1, choices=INFL_PERSON,
                 help_text=u'для гл., мест. сущ. и мест. прил.')
 
     @property
