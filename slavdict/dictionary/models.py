@@ -283,7 +283,8 @@ SUBSTANTIVUS_TYPE_MAP = {
 
 class Entry(models.Model):
 
-    civil_equivalent = CharField(u'гражданское написание', max_length=50)
+    civil_equivalent = CharField(u'гражд. написание', max_length=50)
+    civil_inverse = CharField(u'гражд. инв.', max_length=50)
 
     @property
     def orth_vars(self):
@@ -503,6 +504,7 @@ class Entry(models.Model):
         return ('single_entry_url', [str(self.id)])
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.civil_inverse = self.civil_equivalent[::-1]
         if not without_mtime:
             self.mtime = datetime.datetime.now()
         super(Entry, self).save(*args, **kwargs)
@@ -1146,6 +1148,7 @@ class Collocation(models.Model):
 
     civil_equivalent = CharField(u'гражданское написание', max_length=50,
                                  blank=True)
+    civil_inverse = CharField(u'гражд. инв.', max_length=50)
 
     order = SmallIntegerField(u'порядок следования', blank=True, default=0)
 
@@ -1162,6 +1165,7 @@ class Collocation(models.Model):
         return self.collogroup.host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.civil_inverse = self.civil_equivalent[::-1]
         super(Collocation, self).save(*args, **kwargs)
         self.host_entry.save(without_mtime=without_mtime)
 

@@ -326,6 +326,33 @@ from slavdict.dictionary.models import Entry
 Entry.__unicode__ = lambda self: entry_with_orth_variants(self)
 Entry.entry_authors = lambda self: u', '.join([a.__unicode__() for a in
                                                self.authors.all()])
+hmap = {
+    1: u'\u00b9',
+    2: u'\u00b2',
+    3: u'\u00b3',
+    4: u'\u2074',
+    None: u'',
+}
+def headword(self):
+    return u'''<i>%s</i> <span class="cslav">%s</span><span
+                style="font-size: larger">%s</span><span
+                style="font-size: smaller">%s</span>''' % (
+        self.get_part_of_speech_display(),
+        self.orth_vars[0].idem_ucs,
+        hmap[self.homonym_order],
+        u'<br>%s' % self.homonym_gloss if self.homonym_gloss else u'',
+        )
+headword.short_description = u''  # Делаем заголовок столбца пустым
+headword.admin_order_field = 'civil_equivalent'
+headword.allow_tags = True
+Entry.headword = headword
+
+def civil_inv(self):
+    return self.civil_inverse
+civil_inv.short_description = u''  # Делаем заголовок столбца пустым
+civil_inv.admin_order_field = 'civil_inverse'
+Entry.civil_inv = civil_inv
+
 class AdminEntry(admin.ModelAdmin):
     raw_id_fields = (
         'derivation_entry',
@@ -390,18 +417,15 @@ class AdminEntry(admin.ModelAdmin):
         Etymology_Inline,
         )
     list_display = (
-        'id',
-        'civil_equivalent',
-        '__unicode__',
-        'duplicate',
-        'entry_authors',
-        'status',
-        'part_of_speech',
+        'civil_inv',
+        'headword',
+        'genitive',
+        'short_form',
+        'sg1',
+        'sg2',
         )
     list_display_links = (
-        'id',
-        'civil_equivalent',
-        '__unicode__',
+        'headword',
         )
     list_filter = (
         'authors',
@@ -417,8 +441,10 @@ class AdminEntry(admin.ModelAdmin):
         'participle_type',
         )
     list_editable = (
-        'duplicate',
-        'status',
+        'genitive',
+        'short_form',
+        'sg1',
+        'sg2',
         )
     search_fields = ('civil_equivalent',)# 'orthographic_variants__idem')
     # При переходе к моделям, соотносящимся с основной как "много к одному"
@@ -426,7 +452,7 @@ class AdminEntry(admin.ModelAdmin):
     # См. http://code.djangoproject.com/ticket/15839
 
     filter_horizontal = ('cf_entries', 'cf_collogroups', 'cf_meanings')
-    ordering = ('-id',)
+    ordering = ('civil_inverse',)
     save_on_top = True
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     class Media:
