@@ -33,30 +33,29 @@ def m_template(mes):
                 m.parent_meaning.order if m.parent_meaning else m.order))
     return u', '.join(x), u', '.join(y)
 
-entries, collogroups, meaningse, meaningscg = [], [], [], []
 e_all, cg_all, me_all, mcg_all = [], [], [], []
 e_e, e_cg, e_me, e_mcg = [], [], [], []
 cg_e, cg_cg, cg_me, cg_mcg = [], [], [], []
 me_e, me_cg, me_me, me_mcg = [], [], [], []
 mcg_e, mcg_cg, mcg_me, mcg_mcg = [], [], [], []
 
+# Ссылки вида "ср." от слов
+entries = []
 for e in Entry.objects.order_by('civil_equivalent'):
-    cf_entries, cf_collogroups = [u''] * 2
-    cf_meanings_e, cf_meanings_c = [u''] * 2
+    es, cgs, mes, mcgs = [u''] * 4
 
     if e.cf_entries.exists():
-        cf_entries = e_template(e.cf_entries.all())
+        es = e_template(e.cf_entries.all())
 
     if e.cf_collogroups.exists():
-        cf_collogroups = cg_template(e.cf_collogroups.all())
+        cgs = cg_template(e.cf_collogroups.all())
 
     if e.cf_meanings.exists():
-        cf_meanings_e, cf_meanings_c = m_template(e.cf_meanings.all())
+        mes, mcgs = m_template(e.cf_meanings.all())
 
-    if cf_entries or cf_collogroups or cf_meanings_e or cf_meanings_c:
+    if es or cgs or mes or mcgs:
         etxt =  u'%s%s' % (e.civil_equivalent, hmap[e.homonym_order])
-        item = (etxt, cf_entries, cf_collogroups,
-                cf_meanings_e, cf_meanings_c)
+        item = (etxt, es, cgs, mes, mcgs)
         entries.append(item)
 
 entries.sort()
@@ -99,4 +98,3 @@ text += u'\n'.join(e_mcg)
 text += u'\n'
 f.write(text.encode('utf-8'))
 f.close()
-        
