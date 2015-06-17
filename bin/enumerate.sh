@@ -105,6 +105,7 @@ gs 2>/dev/null \
     -sDEVICE=pdfwrite \
     -dCompatibilityLevel=1.4 \
     -dPDFSETTINGS=/printer \
+    -dUseCIEColor \
     -dNOPAUSE \
     -dQUIET \
     -dBATCH \
