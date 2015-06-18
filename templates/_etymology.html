@@ -81,33 +81,39 @@
 
             <i>{{ etym2.get_language_display() }}</i>&nbsp;
 
-          {% if etym2.is_language(['greek', 'latin']) %}
-            {% if etym2.text or etym2.unitext %}
-            {% if etym2.is_language('greek') %}
-                    <span{% if etym2.corrupted %} class="cinnabar"{% endif %}>{{ etym2.unitext }}</span>
-                    {{ space }}
-            {% else %}
-                    <span class="{{ etym2.get_language_css() }}
-                    {% if etym2.corrupted %} cinnabar{% endif %}">{{ etym2.text }}</span>
-                    {{ space }}
-            {% endif %}
-            {% endif %}
-
-            {% if etym2.translit %}
-                {% if etym2.text or etym2.unitext %}
-                    {{ space }}[
-                    <span class="{{ etym2.get_language_translit_css() }}">{{ etym2.translit }}</span>
-                    ]{{ space }}
+            {% if etym2.is_language(['greek', 'latin']) %}
+              {% if etym2.text or etym2.unitext %}
+                {% if etym2.is_language('greek') %}
+                  <span {% if etym2.corrupted %}
+                          class="cinnabar"
+                        {% endif %}>{{ etym2.unitext }}</span>
+                  {{ space }}
                 {% else %}
-                    <span class="{{ etym2.get_language_translit_css() }}">{{ etym2.translit }}</span>
-                    {{ space }}
-                {% endif %}
-            {% endif %}
+                  <span class="{{ etym2.get_language_css() }}
+                        {% if etym2.corrupted %}
+                          cinnabar
+                        {% endif %}">{{ etym2.text }}</span>
+                {{ space }}
+              {% endif %}
+              {% endif %}
 
-            {% if etym2.mark %}
-                (<i>{{ etym2.mark }}</i>){{ space }}
+              {% if etym2.translit %}
+                {% if etym2.text or etym2.unitext %}
+                  {{ space }}[
+                  <span class="{{ etym2.get_language_translit_css() }}"
+                      >{{ etym2.translit }}</span>
+                  ]{{ space }}
+                {% else %}
+                  <span class="{{ etym2.get_language_translit_css() }}"
+                      >{{ etym2.translit }}</span>
+                  {{ space }}
+                {% endif %}
+              {% endif %}
+
+              {% if etym2.mark %}
+                  (<i>{{ etym2.mark }}</i>){{ space }}
+              {% endif %}
             {% endif %}
-          {% endif %}
 
             {% if etym2.meaning %}
                 <span>‘{{ etym2.meaning }}’</span>
