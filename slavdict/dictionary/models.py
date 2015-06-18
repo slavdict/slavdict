@@ -586,8 +586,11 @@ class Etymology(models.Model):
     language = CharField(u'язык', max_length=1, choices=LANGUAGE_CHOICES,
                          default='')
 
-    def is_language(self, slug):
-        return LANGUAGE_MAP[slug] == self.language
+    def is_language(self, x):
+        if type(x) in (list, tuple):
+            return self.language in [ix for ix in LANGUAGE_MAP if ix in x]
+        else:
+            return self.language == LANGUAGE_MAP[x]
 
     def get_language_css(self):
         return LANGUAGE_CSS[self.language]
