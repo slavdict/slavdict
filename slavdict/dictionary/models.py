@@ -359,9 +359,9 @@ class Entry(models.Model):
 
     canonical_name = BooleanField(u'каноническое', default=False)
 
-    nom_sg = CharField(u'И.ед.м.', help_text=u'''Только для этнонимов
-                       (например, в словарной статье АГАРЯНЕ, здесь --
-                       АГАРЯНИН).''', max_length=50, blank=True, default='')
+    nom_sg = CharField(u'И.мн.', help_text=u'''Только для этнонимов
+                       (например, в словарной статье АГАРЯНИН, здесь --
+                       АГАРЯНЕ).''', max_length=50, blank=True, default='')
     @property
     def nom_sg_ucs_wax(self):
         return ucs_affix_or_word(self.nom_sg)
