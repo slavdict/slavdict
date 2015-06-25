@@ -1417,6 +1417,8 @@ class WordForm(models.Model):
     idem = CharField(u'словоформа', max_length=50)
     civil_equivalent = CharField(
             u'гражданское написание', max_length=50, blank=True)
+    civil_inverse = CharField(u'гражд. инв.', max_length=50, blank=True)
+
     transcription = CharField(
             u'транскрипция', max_length=50, blank=True, default=u'')
     order = SmallIntegerField(u'порядок следования', blank=True, default=20)
@@ -1450,6 +1452,7 @@ class WordForm(models.Model):
         return self.entry
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.civil_inverse = self.civil_equivalent[::-1]
         super(WordForm, self).save(*args, **kwargs)
         self.host_entry.save(without_mtime=without_mtime)
 
