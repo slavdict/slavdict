@@ -319,7 +319,8 @@ INFL_PERSON = (
 
 class Entry(models.Model):
 
-    civil_equivalent = CharField(u'гражданское написание', max_length=50)
+    civil_equivalent = CharField(u'гражд. написание', max_length=50)
+    civil_inverse = CharField(u'гражд. инв.', max_length=50)
 
     @property
     def orth_vars(self):
@@ -380,7 +381,7 @@ class Entry(models.Model):
     def is_gender(self, slug):
         return GENDER_MAP[slug] == self.gender
 
-    genitive = CharField(u'форма Р. падежа', max_length=10, blank=True)
+    genitive = CharField(u'форма Р. падежа', max_length=50, blank=True)
 
     @property
     def genitive_ucs_wax(self):
@@ -394,9 +395,9 @@ class Entry(models.Model):
 
     canonical_name = BooleanField(u'каноническое', default=False)
 
-    nom_sg = CharField(u'И.ед.м.', help_text=u'''Только для этнонимов
-                       (например, в словарной статье АГАРЯНЕ, здесь --
-                       АГАРЯНИН).''', max_length=25, blank=True, default='')
+    nom_sg = CharField(u'И.мн.', help_text=u'''Только для этнонимов
+                       (например, в словарной статье АГАРЯНИН, здесь --
+                       АГАРЯНЕ).''', max_length=50, blank=True, default='')
     @property
     def nom_sg_ucs_wax(self):
         return ucs_affix_or_word(self.nom_sg)
@@ -404,7 +405,7 @@ class Entry(models.Model):
     # только для прилагательных
     short_form = CharField(u'краткая форма', help_text=u'''Если Вы указываете
                            не всё слово, а только его часть, предваряйте её
-                           дефисом.''', max_length=30, blank=True)
+                           дефисом.''', max_length=50, blank=True)
 
     @property
     def short_form_ucs_wax(self):
@@ -420,7 +421,7 @@ class Entry(models.Model):
     def is_transitivity(self, slug):
         return TRANSITIVITY_MAP[slug] == self.transitivity
 
-    sg1 = CharField(u'форма 1 ед.', max_length=30, blank=True,
+    sg1 = CharField(u'форма 1 ед.', max_length=50, blank=True,
                     help_text=u'''Целая словоформа или окончание. В случае
                     окончания первым символом должен идти дефис.''')
 
@@ -428,7 +429,7 @@ class Entry(models.Model):
     def sg1_ucs_wax(self):
         return ucs_affix_or_word(self.sg1)
 
-    sg2 = CharField(u'форма 2 ед.', max_length=30, blank=True,
+    sg2 = CharField(u'форма 2 ед.', max_length=50, blank=True,
                     help_text=u'''Целая словоформа или окончание. В случае
                     окончания первым символом должен идти дефис.''')
 
@@ -539,6 +540,7 @@ class Entry(models.Model):
         return ('single_entry_url', [str(self.id)])
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.civil_inverse = self.civil_equivalent[::-1]
         if not without_mtime:
             self.mtime = datetime.datetime.now()
         super(Entry, self).save(*args, **kwargs)
@@ -620,8 +622,11 @@ class Etymology(models.Model):
     language = CharField(u'язык', max_length=1, choices=LANGUAGE_CHOICES,
                          default='')
 
-    def is_language(self, slug):
-        return LANGUAGE_MAP[slug] == self.language
+    def is_language(self, x):
+        if type(x) in (list, tuple):
+            return self.language in [ix for ix in LANGUAGE_MAP if ix in x]
+        else:
+            return self.language == LANGUAGE_MAP[x]
 
     def get_language_css(self):
         return LANGUAGE_CSS[self.language]
@@ -1182,6 +1187,7 @@ class Collocation(models.Model):
 
     civil_equivalent = CharField(u'гражданское написание', max_length=50,
                                  blank=True)
+    civil_inverse = CharField(u'гражд. инв.', max_length=50)
 
     order = SmallIntegerField(u'порядок следования', blank=True, default=0)
 
@@ -1198,6 +1204,7 @@ class Collocation(models.Model):
         return self.collogroup.host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.civil_inverse = self.civil_equivalent[::-1]
         super(Collocation, self).save(*args, **kwargs)
         self.host_entry.save(without_mtime=without_mtime)
 
