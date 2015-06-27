@@ -29,20 +29,20 @@ def meanings(x):
 
 es, cgs = set(), set()
 for meaning in Meaning.objects.all():
-    if meaning.figurative:
+    if meaning.metaphorical:
         if type(meaning.host) is Entry:
             es.add(meaning.host)
         elif type(meaning.host) is CollocationGroup:
             cgs.add(meaning.host)
 
-f = open('figurative4lexemes.txt', 'w')
+f = open('liturgsymb4lexemes.txt', 'w')
 for e in sorted(es, key=lambda x: x.civil_equivalent):
     text = u'%s%s %s\n' % (e.civil_equivalent, hmap[e.homonym_order], e.get_part_of_speech_display())
     text += meanings(e) + u'\n'
     f.write(text.encode('utf-8'))
 f.close()
 
-f = open('figurative4collocations.txt', 'w')
+f = open('liturgsymb4collocations.txt', 'w')
 for cg in sorted(cgs, key=lambda x: x.host_entry.civil_equivalent):
     text = u', '.join(c.collocation for c in cg.collocations) + u'\n'
     text += meanings(cg) + u'\n'
