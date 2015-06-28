@@ -45,7 +45,7 @@
 
 {% if e.address_text %}
     <span class="example-address">
-        {{ e.address_text }}
+        {{ e.address_text|cslav_injection }}
         {% if not examples_loop.last %}
             {{ backspace }};{{ space }}
         {% else %}
