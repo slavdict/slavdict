@@ -280,6 +280,10 @@ SUBSTANTIVUS_TYPE_MAP = {
     'f.pl.': 'f',
 }
 
+class WithoutHiddenManager(models.Manager):
+    def get_queryset(self):
+        return super(WithoutHiddenManager,
+                     self).get_queryset().filter(hidden=False)
 
 class Entry(models.Model):
 
@@ -555,6 +559,9 @@ class Entry(models.Model):
     def toJSON(self):
         return json.dumps(self.forJSON(),
                           ensure_ascii=False, separators=(',',':'))
+
+    objects = WithoutHiddenManager()
+    objects_with_hidden = models.Manager()
 
     class Meta:
         verbose_name = u'словарная статья'
