@@ -37,14 +37,15 @@ for meaning in Meaning.objects.all():
 
 f = open('liturgsymb4lexemes.txt', 'w')
 for e in sorted(es, key=lambda x: x.civil_equivalent):
-    text = u'%s%s %s\n' % (e.civil_equivalent, hmap[e.homonym_order], e.get_part_of_speech_display())
+    text = u'%s%s %s\n' % (e.civil_equivalent.upper(),
+            hmap[e.homonym_order], e.get_part_of_speech_display())
     text += meanings(e) + u'\n'
     f.write(text.encode('utf-8'))
 f.close()
 
 f = open('liturgsymb4collocations.txt', 'w')
 for cg in sorted(cgs, key=lambda x: x.host_entry.civil_equivalent):
-    text = u', '.join(c.collocation for c in cg.collocations) + u'\n'
+    text = u', '.join(c.collocation.upper() for c in cg.collocations) + u'\n'
     text += meanings(cg) + u'\n'
     f.write(text.encode('utf-8'))
 f.close()
