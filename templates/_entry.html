@@ -115,26 +115,6 @@
         {% endif %}
 
 
-        {% if entry.derivation_entry %}
-
-            {% if entry.possessive %}
-                <i>к</i>&nbsp;
-            {% else %}
-                <i>от</i>&nbsp;
-            {% endif %}
-
-            {% set de = entry.derivation_entry %}
-                <a href="{{ de.get_absolute_url() }}">
-                    <span class="cslav">{{ de.orth_vars.0.idem_ucs }}</span>
-                    {% if de.homonym_order %}
-                        <sup class="homonym-number">{{ de.homonym_order }}</sup>
-                    {% endif %}
-                </a>
-                {{ space }}
-
-        {% endif %}
-
-
         {% if show_additional_info and entry.additional_info %}
             <span class="ai ai-entry">{{ entry.additional_info }}</span>
         {% endif %}
