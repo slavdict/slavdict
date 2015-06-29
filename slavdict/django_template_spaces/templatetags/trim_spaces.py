@@ -140,8 +140,7 @@ class TrimExtension(Extension):
 
 trim = TrimExtension
 
-@register.filter
-def cslav_words(value):
+def cslav_nobr_words(value):
     """ Все слова в переданном тексте делает неразрывными, чтобы браузер их
     случайно не порвал посередине. Всё кроме многоточий и скобок помечает
     для отображения цсл графикой, а многоточия и скобки -- гражданской.
@@ -152,13 +151,14 @@ def cslav_words(value):
     words = (pattern % word for word in value.split())
     return u'&#32;'.join(words)
 
-def wrapper(func):
-    return lambda x: ur'%s<span class="cslav">%s</span>%s' % (
-                                            EXCLAM, func(x.group(1)), EXCLAM)
+def cslav_subst(x):
+    return EXCLAM + cslav_nobr_words(ucs_convert(x.group(1))) + EXCLAM
 
 @register.filter
 def cslav_injection(value):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
-    value = re.sub(ur'##(.*?)##', wrapper(ucs_convert), value)
+    value = re.sub(ur'##(.*?)##', cslav_subst, value)
     return value
+
+register.filter(name='cslav_words')(cslav_nobr_words)
