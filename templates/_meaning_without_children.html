@@ -195,16 +195,7 @@
 
 
 {% if m.examples %}
-    {% if parent_meanings_loop %}
-        {{ backspace }}&nbsp;&mdash;{{ space }}
-    {% else %}
-        {% if m.meaning or m.gloss or m.greek_equivs or m.link_to_entry
-        or m.link_to_collogroup or m.link_to_meaning or m.cfentries
-        or m.cfcollogroups or m.cfmeanings
-        or show_additional_info and m.additional_info %}
-            {{ backspace }}:{{ space }}
-        {% endif %}
-    {% endif %}
+    {{ backspace }}&nbsp;&mdash;{{ space }}
 {% endif %}
 
 
