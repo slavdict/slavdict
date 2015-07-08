@@ -1406,14 +1406,10 @@ class WordForm(models.Model):
     civil_equivalent = CharField(
             u'гражданское написание', max_length=50, blank=True)
     civil_inverse = CharField(u'гражд. инв.', max_length=50, blank=True)
-
-    transcription = CharField(
-            u'транскрипция', max_length=50, blank=True, default=u'')
     order = SmallIntegerField(u'порядок следования', blank=True, default=20)
     mtime = DateTimeField(editable=False, auto_now=True)
     reconstructed = BooleanField(u'отсутствует в корпусе', default=False)
     questionable = BooleanField(u'реконструкция ненадёжна', default=False)
-
     number = CharField(u'число', max_length=1, choices=INFL_NUMBER,
                 help_text=u'для сущ., прил., прич. и гл.')
     case = CharField(u'падеж', max_length=1, choices=INFL_CASE,
@@ -1477,6 +1473,36 @@ class WordForm(models.Model):
         ordering = ('order', 'id')
 
 
+class Transcription(models.Model):
+    wordform = ForeignKey(WordForm)
+    transcription = CharField(
+            u'транскрипция', max_length=50, blank=True, default=u'')
+    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
+
+    @property
+    def host_entry(self):
+        return self.wordform.host_entry
+
+    def save(self, without_mtime=False, *args, **kwargs):
+        super(Transcription, self).save(*args, **kwargs)
+        self.host_entry.save(without_mtime=without_mtime)
+
+    def delete(self, without_mtime=False, *args, **kwargs):
+        super(Transcription, self).delete(*args, **kwargs)
+        self.host_entry.save(without_mtime=without_mtime)
+
+    def __unicode__(self):
+        return self.transcription
+
+    def forJSON(self):
+        _fields = (
+            'order',
+            'transcription',
+            'wordform_id',
+        )
+        return dict((key, self.__dict__[key]) for key in _fields)
+
+
 def toJSON(self):
     return json.dumps(self.forJSON(), ensure_ascii=False, separators=(',',':'))
 
@@ -1497,6 +1523,7 @@ Models = (
     MeaningContext,
     OrthographicVariant,
     Participle,
+    Transcription,
     WordForm,
 )
 for Model in Models:
