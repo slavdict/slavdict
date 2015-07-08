@@ -317,6 +317,11 @@ INFL_PERSON = (
     ('3', u'3-е лицо'),
 )
 
+class WithoutHiddenManager(models.Manager):
+    def get_queryset(self):
+        return super(WithoutHiddenManager,
+                     self).get_queryset().filter(hidden=False)
+
 class Entry(models.Model):
 
     civil_equivalent = CharField(u'гражд. написание', max_length=50)
@@ -592,6 +597,9 @@ class Entry(models.Model):
         return json.dumps(self.forJSON(),
                           ensure_ascii=False, separators=(',',':'))
 
+    objects = WithoutHiddenManager()
+    objects_all = models.Manager()
+
     class Meta:
         verbose_name = u'словарная статья'
         verbose_name_plural = u'СЛОВАРНЫЕ СТАТЬИ'
@@ -713,6 +721,19 @@ class Etymology(models.Model):
         ordering = ('id',)
 
 
+class QuasiGoodManager(models.Manager):
+    def get_queryset(self):
+        X = u''
+        PL = u'мн.'
+        qs = super(QuasiGoodManager, self).get_queryset()
+        # Оставляем в выборке только те контексты значений, которые содержат
+        # либо только цсл. текст, либо только помету "мн."
+        qs = qs.extra(where=['''
+            (context!=%s AND left_text=%s AND right_text=%s) OR
+            (context=%s AND (left_text=%s OR right_text=%s))
+            '''], params=[X] * 4 + [PL] * 2)
+        return qs
+
 class MeaningContext(models.Model):
 
     meaning = ForeignKey('Meaning', verbose_name=u'значение')
@@ -779,6 +800,9 @@ class MeaningContext(models.Model):
     def toJSON(self):
         return json.dumps(self.forJSON(),
                           ensure_ascii=False, separators=(',',':'))
+
+    objects = QuasiGoodManager()
+    objects_all = models.Manager()
 
     class Meta:
         verbose_name = u'контекст значения'
