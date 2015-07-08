@@ -597,10 +597,6 @@ class Entry(models.Model):
                 for e in self.example_set.filter(meaning__isnull=True)]
         return dct
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     objects = WithoutHiddenManager()
     objects_all = models.Manager()
 
@@ -715,10 +711,6 @@ class Etymology(models.Model):
                 for e in Etymology.objects.filter(etymon_to=self)]
         return dct
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     class Meta:
         verbose_name = u'этимон'
         verbose_name_plural = u'этимология'
@@ -800,10 +792,6 @@ class MeaningContext(models.Model):
             'right_text',
         )
         return dict((key, self.__dict__[key]) for key in _fields)
-
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
 
     objects = QuasiGoodManager()
     objects_all = models.Manager()
@@ -969,10 +957,6 @@ class Meaning(models.Model):
         dct['examples'] = [e.forJSON() for e in self.examples]
         return dct
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     class Meta:
         verbose_name = u'значение'
         verbose_name_plural = u'ЗНАЧЕНИЯ'
@@ -1107,10 +1091,6 @@ class Example(models.Model):
         dct['greqs'] = [ge.forJSON() for ge in self.greek_equivs]
         return dct
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
 
@@ -1191,10 +1171,6 @@ class CollocationGroup(models.Model):
                 for e in self.example_set.filter(meaning__isnull=True)]
         return dct
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     class Meta:
         verbose_name = u'группа словосочетаний'
         verbose_name_plural = u'ГРУППЫ СЛОВОСОЧЕТАНИЙ'
@@ -1252,10 +1228,6 @@ class Collocation(models.Model):
             'order',
         )
         return dict((key, self.__dict__[key]) for key in _fields)
-
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
 
     class Meta:
         verbose_name = u'словосочетание'
@@ -1323,10 +1295,6 @@ class GreekEquivalentForExample(models.Model):
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     class Meta:
         verbose_name = u'греческая параллель для примера'
         verbose_name_plural = u'греческие параллели'
@@ -1378,10 +1346,6 @@ class OrthographicVariant(models.Model):
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     class Meta:
         verbose_name = u'вариант'
         verbose_name_plural = u'варианты'
@@ -1429,10 +1393,6 @@ class Participle(models.Model):
             'tp',
         )
         return dict((key, self.__dict__[key]) for key in _fields)
-
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
 
     class Meta:
         verbose_name = u'причастие'
@@ -1511,16 +1471,14 @@ class WordForm(models.Model):
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     class Meta:
         verbose_name = u'словоформа'
         verbose_name_plural = u'словоформы'
         ordering = ('order', 'id')
 
 
+def toJSON(self):
+    return json.dumps(self.forJSON(), ensure_ascii=False, separators=(',',':'))
 
 def get_max_lengths(Model):
     return {f.name:f.max_length
@@ -1545,3 +1503,5 @@ for Model in Models:
     x = get_max_lengths(Model)
     if x:
         MAX_LENGTHS[Model.__name__] = x
+    if hasattr(Model, 'forJSON'):
+        Model.toJSON = toJSON
