@@ -315,6 +315,13 @@ INFL_MOOD = (
     ('c', u'сослагат.'),
     ('m', u'повелит.'),
 )
+INFL_TENSE = (
+    ('p', u'наст.'),
+    ('f', u'буд.'),
+    ('1', u'наст./буд.'),
+    ('i', u'имперф.'),
+    ('a', u'аор.'),
+)
 INFL_PERSON = (
     ('1', u'1-е лицо'),
     ('2', u'2-е лицо'),
@@ -1411,21 +1418,23 @@ class WordForm(models.Model):
     reconstructed = BooleanField(u'отсутствует в корпусе', default=False)
     questionable = BooleanField(u'реконструкция ненадёжна', default=False)
     number = CharField(u'число', max_length=1, choices=INFL_NUMBER,
-                help_text=u'для сущ., прил., прич. и гл.')
+                help_text=u'для сущ., прил., прич. и гл.', blank=True)
     case = CharField(u'падеж', max_length=1, choices=INFL_CASE,
-                help_text=u'для сущ., прил и прич.')
+                help_text=u'для сущ., прил и прич.', blank=True)
     gender = CharField(u'род', max_length=1, choices=INFL_GENDER,
-                help_text=u'для прил. и прич.')
+                help_text=u'для прил. и прич.', blank=True)
     shortness = CharField(u'краткость', max_length=1, choices=INFL_SHORTNESS,
-                help_text=u'для прил. и прич.')
-    comparison = CharField(u'степень сравнения', max_length=1,
+                help_text=u'для прил. и прич.', blank=True)
+    comparison = CharField(u'степень сравнения', max_length=1, blank=True,
                 choices=INFL_COMPARISON, help_text=u'для прил., прич. и нар.')
     voice = CharField(u'залог', max_length=1, choices=INFL_VOICE,
-                help_text=u'для гл. и прич.')
+                help_text=u'для гл. и прич.', blank=True)
     mood = CharField(u'наклонение', max_length=1, choices=INFL_MOOD,
-                help_text=u'только для гл.')
+                help_text=u'только для гл.', blank=True)
+    tense = CharField(u'время', max_length=1, choices=INFL_TENSE,
+                help_text=u'только для гл. и прич.', blank=True)
     person = CharField(u'лицо', max_length=1, choices=INFL_PERSON,
-                help_text=u'для гл., мест. сущ. и мест. прил.')
+                help_text=u'для гл., мест. сущ. и мест. прил.', blank=True)
 
     @property
     def idem_ucs(self):
