@@ -1407,16 +1407,30 @@ class Participle(models.Model):
         ordering = ('order', 'id')
 
 
-class WordForm(models.Model):
-    entry = ForeignKey(Entry, blank=True, null=True)
+class TextSegment(models.Model):
     idem = CharField(u'словоформа', max_length=50)
     civil_equivalent = CharField(
             u'гражданское написание', max_length=50, blank=True)
     civil_inverse = CharField(u'гражд. инв.', max_length=50, blank=True)
-    order = SmallIntegerField(u'порядок следования', blank=True, default=20)
-    mtime = DateTimeField(editable=False, auto_now=True)
-    reconstructed = BooleanField(u'отсутствует в корпусе', default=False)
-    questionable = BooleanField(u'реконструкция ненадёжна', default=False)
+
+    @property
+    def idem_ucs(self):
+        return ucs_convert(self.idem)
+
+    def forJSON(self):
+        _fields = (
+            'civil_equivalent',
+            'id',
+            'idem',
+        )
+        return dict((key, self.__dict__[key]) for key in _fields)
+
+    def save(self, without_mtime=False, *args, **kwargs):
+        self.civil_inverse = self.civil_equivalent[::-1]
+        super(TextSegment, self).save(*args, **kwargs)
+
+
+class GramSemantics(models.Model):
     number = CharField(u'число', max_length=1, choices=INFL_NUMBER,
                 help_text=u'для сущ., прил., прич. и гл.', blank=True)
     case = CharField(u'падеж', max_length=1, choices=INFL_CASE,
@@ -1436,32 +1450,13 @@ class WordForm(models.Model):
     person = CharField(u'лицо', max_length=1, choices=INFL_PERSON,
                 help_text=u'для гл., мест. сущ. и мест. прил.', blank=True)
 
-    @property
-    def idem_ucs(self):
-        return ucs_convert(self.idem)
-
-    @property
-    def host_entry(self):
-        return self.entry
-
-    def save(self, without_mtime=False, *args, **kwargs):
-        self.civil_inverse = self.civil_equivalent[::-1]
-        super(WordForm, self).save(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
-
-    def delete(self, without_mtime=False, *args, **kwargs):
-        super(WordForm, self).delete(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
-
     def __unicode__(self):
         return self.civil_equivalent
 
     def forJSON(self):
         _fields = (
             'case',
-            'civil_equivalent',
             'comparison',
-            'entry_id',
             'gender',
             'id',
             'idem',
@@ -1469,8 +1464,6 @@ class WordForm(models.Model):
             'number',
             'order',
             'person',
-            'questionable',
-            'reconstructed',
             'shortness',
             'voice',
         )
@@ -1480,6 +1473,28 @@ class WordForm(models.Model):
         verbose_name = u'словоформа'
         verbose_name_plural = u'словоформы'
         ordering = ('order', 'id')
+
+
+class WordForm(models.Model):
+    entry = ForeignKey(Entry, blank=True, null=True)
+    text_segment = ForeignKey(TextSegment, blank=True, null=True)
+    gram_semantics = ForeignKey(GramSemantics, blank=True, null=True)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=20)
+    mtime = DateTimeField(editable=False, auto_now=True)
+    reconstructed = BooleanField(u'отсутствует в корпусе', default=False)
+    questionable = BooleanField(u'реконструкция ненадёжна', default=False)
+
+    @property
+    def host_entry(self):
+        return self.entry
+
+    def save(self, without_mtime=False, *args, **kwargs):
+        super(WordForm, self).save(*args, **kwargs)
+        self.host_entry.save(without_mtime=without_mtime)
+
+    def delete(self, without_mtime=False, *args, **kwargs):
+        super(WordForm, self).delete(*args, **kwargs)
+        self.host_entry.save(without_mtime=without_mtime)
 
 
 class Transcription(models.Model):
