@@ -6,3 +6,6 @@ https://github.com/mitsuhiko/jinja2/archive/85820fceb83569df62fa5e6b9b0f2f76b7c6
 
 # Coffin>0.3.8
 https://github.com/coffin/coffin/archive/7b5d514238f44fa0fbc30e198b7405d38dacb626.zip
+
+# HIP2Unicode
+git+https://github.com/while0pass/hip2unicode.git#egg=HIP2Unicode
