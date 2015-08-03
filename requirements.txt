@@ -1,8 +1,6 @@
 Django>1.7,<1.8
 psycopg2>=2.6
-
-# Jinja2>=2.8.0
-https://github.com/mitsuhiko/jinja2/archive/85820fceb83569df62fa5e6b9b0f2f76b7c6a3cf.zip
+Jinja2>=2.8.0
 
 # Coffin>0.3.8
 https://github.com/coffin/coffin/archive/7b5d514238f44fa0fbc30e198b7405d38dacb626.zip
