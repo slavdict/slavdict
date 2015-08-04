@@ -1412,6 +1412,8 @@ class TextSegment(models.Model):
     civil_equivalent = CharField(
             u'гражданское написание', max_length=50, blank=True)
     civil_inverse = CharField(u'гражд. инв.', max_length=50, blank=True)
+    reconstructed = BooleanField(u'отсутствует в корпусе', default=False)
+    questionable = BooleanField(u'реконструкция ненадёжна', default=False)
 
     @property
     def idem_ucs(self):
