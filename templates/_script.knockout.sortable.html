@@ -1,27 +1,5 @@
-{% if debug %}
+<script type="text/javascript" src="{{ JSLIBS.jqueryUi }}"></script>
 
-    <script type="text/javascript"
-            src="{{ JSLIBS.jqueryUi.debugLocal }}"></script>
-
-    <script type="text/javascript"
-            src="{{ JSLIBS.knockoutSortable.debugLocal }}"></script>
-
-{% else %}
-
-    <script type="text/javascript"
-            src="{{ JSLIBS.jqueryUi.min }}"></script>
-
-    <script>
-        window.jQuery || document.write(
-            "<script src='" +
-            "{{ JSLIBS.jqueryUi.minLocal }}" +
-            "'><\/script>"
-            )
-    </script>
-
-    <script type="text/javascript"
-            src="{{ JSLIBS.knockoutSortable.minLocal }}"></script>
-
-{% endif %}
+<script type="text/javascript" src="{{ JSLIBS.knockoutSortable }}"></script>
 
 {# vim: set ft=django.html: #}
