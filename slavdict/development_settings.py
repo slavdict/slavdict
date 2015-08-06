@@ -30,6 +30,8 @@ DATABASES = {
 
 INSTALLED_APPS_EXTENSION = [ 'django_seed' ]
 
+COMPASS_STYLE = 'expanded'
+
 ######################################
 ##  Настройки отдельных приложений  ##
 ######################################

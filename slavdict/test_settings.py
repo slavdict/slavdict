@@ -60,27 +60,3 @@ JSLIBS = {
                          'v2.4.6/downloads/opentip-jquery-excanvas.js',
 }
 
-#import django
-#django.setup()
-#from django_seed import Seed
-#seeder = Seed.seeder()
-#from django.contrib.auth.models import User
-#from slavdict.custom_user.models import CustomUser
-#from django.contrib.auth.hashers import make_password
-#seeder.add_entity(User, 1)
-#seeder.add_entity(CustomUser, 1, {
-#    'password':    lambda x: make_password('12345678'),
-#    'second_name':    lambda x: seeder.faker.name(),
-#})
-#inserted_pks = seeder.execute()
-
-#import sqlite3
-#conn = sqlite3.connect('.test.db')
-#c = conn.cursor()
-#c.execute("INSERT INTO auth_user VALUES ('12345678','',True,'majioa','Malo','Skrylevo','majioa@yandex.ru',True,True,'')")
-#c.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
-#conn.commit()
-#conn.close()
-
-#pry()
-

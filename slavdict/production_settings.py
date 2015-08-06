@@ -27,6 +27,8 @@ DATABASES = {
     }
 }
 
+COMPASS_STYLE = 'compressed'
+
 JSLIBS = {
     'jquery':            'http://cdnjs.cloudflare.com/ajax/libs/'
                          'jquery/2.1.1/jquery.min.js',

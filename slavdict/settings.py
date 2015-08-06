@@ -44,6 +44,7 @@ LANGUAGE_CODE = 'ru'
 USE_I18N = True
 USE_L10N = True
 
+# URLs
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_URL = '/logout/'
@@ -60,6 +61,9 @@ MEDIA_URL = '/u/'
 STATIC_ROOT = ROOT + '.static/'
 STATIC_URL = '/static/'
 STATIC_RESOURCES_VERSION='2015.06.29'
+CSS_PATH = STATIC_URL + 'css/'
+JS_PATH = STATIC_URL + 'js/'
+IMAGE_PATH = STATIC_URL
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = environ['SLAVDICT_SECRET_KEY']
@@ -100,6 +104,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'coffin',
+    'djcompass',
 
     'slavdict.dictionary',
     'slavdict.custom_user',
@@ -135,6 +140,14 @@ ALLOWED_HOSTS= [ '*' ]
 ##  Настройки отдельных приложений  ##
 ######################################
 
+#compass
+COMPASS_INPUT = ROOT + 'sass'
+COMPASS_OUTPUT = ROOT + 'static/css'
+COMPASS_IMAGE_DIR = ROOT + IMAGE_PATH
+COMPASS_SCRIPT_DIR = ROOT + JS_PATH
+COMPASS_STYLE = 'compact'
+
+
 # custom_user
 AUTHENTICATION_BACKENDS = (
     'slavdict.auth_backends.CustomUserModelBackend',
@@ -142,11 +155,13 @@ AUTHENTICATION_BACKENDS = (
 )
 CUSTOM_USER_MODEL = 'slavdict.custom_user.CustomUser'
 
+
 # Сторонние библиотеки JavaScript
 JSLIBS_VERSION = '2014.10.31'
 JSLIBS_URL = STATIC_URL + 'js/outsourcing/'
 JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
 JSLIBS_LOCAL = ()
+
 
 # до и переопределение настроек проекта для выбранного окружения:
 # {development, production, test }
