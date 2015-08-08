@@ -14,6 +14,11 @@ import sys
 import importlib
 import __builtin__
 
+def apply_globals(m):
+    for item in dir(m):
+        if not item.startswith("__"):
+            globals()[item] = eval( "m.%s" % item )
+
 # Базовые настройки проекта,
 # от которых могут зависеть другие настройки
 ROOT = normpath(abspath(dirname(dirname(__file__)))).replace('\\', '/') + '/'
@@ -165,15 +170,13 @@ JSLIBS_LOCAL = ()
 
 # до и переопределение настроек проекта для выбранного окружения:
 # {development, production, test }
-ENV = environ.get( 'DJANGO_ENV', 'development' )
+ENV = environ.get( 'SLAVDICT_ENVIRONMENT', 'development' )
 if ENV not in ( 'development', 'production', 'test' ):
     raise ValueError( "Invalid environment %s specified" % ENV )
 
 # импортирование переменных из подмодуля окружения
 m = __import__( '%s_settings' % ENV, globals={"__name__": __name__} )
-for item in dir(m):
-    if not item.startswith("__"):
-        globals()[item] = eval( "m.%s" % item )
+apply_globals(m)
 
 try:
     INSTALLED_APPS.extend( INSTALLED_APPS_EXTENSION )
@@ -193,9 +196,13 @@ except NameError:
 # скидываться. См. http://rawgit.com/
 #
 # Переменная JSLIBS_LOCAL говорит о том, пути к каким файлам подменять на локальные# чтобы именно они использовались в боевом окружении.
+JSLIBS = {}
 for lib in JSLIBS_LOCAL:
-    filename = JSLIBS[lib].split('/')[-1].split('?')[0]
+    filename = JSLIBS_SOURCE[lib].split('/')[-1].split('?')[0]
     JSLIBS[lib] = JSLIBS_URL + filename + '?' + STATIC_RESOURCES_VERSION
+
+for lib in [x for x in JSLIBS_SOURCE.keys() if x not in JSLIBS_LOCAL]:
+    JSLIBS[lib] = JSLIBS_SOURCE[lib]
 
 # When using Auto Escape you will notice that marking something as
 # a Safestrings with Django will not affect the rendering in Jinja 2. To fix
@@ -206,46 +213,3 @@ if not hasattr(safestring, '__html__'):
     safestring.SafeUnicode.__html__ = lambda self: unicode(self)
 
 
-if __name__ == '__main__':
-    _postfix = ''
-    if len(sys.argv) > 1:
-        if sys.argv[1] == '--jslibs':
-            """ Использование аргумента --jslibs
-
-            Данный вывод в stdout используется в цели jslibs из Makefile.
-            Вывод имеет следующий вид:
-
-              [<ссылка на файл в интернете> -O <абс. имя файла в локальной ФС>]*
-
-            Каждая такая тройка предназначена для wget. Он её будет получать
-            следующим образом:
-
-              python settings.py --jslibs | xargs -n3 wget
-
-            От второго элемента тройки ("-O") отказаться не получилось, т.к.
-            аргументы xargs -L или -n и -I не совместимы (см. man xargs /BUGS).
-            Иначе можно было бы вместо троек использовать двойки и писать:
-
-              python settings.py --jslibs | xargs -n2 -I{} wget {} -O {}
-
-            """
-            xargs_wget = []
-            for lib in JSLIBS:
-                for version in [k
-                                for k in JSLIBS[lib]
-                                if not k.endswith(_postfix)]:
-                    url = JSLIBS[lib][version]
-                    if url.startswith('//'):
-                        url = 'http:' + url
-                    elif not url.startswith('http'):
-                        continue
-                    xargs_wget.append(url)
-                    xargs_wget.append('-O')
-                    xargs_wget.append(JSLIBS_PATH + url.split('/')[-1])
-            sys.stdout.write(' '.join(xargs_wget))
-
-        elif sys.argv[1] == '--jslibs-path':
-            sys.stdout.write(JSLIBS_PATH)
-
-        elif sys.argv[1] == '--jslibs-version':
-            sys.stdout.write(JSLIBS_VERSION)

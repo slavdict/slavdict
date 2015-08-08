@@ -29,7 +29,7 @@ DATABASES = {
 
 COMPASS_STYLE = 'compressed'
 
-JSLIBS = {
+JSLIBS_SOURCE = {
     'jquery':            'http://cdnjs.cloudflare.com/ajax/libs/'
                          'jquery/2.1.1/jquery.min.js',
     'jquery_map':        'http://cdnjs.cloudflare.com/ajax/libs/'

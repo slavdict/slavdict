@@ -37,7 +37,7 @@ COMPASS_STYLE = 'expanded'
 ######################################
 
 # Сторонние библиотеки JavaScript
-JSLIBS = {
+JSLIBS_SOURCE = {
     'jquery':            'http://cdnjs.cloudflare.com/ajax/libs/'
                          'jquery/2.1.1/jquery.js',
     'jquery_map':        'http://cdnjs.cloudflare.com/ajax/libs/'
