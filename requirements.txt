@@ -13,3 +13,6 @@ django-compass2
 
 # rake-like tasker
 paver
+
+# debugging
+git+https://github.com/majioa/pry.py#egg=pry
