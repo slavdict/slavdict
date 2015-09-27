@@ -8,41 +8,31 @@ https://docs.djangoproject.com/en/1.7/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
-from os.path import abspath
-from os.path import dirname
-from os.path import normpath
+from os import environ
+from os.path import (abspath, dirname, normpath)
 import sys
+import importlib
+import __builtin__
+
+def apply_globals(m):
+    for item in dir(m):
+        if not item.startswith("__"):
+            globals()[item] = eval( "m.%s" % item )
 
 # Базовые настройки проекта,
 # от которых могут зависеть другие настройки
-DEBUG = False
 ROOT = normpath(abspath(dirname(dirname(__file__)))).replace('\\', '/') + '/'
-
-# Локальное переопределение базовых настроек,
-# если оно имеется.
-try:
-    from local_base_settings import *
-except ImportError:
-    pass
+__builtin__.DJANGO_ROOT = ROOT
 
 # Настройки, зависящие от базовых
 # либо от которых не зависят другие настройки.
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = ()
 MANAGERS = ADMINS
 BACKUP_MANAGERS = MANAGERS
 BACKUP_DIR = ROOT + '.dumps/'
 
-SERVER_EMAIL = 'no-reply@slavdict.ruslang.ru'
 INTERNAL_IPS = ('127.0.0.1',)
-
-DATABASES = {
-    'default': {
-        'ENGINE':   'django.db.backends.sqlite3',
-        'NAME':     ROOT + '.test.db',
-    }
-}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -59,6 +49,7 @@ LANGUAGE_CODE = 'ru'
 USE_I18N = True
 USE_L10N = True
 
+# URLs
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_URL = '/logout/'
@@ -75,14 +66,17 @@ MEDIA_URL = '/u/'
 STATIC_ROOT = ROOT + '.static/'
 STATIC_URL = '/static/'
 STATIC_RESOURCES_VERSION='2015.06.29'
+CSS_PATH = STATIC_URL + 'css/'
+JS_PATH = STATIC_URL + 'js/'
+IMAGE_PATH = STATIC_URL
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'td2+2t^tz-)^j^%@4_^c8ds#6-po3sfoqbwaa2u*i3rj3y%hs1'
+SECRET_KEY = environ['SLAVDICT_SECRET_KEY']
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
 )
 
 #from jinja2 import StrictUndefined
@@ -105,6 +99,22 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    'coffin',
+    'djcompass',
+
+    'slavdict.dictionary',
+    'slavdict.custom_user',
+    'slavdict.django_template_spaces',
+]
 
 ROOT_URLCONF = 'slavdict.urls'
 
@@ -129,24 +139,19 @@ STATICFILES_DIRS = (
     ROOT + 'static/',
 )
 
-INSTALLED_APPS = (
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'coffin',
-
-    'slavdict.dictionary',
-    'slavdict.custom_user',
-    'slavdict.django_template_spaces',
-)
+ALLOWED_HOSTS= [ '*' ]
 
 ######################################
 ##  Настройки отдельных приложений  ##
 ######################################
+
+#compass
+COMPASS_INPUT = ROOT + 'sass'
+COMPASS_OUTPUT = ROOT + 'static/css'
+COMPASS_IMAGE_DIR = ROOT + IMAGE_PATH
+COMPASS_SCRIPT_DIR = ROOT + JS_PATH
+COMPASS_STYLE = 'compact'
+
 
 # custom_user
 AUTHENTICATION_BACKENDS = (
@@ -155,97 +160,49 @@ AUTHENTICATION_BACKENDS = (
 )
 CUSTOM_USER_MODEL = 'slavdict.custom_user.CustomUser'
 
+
 # Сторонние библиотеки JavaScript
 JSLIBS_VERSION = '2014.10.31'
 JSLIBS_URL = STATIC_URL + 'js/outsourcing/'
 JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
-JSLIBS = {
-    'jquery': {
-      'debug': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js',
-        'map': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.map',
-    },
-    'jqueryUi': {
-      'debug': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/'
-               'jqueryui/1.10.4/jquery-ui.min.js',
-    },
-    'knockout': {
-        'debug': 'http://knockoutjs.com/downloads/knockout-3.2.0.debug.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/'
-               'knockout/3.2.0/knockout-min.js',
-    },
-    'knockoutMapping': {
-        'debug': 'https://raw.githubusercontent.com/SteveSanderson/'
-                 'knockout.mapping/2.4.1/build/output/'
-                 'knockout.mapping-latest.debug.js',
-         'Xmin': 'https://raw.githubusercontent.com/SteveSanderson/'
-                 'knockout.mapping/2.4.1/build/output/'
-                 'knockout.mapping-latest.js',
-    },
-    'knockoutSortable': {
-        'debug': 'https://rawgit.com/rniemeyer/'
-                 'knockout-sortable/v0.9.2/build/knockout-sortable.js',
-         'Xmin': 'https://raw.githubusercontent.com/rniemeyer/'
-                 'knockout-sortable/v0.9.2/build/knockout-sortable.min.js',
-        # NOTE: Файлы с raw.githubusercontent.com нельзя отдавать в продакшн.
-        # Там выставляются http-заголовки
-        #
-        #   Content-Type: text/plain; charset=utf-8
-        #   X-Content-Type-Options: nosniff
-        #
-        # что запрещает браузеру распознавать js-файл как js-файл.
-        # Домен rawgit.com специально предназначен в помощь разработчикам для
-        # обхода этой проблемы, но расчитан исключительно для тестирования,
-        # отладки, демонстрации. При нагрузке его трафиком соединения будут
-        # скидываться. См. http://rawgit.com/
-        #
-        # Ключ ``Xmin`` вместо ``min`` использован специально, чтобы этот адрес
-        # не отдавался в продакшн.
-    },
-    'knockoutPostbox': {
-        'debug': 'https://raw.githubusercontent.com/rniemeyer/'
-                 'knockout-postbox/v0.4.2/build/knockout-postbox.js',
-         'Xmin': 'https://raw.githubusercontent.com/rniemeyer/'
-                 'knockout-postbox/v0.4.2/build/knockout-postbox.min.js',
-    },
-    'zeroClipboard': {
-        'debug': 'https://rawgit.com/zeroclipboard/'
-                 'ZeroClipboard/v1.1.7/ZeroClipboard.js',
-         'Xmin': 'https://raw.githubusercontent.com/zeroclipboard/'
-                 'ZeroClipboard/v1.1.7/ZeroClipboard.min.js',
-          'swf': 'https://raw.githubusercontent.com/zeroclipboard/'
-                 'ZeroClipboard/v1.1.7/ZeroClipboard.swf',
-    },
-    'opentip': {
-        'debug': 'https://rawgit.com/enyo/opentip/'
-                 'v2.4.6/downloads/opentip-jquery.js',
-         'Xmin': 'https://raw.githubusercontent.com/enyo/opentip/'
-                 'v2.4.6/downloads/opentip-jquery.min.js',
-    },
-    'opentipExCanvas': {
-        'debug': 'https://rawgit.com/enyo/opentip/'
-                 'v2.4.6/downloads/opentip-jquery-excanvas.js',
-         'Xmin': 'https://raw.githubusercontent.com/enyo/opentip/'
-                 'v2.4.6/downloads/opentip-jquery-excanvas.min.js',
-    },
-}
-
-_postfix = 'Local'
-for lib in JSLIBS:
-    for version in JSLIBS[lib].keys():
-        filename = JSLIBS[lib][version].split('/')[-1].split('?')[0]
-        if version == 'Xmin':
-            JSLIBS[lib]['min'] = JSLIBS_URL + filename
-            version = 'min'
-        JSLIBS[lib][version + _postfix] = JSLIBS_URL + filename + '?' + STATIC_RESOURCES_VERSION
+JSLIBS_LOCAL = ()
 
 
-# Локальное для компьютера переопределение настроек проекта
+# до и переопределение настроек проекта для выбранного окружения:
+# {development, production, test }
+ENV = environ.get( 'SLAVDICT_ENVIRONMENT', 'development' )
+if ENV not in ( 'development', 'production', 'test' ):
+    raise ValueError( "Invalid environment %s specified" % ENV )
+
+# импортирование переменных из подмодуля окружения
+m = __import__( '%s_settings' % ENV, globals={"__name__": __name__} )
+apply_globals(m)
+
 try:
-    from local_settings import *
-except ImportError:
+    INSTALLED_APPS.extend( INSTALLED_APPS_EXTENSION )
+except NameError:
     pass
+
+# NOTE: Файлы с raw.githubusercontent.com нельзя отдавать в продакшн.
+# Там выставляются http-заголовки
+#
+#   Content-Type: text/plain; charset=utf-8
+#   X-Content-Type-Options: nosniff
+#
+# что запрещает браузеру распознавать js-файл как js-файл.
+# Домен rawgit.com специально предназначен в помощь разработчикам для
+# обхода этой проблемы, но расчитан исключительно для тестирования,
+# отладки, демонстрации. При нагрузке его трафиком соединения будут
+# скидываться. См. http://rawgit.com/
+#
+# Переменная JSLIBS_LOCAL говорит о том, пути к каким файлам подменять на локальные# чтобы именно они использовались в боевом окружении.
+JSLIBS = {}
+for lib in JSLIBS_LOCAL:
+    filename = JSLIBS_SOURCE[lib].split('/')[-1].split('?')[0]
+    JSLIBS[lib] = JSLIBS_URL + filename + '?' + STATIC_RESOURCES_VERSION
+
+for lib in [x for x in JSLIBS_SOURCE.keys() if x not in JSLIBS_LOCAL]:
+    JSLIBS[lib] = JSLIBS_SOURCE[lib]
 
 # When using Auto Escape you will notice that marking something as
 # a Safestrings with Django will not affect the rendering in Jinja 2. To fix
@@ -256,45 +213,3 @@ if not hasattr(safestring, '__html__'):
     safestring.SafeUnicode.__html__ = lambda self: unicode(self)
 
 
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        if sys.argv[1] == '--jslibs':
-            """ Использование аргумента --jslibs
-
-            Данный вывод в stdout используется в цели jslibs из Makefile.
-            Вывод имеет следующий вид:
-
-              [<ссылка на файл в интернете> -O <абс. имя файла в локальной ФС>]*
-
-            Каждая такая тройка предназначена для wget. Он её будет получать
-            следующим образом:
-
-              python settings.py --jslibs | xargs -n3 wget
-
-            От второго элемента тройки ("-O") отказаться не получилось, т.к.
-            аргументы xargs -L или -n и -I не совместимы (см. man xargs /BUGS).
-            Иначе можно было бы вместо троек использовать двойки и писать:
-
-              python settings.py --jslibs | xargs -n2 -I{} wget {} -O {}
-
-            """
-            xargs_wget = []
-            for lib in JSLIBS:
-                for version in [k
-                                for k in JSLIBS[lib]
-                                if not k.endswith(_postfix)]:
-                    url = JSLIBS[lib][version]
-                    if url.startswith('//'):
-                        url = 'http:' + url
-                    elif not url.startswith('http'):
-                        continue
-                    xargs_wget.append(url)
-                    xargs_wget.append('-O')
-                    xargs_wget.append(JSLIBS_PATH + url.split('/')[-1])
-            sys.stdout.write(' '.join(xargs_wget))
-
-        elif sys.argv[1] == '--jslibs-path':
-            sys.stdout.write(JSLIBS_PATH)
-
-        elif sys.argv[1] == '--jslibs-version':
-            sys.stdout.write(JSLIBS_VERSION)
