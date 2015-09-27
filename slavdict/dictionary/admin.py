@@ -353,6 +353,18 @@ civil_inv.short_description = u''  # Делаем заголовок столб�
 civil_inv.admin_order_field = 'civil_inverse'
 Entry.civil_inv = civil_inv
 
+from slavdict.custom_user.models import CustomUser
+entry_actions = []
+def assign_author(author):
+    def func(modeladmin, request, queryset):
+        for entry in queryset:
+            entry.authors.add(author)
+    func.short_description = u'Назначить выбранные статьи автору %s' % author
+    func.func_name = 'assign_author_%s' % author.pk
+    return func
+for author in CustomUser.objects.all():#.filter(groups__name=u'authors'):
+    entry_actions.append(assign_author(author))
+
 class AdminEntry(admin.ModelAdmin):
     raw_id_fields = (
         'derivation_entry',
@@ -446,6 +458,7 @@ class AdminEntry(admin.ModelAdmin):
         'sg1',
         'sg2',
         )
+    actions = entry_actions
     search_fields = ('civil_equivalent',)# 'orthographic_variants__idem')
     # При переходе к моделям, соотносящимся с основной как "много к одному"
     # в результатах поиска возможны дубликаты.
