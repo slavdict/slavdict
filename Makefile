@@ -2,16 +2,10 @@ SHELL = /bin/bash
 
 GITWORKTREE = /var/www/slavdict
 GITDIR = /home/git/slavdict.www
-SETTINGS_FILE = slavdict/settings.py
 
 SLAVDICT_ENVIRONMENT ?= production
 IS_PRODUCTION = test ${SLAVDICT_ENVIRONMENT} = production || (echo "Окружение не является боевым" && exit 1)
 IS_DEVELOPMENT = test ${SLAVDICT_ENVIRONMENT} = development || (echo "Окружение не являетя тестовым" && exit 1)
-
-JSLIBS_PATH := $(shell python ${SETTINGS_FILE} --jslibs-path)
-JSLIBS_VERSION_FILE := ${JSLIBS_PATH}version.txt
-JSLIBS_NEW_VERSION := $(shell python ${SETTINGS_FILE} --jslibs-version)
-JSLIBS_OLD_VERSION := $(shell cat ${JSLIBS_VERSION_FILE} 2>/dev/null)
 
 restart: stop checkout collectstatic fixown migrate start
 
@@ -48,26 +42,21 @@ fixown:
 	chmod u+x bin/*.sh
 
 collectstatic: jslibs
-	compass compile -e ${SLAVDICT_ENVIRONMENT}
-	python ./manage.py collectstatic --noinput
+	./manage.py compass
+	./manage.py collectstatic --noinput
 
 migrate:
-	python ./manage.py migrate
+	./manage.py migrate
 
 clean:
 	-find -name '*.pyc' -execdir rm '{}' \;
 	-rm -f static/*.css
-	-rm -f ${JSLIBS_PATH}*.{js,map,txt}
 	-rm -fR .sass-cache/
 	-rm -fR .static/*
+	paver clean
 
 jslibs:
-	if [ "${JSLIBS_OLD_VERSION}" != "${JSLIBS_NEW_VERSION}" ];\
-	then \
-		rm -f ${JSLIBS_PATH}*.{js,map,txt} ; \
-		python ${SETTINGS_FILE} --jslibs | xargs -n3 wget ; \
-		echo ${JSLIBS_NEW_VERSION} > ${JSLIBS_VERSION_FILE} ; \
-	fi
+	SLAVDICT_ENVIRONMENT=production paver prepare
 
 .PHONY: \
     checkout \

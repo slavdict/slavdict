@@ -1,20 +1,9 @@
-{% if debug %}
-
-    <script type="text/javascript"
-            src="{{ JSLIBS.zeroClipboard.debugLocal }}"></script>
-
-{% else %}
-
-    <script type="text/javascript"
-            src="{{ JSLIBS.zeroClipboard.minLocal }}"></script>
-
-{% endif %}
-
+<script type="text/javascript" src="{{ JSLIBS.zeroClipboard }}"></script>
 
 <script type="text/javascript">
 
     ZeroClipboard.setDefaults(
-        { moviePath: '{{ JSLIBS.zeroClipboard.swfLocal }}' }
+        { moviePath: '{{ JSLIBS.zeroClipboard_swf }}' }
     );
 
 </script>
