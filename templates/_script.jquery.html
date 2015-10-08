@@ -1,3 +1,21 @@
-<script type="text/javascript" src="{{ JSLIBS.jquery }}"></script>
+{% if debug %}
+
+    <script type="text/javascript"
+            src="{{ JSLIBS.jquery.debugLocal }}"></script>
+
+{% else %}
+
+    <script type="text/javascript"
+            src="{{ JSLIBS.jquery.min }}"></script>
+
+    <script>
+        window.jQuery || document.write(
+            "<script src='" +
+            "{{ JSLIBS.jquery.minLocal }}" +
+            "'><\/script>"
+            )
+    </script>
+
+{% endif %}
 
 {# vim: set ft=django.html: #}

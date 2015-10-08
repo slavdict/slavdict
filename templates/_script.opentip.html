@@ -1,3 +1,13 @@
-<script type="text/javascript" src="{{ JSLIBS.opentip }}"></script>
+{% if debug %}
+
+    <script type="text/javascript"
+            src="{{ JSLIBS.opentip.debugLocal }}"></script>
+
+{% else %}
+
+    <script type="text/javascript"
+            src="{{ JSLIBS.opentip.minLocal }}"></script>
+
+{% endif %}
 
 {# vim: set ft=htmldjango: #}

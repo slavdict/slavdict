@@ -1,3 +1,21 @@
-<script type="text/javascript" src="{{ JSLIBS.knockout }}"></script>
+{% if debug %}
+
+    <script type="text/javascript"
+        src="{{ JSLIBS.knockout.debugLocal }}"></script>
+
+{% else %}
+
+    <script type="text/javascript"
+        src="{{ JSLIBS.knockout.min }}"></script>
+
+    <script>
+        window.ko || document.write(
+            "<script src='" +
+            "{{ JSLIBS.knockout.minLocal }}" +
+            "'><\/script>"
+            )
+    </script>
+
+{% endif %}
 
 {# vim: set ft=django.html: #}
