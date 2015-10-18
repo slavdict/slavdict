@@ -1043,8 +1043,15 @@ class Example(models.Model):
                 u'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸꙊУФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴ'
                 ur'\~\'\`\^ı'
                 u']+')
-        ts_text = [civilrus_convert(word) for word in self.example.split(RE)]
-        self.ts_example = u''.join(ts_text).lower()
+        ts_text = u''
+        for word in re.split(RE, self.example):
+            ts_word = word[:1].lower()
+            if len(word) > 2:
+                ts_word += word[1:-1]
+            if len(word) > 1 and word[-1].lower() != u'ъ':
+                ts_word += word[-1]
+            ts_text += ts_word
+        self.ts_example = civilrus_convert(ts_text)
 
     def save(self, without_mtime=False, *args, **kwargs):
         self.ts_convert()
