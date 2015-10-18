@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import datetime
 import json
+import re
 
 from django.db import models
 from django.db.models import BooleanField
@@ -953,6 +954,7 @@ class Example(models.Model):
                           default=False, editable=False)
 
     example = TextField(u'пример')
+    ts_example = TextField()
 
     @property
     def example_ucs(self):
@@ -1034,7 +1036,18 @@ class Example(models.Model):
             else:
                 return self.entry
 
+    def ts_convert(self, text):
+        RE = re.compile(
+                u'[^'
+                u'абвгдеєжѕзийіклмноѻпрстѹꙋуфхѿцчшщъыьѣюꙗѡѽѧѯѱѳѵ'
+                u'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸꙊУФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴ'
+                ur'\~\'\`\^ı'
+                u']+')
+        ts_text = [civilrus_convert(word) for word in text.split(RE)]
+        return u''.join(ts_text).lower()
+
     def save(self, without_mtime=False, *args, **kwargs):
+        self.ts_example = self.ts_convert(self.example)
         host_entry = self.host_entry
         self.entry = host_entry
         host = self.host
