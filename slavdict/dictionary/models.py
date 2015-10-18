@@ -954,7 +954,7 @@ class Example(models.Model):
                           default=False, editable=False)
 
     example = TextField(u'пример')
-    ts_example = TextField()
+    ts_example = TextField(default=u'')
 
     @property
     def example_ucs(self):
@@ -1036,18 +1036,18 @@ class Example(models.Model):
             else:
                 return self.entry
 
-    def ts_convert(self, text):
+    def ts_convert(self):
         RE = re.compile(
                 u'[^'
                 u'абвгдеєжѕзийіклмноѻпрстѹꙋуфхѿцчшщъыьѣюꙗѡѽѧѯѱѳѵ'
                 u'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸꙊУФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴ'
                 ur'\~\'\`\^ı'
                 u']+')
-        ts_text = [civilrus_convert(word) for word in text.split(RE)]
-        return u''.join(ts_text).lower()
+        ts_text = [civilrus_convert(word) for word in self.example.split(RE)]
+        self.ts_example = u''.join(ts_text).lower()
 
     def save(self, without_mtime=False, *args, **kwargs):
-        self.ts_example = self.ts_convert(self.example)
+        self.ts_convert()
         host_entry = self.host_entry
         self.entry = host_entry
         host = self.host
