@@ -204,6 +204,13 @@ def get_examples(form):
     if address:
         FILTER_PARAMS['address_text__istartswith'] = address
 
+    # Текст иллюстраций
+    example = form['hwExample']
+    if example:
+        RE = re.compile(u'[^абвгдеёжзийклмнопрстуфхцчшщъыьэюя]+')
+        example = u''.join(re.split(RE, example.lower()))
+        FILTER_PARAMS['ts_example__contains'] = example
+
     # Статус греческих параллелей
     greq_status = form['hwStatus'] or 'L'
     if greq_status == 'all':

@@ -87,6 +87,14 @@
                 <span class="f5sSI--prefix"><span data-bind="text: hwAddress"></span>...</span>
             </span>
 
+            {{ space }}
+            <span class="f5sS--item" data-bind="visible: hwExample">
+                {{ space }}
+                текст иллюстрации
+                {{ space }}
+                <span class="f5sSI--prefix"><span data-bind="text: hwExample"></span>...</span>
+            </span>
+
         </div></div>
         <div class="f5s--dashboard"><div class="grid"
                 ondblclick="
@@ -125,6 +133,11 @@
 
                 {{ form.hwPrfx.label_tag() }}
                 {{ form.hwPrfx }}
+                </div>
+
+                <div class="R">
+                {{ form.hwExample.label_tag() }}
+                {{ form.hwExample }}
                 </div>
 
                 <div class="P">
@@ -328,6 +341,7 @@
             hwAuthor: '{{ filters.hwAuthor }}',
             hwAddress: '{{ filters.hwAddress }}',
             hwPrfx: '{{ filters.hwPrfx }}',
+            hwExample: '{{ filters.hwExample }}',
             hwExamplesIds: '{{ filters.hwExamplesIds }}',
             hwSortbase: '{{ filters.hwSortbase }}',
             hwSortdir: '{{ filters.hwSortdir }}',

@@ -163,6 +163,11 @@ vM.filters = {
         .rememberDefault('')
         .htmlTextInput('hwPrfx'),
 
+    hwExample: ko.observable()
+        .rememberInitial(vM.valuesToInitialize.hwExample)
+        .rememberDefault('')
+        .htmlTextInput('hwExample'),
+
     hwExamplesIds: ko.observable()
         .rememberInitial(vM.valuesToInitialize.hwExamplesIds)
         .rememberDefault('')
