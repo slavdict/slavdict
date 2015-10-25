@@ -175,6 +175,8 @@ def get_examples(form):
         '-id': ('-id',),
         'addr': ('address_text', 'id'),
         '-addr': ('-address_text', '-id'),
+        'txt': ('ts_example', 'id'),
+        '-txt': ('-ts_example', '-id'),
         }
     if sort in VALID_SORT_PARAMS:
         SORT_PARAMS = VALID_SORT_PARAMS[sort]
