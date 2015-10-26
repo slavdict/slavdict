@@ -175,6 +175,8 @@ def get_examples(form):
         '-id': ('-id',),
         'addr': ('address_text', 'id'),
         '-addr': ('-address_text', '-id'),
+        'txt': ('ts_example', 'id'),
+        '-txt': ('-ts_example', '-id'),
         }
     if sort in VALID_SORT_PARAMS:
         SORT_PARAMS = VALID_SORT_PARAMS[sort]
@@ -203,6 +205,13 @@ def get_examples(form):
     address = form['hwAddress']
     if address:
         FILTER_PARAMS['address_text__istartswith'] = address
+
+    # Текст иллюстраций
+    example = form['hwExample']
+    if example:
+        RE = re.compile(u'[^абвгдеёжзийклмнопрстуфхцчшщъыьэюя]+')
+        example = u''.join(re.split(RE, example.lower()))
+        FILTER_PARAMS['ts_example__contains'] = example
 
     # Статус греческих параллелей
     greq_status = form['hwStatus'] or 'L'

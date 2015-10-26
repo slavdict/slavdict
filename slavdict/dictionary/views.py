@@ -671,15 +671,11 @@ def entry_list(request):
 
 @login_required
 def hellinist_workbench(request):
-    if 'hwPrfx' in request.COOKIES:
-        request.COOKIES['hwPrfx'] = base64 \
-            .standard_b64decode(request.COOKIES['hwPrfx']) \
-            .decode('utf8')
-
-    if 'hwAddress' in request.COOKIES:
-        request.COOKIES['hwAddress'] = base64 \
-            .standard_b64decode(request.COOKIES['hwAddress']) \
-            .decode('utf8')
+    for key in ('hwPrfx', 'hwAddress', 'hwExample'):
+        if key in request.COOKIES:
+            request.COOKIES[key] = base64 \
+                .standard_b64decode(request.COOKIES[key]) \
+                .decode('utf8')
 
     if request.method == 'POST':
         data = request.POST
@@ -746,10 +742,9 @@ def hellinist_workbench(request):
     response = render_to_response('hellinist_workbench.html', context,
                                   RequestContext(request))
     if request.method == 'POST':
-        form.cleaned_data['hwPrfx'] = base64 \
-            .standard_b64encode(form.cleaned_data['hwPrfx'].encode('utf8'))
-        form.cleaned_data['hwAddress'] = base64 \
-            .standard_b64encode(form.cleaned_data['hwAddress'].encode('utf8'))
+        for key in ('hwPrfx', 'hwAddress', 'hwExample'):
+            form.cleaned_data[key] = base64.standard_b64encode(
+                                        form.cleaned_data[key].encode('utf8'))
         for param, value in form.cleaned_data.items():
             response.set_cookie(param, value, path=request.path)
     return response
