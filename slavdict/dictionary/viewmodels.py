@@ -56,8 +56,9 @@ genders = (
 editGenders = (EMPTY_STRING_ID_OBJECT,) + _choices(models.GENDER_CHOICES)
 
 greqSortbase = (
-    {'id': 'id',   'name': u'в порядке добавления примеров'},
-    {'id': 'addr', 'name': u'по адресу примера'},
+    {'id': 'id',   'name': u'в порядке добавления иллюстраций'},
+    {'id': 'addr', 'name': u'по адресу иллюстраций'},
+    {'id': 'txt',  'name': u'по тексту иллюстраций'},
 )
 
 greqStatuses = ({'id': 'all', 'name': u'— любой —'},) \

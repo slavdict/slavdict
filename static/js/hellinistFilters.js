@@ -156,17 +156,22 @@ vM.filters = {
     hwAddress: ko.observable()
         .rememberInitial(vM.valuesToInitialize.hwAddress)
         .rememberDefault('')
-        .htmlTextInput('hwAddress'),
+        .htmlTextValue('hwAddress'),
 
     hwPrfx: ko.observable()
         .rememberInitial(vM.valuesToInitialize.hwPrfx)
         .rememberDefault('')
-        .htmlTextInput('hwPrfx'),
+        .htmlTextValue('hwPrfx'),
+
+    hwExample: ko.observable()
+        .rememberInitial(vM.valuesToInitialize.hwExample)
+        .rememberDefault('')
+        .htmlTextValue('hwExample'),
 
     hwExamplesIds: ko.observable()
         .rememberInitial(vM.valuesToInitialize.hwExamplesIds)
         .rememberDefault('')
-        .htmlTextInput('hwExamplesIds'),
+        .htmlTextValue('hwExamplesIds'),
 
     hwSortbase: ko.observable()
         .rememberInitial(vM.valuesToInitialize.hwSortbase)
@@ -188,6 +193,19 @@ vM.filters = {
         .htmlSelect('hwStatus', vM.listsForWidgets.statuses)
 
 };
+vM.filters.chgg = ko.computed(function () {
+    var x = vM.filters,
+        y = x.hwAuthor() + '|' +
+            x.hwAddress() + '|' +
+            x.hwPrfx() + '|' +
+            x.hwExample() + '|' +
+            x.hwExamplesIds() + '|' +
+            x.hwSortbase() + '|' +
+            x.hwSortdir() + '|' +
+            x.hwStatus();
+    return y;
+}).extend({rateLimit: 500});
+vM.filters.chgg.subscribe(vM.filters.formSubmit);
 
 vM.filters.notDefaultState = ko.computed(function(){
     var defaults = vM.meta.defaults;

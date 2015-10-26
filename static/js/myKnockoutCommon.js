@@ -29,6 +29,15 @@ ko.observable.fn['htmlTextInput'] = function(name){
     return this;
 };
 
+ko.observable.fn['htmlTextValue'] = function(name){
+    $('#id_' + name)
+        .attr('data-bind', 'value: ' + name)
+        .attr('autocomplete', 'off')
+        .attr('spellcheck', 'false')
+        .wrap('<div class="textinput for_id_' + name + '"/>');
+    return this;
+};
+
 ko.observable.fn['index2obj'] = function(value){
     var representer = function(item){ return item.id; },
         arr = ko.utils.arrayMap(this.list(), representer),

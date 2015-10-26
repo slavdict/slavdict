@@ -87,6 +87,14 @@
                 <span class="f5sSI--prefix"><span data-bind="text: hwAddress"></span>...</span>
             </span>
 
+            {{ space }}
+            <span class="f5sS--item" data-bind="visible: hwExample">
+                {{ space }}
+                текст иллюстрации
+                {{ space }}
+                <span class="f5sSI--prefix"><span data-bind="text: hwExample"></span>...</span>
+            </span>
+
         </div></div>
         <div class="f5s--dashboard"><div class="grid"
                 ondblclick="
@@ -127,6 +135,11 @@
                 {{ form.hwPrfx }}
                 </div>
 
+                <div class="R">
+                {{ form.hwExample.label_tag() }}
+                {{ form.hwExample }}
+                </div>
+
                 <div class="P">
                 {{ form.hwExamplesIds.label_tag() }}
                 {{ form.hwExamplesIds }}
@@ -140,13 +153,6 @@
 
                 <span data-bind="click: getDefaultState, visible: notDefaultState"
                     class="button f5sD--reset">сбросить фильтры</span>
-                <span data-bind="visible: !notDefaultState()"
-                    class="button f5sD--reset disabled">сбросить фильтры</span>
-
-                <span data-bind="click: formSubmit, visible: notInitialState"
-                    class="button f5sD--submit">применить фильтры</span>
-                <span data-bind="visible: !notInitialState()"
-                    class="button f5sD--submit disabled">применить фильтры</span>
 
         </div></div>
 
@@ -328,6 +334,7 @@
             hwAuthor: '{{ filters.hwAuthor }}',
             hwAddress: '{{ filters.hwAddress }}',
             hwPrfx: '{{ filters.hwPrfx }}',
+            hwExample: '{{ filters.hwExample }}',
             hwExamplesIds: '{{ filters.hwExamplesIds }}',
             hwSortbase: '{{ filters.hwSortbase }}',
             hwSortdir: '{{ filters.hwSortdir }}',
