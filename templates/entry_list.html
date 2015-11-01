@@ -239,13 +239,16 @@
         </div></div>
         <div class="f5s--dashboard" data-bind="slide: isOperated"><div
                 class="grid"
+            {% if DEBUG %}
                 ondblclick="
                     var x = $(this);
                     if (x.hasClass('grid-debug'))
                         x.removeClass('grid-debug');
                     else
                         x.addClass('grid-debug');
-                ">
+                "
+            {% endif %}
+                >
 
             <div class="f5sD--sort">
             <h3>Упорядочить статьи</h3>

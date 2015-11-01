@@ -65,6 +65,7 @@ function ExForJSON(ex) {
     this.address_text = ex.address;
     this.example = ex.example;
     this.audited = ex.audited;
+    this.saveAuditTime = ex.saveAuditTime;
 }
 
 function Example(ex) {
@@ -73,6 +74,7 @@ function Example(ex) {
     this.id = ex.id;
     this.status = ko.observable(ex.status);
     this.audited = ko.observable(ex.audited);
+    this.audited.subscribe(function () { self.saveAuditTime = true; })
 
     this.address = ko.observable(ex.address);
     this.comment = ko.observable(ex.comment);
