@@ -255,7 +255,9 @@
 
                 <span class="orthoTick">
                     <label>Выверена ли орфография
-                        <input type="checkbox" />
+                        <input type="checkbox"
+                               data-bind="checked: audited,
+                                          event: {change: saveExample}" />
                     </label>
                 </span>{{ space }}
 
