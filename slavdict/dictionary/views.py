@@ -708,6 +708,7 @@ def hellinist_workbench(request):
         'example': e.example,
         'address': e.address_text,
         'status': e.greek_eq_status,
+        'audited': e.audited,
         'comment': e.additional_info,
         'greqs': [
             {
