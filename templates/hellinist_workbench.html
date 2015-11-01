@@ -97,13 +97,16 @@
 
         </div></div>
         <div class="f5s--dashboard"><div class="grid"
+            {% if DEBUG %}
                 ondblclick="
                     var x = $(this);
                     if (x.hasClass('grid-debug'))
                         x.removeClass('grid-debug');
                     else
                         x.addClass('grid-debug');
-                ">
+                "
+            {% endif %}
+                >
 
             <div class="f5sD--sort">
             <h3>Упорядочить иллюстрации</h3>
@@ -161,6 +164,7 @@
 {% endblock %}
 
 {% block content %}
+{% trim %}
 
     {% for e in examples %}
         <div>
@@ -179,14 +183,14 @@
                     {% endfor %}
                 {% endif %}
                 {% if e.meaning.meaning %}
-                    ‘{{ e.meaning.meaning }}’
+                    ‘{{ e.meaning.meaning|cslav_injection }}’
                     {{ space }}
                 {% endif %}
                 {% if e.meaning.gloss %}
                     {% if e.meaning.meaning %}
-                        ({{ e.meaning.gloss }})
+                        ({{ e.meaning.gloss|cslav_injection }})
                     {% else %}
-                        {{ e.meaning.gloss }}
+                        {{ e.meaning.gloss|cslav_injection }}
                     {% endif %}
                 {% endif %}
             </div>
@@ -313,6 +317,7 @@
 
     {% include '_pagination.html' %}
 
+{% endtrim %}
 {% endblock %}
 
 {% block javascript_links %}

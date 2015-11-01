@@ -992,6 +992,8 @@ class Example(models.Model):
 
     audited = BooleanField(u'Пример прошел проверку или взят на проверку',
                            default=False)
+    audited_time = DateTimeField(u'Когда пример был проверен', blank=True,
+            editable=False, null=True)
 
     note = TextField(u'комментарий', help_text=u'''Дополнительная
             информация по данному примеру, которая будет видна рядовому
