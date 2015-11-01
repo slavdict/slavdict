@@ -68,6 +68,11 @@ def json_ex_save(request):
     jsonEx = request.POST.get('ex')
     if jsonEx:
         exDict = json.loads(jsonEx)
+        key = 'saveAuditTime'
+        if key in exDict:
+            if exDict[key]:
+                exDict['audited_time'] = datetime.datetime.now()
+            del exDict[key]
         ex = Example.objects.get(pk=int(exDict['id']))
         del exDict['id']
         ex.__dict__.update(exDict)
