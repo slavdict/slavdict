@@ -923,7 +923,8 @@ class Meaning(models.Model):
             'substantivus_type',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
-        dct['contexts'] = [c.forJSON() for c in self.contexts]
+        dct['contexts'] = [c.forJSON()
+                for c in self.meaningcontext_set(manager='objects_all').all()]
         dct['collogroups'] = [c.forJSON() for c in self.collogroups]
         dct['meanings'] = [m.forJSON() for m in self.child_meanings]
         dct['examples'] = [e.forJSON() for e in self.examples]
