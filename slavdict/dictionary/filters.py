@@ -132,7 +132,9 @@ def get_entries(form):
 
     # Статьи с контекстами значений
     if form['meaningcontexts']:
-        good_entries = set(cg.host_entry.id for cg in MeaningContext.objects.all())
+        good_entries = set(mc.host_entry.id
+                           for mc in MeaningContext.objects.all()
+                           if mc.show_in_dictionary)
         if 'id__in' in FILTER_PARAMS:
             FILTER_PARAMS['id__in'] = \
                     FILTER_PARAMS['id__in'].intersection(good_entries)
