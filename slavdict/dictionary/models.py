@@ -685,19 +685,6 @@ class Etymology(models.Model):
         ordering = ('id',)
 
 
-class QuasiGoodManager(models.Manager):
-    def get_queryset(self):
-        X = u''
-        PL = u'мн.'
-        qs = super(QuasiGoodManager, self).get_queryset()
-        # Оставляем в выборке только те контексты значений, которые содержат
-        # либо только цсл. текст, либо только помету "мн."
-        qs = qs.extra(where=['''
-            (context!=%s AND left_text=%s AND right_text=%s) OR
-            (context=%s AND (left_text=%s OR right_text=%s))
-            '''], params=[X] * 4 + [PL] * 2)
-        return qs
-
 class MeaningContext(models.Model):
 
     meaning = ForeignKey('Meaning', verbose_name=u'значение')
@@ -734,6 +721,16 @@ class MeaningContext(models.Model):
     mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
+    def show_in_dictionary(self):
+        PL = u'мн.'
+        L, C, R = self.left_text, self.context, self.right_text
+        c1 = C and not L and not R
+        c2 = not C and (L == PL or R == PL)
+        if c1 or c2:
+            return True
+        return False
+
+    @property
     def host_entry(self):
         return self.meaning.host_entry
 
@@ -764,10 +761,6 @@ class MeaningContext(models.Model):
     def toJSON(self):
         return json.dumps(self.forJSON(),
                           ensure_ascii=False, separators=(',',':'))
-
-    objects = QuasiGoodManager()
-    objects_all = models.Manager()
-
     class Meta:
         verbose_name = u'контекст значения'
         verbose_name_plural = u'контексты значения'
@@ -862,7 +855,8 @@ class Meaning(models.Model):
 
     @property
     def contexts(self):
-        return self.meaningcontext_set.all()
+        return [mc for mc in self.meaningcontext_set.all()
+                   if mc.show_in_dictionary]
 
     @property
     def greek_equivs(self):
@@ -923,8 +917,7 @@ class Meaning(models.Model):
             'substantivus_type',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
-        dct['contexts'] = [c.forJSON()
-                for c in self.meaningcontext_set(manager='objects_all').all()]
+        dct['contexts'] = [c.forJSON() for c in self.meaningcontext_set.all()]
         dct['collogroups'] = [c.forJSON() for c in self.collogroups]
         dct['meanings'] = [m.forJSON() for m in self.child_meanings]
         dct['examples'] = [e.forJSON() for e in self.examples]
