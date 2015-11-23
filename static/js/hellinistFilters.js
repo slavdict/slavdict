@@ -64,7 +64,7 @@ function ExForJSON(ex) {
     this.additional_info = ex.comment;
     this.address_text = ex.address;
     this.example = ex.example;
-    this.audited = ex.audited;
+    this.audited = ex.audited() || false;
     this.saveAuditTime = ex.saveAuditTime;
 }
 
