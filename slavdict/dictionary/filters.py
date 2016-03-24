@@ -247,11 +247,8 @@ def get_examples(form):
 
     if entries is not None:
         if entries.exists():
-            examples = examples.filter(
-                Q(meaning__entry_container__in=entries) |
-                Q(meaning__parent_meaning__entry_container__in=entries) |
-                Q(meaning__collogroup_container__base_meaning__entry_container__in=entries)
-                )
+            entries_ids = [_ for _ in entries.values_list('id', flat=True)]
+            examples = examples.filter(entry_id__in=entries_ids)
         else:
             examples = examples.none()
 
