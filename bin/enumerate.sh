@@ -50,6 +50,7 @@ fi
 
 INPUT_FILE=$(readlink -f "$1")
 OUTPUT_FILE=$(readlink -f "$2")
+START_PAGE=${3:-1}
 
 test -z $INPUT_FILE && exit 1
 if [ -z $OUTPUT_FILE ]
@@ -73,6 +74,7 @@ cat >numbers.tex <<EOF
 \usepackage{multido}
 \usepackage[hmargin=.8cm,vmargin=0cm,nohead,nofoot]{geometry}
 \pagestyle{myheadings}
+\setcounter{page}{$START_PAGE}
 \begin{document}
 \multido{}{$PAGES}{\vphantom{x}\newpage}
 \end{document}
@@ -98,7 +100,8 @@ do
 done
 
 echo Concatenating pages into single PDF
-pdftk $(for i in $(seq -w $PAGES); do echo numbered_$i.pdf; done) cat output book_bloat.pdf
+pdftk $(for i in $(seq -w $PAGES); do echo numbered_$i.pdf;
+        done) cat output book_bloat.pdf
 
 echo Optimizing PDF file
 gs 2>/dev/null \

@@ -20,10 +20,10 @@ from django.template import RequestContext
 from django.views.decorators.cache import never_cache
 
 from slavdict import unicode_csv
+from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary import filters
 from slavdict.dictionary import models
 from slavdict.dictionary import viewmodels
-from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary.forms import BilletImportForm
 from slavdict.dictionary.forms import FilterEntriesForm
 from slavdict.dictionary.forms import FilterExamplesForm
@@ -33,6 +33,7 @@ from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
 from slavdict.dictionary.models import OrthographicVariant
+from slavdict.middleware import InvalidCookieError
 
 
 
@@ -624,7 +625,13 @@ def entry_list(request):
             data['find'] = request.POST['hdrSearch']
 
     form = FilterEntriesForm(data)
-    assert form.is_valid(), u'Форма заполнена неправильно'
+    if not form.is_valid():
+        message = u'Форма FilterEntriesForm заполнена неправильно.'
+        if request.method == 'POST':
+            raise RuntimeError(message)
+        else:
+            # Кидаем исключение для обработки в мидлваре и стирания всех кук.
+            raise InvalidCookieError(message)
     entries = filters.get_entries(form.cleaned_data)
 
     paginator = Paginator(entries, per_page=12, orphans=2)
@@ -684,7 +691,13 @@ def hellinist_workbench(request):
         data.update(request.COOKIES)
 
     form = FilterExamplesForm(data)
-    assert form.is_valid(), u'Форма FilterExamplesForm заполнена неправильно'
+    if not form.is_valid():
+        message = u'Форма FilterExamplesForm заполнена неправильно.'
+        if request.method == 'POST':
+            raise RuntimeError(message)
+        else:
+            # Кидаем исключение для обработки в мидлваре и стирания всех кук.
+            raise InvalidCookieError(message)
     examples = filters.get_examples(form.cleaned_data)
 
     paginator = Paginator(examples, per_page=4, orphans=2)
