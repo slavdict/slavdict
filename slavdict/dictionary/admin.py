@@ -69,16 +69,18 @@ def example_with_entry(obj):
 
 def meaning_for_example(obj):
     m = obj.meaning
+    if m is None:
+        return u'<None>'
     return u'%s [%s]%s' % (m.meaning, m.id, u'*' if m.metaphorical else u'')
 
 def entry_for_example(obj):
     m = obj.meaning
-    e = m.entry_container
+    e = m and m.entry_container
     if e:
         r = entry_with_orth_variants(e)
         i = u' [%s]' % e.id
     else:
-        cg = m.collogroup_container
+        cg = m and m.collogroup_container
         if cg:
             r = _collocations(cg)
         else:
