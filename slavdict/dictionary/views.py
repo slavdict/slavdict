@@ -515,19 +515,23 @@ def import_csv_billet(request):
                     orthvar_collisions = True
                     csv_writer.writerow(row)
                 else:
-                    author_in_csv = author_in_csv.lower()
-                    if author_in_csv in csv_authors:
-                        author = csv_authors[author_in_csv]
-                    else:
-                        for au in authors:
-                            if au.last_name and author_in_csv.startswith(
-                                                    au.last_name.lower()):
-                                author = au
-                                csv_authors[author_in_csv] = au
-                                break
+                    author_in_csv = author_in_csv.strip().lower()
+                    if author_in_csv:
+                        if author_in_csv in csv_authors:
+                            author = csv_authors[author_in_csv]
                         else:
-                            raise NameError(u"""Автор, указанный в CSV-файле,
-                            не найден среди участников работы над словарём.""")
+                            for au in authors:
+                                if au.last_name and author_in_csv.startswith(
+                                                        au.last_name.lower()):
+                                    author = au
+                                    csv_authors[author_in_csv] = au
+                                    break
+                            else:
+                                raise NameError(u"""Автор, указанный
+                                        в CSV-файле, не найден среди участников
+                                        работы над словарём.""")
+                    else:
+                        author = None
 
                     # Если поле с гражданским эквивалентом пусто, то берем
                     # конвертацию в гражданку заглавного слова. Если же это
@@ -560,7 +564,8 @@ def import_csv_billet(request):
                             'questionable_headword': orthvars_list[0][2],
                             })
                         entry.save()
-                        entry.authors.add(author)
+                        if author is not None:
+                            entry.authors.add(author)
 
                         for i in orthvars_list:
                             orthvar = i[0]
