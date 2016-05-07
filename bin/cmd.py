@@ -2,6 +2,10 @@
 import cmd
 import re
 
+from django.db.models import Model
+from django.db.models.fields import TextField, CharField
+
+import slavdict.dictionary.models as models
 from slavdict.dictionary.models import Example as _Example
 
 class DataChangeShell(cmd.Cmd):
@@ -175,3 +179,17 @@ class DataChangeShell(cmd.Cmd):
 
 def shell(model_attrs=[(_Example, ['address_text'])]):
     DataChangeShell(model_attrs=model_attrs).cmdloop()
+
+# Собрать все текстовые поля не самая хорошая идея, т.к.  выпадающие списки
+# тоже сохраняются в текстовых полях. Тем не менее, вот как это можно сделать:
+crazy_all = []
+for identifier in models.__dict__:
+    x = models.__dict__[identifier]
+    if isinstance(x, type) and issubclass(x, Model):
+        fieldnames = []
+        for i in x._meta.fields:
+            if isinstance(i, (TextField, CharField)):
+                fieldnames.append(i.name)
+        if fieldnames:
+            crazy_all.append((x, fieldnames))
+#shell(crazy_all)
