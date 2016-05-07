@@ -551,8 +551,6 @@ def import_csv_billet(request):
                         'homonym_gloss': homonym_gloss or u'',
                         'duplicate': bool(duplicate),
                     }
-                    raise NameError(u'''В переменной from_csv необходимо
-                                        учесть новое поле authors.''')
 
                     entry = Entry()
                     if not intersection or (force == 'add'):
@@ -561,8 +559,8 @@ def import_csv_billet(request):
                             'reconstructed_headword': orthvars_list[0][1],
                             'questionable_headword': orthvars_list[0][2],
                             })
-
                         entry.save()
+                        entry.authors.add(author)
 
                         for i in orthvars_list:
                             orthvar = i[0]
