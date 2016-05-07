@@ -42,6 +42,10 @@
 
 {% endif %}
 
+{% if e.note %}
+    {{ space }}
+    <i>{{ e.note|cslav_injection }}</i>
+{% endif %}
 
 {% if e.address_text %}
     <span class="example-address">
@@ -68,11 +72,6 @@
     {{ space }}
 {% endif %}
 
-
-{% if e.note %}
-    {{ backspace }},{{ space }}
-    <i>{{ e.note|cslav_injection }}</i>
-{% endif %}
 
 
 {% if intermed %}
