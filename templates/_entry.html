@@ -57,26 +57,26 @@
 
         {% if entry.short_form %}
             {% if entry.short_form_ucs_wax.0 %}-{% endif %}
-            <span class="cslav">{{ entry.short_form_ucs_wax.1 }}</span>
+            {{ entry.short_form_ucs_wax.1|cslav_words }}
             {{ space }}
         {% endif %}
 
         {% if entry.genitive %}
             {% if entry.genitive_ucs_wax.0 %}-{% endif %}
-            <span class="cslav">{{ entry.genitive_ucs_wax.1 }}</span>
+            {{ entry.genitive_ucs_wax.1|cslav_words }}
             {{ space }}
         {% endif %}
 
         {% if entry.sg1 %}
             {% if entry.sg1_ucs_wax.0 %}-{% endif %}
-            <span class="cslav">{{ entry.sg1_ucs_wax.1 }}</span>
+            {{ entry.sg1_ucs_wax.1|cslav_words }}
             {% if entry.sg2 %},{%endif %}
             {{ space }}
         {% endif %}
 
         {% if entry.sg2 %}
             {% if entry.sg2_ucs_wax.0 %}-{% endif %}
-            <span class="cslav">{{ entry.sg2_ucs_wax.1 }}</span>
+            {{ entry.sg2_ucs_wax.1|cslav_words }}
             {{ space }}
         {% endif %}
 
@@ -128,7 +128,7 @@
                 <i>мн.</i>
                 {{ space }}
                 {% if entry.nom_sg_ucs_wax.0 %}-{%endif %}
-                <span class="cslav">{{ entry.nom_sg_ucs_wax.1 }}</span>
+                {{ entry.nom_sg_ucs_wax.1|cslav_words }}
             </div>
     {% endif %}
 

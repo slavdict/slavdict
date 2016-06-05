@@ -7,7 +7,7 @@
 
     {% for c in cg.collocations %}
 
-            <span class="cslav">{{ c.collocation_ucs }}</span>
+            {{ c.collocation_ucs|cslav_words }}
             {{ space }}
 
             {% if c.etymologies %}
