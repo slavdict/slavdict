@@ -69,6 +69,12 @@ jslibs:
 		echo ${JSLIBS_NEW_VERSION} > ${JSLIBS_VERSION_FILE} ; \
 	fi
 
+scp:
+	scp bin/indesign_xml_dumper.py dilijnt0:/var/www/slavdict/bin/
+	ssh dilijnt0 chown www-data:www-is /var/www/slavdict/bin/indesign_xml_dumper.py
+	scp -r templates/indesign/ dilijnt0:/var/www/slavdict/templates/
+	ssh dilijnt0 chown -R www-data:www-is /var/www/slavdict/templates/indesign/
+
 .PHONY: \
     checkout \
     clean \
@@ -83,5 +89,6 @@ jslibs:
     run \
     start \
     stop \
+    scp \
 
 

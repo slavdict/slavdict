@@ -1,0 +1,25 @@
+{% trim %}
+
+{% if entry.questionable_headword %}*{% endif %}{{ entry.orth_vars.0.idem }}
+
+{% if entry.homonym_order %}
+{{ backspace }}{{ space }}{{ entry.homonym_order }}
+{% endif %}
+
+{% for ovar in entry.orth_vars[1:] %}
+
+    {% if loop.first %}
+        {{ backspace }}{{ space }}(
+    {% endif %}
+
+    {{ backspace }}{{ ovar.idem }}
+
+    {% if loop.last %}
+        {{ backspace }}){{ space }}
+    {% else %}
+        {{ backspace }},{{ space }}
+    {% endif %}
+
+{% endfor %}
+{% endtrim %}
+{# vim: set ft=django.html: #}
