@@ -266,12 +266,12 @@ LANGUAGE_TRANSLIT_CSS = {
 
 NBSP = u'\u00A0'  # неразрывный пробел
 SUBSTANTIVUS_TYPE_CHOICES = (
-    ('a', u'с.' + NBSP + 'ед.'),
-    ('b', u'с.' + NBSP + 'мн.'),
-    ('c', u'м.' + NBSP + 'ед.'),
-    ('d', u'м.' + NBSP + 'мн.'),
-    ('e', u'ж.' + NBSP + 'ед.'),
-    ('f', u'ж.' + NBSP + 'мн.'),
+    ('a', u'с.' + NBSP + u'ед.'),
+    ('b', u'с.' + NBSP + u'мн.'),
+    ('c', u'м.' + NBSP + u'ед.'),
+    ('d', u'м.' + NBSP + u'мн.'),
+    ('e', u'ж.' + NBSP + u'ед.'),
+    ('f', u'ж.' + NBSP + u'мн.'),
 )
 SUBSTANTIVUS_TYPE_MAP = {
     'n.sg.': 'a',
