@@ -1,0 +1,5 @@
+{% extends "_ref_entries.html" %}
+
+{% block refheader %}
+    <div class="refheader">Отсылочные статьи</div>
+{% endblock %}

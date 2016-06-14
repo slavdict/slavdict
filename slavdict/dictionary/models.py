@@ -147,7 +147,7 @@ TANTUM_MAP = {
 GENDER_CHOICES = (
     ('m', u'м.'),
     ('f', u'ж.'),
-    ('n', u'ср.'),
+    ('n', u'с.'),
 )
 GENDER_MAP = {
     'masculine': 'm',
@@ -264,13 +264,14 @@ LANGUAGE_TRANSLIT_CSS = {
         LANGUAGE_MAP['syriac']: 'syriac-translit',
 }
 
+NBSP = u'\u00A0'  # неразрывный пробел
 SUBSTANTIVUS_TYPE_CHOICES = (
-    ('a', u'ср.ед.'),
-    ('b', u'ср.мн.'),
-    ('c', u'м.ед.'),
-    ('d', u'м.мн.'),
-    ('e', u'ж.ед.'),
-    ('f', u'ж.мн.'),
+    ('a', u'с.' + NBSP + 'ед.'),
+    ('b', u'с.' + NBSP + 'мн.'),
+    ('c', u'м.' + NBSP + 'ед.'),
+    ('d', u'м.' + NBSP + 'мн.'),
+    ('e', u'ж.' + NBSP + 'ед.'),
+    ('f', u'ж.' + NBSP + 'мн.'),
 )
 SUBSTANTIVUS_TYPE_MAP = {
     'n.sg.': 'a',
@@ -298,6 +299,10 @@ class Entry(models.Model):
     @property
     def orth_vars_refs(self):
         return self.orthographic_variants.filter(no_ref_entry=False)
+
+    @property
+    def base_vars(self):
+        return self.orthographic_variants.filter(parent__isnull=True)
 
     reconstructed_headword = BooleanField(u'Заглавное слово реконструировано',
             default=False)
@@ -1313,10 +1318,15 @@ class OrthographicVariant(models.Model):
     # словарная статья, к которой относится данный орф. вариант
     entry = ForeignKey(Entry, related_name='orthographic_variants', blank=True,
                        null=True)
+    parent = ForeignKey('self', related_name='children', blank=True, null=True)
 
     # сам орфографический вариант
     idem = CharField(u'написание', max_length=50)
-
+    use = CharField(u'использование', max_length=50, help_text=u'''
+                    Информация о том, с какими значениями данный вариант
+                    связан. Разные варианты написания могут коррелировать
+                    с разными значениями, как в случае слов богъ/бг~ъ,
+                    агг~лъ/аггелъ.''', default=u'')
     @property
     def idem_ucs(self):
         return ucs_convert(self.idem)

@@ -66,9 +66,9 @@ x/html-тегами, а также x/html-тэгами и текстом.
 
 {{ punct }} -- Непарный вспомогательный тэг для использования внутри {% trim %}.
 В том случае если текст внутри тэга кончается на знак препинания, гарантирует
-наличие за ним пробела. К сожалению, пока его использоание регулируется слишком
-жесткими правилами. Его необходимо помещать между тэгами, в которых будет текст.
-Помещать внутрь таких тегов его нельзя. Впоследствии его надо будет каким-то
+наличие за ним пробела. К сожалению, пока его использование регулируется слишком
+жесткими правилами. Его необходимо помещать *между* тэгами, в которых будет текст.
+Помещать *внутрь* таких тегов его нельзя. Впоследствии его надо будет каким-то
 образом переделать.
 
 {{ ! }} -- Непарный вспомогательный тэг для использования внутри {% trim %}.
@@ -76,6 +76,17 @@ x/html-тегами, а также x/html-тэгами и текстом.
 
 {{ onlyDot }} -- Непарный вспомогательный тэг, позволяющий поставить точку,
 только если перед ним нет точки или многоточия.
+
+{{ nbsp }} -- неразрывный пробел, no-break space, U+00A0.
+
+{{ nbhyphen }} -- non-breaking hyphen, U+2011.
+
+{{ softhyphen }} -- soft hyphen, U+00AD.
+
+{{ wj }}, {{ zwnbsp }} -- word joiner WJ = zero width no-break space ZWNBSP,
+U+2060. В стандарте Юникод ZWNBSP это U+FEFF, который также используется как
+BOM. Начиная с версии 3.2 использование позиции U+FEFF как ZWNBSP объявлено
+устаревшим и в этой ф-ции надо использовать WJ (U+2060).
 
 """
 import re
@@ -136,6 +147,15 @@ class TrimExtension(Extension):
         source = re.sub(ur'{{\s*!\s*}}', EXCLAM, source)
         # {{ onlyDot }}
         source = re.sub(ur'{{\s*onlyDot\s*}}', ur'\u1902', source)
+        # {{ nbsp }}
+        source = re.sub(ur'{{\s*nbsp\s*}}', ur'\u00A0', source)
+        # {{ nbhyphen }}
+        source = re.sub(ur'{{\s*nbhyphen\s*}}', ur'\u2011', source)
+        # {{ softhyphen }}
+        source = re.sub(ur'{{\s*softhyphen\s*}}', ur'\u00AD', source)
+        # {{ wj }}, {{ zwnbsp }}
+        source = re.sub(ur'{{\s*wj\s*}}', ur'\u2060', source)
+        source = re.sub(ur'{{\s*zwnbsp\s*}}', ur'\u2060', source)
         return source
 
 trim = TrimExtension
@@ -147,10 +167,46 @@ def cslav_nobr_words(value):
     церковнославянской.
 
     """
+    # многоточие, круглые, квадратные скобки и косая черта
     value = re.sub(ur'(\.\.\.|[\(\)\[\]/])', ur'<span>\1</span>', value)
     pattern = u'<span class="cslav nobr">%s</span>'
     words = (pattern % word for word in value.split())
     return u'&#32;'.join(words)
+
+def indesign_cslav_words(value):
+    """ Аналог cslav_nobr_words для импорта в InDesign. """
+    TEXT_TAG = u'<text>%s</text>'
+    CSL_TAG = u'<csl-segment>%s</csl-segment>'
+    # многоточие
+    RE_DOTS = ur'\.\.\.'
+    # круглые, квадратные скобки и косая черта
+    RE_BRACES_SLASH = ur'[\(\)\[\]/]'
+    RE = re.compile(u'(%s|%s)' % (RE_DOTS, RE_BRACES_SLASH))
+
+    segments = []
+    for segment in value.split():
+        parts = []
+        m = RE.search(segment)
+        while m:
+            start, end = m.start(), m.end()
+            left = segment[:start]
+            center = segment[start:end]
+            right = segment[end:]
+
+            if left:
+                parts.append(CSL_TAG % left)
+
+            center = re.sub(RE_DOTS, TEXT_TAG % u'…', center)
+            center = re.sub(RE_BRACES_SLASH, TEXT_TAG % u'\g<0>', center)
+            parts.append(center)
+
+            segment = right
+            m = RE.search(segment)
+        if segment:
+            parts.append(CSL_TAG % segment)
+        segments.append(u''.join(parts))
+    return u' '.join(segments)
+
 
 def cslav_subst(x):
     return EXCLAM + cslav_nobr_words(ucs_convert(x.group(1))) + EXCLAM
@@ -163,3 +219,4 @@ def cslav_injection(value):
     return value
 
 register.filter(name='cslav_words')(cslav_nobr_words)
+register.filter(name='ind_cslav_words')(indesign_cslav_words)
