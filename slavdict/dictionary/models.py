@@ -147,7 +147,7 @@ TANTUM_MAP = {
 GENDER_CHOICES = (
     ('m', u'м.'),
     ('f', u'ж.'),
-    ('n', u'ср.'),
+    ('n', u'с.'),
 )
 GENDER_MAP = {
     'masculine': 'm',
@@ -264,13 +264,14 @@ LANGUAGE_TRANSLIT_CSS = {
         LANGUAGE_MAP['syriac']: 'syriac-translit',
 }
 
+NBSP = u'\u00A0'  # неразрывный пробел
 SUBSTANTIVUS_TYPE_CHOICES = (
-    ('a', u'ср.ед.'),
-    ('b', u'ср.мн.'),
-    ('c', u'м.ед.'),
-    ('d', u'м.мн.'),
-    ('e', u'ж.ед.'),
-    ('f', u'ж.мн.'),
+    ('a', u'с.' + NBSP + 'ед.'),
+    ('b', u'с.' + NBSP + 'мн.'),
+    ('c', u'м.' + NBSP + 'ед.'),
+    ('d', u'м.' + NBSP + 'мн.'),
+    ('e', u'ж.' + NBSP + 'ед.'),
+    ('f', u'ж.' + NBSP + 'мн.'),
 )
 SUBSTANTIVUS_TYPE_MAP = {
     'n.sg.': 'a',
