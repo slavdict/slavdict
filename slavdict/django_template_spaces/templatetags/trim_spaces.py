@@ -77,6 +77,17 @@ x/html-тегами, а также x/html-тэгами и текстом.
 {{ onlyDot }} -- Непарный вспомогательный тэг, позволяющий поставить точку,
 только если перед ним нет точки или многоточия.
 
+{{ nbsp }} -- неразрывный пробел, no-break space, U+00A0.
+
+{{ nbhyphen }} -- non-breaking hyphen, U+2011.
+
+{{ softhyphen }} -- soft hyphen, U+00AD.
+
+{{ wj }}, {{ zwnbsp }} -- word joiner WJ = zero width no-break space ZWNBSP,
+U+2060. В стандарте Юникод ZWNBSP это U+FEFF, который также используется как
+BOM. Начиная с версии 3.2 использование позиции U+FEFF как ZWNBSP объявлено
+устаревшим и в этой ф-ции надо использовать WJ (U+2060).
+
 """
 import re
 
@@ -136,6 +147,15 @@ class TrimExtension(Extension):
         source = re.sub(ur'{{\s*!\s*}}', EXCLAM, source)
         # {{ onlyDot }}
         source = re.sub(ur'{{\s*onlyDot\s*}}', ur'\u1902', source)
+        # {{ nbsp }}
+        source = re.sub(ur'{{\s*nbsp\s*}}', ur'\u00A0', source)
+        # {{ nbhyphen }}
+        source = re.sub(ur'{{\s*nbhyphen\s*}}', ur'\u2011', source)
+        # {{ softhyphen }}
+        source = re.sub(ur'{{\s*softhyphen\s*}}', ur'\u00AD', source)
+        # {{ wj }}, {{ zwnbsp }}
+        source = re.sub(ur'{{\s*wj\s*}}', ur'\u2060', source)
+        source = re.sub(ur'{{\s*zwnbsp\s*}}', ur'\u2060', source)
         return source
 
 trim = TrimExtension
