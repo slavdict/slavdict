@@ -1313,10 +1313,15 @@ class OrthographicVariant(models.Model):
     # словарная статья, к которой относится данный орф. вариант
     entry = ForeignKey(Entry, related_name='orthographic_variants', blank=True,
                        null=True)
+    parent = ForeignKey('self', related_name='children', blank=True, null=True)
 
     # сам орфографический вариант
     idem = CharField(u'написание', max_length=50)
-
+    use = CharField(u'использование', max_length=50, help_text=u'''
+                    Информация о том, с какими значениями данный вариант
+                    связан. Разные варианты написания могут коррелировать
+                    с разными значениями, как в случае слов богъ/бг~ъ,
+                    агг~лъ/аггелъ.''', default=u'')
     @property
     def idem_ucs(self):
         return ucs_convert(self.idem)
