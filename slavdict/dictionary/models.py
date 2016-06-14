@@ -300,6 +300,10 @@ class Entry(models.Model):
     def orth_vars_refs(self):
         return self.orthographic_variants.filter(no_ref_entry=False)
 
+    @property
+    def base_vars(self):
+        return self.orthographic_variants.filter(parent__isnull=True)
+
     reconstructed_headword = BooleanField(u'Заглавное слово реконструировано',
             default=False)
 

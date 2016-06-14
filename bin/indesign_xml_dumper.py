@@ -115,7 +115,7 @@ from slavdict.dictionary.models import Entry, OrthographicVariant
 
 #entries = [e for e in Entry.objects.all()
 #             if e.orth_vars[0].idem.startswith((u'а', u'А', u'б', u'Б'))]
-#entries = [(e, render_to_string('indesign/e.xml', {'entry': e}).strip())
+#entries = [(e, render_to_string('indesign/entry.xml', {'entry': e}).strip())
 #           for e in entries]
 #entries.sort(key=lambda x: x[0].orth_vars[0].idem)
 #

@@ -1,143 +1,144 @@
-{% from '_etymology.html'   import etymology    with context %}
-{% from '_meaning_without_children.html' import meaning with context %}
 {% trim %}
-<div class="entry">
-    <div style="line-height: 100%;">
-        {% if entry.questionable_headword %}*{% endif %}
-        <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
+
+{% from '_etymology.xml'   import etymology    with context %}
+{% from '_meaning_without_children.xml' import meaning with context %}
+
+<entry>
+
+    {% for base_var in entry.base_vars %}
+
+        <headword>{{ base_var.idem_ucs }}</headword>
+        {% if loop.first %}
+            {% if entry.homonym_order %}
+                <homonym-number>{{ entry.homonym_order }}</homonym-number>
+                {{ space }}
+            {% endif %}
+            {% if entry.questionable_headword %}
+                <questionable>(?)</questionable>
+            {% endif %}
+        {% endif %}
         {{ space }}
 
-        {% if entry.homonym_order %}
-            {{ backspace }}
-            <sup class="homonym-number">{{ entry.homonym_order }}</sup>
-            {{ space }}
-        {% endif %}
-
-        {% for ovar in entry.orth_vars[1:] %}
+        {% for var in base_var.children %}
 
             {% if loop.first %}
-                {{ space }}(
+                {{ space }}<text>(</text>
             {% endif %}
 
-            <span class="cslav orthvar">{{ ovar.idem_ucs }}</span>
+            <var>{{ var.idem_ucs }}</var>
 
             {% if loop.last %}
-                {{ backspace }}){{ space }}
+                {{ backspace }}<text>)</text>{{ space }}
             {% else %}
-                {{ backspace }},{{ space }}
+                {{ backspace }}<text>,</text>{{ space }}
             {% endif %}
 
         {% endfor %}
 
-        {% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %}
+    {% endfor %}
+
+
+    {% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %}
+        {{ backspace }}<text>,</text>{{ space }}
+    {% endif %}
+
+
+    {% if entry.short_form %}
+        {% if entry.short_form_ucs_wax.0 %}{{ nbhyphen }}{% endif %}
+        <csl>{{ entry.short_form_ucs_wax.1|ind_cslav_words }}</csl>
+        {{ space }}
+    {% endif %}
+
+    {% if entry.genitive %}
+        {% if entry.genitive_ucs_wax.0 %}{{ nbhyphen }}{% endif %}
+        <csl>{{ entry.genitive_ucs_wax.1|ind_cslav_words }}</csl>
+        {{ space }}
+    {% endif %}
+
+    {% if entry.sg1 %}
+        {% if entry.sg1_ucs_wax.0 %}{{ nbhyphen }}{% endif %}
+        <csl>{{ entry.sg1_ucs_wax.1|ind_cslav_words }}</csl>
+        {% if entry.sg2 %},{%endif %}
+        {{ space }}
+    {% endif %}
+
+    {% if entry.sg2 %}
+        {% if entry.sg2_ucs_wax.0 %}{{ nbhyphen }}{% endif %}
+        <csl>{{ entry.sg2_ucs_wax.1|ind_cslav_words }}</csl>
+        {{ space }}
+    {% endif %}
+
+    {% if entry.uninflected %}
+        <i>неизм.</i>
+        {{ space }}
+    {% endif %}
+
+    {% if entry.possessive %}
+        <i>притяж.</i>
+        {{ space }}
+    {% endif %}
+
+
+    {% if entry.participle_type %}
+        <i>{{ entry.get_participle_type_display() }}</i>
+        {{ space }}
+    {% else %}
+        {% if entry.part_of_speech %}
+            {% if not entry.is_part_of_speech("letter") and
+                  not entry.is_part_of_speech("number") and
+                  not entry.is_part_of_speech("noun") %}
+            <i>{{ entry.get_part_of_speech_display() }}</i>
+            {% endif %}
+        {% endif %}
+
+        {{ space }}
+        {% if entry.gender %}
             {{ backspace }},{{ space }}
-        {% endif %}
-
-
-        {% if entry.short_form %}
-            {% if entry.short_form_ucs_wax.0 %}-{% endif %}
-            <span class="cslav">{{ entry.short_form_ucs_wax.1 }}</span>
+            <i>{{ entry.get_gender_display() }}</i>
             {{ space }}
         {% endif %}
-
-        {% if entry.genitive %}
-            {% if entry.genitive_ucs_wax.0 %}-{% endif %}
-            <span class="cslav">{{ entry.genitive_ucs_wax.1 }}</span>
-            {{ space }}
-        {% endif %}
-
-        {% if entry.sg1 %}
-            {% if entry.sg1_ucs_wax.0 %}-{% endif %}
-            <span class="cslav">{{ entry.sg1_ucs_wax.1 }}</span>
-            {% if entry.sg2 %},{%endif %}
-            {{ space }}
-        {% endif %}
-
-        {% if entry.sg2 %}
-            {% if entry.sg2_ucs_wax.0 %}-{% endif %}
-            <span class="cslav">{{ entry.sg2_ucs_wax.1 }}</span>
-            {{ space }}
-        {% endif %}
-
-        {% if entry.uninflected %}
-            <i>неизм.</i>
-            {{ space }}
-        {% endif %}
-
-        {% if entry.possessive %}
-            <i>притяж.</i>
-            {{ space }}
-        {% endif %}
+    {% endif %}
 
 
-        {% if entry.participle_type %}
-            <i>{{ entry.get_participle_type_display() }}</i>
-            {{ space }}
-        {% else %}
-            {% if entry.part_of_speech %}
-                {% if not entry.is_part_of_speech("letter") and
-                      not entry.is_part_of_speech("number") %}
-                <i>{{ entry.get_part_of_speech_display() }}</i>
-                {% endif %}
-            {% endif %}
-
-            {{ space }}
-            {% if entry.gender %}
-                {{ backspace }},{{ space }}
-                <i>{{ entry.get_gender_display() }}</i>
-                {{ space }}
-            {% endif %}
-        {% endif %}
-
-
-        {% if entry.tantum %}
-            <i>{{ entry.get_tantum_display() }}</i>
-            {{ space }}
-        {% endif %}
-
-
-        {% if show_additional_info and entry.additional_info %}
-            <span class="ai ai-entry">{{ entry.additional_info }}</span>
-        {% endif %}
-    </div>
-
+    {% if entry.tantum %}
+        <i>{{ entry.get_tantum_display() }}</i>
+        {{ space }}
+    {% endif %}
 
     {% if entry.is_onym('ethnonym') and entry.nom_sg %}
-            <div>
-                <i>мн.</i>
-                {{ space }}
-                {% if entry.nom_sg_ucs_wax.0 %}-{%endif %}
-                <span class="cslav">{{ entry.nom_sg_ucs_wax.1 }}</span>
-            </div>
+        <i>мн.</i>
+        {{ space }}
+        {% if entry.nom_sg_ucs_wax.0 %}{{ nbhyphen }}{%endif %}
+        <csl>{{ entry.nom_sg_ucs_wax.1|ind_cslav_words }}</csl>
     {% endif %}
 
 
-    {% if entry.etymologies %}
-        <div class="etymology">
-            {% for etym in entry.etymologies %}
+    {% for etym in entry.etymologies %}
 
-                {% set prevLang = Lang %}
-                {% set Lang = etym.get_language_display() %}
-                {% set isLanguageChanged = (Lang != prevLang) %}
+        {% set prevLang = Lang %}
+        {% set Lang = etym.get_language_display() %}
+        {% set isLanguageChanged = (Lang != prevLang) %}
 
-                {{ etymology(etym, isLanguageChanged, loop) }}
+        {{ etymology(etym, isLanguageChanged, loop) }}
 
-            {% endfor %}
-        </div>
-    {% endif %}
+    {% endfor %}
 
 
     {% if entry.is_onym('anthroponym') %}
         <i>имя собств.</i>
         {% if entry.canonical_name %}
-            ,{{ space }}
+            <text>,</text>{{ space }}
             <i>канонич.</i>
         {% endif %}
+        {{ space }}
     {% endif %}
 
     {% if entry.is_onym('toponym') %}
-        <i>топоним</i>
+        <i>топоним</i>{{ space }}
     {% endif %}
+
+
+    {# <<<<<<<<<<<<<<< #}
 
 
     {% if entry.link_to_entry or entry.link_to_collogroup or entry.link_to_meaning %}
@@ -238,28 +239,9 @@
     {% endif %}
 
 
-    {% if intermed %}
-
-        <div class="edit-controls">
-
-            <div>
-                <a href="{% if user.is_admeditor %}{% url 'admin:dictionary_entry_change' entry.pk %}{% else %}{% url 'UI:dictionary_entry_change' entry.pk %}{% endif %}">
-                    <img src="{{ STATIC_URL }}pen.png" alt="" />
-                    {{ space }}
-                    Редактировать информацию о лексеме
-                </a>
-            </div>
-
-        </div>
-
-    {% endif %}
-
-
     {% for m in entry.meanings %}
 
-        <div class="eM--meaning
-         {% if intermed %}eM--meaning-intermed{% endif %}"
-         >
+        <div class="eM--meaning">
             {% set mnumber = loop.index %}
 
             {% if not entry.meanings|length == 1 %}
@@ -315,55 +297,7 @@
         </div>
     {% endif %}
 
-</div>
+</entry>
 
-    {% if show_additional_info and not intermed %}
-        <div class="author">
-            {% if entry.authors.exists() %}
-                {% for author in entry.authors.all() %}
-                    {{ author }}<br/>
-                {% endfor %}
-            {% else %}
-                &lt; Автор не назначен &gt;
-            {% endif %}
-        </div>
-    {% endif %}
-
-{% if intermed %}
-
-    <div class="edit-controls">
-
-        <div>
-            <a rel="prefetch"
-               href="{% if user.is_admeditor %}{% url 'admin:dictionary_meaning_add' %}{% else %}{% url 'UI:dictionary_meaning_add' %}{% endif %}?entry={{ entry.id }}">
-                <img src="{{ STATIC_URL }}plus.png" alt="" />
-                {{ space }}
-                Добавить значение
-            </a>
-        </div>
-
-        <div>
-            <a rel="prefetch"
-               href="{% if user.is_admeditor %}{% url 'admin:dictionary_collocationgroup_add' %}{% else %}{% url 'UI:dictionary_collocationgroup_add' %}{% endif %}?entry={{ entry.id }}">
-                <img src="{{ STATIC_URL }}plus.png" alt="" />
-                {{ space }}
-                Добавить словосочетание
-            </a>
-        </div>
-
-    </div>
-
-    <div class="edit-controls" style="margin-bottom: 7em;">
-
-        <a href="{{ entry.get_absolute_url() }}" style="color: #070;">
-            <img src="{{ STATIC_URL }}check.png" alt="" />
-            {{ space }}
-            Закончить редактирование
-        </a>
-
-    </div>
-
-{% endif %}
-
-{% endtrim %}
 {# vim: set ft=django.html: #}
+{% endtrim %}

@@ -1,0 +1,88 @@
+{% macro example(e, examples_loop, peer_meanings_loop) %}
+
+<span class="entry-example">{{ e.example_ucs|cslav_words }}</span>
+{{ space }}
+
+
+{% if e.greek_equivs %}
+
+    {% set COMMA = joiner(',') %}
+    {% for ge in e.greek_equivs %}
+
+        {% set ADDITIONAL_INFO = show_additional_info and ge.additional_info %}
+        {% if ge.unitext or ADDITIONAL_INFO %}
+            {{ backspace }}{{ COMMA() }}{{ space }}
+        {% endif %}
+
+        <span class="unigrec{% if ge.corrupted %} cinnabar{% endif %}">{{ ge.unitext }}</span>
+        {{ space }}
+
+        {% for x in (ge.mark, ge.source, ge.note)|reject('equalto', '') %}
+
+            {% if loop.first %}
+                <span>[</span>
+            {% else %} {{ backspace }},{{ space }}
+            {% endif %}
+
+            <i>{{ x }}</i>
+            {{ space }}
+
+            {% if loop.last %}
+                {{ backspace }}<span>]</span>{{ space }}
+            {% endif %}
+
+        {% endfor %}
+
+        {% if ADDITIONAL_INFO %}
+            <span class="ai ai-grfex">{{ ge.additional_info }}</span>
+        {% endif %}
+
+
+    {% endfor %}
+
+{% endif %}
+
+{% if e.note %}
+    {{ space }}
+    <i>{{ e.note|cslav_injection }}</i>
+{% endif %}
+
+{% if e.address_text %}
+    <span class="example-address">
+        {{ e.address_text|cslav_injection }}
+        {% if not examples_loop.last %}
+            {{ backspace }};{{ space }}
+        {% else %}
+            {% if peer_meanings_loop.last or not parent_meanings_loop %}
+                {{ backspace }}{{ onlyDot }}{{ space }}
+            {% else %}
+                {{ backspace }};{{ space }}
+            {% endif %}
+        {% endif %}
+    </span>
+{% else %}
+    {% if show_additional_info %}
+        <span class="noaddress">Нет адреса!</span>
+    {% endif %}
+{% endif %}
+
+{% if show_additional_info and e.additional_info %}
+    {{ space }}
+    <span class="ai ai-example">{{ e.additional_info }}</span>
+    {{ space }}
+{% endif %}
+
+
+
+{% if intermed %}
+
+    <span class="edit-controls">
+        <a href="{% url 'UI:dictionary_example_change' e.id %}">
+            <img src="{{ STATIC_URL }}pen.png" alt="" />
+        </a>
+    </span>
+
+{% endif %}
+
+{% endmacro %}
+{# vim: set ft=django.html: #}
