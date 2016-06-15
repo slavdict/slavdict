@@ -1,0 +1,81 @@
+{% from '_etymology.xml'   import etymology    with context %}
+{% from '_meaning_without_children.xml' import meaning with context %}
+
+{% if cg.meanings or cg.metaph_meanings %}<div{% else %}<span{% endif %}
+    class="entry-collogroup">
+    &#x2662;<!-- LOZENGE -->&nbsp;
+
+    {% for c in cg.collocations %}
+
+            {{ c.collocation_ucs|cslav_words }}
+            {{ space }}
+
+            {% if not loop.last %}
+                {{ backspace }},{{ space }}
+            {% endif %}
+
+    {% endfor %}
+
+    {% if cg.additional_info and (show_additional_info or intermed) %}
+        <span class="ai ai-entry">{{ cg.additional_info }}</span>
+    {% endif %}
+
+
+
+    {% if intermed %}
+
+        <div class="edit-controls">
+
+            <div>
+                <a href="{% url 'UI:dictionary_collocationgroup_change' cg.id %}">
+                    <img src="{{ STATIC_URL }}pen.png" alt="" />
+                    {{ space }}
+                    Редактировать словосочетания
+                </a>
+            </div>
+
+            <div>
+                <a href="{% if user.is_admeditor %}{% url 'admin:dictionary_meaning_add' %}{% else %}{% url 'UI:dictionary_meaning_add' %}{% endif %}?collogroup={{ cg.id }}"
+                   rel="prefetch">
+                    <img src="{{ STATIC_URL }}plus.png" alt="" />
+                    {{ space }}
+                    Добавить значение
+                </a>
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+        {% set mnumber = '' %}
+
+        {% if intermed %}<div style="margin-left: 50px">{% else %}<span>{% endif %}
+
+        {% for m in cg.meanings %}
+            {% if cg.meanings|length != 1 %}
+                {{ loop.index }}.{{ space }}
+            {% endif %}
+            {% include '_meaning_with_children.xml' %}
+        {% endfor %}
+
+
+        {% for m in cg.metaph_meanings %}
+
+            <span style="color: #777;">►</span>
+            {{ space }}
+            {{ meaning(m, peer_meanings_loop=loop,
+                          parent_meanings_loop=none,
+                          child_meanings=none) }}
+
+        {% endfor %}
+
+        {% if intermed %}</div>{% else %}</span>{% endif %}
+
+{% if cg.meanings or cg.metaph_meanings %}
+</div>
+{% else %}
+</span>
+{% endif %}
+
+{# vim: set ft=django.xml: #}
