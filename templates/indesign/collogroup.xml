@@ -2,7 +2,7 @@
 
 {% for c in cg.collocations %}
 
-        {{ c.collocation_ucs|cslav_words }}
+        {{ c.collocation_ucs|ind_cslav_words }}
         {{ space }}
 
         {% if not loop.last %}

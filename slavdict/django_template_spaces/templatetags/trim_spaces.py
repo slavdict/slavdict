@@ -121,7 +121,9 @@ def strip_spaces_between_tags_and_text(value):
     value = re.sub(ur'([\.…])((\s)|(&nbsp;))*\u1902', ur'\1', value)
     value = re.sub(ur'((\s)|(&nbsp;))*\u1902', ur'.', value)
     # {{ newline }}
-    value = re.sub(u'\uEEEE', '\n', value)
+    value = re.sub(u'\uEEEE', u'\n', value)
+    # {{ nbsp }}
+    value = re.sub(u'\uEEA0', u'\u00A0', value)
     return value
 strip_spaces_between_tags_and_text = allow_lazy(strip_spaces_between_tags_and_text, unicode)
 
@@ -152,7 +154,7 @@ class TrimExtension(Extension):
         # {{ onlyDot }}
         source = re.sub(ur'{{\s*onlyDot\s*}}', ur'\u1902', source)
         # {{ nbsp }}
-        source = re.sub(ur'{{\s*nbsp\s*}}', ur'\u00A0', source)
+        source = re.sub(ur'{{\s*nbsp\s*}}', ur'\uEEA0', source)
         # {{ nbhyphen }}
         source = re.sub(ur'{{\s*nbhyphen\s*}}', ur'\u2011', source)
         # {{ softhyphen }}

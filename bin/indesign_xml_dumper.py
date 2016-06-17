@@ -114,7 +114,7 @@ def sort_key(word):
 from slavdict.dictionary.models import Entry
 
 entries = []
-lexemes = [e for e in Entry.objects.all()[:20]
+lexemes = [e for e in Entry.objects.all()
              if e.orth_vars[0].idem.startswith((u'а', u'А', u'б', u'Б'))]
 
 for lexeme in lexemes:

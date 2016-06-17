@@ -5,7 +5,7 @@
     {% for mc in m.contexts %}
 
         {% if loop.first %}
-            <span class="meaning-context">
+            <meaning-context>
             [
         {% endif %}
 
@@ -15,7 +15,7 @@
         {% endif %}
 
         {% if mc.context %}
-            <span class="cslav">{{ mc.context_ucs }}</span>
+            <csl>{{ mc.context_ucs }}</csl>
             {{ space }}
         {% endif %}
 
@@ -26,7 +26,7 @@
         {% if not loop.last %}
             {{ backspace }},{{ space }}
         {% else %}
-            {{ backspace }}]</span>{{ space }}
+            {{ backspace }}]</meaning-context>{{ space }}
         {% endif %}
 
     {% endfor %}
@@ -46,158 +46,20 @@
 {% endif %}
 
 {% if m.meaning %}
-    <span class="eM--meaning">{{ m.meaning|cslav_injection }}</span>
-{% endif %}
-
-{% if m.greek_equivs %}
-
-    {% if m.meaning %}
-        {{ backspace }},{{ space }}
-    {% endif %}
-
-    <i>греч.</i>{{ nbsp }}
-
-    {% for ge in m.greek_equivs %}
-
-        <span class="unigrec {% if ge.corrupted %}cinnabar{% endif %}">
-            {{ ge.unitext }}
-        </span>
-        {{ space }}
-
-        {% if ge.mark %}
-            (<i>{{ ge.mark }}</i>)
-            {{ space }}
-        {% endif %}
-
-        {% if not loop.last %}
-            {% if show_additional_info and ge.additional_info %}
-                {{ space }}
-                <span class="ai ai-grfmnng">{{ ge.additional_info }}</span>
-            {% endif %}
-            {{ backspace }},{{ space }}
-        {% endif %}
-
-    {% endfor %}
+    <meaning>{{ m.meaning|cslav_injection }}</meaning>
 {% endif %}
 
 {% if m.gloss %}
     {% if m.meaning or m.greek_equivs %}
         {{ backspace }};{{ space }}
     {% endif %}
-    <span class="eM--gloss">{{ m.gloss|cslav_injection }}</span>
+    <gloss>{{ m.gloss|cslav_injection }}</gloss>
     {{ space }}
 {% endif %}
-
-
-{% if m.link_to_entry or m.link_to_collogroup or m.link_to_meaning %}
-    {% if m.meaning or m.gloss %}
-        {{ backspace }},{{ space }}
-    {% endif %}
-
-    <i>см.&nbsp;</i>
-
-    {% if m.link_to_meaning %}
-
-        {% if m.link_to_meaning.entry_container %}
-            <a href="{{ m.link_to_meaning.entry_container.get_absolute_url() }}">
-                <span class="cslav">
-                    {{ m.link_to_meaning.entry_container.orth_vars.0.idem_ucs }}
-                </span>
-                {% if m.link_to_meaning.entry_container.homonym_order %}
-                    <sup class="homonym-number">{{ m.link_to_meaning.entry_container.homonym_order }}</sup>
-                {% endif %}
-            </a>
-        {% endif %}
-
-        {% if m.link_to_meaning.collogroup_container %}
-            <span class="cslav">
-                {{ m.link_to_meaning.collogroup_container.collocations.0.collocation_ucs }}
-            </span>
-        {% endif %}
-
-        {{ space }}<i>знач.</i>{{ space }}{{ m.link_to_meaning.order }}
-    {% endif %}
-
-    {% if m.link_to_entry %}
-        <a href="{{ m.link_to_entry.get_absolute_url() }}">
-            <span class="cslav">
-                {{ m.link_to_entry.orth_vars.0.idem_ucs }}
-            </span>
-            {% if m.link_to_entry.homonym_order %}
-                <sup class="homonym-number">{{ m.link_to_entry.homonym_order }}</sup>
-            {% endif %}
-        </a>
-        {{ space }}
-    {% endif %}
-
-    {% if m.link_to_collogroup %}
-        <span class="cslav">{{ m.link_to_collogroup.collocations.0.collocation_ucs }}</span>
-        {{ space }}
-    {% endif %}
-
-{% endif %}
-
-{% if m.cfentries or m.cfcollogroups or m.cfmeanings %}
-    {% if m.link_to_meaning or m.link_to_entry or m.link_to_collogroup
-    or m.meaning or m.gloss %}
-        {{ backspace }},{{ space }}
-    {% endif %}
-
-    <i>ср.&nbsp;</i>
-
-    {% set comma = joiner('{{ backspace }},{{ space }}') %}
-    {% for cfm in m.cfmeanings %}
-        {{ comma() }}
-        {% if cfm.entry_container %}
-            <a href="{{ cfm.entry_container.get_absolute_url() }}">
-                <span class="cslav">
-                    {{ cfm.entry_container.orth_vars.0.idem_ucs }}
-                </span>
-                {% if cfm.entry_container.homonym_order %}
-                    <sup class="homonym-number">{{ cfm.entry_container.homonym_order }}</sup>
-                {% endif %}
-            </a>
-        {% endif %}
-        {% if cfm.collogroup_container %}
-            <span class="cslav">
-                {{ cfm.collogroup_container.collocations.0.collocation_ucs }}
-            </span>
-        {% endif %}
-        {{ space }}<i>знач.</i>{{ space }}{{ cfm.order }}
-    {% endfor %}
-
-    {% for cfe in m.cfentries %}
-        {{ comma() }}
-        <a href="{{ cfe.get_absolute_url() }}">
-            <span class="cslav">
-                {{ cfe.orth_vars.0.idem_ucs }}
-            </span>
-            {% if cfe.homonym_order %}
-                <sup class="homonym-number">{{ cfe.homonym_order }}</sup>
-            {% endif %}
-        </a>
-    {% endfor %}
-
-    {% for cfcg in m.cfcollogroups %}
-        {{ comma() }}
-        <span class="cslav">
-            {{ cfcg.collocations.0.collocation_ucs }}
-        </span>
-    {% endfor %}
-
-{% endif %}
-
-
-{% if show_additional_info and m.additional_info %}
-    {{ space }}
-    <span class="ai ai-meaning">{{ m.additional_info }}</span>
-{% endif %}
-
 
 {% if m.examples %}
-    {{ backspace }}&nbsp;&mdash;{{ space }}
+    {{ backspace }}:{{ space }}
 {% endif %}
-
 
 {% for e in m.examples %}
     {{ example(e, examples_loop=loop, peer_meanings_loop=peer_meanings_loop) }}

@@ -13,4 +13,3 @@
 </entry>
 
 {# vim: set ft=django.xml: #}
-{% endtrim %}

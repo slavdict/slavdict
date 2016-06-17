@@ -1,6 +1,6 @@
 {% macro example(e, examples_loop, peer_meanings_loop) %}
 
-<span class="entry-example">{{ e.example_ucs|cslav_words }}</span>
+<example>{{ e.example_ucs|ind_cslav_words }}</example>
 {{ space }}
 
 
@@ -14,13 +14,13 @@
             {{ backspace }}{{ COMMA() }}{{ space }}
         {% endif %}
 
-        <span class="unigrec{% if ge.corrupted %} cinnabar{% endif %}">{{ ge.unitext }}</span>
+        <greek>{{ ge.unitext }}</greek>
         {{ space }}
 
         {% for x in (ge.mark, ge.source, ge.note)|reject('equalto', '') %}
 
             {% if loop.first %}
-                <span>[</span>
+                <text>[</text>
             {% else %} {{ backspace }},{{ space }}
             {% endif %}
 
@@ -28,7 +28,7 @@
             {{ space }}
 
             {% if loop.last %}
-                {{ backspace }}<span>]</span>{{ space }}
+                {{ backspace }}<text>]</text>{{ space }}
             {% endif %}
 
         {% endfor %}
@@ -39,11 +39,11 @@
 
 {% if e.note %}
     {{ space }}
-    <i>{{ e.note|cslav_injection }}</i>
+    <example-note>{{ e.note|cslav_injection }}</example-note>
 {% endif %}
 
 {% if e.address_text %}
-    <span class="example-address">
+    <address>
         {{ e.address_text|cslav_injection }}
         {% if not examples_loop.last %}
             {{ backspace }};{{ space }}
@@ -54,7 +54,7 @@
                 {{ backspace }};{{ space }}
             {% endif %}
         {% endif %}
-    </span>
+    </address>
 {% endif %}
 
 
