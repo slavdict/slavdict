@@ -208,8 +208,10 @@ def indesign_cslav_words(value):
             if left:
                 parts.append(CSL_TAG % left)
 
-            center = re.sub(RE_DOTS, TEXT_TAG % u'…', center)
             center = re.sub(RE_BRACES_SLASH, TEXT_TAG % u'\g<0>', center)
+            # NOTE: Замена точек должна происходить после замены скобок
+            # и слэшей, поскольку сам TEXT_TAG содержит слэш.
+            center = re.sub(RE_DOTS, TEXT_TAG % u'…', center)
             parts.append(center)
 
             segment = right
