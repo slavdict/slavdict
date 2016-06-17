@@ -45,16 +45,20 @@
 {% if e.address_text %}
     <address>
         {{ e.address_text|cslav_injection }}
+    </address>
+    <text>
         {% if not examples_loop.last %}
-            {{ backspace }};{{ space }}
+            {{ backspace }};
         {% else %}
             {% if peer_meanings_loop.last or not parent_meanings_loop %}
-                {{ backspace }}{{ onlyDot }}{{ space }}
+                {{ backspace }}{{ onlyDot }}
             {% else %}
-                {{ backspace }};{{ space }}
+                {{ backspace }};
             {% endif %}
         {% endif %}
-    </address>
+    </text>
+    {{ space }}
+
 {% endif %}
 
 

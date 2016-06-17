@@ -9,7 +9,7 @@
             <homonym-number>{{ entry.homonym_order }}</homonym-number>
         {% endif %}
 
-    </p>{{ newline }}
-</entry>
+    </p>
+</entry>{{ newline }}
 
 {# vim: set ft=django.xml: #}

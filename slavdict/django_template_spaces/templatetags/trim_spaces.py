@@ -103,27 +103,37 @@ from coffin import template
 from slavdict.dictionary.models import ucs_convert
 
 register = template.Library()
+BACKSPACE = u'\u0008'
 EXCLAM = u'\u1991'
+NBSP = u'\uEEA0'
+NEWLINE = u'\uEEEE'
+ONLYDOT = u'\u1902'
+PUNCT = u'\u1900'
+SPACE = u'\u0007'
+SPACES = SPACE + NBSP + NEWLINE
 
 def strip_spaces_between_tags_and_text(value):
     value = re.sub(ur'>\s+', u'>', force_unicode(value.strip()))
     value = re.sub(ur'\s+<', u'<', value)
-    # {{ space }}
-    value = re.sub(u'\u0007', u' ', value)
     # {{ backspace }}
-    #  Звёздочка вместо плюса нужна, чтобы \u0008 (backspace) были удалены
-    #  в любом случае независимо от того, предшествует им пробел или нет.
-    value = re.sub(ur'((\s)|(&nbsp;))*\u0008', u'', value)
+    # Звёздочка вместо плюса нужна, чтобы backspace'ы были удалены
+    # в любом случае независимо от того, предшествует им пробел или нет.
+    value = re.sub(ur'([\s{spaces}]|&nbsp;)*{backspace}'.format(
+                           spaces=SPACES, backspace=BACKSPACE), u'', value)
     # {{ punct }}
-    value = re.sub(ur'\u1900(<[^>]+>)([\.,:;\!\?])', ur'\1\2', value)
-    value = re.sub(ur'\u1900', u' ', value)
+    value = re.sub(PUNCT + ur'(<[^>]+>)([\.,:;\!\?])', ur'\1\2', value)
+    value = re.sub(PUNCT, u' ', value)
+    # {{ ! }}
     value = re.sub(EXCLAM, u'', value)
-    value = re.sub(ur'([\.…])((\s)|(&nbsp;))*\u1902', ur'\1', value)
-    value = re.sub(ur'((\s)|(&nbsp;))*\u1902', ur'.', value)
+    # {{ onlyDot }}
+    value = re.sub(ur'([\.…])((\s)|(&nbsp;))*' + ONLYDOT, ur'\1', value)
+    value = re.sub(ur'((\s)|(&nbsp;))*' + ONLYDOT, ur'.', value)
     # {{ newline }}
-    value = re.sub(u'\uEEEE', u'\n', value)
+    value = re.sub(NEWLINE, u'\n', value)
     # {{ nbsp }}
-    value = re.sub(u'\uEEA0', u'\u00A0', value)
+    value = re.sub(NBSP, u'\u00A0', value)
+    # {{ space }}
+    value = re.sub(SPACE, u' ', value)
     return value
 strip_spaces_between_tags_and_text = allow_lazy(strip_spaces_between_tags_and_text, unicode)
 
@@ -143,18 +153,14 @@ class TrimExtension(Extension):
         return strip_spaces_between_tags_and_text(caller().strip())
 
     def preprocess(self, source, name, filename=None):
-        # {{ space }}
-        source = re.sub(ur'{{\s*space\s*}}', ur'\u0007', source)
-        # {{ backspace }}
-        source = re.sub(ur'{{\s*backspace\s*}}', ur'\u0008', source)
-        # {{ punct }}
-        source = re.sub(ur'{{\s*punct\s*}}', ur'\u1900', source)
-        # {{ ! }}
+        source = re.sub(ur'{{\s*space\s*}}', SPACE, source)
+        source = re.sub(ur'{{\s*backspace\s*}}', BACKSPACE, source)
+        source = re.sub(ur'{{\s*punct\s*}}', PUNCT, source)
         source = re.sub(ur'{{\s*!\s*}}', EXCLAM, source)
-        # {{ onlyDot }}
-        source = re.sub(ur'{{\s*onlyDot\s*}}', ur'\u1902', source)
-        # {{ nbsp }}
-        source = re.sub(ur'{{\s*nbsp\s*}}', ur'\uEEA0', source)
+        source = re.sub(ur'{{\s*onlyDot\s*}}', ONLYDOT, source)
+        source = re.sub(ur'{{\s*nbsp\s*}}', NBSP, source)
+        source = re.sub(ur'{{\s*newline\s*}}', NEWLINE, source)
+
         # {{ nbhyphen }}
         source = re.sub(ur'{{\s*nbhyphen\s*}}', ur'\u2011', source)
         # {{ softhyphen }}
@@ -162,8 +168,6 @@ class TrimExtension(Extension):
         # {{ wj }}, {{ zwnbsp }}
         source = re.sub(ur'{{\s*wj\s*}}', ur'\u2060', source)
         source = re.sub(ur'{{\s*zwnbsp\s*}}', ur'\u2060', source)
-        # {{ newline }}
-        source = re.sub(ur'{{\s*newline\s*}}', ur'\uEEEE', source)
         return source
 
 trim = TrimExtension
