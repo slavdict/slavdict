@@ -3,6 +3,7 @@ SHELL = /bin/bash
 GITWORKTREE = /var/www/slavdict
 GITDIR = /home/git/slavdict.www
 SETTINGS_FILE = slavdict/settings.py
+DATE_TIME := $(shell date +%Y-%m-%d--%H-%M)
 
 SLAVDICT_ENVIRONMENT ?= production
 IS_PRODUCTION = test ${SLAVDICT_ENVIRONMENT} = production || (echo "Окружение не является боевым" && exit 1)
@@ -13,7 +14,7 @@ JSLIBS_VERSION_FILE := ${JSLIBS_PATH}version.txt
 JSLIBS_NEW_VERSION := $(shell python ${SETTINGS_FILE} --jslibs-version)
 JSLIBS_OLD_VERSION := $(shell cat ${JSLIBS_VERSION_FILE} 2>/dev/null)
 
-restart: stop checkout collectstatic fixown migrate start
+restart: stop copydiff destroy_loc_changes checkout collectstatic fixown migrate start
 
 run: collectstatic
 	@echo "Запуск сервера в тестовом окружении..."
@@ -28,6 +29,16 @@ stop:
 
 start:
 	sudo /etc/init.d/cherokee start
+
+copydiff:
+	@$(IS_PRODUCTION)
+	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
+		diff --no-color >/root/slavdict-local-changes-${DATE_TIME}.diff
+
+destroy_loc_changes:
+	@$(IS_PRODUCTION)
+	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
+		reset --hard HEAD
 
 checkout:
 	@$(IS_PRODUCTION)
@@ -76,9 +87,11 @@ scp:
 	ssh dilijnt0 chown -R www-data:www-is /var/www/slavdict/templates/indesign/
 
 .PHONY: \
+    destroy_loc_changes \
     checkout \
     clean \
     collectstatic \
+    copydiff \
     fixown \
     jslibs \
     migrate \
