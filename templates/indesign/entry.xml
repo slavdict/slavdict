@@ -1,9 +1,10 @@
 {% trim %}
 
-{% from '_etymology.xml'   import etymology    with context %}
-{% from '_meaning_without_children.xml' import meaning with context %}
+{% from 'indesign/etymology.xml'   import etymology    with context %}
+{% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
 <entry>
+    <p aid:pstyle="FirstParagraph">
 
     {% for base_var in entry.base_vars %}
 
@@ -19,7 +20,7 @@
         {% endif %}
         {{ space }}
 
-        {% for var in base_var.children %}
+        {% for var in base_var.childvars %}
 
             {% if loop.first %}
                 {{ space }}<text>(</text>
@@ -144,27 +145,26 @@
             <meaning-number>{{ mnumber }}.</meaning-number>{{ space }}
         {% endif %}
 
-        {% include '_meaning_with_children.xml' with context %}
+        {% include 'indesign/meaning_with_children.xml' with context %}
 
         {% for cg in m.collogroups %}
-            {% include '_collogroup.xml' %}
+            {% include 'indesign/collogroup.xml' %}
         {% endfor %}
     {% endfor %}
 
 
     {% for m in entry.metaph_meanings %}
-        <litsym>♢</litsym>{# U+2662 #}
-        {{ nbsp }}
+        {% include 'indesign/litsym.xml' %}
         {{ meaning(m, peer_meanings_loop=loop,
                       parent_meanings_loop=none,
                       child_meanings=none) }}
         {% for cg in m.collogroups %}
-            {% include '_collogroup.xml' %}
+            {% include 'indesign/collogroup.xml' %}
         {% endfor %}
     {% endfor %}
 
     {% for cg in entry.collogroups %}
-        {% include '_collogroup.xml' %}
+        {% include 'indesign/collogroup.xml' %}
     {% endfor %}
 
 
@@ -194,6 +194,7 @@
         {{ backspace }}<text>.</text>
     {% endif %}
 
+    </p>{{ newline }}
 </entry>
 
 {# vim: set ft=django.xml: #}

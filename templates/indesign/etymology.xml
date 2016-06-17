@@ -26,4 +26,4 @@
 
 {% endmacro %}
 
-{# vim: set ft=htmldjango: #}
+{# vim: set ft=django.xml: #}

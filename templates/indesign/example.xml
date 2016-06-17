@@ -33,11 +33,6 @@
 
         {% endfor %}
 
-        {% if ADDITIONAL_INFO %}
-            <span class="ai ai-grfex">{{ ge.additional_info }}</span>
-        {% endif %}
-
-
     {% endfor %}
 
 {% endif %}
@@ -60,29 +55,8 @@
             {% endif %}
         {% endif %}
     </span>
-{% else %}
-    {% if show_additional_info %}
-        <span class="noaddress">Нет адреса!</span>
-    {% endif %}
 {% endif %}
 
-{% if show_additional_info and e.additional_info %}
-    {{ space }}
-    <span class="ai ai-example">{{ e.additional_info }}</span>
-    {{ space }}
-{% endif %}
-
-
-
-{% if intermed %}
-
-    <span class="edit-controls">
-        <a href="{% url 'UI:dictionary_example_change' e.id %}">
-            <img src="{{ STATIC_URL }}pen.png" alt="" />
-        </a>
-    </span>
-
-{% endif %}
 
 {% endmacro %}
-{# vim: set ft=django.html: #}
+{# vim: set ft=django.xml: #}

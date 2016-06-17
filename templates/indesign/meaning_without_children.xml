@@ -1,5 +1,5 @@
 {% macro meaning(m, peer_meanings_loop, parent_meanings_loop, child_meanings) %}
-{% from '_example.html' import example with context %}
+{% from 'indesign/example.xml' import example with context %}
 
 {% if m.contexts %}
     {% for mc in m.contexts %}
@@ -33,10 +33,10 @@
 {% endif %}
 
 {% if m.substantivus %}
-    <i>в&nbsp;роли сущ.</i>
+    <i>в{{ nbsp }}роли сущ.</i>
     {{ space }}
     {% if m.substantivus_type %}
-        <i>({{ m.get_substantivus_type_display() }})</i>{{ space }}
+        <i>{{ m.get_substantivus_type_display() }}</i>{{ space }}
     {% endif %}
 {% endif %}
 
@@ -55,7 +55,7 @@
         {{ backspace }},{{ space }}
     {% endif %}
 
-    <i>греч.</i>&nbsp;
+    <i>греч.</i>{{ nbsp }}
 
     {% for ge in m.greek_equivs %}
 
@@ -200,40 +200,9 @@
 
 
 {% for e in m.examples %}
-    {% if intermed %}<div style="margin-top: 10px;">{% endif %}
     {{ example(e, examples_loop=loop, peer_meanings_loop=peer_meanings_loop) }}
-    {% if intermed %}</div>{% endif %}
 {% endfor %}
 
 
-{% if intermed %}
-
-    <div class="edit-controls">
-
-        <div>
-            <a href="{% if user.is_admeditor %}{% url 'admin:dictionary_meaning_change' m.pk %}{% else %}{% url 'UI:dictionary_meaning_change' m.pk %}{% endif %}">
-                <img src="{{ STATIC_URL }}pen.png" alt="" />
-                {{ space }}
-                Редактировать
-                {% if not m.parent_meaning %}
-                    значение {% if mnumber %}№&nbsp;{{ mnumber }}{% endif %}
-                {% else %}
-                    метафорическое употребление или группу примеров
-                {% endif %}
-            </a>
-        </div>
-
-        <div>
-            <a href="{% if user.is_admeditor %}{% url 'admin:dictionary_example_add' %}{% else %}{% url 'UI:dictionary_example_add' %}{% endif %}?meaning={{ m.id }}">
-                <img src="{{ STATIC_URL }}plus.png" alt="" />
-                {{ space }}
-                Добавить пример
-            </a>
-        </div>
-
-    </div>
-
-{% endif %}
-
 {% endmacro %}
-{# vim: set ft=django.html: #}
+{# vim: set ft=django.xml: #}

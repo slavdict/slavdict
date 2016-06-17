@@ -1,0 +1,33 @@
+{% from 'indesign/meaning_without_children.xml' import meaning with context %}
+
+{% for c in cg.collocations %}
+
+        {{ c.collocation_ucs|cslav_words }}
+        {{ space }}
+
+        {% if not loop.last %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+
+{% endfor %}
+
+
+{% set mnumber = '' %}
+
+{% for m in cg.meanings %}
+    {% if cg.meanings|length != 1 %}
+        {{ loop.index }}.{{ space }}
+    {% endif %}
+    {% include 'indesign/meaning_with_children.xml' %}
+{% endfor %}
+
+
+{% for m in cg.metaph_meanings %}
+
+    {% include 'indesign/litsym.xml' %}
+    {{ meaning(m, peer_meanings_loop=loop,
+                  parent_meanings_loop=none,
+                  child_meanings=none) }}
+{% endfor %}
+
+{# vim: set ft=django.xml: #}

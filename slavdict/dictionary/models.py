@@ -1320,6 +1320,10 @@ class OrthographicVariant(models.Model):
                        null=True)
     parent = ForeignKey('self', related_name='children', blank=True, null=True)
 
+    @property
+    def childvars(self):
+        return self.children.all()
+
     # сам орфографический вариант
     idem = CharField(u'написание', max_length=50)
     use = CharField(u'использование', max_length=50, help_text=u'''

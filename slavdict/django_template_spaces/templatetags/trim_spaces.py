@@ -88,6 +88,8 @@ U+2060. В стандарте Юникод ZWNBSP это U+FEFF, который 
 BOM. Начиная с версии 3.2 использование позиции U+FEFF как ZWNBSP объявлено
 устаревшим и в этой ф-ции надо использовать WJ (U+2060).
 
+{{ newline }} -- конец абзаца и начало нового.
+
 """
 import re
 
@@ -118,6 +120,8 @@ def strip_spaces_between_tags_and_text(value):
     value = re.sub(EXCLAM, u'', value)
     value = re.sub(ur'([\.…])((\s)|(&nbsp;))*\u1902', ur'\1', value)
     value = re.sub(ur'((\s)|(&nbsp;))*\u1902', ur'.', value)
+    # {{ newline }}
+    value = re.sub(u'\uEEEE', '\n', value)
     return value
 strip_spaces_between_tags_and_text = allow_lazy(strip_spaces_between_tags_and_text, unicode)
 
@@ -156,6 +160,8 @@ class TrimExtension(Extension):
         # {{ wj }}, {{ zwnbsp }}
         source = re.sub(ur'{{\s*wj\s*}}', ur'\u2060', source)
         source = re.sub(ur'{{\s*zwnbsp\s*}}', ur'\u2060', source)
+        # {{ newline }}
+        source = re.sub(ur'{{\s*newline\s*}}', ur'\uEEEE', source)
         return source
 
 trim = TrimExtension
