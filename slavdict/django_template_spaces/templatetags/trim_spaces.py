@@ -88,6 +88,8 @@ U+2060. В стандарте Юникод ZWNBSP это U+FEFF, который 
 BOM. Начиная с версии 3.2 использование позиции U+FEFF как ZWNBSP объявлено
 устаревшим и в этой ф-ции надо использовать WJ (U+2060).
 
+{{ newline }} -- конец абзаца и начало нового.
+
 """
 import re
 
@@ -118,6 +120,10 @@ def strip_spaces_between_tags_and_text(value):
     value = re.sub(EXCLAM, u'', value)
     value = re.sub(ur'([\.…])((\s)|(&nbsp;))*\u1902', ur'\1', value)
     value = re.sub(ur'((\s)|(&nbsp;))*\u1902', ur'.', value)
+    # {{ newline }}
+    value = re.sub(u'\uEEEE', u'\n', value)
+    # {{ nbsp }}
+    value = re.sub(u'\uEEA0', u'\u00A0', value)
     return value
 strip_spaces_between_tags_and_text = allow_lazy(strip_spaces_between_tags_and_text, unicode)
 
@@ -148,7 +154,7 @@ class TrimExtension(Extension):
         # {{ onlyDot }}
         source = re.sub(ur'{{\s*onlyDot\s*}}', ur'\u1902', source)
         # {{ nbsp }}
-        source = re.sub(ur'{{\s*nbsp\s*}}', ur'\u00A0', source)
+        source = re.sub(ur'{{\s*nbsp\s*}}', ur'\uEEA0', source)
         # {{ nbhyphen }}
         source = re.sub(ur'{{\s*nbhyphen\s*}}', ur'\u2011', source)
         # {{ softhyphen }}
@@ -156,6 +162,8 @@ class TrimExtension(Extension):
         # {{ wj }}, {{ zwnbsp }}
         source = re.sub(ur'{{\s*wj\s*}}', ur'\u2060', source)
         source = re.sub(ur'{{\s*zwnbsp\s*}}', ur'\u2060', source)
+        # {{ newline }}
+        source = re.sub(ur'{{\s*newline\s*}}', ur'\uEEEE', source)
         return source
 
 trim = TrimExtension

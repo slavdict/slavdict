@@ -379,7 +379,8 @@ class AdminEntry(admin.ModelAdmin):
     )
     fieldsets = (
         (None, {
-            'fields': (('reconstructed_headword', 'questionable_headword'),),
+            'fields': (('untitled_exists', 'reconstructed_headword',
+                'questionable_headword'),),
             }),
         (None, {
             'fields': ('civil_equivalent',),
@@ -433,6 +434,8 @@ class AdminEntry(admin.ModelAdmin):
     list_display = (
         'civil_inv',
         'headword',
+        'untitled_exists',
+        'part_of_speech',
         'genitive',
         'short_form',
         'sg1',
@@ -455,6 +458,8 @@ class AdminEntry(admin.ModelAdmin):
         'participle_type',
         )
     list_editable = (
+        'untitled_exists',
+        'part_of_speech',
         'genitive',
         'short_form',
         'sg1',
@@ -467,7 +472,7 @@ class AdminEntry(admin.ModelAdmin):
     # См. http://code.djangoproject.com/ticket/15839
 
     filter_horizontal = ('cf_entries', 'cf_collogroups', 'cf_meanings')
-    ordering = ('civil_inverse',)
+    ordering = ('civil_equivalent',)#'civil_inverse',)
     save_on_top = True
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     class Media:

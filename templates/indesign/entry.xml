@@ -1,9 +1,10 @@
 {% trim %}
 
-{% from '_etymology.xml'   import etymology    with context %}
-{% from '_meaning_without_children.xml' import meaning with context %}
+{% from 'indesign/etymology.xml'   import etymology    with context %}
+{% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
 <entry>
+    <p aid:pstyle="FirstParagraph">
 
     {% for base_var in entry.base_vars %}
 
@@ -19,7 +20,7 @@
         {% endif %}
         {{ space }}
 
-        {% for var in base_var.children %}
+        {% for var in base_var.childvars %}
 
             {% if loop.first %}
                 {{ space }}<text>(</text>
@@ -138,166 +139,63 @@
     {% endif %}
 
 
-    {# <<<<<<<<<<<<<<< #}
-
-
-    {% if entry.link_to_entry or entry.link_to_collogroup or entry.link_to_meaning %}
-    <div>
-        <i>см.</i>
-        {{ space }}
-
-        {% if entry.link_to_meaning %}
-                {% set eltm = entry.link_to_meaning %}
-                {% if eltm.entry_container %}
-                    <a href="{{ eltm.entry_container.get_absolute_url() }}">
-                        <span class="cslav">
-                            {{ eltm.entry_container.orth_vars.0.idem_ucs }}
-                        </span>
-                        {% if eltm.entry_container.homonym_order %}
-                            <sup class="homonym-number">{{ eltm.entry_container.homonym_order }}</sup>
-                        {% endif %}
-                    </a>
-                {% endif %}
-                {% if eltm.collogroup_container %}
-                    <span class="cslav">
-                        {{ eltm.collogroup_container.collocations.0.collocation_ucs }}
-                    </span>
-                {% endif %}
-                {{ space }}<i>знач.</i>{{ space }}{{ eltm.order }}
-        {% endif %}
-
-        {% if entry.link_to_entry %}
-            <a href="{{ entry.link_to_entry.get_absolute_url() }}">
-                <span class="cslav">
-                    {{ entry.link_to_entry.orth_vars.0.idem_ucs }}
-                </span>
-                {% if entry.link_to_entry.homonym_order %}
-                    <sup class="homonym-number">{{ entry.link_to_entry.homonym_order }}</sup>
-                {% endif %}
-            </a>
-        {% endif %}
-
-        {% if entry.link_to_collogroup %}
-            <span class="cslav">
-                {{ entry.link_to_collogroup.collocations.0.collocation_ucs }}
-            </span>
-        {% endif %}
-    </div>
-    {% endif %}
-
-
-    {% if entry.cfentries or entry.cfcollogroups or entry.cfmeanings %}
-    <div>
-        <i>ср.&nbsp;</i>
-
-        {% for cfm in entry.cfmeanings %}
-            {% if not loop.first %}
-                {{ backspace }},{{ space }}
-            {% endif %}
-            {% if cfm.entry_container %}
-                <a href="{{ cfm.entry_container.get_absolute_url() }}">
-                    <span class="cslav">
-                        {{ cfm.entry_container.orth_vars.0.idem_ucs }}
-                    </span>
-                    {% if cfm.entry_container.homonym_order %}
-                        <sup class="homonym-number">{{ cfm.entry_container.homonym_order }}</sup>
-                    {% endif %}
-                </a>
-            {% endif %}
-            {% if cfm.collogroup_container %}
-                <span class="cslav">
-                    {{ cfm.collogroup_container.collocations.0.collocation_ucs }}
-                </span>
-            {% endif %}
-            {{ space }}<i>знач.</i>{{ space }}{{ cfm.order }}
-        {% endfor %}
-
-        {% for cfe in entry.cfentries %}
-            {% if not loop.first or entry.cfmeanings %}
-                {{ backspace }},{{ space }}
-            {% endif %}
-            <a href="{{ cfe.get_absolute_url() }}">
-                <span class="cslav">
-                    {{ cfe.orth_vars.0.idem_ucs }}
-                </span>
-                {% if cfe.homonym_order %}
-                    <sup class="homonym-number">{{ cfe.homonym_order }}</sup>
-                {% endif %}
-            </a>
-        {% endfor %}
-
-        {% for cfcg in entry.cfcollogroups %}
-            {% if not loop.first or entry.cfmeanings or entry.cfentries %}
-                ,{{ space }}
-            {% endif %}
-            <span class="cslav">
-                {{ cfcg.collocations.0.collocation_ucs }}
-            </span>
-        {% endfor %}
-
-    </div>
-    {% endif %}
-
-
     {% for m in entry.meanings %}
-
-        <div class="eM--meaning">
-            {% set mnumber = loop.index %}
-
-            {% if not entry.meanings|length == 1 %}
-                <b>{{ mnumber }}</b>.{{ space }}
-            {% endif %}
-
-            {% include '_meaning_with_children.html' with context %}
-
-        </div>
-
-
-        {% if m.collogroups %}
-            <div class="entry-collogroups">
-                {% for cg in m.collogroups %}
-                    {% include '_collogroup.html' %}
-                {% endfor %}
-            </div>
+        {% set mnumber = loop.index %}
+        {% if not entry.meanings|length == 1 %}
+            <meaning-number>{{ mnumber }}.</meaning-number>{{ space }}
         {% endif %}
 
+        {% include 'indesign/meaning_with_children.xml' with context %}
 
+        {% for cg in m.collogroups %}
+            {% include 'indesign/collogroup.xml' %}
+        {% endfor %}
     {% endfor %}
 
 
     {% for m in entry.metaph_meanings %}
-
-        <div class="eM--meaning">
-
-            <span style="color: #777;">►</span>
-            {{ space }}
-            {{ meaning(m, peer_meanings_loop=loop,
-                          parent_meanings_loop=none,
-                          child_meanings=none) }}
-
-
-
-        </div>
-
-        {% if m.collogroups %}
-            <div class="entry-collogroups">
-                {% for cg in m.collogroups %}
-                    {% include '_collogroup.html' %}
-                {% endfor %}
-            </div>
-        {% endif %}
-
+        {% include 'indesign/litsym.xml' %}
+        {{ meaning(m, peer_meanings_loop=loop,
+                      parent_meanings_loop=none,
+                      child_meanings=none) }}
+        {% for cg in m.collogroups %}
+            {% include 'indesign/collogroup.xml' %}
+        {% endfor %}
     {% endfor %}
 
-    {% if entry.collogroups %}
-        <div class="entry-collogroups">
-            {% for cg in entry.collogroups %}
-                {% include '_collogroup.html' %}
-            {% endfor %}
-        </div>
+    {% for cg in entry.collogroups %}
+        {% include 'indesign/collogroup.xml' %}
+    {% endfor %}
+
+
+    {% if entry.cfentries or entry.cfcollogroups %}
+        <i>—Ср.{{ nbsp }}</i>
+
+        {% for cfe in entry.cfentries %}
+
+            {% if not loop.first and
+                    not (loop.last and not entry.cfcollogroups) %}
+                {{ backspace }}<text>,</text>{{ space }}
+            {% endif %}
+
+            <csl>{{ cfe.orth_vars.0.idem_ucs|ind_cslav_words }}</csl>
+
+            {% if cfe.homonym_order %}
+                <homonym-number>{{ cfe.homonym_order }}</homonym-number>
+            {% endif %}
+        {% endfor %}
+
+        {% for cfcg in entry.cfcollogroups %}
+            {% if (not loop.first or entry.cfentries) and not loop.last %}
+                {{ backspace }}<text>,</text>{{ space }}
+            {% endif %}
+            <csl>{{ cfcg.collocations.0.collocation_ucs|ind_cslav_words }}</csl>
+        {% endfor %}
+        {{ backspace }}<text>.</text>
     {% endif %}
 
+    </p>{{ newline }}
 </entry>
 
-{# vim: set ft=django.html: #}
+{# vim: set ft=django.xml: #}
 {% endtrim %}

@@ -117,6 +117,7 @@ PART_OF_SPEECH_CHOICES = (
     ('j', u'межд.'),
     ('k', u'[число]'),
     ('l', u'[буква]'),
+    ('m', u'прич.-прил.'),
 )
 PART_OF_SPEECH_MAP = {
     'noun': 'a',
@@ -131,6 +132,7 @@ PART_OF_SPEECH_MAP = {
     'interjection': 'j',
     'number': 'k',
     'letter': 'l',
+    'participle-adjective': 'm',
 }
 
 TANTUM_CHOICES = (
@@ -266,12 +268,12 @@ LANGUAGE_TRANSLIT_CSS = {
 
 NBSP = u'\u00A0'  # неразрывный пробел
 SUBSTANTIVUS_TYPE_CHOICES = (
-    ('a', u'с.' + NBSP + 'ед.'),
-    ('b', u'с.' + NBSP + 'мн.'),
-    ('c', u'м.' + NBSP + 'ед.'),
-    ('d', u'м.' + NBSP + 'мн.'),
-    ('e', u'ж.' + NBSP + 'ед.'),
-    ('f', u'ж.' + NBSP + 'мн.'),
+    ('a', u'с.' + NBSP + u'ед.'),
+    ('b', u'с.' + NBSP + u'мн.'),
+    ('c', u'м.' + NBSP + u'ед.'),
+    ('d', u'м.' + NBSP + u'мн.'),
+    ('e', u'ж.' + NBSP + u'ед.'),
+    ('f', u'ж.' + NBSP + u'мн.'),
 )
 SUBSTANTIVUS_TYPE_MAP = {
     'n.sg.': 'a',
@@ -309,6 +311,10 @@ class Entry(models.Model):
 
     questionable_headword = BooleanField(u'''Реконструкция заглавного слова
             вызывает сомнения''', default=False)
+
+    untitled_exists = BooleanField(u'''Вариант без титла представлен
+            в текстах''', default=False)
+
 
     hidden = BooleanField(u'Скрыть лексему', help_text=u'''Не отображать лексему
             в списке словарных статей.''', default=False, editable=False)
@@ -1319,6 +1325,10 @@ class OrthographicVariant(models.Model):
     entry = ForeignKey(Entry, related_name='orthographic_variants', blank=True,
                        null=True)
     parent = ForeignKey('self', related_name='children', blank=True, null=True)
+
+    @property
+    def childvars(self):
+        return self.children.all()
 
     # сам орфографический вариант
     idem = CharField(u'написание', max_length=50)

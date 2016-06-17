@@ -111,32 +111,46 @@ def sort_key(word):
 
 
 
-from slavdict.dictionary.models import Entry, OrthographicVariant
+from slavdict.dictionary.models import Entry
 
-#entries = [e for e in Entry.objects.all()
-#             if e.orth_vars[0].idem.startswith((u'а', u'А', u'б', u'Б'))]
-#entries = [(e, render_to_string('indesign/entry.xml', {'entry': e}).strip())
-#           for e in entries]
-#entries.sort(key=lambda x: x[0].orth_vars[0].idem)
-#
-#for e, _ in entries:
-#    if e.orth_vars_refs[1:] or e.nom_sg or e.participles:
-#
-#        text = e.orth_vars_refs[0].idem
-#        print text.encode('utf-8')
-#
-#        orthvars = [o.idem for o in e.orth_vars_refs[1:]]
-#        participles = [p.idem for p in e.participles]
-#        nom_sg = [e.nom_sg] if e.nom_sg else []
-#        text = u'    %s\n' % u' '.join(orthvars + nom_sg + participles)
-#        print text.encode('utf-8')
+entries = []
+lexemes = [e for e in Entry.objects.all()
+             if e.orth_vars[0].idem.startswith((u'а', u'А', u'б', u'Б'))]
 
-entries = [ov.idem for ov in OrthographicVariant.objects.all()] + \
-          [e.nom_sg for e in Entry.objects.all() if e.nom_sg] + \
-          [p.idem for e in Entry.objects.all() for p in e.participles] + \
-          [e.short_form for e in Entry.objects.all() if e.short_form]
-entries.sort(key=sort_key)
-for e in entries:
-    print e.encode('utf-8')
+for lexeme in lexemes:
+
+    wordform = lexeme.orth_vars[0].idem
+    reference = None
+    entries.append((wordform, reference, lexeme))
+
+    # Варианты
+    for var in lexeme.orth_vars_refs[1:]:
+        wordform = var.idem
+        reference = var.idem_ucs
+        entries.append((wordform, reference, lexeme))
+
+    # Названия народов
+    if lexeme.nom_sg:
+        wordform = lexeme.nom_sg
+        reference = lexeme.nom_sg_ucs_wax[1]
+        entries.append((wordform, reference, lexeme))
+
+    # Краткие формы
+    #if lexeme.short_form:
+    #    wordform = lexeme.short_form
+    #    reference = lexeme.short_form_ucs
+    #    entries.append((wordform, reference, lexeme))
+
+    # Причастия
+    for participle in lexeme.participles:
+        wordform = participle.idem
+        reference = participle.idem_ucs
+        entries.append((wordform, reference, lexeme))
+
+entries.sort(key=lambda (wordform, reference, lexeme):sort_key(wordform))
+entries = [(reference, lexeme) for wordform, reference, lexeme in entries]
+
+xml = render_to_string('indesign/slavdict.xml', {'entries': entries})
+sys.stdout.write(xml.encode('utf-8'))
 
 sys.exit(0)

@@ -1,0 +1,15 @@
+<entry>
+    <p aid:pstyle="FirstParagraph">
+
+        <headword>{{ reference }}</headword>
+        {{ space }}
+        <i>см.<i>
+        <csl>{{ entry.base_vars.0 }}</csl>
+        {% if entry.homonym_order %}
+            <homonym-number>{{ entry.homonym_order }}</homonym-number>
+        {% endif %}
+
+    </p>{{ newline }}
+</entry>
+
+{# vim: set ft=django.xml: #}

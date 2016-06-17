@@ -1,0 +1,70 @@
+{% macro meaning(m, peer_meanings_loop, parent_meanings_loop, child_meanings) %}
+{% from 'indesign/example.xml' import example with context %}
+
+{% if m.contexts %}
+    {% for mc in m.contexts %}
+
+        {% if loop.first %}
+            <meaning-context>
+            [
+        {% endif %}
+
+        {% if mc.left_text %}
+            <i>{{ mc.left_text }}</i>
+            {{ space }}
+        {% endif %}
+
+        {% if mc.context %}
+            <csl>{{ mc.context_ucs }}</csl>
+            {{ space }}
+        {% endif %}
+
+        {% if mc.right_text %}
+            <i>{{ mc.right_text }}</i>
+        {% endif %}
+
+        {% if not loop.last %}
+            {{ backspace }},{{ space }}
+        {% else %}
+            {{ backspace }}]</meaning-context>{{ space }}
+        {% endif %}
+
+    {% endfor %}
+{% endif %}
+
+{% if m.substantivus %}
+    <i>в{{ nbsp }}роли сущ.</i>
+    {{ space }}
+    {% if m.substantivus_type %}
+        <i>{{ m.get_substantivus_type_display() }}</i>{{ space }}
+    {% endif %}
+{% endif %}
+
+
+{% if m.figurative %}
+    <i>перен.</i>{{ space }}
+{% endif %}
+
+{% if m.meaning %}
+    <meaning>{{ m.meaning|cslav_injection }}</meaning>
+{% endif %}
+
+{% if m.gloss %}
+    {% if m.meaning or m.greek_equivs %}
+        {{ backspace }};{{ space }}
+    {% endif %}
+    <gloss>{{ m.gloss|cslav_injection }}</gloss>
+    {{ space }}
+{% endif %}
+
+{% if m.examples %}
+    {{ backspace }}:{{ space }}
+{% endif %}
+
+{% for e in m.examples %}
+    {{ example(e, examples_loop=loop, peer_meanings_loop=peer_meanings_loop) }}
+{% endfor %}
+
+
+{% endmacro %}
+{# vim: set ft=django.xml: #}
