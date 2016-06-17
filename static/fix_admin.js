@@ -28,6 +28,22 @@
             };
         }
 
+        /* Меняем заголовок в списке лексем для колонки с флажками,
+         * указывающими представлен ли вариант без титла в текстах или нет */
+        $('.column-untitled_exists').html('Титл');
+
+        /* Добавляем ссылку на отображение статьи */
+        var RE = /entry\/(\d+)\//;
+        $('th.field-headword a').each(function(){
+            var x = $(this).parent().prev('td.field-civil_inv'),
+                text = x.html(),
+                y = RE.exec(this.href),
+                id = y && y[1];
+            if (id) {
+                x.html('<a href="/entries/' + id + '/">' + text + '</a>');
+            }
+        });
+
         /* Убираем у всех label двоеточия */
         $('label').each(function(){
             var x = $(this);

@@ -117,6 +117,7 @@ PART_OF_SPEECH_CHOICES = (
     ('j', u'межд.'),
     ('k', u'[число]'),
     ('l', u'[буква]'),
+    ('m', u'прич.-прил.'),
 )
 PART_OF_SPEECH_MAP = {
     'noun': 'a',
@@ -131,6 +132,7 @@ PART_OF_SPEECH_MAP = {
     'interjection': 'j',
     'number': 'k',
     'letter': 'l',
+    'participle-adjective': 'm',
 }
 
 TANTUM_CHOICES = (
@@ -309,6 +311,10 @@ class Entry(models.Model):
 
     questionable_headword = BooleanField(u'''Реконструкция заглавного слова
             вызывает сомнения''', default=False)
+
+    untitled_exists = BooleanField(u'''Вариант без титла представлен
+            в текстах''', default=False)
+
 
     hidden = BooleanField(u'Скрыть лексему', help_text=u'''Не отображать лексему
             в списке словарных статей.''', default=False, editable=False)
