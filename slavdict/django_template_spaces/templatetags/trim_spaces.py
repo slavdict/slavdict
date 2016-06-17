@@ -188,7 +188,7 @@ def cslav_nobr_words(value):
 def indesign_cslav_words(value):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
     TEXT_TAG = u'<text>%s</text>'
-    CSL_TAG = u'<csl-segment>%s</csl-segment>'
+    CSL_TAG = u'<w>%s</w>'
     # многоточие
     RE_DOTS = ur'\.\.\.'
     # круглые, квадратные скобки и косая черта
@@ -217,7 +217,7 @@ def indesign_cslav_words(value):
         if segment:
             parts.append(CSL_TAG % segment)
         segments.append(u''.join(parts))
-    return u' '.join(segments)
+    return SPACE.join(segments)
 
 
 def cslav_subst(x):
