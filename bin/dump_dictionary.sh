@@ -1,5 +1,5 @@
 #!/bin/bash
-DBS_VERSION=4.07
+DBS_VERSION=4.09
 GREP_SIGNATURE=::::
 NOW=$(date +"%Y.%m.%d--%H.%M")
 PRJDIR=$(dirname "$(dirname "$(readlink -e "$0")")")
@@ -7,7 +7,7 @@ DUMPDIR="${1:-$PRJDIR/.dumps}"
 LASTFILE=$(ls -tA $DUMPDIR/.dictionary*.xml | head -1)
 FILE="$DUMPDIR/.dictionary--$NOW---$DBS_VERSION.xml"
 
-python $PRJDIR/manage.py dumpdata dictionary --format=xml --indent=4 > $FILE
+python $PRJDIR/manage.py dumpdata dictionary --all --format=xml --indent=4 > $FILE
 
 if [ "$LASTFILE" ]
 then

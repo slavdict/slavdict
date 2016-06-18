@@ -1,5 +1,14 @@
 #!/usr/bin/env python2
 # -*- coding: UTF-8 -*-
+"""
+Скрипт делает XML-выгрузку словарной базы для InDesign.
+
+При необходимости сделать выборочную выгрузку скрипту допустимо передавать
+номера статей в качестве аргументов. Каждый номер можно отделять от другого
+пробелами, запятыми или запятыми с пробелами, например:
+
+    SCRIPT 1177,123 89 945, 234
+"""
 import os
 import re
 import sys
@@ -13,8 +22,7 @@ from slavdict import settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
-def sort_key(word):
-    w1 = w2 = word
+def sort_key1(word):
     level1 = (
         (ur"['`\^\~А-ЯЄЅІЇѠѢѤѦѨѪѬѮѰѲѴѶѸѺѼѾ]", u''),
         (u'ъ',      u''),
@@ -55,6 +63,11 @@ def sort_key(word):
         (u'ю',      u'28'),
         (u'[ѧꙗ]',   u'29'),
     )
+    for pattern, substitution in level1:
+        word = re.sub(pattern, substitution, word)
+    return word
+
+def sort_key2(word):
     level2 = (
         (ur"([аеє])(['`\^]?)ѵ", ur'\g<1>\g<2>01'),
 
@@ -99,14 +112,9 @@ def sort_key(word):
 
         (u'[а-я]', u'00'),
     )
-
-    for pattern, substitution in level1:
-        w1 = re.sub(pattern, substitution, w1)
-
     for pattern, substitution in level2:
-        w2 = re.sub(pattern, substitution, w2)
-
-    return (w1, w2)
+        word = re.sub(pattern, substitution, word)
+    return word
 
 
 
@@ -114,7 +122,15 @@ def sort_key(word):
 from slavdict.dictionary.models import Entry
 
 entries = []
-lexemes = [e for e in Entry.objects.all()
+lexemes = Entry.objects.all()
+test_entries = None
+if len(sys.argv) > 1:
+    r = re.compile(r'\s*,\s*|\s+')
+    s = u' '.join(sys.argv[1:]).strip(' ,')
+    test_entries = [int(i) for i in r.split(s)]
+if test_entries:
+    lexemes = lexemes.filter(pk__in=test_entries)
+lexemes = [e for e in lexemes
              if e.orth_vars[0].idem.startswith((u'а', u'А', u'б', u'Б'))]
 
 for lexeme in lexemes:
@@ -122,12 +138,15 @@ for lexeme in lexemes:
     wordform = lexeme.orth_vars[0].idem
     reference = None
     entries.append((wordform, reference, lexeme))
+    key = sort_key1(wordform)
 
     # Варианты
     for var in lexeme.orth_vars_refs[1:]:
         wordform = var.idem
-        reference = var.idem_ucs
-        entries.append((wordform, reference, lexeme))
+        key2 = sort_key1(wordform)
+        if key2 != key:
+            reference = var.idem_ucs
+            entries.append((wordform, reference, lexeme))
 
     # Названия народов
     if lexeme.nom_sg:
@@ -147,7 +166,11 @@ for lexeme in lexemes:
         reference = participle.idem_ucs
         entries.append((wordform, reference, lexeme))
 
-entries.sort(key=lambda (wordform, reference, lexeme):sort_key(wordform))
+def sort_key(x):
+    wordform = x[0]
+    return sort_key1(wordform), sort_key2(wordform)
+
+entries.sort(key=sort_key)
 entries = [(reference, lexeme) for wordform, reference, lexeme in entries]
 
 xml = render_to_string('indesign/slavdict.xml', {'entries': entries})

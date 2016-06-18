@@ -1,5 +1,3 @@
-{% trim %}
-
 {% from 'indesign/etymology.xml'   import etymology    with context %}
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
@@ -7,6 +5,14 @@
     <p aid:pstyle="FirstParagraph">
 
     {% for base_var in entry.base_vars %}
+        {% if loop.first %}
+            {# pass #}
+        {% elif loop.last %}
+            {{ backspace }}{{ space }}<i>и<i>{{ space }}
+            {# FIXME: нужен ли неразрывный пробел #}
+        {% else %}
+            {{ backspace }},{{ space }}
+        {% endif %}
 
         <headword>{{ base_var.idem_ucs }}</headword>
         {% if loop.first %}
@@ -18,12 +24,12 @@
                 <questionable>(?)</questionable>
             {% endif %}
         {% endif %}
-        {{ space }}
+        {{ backspace }}{{ space }}
 
         {% for var in base_var.childvars %}
 
             {% if loop.first %}
-                {{ space }}<text>(</text>
+                <text>(</text>
             {% endif %}
 
             <var>{{ var.idem_ucs }}</var>
@@ -45,26 +51,36 @@
 
 
     {% if entry.short_form %}
-        {% if entry.short_form_ucs_wax.0 %}{{ nbhyphen }}{% endif %}
+        {% if entry.short_form_ucs_wax.0 %}
+            <text>{{ nbhyphen }}</text>
+        {% endif %}
         <csl>{{ entry.short_form_ucs_wax.1|ind_cslav_words }}</csl>
         {{ space }}
     {% endif %}
 
     {% if entry.genitive %}
-        {% if entry.genitive_ucs_wax.0 %}{{ nbhyphen }}{% endif %}
+        {% if entry.genitive_ucs_wax.0 %}
+            <text>{{ nbhyphen }}</text>
+        {% endif %}
         <csl>{{ entry.genitive_ucs_wax.1|ind_cslav_words }}</csl>
         {{ space }}
     {% endif %}
 
     {% if entry.sg1 %}
-        {% if entry.sg1_ucs_wax.0 %}{{ nbhyphen }}{% endif %}
+        {% if entry.sg1_ucs_wax.0 %}
+            <text>{{ nbhyphen }}</text>
+        {% endif %}
         <csl>{{ entry.sg1_ucs_wax.1|ind_cslav_words }}</csl>
-        {% if entry.sg2 %},{%endif %}
+        {% if entry.sg2 %}
+            <text>,</text>
+        {%endif %}
         {{ space }}
     {% endif %}
 
     {% if entry.sg2 %}
-        {% if entry.sg2_ucs_wax.0 %}{{ nbhyphen }}{% endif %}
+        {% if entry.sg2_ucs_wax.0 %}
+            <text>{{ nbhyphen }}</text>
+        {% endif %}
         <csl>{{ entry.sg2_ucs_wax.1|ind_cslav_words }}</csl>
         {{ space }}
     {% endif %}
@@ -94,7 +110,7 @@
 
         {{ space }}
         {% if entry.gender %}
-            {{ backspace }},{{ space }}
+            {{ backspace }}<text>,</text>{{ space }}
             <i>{{ entry.get_gender_display() }}</i>
             {{ space }}
         {% endif %}
@@ -194,8 +210,7 @@
         {{ backspace }}<text>.</text>
     {% endif %}
 
-    </p>{{ newline }}
+    </p>
 </entry>
 
 {# vim: set ft=django.xml: #}
-{% endtrim %}
