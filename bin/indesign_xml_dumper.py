@@ -1,5 +1,14 @@
 #!/usr/bin/env python2
 # -*- coding: UTF-8 -*-
+"""
+Скрипт делает XML-выгрузку словарной базы для InDesign.
+
+При необходимости сделать выборочную выгрузку скрипту допустимо передавать
+номера статей в качестве аргументов. Каждый номер можно отделять от другого
+пробелами, запятыми или запятыми с пробелами, например:
+
+    SCRIPT 1177,123 89 945, 234
+"""
 import os
 import re
 import sys
@@ -113,7 +122,15 @@ def sort_key2(word):
 from slavdict.dictionary.models import Entry
 
 entries = []
-lexemes = [e for e in Entry.objects.all()
+lexemes = Entry.objects.all()
+test_entries = None
+if len(sys.argv) > 1:
+    r = re.compile(r'\s*,\s*|\s+')
+    s = u' '.join(sys.argv[1:]).strip(' ,')
+    test_entries = [int(i) for i in r.split(s)]
+if test_entries:
+    lexemes = lexemes.filter(pk__in=test_entries)
+lexemes = [e for e in lexemes
              if e.orth_vars[0].idem.startswith((u'а', u'А', u'б', u'Б'))]
 
 for lexeme in lexemes:
