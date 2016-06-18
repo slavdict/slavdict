@@ -5,6 +5,14 @@
     <p aid:pstyle="FirstParagraph">
 
     {% for base_var in entry.base_vars %}
+        {% if loop.first %}
+            {# pass #}
+        {% elif loop.last %}
+            {{ backspace }}{{ space }}<i>и<i>{{ space }}
+            {# FIXME: нужен ли неразрывный пробел #}
+        {% else %}
+            {{ backspace }},{{ space }}
+        {% endif %}
 
         <headword>{{ base_var.idem_ucs }}</headword>
         {% if loop.first %}
@@ -16,12 +24,12 @@
                 <questionable>(?)</questionable>
             {% endif %}
         {% endif %}
-        {{ space }}
+        {{ backspace }}{{ space }}
 
         {% for var in base_var.childvars %}
 
             {% if loop.first %}
-                {{ space }}<text>(</text>
+                <text>(</text>
             {% endif %}
 
             <var>{{ var.idem_ucs }}</var>
@@ -203,6 +211,6 @@
     {% endif %}
 
     </p>
-</entry>{{ newline }}
+</entry>
 
 {# vim: set ft=django.xml: #}

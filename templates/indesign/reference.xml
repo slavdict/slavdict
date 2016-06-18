@@ -10,6 +10,6 @@
         {% endif %}
 
     </p>
-</entry>{{ newline }}
+</entry>
 
 {# vim: set ft=django.xml: #}

@@ -10,6 +10,7 @@
     {% endif %}
 {% endif %}
 
+{{ backspace }}{{ space }}
 {% if etym.unitext and etym.is_language('greek') %}
     <etymon lang="gr">{{ etym.unitext }}</etymon>{{ space }}
 {% elif etym.text and etym.is_language('latin') %}
