@@ -1328,7 +1328,11 @@ class OrthographicVariant(models.Model):
 
     @property
     def childvars(self):
-        return self.children.all()
+        childvars = self.children.all()
+        if self.entry:
+            if self.pk ==  self.entry.orth_vars[0].pk and self.entry.untitled_exists:
+                childvars = tuple(childvars) + (self,)
+        return childvars
 
     # сам орфографический вариант
     idem = CharField(u'написание', max_length=50)
