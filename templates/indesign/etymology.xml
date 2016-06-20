@@ -12,9 +12,13 @@
 
 {{ backspace }}{{ space }}
 {% if etym.unitext and etym.is_language('greek') %}
-    <etymon lang="gr">{{ etym.unitext }}</etymon>{{ space }}
+    <etymon aid:cstyle="Greek">
+        {{ etym.unitext }}
+    </etymon>{{ space }}
 {% elif etym.text and etym.is_language('latin') %}
-    <etymon lang="la">{{ etym.text }}</etymon>{{ space }}
+    <etymon aid:cstyle="Latin">
+        {{ etym.text }}
+    </etymon>{{ space }}
 {% endif %}
 
 {% endmacro %}

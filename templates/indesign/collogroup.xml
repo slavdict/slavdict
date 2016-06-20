@@ -1,5 +1,6 @@
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
+<text aid:cstyle="CollocSym">▶</text>{{ nbsp }}
 {% for c in cg.collocations %}
 
         {{ c.collocation_ucs|ind_cslav_words }}
@@ -10,7 +11,8 @@
         {% endif %}
 
 {% endfor %}
-
+{{ backspace }}{{ nbsp }}
+<text aid:cstyle="CollocSym">◀</text>
 
 {% set mnumber = '' %}
 

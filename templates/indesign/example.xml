@@ -1,12 +1,12 @@
 {% macro example(e, examples_loop, peer_meanings_loop) %}
 
-<example>{{ e.example_ucs|ind_cslav_words }}</example>
-{{ space }}
-
+<example aid:cstyle="CSL">
+    {{ e.example_ucs|ind_cslav_words }}
+</example>{{ space }}
 
 {% if e.greek_equivs %}
 
-    {% set COMMA = joiner(',') %}
+    {% set COMMA = joiner('<text>,</text>') %}
     {% for ge in e.greek_equivs %}
 
         {% set ADDITIONAL_INFO = show_additional_info and ge.additional_info %}
@@ -14,18 +14,21 @@
             {{ backspace }}{{ COMMA() }}{{ space }}
         {% endif %}
 
-        <greek>{{ ge.unitext }}</greek>
-        {{ space }}
+        <greek aid:cstyle="Greek">
+            {{ ge.unitext }}
+        </greek>{{ space }}
 
         {% for x in (ge.mark, ge.source, ge.note)|reject('equalto', '') %}
 
             {% if loop.first %}
                 <text>[</text>
-            {% else %} {{ backspace }},{{ space }}
+            {% else %}
+                {{ backspace }}<text>,</text>{{ space }}
             {% endif %}
 
-            <i>{{ x }}</i>
-            {{ space }}
+            <i aid:cstyle="Em">
+                {{ x }}
+            </i>{{ space }}
 
             {% if loop.last %}
                 {{ backspace }}<text>]</text>{{ space }}
@@ -39,14 +42,14 @@
 
 {% if e.note %}
     {{ space }}
-    <example-note>{{ e.note|cslav_injection }}</example-note>
+    <example-note>{{ e.note|e|ind_cslav_injection }}</example-note>
 {% endif %}
 
 {% if e.address_text %}
-    <address>
-        {{ e.address_text|cslav_injection }}
+    <address aid:cstyle="Address">
+        {{ e.address_text|e|ind_cslav_injection }}
     </address>
-    <text>
+    <text aid:cstyle="Address">
         {% if not examples_loop.last %}
             {{ backspace }};
         {% else %}

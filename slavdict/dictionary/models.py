@@ -28,9 +28,22 @@ compiled_conversion_without_aspiration = compile_conversion(
         antconc_ucs8_without_aspiration.conversion)
 compiled_conversion_civil = compile_conversion(antconc_civilrus.conversion)
 
+def html_escape(text):
+    text = text.replace(u'&', u'&amp;')
+    text = text.replace(u'<', u'&lt;')
+    text = text.replace(u'>', u'&gt;')
+    text = text.replace(u'"', u'&#34;')
+    return text.replace(u"'", u'&#39;')
+
+def html_unescape(text):
+    text = text.replace(u'&#39;', u"'")
+    text = text.replace(u'&#34;', u'"')
+    text = text.replace(u'&gt;',  u'>')
+    text = text.replace(u'&lt;',  u'<')
+    return text.replace(u'&amp;', u'&')
 
 def ucs_convert(text):
-    return convert(text, compiled_conversion_with_aspiration)
+    return html_escape(convert(text, compiled_conversion_with_aspiration))
 
 
 def ucs_convert_affix(text):
@@ -44,8 +57,7 @@ def ucs_convert_affix(text):
     if text:
         if text[0] == u'-':
             text = text[1:]
-        return convert(text, compiled_conversion_without_aspiration)
-    return text
+        return html_escape(convert(text, compiled_conversion_without_aspiration))
 
 
 def civilrus_convert(word):

@@ -6,11 +6,11 @@
 
         {% if loop.first %}
             <meaning-context>
-            [
+                <text>[</text>
         {% endif %}
 
         {% if mc.left_text %}
-            <i>{{ mc.left_text }}</i>
+            <i aid:cstyle="Em">{{ mc.left_text }}</i>
             {{ space }}
         {% endif %}
 
@@ -20,45 +20,45 @@
         {% endif %}
 
         {% if mc.right_text %}
-            <i>{{ mc.right_text }}</i>
+            <i aid:cstyle="Em">{{ mc.right_text }}</i>
         {% endif %}
 
         {% if not loop.last %}
-            {{ backspace }},{{ space }}
+            {{ backspace }}<text>,</text>{{ space }}
         {% else %}
-            {{ backspace }}]</meaning-context>{{ space }}
+            {{ backspace }}<text>]</text></meaning-context>{{ space }}
         {% endif %}
 
     {% endfor %}
 {% endif %}
 
 {% if m.substantivus %}
-    <i>в{{ nbsp }}роли сущ.</i>
+    <i aid:cstyle="Em">в{{ nbsp }}роли сущ.</i>
     {{ space }}
     {% if m.substantivus_type %}
-        <i>{{ m.get_substantivus_type_display() }}</i>{{ space }}
+        <i aid:cstyle="Em">{{ m.get_substantivus_type_display() }}</i>{{ space }}
     {% endif %}
 {% endif %}
 
 
 {% if m.figurative %}
-    <i>перен.</i>{{ space }}
+    <i aid:cstyle="Em">перен.</i>{{ space }}
 {% endif %}
 
 {% if m.meaning %}
-    <meaning>{{ m.meaning|cslav_injection }}</meaning>
+    <meaning>{{ m.meaning|e|ind_cslav_injection }}</meaning>
 {% endif %}
 
 {% if m.gloss %}
     {% if m.meaning or m.greek_equivs %}
-        {{ backspace }};{{ space }}
+        {{ backspace }}<text>;</text>{{ space }}
     {% endif %}
-    <gloss>{{ m.gloss|cslav_injection }}</gloss>
+    <gloss aid:cstyle="Em">{{ m.gloss|e|ind_cslav_injection }}</gloss>
     {{ space }}
 {% endif %}
 
 {% if m.examples %}
-    {{ backspace }}:{{ space }}
+    {{ backspace }}<text>:</text>{{ space }}
 {% endif %}
 
 {% for e in m.examples %}
