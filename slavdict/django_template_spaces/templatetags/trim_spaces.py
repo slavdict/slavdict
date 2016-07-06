@@ -186,27 +186,27 @@ def cslav_nobr_words(value):
     return u'&#32;'.join(words)
 
 def make_soft_hyphens(segment):
-    unescaped = html_unescape(segment)
-    text = unescaped[:2]
-    for c in unescaped[2:-2]:
+    text = segment[:2]
+    for c in segment[2:-2]:
         if c not in u'!#$%&+,-.12345678:;<=>?@C\\^_bcdg~·':
             text += u'\u00AD' + c
         else:
             text += c
-    if len(unescaped) > 3:
-        text += unescaped[-2:]
-    elif len(unescaped) == 3:
-        text += unescaped[-1:]
-    if unescaped != segment:
-        text = html_escape(text)
+    if len(segment) > 3:
+        text += segment[-2:]
+    elif len(segment) == 3:
+        text += segment[-1:]
     return text
 
-def indesign_cslav_words(value):
+def indesign_cslav_words(value, *args):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
     if value is None:
         value = u''
+    cstyle = u'CSLSegment'
+    if args:
+        cstyle = args[0]
     TEXT_TAG = u'<text aid:cstyle="TextInCSL">%s</text>'
-    CSL_TAG = u'<w aid:cstyle="CSLSegment">%s</w>'
+    CSL_TAG = u'<w aid:cstyle="{}">%s</w>'.format(cstyle)
     # многоточие
     RE_DOTS = ur'\.\.\.'
     # круглые, квадратные скобки и косая черта
@@ -224,7 +224,7 @@ def indesign_cslav_words(value):
             right = segment[end:]
 
             if left:
-                parts.append(CSL_TAG % make_soft_hyphens(left))
+                parts.append(CSL_TAG % html_escape(make_soft_hyphens(left)))
 
             center = re.sub(RE_BRACES_SLASH, TEXT_TAG % u'\g<0>', center)
             # NOTE: Замена точек должна происходить после замены скобок
@@ -235,7 +235,7 @@ def indesign_cslav_words(value):
             segment = right
             m = RE.search(segment)
         if segment:
-            parts.append(CSL_TAG % make_soft_hyphens(segment))
+            parts.append(CSL_TAG % html_escape(make_soft_hyphens(segment)))
         segments.append(u''.join(parts))
     return SPACE.join(segments)
 

@@ -2,11 +2,11 @@
 
 {% if isLanguageChanged %}
     {% if not loop.first %}
-        {{ backspace }};{{ space }}
+        {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
     {% endif %}
 {% else %}
     {% if not loop.first %}
-        {{ backspace }},{{ space }}
+        {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
     {% endif %}
 {% endif %}
 

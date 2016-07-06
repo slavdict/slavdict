@@ -6,7 +6,7 @@
 
 {% if e.greek_equivs %}
 
-    {% set COMMA = joiner('<text>,</text>') %}
+    {% set COMMA = joiner('<text aid:cstyle="Text">,</text>') %}
     {% for ge in e.greek_equivs %}
 
         {% set ADDITIONAL_INFO = show_additional_info and ge.additional_info %}
@@ -21,9 +21,9 @@
         {% for x in (ge.mark, ge.source, ge.note)|reject('equalto', '') %}
 
             {% if loop.first %}
-                <text>[</text>
+                <text aid:cstyle="Text">[</text>
             {% else %}
-                {{ backspace }}<text>,</text>{{ space }}
+                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
 
             <i aid:cstyle="Em">
@@ -31,7 +31,7 @@
             </i>{{ space }}
 
             {% if loop.last %}
-                {{ backspace }}<text>]</text>{{ space }}
+               {{ backspace }}<text aid:cstyle="Text">]</text>{{ space }}
             {% endif %}
 
         {% endfor %}
@@ -42,12 +42,12 @@
 
 {% if e.note %}
     {{ space }}
-    <example-note>{{ e.note|e|ind_cslav_injection }}</example-note>
+    <example-note>{{ e.note|ind_cslav_injection }}</example-note>
 {% endif %}
 
 {% if e.address_text %}
     <address aid:cstyle="Address">
-        {{ e.address_text|e|ind_cslav_injection }}
+        {{ e.address_text|ind_cslav_injection }}
     </address>
     <text aid:cstyle="Address">
         {% if not examples_loop.last %}

@@ -81,10 +81,22 @@ jslibs:
 	fi
 
 scp:
-	scp bin/indesign_xml_dumper.py dilijnt0:/var/www/slavdict/bin/
+	rsync bin/indesign_xml_dumper.py dilijnt0:/var/www/slavdict/bin/
 	ssh dilijnt0 chown www-data:www-is /var/www/slavdict/bin/indesign_xml_dumper.py
-	scp -r templates/indesign/ dilijnt0:/var/www/slavdict/templates/
+	rsync -av templates/indesign dilijnt0:/var/www/slavdict/templates/
 	ssh dilijnt0 chown -R www-data:www-is /var/www/slavdict/templates/indesign/
+
+indesign:
+	rsync bin/indesign_xml_dumper.py dilijnt0:/var/www/slavdict/bin/
+	rsync -av slavdict/django_template_spaces dilijnt0:/var/www/slavdict/slavdict/
+	rsync -av  templates/indesign dilijnt0:/var/www/slavdict/templates/
+	rsync .list dilijnt0:/root/
+	ssh dilijnt0 chown -R www-data:www-is /var/www/slavdict/
+	ssh dilijnt0 bash -c 'time cat /root/.list | xargs python /var/www/slavdict/bin/indesign_xml_dumper.py >/root/slavdict-dump.xml'
+	scp dilijnt0:/root/slavdict-dump.xml ~/VirtualBox\ SharedFolder/slavdict-indesign.xml
+
+listen-indesign:
+	ls .list bin/indesign_xml_dumper.py templates/indesign/* | entr bash -c 'time cat .list | xargs python bin/indesign_xml_dumper.py >/home/nurono/VirtualBox\ SharedFolder/slavdict-indesign.xml'
 
 .PHONY: \
     destroy_loc_changes \
@@ -94,6 +106,7 @@ scp:
     copydiff \
     fixown \
     jslibs \
+    listen-indesign \
     migrate \
     migrestart \
     restart \

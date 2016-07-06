@@ -16,7 +16,7 @@ import sys
 import django
 from coffin.shortcuts import render_to_string
 
-sys.path.append(os.path.abspath('../slavdict'))
+sys.path.append(os.path.abspath('/var/www/slavdict'))
 from slavdict import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
@@ -167,8 +167,8 @@ for lexeme in lexemes:
         entries.append((wordform, reference, lexeme))
 
 def sort_key(x):
-    wordform = x[0]
-    return sort_key1(wordform), sort_key2(wordform)
+    wordform, _, lexeme = x
+    return sort_key1(wordform), lexeme.homonym_order or 0, sort_key2(wordform)
 
 entries.sort(key=sort_key)
 entries = [(reference, lexeme) for wordform, reference, lexeme in entries]

@@ -2,7 +2,7 @@
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
 <entry id="en{{ entry }}">
-    <p aid:pstyle="FirstParagraph">
+    <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
 
     {% for base_var in entry.base_vars %}
         {% if loop.first %}
@@ -11,7 +11,7 @@
             {{ backspace }}{{ nbsp }}
             <i aid:cstyle="Em">и</i>{{ space }}
         {% else %}
-            {{ backspace }},{{ space }}
+            {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
         {% endif %}
 
         <headword aid:cstyle="Headword">
@@ -33,17 +33,17 @@
         {% for var in base_var.childvars %}
 
             {% if loop.first %}
-                <text>(</text>
+                <text aid:cstyle="Text">(</text>
             {% endif %}
 
-            <var aid:cstyle="CSLWord">
+            <var aid:cstyle="CSLSegment">
                 {{ var.idem_ucs|e }}
             </var>
 
             {% if loop.last %}
-                {{ backspace }}<text>)</text>{{ space }}
+                {{ backspace }}<text aid:cstyle="Text">)</text>{{ space }}
             {% else %}
-                {{ backspace }}<text>,</text>{{ space }}
+                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
 
         {% endfor %}
@@ -52,13 +52,13 @@
 
 
     {% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %}
-        {{ backspace }}<text>,</text>{{ space }}
+        {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
     {% endif %}
 
 
     {% if entry.short_form %}
         {% if entry.short_form_ucs_wax.0 %}
-            <text>{{ nbhyphen }}</text>
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
         <csl>
             {{ entry.short_form_ucs_wax.1|ind_cslav_words }}
@@ -68,7 +68,7 @@
 
     {% if entry.genitive %}
         {% if entry.genitive_ucs_wax.0 %}
-            <text>{{ nbhyphen }}</text>
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
         <csl>
             {{ entry.genitive_ucs_wax.1|ind_cslav_words }}
@@ -78,20 +78,20 @@
 
     {% if entry.sg1 %}
         {% if entry.sg1_ucs_wax.0 %}
-            <text>{{ nbhyphen }}</text>
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
         <csl>
             {{ entry.sg1_ucs_wax.1|ind_cslav_words }}
         </csl>
         {% if entry.sg2 %}
-            <text>,</text>
+            <text aid:cstyle="Text">,</text>
         {%endif %}
         {{ space }}
     {% endif %}
 
     {% if entry.sg2 %}
         {% if entry.sg2_ucs_wax.0 %}
-            <text>{{ nbhyphen }}</text>
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
         <csl>
             {{ entry.sg2_ucs_wax.1|ind_cslav_words }}
@@ -177,7 +177,7 @@
             имя собств.
         </i>
         {% if entry.canonical_name %}
-            <text>,</text>{{ space }}
+            {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             <i aid:cstyle="Em">
                 канонич.
             </i>
@@ -194,12 +194,13 @@
 
     {% for m in entry.meanings %}
         {% set mnumber = loop.index %}
-        {% if not loop.first %}
-            <p aid:pstyle="Paragraph">
+        {% if entry.meanings|length > 1 and loop.first %}
+            {{ backspace }}</p>{{ newline }}
         {% endif %}
-        {% if not entry.meanings|length == 1 %}
+        {% if entry.meanings|length > 1 %}
+            <p aid:pstyle="Paragraph" aid:cstyle="Text">
             <meaning-number aid:cstyle="MeaningNumber">
-                {{ mnumber }}
+                {{ mnumber }}.
             </meaning-number>{{ nbsp }}
         {% endif %}
 
@@ -210,7 +211,7 @@
         {% endfor %}
 
         {% if not loop.last %}
-            </p>{{ newline }}
+            {{ backspace }}</p>{{ newline }}
         {% endif %}
     {% endfor %}
 
@@ -231,14 +232,15 @@
 
 
     {% if entry.cfentries or entry.cfcollogroups %}
+        {{ backspace }}{{ nbsp }}
         <i aid:cstyle="Em">
             —Ср.
         </i>{{ nbsp }}
 
         {% for cfe in entry.cfentries %}
 
-            {% if not loop.first and (not loop.last or entry.cfcollogroups) %}
-                {{ backspace }}<text>,</text>{{ space }}
+            {% if not loop.first %}
+                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
 
             <csl>
@@ -253,17 +255,17 @@
         {% endfor %}
 
         {% for cfcg in entry.cfcollogroups %}
-            {% if (not loop.first or entry.cfentries) and not loop.last %}
-                {{ backspace }}<text>,</text>{{ space }}
+            {% if not loop.first or entry.cfentries %}
+                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
             <csl>
                 {{ cfcg.collocations.0.collocation_ucs|ind_cslav_words }}
             </csl>
         {% endfor %}
-        {{ backspace }}<text>.</text>
+        {{ backspace }}<text aid:cstyle="Text">.</text>
     {% endif %}
 
-    </p>
+    {{ backspace }}</p>
 </entry>
 
 {# vim: set ft=django.xml: #}
