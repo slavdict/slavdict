@@ -303,8 +303,14 @@
                 });
             });
 
-        $('input[id$="phraseological"]').wrap('<label></label>');
-
+        /* Вся клетка с галочкой "фразеологизм" должна реагировать на щелчок
+         * мыши, а не только сама галочка */
+        $('input[id$="-phraseological"]').each(function(){
+            var x = $(this);
+            x.parent().click(function(){
+                x.prop('checked', !x.prop('checked'));
+            });
+        });
 
         /* Действия, которые необходимо отложить хотя бы на секунду, чтобы они
          * были успешно выполнены. */
