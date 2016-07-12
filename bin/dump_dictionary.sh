@@ -1,5 +1,5 @@
 #!/bin/bash
-DBS_VERSION=4.09
+DBS_VERSION=4.10
 GREP_SIGNATURE=::::
 NOW=$(date +"%Y.%m.%d--%H.%M")
 PRJDIR=$(dirname "$(dirname "$(readlink -e "$0")")")
