@@ -1,0 +1,42 @@
+{% from 'indesign/meaning_without_children.xml' import meaning with context %}
+
+{{ backspace }}{{ space }}
+<text aid:cstyle="CollocSym">▶</text>{{ nbsp }}{# ⯈ ▶ ▸ #}
+{% for c in cg.collocations %}
+
+        {{ c.collocation_ucs|ind_cslav_words("CSLBSegment") }}
+        {{ space }}
+
+        {% if not loop.last %}
+        {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+        {% endif %}
+
+{% endfor %}
+{{ backspace }}{{ nbsp }}
+<text aid:cstyle="CollocSym">◀</text>{# ◂ ◀ ⯇ #}
+
+{% set mnumber = '' %}
+
+{% for m in cg.meanings %}
+    {% if cg.meanings|length != 1 %}
+        {% set cgmnumber = {1:'а', 2:'б', 3:'в', 4:'г', 5:'д'}[loop.index] %}
+        {{ backspace }}{{ space }}
+        <collogroup-meaning-number aid:cstyle="CgMeaningNumber">
+            {{ cgmnumber }}.
+        </collogroup-meaning-number>{{ nbsp }}
+    {% else %}
+        {{ backspace }}{{ space }}
+    {% endif %}
+    {% include 'indesign/meaning_with_children.xml' %}
+{% endfor %}
+
+
+{% for m in cg.metaph_meanings %}
+
+    {% include 'indesign/litsym.xml' %}
+    {{ meaning(m, peer_meanings_loop=loop,
+                  parent_meanings_loop=none,
+                  child_meanings=none) }}
+{% endfor %}
+
+{# vim: set ft=django.xml: #}

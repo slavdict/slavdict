@@ -1,0 +1,22 @@
+{% from 'indesign/meaning_without_children.xml' import meaning with context %}
+{% set child_meanings = m.child_meanings %}
+{% set parent_meanings_loop = loop %}
+
+{{ meaning(m, peer_meanings_loop=loop,
+              parent_meanings_loop=none,
+              child_meanings=child_meanings) }}
+
+{% for m in child_meanings %}
+
+    {% if m.metaphorical %}
+        {% include 'indesign/litsym.xml' %}
+    {% elif loop.first and not m.metaphorical and not m.parent_meaning.examples %}
+        {{ backspace }}{{ nbsp }}<text aid:cstyle="Use">||</text>{{ nbsp }}
+    {% endif %}
+
+    {{ meaning(m, peer_meanings_loop=loop,
+                  parent_meanings_loop=parent_meanings_loop,
+                  child_meanings=none) }}
+{% endfor %}
+
+{# vim: set ft=django.xml: #}

@@ -28,9 +28,22 @@ compiled_conversion_without_aspiration = compile_conversion(
         antconc_ucs8_without_aspiration.conversion)
 compiled_conversion_civil = compile_conversion(antconc_civilrus.conversion)
 
+def html_escape(text):
+    text = text.replace(u'&', u'&amp;')
+    text = text.replace(u'<', u'&lt;')
+    text = text.replace(u'>', u'&gt;')
+    text = text.replace(u'"', u'&#34;')
+    return text.replace(u"'", u'&#39;')
+
+def html_unescape(text):
+    text = text.replace(u'&#39;', u"'")
+    text = text.replace(u'&#34;', u'"')
+    text = text.replace(u'&gt;',  u'>')
+    text = text.replace(u'&lt;',  u'<')
+    return text.replace(u'&amp;', u'&')
 
 def ucs_convert(text):
-    return convert(text, compiled_conversion_with_aspiration)
+    return html_escape(convert(text, compiled_conversion_with_aspiration))
 
 
 def ucs_convert_affix(text):
@@ -44,8 +57,7 @@ def ucs_convert_affix(text):
     if text:
         if text[0] == u'-':
             text = text[1:]
-        return convert(text, compiled_conversion_without_aspiration)
-    return text
+        return html_escape(convert(text, compiled_conversion_without_aspiration))
 
 
 def civilrus_convert(word):
@@ -117,6 +129,7 @@ PART_OF_SPEECH_CHOICES = (
     ('j', u'межд.'),
     ('k', u'[число]'),
     ('l', u'[буква]'),
+    ('m', u'прич.-прил.'),
 )
 PART_OF_SPEECH_MAP = {
     'noun': 'a',
@@ -131,6 +144,7 @@ PART_OF_SPEECH_MAP = {
     'interjection': 'j',
     'number': 'k',
     'letter': 'l',
+    'participle-adjective': 'm',
 }
 
 TANTUM_CHOICES = (
@@ -147,7 +161,7 @@ TANTUM_MAP = {
 GENDER_CHOICES = (
     ('m', u'м.'),
     ('f', u'ж.'),
-    ('n', u'ср.'),
+    ('n', u'с.'),
 )
 GENDER_MAP = {
     'masculine': 'm',
@@ -264,13 +278,14 @@ LANGUAGE_TRANSLIT_CSS = {
         LANGUAGE_MAP['syriac']: 'syriac-translit',
 }
 
+NBSP = u'\u00A0'  # неразрывный пробел
 SUBSTANTIVUS_TYPE_CHOICES = (
-    ('a', u'ср.ед.'),
-    ('b', u'ср.мн.'),
-    ('c', u'м.ед.'),
-    ('d', u'м.мн.'),
-    ('e', u'ж.ед.'),
-    ('f', u'ж.мн.'),
+    ('a', u'с.' + NBSP + u'ед.'),
+    ('b', u'с.' + NBSP + u'мн.'),
+    ('c', u'м.' + NBSP + u'ед.'),
+    ('d', u'м.' + NBSP + u'мн.'),
+    ('e', u'ж.' + NBSP + u'ед.'),
+    ('f', u'ж.' + NBSP + u'мн.'),
 )
 SUBSTANTIVUS_TYPE_MAP = {
     'n.sg.': 'a',
@@ -299,11 +314,19 @@ class Entry(models.Model):
     def orth_vars_refs(self):
         return self.orthographic_variants.filter(no_ref_entry=False)
 
+    @property
+    def base_vars(self):
+        return self.orthographic_variants.filter(parent__isnull=True)
+
     reconstructed_headword = BooleanField(u'Заглавное слово реконструировано',
             default=False)
 
     questionable_headword = BooleanField(u'''Реконструкция заглавного слова
             вызывает сомнения''', default=False)
+
+    untitled_exists = BooleanField(u'''Вариант без титла представлен
+            в текстах''', default=False)
+
 
     hidden = BooleanField(u'Скрыть лексему', help_text=u'''Не отображать лексему
             в списке словарных статей.''', default=False, editable=False)
@@ -1107,6 +1130,8 @@ class CollocationGroup(models.Model):
             help_text=u'''Значение, при котором будет стоять словосочетание.''',
             related_name='collocationgroup_set', blank=True, null=True)
 
+    phraseological = BooleanField(u'фразеологизм', default=False)
+
     link_to_entry = ForeignKey(Entry, verbose_name=u'ссылка на лексему',
             help_text=u'''Если вместо значений словосочетания должна быть
             только ссылка на словарную статью, укажите её в данном поле.''',
@@ -1137,6 +1162,24 @@ class CollocationGroup(models.Model):
     def host_entry(self):
         return (self.base_entry or
                 self.base_meaning and self.base_meaning.host_entry)
+
+    @property
+    def first_meaning_for_admin(self):
+        meanings = self.meanings
+        text = u''
+        n = len(meanings)
+        if n > 1:
+            text = u'[%s]' % n
+        for i, meaning in enumerate(meanings):
+            if n > 1:
+                number = u'%s) ' % unicode(i + 1)
+            else:
+                number = u''
+            if meaning.meaning.strip():
+                text += u' %s%s' % (number, meaning.meaning)
+            if meaning.gloss.strip():
+                text += u' [[%s]]' % meaning.gloss
+        return text
 
     meanings = property(meanings)
     metaph_meanings = property(metaph_meanings)
@@ -1182,15 +1225,15 @@ class Collocation(models.Model):
                             verbose_name=u'группа словосочетаний',
                             related_name='collocation_set')
 
-    collocation = CharField(u'словосочетание', max_length=70)
+    collocation = CharField(u'словосочетание', max_length=200)
 
     @property
     def collocation_ucs(self):
         return ucs_convert(self.collocation)
 
-    civil_equivalent = CharField(u'гражданское написание', max_length=50,
+    civil_equivalent = CharField(u'гражданское написание', max_length=350,
                                  blank=True)
-    civil_inverse = CharField(u'гражд. инв.', max_length=50)
+    civil_inverse = CharField(u'гражд. инв.', max_length=350)
 
     order = SmallIntegerField(u'порядок следования', blank=True, default=0)
 
@@ -1313,10 +1356,23 @@ class OrthographicVariant(models.Model):
     # словарная статья, к которой относится данный орф. вариант
     entry = ForeignKey(Entry, related_name='orthographic_variants', blank=True,
                        null=True)
+    parent = ForeignKey('self', related_name='children', blank=True, null=True)
+
+    @property
+    def childvars(self):
+        childvars = self.children.all()
+        if self.entry:
+            if self.pk ==  self.entry.orth_vars[0].pk and self.entry.untitled_exists:
+                childvars = tuple(childvars) + (self,)
+        return childvars
 
     # сам орфографический вариант
     idem = CharField(u'написание', max_length=50)
-
+    use = CharField(u'использование', max_length=50, help_text=u'''
+                    Информация о том, с какими значениями данный вариант
+                    связан. Разные варианты написания могут коррелировать
+                    с разными значениями, как в случае слов богъ/бг~ъ,
+                    агг~лъ/аггелъ.''', default=u'')
     @property
     def idem_ucs(self):
         return ucs_convert(self.idem)

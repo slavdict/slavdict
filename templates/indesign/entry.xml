@@ -1,0 +1,271 @@
+{% from 'indesign/etymology.xml'   import etymology    with context %}
+{% from 'indesign/meaning_without_children.xml' import meaning with context %}
+
+<entry id="en{{ entry }}">
+    <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
+
+    {% for base_var in entry.base_vars %}
+        {% if loop.first %}
+            {# pass #}
+        {% elif loop.last %}
+            {{ backspace }}{{ nbsp }}
+            <i aid:cstyle="Em">и</i>{{ space }}
+        {% else %}
+            {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+        {% endif %}
+
+        <headword aid:cstyle="Headword">
+            {{ base_var.idem_ucs|e }}
+        </headword>
+        {% if loop.first %}
+            {% if entry.homonym_order %}
+                <homonym-number aid:cstyle="HeadwordHomonymNumber">
+                    {{ entry.homonym_order }}
+                </homonym-number>
+                {{ space }}
+            {% endif %}
+            {% if entry.questionable_headword %}
+                <questionable>(?)</questionable>
+            {% endif %}
+        {% endif %}
+        {{ backspace }}{{ space }}
+
+        {% for var in base_var.childvars %}
+
+            {% if loop.first %}
+                <text aid:cstyle="Text">(</text>
+            {% endif %}
+
+            <var aid:cstyle="CSLSegment">
+                {{ var.idem_ucs|e }}
+            </var>
+
+            {% if loop.last %}
+                {{ backspace }}<text aid:cstyle="Text">)</text>{{ space }}
+            {% else %}
+                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+            {% endif %}
+
+        {% endfor %}
+
+    {% endfor %}
+
+
+    {% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %}
+        {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+    {% endif %}
+
+
+    {% if entry.short_form %}
+        {% if entry.short_form_ucs_wax.0 %}
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
+        {% endif %}
+        <csl>
+            {{ entry.short_form_ucs_wax.1|ind_cslav_words }}
+        </csl>
+        {{ space }}
+    {% endif %}
+
+    {% if entry.genitive %}
+        {% if entry.genitive_ucs_wax.0 %}
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
+        {% endif %}
+        <csl>
+            {{ entry.genitive_ucs_wax.1|ind_cslav_words }}
+        </csl>
+        {{ space }}
+    {% endif %}
+
+    {% if entry.sg1 %}
+        {% if entry.sg1_ucs_wax.0 %}
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
+        {% endif %}
+        <csl>
+            {{ entry.sg1_ucs_wax.1|ind_cslav_words }}
+        </csl>
+        {% if entry.sg2 %}
+            <text aid:cstyle="Text">,</text>
+        {%endif %}
+        {{ space }}
+    {% endif %}
+
+    {% if entry.sg2 %}
+        {% if entry.sg2_ucs_wax.0 %}
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
+        {% endif %}
+        <csl>
+            {{ entry.sg2_ucs_wax.1|ind_cslav_words }}
+        </csl>
+        {{ space }}
+    {% endif %}
+
+    {% if entry.uninflected %}
+        <i aid:cstyle="Em">
+            неизм.
+        </i>
+        {{ space }}
+    {% endif %}
+
+    {% if entry.possessive %}
+        <i aid:cstyle="Em">
+            притяж.
+        </i>
+        {{ space }}
+    {% endif %}
+
+
+    {% if entry.participle_type %}
+        <i aid:cstyle="Em">
+            {{ entry.get_participle_type_display() }}
+        </i>
+        {{ space }}
+    {% else %}
+        {% if entry.part_of_speech %}
+            {% if not entry.is_part_of_speech("letter") and
+                  not entry.is_part_of_speech("number") and
+                  not entry.is_part_of_speech("noun") %}
+                <i aid:cstyle="Em">
+                    {{ entry.get_part_of_speech_display() }}
+                </i>
+            {% endif %}
+        {% endif %}
+
+        {{ backspace }}{{ space }}
+        {% if entry.gender %}
+            <i aid:cstyle="Em">
+                {{ entry.get_gender_display() }}
+            </i>
+            {{ space }}
+        {% endif %}
+    {% endif %}
+
+
+    {% if entry.tantum %}
+        {{ backspace }}{{ space }}
+        <i aid:cstyle="Em">
+            {{ entry.get_tantum_display() }}
+        </i>
+        {{ space }}
+    {% endif %}
+
+    {% if entry.is_onym('ethnonym') and entry.nom_sg %}
+        <i aid:cstyle="Em">
+            мн.
+        </i>
+        {{ space }}
+        {% if entry.nom_sg_ucs_wax.0 %}{{ nbhyphen }}{%endif %}
+        <csl>
+            {{ entry.nom_sg_ucs_wax.1|ind_cslav_words }}
+        </csl>
+        {{ space }}
+    {% endif %}
+
+
+    {% for etym in entry.etymologies %}
+
+        {% set prevLang = Lang %}
+        {% set Lang = etym.get_language_display() %}
+        {% set isLanguageChanged = (Lang != prevLang) %}
+
+        {{ etymology(etym, isLanguageChanged, loop) }}
+
+    {% endfor %}
+
+
+    {% if entry.is_onym('anthroponym') %}
+        <i aid:cstyle="Em">
+            имя собств.
+        </i>
+        {% if entry.canonical_name %}
+            {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+            <i aid:cstyle="Em">
+                канонич.
+            </i>
+        {% endif %}
+        {{ space }}
+    {% endif %}
+
+    {% if entry.is_onym('toponym') %}
+        <i aid:cstyle="Em">
+            топоним
+        </i>{{ space }}
+    {% endif %}
+
+
+    {% for m in entry.meanings %}
+        {% set mnumber = loop.index %}
+        {% if entry.meanings|length > 1 and loop.first %}
+            {{ backspace }}</p>{{ newline }}
+        {% endif %}
+        {% if entry.meanings|length > 1 %}
+            <p aid:pstyle="Paragraph" aid:cstyle="Text">
+            <meaning-number aid:cstyle="MeaningNumber">
+                {{ mnumber }}.
+            </meaning-number>{{ nbsp }}
+        {% endif %}
+
+        {% include 'indesign/meaning_with_children.xml' with context %}
+
+        {% for cg in m.collogroups %}
+            {% include 'indesign/collogroup.xml' %}
+        {% endfor %}
+
+        {% if not loop.last %}
+            {{ backspace }}</p>{{ newline }}
+        {% endif %}
+    {% endfor %}
+
+
+    {% for m in entry.metaph_meanings %}
+        {% include 'indesign/litsym.xml' %}
+        {{ meaning(m, peer_meanings_loop=loop,
+                      parent_meanings_loop=none,
+                      child_meanings=none) }}
+        {% for cg in m.collogroups %}
+            {% include 'indesign/collogroup.xml' %}
+        {% endfor %}
+    {% endfor %}
+
+    {% for cg in entry.collogroups %}
+        {% include 'indesign/collogroup.xml' %}
+    {% endfor %}
+
+
+    {% if entry.cfentries or entry.cfcollogroups %}
+        {{ backspace }}{{ nbsp }}
+        <i aid:cstyle="Em">
+            —Ср.
+        </i>{{ nbsp }}
+
+        {% for cfe in entry.cfentries %}
+
+            {% if not loop.first %}
+                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+            {% endif %}
+
+            <csl>
+                {{ cfe.orth_vars.0.idem_ucs|ind_cslav_words }}
+            </csl>
+
+            {% if cfe.homonym_order %}
+                <homonym-number aid:cstyle="HeadwordNumber">
+                    {{ cfe.homonym_order }}
+                </homonym-number>
+            {% endif %}
+        {% endfor %}
+
+        {% for cfcg in entry.cfcollogroups %}
+            {% if not loop.first or entry.cfentries %}
+                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+            {% endif %}
+            <csl>
+                {{ cfcg.collocations.0.collocation_ucs|ind_cslav_words }}
+            </csl>
+        {% endfor %}
+        {{ backspace }}<text aid:cstyle="Text">.</text>
+    {% endif %}
+
+    {{ backspace }}</p>
+</entry>
+
+{# vim: set ft=django.xml: #}

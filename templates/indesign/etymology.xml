@@ -1,0 +1,25 @@
+{% macro etymology(etym, isLanguageChanged, loop) %}
+
+{% if isLanguageChanged %}
+    {% if not loop.first %}
+        {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
+    {% endif %}
+{% else %}
+    {% if not loop.first %}
+        {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+    {% endif %}
+{% endif %}
+
+{{ backspace }}{{ space }}
+{% if etym.unitext and etym.is_language('greek') %}
+    <etymon aid:cstyle="Greek">
+        {{ etym.unitext }}
+    </etymon>{{ space }}
+{% elif etym.text and etym.is_language('latin') %}
+    <etymon aid:cstyle="Latin">
+        {{ etym.text }}
+    </etymon>{{ space }}
+{% endif %}
+
+{% endmacro %}
+{# vim: set ft=django.xml: #}

@@ -67,6 +67,9 @@ input#id_sg2
     font-family: AntConSol
     width: 7em
 
+input[id$="-collocation"]
+    width: 40em !important
+
 .field-headword a
     color: black
     font-family: Arial, Verdana, sans-serif
@@ -100,6 +103,19 @@ $headword-width: 15em
     input
         width: 95% !important
         font-family: AntConSol
+
+.column-phraseological,
+.field-phraseological
+    max-width: 3em
+    position: relative
+
+    label,
+    input
+        position: absolute
+        top: 0
+        bottom: 0
+        left: 0
+        right: 0
 
 .field-canonical_name,
 .field-nom_sg
@@ -149,3 +165,6 @@ $headword-width: 15em
     font-size: larger
 
 // 'Estrangelo Edessa'
+
+div.field-box.field-untitled_exists
+    margin-right: 20em

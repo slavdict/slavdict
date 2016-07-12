@@ -28,6 +28,22 @@
             };
         }
 
+        /* Меняем заголовок в списке лексем для колонки с флажками,
+         * указывающими представлен ли вариант без титла в текстах или нет */
+        $('.column-untitled_exists').html('Титл');
+
+        /* Добавляем ссылки на отображение статей помимо ссылок редактирования */
+        var RE = /entry\/(\d+)\//;
+        $('th.field-headword a').each(function(){
+            var x = $(this).parent().prev('td.field-civil_inv'),
+                text = x.html(),
+                y = RE.exec(this.href),
+                id = y && y[1];
+            if (id) {
+                x.html('<a href="/entries/' + id + '/">' + text + '</a>');
+            }
+        });
+
         /* Убираем у всех label двоеточия */
         $('label').each(function(){
             var x = $(this);
@@ -243,7 +259,6 @@
             }
         });
 
-        
         // для словосочетаний
         $('input[name|="collocation_set"]')
             .filter('input[name$="-civil_equivalent"]')
@@ -287,6 +302,9 @@
                     }
                 });
             });
+
+        $('input[id$="phraseological"]').wrap('<label></label>');
+
 
         /* Действия, которые необходимо отложить хотя бы на секунду, чтобы они
          * были успешно выполнены. */

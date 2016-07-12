@@ -66,9 +66,9 @@ x/html-тегами, а также x/html-тэгами и текстом.
 
 {{ punct }} -- Непарный вспомогательный тэг для использования внутри {% trim %}.
 В том случае если текст внутри тэга кончается на знак препинания, гарантирует
-наличие за ним пробела. К сожалению, пока его использоание регулируется слишком
-жесткими правилами. Его необходимо помещать между тэгами, в которых будет текст.
-Помещать внутрь таких тегов его нельзя. Впоследствии его надо будет каким-то
+наличие за ним пробела. К сожалению, пока его использование регулируется слишком
+жесткими правилами. Его необходимо помещать *между* тэгами, в которых будет текст.
+Помещать *внутрь* таких тегов его нельзя. Впоследствии его надо будет каким-то
 образом переделать.
 
 {{ ! }} -- Непарный вспомогательный тэг для использования внутри {% trim %}.
@@ -76,6 +76,19 @@ x/html-тегами, а также x/html-тэгами и текстом.
 
 {{ onlyDot }} -- Непарный вспомогательный тэг, позволяющий поставить точку,
 только если перед ним нет точки или многоточия.
+
+{{ nbsp }} -- неразрывный пробел, no-break space, U+00A0.
+
+{{ nbhyphen }} -- non-breaking hyphen, U+2011.
+
+{{ softhyphen }} -- soft hyphen, U+00AD.
+
+{{ wj }}, {{ zwnbsp }} -- word joiner WJ = zero width no-break space ZWNBSP,
+U+2060. В стандарте Юникод ZWNBSP это U+FEFF, который также используется как
+BOM. Начиная с версии 3.2 использование позиции U+FEFF как ZWNBSP объявлено
+устаревшим и в этой ф-ции надо использовать WJ (U+2060).
+
+{{ newline }} -- конец абзаца и начало нового.
 
 """
 import re
@@ -87,26 +100,40 @@ from jinja2 import nodes
 from jinja2.ext import Extension
 from coffin import template
 
-from slavdict.dictionary.models import ucs_convert
+from slavdict.dictionary.models import ucs_convert, html_escape, html_unescape
 
 register = template.Library()
+BACKSPACE = u'\u0008'
 EXCLAM = u'\u1991'
+NBSP = u'\uEEA0'
+NEWLINE = u'\uEEEE'
+ONLYDOT = u'\u1902'
+PUNCT = u'\u1900'
+SPACE = u'\u0007'
+SPACES = SPACE + NBSP + NEWLINE
 
 def strip_spaces_between_tags_and_text(value):
     value = re.sub(ur'>\s+', u'>', force_unicode(value.strip()))
     value = re.sub(ur'\s+<', u'<', value)
-    # {{ space }}
-    value = re.sub(u'\u0007', u' ', value)
     # {{ backspace }}
-    #  Звёздочка вместо плюса нужна, чтобы \u0008 (backspace) были удалены
-    #  в любом случае независимо от того, предшествует им пробел или нет.
-    value = re.sub(ur'((\s)|(&nbsp;))*\u0008', u'', value)
+    # Звёздочка вместо плюса нужна, чтобы backspace'ы были удалены
+    # в любом случае независимо от того, предшествует им пробел или нет.
+    value = re.sub(ur'([\s{spaces}]|&nbsp;)*{backspace}'.format(
+                           spaces=SPACES, backspace=BACKSPACE), u'', value)
     # {{ punct }}
-    value = re.sub(ur'\u1900(<[^>]+>)([\.,:;\!\?])', ur'\1\2', value)
-    value = re.sub(ur'\u1900', u' ', value)
+    value = re.sub(PUNCT + ur'(<[^>]+>)([\.,:;\!\?])', ur'\1\2', value)
+    value = re.sub(PUNCT, u' ', value)
+    # {{ ! }}
     value = re.sub(EXCLAM, u'', value)
-    value = re.sub(ur'([\.…])((\s)|(&nbsp;))*\u1902', ur'\1', value)
-    value = re.sub(ur'((\s)|(&nbsp;))*\u1902', ur'.', value)
+    # {{ onlyDot }}
+    value = re.sub(ur'([\.…])((\s)|(&nbsp;))*' + ONLYDOT, ur'\1', value)
+    value = re.sub(ur'((\s)|(&nbsp;))*' + ONLYDOT, ur'.', value)
+    # {{ newline }}
+    value = re.sub(NEWLINE, u'\n', value)
+    # {{ nbsp }}
+    value = re.sub(NBSP, u'\u00A0', value)
+    # {{ space }}
+    value = re.sub(SPACE, u' ', value)
     return value
 strip_spaces_between_tags_and_text = allow_lazy(strip_spaces_between_tags_and_text, unicode)
 
@@ -126,16 +153,21 @@ class TrimExtension(Extension):
         return strip_spaces_between_tags_and_text(caller().strip())
 
     def preprocess(self, source, name, filename=None):
-        # {{ space }}
-        source = re.sub(ur'{{\s*space\s*}}', ur'\u0007', source)
-        # {{ backspace }}
-        source = re.sub(ur'{{\s*backspace\s*}}', ur'\u0008', source)
-        # {{ punct }}
-        source = re.sub(ur'{{\s*punct\s*}}', ur'\u1900', source)
-        # {{ ! }}
+        source = re.sub(ur'{{\s*space\s*}}', SPACE, source)
+        source = re.sub(ur'{{\s*backspace\s*}}', BACKSPACE, source)
+        source = re.sub(ur'{{\s*punct\s*}}', PUNCT, source)
         source = re.sub(ur'{{\s*!\s*}}', EXCLAM, source)
-        # {{ onlyDot }}
-        source = re.sub(ur'{{\s*onlyDot\s*}}', ur'\u1902', source)
+        source = re.sub(ur'{{\s*onlyDot\s*}}', ONLYDOT, source)
+        source = re.sub(ur'{{\s*nbsp\s*}}', NBSP, source)
+        source = re.sub(ur'{{\s*newline\s*}}', NEWLINE, source)
+
+        # {{ nbhyphen }}
+        source = re.sub(ur'{{\s*nbhyphen\s*}}', ur'\u2011', source)
+        # {{ softhyphen }}
+        source = re.sub(ur'{{\s*softhyphen\s*}}', ur'\u00AD', source)
+        # {{ wj }}, {{ zwnbsp }}
+        source = re.sub(ur'{{\s*wj\s*}}', ur'\u2060', source)
+        source = re.sub(ur'{{\s*zwnbsp\s*}}', ur'\u2060', source)
         return source
 
 trim = TrimExtension
@@ -147,10 +179,66 @@ def cslav_nobr_words(value):
     церковнославянской.
 
     """
+    # многоточие, круглые, квадратные скобки и косая черта
     value = re.sub(ur'(\.\.\.|[\(\)\[\]/])', ur'<span>\1</span>', value)
     pattern = u'<span class="cslav nobr">%s</span>'
     words = (pattern % word for word in value.split())
     return u'&#32;'.join(words)
+
+def make_soft_hyphens(segment):
+    text = segment[:2]
+    for c in segment[2:-2]:
+        if c not in u'!#$%&+,-.12345678:;<=>?@C\\^_bcdg~·':
+            text += u'\u00AD' + c
+        else:
+            text += c
+    if len(segment) > 3:
+        text += segment[-2:]
+    elif len(segment) == 3:
+        text += segment[-1:]
+    return text
+
+def indesign_cslav_words(value, *args):
+    """ Аналог cslav_nobr_words для импорта в InDesign. """
+    if value is None:
+        value = u''
+    cstyle = u'CSLSegment'
+    if args:
+        cstyle = args[0]
+    TEXT_TAG = u'<text aid:cstyle="TextInCSL">%s</text>'
+    CSL_TAG = u'<w aid:cstyle="{}">%s</w>'.format(cstyle)
+    # многоточие
+    RE_DOTS = ur'\.\.\.'
+    # круглые, квадратные скобки и косая черта
+    RE_BRACES_SLASH = ur'[\(\)\[\]/]'
+    RE = re.compile(u'(%s|%s)' % (RE_DOTS, RE_BRACES_SLASH))
+
+    segments = []
+    for segment in value.split():
+        parts = []
+        m = RE.search(segment)
+        while m:
+            start, end = m.start(), m.end()
+            left = segment[:start]
+            center = segment[start:end]
+            right = segment[end:]
+
+            if left:
+                parts.append(CSL_TAG % html_escape(make_soft_hyphens(left)))
+
+            center = re.sub(RE_BRACES_SLASH, TEXT_TAG % u'\g<0>', center)
+            # NOTE: Замена точек должна происходить после замены скобок
+            # и слэшей, поскольку сам TEXT_TAG содержит слэш.
+            center = re.sub(RE_DOTS, TEXT_TAG % u'…', center)
+            parts.append(center)
+
+            segment = right
+            m = RE.search(segment)
+        if segment:
+            parts.append(CSL_TAG % html_escape(make_soft_hyphens(segment)))
+        segments.append(u''.join(parts))
+    return SPACE.join(segments)
+
 
 def cslav_subst(x):
     return EXCLAM + cslav_nobr_words(ucs_convert(x.group(1))) + EXCLAM
@@ -162,4 +250,14 @@ def cslav_injection(value):
     value = re.sub(ur'##(.*?)##', cslav_subst, value)
     return value
 
+@register.filter
+def ind_cslav_injection(value):
+    """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
+    """
+    TAG = u'<csl aid:cstyle="CSL">%s</csl>'
+    func = lambda x: TAG % indesign_cslav_words(ucs_convert(x.group(1)))
+    value = re.sub(ur'##(.*?)##', func, value)
+    return value
+
 register.filter(name='cslav_words')(cslav_nobr_words)
+register.filter(name='ind_cslav_words')(indesign_cslav_words)
