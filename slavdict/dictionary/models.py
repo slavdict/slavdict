@@ -13,6 +13,7 @@ from django.db.models import PositiveIntegerField
 from django.db.models import PositiveSmallIntegerField
 from django.db.models import SmallIntegerField
 from django.db.models import TextField
+from django.utils.safestring import mark_safe
 
 from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
@@ -1164,7 +1165,7 @@ class CollocationGroup(models.Model):
                 self.base_meaning and self.base_meaning.host_entry)
 
     @property
-    def first_meaning_for_admin(self):
+    def meanings_for_admin(self):
         meanings = self.meanings
         text = u''
         n = len(meanings)
@@ -1178,8 +1179,28 @@ class CollocationGroup(models.Model):
             if meaning.meaning.strip():
                 text += u' %s%s' % (number, meaning.meaning)
             if meaning.gloss.strip():
-                text += u' [[%s]]' % meaning.gloss
-        return text
+                text += u' <em>%s</em>' % meaning.gloss
+        return mark_safe(text)
+
+    @property
+    def examples_for_admin(self):
+        examples = []
+        n = 0
+        for meaning in self.meanings:
+            n += len(meaning.examples)
+            for example in meaning.examples:
+                examples.append(example.example)
+            for child_meaning in meaning.child_meanings:
+                n += len(child_meaning.examples)
+                for example in child_meaning.examples:
+                    examples.append(example.example)
+        if len(examples) == 0:
+            text = u''
+        elif len(examples) == 1:
+            text = examples[0]
+        else:
+            text = u'<ol>%s</ol>' % u''.join(u'<li>%s</li>' % ex for ex in examples)
+        return mark_safe(text)
 
     meanings = property(meanings)
     metaph_meanings = property(metaph_meanings)
