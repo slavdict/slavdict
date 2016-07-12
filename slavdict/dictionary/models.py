@@ -1130,6 +1130,8 @@ class CollocationGroup(models.Model):
             help_text=u'''Значение, при котором будет стоять словосочетание.''',
             related_name='collocationgroup_set', blank=True, null=True)
 
+    phraseological = BooleanField(u'фразеологизм', default=False)
+
     link_to_entry = ForeignKey(Entry, verbose_name=u'ссылка на лексему',
             help_text=u'''Если вместо значений словосочетания должна быть
             только ссылка на словарную статью, укажите её в данном поле.''',
@@ -1205,15 +1207,15 @@ class Collocation(models.Model):
                             verbose_name=u'группа словосочетаний',
                             related_name='collocation_set')
 
-    collocation = CharField(u'словосочетание', max_length=70)
+    collocation = CharField(u'словосочетание', max_length=200)
 
     @property
     def collocation_ucs(self):
         return ucs_convert(self.collocation)
 
-    civil_equivalent = CharField(u'гражданское написание', max_length=50,
+    civil_equivalent = CharField(u'гражданское написание', max_length=350,
                                  blank=True)
-    civil_inverse = CharField(u'гражд. инв.', max_length=50)
+    civil_inverse = CharField(u'гражд. инв.', max_length=350)
 
     order = SmallIntegerField(u'порядок следования', blank=True, default=0)
 
