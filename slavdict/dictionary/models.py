@@ -1163,6 +1163,24 @@ class CollocationGroup(models.Model):
         return (self.base_entry or
                 self.base_meaning and self.base_meaning.host_entry)
 
+    @property
+    def first_meaning_for_admin(self):
+        meanings = self.meanings
+        text = u''
+        n = len(meanings)
+        if n > 1:
+            text = u'[%s]' % n
+        for i, meaning in enumerate(meanings):
+            if n > 1:
+                number = u'%s) ' % unicode(i + 1)
+            else:
+                number = u''
+            if meaning.meaning.strip():
+                text += u' %s%s' % (number, meaning.meaning)
+            if meaning.gloss.strip():
+                text += u' [[%s]]' % meaning.gloss
+        return text
+
     meanings = property(meanings)
     metaph_meanings = property(metaph_meanings)
     all_meanings = property(all_meanings)

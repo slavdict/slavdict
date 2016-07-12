@@ -565,7 +565,7 @@ class AdminCollocationGroup(admin.ModelAdmin):
         )
     ordering = ('-id',)
     filter_horizontal = ('cf_entries', 'cf_meanings')
-    list_display = ('id', 'phraseological', '__unicode__')
+    list_display = ('id', 'phraseological', '__unicode__', 'first_meaning_for_admin')
     list_display_links = ('id', '__unicode__')
     list_editable = ('phraseological',)
     search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')
