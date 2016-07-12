@@ -20,12 +20,12 @@
 {% for m in cg.meanings %}
     {% if cg.meanings|length != 1 %}
         {% set cgmnumber = {1:'а', 2:'б', 3:'в', 4:'г', 5:'д'}[loop.index] %}
-        {{ backspace }}{{ space }}{{ space }}{{ space }}{{ space }}
+        {{ backspace }}{{ space }}
         <collogroup-meaning-number aid:cstyle="CgMeaningNumber">
-            {{ cgmnumber }}
-        </collogroup-meaning-number>{{ nbsp }}{{ nbsp }}
+            {{ cgmnumber }}.
+        </collogroup-meaning-number>{{ nbsp }}
     {% else %}
-        {{ backspace }}{{ space }}{{ space }}
+        {{ backspace }}{{ space }}
     {% endif %}
     {% include 'indesign/meaning_with_children.xml' %}
 {% endfor %}
