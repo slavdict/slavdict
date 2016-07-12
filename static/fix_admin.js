@@ -259,7 +259,6 @@
             }
         });
 
-        
         // для словосочетаний
         $('input[name|="collocation_set"]')
             .filter('input[name$="-civil_equivalent"]')
@@ -303,6 +302,9 @@
                     }
                 });
             });
+
+        $('input[id$="phraseological"]').wrap('<label></label>');
+
 
         /* Действия, которые необходимо отложить хотя бы на секунду, чтобы они
          * были успешно выполнены. */
