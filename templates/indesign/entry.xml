@@ -1,23 +1,27 @@
 {% from 'indesign/etymology.xml'   import etymology    with context %}
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
-<entry>
-    <p aid:pstyle="FirstParagraph">
+<entry id="en{{ entry }}">
+    <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
 
     {% for base_var in entry.base_vars %}
         {% if loop.first %}
             {# pass #}
         {% elif loop.last %}
-            {{ backspace }}{{ space }}<i>и<i>{{ space }}
-            {# FIXME: нужен ли неразрывный пробел #}
+            {{ backspace }}{{ nbsp }}
+            <i aid:cstyle="Em">и</i>{{ space }}
         {% else %}
-            {{ backspace }},{{ space }}
+            {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
         {% endif %}
 
-        <headword>{{ base_var.idem_ucs }}</headword>
+        <headword aid:cstyle="Headword">
+            {{ base_var.idem_ucs|e }}
+        </headword>
         {% if loop.first %}
             {% if entry.homonym_order %}
-                <homonym-number>{{ entry.homonym_order }}</homonym-number>
+                <homonym-number aid:cstyle="HeadwordHomonymNumber">
+                    {{ entry.homonym_order }}
+                </homonym-number>
                 {{ space }}
             {% endif %}
             {% if entry.questionable_headword %}
@@ -29,15 +33,17 @@
         {% for var in base_var.childvars %}
 
             {% if loop.first %}
-                <text>(</text>
+                <text aid:cstyle="Text">(</text>
             {% endif %}
 
-            <var>{{ var.idem_ucs }}</var>
+            <var aid:cstyle="CSLSegment">
+                {{ var.idem_ucs|e }}
+            </var>
 
             {% if loop.last %}
-                {{ backspace }}<text>)</text>{{ space }}
+                {{ backspace }}<text aid:cstyle="Text">)</text>{{ space }}
             {% else %}
-                {{ backspace }}<text>,</text>{{ space }}
+                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
 
         {% endfor %}
@@ -46,87 +52,112 @@
 
 
     {% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %}
-        {{ backspace }}<text>,</text>{{ space }}
+        {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
     {% endif %}
 
 
     {% if entry.short_form %}
         {% if entry.short_form_ucs_wax.0 %}
-            <text>{{ nbhyphen }}</text>
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        <csl>{{ entry.short_form_ucs_wax.1|ind_cslav_words }}</csl>
+        <csl>
+            {{ entry.short_form_ucs_wax.1|ind_cslav_words }}
+        </csl>
         {{ space }}
     {% endif %}
 
     {% if entry.genitive %}
         {% if entry.genitive_ucs_wax.0 %}
-            <text>{{ nbhyphen }}</text>
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        <csl>{{ entry.genitive_ucs_wax.1|ind_cslav_words }}</csl>
+        <csl>
+            {{ entry.genitive_ucs_wax.1|ind_cslav_words }}
+        </csl>
         {{ space }}
     {% endif %}
 
     {% if entry.sg1 %}
         {% if entry.sg1_ucs_wax.0 %}
-            <text>{{ nbhyphen }}</text>
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        <csl>{{ entry.sg1_ucs_wax.1|ind_cslav_words }}</csl>
+        <csl>
+            {{ entry.sg1_ucs_wax.1|ind_cslav_words }}
+        </csl>
         {% if entry.sg2 %}
-            <text>,</text>
+            <text aid:cstyle="Text">,</text>
         {%endif %}
         {{ space }}
     {% endif %}
 
     {% if entry.sg2 %}
         {% if entry.sg2_ucs_wax.0 %}
-            <text>{{ nbhyphen }}</text>
+            <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        <csl>{{ entry.sg2_ucs_wax.1|ind_cslav_words }}</csl>
+        <csl>
+            {{ entry.sg2_ucs_wax.1|ind_cslav_words }}
+        </csl>
         {{ space }}
     {% endif %}
 
     {% if entry.uninflected %}
-        <i>неизм.</i>
+        <i aid:cstyle="Em">
+            неизм.
+        </i>
         {{ space }}
     {% endif %}
 
     {% if entry.possessive %}
-        <i>притяж.</i>
+        <i aid:cstyle="Em">
+            притяж.
+        </i>
         {{ space }}
     {% endif %}
 
 
     {% if entry.participle_type %}
-        <i>{{ entry.get_participle_type_display() }}</i>
+        <i aid:cstyle="Em">
+            {{ entry.get_participle_type_display() }}
+        </i>
         {{ space }}
     {% else %}
         {% if entry.part_of_speech %}
             {% if not entry.is_part_of_speech("letter") and
                   not entry.is_part_of_speech("number") and
                   not entry.is_part_of_speech("noun") %}
-            <i>{{ entry.get_part_of_speech_display() }}</i>
+                <i aid:cstyle="Em">
+                    {{ entry.get_part_of_speech_display() }}
+                </i>
             {% endif %}
         {% endif %}
 
-        {{ space }}
+        {{ backspace }}{{ space }}
         {% if entry.gender %}
-            {{ backspace }}<text>,</text>{{ space }}
-            <i>{{ entry.get_gender_display() }}</i>
+            <i aid:cstyle="Em">
+                {{ entry.get_gender_display() }}
+            </i>
             {{ space }}
         {% endif %}
     {% endif %}
 
 
     {% if entry.tantum %}
-        <i>{{ entry.get_tantum_display() }}</i>
+        {{ backspace }}{{ space }}
+        <i aid:cstyle="Em">
+            {{ entry.get_tantum_display() }}
+        </i>
         {{ space }}
     {% endif %}
 
     {% if entry.is_onym('ethnonym') and entry.nom_sg %}
-        <i>мн.</i>
+        <i aid:cstyle="Em">
+            мн.
+        </i>
         {{ space }}
         {% if entry.nom_sg_ucs_wax.0 %}{{ nbhyphen }}{%endif %}
-        <csl>{{ entry.nom_sg_ucs_wax.1|ind_cslav_words }}</csl>
+        <csl>
+            {{ entry.nom_sg_ucs_wax.1|ind_cslav_words }}
+        </csl>
+        {{ space }}
     {% endif %}
 
 
@@ -142,23 +173,35 @@
 
 
     {% if entry.is_onym('anthroponym') %}
-        <i>имя собств.</i>
+        <i aid:cstyle="Em">
+            имя собств.
+        </i>
         {% if entry.canonical_name %}
-            <text>,</text>{{ space }}
-            <i>канонич.</i>
+            {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+            <i aid:cstyle="Em">
+                канонич.
+            </i>
         {% endif %}
         {{ space }}
     {% endif %}
 
     {% if entry.is_onym('toponym') %}
-        <i>топоним</i>{{ space }}
+        <i aid:cstyle="Em">
+            топоним
+        </i>{{ space }}
     {% endif %}
 
 
     {% for m in entry.meanings %}
         {% set mnumber = loop.index %}
-        {% if not entry.meanings|length == 1 %}
-            <meaning-number>{{ mnumber }}.</meaning-number>{{ space }}
+        {% if entry.meanings|length > 1 and loop.first %}
+            {{ backspace }}</p>{{ newline }}
+        {% endif %}
+        {% if entry.meanings|length > 1 %}
+            <p aid:pstyle="Paragraph" aid:cstyle="Text">
+            <meaning-number aid:cstyle="MeaningNumber">
+                {{ mnumber }}.
+            </meaning-number>{{ nbsp }}
         {% endif %}
 
         {% include 'indesign/meaning_with_children.xml' with context %}
@@ -166,6 +209,10 @@
         {% for cg in m.collogroups %}
             {% include 'indesign/collogroup.xml' %}
         {% endfor %}
+
+        {% if not loop.last %}
+            {{ backspace }}</p>{{ newline }}
+        {% endif %}
     {% endfor %}
 
 
@@ -185,32 +232,40 @@
 
 
     {% if entry.cfentries or entry.cfcollogroups %}
-        <i>—Ср.{{ nbsp }}</i>
+        {{ backspace }}{{ nbsp }}
+        <i aid:cstyle="Em">
+            —Ср.
+        </i>{{ nbsp }}
 
         {% for cfe in entry.cfentries %}
 
-            {% if not loop.first and
-                    not (loop.last and not entry.cfcollogroups) %}
-                {{ backspace }}<text>,</text>{{ space }}
+            {% if not loop.first %}
+                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
 
-            <csl>{{ cfe.orth_vars.0.idem_ucs|ind_cslav_words }}</csl>
+            <csl>
+                {{ cfe.orth_vars.0.idem_ucs|ind_cslav_words }}
+            </csl>
 
             {% if cfe.homonym_order %}
-                <homonym-number>{{ cfe.homonym_order }}</homonym-number>
+                <homonym-number aid:cstyle="HeadwordNumber">
+                    {{ cfe.homonym_order }}
+                </homonym-number>
             {% endif %}
         {% endfor %}
 
         {% for cfcg in entry.cfcollogroups %}
-            {% if (not loop.first or entry.cfentries) and not loop.last %}
-                {{ backspace }}<text>,</text>{{ space }}
+            {% if not loop.first or entry.cfentries %}
+                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
-            <csl>{{ cfcg.collocations.0.collocation_ucs|ind_cslav_words }}</csl>
+            <csl>
+                {{ cfcg.collocations.0.collocation_ucs|ind_cslav_words }}
+            </csl>
         {% endfor %}
-        {{ backspace }}<text>.</text>
+        {{ backspace }}<text aid:cstyle="Text">.</text>
     {% endif %}
 
-    </p>
+    {{ backspace }}</p>
 </entry>
 
 {# vim: set ft=django.xml: #}

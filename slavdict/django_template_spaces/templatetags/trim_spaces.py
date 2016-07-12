@@ -100,7 +100,7 @@ from jinja2 import nodes
 from jinja2.ext import Extension
 from coffin import template
 
-from slavdict.dictionary.models import ucs_convert
+from slavdict.dictionary.models import ucs_convert, html_escape, html_unescape
 
 register = template.Library()
 BACKSPACE = u'\u0008'
@@ -185,10 +185,28 @@ def cslav_nobr_words(value):
     words = (pattern % word for word in value.split())
     return u'&#32;'.join(words)
 
-def indesign_cslav_words(value):
+def make_soft_hyphens(segment):
+    text = segment[:2]
+    for c in segment[2:-2]:
+        if c not in u'!#$%&+,-.12345678:;<=>?@C\\^_bcdg~·':
+            text += u'\u00AD' + c
+        else:
+            text += c
+    if len(segment) > 3:
+        text += segment[-2:]
+    elif len(segment) == 3:
+        text += segment[-1:]
+    return text
+
+def indesign_cslav_words(value, *args):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
-    TEXT_TAG = u'<text>%s</text>'
-    CSL_TAG = u'<w>%s</w>'
+    if value is None:
+        value = u''
+    cstyle = u'CSLSegment'
+    if args:
+        cstyle = args[0]
+    TEXT_TAG = u'<text aid:cstyle="TextInCSL">%s</text>'
+    CSL_TAG = u'<w aid:cstyle="{}">%s</w>'.format(cstyle)
     # многоточие
     RE_DOTS = ur'\.\.\.'
     # круглые, квадратные скобки и косая черта
@@ -206,7 +224,7 @@ def indesign_cslav_words(value):
             right = segment[end:]
 
             if left:
-                parts.append(CSL_TAG % left)
+                parts.append(CSL_TAG % html_escape(make_soft_hyphens(left)))
 
             center = re.sub(RE_BRACES_SLASH, TEXT_TAG % u'\g<0>', center)
             # NOTE: Замена точек должна происходить после замены скобок
@@ -217,7 +235,7 @@ def indesign_cslav_words(value):
             segment = right
             m = RE.search(segment)
         if segment:
-            parts.append(CSL_TAG % segment)
+            parts.append(CSL_TAG % html_escape(make_soft_hyphens(segment)))
         segments.append(u''.join(parts))
     return SPACE.join(segments)
 
@@ -230,6 +248,15 @@ def cslav_injection(value):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
     value = re.sub(ur'##(.*?)##', cslav_subst, value)
+    return value
+
+@register.filter
+def ind_cslav_injection(value):
+    """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
+    """
+    TAG = u'<csl aid:cstyle="CSL">%s</csl>'
+    func = lambda x: TAG % indesign_cslav_words(ucs_convert(x.group(1)))
+    value = re.sub(ur'##(.*?)##', func, value)
     return value
 
 register.filter(name='cslav_words')(cslav_nobr_words)

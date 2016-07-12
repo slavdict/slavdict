@@ -11,7 +11,7 @@
     {% if m.metaphorical %}
         {% include 'indesign/litsym.xml' %}
     {% elif loop.first and not m.metaphorical and not m.parent_meaning.examples %}
-        {{ backspace }}.{{ nbsp }}—{{ space }}
+        {{ backspace }}{{ nbsp }}<text aid:cstyle="Use">||</text>{{ nbsp }}
     {% endif %}
 
     {{ meaning(m, peer_meanings_loop=loop,

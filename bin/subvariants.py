@@ -19,16 +19,24 @@ def subvariants(arg):
         print 'wrong argument:', arg
     ids = [o.id for o in e.orth_vars]
 
-    with transaction.atomic():
-        text = u''
-        for basevar in e.base_vars:
-            text += u'%s\t%s\n' % (basevar.pk, basevar.idem)
-            for subvar in basevar.children.all():
-                text += u'\t%s\t%s\n' % (subvar.pk, subvar.idem)
-        print
-        print text
+    text = u''
+    for basevar in e.base_vars:
+        text += u'%s\t%s\n' % (basevar.pk, basevar.idem)
+        for subvar in basevar.children.all():
+            text += u'\t%s\t%s\n' % (subvar.pk, subvar.idem)
+    print
+    print text
 
-        text += u'''
+    x = raw_input(u'\nРедактировать? (Y/n/1): '.encode('utf-8'))
+    x = x.strip()
+    if not x or x.lower() in ('y', 'ye', 'yes', u'да', u'д'):
+        do_special = False
+    elif x == u'1':
+        do_special = True
+    else:
+        return
+
+    text += u'''
 # Для изменения порядка следования вариантов расположите строки в нужном
 # порядке. Иерархические отношения задавайте отступами в начале строки. Если
 # отступ в начале строки есть, значит данный вариант является подвариантом
@@ -38,54 +46,66 @@ def subvariants(arg):
 # знак плюса. Для удаления варианта добавьте впритык к идентификатору минус
 # слева или справа.'''
 
-        with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:
-            tf.write(text.encode('utf-8'))
-            tf.flush()
-            subprocess.call([EDITOR, tf.name])
-            tf.seek(0)
-            edited_text = tf.readlines()
+    with transaction.atomic():
 
-        n = 0
-        parent = None
-        r = re.compile(u'\s+')
-        for line in filter(lambda x:x.strip() and x[:1] != u'#', edited_text):
-            n += 1
-            oid, wordform = r.split(line.strip())
-            if oid == '+':
-                o = OrthographicVariant(idem=wordform, entry=e)
-            elif oid.strip('-').isdigit():
-                if u'-' in oid:
-                    do_delete = True
-                else:
-                    do_delete = False
-                if do_delete:
-                    oid = int(oid.strip('-'))
-                    for oo in e.orth_vars:
-                        if oo.parent and oo.parent.id == oid:
-                            oo.parent = None
-                            oo.save()
-                else:
-                    oid = int(oid)
-                assert oid in ids
-                o = OrthographicVariant.objects.get(pk=oid)
-                if do_delete:
-                    o.delete()
-                    continue
-            o.order = n
-            if line.lstrip() == line:
-                o.parent = None
-                parent = o
-            else:
-                o.parent = parent
+        if do_special:
+            o = e.orth_vars[0]
+            o.parent = None
             o.save()
+            for oo in e.orth_vars[1:]:
+                oo.parent = o
+                oo.save()
+        else:
+            with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:
+                tf.write(text.encode('utf-8'))
+                tf.flush()
+                subprocess.call([EDITOR, tf.name])
+                tf.seek(0)
+                edited_text = tf.readlines()
 
-        text = u''
-        for basevar in e.base_vars:
-            text += u'%s\t%s\n' % (basevar.pk, basevar.idem)
-            for subvar in basevar.children.all():
-                text += u'\t%s\t%s\n' % (subvar.pk, subvar.idem)
-        print '-' * 10
-        print text
+            n = 0
+            parent = None
+            r = re.compile(u'\s+')
+            lines = filter(lambda x:x.strip() and x[:1] != u'#', edited_text)
+            for line in lines:
+                n += 1
+                oid, wordform = r.split(line.strip())
+                if oid == '+':
+                    o = OrthographicVariant(idem=wordform, entry=e)
+                elif oid.strip('-').isdigit():
+                    if u'-' in oid:
+                        do_delete = True
+                    else:
+                        do_delete = False
+                    if do_delete:
+                        oid = int(oid.strip('-'))
+                        for oo in e.orth_vars:
+                            if oo.parent and oo.parent.id == oid:
+                                oo.parent = None
+                                oo.save()
+                    else:
+                        oid = int(oid)
+                    assert oid in ids
+                    o = OrthographicVariant.objects.get(pk=oid)
+                    if do_delete:
+                        o.delete()
+                        continue
+                o.idem = wordform
+                o.order = n
+                if line.lstrip() == line:
+                    o.parent = None
+                    parent = o
+                else:
+                    o.parent = parent
+                o.save()
+
+    text = u''
+    for basevar in e.base_vars:
+        text += u'%s\t%s\n' % (basevar.pk, basevar.idem)
+        for subvar in basevar.children.all():
+            text += u'\t%s\t%s\n' % (subvar.pk, subvar.idem)
+    print '-' * 10
+    print text
 
     x = raw_input(u'\nЗакончить редактирование? (Y/n): '.encode('utf-8'))
     x = x.strip()

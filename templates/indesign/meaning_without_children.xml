@@ -2,15 +2,15 @@
 {% from 'indesign/example.xml' import example with context %}
 
 {% if m.contexts %}
+    <meaning-context>
     {% for mc in m.contexts %}
 
         {% if loop.first %}
-            <meaning-context>
-            [
+                <text aid:cstyle="Text">[</text>
         {% endif %}
 
         {% if mc.left_text %}
-            <i>{{ mc.left_text }}</i>
+            <i aid:cstyle="Em">{{ mc.left_text }}</i>
             {{ space }}
         {% endif %}
 
@@ -20,45 +20,46 @@
         {% endif %}
 
         {% if mc.right_text %}
-            <i>{{ mc.right_text }}</i>
+            <i aid:cstyle="Em">{{ mc.right_text }}</i>
         {% endif %}
 
-        {% if not loop.last %}
-            {{ backspace }},{{ space }}
+        {% if loop.last %}
+            {{ backspace }}<text aid:cstyle="Text">]</text>
         {% else %}
-            {{ backspace }}]</meaning-context>{{ space }}
+            {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
         {% endif %}
 
     {% endfor %}
+    </meaning-context>{{ space }}
 {% endif %}
 
 {% if m.substantivus %}
-    <i>в{{ nbsp }}роли сущ.</i>
+    <i aid:cstyle="Em">в{{ nbsp }}роли сущ.</i>
     {{ space }}
     {% if m.substantivus_type %}
-        <i>{{ m.get_substantivus_type_display() }}</i>{{ space }}
+        <i aid:cstyle="Em">{{ m.get_substantivus_type_display() }}</i>{{ space }}
     {% endif %}
 {% endif %}
 
 
 {% if m.figurative %}
-    <i>перен.</i>{{ space }}
+    <i aid:cstyle="Em">перен.</i>{{ space }}
 {% endif %}
 
 {% if m.meaning %}
-    <meaning>{{ m.meaning|cslav_injection }}</meaning>
+    <meaning aid:cstyle="Text">{{ m.meaning|ind_cslav_injection }}</meaning>
 {% endif %}
 
 {% if m.gloss %}
     {% if m.meaning or m.greek_equivs %}
-        {{ backspace }};{{ space }}
+        {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
     {% endif %}
-    <gloss>{{ m.gloss|cslav_injection }}</gloss>
+    <gloss aid:cstyle="Em">{{ m.gloss|ind_cslav_injection }}</gloss>
     {{ space }}
 {% endif %}
 
-{% if m.examples %}
-    {{ backspace }}:{{ space }}
+{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss) and m.examples %}
+    {{ backspace }}<text aid:cstyle="Text">:</text>{{ space }}
 {% endif %}
 
 {% for e in m.examples %}

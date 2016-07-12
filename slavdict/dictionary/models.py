@@ -28,9 +28,22 @@ compiled_conversion_without_aspiration = compile_conversion(
         antconc_ucs8_without_aspiration.conversion)
 compiled_conversion_civil = compile_conversion(antconc_civilrus.conversion)
 
+def html_escape(text):
+    text = text.replace(u'&', u'&amp;')
+    text = text.replace(u'<', u'&lt;')
+    text = text.replace(u'>', u'&gt;')
+    text = text.replace(u'"', u'&#34;')
+    return text.replace(u"'", u'&#39;')
+
+def html_unescape(text):
+    text = text.replace(u'&#39;', u"'")
+    text = text.replace(u'&#34;', u'"')
+    text = text.replace(u'&gt;',  u'>')
+    text = text.replace(u'&lt;',  u'<')
+    return text.replace(u'&amp;', u'&')
 
 def ucs_convert(text):
-    return convert(text, compiled_conversion_with_aspiration)
+    return html_escape(convert(text, compiled_conversion_with_aspiration))
 
 
 def ucs_convert_affix(text):
@@ -44,8 +57,7 @@ def ucs_convert_affix(text):
     if text:
         if text[0] == u'-':
             text = text[1:]
-        return convert(text, compiled_conversion_without_aspiration)
-    return text
+        return html_escape(convert(text, compiled_conversion_without_aspiration))
 
 
 def civilrus_convert(word):
@@ -1118,6 +1130,8 @@ class CollocationGroup(models.Model):
             help_text=u'''Значение, при котором будет стоять словосочетание.''',
             related_name='collocationgroup_set', blank=True, null=True)
 
+    phraseological = BooleanField(u'фразеологизм', default=False)
+
     link_to_entry = ForeignKey(Entry, verbose_name=u'ссылка на лексему',
             help_text=u'''Если вместо значений словосочетания должна быть
             только ссылка на словарную статью, укажите её в данном поле.''',
@@ -1148,6 +1162,24 @@ class CollocationGroup(models.Model):
     def host_entry(self):
         return (self.base_entry or
                 self.base_meaning and self.base_meaning.host_entry)
+
+    @property
+    def first_meaning_for_admin(self):
+        meanings = self.meanings
+        text = u''
+        n = len(meanings)
+        if n > 1:
+            text = u'[%s]' % n
+        for i, meaning in enumerate(meanings):
+            if n > 1:
+                number = u'%s) ' % unicode(i + 1)
+            else:
+                number = u''
+            if meaning.meaning.strip():
+                text += u' %s%s' % (number, meaning.meaning)
+            if meaning.gloss.strip():
+                text += u' [[%s]]' % meaning.gloss
+        return text
 
     meanings = property(meanings)
     metaph_meanings = property(metaph_meanings)
@@ -1193,15 +1225,15 @@ class Collocation(models.Model):
                             verbose_name=u'группа словосочетаний',
                             related_name='collocation_set')
 
-    collocation = CharField(u'словосочетание', max_length=70)
+    collocation = CharField(u'словосочетание', max_length=200)
 
     @property
     def collocation_ucs(self):
         return ucs_convert(self.collocation)
 
-    civil_equivalent = CharField(u'гражданское написание', max_length=50,
+    civil_equivalent = CharField(u'гражданское написание', max_length=350,
                                  blank=True)
-    civil_inverse = CharField(u'гражд. инв.', max_length=50)
+    civil_inverse = CharField(u'гражд. инв.', max_length=350)
 
     order = SmallIntegerField(u'порядок следования', blank=True, default=0)
 

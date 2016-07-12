@@ -7,7 +7,7 @@
         {% else %}
             {% include 'indesign/entry.xml' with context %}
         {% endif %}
-        {{ backspace }}{{ newline }}{{ newline }}
+        {{ backspace }}{{ newline }}
     {% endfor %}
 </slavdict>
 {# vim: set ft=django.xml: #}

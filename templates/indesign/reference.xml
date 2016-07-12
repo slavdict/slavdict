@@ -1,12 +1,15 @@
-<entry>
+<entry id="en{{ entry.id }}{{ reference|e }}">
     <p aid:pstyle="FirstParagraph">
 
-        <headword>{{ reference }}</headword>
-        {{ space }}
-        <i>см.<i>
-        <csl>{{ entry.base_vars.0 }}</csl>
+        <headword aid:cstyle="Headword">
+            {{ reference|e }}
+        </headword>{{ space }}
+        <i aid:cstyle="Em">см.</i>{{ nbsp }}
+        <csl aid:cstyle="CSLSegment">{{ entry.base_vars.0.idem_ucs }}</csl>
         {% if entry.homonym_order %}
-            <homonym-number>{{ entry.homonym_order }}</homonym-number>
+            <homonym-number aid:cstyle="HomonymNumber">
+                {{ entry.homonym_order }}
+            </homonym-number>
         {% endif %}
 
     </p>
