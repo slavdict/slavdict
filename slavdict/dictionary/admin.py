@@ -7,20 +7,41 @@ from django.db import models
 from django.http import HttpResponseRedirect
 
 from slavdict.admin import ui
+from slavdict.dictionary.models import Entry
 
 admin.site.login_template = ui.login_template
 
-def staff_has_add_permission(self, request):
+def staff_has_permission(self, request, obj=None):
+    if obj is None:
+        pass
+    elif isinstance(obj, Entry):
+        if request.user.preplock and obj.first_volume:
+            return False
+    else:
+        try:
+            entry = obj.host_entry
+        except:
+            return False
+        else:
+            if request.user.preplock and entry.first_volume:
+                return False
     return request.user.is_staff
 
-def staff_has_change_permission(self, request, obj=None):
-    return request.user.is_staff
-
-def superuser_has_delete_permission(self, request, obj=None):
+def superuser_has_permission(self, request, obj=None):
+    if obj is None:
+        pass
+    elif isinstance(obj, Entry):
+        if request.user.preplock and obj.first_volume:
+            return False
+    else:
+        try:
+            entry = obj.host_entry
+        except:
+            return False
+        else:
+            if request.user.preplock and entry.first_volume:
+                return False
     return request.user.is_superuser
-
-def staff_has_delete_permission(self, request, obj=None):
-    return request.user.is_staff
 
 
 def _orth_vars(obj):
@@ -218,9 +239,9 @@ class AdminExample(admin.ModelAdmin):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
 
-AdminExample.has_add_permission = staff_has_add_permission
-AdminExample.has_change_permission = staff_has_change_permission
-AdminExample.has_delete_permission = staff_has_delete_permission
+AdminExample.has_add_permission = staff_has_permission
+AdminExample.has_change_permission = staff_has_permission
+AdminExample.has_delete_permission = staff_has_permission
 
 admin.site.register(Example, AdminExample)
 ui.register(Example, AdminExample)
@@ -300,9 +321,9 @@ class AdminMeaning(admin.ModelAdmin):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
 
-AdminMeaning.has_add_permission = staff_has_add_permission
-AdminMeaning.has_change_permission = staff_has_change_permission
-AdminMeaning.has_delete_permission = staff_has_delete_permission
+AdminMeaning.has_add_permission = staff_has_permission
+AdminMeaning.has_change_permission = staff_has_permission
+AdminMeaning.has_delete_permission = staff_has_permission
 
 class AdminMeaningUI(AdminMeaning):
     pass
@@ -485,9 +506,9 @@ class AdminEntry(admin.ModelAdmin):
         post_url_continue = obj.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
 
-AdminEntry.has_add_permission = staff_has_add_permission
-AdminEntry.has_change_permission = staff_has_change_permission
-AdminEntry.has_delete_permission = superuser_has_delete_permission
+AdminEntry.has_add_permission = staff_has_permission
+AdminEntry.has_change_permission = staff_has_permission
+AdminEntry.has_delete_permission = superuser_has_permission
 
 
 class AdminEntryADMIN(AdminEntry):
@@ -523,7 +544,7 @@ from slavdict.dictionary.models import Collocation
 #        post_url_continue = obj.host_entry.get_absolute_url()
 #        return HttpResponseRedirect(post_url_continue + 'intermed/')
 #
-#AdminCollocation.has_add_permission = staff_has_add_permission
+#AdminCollocation.has_add_permission = staff_has_permission
 #AdminCollocation.has_change_permission = staff_has_change_permission
 #AdminCollocation.has_delete_permission = staff_has_delete_permission
 #
@@ -585,9 +606,9 @@ class AdminCollocationGroup(admin.ModelAdmin):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
 
-AdminCollocationGroup.has_add_permission = staff_has_add_permission
-AdminCollocationGroup.has_change_permission = staff_has_change_permission
-AdminCollocationGroup.has_delete_permission = staff_has_delete_permission
+AdminCollocationGroup.has_add_permission = staff_has_permission
+AdminCollocationGroup.has_change_permission = staff_has_permission
+AdminCollocationGroup.has_delete_permission = staff_has_permission
 
 class AdminCollocationGroupUI(AdminCollocationGroup):
     pass
