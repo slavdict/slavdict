@@ -1172,19 +1172,16 @@ class CollocationGroup(models.Model):
     @property
     def meanings_for_admin(self):
         meanings = self.meanings
-        text = u''
-        n = len(meanings)
-        if n > 1:
-            text = u'[%s]' % n
-        for i, meaning in enumerate(meanings):
-            if n > 1:
-                number = u'%s) ' % unicode(i + 1)
-            else:
-                number = u''
-            if meaning.meaning.strip():
-                text += u' %s%s' % (number, meaning.meaning)
-            if meaning.gloss.strip():
-                text += u' <em>%s</em>' % meaning.gloss
+        if len(meanings) == 0:
+            text = u''
+        elif len(meanings) == 1:
+            meaning = meanings[0]
+            text = u'%s <em>%s</em>' % (meaning.meaning, meaning.gloss)
+        else:
+            text = u'<ol>%s</ol>' % u''.join(
+                       [u'<li>%s <em>%s</em></li>' % (m.meaning, m.gloss)
+                        for m in meanings]
+                   )
         return mark_safe(text)
 
     @property
