@@ -563,6 +563,7 @@ class Collocation_Inline(admin.StackedInline):
 
 from slavdict.dictionary.models import CollocationGroup
 CollocationGroup.__unicode__=lambda self: _collocations(self)
+CollocationGroup.ENTRY = lambda self: self.host_entry.civil_equivalent
 class AdminCollocationGroup(admin.ModelAdmin):
     inlines = (Collocation_Inline,)
     raw_id_fields = (
@@ -589,6 +590,7 @@ class AdminCollocationGroup(admin.ModelAdmin):
     filter_horizontal = ('cf_entries', 'cf_meanings')
     list_display = (
         'id',
+        'ENTRY',
         'phraseological',
         '__unicode__',
         'meanings_for_admin',
