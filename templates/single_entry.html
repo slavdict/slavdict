@@ -14,8 +14,9 @@
 {% block content %}
 
     {% if not intermed %}
-        {% if not entry.authors.exists() or user.is_admeditor
-        or user in entry.authors.all() %}
+        {% if not (user.preplock and entry.first_volume)
+              and (not entry.authors.exists() or user.is_admeditor
+                   or user in entry.authors.all()) %}
             {% if not entry.duplicate or user.is_admeditor %}
             <div style="position: absolute; top: -3px; left: -40px;">
                 <a class="icon edit" href="javascript:

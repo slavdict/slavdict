@@ -407,9 +407,10 @@ def single_entry(request, entry_id, extra_context=None,
 
     if request.path.endswith('intermed/'):
         user_groups = [t[0] for t in user.groups.values_list('name')]
-        if (not entry.authors.exists() or user.is_superuser
-        or 'editors' in user_groups or 'admins' in user_groups
-        or user in entry.authors.all()):
+        if not (user.preplock and entry.first_volume) \
+                and (not entry.authors.exists() or user.is_superuser
+                     or 'editors' in user_groups or 'admins' in user_groups
+                     or user in entry.authors.all()):
             pass
         else:
             return redirect(entry.get_absolute_url())
@@ -800,6 +801,17 @@ def antconc2ucs8_converter(request):
 @login_required
 @never_cache
 def edit_entry(request, id):
+    entry = get_object_or_404(Entry, id=id)
+    user = request.user
+    user_groups = [t[0] for t in user.groups.values_list('name')]
+    if not (user.preplock and entry.first_volume) \
+            and (not entry.authors.exists() or user.is_superuser
+                 or 'editors' in user_groups or 'admins' in user_groups
+                 or user in entry.authors.all()):
+        pass
+    else:
+        return redirect(entry.get_absolute_url())
+
     choices = {
         'author': viewmodels.editAuthors,
         'entry_status': viewmodels.editStatuses,

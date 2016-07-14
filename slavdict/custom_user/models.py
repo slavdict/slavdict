@@ -22,9 +22,14 @@ class CustomUser(User):
     # create_user и т.п.
     objects = UserManager()
 
-    # принадлежит ли пользователь к одной из привиллегированных
-    # групп пользователей (является суперпользователем,
-    # администратором или редактором [в отл. от авторов])
+    @property
+    def preplock(self):
+        l = (u'\u0434\u043e\u0431\u0440\u043e\u0432',
+             u'\u0445\u0438\u0442\u0440')
+        return not self.last_name.lower().startswith(l)
+
+    # принадлежит ли пользователь к одной из привиллегированных групп (является
+    # суперпользователем, администратором или редактором [в отл. от авторов])
     @property
     def is_admeditor(self):
         user_groups = [i[0] for i in self.groups.values_list('name')]

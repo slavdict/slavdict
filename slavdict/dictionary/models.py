@@ -528,6 +528,11 @@ class Entry(models.Model):
     all_meanings = property(all_meanings)
     has_meanings = property(has_meanings)
 
+    @property
+    def first_volume(self):
+        letters = (u'а', u'б')
+        return self.civil_equivalent[:1].lower() in letters
+
     @models.permalink
     def get_absolute_url(self):
         return ('single_entry_url', [str(self.id)])
