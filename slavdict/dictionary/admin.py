@@ -583,8 +583,9 @@ class AdminCollocationGroup(admin.ModelAdmin):
             (u'Ср.',
                 {'fields': ('cf_entries', 'cf_meanings'),
                 'classes': ('collapse',)}),
+            (None, {'fields': (('phraseological',),) }),
         )
-    ordering = ('-id',)
+    ordering = ('collocation_set__collocation',)
     filter_horizontal = ('cf_entries', 'cf_meanings')
     list_display = (
         'id',
