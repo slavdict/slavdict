@@ -306,10 +306,12 @@
         /* Вся клетка с галочкой "фразеологизм" должна реагировать на щелчок
          * мыши, а не только сама галочка */
         $('input[id$="-phraseological"]').each(function(){
-            var x = $(this);
-            x.parent().click(function(){
-                x.prop('checked', !x.prop('checked'));
-            });
+            var x = $(this),
+                eventHandler = function () {
+                    x.prop('checked', !x.prop('checked'));
+                };
+            x.click(eventHandler);
+            x.parent().click(eventHandler);
         });
 
         /* Действия, которые необходимо отложить хотя бы на секунду, чтобы они
