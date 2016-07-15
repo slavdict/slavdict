@@ -227,12 +227,12 @@ def get_examples(form):
     assert not PARSING_ERRORS, u'Недопустимые значения параметров: %s' % PARSING_ERRORS
 
     # slavdict.dictionary.models.Entry.status
-    good_statuses = [
-            'g', # поиск греч.
-            'f', # завершена
-            'e', # редактируется
-            'a', # утверждена
-            ]
+    #good_statuses = [
+    #        'g', # поиск греч.
+    #        'f', # завершена
+    #        'e', # редактируется
+    #        'a', # утверждена
+    #        ]
     bad_statuses = [
             'c', # создана
             'w', # в работе
