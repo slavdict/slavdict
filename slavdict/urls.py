@@ -51,6 +51,9 @@ urlpatterns += patterns('slavdict.dictionary',
     url( r'^json/ex/save/$', 'jsonviews.json_ex_save', name="jsonExSaveURL"),
     url( r'^json/goodness/save/$', 'jsonviews.json_goodness_save', name="jsonGoodnessSaveURL"),
 
+    url( r'^urls/$', 'views.useful_urls', name="usefulURLs"),
+    url( r'^urls/([^/]+)/$', 'views.useful_urls', name="usefulURLsX"),
+
     # TODO: В последствии всё это должно быть удалено.
     url( r'^adhoc/csv-import/$', 'views.import_csv_billet' ),
     url( r'^adhoc/dump/$', 'views.dump' ),

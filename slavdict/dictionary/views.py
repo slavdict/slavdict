@@ -28,6 +28,7 @@ from slavdict.dictionary.forms import BilletImportForm
 from slavdict.dictionary.forms import FilterEntriesForm
 from slavdict.dictionary.forms import FilterExamplesForm
 from slavdict.dictionary.models import civilrus_convert
+from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
@@ -875,3 +876,31 @@ def dump(request):
     else:
         os.wait()
     return  HttpResponseRedirect('/')
+
+
+
+def useful_urls_redirect(uri):
+    cgURI = '/admin/dictionary/collocationgroup/?id__in='
+    if uri == 'all-collocations':
+        cgs = [cg for cg in CollocationGroup.objects.all()
+                  if cg.host_entry.first_volume]
+        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
+    return  HttpResponseRedirect(uri)
+
+
+@login_required
+@never_cache
+def useful_urls(request, x=None):
+    urls = (
+            (u'Словосочетания', (
+                    (u'Все словосочетания', 'all-collocations'),
+                )),
+    )
+    if x:
+        for section, data in urls:
+            for name, uri in data:
+                if x == uri:
+                    return useful_urls_redirect(uri)
+    context = { 'urls': urls }
+    return render_to_response('useful_urls.html', context,
+                              RequestContext(request))

@@ -49,6 +49,12 @@
             class="header--item button">Греческий кабинет</a>
     {% endif %}
 
+    {% if not user.preplock %}
+        {{ space }}
+        <a href="{% url 'usefulURLs' %}"
+            class="header--item button">Ускоряторы</a>
+    {% endif %}
+
     <span class="right-justification">
         <a href="https://docs.google.com/document/d/1AmrZZgBa4BdTlhvyyBEN8n5KYD0-f_AC04Jd-v_pdjU"
            class="header--item button"
