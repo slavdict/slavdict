@@ -5,6 +5,7 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 from django.http import HttpResponseRedirect
+from django.utils.safestring import mark_safe
 
 from slavdict.admin import ui
 from slavdict.dictionary.models import Entry
@@ -43,6 +44,14 @@ def superuser_has_permission(self, request, obj=None):
                 return False
     return request.user.is_superuser
 
+def host_entry(self):
+    try:
+        entry = self.host_entry
+    except:
+        return u'не относится ни к какой статье'
+    else:
+        html = u'<a href="%s">%s</a>' % (entry.get_absolute_url(), entry.civil_equivalent)
+        return mark_safe(html)
 
 def _orth_vars(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('id')]
@@ -555,7 +564,7 @@ class Collocation_Inline(admin.StackedInline):
     model = Collocation
     extra = 1
     fieldsets = (
-            (None, {'fields': ('collocation', 'civil_equivalent')}),
+            (None, {'fields': ('collocation', 'civil_equivalent', 'order')}),
         )
 
 
@@ -563,7 +572,7 @@ class Collocation_Inline(admin.StackedInline):
 
 from slavdict.dictionary.models import CollocationGroup
 CollocationGroup.__unicode__=lambda self: _collocations(self)
-CollocationGroup.ENTRY = lambda self: self.host_entry.civil_equivalent
+CollocationGroup._entry = host_entry
 class AdminCollocationGroup(admin.ModelAdmin):
     inlines = (Collocation_Inline,)
     raw_id_fields = (
@@ -590,7 +599,7 @@ class AdminCollocationGroup(admin.ModelAdmin):
     filter_horizontal = ('cf_entries', 'cf_meanings')
     list_display = (
         'id',
-        'ENTRY',
+        '_entry',
         'phraseological',
         '__unicode__',
         'meanings_for_admin',

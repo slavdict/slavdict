@@ -1258,7 +1258,7 @@ class Collocation(models.Model):
                                  blank=True)
     civil_inverse = CharField(u'гражд. инв.', max_length=350)
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=10)
 
     @property
     def etymologies(self):
