@@ -936,7 +936,9 @@ class Meaning(models.Model):
 
     @property
     def host(self):
-        if self.entry_container:
+        if self.parent_meaning:
+            return self.parent_meaning.host
+        elif self.entry_container:
             return self.entry_container
         else:
             return self.collogroup_container

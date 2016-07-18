@@ -35,6 +35,7 @@ from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
+from slavdict.dictionary.models import Meaning
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.middleware import InvalidCookieError
 
@@ -914,12 +915,9 @@ def useful_urls_redirect(uri, request):
                                   RequestContext(request))
 
     elif uri == 'collocs-litsym':
-        cgs = (cg for cg in cgs
-               if any(m.metaphorical
-                      for m in cg.meanings)
-               or any(cm.metaphorical
-                      for m in cg.meanings
-                        for cm in m.child_meanings))
+        cgs = (m.host
+               for m in Meaning.objects.filter(metaphorical=True)
+               if m.host_entry.first_volume and isinstance(m.host, CollocationGroup))
         uri = cgURI + ','.join(str(cg.id) for cg in cgs)
 
     elif uri == 'collocs-noun':
@@ -975,7 +973,14 @@ def useful_urls_redirect(uri, request):
         return render_to_response('useful_urls2.html', context,
                                   RequestContext(request))
 
-    return  HttpResponseRedirect(uri)
+    elif uri == 'collocs-2b':
+        cgs = (cg for cg in cgs for c in cg.collocations
+               if [x.startswith(u'б')
+                   for x in re.split(ur'[\s/,\(\)]+', c.collocation.lower())
+                   ].count(True) > 1)
+        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
+
+    return HttpResponseRedirect(uri)
 
 
 @login_required
@@ -989,6 +994,7 @@ def useful_urls(request, x=None, y=None):
                     (u'Сс в роли сущ.', 'collocs-noun'),
                     (u'Одинаковые сс в одной статье', 'same-collocs-same-entry'),
                     (u'Одинаковые сс в разных статьях', 'same-collocs-diff-entry'),
+                    (u'CC, где 2 слова на Б', 'collocs-2b'),
                 )),
     )
     if x:
