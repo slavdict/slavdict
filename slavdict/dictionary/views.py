@@ -905,6 +905,7 @@ def useful_urls_redirect(uri, request):
                    m.collogroup_container
                    if m.collogroup_container else m.parent_meaning.collogroup_container
                    for m in values))) for key, values in same.items() if len(values) > 1]
+        groups.sort()
         context = {
             'name': u'Словосочетания с одинаковыми значениями',
             'groups': groups,
@@ -921,6 +922,50 @@ def useful_urls_redirect(uri, request):
                         for cm in m.child_meanings))
         uri = cgURI + ','.join(str(cg.id) for cg in cgs)
 
+    elif uri == 'same-collocs-same-entry':
+        cs = (list(cg.collocations) for cg in cgs)
+        same = collections.defaultdict(set)
+        for collocations in cs:
+            for c in collocations:
+                collocation = c.civil_equivalent.lower().strip()
+                if collocation:
+                    same[collocation].add(c.collogroup)
+        same = same.items()
+        same = ((key, value) for key, value in same if len(value) > 1)
+        same = ((key, value) for key, value in same
+                if len(value) > len(list(cg.host_entry for cg in value)))
+        groups = [(key, cgURI + ','.join(str(cg.id) for cg in value))
+                  for key, value in same]
+        groups.sort()
+        context = {
+            'name': u'Одинаковые словосочетания в одной статье',
+            'groups': groups,
+        }
+        return render_to_response('useful_urls2.html', context,
+                                  RequestContext(request))
+
+    elif uri == 'same-collocs-diff-entry':
+        cs = (list(cg.collocations) for cg in cgs)
+        same = collections.defaultdict(set)
+        for collocations in cs:
+            for c in collocations:
+                collocation = c.civil_equivalent.lower().strip()
+                if collocation:
+                    same[collocation].add(c.collogroup)
+        same = same.items()
+        same = ((key, value) for key, value in same if len(value) > 1)
+        same = ((key, value) for key, value in same
+                if len(list(cg.host_entry for cg in value)) > 1)
+        groups = [(key, cgURI + ','.join(str(cg.id) for cg in value))
+                  for key, value in same]
+        groups.sort()
+        context = {
+            'name': u'Одинаковые словосочетания в разных статьях',
+            'groups': groups,
+        }
+        return render_to_response('useful_urls2.html', context,
+                                  RequestContext(request))
+
     return  HttpResponseRedirect(uri)
 
 
@@ -928,10 +973,12 @@ def useful_urls_redirect(uri, request):
 @never_cache
 def useful_urls(request, x=None, y=None):
     urls = (
-            (u'Словосочетания', (
-                    (u'Все словосочетания', 'all-collocations'),
-                    (u'Словосочетания с одинаковыми значениями', 'collocs-same-meaning'),
-                    (u'Словосочетания – литургические символы', 'collocs-litsym'),
+            (u'Словосочетания (cc)', (
+                    (u'Все сс', 'all-collocations'),
+                    (u'Сс с одинаковыми значениями', 'collocs-same-meaning'),
+                    (u'Сс – литургические символы', 'collocs-litsym'),
+                    (u'Одинаковые сс в одной статье', 'same-collocs-same-entry'),
+                    (u'Одинаковые сс в разных статьях', 'same-collocs-diff-entry'),
                 )),
     )
     if x:
