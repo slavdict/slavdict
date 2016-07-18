@@ -922,6 +922,15 @@ def useful_urls_redirect(uri, request):
                         for cm in m.child_meanings))
         uri = cgURI + ','.join(str(cg.id) for cg in cgs)
 
+    elif uri == 'collocs-noun':
+        cgs = (cg for cg in cgs
+               if any(m.substantivus
+                      for m in cg.meanings)
+               or any(cm.substantivus
+                      for m in cg.meanings
+                        for cm in m.child_meanings))
+        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
+
     elif uri == 'same-collocs-same-entry':
         cs = (list(cg.collocations) for cg in cgs)
         same = collections.defaultdict(set)
@@ -977,6 +986,7 @@ def useful_urls(request, x=None, y=None):
                     (u'Все сс', 'all-collocations'),
                     (u'Сс с одинаковыми значениями', 'collocs-same-meaning'),
                     (u'Сс – литургические символы', 'collocs-litsym'),
+                    (u'Сс в роли сущ.', 'collocs-noun'),
                     (u'Одинаковые сс в одной статье', 'same-collocs-same-entry'),
                     (u'Одинаковые сс в разных статьях', 'same-collocs-diff-entry'),
                 )),
