@@ -1326,6 +1326,7 @@ class Collocation(models.Model):
             return host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.civil_equivalent = civilrus_convert(self.collocation)
         self.civil_inverse = self.civil_equivalent[::-1]
         super(Collocation, self).save(*args, **kwargs)
         host_entry = self.host_entry
