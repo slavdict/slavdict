@@ -42,15 +42,13 @@
 <div id='materials'>
 
     <h2>{{ name }}</h2>
-    {% for key, uri in groups %}
     <ul>
-        {% for name, uri in data %}
+    {% for name, uri in groups %}
         <li>
             <a href="{{ uri }}">{{ name }}</a>
         </li>
-        {% endfor %}
-    </ul>
     {% endfor %}
+    </ul>
 
 </div>
 
