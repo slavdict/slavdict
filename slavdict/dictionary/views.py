@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import base64
+import collections
 import datetime
+import operator
 import random
 import re
 import StringIO
@@ -879,28 +881,54 @@ def dump(request):
 
 
 
-def useful_urls_redirect(uri):
+def useful_urls_redirect(uri, request):
     cgURI = '/admin/dictionary/collocationgroup/?id__in='
+    cgs = (cg for cg in CollocationGroup.objects.all()
+              if cg.host_entry.first_volume)
+
     if uri == 'all-collocations':
-        cgs = [cg for cg in CollocationGroup.objects.all()
-                  if cg.host_entry.first_volume]
         uri = cgURI + ','.join(str(cg.id) for cg in cgs)
+
+    elif uri == 'collocs-same-meaning':
+        meanings = reduce(operator.add, [list(cg.meanings) for cg in cgs])
+        child_meanings = reduce(operator.add, [list(m.child_meanings) for m in meanings])
+        meanings = meanings + child_meanings
+        same = collections.defaultdict(list)
+        for m in meanings:
+            meaning = m.meaning.strip()
+            if meaning:
+                same[meaning].append(m)
+            gloss = m.gloss.strip()
+            if gloss:
+                same[gloss].append(m)
+        groups = [(key, cgURI + ','.join(str(cg.id) for cg in set(
+                   m.collogroup_container
+                   if m.collogroup_container else m.parent_meaning.collogroup_container
+                   for m in values))) for key, values in same.items() if len(values) > 1]
+        context = {
+            'name': u'Словосочетания с одинаковыми значениями',
+            'groups': groups,
+        }
+        return render_to_response('useful_urls2.html', context,
+                                  RequestContext(request))
+
     return  HttpResponseRedirect(uri)
 
 
 @login_required
 @never_cache
-def useful_urls(request, x=None):
+def useful_urls(request, x=None, y=None):
     urls = (
             (u'Словосочетания', (
                     (u'Все словосочетания', 'all-collocations'),
+                    (u'Словосочетания с одинаковыми значениями', 'collocs-same-meaning'),
                 )),
     )
     if x:
         for section, data in urls:
             for name, uri in data:
                 if x == uri:
-                    return useful_urls_redirect(uri)
+                    return useful_urls_redirect(uri, request)
     context = { 'urls': urls }
     return render_to_response('useful_urls.html', context,
                               RequestContext(request))
