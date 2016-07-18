@@ -895,10 +895,10 @@ def useful_urls_redirect(uri, request):
         meanings = meanings + child_meanings
         same = collections.defaultdict(list)
         for m in meanings:
-            meaning = m.meaning.strip()
+            meaning = m.meaning.lower().strip()
             if meaning:
                 same[meaning].append(m)
-            gloss = m.gloss.strip()
+            gloss = m.gloss.lower().strip()
             if gloss:
                 same[gloss].append(m)
         groups = [(key, cgURI + ','.join(str(cg.id) for cg in set(
