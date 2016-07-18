@@ -659,7 +659,12 @@ class Etymology(models.Model):
         if self.entry:
             return self.entry
         else:
-            return self.collocation.host_entry
+            try:
+                host_entry = self.collocation.host_entry
+            except:
+                return None
+            else:
+                return host_entry
 
     @property
     def host(self):
@@ -670,11 +675,15 @@ class Etymology(models.Model):
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(Etymology, self).save(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Etymology, self).delete(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def __unicode__(self):
         return u'%s %s %s' % (self.get_language_display(), self.entry,
@@ -761,15 +770,24 @@ class MeaningContext(models.Model):
 
     @property
     def host_entry(self):
-        return self.meaning.host_entry
+        try:
+            host_entry = self.meaning.host_entry
+        except:
+            return None
+        else:
+            return host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(MeaningContext, self).save(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(MeaningContext, self).delete(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def __unicode__(self):
         SPACE = u' '
@@ -909,7 +927,12 @@ class Meaning(models.Model):
         if self.entry_container:
             return self.entry_container
         else:
-            return self.collogroup_container.host_entry
+            try:
+                host_entry = self.collogroup_container.host_entry
+            except:
+                return None
+            else:
+                return host_entry
 
     @property
     def host(self):
@@ -920,11 +943,15 @@ class Meaning(models.Model):
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(Meaning, self).save(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Meaning, self).delete(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def __unicode__(self):
         return self.meaning
@@ -1049,7 +1076,12 @@ class Example(models.Model):
         if self.entry:
             return self.entry
         else:
-            return self.meaning.host_entry
+            try:
+                host_entry = self.meaning.host_entry
+            except:
+                return None
+            else:
+                return host_entry
 
     @property
     def host(self):
@@ -1081,16 +1113,21 @@ class Example(models.Model):
     def save(self, without_mtime=False, *args, **kwargs):
         self.ts_convert()
         host_entry = self.host_entry
-        self.entry = host_entry
+        if host_entry is not None:
+            self.entry = host_entry
         host = self.host
         if host and 'base_meaning_id' in host.__dict__:
             self.collogroup = host
         super(Example, self).save(*args, **kwargs)
-        host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Example, self).delete(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def forJSON(self):
         _fields = (
@@ -1166,8 +1203,15 @@ class CollocationGroup(models.Model):
 
     @property
     def host_entry(self):
-        return (self.base_entry or
-                self.base_meaning and self.base_meaning.host_entry)
+        if self.base_entry:
+            return self.base_entry
+        elif self.base_meaning:
+            try:
+                host_entry = self.base_meaning.host_entry
+            except:
+                return None
+            else:
+                return host_entry
 
     @property
     def meanings_for_admin(self):
@@ -1211,11 +1255,15 @@ class CollocationGroup(models.Model):
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(CollocationGroup, self).save(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(CollocationGroup, self).delete(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def forJSON(self):
         _fields = (
@@ -1270,16 +1318,25 @@ class Collocation(models.Model):
 
     @property
     def host_entry(self):
-        return self.collogroup.host_entry
+        try:
+            host_entry = self.collogroup.host_entry
+        except:
+            return None
+        else:
+            return host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
         self.civil_inverse = self.civil_equivalent[::-1]
         super(Collocation, self).save(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Collocation, self).delete(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def __unicode__(self):
         return self.collocation
@@ -1338,15 +1395,24 @@ class GreekEquivalentForExample(models.Model):
 
     @property
     def host_entry(self):
-        return self.for_example.host_entry
+        try:
+            host_entry = self.for_example.host_entry
+        except:
+            return None
+        else:
+            return host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(GreekEquivalentForExample, self).save(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(GreekEquivalentForExample, self).delete(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def forJSON(self):
         _fields = (
@@ -1414,11 +1480,15 @@ class OrthographicVariant(models.Model):
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(OrthographicVariant, self).save(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(OrthographicVariant, self).delete(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def __unicode__(self):
         return self.idem
@@ -1465,11 +1535,15 @@ class Participle(models.Model):
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(Participle, self).save(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Participle, self).delete(*args, **kwargs)
-        self.host_entry.save(without_mtime=without_mtime)
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
 
     def __unicode__(self):
         return self.idem
