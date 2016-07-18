@@ -912,6 +912,15 @@ def useful_urls_redirect(uri, request):
         return render_to_response('useful_urls2.html', context,
                                   RequestContext(request))
 
+    elif uri == 'collocs-litsym':
+        cgs = (cg for cg in cgs
+               if any(m.metaphorical
+                      for m in cg.meanings)
+               or any(cm.metaphorical
+                      for m in cg.meanings
+                        for cm in m.child_meanings))
+        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
+
     return  HttpResponseRedirect(uri)
 
 
@@ -922,6 +931,7 @@ def useful_urls(request, x=None, y=None):
             (u'Словосочетания', (
                     (u'Все словосочетания', 'all-collocations'),
                     (u'Словосочетания с одинаковыми значениями', 'collocs-same-meaning'),
+                    (u'Словосочетания – литургические символы', 'collocs-litsym'),
                 )),
     )
     if x:
