@@ -90,12 +90,12 @@ scp:
 	ssh dilijnt0 chown -R www-data:www-is /var/www/slavdict/templates/indesign/
 
 indesign:
-	rsync bin/indesign_xml_dumper.py dilijnt0:/var/www/slavdict/bin/
+	rsync -av bin dilijnt0:/var/www/slavdict/
 	rsync -av slavdict/django_template_spaces dilijnt0:/var/www/slavdict/slavdict/
 	rsync -av  templates/indesign dilijnt0:/var/www/slavdict/templates/
 	rsync .list dilijnt0:/root/
 	ssh dilijnt0 chown -R www-data:www-is /var/www/slavdict/
-	ssh dilijnt0 bash -c 'time cat /root/.list | xargs python /var/www/slavdict/bin/indesign_xml_dumper.py >/root/slavdict-dump.xml'
+	ssh dilijnt0 nohup /var/www/slavdict/bin/remote_indesign_xml_dumper.sh
 	scp dilijnt0:/root/slavdict-dump.xml ~/VirtualBox\ SharedFolder/slavdict-indesign.xml
 
 listen-indesign:

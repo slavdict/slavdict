@@ -175,5 +175,4 @@ entries = [(reference, lexeme) for wordform, reference, lexeme in entries]
 
 xml = render_to_string('indesign/slavdict.xml', {'entries': entries})
 sys.stdout.write(xml.encode('utf-8'))
-
 sys.exit(0)
