@@ -24,11 +24,14 @@ run: collectstatic
 
 stop:
 	@$(IS_PRODUCTION)
+	sudo service nginx stop
 	sudo /etc/init.d/cherokee stop
 	-sudo killall -9 uwsgi
 
 start:
 	sudo /etc/init.d/cherokee start
+	curl slavdict.ruslang.ru:8088
+	sudo service nginx start
 
 copydiff:
 	@$(IS_PRODUCTION)
