@@ -1,5 +1,6 @@
 #!/bin/bash
-DBS_VERSION=4.10
+MIGRATION_VERSION=$(basename $(ls ../slavdict/dictionary/migrations/????_*.py | tail -1) | cut -d_ -f1)
+DBS_VERSION=4.$MIGRATION_VERSION
 GREP_SIGNATURE=::::
 NOW=$(date +"%Y.%m.%d--%H.%M")
 PRJDIR=$(dirname "$(dirname "$(readlink -e "$0")")")

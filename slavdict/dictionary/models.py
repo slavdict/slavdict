@@ -1198,6 +1198,11 @@ class CollocationGroup(models.Model):
     ctime = DateTimeField(editable=False, auto_now_add=True)
     mtime = DateTimeField(editable=False, auto_now=True)
     additional_info = TextField(u'примечание', blank=True)
+    hidden = BooleanField(u'Скрыть словосочетание', help_text=u'''Не отображать
+            словосочетание в статье.''', default=False, editable=False)
+
+    objects = WithoutHiddenManager()
+    objects_all = models.Manager()
 
     @property
     def collocations(self):
