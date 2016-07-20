@@ -887,9 +887,7 @@ def useful_urls_redirect(uri, request):
     mURI = '/admin/dictionary/meaning/?id__in='
 
     if uri == 'all-collocations':
-        cgs = (cg for cg in CollocationGroup.objects.all()
-                  if cg.host_entry.first_volume)
-        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
+        uri = '/admin/dictionary/collocationgroup/?first_volume=1'
 
     elif uri == 'collocs-same-meaning':
         cgs = (cg for cg in CollocationGroup.objects.all()
@@ -989,8 +987,7 @@ def useful_urls_redirect(uri, request):
         uri = cgURI + ','.join(str(cg.id) for cg in cgs)
 
     elif uri == 'all-meanings':
-        ms = (m for m in Meaning.objects.all() if m.not_hidden())
-        uri = mURI + ','.join(str(m.id) for m in ms)
+        uri = '/admin/dictionary/meaning/?first_volume=1'
 
     elif uri == 'meanings-literal':
         mark = u'букв.'

@@ -978,6 +978,13 @@ class Meaning(models.Model):
         else:
             return self.collogroup_container
 
+    @property
+    def first_volume(self):
+        host_entry = self.host_entry
+        if host_entry:
+            return host_entry.first_volume
+        return False
+
     def save(self, without_mtime=False, *args, **kwargs):
         super(Meaning, self).save(*args, **kwargs)
         host_entry = self.host_entry
@@ -1130,6 +1137,13 @@ class Example(models.Model):
             else:
                 return self.entry
 
+    @property
+    def first_volume(self):
+        host_entry = self.host_entry
+        if host_entry:
+            return host_entry.first_volume
+        return False
+
     def example_for_admin(self):
         text = u''
         return mark_safe(text)
@@ -1258,6 +1272,13 @@ class CollocationGroup(models.Model):
                 return None
             else:
                 return host_entry
+
+    @property
+    def first_volume(self):
+        host_entry = self.host_entry
+        if host_entry:
+            return host_entry.first_volume
+        return False
 
     def meanings_for_admin(self):
         meanings = self.meanings

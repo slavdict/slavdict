@@ -4,11 +4,22 @@ import copy
 from django import forms
 from django.contrib import admin
 from django.db import models
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
 
 from slavdict.admin import ui
+from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary.models import Collocation
+from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
+from slavdict.dictionary.models import Etymology
+from slavdict.dictionary.models import Example
+from slavdict.dictionary.models import GreekEquivalentForExample
+from slavdict.dictionary.models import Meaning
+from slavdict.dictionary.models import MeaningContext
+from slavdict.dictionary.models import OrthographicVariant
+from slavdict.dictionary.models import Participle
 
 admin.site.login_template = ui.login_template
 
@@ -76,7 +87,6 @@ def parent_meaning(self):
                     '/admin/dictionary/meaning/?id=%s' % mid, mid)
     return mark_safe(text)
 
-
 def _orth_vars(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('id')]
     delimiter = u', '
@@ -143,9 +153,38 @@ def entry_for_example(obj):
     return u'%s%s' % (r, i)
 
 
+class FirstVolumeFilter(admin.SimpleListFilter):
+    title = u'1-й том'
+    parameter_name = 'first_volume'
+    def lookups(self, request, model_admin):
+        return (
+            ('1', u'из 1-го тома'),
+            ('0', u'остальные'),
+        )
+    def queryset(self, request, queryset):
+        if self.value() == '1':
+            return queryset.filter(id__in=self.xs)
+        if self.value() == '0':
+            return queryset.filter(~Q(id__in=self.xs))
+
+class FirstVolumeEntryFilter(FirstVolumeFilter):
+    def xs(self):
+        return (e.id for e in Entry.objects.all() if e.first_volume)
+
+class FirstVolumeCollogroupFilter(FirstVolumeFilter):
+    def xs(self):
+        return (x.id for x in CollocationGroup.objects.all() if x.first_volume)
+
+class FirstVolumeMeaningFilter(FirstVolumeFilter):
+    def xs(self):
+        return (m.id for m in Meaning.objects.all() if m.not_hidden() and m.first_volume)
+
+class FirstVolumeExampleFilter(FirstVolumeFilter):
+    def xs(self):
+        return (x.id for x in Example.objects.all() if x.first_volume)
 
 
-from slavdict.dictionary.models import OrthographicVariant
+
 class OrthVar_Inline(admin.StackedInline):
     model = OrthographicVariant
     extra = 0
@@ -158,7 +197,6 @@ class OrthVar_Inline(admin.StackedInline):
 
 
 
-from slavdict.dictionary.models import Etymology
 ETYMOLOGY_FIELDSETS = (
     (u'Является этимоном для др. этимона',
         {'fields': ('etymon_to', 'questionable'),
@@ -196,7 +234,6 @@ class EtymologyForCollocation_Inline(admin.StackedInline):
 
 
 
-from slavdict.dictionary.models import GreekEquivalentForExample
 class GreekEquivalentForExample_Inline(admin.StackedInline):
     model = GreekEquivalentForExample
     extra = 0
@@ -219,7 +256,6 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
 
 
 
-from slavdict.dictionary.models import Example
 
 funcTemp = lambda self: meaning_for_example(self)
 funcTemp.admin_order_field = 'meaning'
@@ -251,7 +287,7 @@ class AdminExample(admin.ModelAdmin):
     list_display = ('entry_for_example', 'meaning_for_example', 'id', 'example', 'address_text', 'greek_eq_status')
     list_display_links = ('id', 'example')
     list_editable = ('greek_eq_status', 'address_text')
-    list_filter = ('greek_eq_status',)
+    list_filter = (FirstVolumeExampleFilter, 'greek_eq_status',)
     search_fields = (
         'example',
         'address_text',
@@ -282,7 +318,6 @@ ui.register(Example, AdminExample)
 
 
 
-from slavdict.dictionary.models import MeaningContext
 class MeaningContext_Inline(admin.StackedInline):
     model = MeaningContext
     extra = 0
@@ -291,7 +326,6 @@ class MeaningContext_Inline(admin.StackedInline):
 
 
 
-from slavdict.dictionary.models import Meaning
 Meaning._entry = host_entry
 Meaning._collogroup = host_collogroup
 Meaning._parent_meaning = parent_meaning
@@ -348,7 +382,7 @@ class AdminMeaning(admin.ModelAdmin):
     )
     list_display_links = ('id',)
     list_editable = ('metaphorical', 'figurative')
-    list_filter = ('metaphorical', 'figurative')
+    list_filter = (FirstVolumeMeaningFilter, 'metaphorical', 'figurative')
     search_fields = (
         'entry_container__civil_equivalent',
         'entry_container__orthographic_variants__idem',
@@ -382,7 +416,6 @@ ui.register(Meaning, AdminMeaningUI)
 
 
 
-from slavdict.dictionary.models import Participle
 class Participle_Inline(admin.StackedInline):
     model = Participle
     extra = 1
@@ -391,7 +424,6 @@ class Participle_Inline(admin.StackedInline):
 
 
 
-from slavdict.dictionary.models import Entry
 Entry.__unicode__ = lambda self: entry_with_orth_variants(self)
 Entry.entry_authors = lambda self: u', '.join([a.__unicode__() for a in
                                                self.authors.all()])
@@ -422,7 +454,6 @@ civil_inv.short_description = u''  # Делаем заголовок столб�
 civil_inv.admin_order_field = 'civil_inverse'
 Entry.civil_inv = civil_inv
 
-from slavdict.custom_user.models import CustomUser
 entry_actions = []
 def assign_author(author):
     def func(modeladmin, request, queryset):
@@ -512,6 +543,7 @@ class AdminEntry(admin.ModelAdmin):
         'headword',
         )
     list_filter = (
+    	FirstVolumeEntryFilter,
         'authors',
         'status',
         'part_of_speech',
@@ -574,7 +606,6 @@ ui.register(Entry, AdminEntryUI)
 
 
 
-from slavdict.dictionary.models import Collocation
 #class AdminCollocation(admin.ModelAdmin):
 #    inlines = (EtymologyForCollocation_Inline,)
 #    fieldsets = (
@@ -607,7 +638,6 @@ class Collocation_Inline(admin.StackedInline):
 
 
 
-from slavdict.dictionary.models import CollocationGroup
 CollocationGroup.__unicode__=lambda self: _collocations(self)
 CollocationGroup._entry = host_entry
 class AdminCollocationGroup(admin.ModelAdmin):
@@ -644,7 +674,7 @@ class AdminCollocationGroup(admin.ModelAdmin):
     )
     list_display_links = ('id', '__unicode__')
     list_editable = ('phraseological',)
-    list_filter = ('phraseological',)
+    list_filter = (FirstVolumeCollogroupFilter, 'phraseological',)
     search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')
     class Media:
         css = {"all": ("fix_admin.css",)}
