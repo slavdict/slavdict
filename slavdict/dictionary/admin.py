@@ -348,6 +348,7 @@ class AdminMeaning(admin.ModelAdmin):
     )
     list_display_links = ('id',)
     list_editable = ('metaphorical', 'figurative')
+    list_filter = ('metaphorical', 'figurative')
     search_fields = (
         'entry_container__civil_equivalent',
         'entry_container__orthographic_variants__idem',
@@ -643,6 +644,7 @@ class AdminCollocationGroup(admin.ModelAdmin):
     )
     list_display_links = ('id', '__unicode__')
     list_editable = ('phraseological',)
+    list_filter = ('phraseological',)
     search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')
     class Media:
         css = {"all": ("fix_admin.css",)}
