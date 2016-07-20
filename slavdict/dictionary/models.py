@@ -925,6 +925,12 @@ class Meaning(models.Model):
         text = u'<ol>%s</ol>' % text
         return mark_safe(text)
 
+    def not_hidden(self):
+        host = self.host
+        if host:
+            return not host.hidden
+        return True
+
     @property
     def examples(self):
         return self.example_set.order_by('order', 'id')

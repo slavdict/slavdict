@@ -884,13 +884,16 @@ def dump(request):
 
 def useful_urls_redirect(uri, request):
     cgURI = '/admin/dictionary/collocationgroup/?id__in='
-    cgs = (cg for cg in CollocationGroup.objects.all()
-              if cg.host_entry.first_volume)
+    mURI = '/admin/dictionary/meaning/?id__in='
 
     if uri == 'all-collocations':
+        cgs = (cg for cg in CollocationGroup.objects.all()
+                  if cg.host_entry.first_volume)
         uri = cgURI + ','.join(str(cg.id) for cg in cgs)
 
     elif uri == 'collocs-same-meaning':
+        cgs = (cg for cg in CollocationGroup.objects.all()
+                  if cg.host_entry.first_volume)
         meanings = reduce(operator.add, [list(cg.meanings) for cg in cgs])
         child_meanings = reduce(operator.add, [list(m.child_meanings) for m in meanings])
         meanings = meanings + child_meanings
@@ -921,15 +924,16 @@ def useful_urls_redirect(uri, request):
         uri = cgURI + ','.join(str(cg.id) for cg in cgs)
 
     elif uri == 'collocs-noun':
-        cgs = (cg for cg in cgs
-               if any(m.substantivus
-                      for m in cg.meanings)
-               or any(cm.substantivus
-                      for m in cg.meanings
-                        for cm in m.child_meanings))
+        cgs = (cg for cg in CollocationGroup.objects.all()
+                  if cg.host_entry.first_volume and (
+                      any(m.substantivus for m in cg.meanings) or
+                      any(cm.substantivus for m in cg.meanings
+                                            for cm in m.child_meanings)))
         uri = cgURI + ','.join(str(cg.id) for cg in cgs)
 
     elif uri == 'same-collocs-same-entry':
+        cgs = (cg for cg in CollocationGroup.objects.all()
+                  if cg.host_entry.first_volume)
         cs = (list(cg.collocations) for cg in cgs)
         same = collections.defaultdict(set)
         for collocations in cs:
@@ -952,6 +956,8 @@ def useful_urls_redirect(uri, request):
                                   RequestContext(request))
 
     elif uri == 'same-collocs-diff-entry':
+        cgs = (cg for cg in CollocationGroup.objects.all()
+                  if cg.host_entry.first_volume)
         cs = (list(cg.collocations) for cg in cgs)
         same = collections.defaultdict(set)
         for collocations in cs:
@@ -974,11 +980,23 @@ def useful_urls_redirect(uri, request):
                                   RequestContext(request))
 
     elif uri == 'collocs-2b':
-        cgs = (cg for cg in cgs for c in cg.collocations
+        cgss = (cg for cg in CollocationGroup.objects.all()
+                   if cg.host_entry.first_volume)
+        cgs = (cg for cg in cgss for c in cg.collocations
                if [x.startswith(u'б')
                    for x in re.split(ur'[\s/,\(\)]+', c.collocation.lower())
                    ].count(True) > 1)
         uri = cgURI + ','.join(str(cg.id) for cg in cgs)
+
+    elif uri == 'all-meanings':
+        ms = (m for m in Meaning.objects.all() if m.not_hidden())
+        uri = mURI + ','.join(str(m.id) for m in ms)
+
+    elif uri == 'meanings-literal':
+        mark = u'букв.'
+        ms = (m for m in Meaning.objects.all() if m.not_hidden() and
+                (mark in m.meaning or mark in m.gloss))
+        uri = mURI + ','.join(str(m.id) for m in ms)
 
     return HttpResponseRedirect(uri)
 
@@ -995,6 +1013,10 @@ def useful_urls(request, x=None, y=None):
                     (u'Одинаковые сс в одной статье', 'same-collocs-same-entry'),
                     (u'Одинаковые сс в разных статьях', 'same-collocs-diff-entry'),
                     (u'CC, где 2 слова на Б', 'collocs-2b'),
+                )),
+            (u'Значения и употребления', (
+                    (u'Все значения и употребления', 'all-meanings'),
+                    (u'Значения с пометой "букв."', 'meanings-literal'),
                 )),
     )
     if x:
