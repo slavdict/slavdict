@@ -896,6 +896,35 @@ class Meaning(models.Model):
             а в аналогичных полях при примере и лексеме, соответственно.''',
             blank=True)
 
+    def meaning_for_admin(self):
+        text = u''
+        template = u'[<em>%s</em>] '
+        if self.figurative:
+            text += template % u'перен.'
+        if self.metaphorical:
+            text += template % u'лит.символ'
+        if self.substantivus:
+            text += template % u'в роли сущ.'
+        meaning = self.meaning.strip()
+        if meaning:
+            text += u'%s ' % meaning
+        gloss = self.gloss.strip()
+        if gloss:
+            text += u'<em>%s</em> ' % gloss
+        if self.child_meanings:
+            child_meanings = u''
+            for m in self.child_meanings:
+                child_meanings += u'<li>%s</li>' % m.meaning_for_admin()
+            text += u'<ul>%s</ul>' % child_meanings
+        return mark_safe(text)
+
+    def examples_for_admin(self):
+        text = u''
+        for ex in self.examples:
+            text += u'<li>%s</li>' % ex.example
+        text = u'<ol>%s</ol>' % text
+        return mark_safe(text)
+
     @property
     def examples(self):
         return self.example_set.order_by('order', 'id')
@@ -1095,6 +1124,10 @@ class Example(models.Model):
             else:
                 return self.entry
 
+    def example_for_admin(self):
+        text = u''
+        return mark_safe(text)
+
     def ts_convert(self):
         RE = re.compile(
                 u'[^'
@@ -1220,39 +1253,29 @@ class CollocationGroup(models.Model):
             else:
                 return host_entry
 
-    @property
     def meanings_for_admin(self):
         meanings = self.meanings
         if len(meanings) == 0:
             text = u''
         elif len(meanings) == 1:
-            meaning = meanings[0]
-            text = u'%s <em>%s</em>' % (meaning.meaning, meaning.gloss)
+            text = meanings[0].meaning_for_admin()
         else:
-            text = u'<ol>%s</ol>' % u''.join(
-                       [u'<li>%s <em>%s</em></li>' % (m.meaning, m.gloss)
-                        for m in meanings]
-                   )
+            text2 = u''
+            for m in meanings:
+                text2 += u'<li>%s</li>' % m.meaning_for_admin()
+            text = u'<ol>%s</ol>' % text2
         return mark_safe(text)
 
-    @property
     def examples_for_admin(self):
-        examples = []
-        n = 0
-        for meaning in self.meanings:
-            n += len(meaning.examples)
-            for example in meaning.examples:
-                examples.append(example.example)
-            for child_meaning in meaning.child_meanings:
-                n += len(child_meaning.examples)
-                for example in child_meaning.examples:
-                    examples.append(example.example)
-        if len(examples) == 0:
-            text = u''
-        elif len(examples) == 1:
-            text = examples[0]
-        else:
-            text = u'<ol>%s</ol>' % u''.join(u'<li>%s</li>' % ex for ex in examples)
+        text = u''
+        for m in self.meanings:
+            text += m.examples_for_admin()
+            if m.child_meanings:
+                text2 = u''
+                for cm in m.child_meanings:
+                    text2 += u'<li>%s</li>' % cm.examples_for_admin()
+                if text2:
+                    text += u'<ul>%s</ul>' % text2
         return mark_safe(text)
 
     meanings = property(meanings)
