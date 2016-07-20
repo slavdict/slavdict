@@ -36,13 +36,14 @@
     #materials li a em {
         color: gray;
     }
-    h2
+    h2 {
+        margin-top: 2em;
+    }
 </style>
 
 <div id='materials'>
 
     <p>Ссылки-ускоряторы для подготовки 1-го тома</p>
-    <br><br>
     {% for section, data in urls %}
     <h2>{{ section }}</h2>
     <ul>
