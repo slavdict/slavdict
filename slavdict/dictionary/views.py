@@ -940,7 +940,7 @@ def useful_urls_redirect(uri, request):
         same = same.items()
         same = ((key, value) for key, value in same if len(value) > 1)
         same = ((key, value) for key, value in same
-                if len(value) > len(list(cg.host_entry for cg in value)))
+                if len(value) > len(set(cg.host_entry for cg in value)))
         groups = [(key, cgURI + ','.join(str(cg.id) for cg in value))
                   for key, value in same]
         groups.sort()
@@ -962,7 +962,7 @@ def useful_urls_redirect(uri, request):
         same = same.items()
         same = ((key, value) for key, value in same if len(value) > 1)
         same = ((key, value) for key, value in same
-                if len(list(cg.host_entry for cg in value)) > 1)
+                if len(set(cg.host_entry for cg in value)) > 1)
         groups = [(key, cgURI + ','.join(str(cg.id) for cg in value))
                   for key, value in same]
         groups.sort()
