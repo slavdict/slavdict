@@ -50,8 +50,32 @@ def host_entry(self):
     except:
         return u'не относится ни к какой статье'
     else:
-        html = u'<a href="%s">%s</a>' % (entry.get_absolute_url(), entry.civil_equivalent)
+        html = u'<a href="%s" target="_blank">%s</a>' % (
+                        entry.get_absolute_url(), entry.civil_equivalent)
         return mark_safe(html)
+
+def host_collogroup(self):
+    html = u''
+    try:
+        host = self.host
+    except:
+        return html
+    else:
+        if isinstance(host, CollocationGroup):
+            html = u'<a href="%s">%s</a>' % (
+                        '/admin/dictionary/collocationgroup/?id=%s' % host.id,
+                        host)
+            html = mark_safe(html)
+        return html
+
+def parent_meaning(self):
+    text = u''
+    if self.parent_meaning:
+        mid = self.parent_meaning.id
+        text = u'<a href="%s" target="_blank">%s</a>' % (
+                    '/admin/dictionary/meaning/?id=%s' % mid, mid)
+    return mark_safe(text)
+
 
 def _orth_vars(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('id')]
@@ -268,7 +292,9 @@ class MeaningContext_Inline(admin.StackedInline):
 
 
 from slavdict.dictionary.models import Meaning
-Meaning.__unicode__=lambda self:meaning_with_entry(self)
+Meaning._entry = host_entry
+Meaning._collogroup = host_collogroup
+Meaning._parent_meaning = parent_meaning
 class AdminMeaning(admin.ModelAdmin):
     inlines = (
         MeaningContext_Inline,
@@ -310,8 +336,18 @@ class AdminMeaning(admin.ModelAdmin):
         }
     filter_horizontal = ('cf_entries', 'cf_collogroups', 'cf_meanings')
     ordering = ('-id',)
-    list_display = ('id', '__unicode__')
-    list_display_links = list_display
+    list_display = (
+        'id',
+        '_entry',
+        '_collogroup',
+        '_parent_meaning',
+        'metaphorical',
+        'figurative',
+        'meaning_for_admin',
+        'examples_for_admin',
+    )
+    list_display_links = ('id',)
+    list_editable = ('metaphorical', 'figurative')
     search_fields = (
         'entry_container__civil_equivalent',
         'entry_container__orthographic_variants__idem',
