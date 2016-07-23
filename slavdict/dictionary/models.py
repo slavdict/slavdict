@@ -873,7 +873,7 @@ class Meaning(models.Model):
     def cfcollogroups(self):
         return self.cf_collogroups.all()
 
-    metaphorical = BooleanField(u'метафорическое', default=False)
+    metaphorical = BooleanField(u'гимногр.метафора', default=False)
     figurative = BooleanField(u'переносное', default=False)
     meaning = TextField(u'значение', blank=True)
 
@@ -903,7 +903,7 @@ class Meaning(models.Model):
         if self.figurative:
             text += template % u'перен.'
         if self.metaphorical:
-            text += template % u'лит.символ'
+            text += template % u'гимногр.метаф.'
         if self.substantivus:
             text += template % u'в роли сущ.'
         meaning = self.meaning.strip()
@@ -1291,7 +1291,12 @@ class CollocationGroup(models.Model):
             text2 = u''
             for m in meanings:
                 text2 += u'<li>%s</li>' % m.meaning_for_admin()
-            text = u'<ol>%s</ol>' % text2
+            text += u'<ol>%s</ol>' % text2
+        if self.metaph_meanings:
+            text2 = u''
+            for m in self.metaph_meanings:
+                text2 += u'<li>%s</li>' % m.meaning_for_admin()
+            text += u'<ul>%s</ul>' % text2
         return mark_safe(text)
 
     def examples_for_admin(self):
@@ -1304,6 +1309,11 @@ class CollocationGroup(models.Model):
                     text2 += u'<li>%s</li>' % cm.examples_for_admin()
                 if text2:
                     text += u'<ul>%s</ul>' % text2
+        if self.metaph_meanings:
+            text2 = u''
+            for m in self.metaph_meanings:
+                text2 += u'<li>%s</li>' % m.examples_for_admin()
+            text += u'<ul>%s</ul>' % text2
         return mark_safe(text)
 
     meanings = property(meanings)

@@ -65,6 +65,8 @@ def host_entry(self):
                         entry.get_absolute_url(), entry.civil_equivalent)
         return mark_safe(html)
 
+host_entry.short_description = u'словарная статья'
+
 def host_collogroup(self):
     html = u''
     try:
@@ -79,6 +81,8 @@ def host_collogroup(self):
             html = mark_safe(html)
         return html
 
+host_collogroup.short_description = u'Словосочетание'
+
 def parent_meaning(self):
     text = u''
     if self.parent_meaning:
@@ -86,6 +90,8 @@ def parent_meaning(self):
         text = u'<a href="%s" target="_blank">%s</a>' % (
                     '/admin/dictionary/meaning/?id=%s' % mid, mid)
     return mark_safe(text)
+
+parent_meaning.admin_order_field = 'parent_meaning_id'
 
 def _orth_vars(obj):
     orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('id')]
