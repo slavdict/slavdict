@@ -873,7 +873,7 @@ class Meaning(models.Model):
     def cfcollogroups(self):
         return self.cf_collogroups.all()
 
-    is_valency = BooleanField(u'Модель управления', default=False)
+    is_valency = BooleanField(u'содержит управление', default=False)
     metaphorical = BooleanField(u'гимногр.метафора', default=False)
     figurative = BooleanField(u'переносное', default=False)
     meaning = TextField(u'значение', blank=True)

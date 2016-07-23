@@ -364,7 +364,9 @@ class AdminMeaning(admin.ModelAdmin):
                 {'fields': ('substantivus', 'substantivus_type'),
                 'classes': ('collapse',)}),
             (None,
-                {'fields': ('metaphorical', 'meaning', 'gloss')}),
+                {'fields': ('metaphorical', 'figurative', 'is_valency')}),
+            (None,
+                {'fields': ('meaning', 'gloss')}),
             (None, { 'fields': tuple(), 'classes': ('blank',) }),
             (u'Примечание к значению',
                 {'fields': ('additional_info',),
@@ -383,12 +385,22 @@ class AdminMeaning(admin.ModelAdmin):
         '_parent_meaning',
         'metaphorical',
         'figurative',
+        'is_valency',
         'meaning_for_admin',
         'examples_for_admin',
     )
     list_display_links = ('id',)
-    list_editable = ('metaphorical', 'figurative')
-    list_filter = (FirstVolumeMeaningFilter, 'metaphorical', 'figurative')
+    list_editable = (
+        'metaphorical',
+        'figurative',
+        'is_valency',
+    )
+    list_filter = (
+        FirstVolumeMeaningFilter,
+        'metaphorical',
+        'figurative',
+        'is_valency',
+    )
     search_fields = (
         'entry_container__civil_equivalent',
         'entry_container__orthographic_variants__idem',
