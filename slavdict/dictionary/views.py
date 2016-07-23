@@ -986,6 +986,37 @@ def useful_urls_redirect(uri, request):
                    ].count(True) > 1)
         uri = cgURI + ','.join(str(cg.id) for cg in cgs)
 
+    elif uri == 'collocs-uniq':
+        cgss = (cg for cg in CollocationGroup.objects.all()
+                   if cg.host_entry.first_volume)
+        cgs = set()
+        for cg in cgss:
+            m = cg.base_meaning
+            e = cg.base_entry
+            empty_meaning = m and not m.meaning.strip() and not m.gloss.strip()
+            no_meanings = not m and e and not list(e.meanings) + list(e.metaph_meanings)
+            if empty_meaning or no_meanings:
+                cgs.add(cg)
+        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
+
+    elif uri == 'collocs-uniqab':
+        cgss = (cg for cg in CollocationGroup.objects.all()
+                   if cg.host_entry.first_volume)
+        cgs = set()
+        for cg in cgss:
+            m = cg.base_meaning
+            e = cg.base_entry
+            empty_meaning = m and not m.meaning.strip() and not m.gloss.strip()
+            no_meanings = not m and e and not list(e.meanings) + list(e.metaph_meanings)
+            several_ABwords = any(
+                len([True
+                     for x in re.split(ur'[\s/,;\(\)]+', c.civil_equivalent)
+                     if x.startswith((u'а', u'А', u'б', u'Б'))]) > 1
+                for c in cg.collocations)
+            if (empty_meaning or no_meanings) and several_ABwords:
+                cgs.add(cg)
+        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
+
     elif uri == 'all-meanings':
         uri = '/admin/dictionary/meaning/?first_volume=1'
 
@@ -1010,6 +1041,9 @@ def useful_urls(request, x=None, y=None):
                     (u'Одинаковые сс в одной статье', 'same-collocs-same-entry'),
                     (u'Одинаковые сс в разных статьях', 'same-collocs-diff-entry'),
                     (u'CC, где 2 слова на Б', 'collocs-2b'),
+                    (u'Такие сс, что кроме них в статье ничего нет', 'collocs-uniq'),
+                    (u'Такие сс, что кроме них в статье ничего нет '
+                     u'и сс содержит несколько слов на А или Б', 'collocs-uniqab'),
                 )),
             (u'Значения и употребления', (
                     (u'Все значения и употребления', 'all-meanings'),
