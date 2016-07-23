@@ -1289,7 +1289,7 @@ class CollocationGroup(models.Model):
         elif len(meanings) == 1:
             text = meanings[0].meaning_for_admin()
         else:
-            text2 = u''
+            text = text2 = u''
             for m in meanings:
                 text2 += u'<li>%s</li>' % m.meaning_for_admin()
             text += u'<ol>%s</ol>' % text2
