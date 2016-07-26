@@ -169,9 +169,9 @@ class FirstVolumeFilter(admin.SimpleListFilter):
         )
     def queryset(self, request, queryset):
         if self.value() == '1':
-            return queryset.filter(id__in=self.xs)
+            return queryset.filter(id__in=self.xs())
         if self.value() == '0':
-            return queryset.filter(~Q(id__in=self.xs))
+            return queryset.filter(~Q(id__in=self.xs()))
 
 class FirstVolumeEntryFilter(FirstVolumeFilter):
     def xs(self):
@@ -188,6 +188,25 @@ class FirstVolumeMeaningFilter(FirstVolumeFilter):
 class FirstVolumeExampleFilter(FirstVolumeFilter):
     def xs(self):
         return (x.id for x in Example.objects.all() if x.first_volume)
+
+class SubstantivusMeaningFilter(admin.SimpleListFilter):
+    title = u'в роли сущ.'
+    parameter_name = 'substantivus'
+    def lookups(self, request, model_admin):
+        return (
+            ('1', u'в роли сущ.'),
+            ('0', u'остальные'),
+        )
+    def xs(self):
+        pattern = u'в роли сущ.'
+        return (x.id for x in Meaning.objects.filter(
+                    Q(gloss__icontains=pattern)|
+                    Q(meaning__icontains=pattern)))
+    def queryset(self, request, queryset):
+        if self.value() == '1':
+            return queryset.filter(Q(substantivus=True)|Q(id__in=self.xs()))
+        if self.value() == '0':
+            return queryset.exclude(Q(substantivus=True)|Q(id__in=self.xs()))
 
 
 
@@ -385,6 +404,7 @@ class AdminMeaning(admin.ModelAdmin):
         '_parent_meaning',
         'metaphorical',
         'figurative',
+        'substantivus',
         'is_valency',
         'meaning_for_admin',
         'examples_for_admin',
@@ -393,12 +413,14 @@ class AdminMeaning(admin.ModelAdmin):
     list_editable = (
         'metaphorical',
         'figurative',
+        'substantivus',
         'is_valency',
     )
     list_filter = (
         FirstVolumeMeaningFilter,
         'metaphorical',
         'figurative',
+        SubstantivusMeaningFilter,
         'is_valency',
     )
     search_fields = (
