@@ -14,6 +14,8 @@ JSLIBS_VERSION_FILE := ${JSLIBS_PATH}version.txt
 JSLIBS_NEW_VERSION := $(shell python ${SETTINGS_FILE} --jslibs-version)
 JSLIBS_OLD_VERSION := $(shell cat ${JSLIBS_VERSION_FILE} 2>/dev/null)
 
+LOCCHDIR = /root/slavdict-local-changes-untracked
+
 restart: stop copydiff destroy_loc_changes checkout collectstatic fixown migrate start
 
 run: collectstatic
@@ -35,6 +37,10 @@ start:
 
 copydiff:
 	@$(IS_PRODUCTION)
+	mkdir -p ${LOCCHDIR}
+	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
+		status -s | grep --color=never '?? ' | cut -c4- \
+		| xargs -I '{}' rsync -av '{}' ${LOCCHDIR}/
 	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
 		diff --no-color >/root/slavdict-local-changes-${DATE_TIME}.diff
 
