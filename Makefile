@@ -45,7 +45,7 @@ copydiff:
 		| xargs -I '{}' rsync -av '{}' ${LOCCHDIR}/
 	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
 		status -s | grep --color=never '?? ' | cut -c4- \
-		| xargs -I '{}' rm -ir '{}'
+		| xargs -I '{}' rm -fr '{}'
 
 destroy_loc_changes:
 	@$(IS_PRODUCTION)
