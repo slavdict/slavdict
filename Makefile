@@ -39,10 +39,13 @@ copydiff:
 	@$(IS_PRODUCTION)
 	mkdir -p ${LOCCHDIR}
 	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
+		diff --no-color >/root/slavdict-local-changes-${DATE_TIME}.diff
+	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
 		status -s | grep --color=never '?? ' | cut -c4- \
 		| xargs -I '{}' rsync -av '{}' ${LOCCHDIR}/
 	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
-		diff --no-color >/root/slavdict-local-changes-${DATE_TIME}.diff
+		status -s | grep --color=never '?? ' | cut -c4- \
+		| xargs -I '{}' rm -ir '{}'
 
 destroy_loc_changes:
 	@$(IS_PRODUCTION)
