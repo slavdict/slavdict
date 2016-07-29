@@ -11,6 +11,8 @@
     {% if m.metaphorical %}
         {% include 'indesign/litsym.xml' %}
     {% elif loop.first and not m.metaphorical and not m.parent_meaning.examples %}
+        {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
+    {% elif not m.metaphorical %}
         {{ backspace }}{{ nbsp }}<text aid:cstyle="Use">||</text>{{ nbsp }}
     {% endif %}
 

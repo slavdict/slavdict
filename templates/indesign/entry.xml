@@ -194,11 +194,8 @@
 
     {% for m in entry.meanings %}
         {% set mnumber = loop.index %}
-        {% if entry.meanings|length > 1 and loop.first %}
-            {{ backspace }}</p>{{ newline }}
-        {% endif %}
-        {% if entry.meanings|length > 1 %}
-            <p aid:pstyle="Paragraph" aid:cstyle="Text">
+        {% if not loop.first %}
+            {{ backspace }}</p>{{ newline }}<p aid:pstyle="MeaningParagraph" aid:cstyle="Text">
             <meaning-number aid:cstyle="MeaningNumber">
                 {{ mnumber }}.
             </meaning-number>{{ nbsp }}
@@ -206,12 +203,11 @@
 
         {% include 'indesign/meaning_with_children.xml' with context %}
 
-        {% for cg in m.collogroups %}
-            {% include 'indesign/collogroup.xml' %}
-        {% endfor %}
-
-        {% if not loop.last %}
-            {{ backspace }}</p>{{ newline }}
+        {% if m.collogroups %}
+            {{ backspace }}</p>{{ newline }}<p aid:pstyle="CollogroupParagraph">
+            {% for cg in m.collogroups %}
+                {% include 'indesign/collogroup.xml' %}
+            {% endfor %}
         {% endif %}
     {% endfor %}
 
@@ -232,9 +228,9 @@
 
 
     {% if entry.cfentries or entry.cfcollogroups %}
-        {{ backspace }}{{ nbsp }}
-        <i aid:cstyle="Em">
-            —Ср.
+        {{ backspace }}</p>{{ newline }}
+        <p aid:pstyle="CfParagraph"><i aid:cstyle="Em">
+            Ср.
         </i>{{ nbsp }}
 
         {% for cfe in entry.cfentries %}

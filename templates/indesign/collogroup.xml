@@ -1,7 +1,13 @@
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
-{{ backspace }}{{ space }}
-<text aid:cstyle="CollocSym">▶</text>{{ nbsp }}{# ⯈ ▶ ▸ #}
+{# ⯈ ▶ ▸ #}
+{% if cg.phraseological %}
+    {{ backspace }}{{ space }}
+    <text aid:cstyle="Diamond">♦</text>{{ nbsp }}{# U+2666 #}
+{% else %}
+    {{ backspace }}{{ nbsp }}
+    <text aid:cstyle="Use">||</text>{{ space }}
+{% endif %}
 {% for c in cg.collocations %}
 
         {{ c.collocation_ucs|ind_cslav_words("CSLBSegment") }}
@@ -13,7 +19,7 @@
 
 {% endfor %}
 {{ backspace }}{{ nbsp }}
-<text aid:cstyle="CollocSym">◀</text>{# ◂ ◀ ⯇ #}
+{# ◂ ◀ ⯇ #}
 
 {% set mnumber = '' %}
 
