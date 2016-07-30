@@ -9,11 +9,11 @@ from os.path import basename, dirname, abspath, join
 import django
 from django.core import mail
 
-sys.path.append('/var/www/slavdict')
-from slavdict import settings
-
+sys.path.append(dirname(dirname(abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
+
+from slavdict import settings
 
 DUMP_SCRIPT = join(dirname(abspath(__file__)), 'dump.sh')
 BACKUP_DIR = settings.BACKUP_DIR
