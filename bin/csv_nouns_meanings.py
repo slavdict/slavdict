@@ -17,7 +17,7 @@ NOUN = u'a'
 for GENDER in (u'm', u'f', u'n'):
     uw = UnicodeWriter(open('nouns_%s_meanings.csv' % GENDER, 'w'))
     for e in (e for e in Entry.objects.filter(part_of_speech=NOUN,
-                            onym=u'', gender=GENDER).order('civil_equivalent')
+                            onym=u'', gender=GENDER).order_by('civil_equivalent')
               if e.first_volume):
         ecolumn = e.civil_equivalent + {1: u'¹', 2: u'²'}.get(e.homonym_order, u'')
         for m in list(e.meanings) + list(e.metaph_meanings):
