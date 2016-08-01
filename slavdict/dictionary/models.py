@@ -539,6 +539,7 @@ class Entry(models.Model):
         return ('single_entry_url', [str(self.id)])
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.civil_equivalent = civilrus_convert(self.orth_vars[0].strip())
         self.civil_inverse = self.civil_equivalent[::-1]
         if not without_mtime:
             self.mtime = datetime.datetime.now()
@@ -949,6 +950,14 @@ class Meaning(models.Model):
     @property
     def collogroups(self):
         return self.collocationgroup_set.all().order_by('order', 'id')
+
+    @property
+    def collogroups_phraseological(self):
+        return self.collocationgroup_set.filter(phraseological=True).order_by('order', 'id')
+
+    @property
+    def collogroups_non_phraseological(self):
+        return self.collocationgroup_set.exclude(phraseological=True).order_by('order', 'id')
 
     @property
     def child_meanings(self):
