@@ -539,7 +539,7 @@ class Entry(models.Model):
         return ('single_entry_url', [str(self.id)])
 
     def save(self, without_mtime=False, *args, **kwargs):
-        self.civil_equivalent = civilrus_convert(self.orth_vars[0].strip())
+        self.civil_equivalent = civilrus_convert(self.orth_vars[0].idem.strip())
         self.civil_inverse = self.civil_equivalent[::-1]
         if not without_mtime:
             self.mtime = datetime.datetime.now()
