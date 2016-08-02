@@ -931,6 +931,13 @@ class Meaning(models.Model):
         for ex in self.examples:
             text += u'<li>%s</li>' % ex.example
         text = u'<ol>%s</ol>' % text
+        child_meanings = self.child_meanings
+        if child_meanings:
+            text2 = u''
+            for cm in child_meanings:
+                text2 += u'<li>%s</li>' % cm.examples_for_admin()
+            if text2:
+                text += u'<ul>%s</ul>' % text2
         return mark_safe(text)
 
     def not_hidden(self):
