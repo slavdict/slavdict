@@ -217,7 +217,10 @@
         {{ meaning(m, peer_meanings_loop=loop,
                       parent_meanings_loop=none,
                       child_meanings=none) }}
-        {% for cg in m.collogroups %}
+        {% for cg in m.collogroups_non_phraseological %}
+            {% include 'indesign/collogroup.xml' %}
+        {% endfor %}
+        {% for cg in m.collogroups_phraseological %}
             {% include 'indesign/collogroup.xml' %}
         {% endfor %}
     {% endfor %}

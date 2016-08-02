@@ -1,7 +1,7 @@
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
 {# ⯈ ▶ ▸ #}
-{% if cg.phraseological %}
+{% if cg.phraseological and loop.first %}
     {{ backspace }}{{ space }}
     <text aid:cstyle="Diamond">♦</text>{{ nbsp }}{# U+2666 #}
 {% else %}
