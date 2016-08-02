@@ -406,6 +406,7 @@ class AdminMeaning(admin.ModelAdmin):
         'figurative',
         'substantivus',
         'is_valency',
+        'transitivity',
         'meaning_for_admin',
         'examples_for_admin',
     )
@@ -415,6 +416,7 @@ class AdminMeaning(admin.ModelAdmin):
         'figurative',
         'substantivus',
         'is_valency',
+        'transitivity',
     )
     list_filter = (
         FirstVolumeMeaningFilter,
@@ -422,6 +424,7 @@ class AdminMeaning(admin.ModelAdmin):
         'figurative',
         SubstantivusMeaningFilter,
         'is_valency',
+        'transitivity',
     )
     search_fields = (
         'entry_container__civil_equivalent',
