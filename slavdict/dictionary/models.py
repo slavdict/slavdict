@@ -193,6 +193,7 @@ TRANSITIVITY_CHOICES = (
 TRANSITIVITY_MAP = {
     'transitive': 't',
     'intransitive': 'i',
+    'labile': 'b',
 }
 
 # TODO: Должен остаться только один
@@ -416,6 +417,16 @@ class Entry(models.Model):
 
     def is_transitivity(self, slug):
         return TRANSITIVITY_MAP[slug] == self.transitivity
+
+    @property
+    def transitivity_from_meanings(self):
+        t = set(filter(None, (m.transitivity for m in self.all_meanings)))
+        if t and len(t) == 1:
+            return TRANSITIVITY_MAP[t.pop()]
+        elif t and len(t) == 2:
+            return TRANSITIVITY_MAP['labile']
+        else:
+            return u''
 
     sg1 = CharField(u'форма 1 ед.', max_length=50, blank=True,
                     help_text=u'''Целая словоформа или окончание. В случае

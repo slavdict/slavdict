@@ -60,9 +60,7 @@
         {% if entry.short_form_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        <csl>
-            {{ entry.short_form_ucs_wax.1|ind_cslav_words }}
-        </csl>
+        {{ entry.short_form_ucs_wax.1|ind_cslav_words }}
         {{ space }}
     {% endif %}
 
@@ -70,9 +68,7 @@
         {% if entry.genitive_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        <csl>
-            {{ entry.genitive_ucs_wax.1|ind_cslav_words }}
-        </csl>
+        {{ entry.genitive_ucs_wax.1|ind_cslav_words }}
         {{ space }}
     {% endif %}
 
@@ -80,9 +76,7 @@
         {% if entry.sg1_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        <csl>
-            {{ entry.sg1_ucs_wax.1|ind_cslav_words }}
-        </csl>
+        {{ entry.sg1_ucs_wax.1|ind_cslav_words }}
         {% if entry.sg2 %}
             <text aid:cstyle="Text">,</text>
         {%endif %}
@@ -93,9 +87,7 @@
         {% if entry.sg2_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        <csl>
-            {{ entry.sg2_ucs_wax.1|ind_cslav_words }}
-        </csl>
+        {{ entry.sg2_ucs_wax.1|ind_cslav_words }}
         {{ space }}
     {% endif %}
 
@@ -137,6 +129,14 @@
             </i>
             {{ space }}
         {% endif %}
+
+        {% if entry.is_part_of_speech("verb") %}
+            {{ backspace }}{{ space }}
+            <i aid:cstyle="Em">
+                {{ entry.transitivity_from_meanings }}
+            </i>
+            {{ space }}
+        {% endif %}
     {% endif %}
 
 
@@ -154,9 +154,7 @@
         </i>
         {{ space }}
         {% if entry.nom_sg_ucs_wax.0 %}{{ nbhyphen }}{%endif %}
-        <csl>
             {{ entry.nom_sg_ucs_wax.1|ind_cslav_words }}
-        </csl>
         {{ space }}
     {% endif %}
 
@@ -242,9 +240,7 @@
                 {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
 
-            <csl>
-                {{ cfe.orth_vars.0.idem_ucs|ind_cslav_words }}
-            </csl>
+            {{ cfe.orth_vars.0.idem_ucs|ind_cslav_words }}
 
             {% if cfe.homonym_order %}
                 <homonym-number aid:cstyle="HeadwordNumber">
@@ -257,9 +253,7 @@
             {% if not loop.first or entry.cfentries %}
                 {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
-            <csl>
-                {{ cfcg.collocations.0.collocation_ucs|ind_cslav_words }}
-            </csl>
+            {{ cfcg.collocations.0.collocation_ucs|ind_cslav_words }}
         {% endfor %}
         {{ backspace }}<text aid:cstyle="Text">.</text>
     {% endif %}
