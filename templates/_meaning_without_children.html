@@ -32,6 +32,12 @@
     {% endfor %}
 {% endif %}
 
+{% if m.transitivity %}
+    {{ backspace }}{{ space }}
+    <i>{{ m.get_transitivity_display() }}</i>
+    {{ space }}
+{% endif %}
+
 {% if m.substantivus %}
     <i>в&nbsp;роли сущ.</i>
     {{ space }}
