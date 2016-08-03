@@ -422,9 +422,9 @@ class Entry(models.Model):
     def transitivity_from_meanings(self):
         t = set(filter(None, (m.transitivity for m in self.all_meanings)))
         if t and len(t) == 1:
-            return TRANSITIVITY_MAP[t.pop()]
+            return dict(TRANSITIVITY_CHOICES).get(t.pop(), (None, u''))[1]
         elif t and len(t) == 2:
-            return TRANSITIVITY_MAP['labile']
+            return dict(TRANSITIVITY_CHOICES)[TRANSITIVITY_MAP['labile']][1]
         else:
             return u''
 
