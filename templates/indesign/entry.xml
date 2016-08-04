@@ -204,7 +204,7 @@
         {% endif %}
 
         {% include 'indesign/meaning_with_children.xml' with context %}
-        {% include 'indesign/collogroups.xml' with context %}
+        {% include 'indesign/meaning_collogroups.xml' with context %}
     {% endfor %}
 
 

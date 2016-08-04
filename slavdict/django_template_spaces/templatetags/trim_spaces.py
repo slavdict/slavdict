@@ -254,7 +254,7 @@ def cslav_injection(value):
 def ind_cslav_injection(value):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
-    TAG = u'<csl aid:cstyle="CSL">%s</csl>'
+    TAG = u'<x/>%s<x/>'
     func = lambda x: TAG % indesign_cslav_words(ucs_convert(x.group(1)))
     value = re.sub(ur'##(.*?)##', func, value)
     return value

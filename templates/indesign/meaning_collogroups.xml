@@ -6,7 +6,7 @@
     {% endfor %}
 {% endif %}
 
-{% if m.collogroups_non_phraseological %}
+{% if m.collogroups_phraseological %}
     {{ backspace }}</p>{{ newline }}<p aid:pstyle="CollogroupParagraph" aid:cstyle="Text">
     <text aid:cstyle="Diamond">♦{# U+2666 #}</text>{{ nbsp }}
     {% for cg in m.collogroups_phraseological %}
