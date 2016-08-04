@@ -1,25 +1,22 @@
+{% macro collogroup(cg, cg_loop) %}
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
-{# ⯈ ▶ ▸ #}
-{% if not loop.first %}
+
+{% if not cg_loop.first %}
     {{ backspace }}{{ nbsp }}
     <text aid:cstyle="Use">||</text>{{ space }}
 {% endif %}
+
 {% for c in cg.collocations %}
-
-        {{ c.collocation_ucs|ind_cslav_words("CSLSegment") }}
-        {{ space }}
-
-        {% if not loop.last %}
-        {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
-        {% endif %}
-
+    {{ c.collocation_ucs|ind_cslav_words("CSLSegment") }}{{ space }}
+    {% if not loop.last %}
+        {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
+    {% endif %}
 {% endfor %}
-{{ backspace }}{{ nbsp }}
-{# ◂ ◀ ⯇ #}
+{{ backspace }}{{ space }}
+
 
 {% set mnumber = '' %}
-
 {% for m in cg.meanings %}
     {% if cg.meanings|length != 1 %}
         {% set cgmnumber = {1:'а', 2:'б', 3:'в', 4:'г', 5:'д'}[loop.index] %}
@@ -42,4 +39,5 @@
                   child_meanings=none) }}
 {% endfor %}
 
+{% endmacro %}
 {# vim: set ft=django.xml: #}
