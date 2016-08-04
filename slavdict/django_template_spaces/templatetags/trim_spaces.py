@@ -250,16 +250,23 @@ def cslav_injection(value):
     value = re.sub(ur'##(.*?)##', cslav_subst, value)
     return value
 
+def subst_func(match):
+    x, y, z = match.group(1), match.group(2), match.group(3)
+    if u'\u00a0' in x:
+        x = NBSP
+    elif u' ' in x:
+        x = SPACE
+    if u'\u00a0' in z:
+        z = NBSP
+    elif u' ' in z:
+        z = SPACE
+    return u'%s%s%s' % (x, indesign_cslav_words(ucs_convert(y)), z)
+
 @register.filter
 def ind_cslav_injection(value):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
-    func = lambda x, y, z: u'%s%s%s' % (
-                                SPACE if x else u'',
-                                indesign_cslav_words(ucs_convert(y.group(1))),
-                                SPACE if z else u'')
-    value = re.sub(ur'(\s*)##(.*?)##(\s*)', func, value)
-    return value
+    return re.sub(ur'(\s*)##(.*?)##(\s*)', subst_func, value)
 
 register.filter(name='cslav_words')(cslav_nobr_words)
 register.filter(name='ind_cslav_words')(indesign_cslav_words)
