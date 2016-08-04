@@ -108,6 +108,11 @@
                 <i>{{ entry.get_gender_display() }}</i>
                 {{ space }}
             {% endif %}
+            {% if entry.is_part_of_speech("verb") %}
+                {{ backspace }},{{ space }}
+                <i>{{ entry.transitivity_from_meanings }}</i>
+                {{ space }}
+            {% endif %}
         {% endif %}
 
 

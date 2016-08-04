@@ -3,6 +3,8 @@ import datetime
 import json
 import re
 
+from collections import Counter
+
 from django.db import models
 from django.db.models import BooleanField
 from django.db.models import CharField
@@ -188,7 +190,7 @@ TRANSITIVITY_CHOICES = (
     ('', u''),
     ('t', u'перех.'),
     ('i', u'неперех.'),
-    ('b', u'перех./неперех.'),
+    ('b', u'перех. и неперех.'),
 )
 TRANSITIVITY_MAP = {
     'transitive': 't',
@@ -420,13 +422,28 @@ class Entry(models.Model):
 
     @property
     def transitivity_from_meanings(self):
-        t = set(filter(None, (m.transitivity for m in self.all_meanings)))
-        if t and len(t) == 1:
-            return dict(TRANSITIVITY_CHOICES).get(t.pop(), (None, u''))[1]
-        elif t and len(t) == 2:
-            return dict(TRANSITIVITY_CHOICES)[TRANSITIVITY_MAP['labile']][1]
-        else:
+        labile = TRANSITIVITY_MAP['labile']
+        trans = TRANSITIVITY_MAP['transitive']
+        intrans = TRANSITIVITY_MAP['intransitive']
+        tmap = dict(TRANSITIVITY_CHOICES)
+        lst = filter(None, (m.transitivity for m in self.meanings))
+        template = u'%s и\u00a0%s'
+        if len(lst) == 0:
+            self.transitivity_label = u''
             return u''
+        elif len(set(lst)) == 1:
+            self.transitivity_label = lst[0]
+            return tmap.get(lst[0], u'')
+        else:
+            self.transitivity_label = labile
+            c = Counter(lst)
+            if labile in c:
+                c[trans] += c[labile]
+                c[intrans] += c[labile]
+            if c[trans] >= c[intrans]:
+                return template % (tmap[trans], tmap[intrans])
+            else:
+                return template % (tmap[intrans], tmap[trans])
 
     sg1 = CharField(u'форма 1 ед.', max_length=50, blank=True,
                     help_text=u'''Целая словоформа или окончание. В случае
