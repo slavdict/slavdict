@@ -256,7 +256,7 @@ def ind_cslav_injection(value):
     """
     func = lambda x, y, z: u'%s%s%s' % (
                                 SPACE if x else u'',
-                                indesign_cslav_words(ucs_convert(y.group(1)),
+                                indesign_cslav_words(ucs_convert(y.group(1))),
                                 SPACE if z else u'')
     value = re.sub(ur'(\s*)##(.*?)##(\s*)', func, value)
     return value
