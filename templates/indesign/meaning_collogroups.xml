@@ -2,7 +2,7 @@
     {{ backspace }}</p>{{ newline }}<p aid:pstyle="CollogroupParagraph" aid:cstyle="Text">
     <text aid:cstyle="Diamond">♢{# U+2662 #}</text>{{ nbsp }}
     {% for cg in m.collogroups_non_phraseological %}
-        {% include 'indesign/collogroup.xml' %}
+        {% include 'indesign/collogroup.xml' with context %}
     {% endfor %}
 {% endif %}
 
@@ -10,7 +10,7 @@
     {{ backspace }}</p>{{ newline }}<p aid:pstyle="CollogroupParagraph" aid:cstyle="Text">
     <text aid:cstyle="Diamond">♦{# U+2666 #}</text>{{ nbsp }}
     {% for cg in m.collogroups_phraseological %}
-        {% include 'indesign/collogroup.xml' %}
+        {% include 'indesign/collogroup.xml' with context %}
     {% endfor %}
 {% endif %}
 
