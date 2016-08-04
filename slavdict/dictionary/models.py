@@ -217,7 +217,7 @@ def sort_key2(word):
     return word
 
 def collogroup_sort_key(cg):
-    text = u' '.join(cg.collocations)
+    text = u' '.join(c.collocation for c in cg.collocations)
     text = text.replace(u'-', u'')
     text = re.sub(ur'[\s/,\.;#\(\)]+', u' ', text)
     text = text.strip()
