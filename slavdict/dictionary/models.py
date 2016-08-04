@@ -915,7 +915,7 @@ class Meaning(models.Model):
             дополнительная информация, комментарии к употреблению.''',
             blank=True)
 
-    substantivus = BooleanField(u'в роли сущ.')
+    substantivus = BooleanField(u'в роли сущ.', default=False)
     substantivus_type = CharField(u'форма субстантива', max_length=1,
                                   choices=SUBSTANTIVUS_TYPE_CHOICES,
                                   blank=True, default='')

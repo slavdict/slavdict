@@ -1,6 +1,6 @@
 {% macro example(e, examples_loop, peer_meanings_loop) %}
 
-<example aid:cstyle="CSL">
+<example>
     {{ e.example_ucs|ind_cslav_words }}
 </example>{{ space }}
 

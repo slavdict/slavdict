@@ -9,7 +9,7 @@
 {% for m in child_meanings %}
 
     {% if m.metaphorical %}
-        {% include 'indesign/litsym.xml' %}
+        {% include 'indesign/allusion.xml' %}
     {% elif loop.first and m.is_valency and not m.parent_meaning.examples %}
         {{ backspace }}<text aid:cstyle="Text">:</text>{{ space }}
     {% elif loop.first and not m.metaphorical and not m.parent_meaning.examples %}

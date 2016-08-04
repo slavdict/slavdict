@@ -1,16 +1,13 @@
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
 {# ⯈ ▶ ▸ #}
-{% if cg.phraseological and loop.first %}
-    {{ backspace }}{{ space }}
-    <text aid:cstyle="Diamond">♦</text>{{ nbsp }}{# U+2666 #}
-{% else %}
+{% if not loop.first %}
     {{ backspace }}{{ nbsp }}
     <text aid:cstyle="Use">||</text>{{ space }}
 {% endif %}
 {% for c in cg.collocations %}
 
-        {{ c.collocation_ucs|ind_cslav_words("CSLBSegment") }}
+        {{ c.collocation_ucs|ind_cslav_words("CSLSegment") }}
         {{ space }}
 
         {% if not loop.last %}
@@ -39,7 +36,7 @@
 
 {% for m in cg.metaph_meanings %}
 
-    {% include 'indesign/litsym.xml' %}
+    {% include 'indesign/allusion.xml' %}
     {{ meaning(m, peer_meanings_loop=loop,
                   parent_meanings_loop=none,
                   child_meanings=none) }}

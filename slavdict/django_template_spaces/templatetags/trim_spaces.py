@@ -205,7 +205,7 @@ def indesign_cslav_words(value, *args):
     cstyle = u'CSLSegment'
     if args:
         cstyle = args[0]
-    TEXT_TAG = u'<text aid:cstyle="TextInCSL">%s</text>'
+    TEXT_TAG = u'%s'
     CSL_TAG = u'<w aid:cstyle="{}">%s</w>'.format(cstyle)
     # многоточие
     RE_DOTS = ur'\.\.\.'

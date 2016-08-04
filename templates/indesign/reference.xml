@@ -1,5 +1,5 @@
-<entry id="en{{ entry.id }}{{ reference|e }}">
-    <p aid:pstyle="FirstParagraph">
+<entry>
+    <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
 
         <headword aid:cstyle="Headword">
             {{ reference|e }}

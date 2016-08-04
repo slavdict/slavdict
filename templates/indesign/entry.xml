@@ -1,7 +1,7 @@
 {% from 'indesign/etymology.xml'   import etymology    with context %}
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
-<entry id="en{{ entry }}">
+<entry>
     <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
 
     {% for base_var in entry.base_vars %}
@@ -192,45 +192,25 @@
 
     {% for m in entry.meanings %}
         {% set mnumber = loop.index %}
+
         {% if not loop.first %}
             {{ backspace }}</p>{{ newline }}<p aid:pstyle="MeaningParagraph" aid:cstyle="Text">
-            <meaning-number aid:cstyle="MeaningNumber">
-                {{ mnumber }}.
-            </meaning-number>{{ nbsp }}
+        {% endif %}
+
+        {% if entry.meanings|length > 1 %}
+        <meaning-number aid:cstyle="MeaningNumber">
+            {{ mnumber }}.
+        </meaning-number>{{ nbsp }}
         {% endif %}
 
         {% include 'indesign/meaning_with_children.xml' with context %}
-
-        {% if m.collogroups %}
-            {{ backspace }}</p>{{ newline }}<p aid:pstyle="CollogroupParagraph">
-            {% for cg in m.collogroups %}
-                {% include 'indesign/collogroup.xml' %}
-            {% endfor %}
-        {% endif %}
-    {% endfor %}
-
-
-    {% for m in entry.metaph_meanings %}
-        {% include 'indesign/litsym.xml' %}
-        {{ meaning(m, peer_meanings_loop=loop,
-                      parent_meanings_loop=none,
-                      child_meanings=none) }}
-        {% for cg in m.collogroups_non_phraseological %}
-            {% include 'indesign/collogroup.xml' %}
-        {% endfor %}
-        {% for cg in m.collogroups_phraseological %}
-            {% include 'indesign/collogroup.xml' %}
-        {% endfor %}
-    {% endfor %}
-
-    {% for cg in entry.collogroups %}
-        {% include 'indesign/collogroup.xml' %}
+        {% include 'indesign/collogroups.xml' with context %}
     {% endfor %}
 
 
     {% if entry.cfentries or entry.cfcollogroups %}
         {{ backspace }}</p>{{ newline }}
-        <p aid:pstyle="CfParagraph"><i aid:cstyle="Em">
+        <p aid:pstyle="CfParagraph" aid:cstyle="Text"><i aid:cstyle="Em">
             Ср.
         </i>{{ nbsp }}
 
