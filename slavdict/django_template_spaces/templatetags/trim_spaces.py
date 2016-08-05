@@ -275,9 +275,27 @@ def ind_cslav_injection(value):
     """
     return re.sub(ur'(\s*)##(.*?)##(\s*)', ind_cslav, value)
 
+class MMM(object):
+    def __init__(self, text):
+        L = len(text)
+        if L == len(text.strip()):
+            self.match_groups = [None, u'', text, u'']
+        else:
+            LL = len(text.lstrip())
+            LR = len(text.rstrip())
+            x = u''
+            if L > LL:
+                x = text[:L - LL]
+            y = text[L - LL:LR]
+            z = u''
+            if L > LR:
+                z = text[LR:]
+            self.match_groups = [None, x, y, z]
+    def group(self, x):
+        return self.match_groups[x]
+
 @register.filter
 def ind_civil_injection(value, cstyle):
-    pattern = u'(\s*)(.*)(\s*)'
     lst = value.split(u'##')
     TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
     ind_civil = subst_func(lambda x: TAG % x)
@@ -285,9 +303,9 @@ def ind_civil_injection(value, cstyle):
         if not elem:
             continue
         if i % 2:
-            elem = re.sub(pattern, ind_cslav, elem)
+            elem = ind_civil(MMM(elem))
         else:
-            elem = re.sub(pattern, ind_civil, elem)
+            elem = ind_cslav(MMM(elem))
         lst[i] = elem
     return u''.join(lst)
 
