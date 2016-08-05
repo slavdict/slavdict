@@ -9,7 +9,7 @@
         <x aid:cstyle="Text">{{ frame|
             ind_cslav_injection|
             ind_regex('Valency', '\\b[а-яА-Я]+[\\-\u2011]л\\.')|
-            ind_regex('Em', r'с\\s(?:придат|инф)\\.')}}</x>
+            ind_regex('Em', 'с\\s(?:придат|инф)\\.')}}</x>
     {% endfor %}
 {% endif %}
 
