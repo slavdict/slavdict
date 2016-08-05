@@ -47,7 +47,7 @@
 {% endif %}
 
 {% if m.meaning %}
-    <meaning aid:cstyle="Text">{{ m.meaning|ind_cslav_injection }}</meaning>
+    <meaning aid:cstyle="Text">{{ m.meaning|ind_cslav_injection|ind_italics("Em") }}</meaning>
 {% endif %}
 
 {% if m.gloss %}

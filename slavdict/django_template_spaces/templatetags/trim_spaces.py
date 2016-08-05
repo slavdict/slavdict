@@ -271,5 +271,13 @@ def ind_cslav_injection(value):
     """
     return re.sub(ur'(\s*)##(.*?)##(\s*)', subst_func, value)
 
+@register.filter
+def ind_italics(value, cstyle):
+    """ Помечает указанным стилем cstyle найденные пометы: перен., зд.
+    """
+    TAG = u'<x cstyle="{}">%s</x>'.format(cstyle)
+    func = lambda x: TAG % x.group(0)
+    return re.sub(ur'\b(?:перен|зд)\.', func, value)
+
 register.filter(name='cslav_words')(cslav_nobr_words)
 register.filter(name='ind_cslav_words')(indesign_cslav_words)
