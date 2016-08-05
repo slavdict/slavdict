@@ -267,13 +267,29 @@ def subst_func(func):
         return u'%s%s%s' % (x, func(y), z)
     return f
 
-_ind_cslav_injection = subst_func(lambda x: indesign_cslav_words(ucs_convert(x)))
+ind_cslav = subst_func(lambda x: indesign_cslav_words(ucs_convert(x)))
 
 @register.filter
 def ind_cslav_injection(value):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
-    return re.sub(ur'(\s*)##(.*?)##(\s*)', _ind_cslav_injection, value)
+    return re.sub(ur'(\s*)##(.*?)##(\s*)', ind_cslav, value)
+
+@register.filter
+def ind_civil_injection(value, cstyle):
+    pattern = u'(\s*)(.*)(\s*)'
+    lst = value.split(u'##')
+    TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
+    ind_civil = subst_func(lambda x: TAG % x)
+    for i, elem in enumerate(lst):
+        if not elem:
+            continue
+        if i % 2:
+            elem = re.sub(pattern, ind_cslav, elem)
+        else:
+            elem = re.sub(pattern, ind_civil, elem)
+        lst[i] = elem
+    return u''.join(lst)
 
 @register.filter
 def ind_regex(value, cstyle, regex):

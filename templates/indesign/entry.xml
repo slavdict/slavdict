@@ -60,7 +60,7 @@
         {% if entry.short_form_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        {{ entry.short_form_ucs_wax.1|ind_cslav_words }}
+        {{ entry.short_form_ucs_wax.1|ind_cslav_words("CSLSegment") }}
         {{ space }}
     {% endif %}
 
@@ -68,7 +68,7 @@
         {% if entry.genitive_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        {{ entry.genitive_ucs_wax.1|ind_cslav_words }}
+        {{ entry.genitive_ucs_wax.1|ind_cslav_words("CSLSegment") }}
         {{ space }}
     {% endif %}
 
@@ -76,7 +76,7 @@
         {% if entry.sg1_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        {{ entry.sg1_ucs_wax.1|ind_cslav_words }}
+        {{ entry.sg1_ucs_wax.1|ind_cslav_words("CSLSegment") }}
         {% if entry.sg2 %}
             <text aid:cstyle="Text">,</text>
         {%endif %}
@@ -87,7 +87,7 @@
         {% if entry.sg2_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        {{ entry.sg2_ucs_wax.1|ind_cslav_words }}
+        {{ entry.sg2_ucs_wax.1|ind_cslav_words("CSLSegment") }}
         {{ space }}
     {% endif %}
 
@@ -154,7 +154,7 @@
         </i>
         {{ space }}
         {% if entry.nom_sg_ucs_wax.0 %}{{ nbhyphen }}{%endif %}
-            {{ entry.nom_sg_ucs_wax.1|ind_cslav_words }}
+            {{ entry.nom_sg_ucs_wax.1|ind_cslav_words("CSLSegment") }}
         {{ space }}
     {% endif %}
 
@@ -220,7 +220,7 @@
                 {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
 
-            {{ cfe.orth_vars.0.idem_ucs|ind_cslav_words }}
+            {{ cfe.orth_vars.0.idem_ucs|ind_cslav_words("CSLSegment") }}
 
             {% if cfe.homonym_order %}
                 <homonym-number aid:cstyle="HeadwordNumber">
@@ -233,7 +233,7 @@
             {% if not loop.first or entry.cfentries %}
                 {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
-            {{ cfcg.collocations.0.collocation_ucs|ind_cslav_words }}
+            {{ cfcg.collocations.0.collocation_ucs|ind_cslav_words("CSLSegment") }}
         {% endfor %}
         {{ backspace }}<text aid:cstyle="Text">.</text>
     {% endif %}

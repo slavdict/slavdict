@@ -1,7 +1,7 @@
 {% macro example(e, examples_loop, peer_meanings_loop) %}
 
 <example>
-    {{ e.example_ucs|ind_cslav_words }}
+    {{ e.example_ucs|ind_cslav_words("CSLSegment") }}
 </example>{{ space }}
 
 {% if e.greek_equivs %}

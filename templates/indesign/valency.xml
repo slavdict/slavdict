@@ -3,13 +3,13 @@
 
 {% if m.meaning %}
     {{ backspace }}{{ nbsp }}
-    {{ m.host_entry.base_vars[0].idem_ucs|ind_cslav_words }}{{ space }}
+    {{ m.host_entry.base_vars[0].idem_ucs|ind_cslav_words("CSLSegment") }}{{ space }}
     {% set ili = joiner('{{ space }}<x aid:cstyle="Em">или</x>{{ space }}') %}
-    {% for frame in m.meaning.split("; ") %}
+    {% for frame in m.meaning.split(";") %}
         {{ ili() }}
-        <x aid:cstyle="Text">{{ frame|
+        <x aid:cstyle="Text">{{ frame|trim|
             ind_cslav_injection|
-            ind_regex('Valency', '\\b[а-яА-Я]+[\\-\u2011]л\\.')|
+            ind_regex('Valency', '[а-я]+[\\-\u2011]л\\.')|
             ind_regex('Em', 'с\\s(?:придат|инф)\\.')}}</x>
     {% endfor %}
 {% endif %}

@@ -15,7 +15,7 @@
         {% endif %}
 
         {% if mc.context %}
-            {{ mc.context_ucs|ind_cslav_words }}
+            {{ mc.context_ucs|ind_cslav_words("CSLSegment") }}
             {{ space }}
         {% endif %}
 
