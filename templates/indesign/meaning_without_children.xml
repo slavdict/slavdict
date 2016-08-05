@@ -6,27 +6,27 @@
     {% for mc in m.contexts %}
 
         {% if loop.first %}
-                <text aid:cstyle="Text">[</text>
+                <x aid:cstyle="Text">[</x>
         {% endif %}
 
         {% if mc.left_text %}
-            <i aid:cstyle="Em">{{ mc.left_text }}</i>
+            <x aid:cstyle="Em">{{ mc.left_text }}</x>
             {{ space }}
         {% endif %}
 
         {% if mc.context %}
-            <csl>{{ mc.context_ucs|ind_cslav_words }}</csl>
+            {{ mc.context_ucs|ind_cslav_words }}
             {{ space }}
         {% endif %}
 
         {% if mc.right_text %}
-            <i aid:cstyle="Em">{{ mc.right_text }}</i>
+            <x aid:cstyle="Em">{{ mc.right_text }}</x>
         {% endif %}
 
         {% if loop.last %}
-            {{ backspace }}<text aid:cstyle="Text">]</text>
+            {{ backspace }}<x aid:cstyle="Text">]</x>
         {% else %}
-            {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+            {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
 
     {% endfor %}
@@ -47,7 +47,9 @@
 {% endif %}
 
 {% if m.meaning %}
-    <meaning aid:cstyle="Text">{{ m.meaning|ind_cslav_injection|ind_italics("Em") }}</meaning>
+    <meaning aid:cstyle="Text">{{ m.meaning|
+        ind_cslav_injection|
+        ind_regex('Em', '\\b(?:перен|зд)\\.') }}</meaning>
 {% endif %}
 
 {% if m.gloss %}

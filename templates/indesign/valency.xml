@@ -1,0 +1,33 @@
+{% macro valency(m) %}
+{% from 'indesign/example.xml' import example with context %}
+
+{% if m.meaning %}
+    {{ m.host_entry.base_vars[0].idem_ucs|e }}{{ space }}
+    {% set ili = joiner('{{ space }}<x aid:cstyle="Em">или</x>{{ space }}') %}
+    {% for frame in m.meaning.split("; ") %}
+        {{ ili() }}
+        <x aid:cstyle="Text">{{ frame|
+            ind_cslav_injection|
+            ind_regex('Valency', '\\b[а-яА-Я]+[\\-\u2011]л\\.')|
+            ind_regex('Em', r'с\\s(?:придат|инф)\\.')}}</x>
+    {% endfor %}
+{% endif %}
+
+{% if m.gloss %}
+    <x aid:cstyle="Text">(=</x>{{ nbsp }}
+    <gloss aid:cstyle="Em">{{ m.gloss|ind_cslav_injection }}</gloss>
+    <x aid:cstyle="Text">)</x>
+    {{ space }}
+{% endif %}
+
+{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss) and m.examples %}
+    {{ backspace }}<x aid:cstyle="Text">:</x>{{ space }}
+{% endif %}
+
+{% for e in m.examples %}
+    {{ example(e, examples_loop=loop, peer_meanings_loop=peer_meanings_loop) }}
+{% endfor %}
+
+
+{% endmacro %}
+{# vim: set ft=django.xml: #}

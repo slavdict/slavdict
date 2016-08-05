@@ -253,31 +253,35 @@ def cslav_injection(value):
     value = re.sub(ur'##(.*?)##', cslav_subst, value)
     return value
 
-def subst_func(match):
-    x, y, z = match.group(1), match.group(2), match.group(3)
-    if u'\u00a0' in x:
-        x = NBSP
-    elif u' ' in x:
-        x = SPACE
-    if u'\u00a0' in z:
-        z = NBSP
-    elif u' ' in z:
-        z = SPACE
-    return u'%s%s%s' % (x, indesign_cslav_words(ucs_convert(y)), z)
+def subst_func(func):
+    def f(match):
+        x, y, z = match.group(1), match.group(2), match.group(3)
+        if u'\u00a0' in x:
+            x = NBSP
+        elif u' ' in x:
+            x = SPACE
+        if u'\u00a0' in z:
+            z = NBSP
+        elif u' ' in z:
+            z = SPACE
+        return u'%s%s%s' % (x, func(y), z)
+    return f
+
+_ind_cslav_injection = subst_func(lambda x: indesign_cslav_words(ucs_convert(x)))
 
 @register.filter
 def ind_cslav_injection(value):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
-    return re.sub(ur'(\s*)##(.*?)##(\s*)', subst_func, value)
+    return re.sub(ur'(\s*)##(.*?)##(\s*)', _ind_cslav_injection, value)
 
 @register.filter
-def ind_italics(value, cstyle):
-    """ Помечает указанным стилем cstyle найденные пометы: перен., зд.
+def ind_regex(value, cstyle, regex):
+    """ Помечает указанным стилем cstyle найденный текст
     """
-    TAG = u'<x cstyle="{}">%s</x>'.format(cstyle)
-    func = lambda x: TAG % x.group(0)
-    return re.sub(ur'\b(?:перен|зд)\.', func, value)
+    TAG = u'%s<x aid:cstyle="{}">%s</x>%s'.format(cstyle)
+    _ind_regex = subst_func(lambda x: TAG % x)
+    return re.sub(ur'(\s*)(%s)(\s*)' % regex, _ind_regex, value)
 
 register.filter(name='cslav_words')(cslav_nobr_words)
 register.filter(name='ind_cslav_words')(indesign_cslav_words)

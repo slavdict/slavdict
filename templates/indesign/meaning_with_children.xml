@@ -1,4 +1,5 @@
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
+{% from 'indesign/valency.xml' import valency with context %}
 {% set child_meanings = m.child_meanings %}
 {% set parent_meanings_loop = loop %}
 
@@ -18,9 +19,13 @@
         {% include 'indesign/separator.xml' %}
     {% endif %}
 
-    {{ meaning(m, peer_meanings_loop=loop,
-                  parent_meanings_loop=parent_meanings_loop,
-                  child_meanings=none) }}
+    {% if m.is_valency %}
+        {{ valency(m) }}
+    {% else %}
+        {{ meaning(m, peer_meanings_loop=loop,
+                      parent_meanings_loop=parent_meanings_loop,
+                      child_meanings=none) }}
+    {% endif %}
 {% endfor %}
 
 {# vim: set ft=django.xml: #}
