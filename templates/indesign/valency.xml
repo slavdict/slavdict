@@ -1,4 +1,4 @@
-{% macro valency(m) %}
+{% macro valency(m, peer_meanings_loop, parent_meanings_loop) %}
 {% from 'indesign/example.xml' import example with context %}
 
 {% if m.meaning %}
@@ -20,7 +20,7 @@
     {{ space }}
 {% endif %}
 
-{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss) and m.examples %}
+{% if m.meaning and m.examples %}
     {{ backspace }}<x aid:cstyle="Text">:</x>{{ space }}
 {% endif %}
 

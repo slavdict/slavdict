@@ -20,7 +20,8 @@
     {% endif %}
 
     {% if m.is_valency %}
-        {{ valency(m) }}
+        {{ valency(m, peer_meanings_loop=loop,
+                      parent_meanings_loop=parent_meanings_loop) }}
     {% else %}
         {{ meaning(m, peer_meanings_loop=loop,
                       parent_meanings_loop=parent_meanings_loop,

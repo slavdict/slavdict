@@ -279,7 +279,7 @@ def ind_cslav_injection(value):
 def ind_regex(value, cstyle, regex):
     """ Помечает указанным стилем cstyle найденный текст
     """
-    TAG = u'%s<x aid:cstyle="{}">%s</x>%s'.format(cstyle)
+    TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
     _ind_regex = subst_func(lambda x: TAG % x)
     return re.sub(ur'(\s*)(%s)(\s*)' % regex, _ind_regex, value)
 
