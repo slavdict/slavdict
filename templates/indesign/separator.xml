@@ -1,3 +1,4 @@
-{{ backspace }}{{ emspace }}<x aid:cstyle="Use">||</x>{{ nbsp }}
+{{ backspace }}{{ space }}{{ space }}{{ space }}
+<x aid:cstyle="Use">||</x>{{ nbsp }}
 
 {# vim: set ft=django.xml: #}

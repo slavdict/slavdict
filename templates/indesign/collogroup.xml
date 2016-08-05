@@ -7,6 +7,7 @@
 {% endif %}
 
 {% for c in cg.collocations %}
+    {{ backspace }}{{ space }}
     {{ c.collocation_ucs|ind_cslav_words("CSLSegment") }}{{ space }}
     {% if not loop.last %}
         {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
