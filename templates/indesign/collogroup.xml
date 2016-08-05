@@ -3,8 +3,7 @@
 
 
 {% if not cg_loop.first %}
-    {{ backspace }}{{ nbsp }}
-    <text aid:cstyle="Use">||</text>{{ space }}
+    {% include 'indesign/separator.xml' %}
 {% endif %}
 
 {% for c in cg.collocations %}

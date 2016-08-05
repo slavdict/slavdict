@@ -168,6 +168,9 @@ class TrimExtension(Extension):
         # {{ wj }}, {{ zwnbsp }}
         source = re.sub(ur'{{\s*wj\s*}}', ur'\u2060', source)
         source = re.sub(ur'{{\s*zwnbsp\s*}}', ur'\u2060', source)
+        # {{ emspace }}, {{ enspace }}
+        source = re.sub(ur'{{\s*emspace\*}}', u'\u2003', source)
+        source = re.sub(ur'{{\s*enspace\*}}', u'\u2002', source)
         return source
 
 trim = TrimExtension
