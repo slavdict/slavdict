@@ -40,18 +40,24 @@ lexemes = [e for e in lexemes
 
 for lexeme in lexemes:
 
-    wordform = lexeme.orth_vars[0].idem
+    wordform = lexeme.base_vars[0].idem
     reference = None
     entries.append((wordform, reference, lexeme))
     key = sort_key1(wordform)
-
-    # Варианты
-    for var in lexeme.orth_vars_refs[1:]:
+    for var in lexeme.base_vars[1:]:
         wordform = var.idem
         key2 = sort_key1(wordform)
         if key2 != key:
             reference = var.idem_ucs
             entries.append((wordform, reference, lexeme))
+
+    # Варианты
+    #for var in lexeme.orth_vars_refs[1:]:
+    #    wordform = var.idem
+    #    key2 = sort_key1(wordform)
+    #    if key2 != key:
+    #        reference = var.idem_ucs
+    #        entries.append((wordform, reference, lexeme))
 
     # Названия народов
     if lexeme.nom_sg:

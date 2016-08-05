@@ -15,6 +15,7 @@
 {% endif %}
 
 {% if m.gloss %}
+    {{ backspace }}{{ space }}
     <x aid:cstyle="Text">(=</x>{{ nbsp }}
     <gloss aid:cstyle="Em">{{ m.gloss|ind_cslav_injection }}</gloss>
     <x aid:cstyle="Text">)</x>
