@@ -10,9 +10,8 @@
     {{ backspace }}{{ space }}
     {{ c.collocation_ucs|ind_civil_injection('Valency') }}
     {% if not loop.last %}
-        {{ backspace }}<text aid:cstyle="Text">;</text>
+        {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
     {% endif %}
-    {{ space }}
 {% endfor %}
 {{ backspace }}{{ space }}
 
