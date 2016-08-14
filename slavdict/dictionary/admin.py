@@ -427,10 +427,10 @@ class AdminMeaning(admin.ModelAdmin):
         'transitivity',
     )
     search_fields = (
-        'entry_container__civil_equivalent',
-        'entry_container__orthographic_variants__idem',
-        'collogroup_container__collocation_set__civil_equivalent',
-        'collogroup_container__collocation_set__collocation',
+        #'entry_container__civil_equivalent',
+        #'entry_container__orthographic_variants__idem',
+        #'collogroup_container__collocation_set__civil_equivalent',
+        #'collogroup_container__collocation_set__collocation',
         'meaning',
         'gloss',
         )
