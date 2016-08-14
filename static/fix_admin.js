@@ -32,6 +32,21 @@
          * указывающими представлен ли вариант без титла в текстах или нет */
         $('.column-untitled_exists').html('Титл');
 
+        /* Убираем заголовки столбцов с длинными названиями в атрибут title */
+        var only_titles = ['_parent_meaning', 'metaphorical',
+            'figurative', 'substantivus', 'is_valency',
+            'meaning_for_admin', 'examples_for_admin'];
+        for (var i=only_titles.length; i>0; i--) {
+            var x = $('th.column-' + only_titles[i-1]);
+            x.prop('title', x.text());
+            x.html('&nbsp;…');
+        }
+
+        $('select[id$="-transitivity"]').each(function () {
+            var x = $(this);
+            x.innerWidth('7em');
+        });
+
         /* Добавляем ссылки на отображение статей помимо ссылок редактирования */
         var RE = /entry\/(\d+)\//;
         $('th.field-headword a').each(function(){

@@ -61,9 +61,13 @@ def host_entry(self):
     except:
         return u'не относится ни к какой статье'
     else:
-        html = u'<a href="%s" target="_blank">%s</a>' % (
-                        entry.get_absolute_url(), entry.civil_equivalent)
-        return mark_safe(html)
+        if entry:
+            html = u'<a href="%s" target="_blank">%s</a>' % (
+                        entry.get_absolute_url(),
+                        entry.civil_equivalent)
+            return mark_safe(html)
+        else:
+            return u'не относится ни к какой статье'
 
 host_entry.short_description = u'словарная статья'
 
