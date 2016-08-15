@@ -10,15 +10,12 @@ sys.path.append(
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
-from slavdict.dictionary.models import Entry
+from slavdict.dictionary.models import Entry, ONYM_MAP
 from slavdict.unicode_csv import UnicodeWriter
 
-NOUN = u'a'
-for GENDER in (u'm', u'f', u'n'):
-    uw = UnicodeWriter(open('nouns_%s_meanings.csv' % GENDER, 'w'))
-    for e in (e for e in Entry.objects.filter(part_of_speech=NOUN,
-                            onym=u'', gender=GENDER).order_by('civil_equivalent')
-              if e.first_volume):
+def write_csv(filename, entries):
+    uw = UnicodeWriter(open(filename, 'w'))
+    for e in (e for e in entries if e.first_volume):
         ecolumn = e.civil_equivalent + {1: u'¹', 2: u'²'}.get(e.homonym_order, u'')
         for m in list(e.meanings) + list(e.metaph_meanings):
             meaning = m.meaning.strip()
@@ -36,3 +33,18 @@ for GENDER in (u'm', u'f', u'n'):
                     if ecolumn:
                        ecolumn = u''
     uw.stream.close()
+
+NOUN = u'a'
+for GENDER in (u'm', u'f', u'n', u''):
+    filename = 'nouns_%s_meanings.csv' % GENDER
+    common_nouns = Entry.objects.filter(
+            part_of_speech=NOUN, onym=u'',
+            gender=GENDER).order_by('civil_equivalent')
+    write_csv(filename, common_nouns)
+
+for ONYM in ('anthroponym', 'toponym', 'ethnonym', 'other'):
+    onyms = Entry.objects \
+                .filter(part_of_speech=NOUN, onym=ONYM_MAP[ONYM]) \
+                .order_by('civil_equivalent')
+    filename = 'nouns_meanings_%s.csv' % ONYM
+    write_csv(filename, onyms)
