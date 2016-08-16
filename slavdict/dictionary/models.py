@@ -251,6 +251,8 @@ PART_OF_SPEECH_MAP = {
     'adverb': 'f',
     'conjunction': 'g',
     'adposition': 'h',
+    'preposition': 'h',
+    'postposition': 'h',
     'particle': 'i',
     'interjection': 'j',
     'number': 'k',
