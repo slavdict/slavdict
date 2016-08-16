@@ -11,7 +11,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
 from slavdict.dictionary.models import Entry, PART_OF_SPEECH_MAP
-from slavdict.dictionary.models import TRANSITIVITY_MAP
+from slavdict.dictionary.models import TRANSITIVITY_MAP, TRANSITIVITY_CHOICES
 from slavdict.unicode_csv import UnicodeWriter
 
 def write_csv(filename, entries):
@@ -53,16 +53,17 @@ particles = Entry.objects.filter(part_of_speech=PART_OF_SPEECH_MAP['particle']
     ).order_by('civil_equivalent')
 interjections = Entry.objects.filter(part_of_speech=PART_OF_SPEECH_MAP[
     'interjection']).order_by('civil_equivalent')
+TRANSITIVE = dict(TRANSITIVITY_CHOICES)[TRANSITIVITY_MAP['transitive']]
+INTRANSITIVE = dict(TRANSITIVITY_CHOICES)[TRANSITIVITY_MAP['intransitive']]
 trans_verbs = (e for e in Entry.objects.filter(
     part_of_speech=PART_OF_SPEECH_MAP['verb']).order_by('civil_equivalent')
-    if e.transitivity_from_meanings == TRANSITIVITY_MAP['transitive'])
+    if e.transitivity_from_meanings == TRANSITIVE)
 intrans_verbs = (e for e in Entry.objects.filter(
     part_of_speech=PART_OF_SPEECH_MAP['verb']).order_by('civil_equivalent')
-    if e.transitivity_from_meanings == TRANSITIVITY_MAP['intransitive'])
+    if e.transitivity_from_meanings == INTRANSITIVE)
 labile_verbs = (e for e in Entry.objects.filter(
     part_of_speech=PART_OF_SPEECH_MAP['verb']).order_by('civil_equivalent')
-    if e.transitivity_from_meanings not in (TRANSITIVITY_MAP['transitive'],
-        TRANSITIVITY_MAP['intransitive']))
+    if e.transitivity_from_meanings not in (TRANSITIVE, INTRANSITIVE))
 other = Entry.objects.exclude(part_of_speech__in=[
     PART_OF_SPEECH_MAP['noun'],
     PART_OF_SPEECH_MAP['adjective'],
