@@ -23,7 +23,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
 from slavdict.dictionary.models import Entry
-from slavdict.dictionary.models import sort_key1, sort_key2
+from slavdict.dictionary.models import sort_key1, sort_key2, resolve_titles
 
 
 entries = []
@@ -47,7 +47,7 @@ for lexeme in lexemes:
     # Варианты
     for var in lexeme.orth_vars_refs[1:]:
         wordform = var.idem
-        key2 = sort_key1(wordform)
+        key2 = sort_key1(resolve_titles(wordform))
         if key2 != key:
             reference = var.idem_ucs
             entries.append((wordform, reference, lexeme))
