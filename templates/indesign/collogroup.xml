@@ -7,10 +7,12 @@
 {% endif %}
 
 {% for c in cg.collocations %}
-    {{ backspace }}{{ space }}
-    {{ c.collocation_ucs|ind_civil_injection('Valency') }}
+    {% if not loop.first %}
+        {{ backspace }}{{ space }}
+    {% endif %}
+    <x>{{ c.collocation_ucs|ind_civil_injection('Valency') }}</x>
     {% if not loop.last %}
-        {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
+        {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
     {% endif %}
 {% endfor %}
 {{ backspace }}{{ space }}
