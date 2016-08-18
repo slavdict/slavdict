@@ -317,5 +317,12 @@ def ind_regex(value, cstyle, regex):
     _ind_regex = subst_func(lambda x: TAG % x)
     return re.sub(ur'(\s*)(%s)(\s*)' % regex, _ind_regex, value)
 
+@register.filter
+def has_no_accent(value):
+    r = re.compile(ur"['`\^~А-Щ]")
+    if re.findall(r, value):
+        return False
+    return True
+
 register.filter(name='cslav_words')(cslav_nobr_words)
 register.filter(name='ind_cslav_words')(indesign_cslav_words)
