@@ -35,8 +35,7 @@ if len(sys.argv) > 1:
     test_entries = [int(i) for i in r.split(s)]
 if test_entries:
     lexemes = lexemes.filter(pk__in=test_entries)
-lexemes = [e for e in lexemes
-             if e.orth_vars[0].idem.startswith((u'а', u'А', u'б', u'Б'))]
+lexemes = [e for e in lexemes if e.first_volume]
 
 for lexeme in lexemes:
 
@@ -44,20 +43,14 @@ for lexeme in lexemes:
     reference = None
     entries.append((wordform, reference, lexeme))
     key = sort_key1(wordform)
-    for var in lexeme.base_vars[1:]:
+
+    # Варианты
+    for var in lexeme.orth_vars_refs[1:]:
         wordform = var.idem
         key2 = sort_key1(wordform)
         if key2 != key:
             reference = var.idem_ucs
             entries.append((wordform, reference, lexeme))
-
-    # Варианты
-    #for var in lexeme.orth_vars_refs[1:]:
-    #    wordform = var.idem
-    #    key2 = sort_key1(wordform)
-    #    if key2 != key:
-    #        reference = var.idem_ucs
-    #        entries.append((wordform, reference, lexeme))
 
     # Названия народов
     if lexeme.nom_sg:
