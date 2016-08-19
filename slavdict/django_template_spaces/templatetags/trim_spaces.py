@@ -217,7 +217,18 @@ def indesign_cslav_words(value, *args):
     RE = re.compile(u'(%s|%s)' % (RE_DOTS, RE_BRACES_SLASH))
 
     segments = []
-    for segment in value.split():
+    for segment in re.split(ur'([\s\u00a0]+)', value):
+        # NOTE: скобки в регулярном выражении нельзя опустить, т.к. нужно,
+        # чтобы в списке сохранялись не только слова, но и пробелы.
+
+        if segment.isspace():
+            if u'\u00a0' in segment:
+                segment = NBSP
+            else:
+                segment = SPACE
+            segments.append(segment)
+            continue
+
         parts = []
         m = RE.search(segment)
         while m:
@@ -240,7 +251,8 @@ def indesign_cslav_words(value, *args):
         if segment:
             parts.append(CSL_TAG % html_escape(make_soft_hyphens(segment)))
         segments.append(u''.join(parts))
-    return SPACE.join(segments)
+
+    return u''.join(segments)
 
 
 def cslav_subst(x):
@@ -298,14 +310,13 @@ class MMM(object):
 def ind_civil_injection(value, cstyle):
     lst = value.split(u'##')
     TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
-    ind_civil = subst_func(lambda x: TAG % x)
     for i, elem in enumerate(lst):
         if not elem:
             continue
         if i % 2:
-            elem = ind_civil(MMM(elem))
+            elem = TAG % elem
         else:
-            elem = ind_cslav(MMM(elem))
+            elem = indesign_cslav_words(elem)
         lst[i] = elem
     return u''.join(lst)
 
