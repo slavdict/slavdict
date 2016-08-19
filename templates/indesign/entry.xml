@@ -58,7 +58,7 @@
 
     {% if entry.short_form %}
         {% if entry.short_form_ucs_wax.0 %}
-            <text aid:cstyle="Text">{{ nbhyphen }}</text>
+            <x aid:cstyle="Text">{{ nbhyphen }}</x>
         {% endif %}
         <x>{{ entry.short_form_ucs_wax.1|ind_cslav_words("CSLSegment") }}</x>
         {% if entry.short_form|has_no_accent %}
@@ -69,7 +69,7 @@
 
     {% if entry.genitive %}
         {% if entry.genitive_ucs_wax.0 %}
-            <text aid:cstyle="Text">{{ nbhyphen }}</text>
+            <x aid:cstyle="Text">{{ nbhyphen }}</x>
         {% endif %}
         <x>{{ entry.genitive_ucs_wax.1|ind_cslav_words("CSLSegment") }}</x>
         {% if entry.genitive|has_no_accent %}
@@ -80,21 +80,21 @@
 
     {% if entry.sg1 %}
         {% if entry.sg1_ucs_wax.0 %}
-            <text aid:cstyle="Text">{{ nbhyphen }}</text>
+            <x aid:cstyle="Text">{{ nbhyphen }}</x>
         {% endif %}
         <x>{{ entry.sg1_ucs_wax.1|ind_cslav_words("CSLSegment") }}</x>
         {% if entry.sg1|has_no_accent %}
             {% include 'indesign/noaccent.xml' %}
         {% endif %}
         {% if entry.sg2 %}
-            <text aid:cstyle="Text">,</text>
+            <x aid:cstyle="Text">,</x>
         {%endif %}
         {{ space }}
     {% endif %}
 
     {% if entry.sg2 %}
         {% if entry.sg2_ucs_wax.0 %}
-            <text aid:cstyle="Text">{{ nbhyphen }}</text>
+            <x aid:cstyle="Text">{{ nbhyphen }}</x>
         {% endif %}
         <x>{{ entry.sg2_ucs_wax.1|ind_cslav_words("CSLSegment") }}</x>
         {% if entry.sg2|has_no_accent %}
@@ -104,24 +104,24 @@
     {% endif %}
 
     {% if entry.uninflected %}
-        <i aid:cstyle="Em">
+        <x aid:cstyle="Em">
             неизм.
-        </i>
+        </x>
         {{ space }}
     {% endif %}
 
     {% if entry.possessive %}
-        <i aid:cstyle="Em">
+        <x aid:cstyle="Em">
             притяж.
-        </i>
+        </x>
         {{ space }}
     {% endif %}
 
 
     {% if entry.participle_type %}
-        <i aid:cstyle="Em">
+        <x aid:cstyle="Em">
             {{ entry.get_participle_type_display() }}
-        </i>
+        </x>
         {{ space }}
     {% else %}
         {% if entry.part_of_speech %}
@@ -129,25 +129,25 @@
                   not entry.is_part_of_speech("number") and
                   not entry.is_part_of_speech("verb") and
                   not entry.is_part_of_speech("noun") %}
-                <i aid:cstyle="Em">
+                <x aid:cstyle="Em">
                     {{ entry.get_part_of_speech_display() }}
-                </i>
+                </x>
             {% endif %}
         {% endif %}
 
         {{ backspace }}{{ space }}
         {% if entry.gender %}
-            <i aid:cstyle="Em">
+            <x aid:cstyle="Em">
                 {{ entry.get_gender_display() }}
-            </i>
+            </x>
             {{ space }}
         {% endif %}
 
         {% if entry.is_part_of_speech("verb") %}
             {{ backspace }}{{ space }}
-            <i aid:cstyle="Em">
+            <x aid:cstyle="Em">
                 {{ entry.transitivity_from_meanings }}
-            </i>
+            </x>
             {{ space }}
         {% endif %}
     {% endif %}
@@ -155,16 +155,16 @@
 
     {% if entry.tantum %}
         {{ backspace }}{{ space }}
-        <i aid:cstyle="Em">
+        <x aid:cstyle="Em">
             {{ entry.get_tantum_display() }}
-        </i>
+        </x>
         {{ space }}
     {% endif %}
 
     {% if entry.is_onym('ethnonym') and entry.nom_sg %}
-        <i aid:cstyle="Em">
+        <x aid:cstyle="Em">
             мн.
-        </i>
+        </x>
         {{ space }}
         {% if entry.nom_sg_ucs_wax.0 %}{{ nbhyphen }}{%endif %}
             {{ entry.nom_sg_ucs_wax.1|ind_cslav_words("CSLSegment") }}
