@@ -41,8 +41,8 @@
 {% endif %}
 
 {% if e.note %}
-    {{ space }}
-    <example-note>{{ e.note|ind_cslav_injection }}</example-note>
+    {{ backspace }}{{ space }}
+    <example-note>{{ e.note|ind_cslav_injection }}</example-note>{{ space }}
 {% endif %}
 
 {% if e.address_text %}
