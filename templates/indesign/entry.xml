@@ -60,7 +60,7 @@
         {% if entry.short_form_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        {{ entry.short_form_ucs_wax.1|ind_cslav_words("CSLSegment") }}
+        <x>{{ entry.short_form_ucs_wax.1|ind_cslav_words("CSLSegment") }}</x>
         {% if entry.short_form|has_no_accent %}
             {% include 'indesign/noaccent.xml' %}
         {% endif %}
@@ -71,7 +71,7 @@
         {% if entry.genitive_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        {{ entry.genitive_ucs_wax.1|ind_cslav_words("CSLSegment") }}
+        <x>{{ entry.genitive_ucs_wax.1|ind_cslav_words("CSLSegment") }}</x>
         {% if entry.genitive|has_no_accent %}
             {% include 'indesign/noaccent.xml' %}
         {% endif %}
@@ -82,7 +82,7 @@
         {% if entry.sg1_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        {{ entry.sg1_ucs_wax.1|ind_cslav_words("CSLSegment") }}
+        <x>{{ entry.sg1_ucs_wax.1|ind_cslav_words("CSLSegment") }}</x>
         {% if entry.sg1|has_no_accent %}
             {% include 'indesign/noaccent.xml' %}
         {% endif %}
@@ -96,7 +96,7 @@
         {% if entry.sg2_ucs_wax.0 %}
             <text aid:cstyle="Text">{{ nbhyphen }}</text>
         {% endif %}
-        {{ entry.sg2_ucs_wax.1|ind_cslav_words("CSLSegment") }}
+        <x>{{ entry.sg2_ucs_wax.1|ind_cslav_words("CSLSegment") }}</x>
         {% if entry.sg2|has_no_accent %}
             {% include 'indesign/noaccent.xml' %}
         {% endif %}
