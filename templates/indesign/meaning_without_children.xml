@@ -49,7 +49,7 @@
 {% if m.meaning %}
     <meaning aid:cstyle="Text">{{ m.meaning|
         ind_cslav_injection|
-        ind_regex('Em', '\\b(?:перен|зд)\\.') }}</meaning>
+        ind_regex('Em', '(?<![А-Яа-я])(?:перен|зд)\\.') }}</meaning>
 {% endif %}
 
 {% if m.gloss %}
