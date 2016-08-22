@@ -168,19 +168,26 @@
         {{ space }}
         {% set several_ethnonyms = entry.special_cases('several ethnonyms') %}
         {% if several_ethnonyms %}
-            {% for ethnonym in serveral_ethnonyms %}
+            {% for ethnonym, ethnonym_ucs in serveral_ethnonyms %}
                 {% if not loop.first and not loop.last %}
                     {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
                 {% elif not loop.first and loop.last %}
                     {{ backspace }}<x aid:cstyle="Em">или<x>{{ space }}
                 {% endif %}
-                <x>{{ ethnonym|ind_cslav_words("CSLSegment") }}</x>{{ space }}
+                <x>{{ ethnonym_ucs|ind_cslav_words("CSLSegment") }}</x>
+                {% if ethnonym|has_no_accent %}
+                    {% include 'indesign/noaccent.xml' %}
+                {% endif %}
+                {{ space }}
             {% endfor %}
         {% else %}
             {% if entry.nom_sg_ucs_wax.0 %}
                 {{ backspace }}{{ space }}{{ nbhyphen }}
             {%endif %}
-            {{ entry.nom_sg_ucs_wax.1|ind_cslav_words("CSLSegment") }}
+            <x>{{ entry.nom_sg_ucs_wax.1|ind_cslav_words("CSLSegment") }}</x>
+            {% if entry.nom_sg|has_no_accent %}
+                {% include 'indesign/noaccent.xml' %}
+            {% endif %}
             {{ space }}
         {% endif %}
     {% endif %}

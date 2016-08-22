@@ -673,7 +673,8 @@ class Entry(models.Model):
     def special_cases(self, case):
         if case == 'several ethnonyms':
             if self.nom_sg and ',' in self.nom_sg:
-                return re.split(ur'[,\s]+', self.nom_sg_ucs_wax[1])
+                words = re.split(ur'[,\s]+', self.nom_sg)
+                return [(word, ucs_convert(word)) for word in words]
 
     @property
     def first_volume(self):
