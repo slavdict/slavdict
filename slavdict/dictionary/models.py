@@ -670,6 +670,11 @@ class Entry(models.Model):
     all_meanings = property(all_meanings)
     has_meanings = property(has_meanings)
 
+    def special_cases(self, case):
+        if case == 'several ethnonyms':
+            if self.nom_sg and ',' in self.nom_sg:
+                return re.split(ur'[,\s]+', self.nom_sg_ucs_wax[1])
+
     @property
     def first_volume(self):
         letters = (u'а', u'б')
