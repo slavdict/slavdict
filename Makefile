@@ -104,6 +104,7 @@ indesign:
 	rsync -av bin dilijnt0:/var/www/slavdict/
 	rsync -av slavdict/django_template_spaces dilijnt0:/var/www/slavdict/slavdict/
 	rsync -av  templates/indesign dilijnt0:/var/www/slavdict/templates/
+	[ ! -e .list ] && touch .list
 	rsync .list dilijnt0:/root/
 	ssh dilijnt0 chown -R www-data:www-is /var/www/slavdict/
 	ssh dilijnt0 nohup /var/www/slavdict/bin/remote_indesign_xml_dumper.sh
