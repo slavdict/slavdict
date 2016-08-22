@@ -16,7 +16,7 @@
         {{ etym.unitext }}
     </etymon>{{ space }}
 {% elif etym.text and etym.is_language('latin') %}
-    <etymon>
+    <etymon aid:cstyle="Latin">
         {{ etym.text }}
     </etymon>{{ space }}
 {% endif %}
