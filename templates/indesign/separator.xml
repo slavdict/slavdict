@@ -1,5 +1,5 @@
 {{ backspace }}{{ nbsp }}{{ nbsp }}{{ nbsp }}
-<x aid:cstyle="Use">||</x>
+<x aid:cstyle="Use">‖</x>
 {{ space }}{{ space }}{{ space }}
 
 {# vim: set ft=django.xml: #}
