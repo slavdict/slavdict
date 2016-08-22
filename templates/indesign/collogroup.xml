@@ -10,7 +10,10 @@
     {% if not loop.first %}
         {{ backspace }}{{ space }}
     {% endif %}
-    <x>{{ c.collocation_ucs|ind_civil_injection('Valency') }}</x>
+    <x>{{ c.collocation_ucs|
+            ind_civil_injection('Valency')|
+            ind_regex('Text', ',\s-')|
+            ind_regex('Text', "(?<=ѻтє'цъ),\s(?=ѻц~є'въ)") }}</x>
     {% if not loop.last %}
         {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
     {% endif %}
