@@ -14,7 +14,7 @@
             {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
         {% endif %}
 
-        <headword aid:cstyle="Headword">
+        <headword aid:cstyle="{% if loop.first %}Headword{% else %}SubHeadword{% endif %}">
             {{ base_var.idem_ucs|e }}
         </headword>
         {% if loop.first %}
