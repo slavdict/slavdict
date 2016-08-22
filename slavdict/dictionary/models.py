@@ -673,7 +673,7 @@ class Entry(models.Model):
     @property
     def first_volume(self):
         letters = (u'а', u'б')
-        return self.civil_equivalent.lstrip()[:1].lower() in letters
+        return self.civil_equivalent.lstrip(u' =')[:1].lower() in letters
 
     @models.permalink
     def get_absolute_url(self):

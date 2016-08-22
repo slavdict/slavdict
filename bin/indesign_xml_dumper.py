@@ -24,7 +24,7 @@ from slavdict.dictionary.models import Entry, ucs_convert
 from slavdict.dictionary.models import sort_key1, sort_key2, resolve_titles
 
 def in_first_volume(wordform):
-    return wordform.lstrip()[:1].lower() in (u'а', u'б')
+    return wordform.lstrip(u' =')[:1].lower() in (u'а', u'б')
 
 entries = []
 lexemes = Entry.objects.all()
