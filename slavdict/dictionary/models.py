@@ -731,7 +731,7 @@ class Entry(models.Model):
 
     def toJSON(self):
         return json.dumps(self.forJSON(),
-
+                          ensure_ascii=False, separators=(',',':'))
     @property
     def host_entry(self):
         return self
