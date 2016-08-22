@@ -17,14 +17,14 @@ import django
 from coffin.shortcuts import render_to_string
 
 sys.path.append(os.path.abspath('/var/www/slavdict'))
-from slavdict import settings
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
-from slavdict.dictionary.models import Entry
+from slavdict.dictionary.models import Entry, ucs_convert
 from slavdict.dictionary.models import sort_key1, sort_key2, resolve_titles
 
+def in_first_volume(wordform):
+    return wordform.lstrip()[:1].lower() in (u'а', u'б')
 
 entries = []
 lexemes = Entry.objects.all()
@@ -46,17 +46,20 @@ for lexeme in lexemes:
 
     # Варианты
     for var in lexeme.orth_vars_refs[1:]:
-        wordform = var.idem
-        key2 = sort_key1(resolve_titles(wordform))
+        wordform = resolve_titles(var.idem)
+        key2 = sort_key1(wordform)
         if key2 != key:
-            reference = var.idem_ucs
+            reference = ucs_convert(wordform)
             entries.append((wordform, reference, lexeme))
 
     # Названия народов
+    COMMA = ur',\s+'
     if lexeme.nom_sg:
         wordform = lexeme.nom_sg
         reference = lexeme.nom_sg_ucs_wax[1]
-        entries.append((wordform, reference, lexeme))
+        for wordform, reference in zip(
+                re.split(COMMA, wordform), re.split(COMMA, reference)):
+            entries.append((wordform, reference, lexeme))
 
     # Краткие формы
     #if lexeme.short_form:
@@ -70,12 +73,22 @@ for lexeme in lexemes:
     #    reference = participle.idem_ucs
     #    entries.append((wordform, reference, lexeme))
 
+other_volumes = [e for e in Entry.objects.all() if not e.first_volume]
+for lexeme in other_volumes:
+    for participle in lexeme.participles:
+        if participle.tp not in ('1', '2', '3', '4'):
+            wordform = participle.idem
+            if in_first_volume(wordform):
+                reference = participle.idem_ucs
+                entries.append((wordform, reference, lexeme))
+
 def sort_key(x):
     wordform, _, lexeme = x
     return sort_key1(wordform), lexeme.homonym_order or 0, sort_key2(wordform)
 
-entries.sort(key=sort_key)
-entries = [(reference, lexeme) for wordform, reference, lexeme in entries]
+entries = sorted(set(entries), key=sort_key)
+entries = [(reference, lexeme) for wordform, reference, lexeme in entries
+                               if in_first_volume(wordform)]
 
 xml = render_to_string('indesign/slavdict.xml', {'entries': entries})
 sys.stdout.write(xml.encode('utf-8'))
