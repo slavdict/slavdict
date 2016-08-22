@@ -264,7 +264,7 @@ def shell():
         subprocess.call([EDITOR, tf.name])
         tf.seek(0)
         edited_text = tf.readlines()
-    model_attrs = eval(u'[%s]' % edited_text, locals=locals())
+    model_attrs = eval(u'[%s]' % edited_text, globals(), locals())
     DataChangeShell(model_attrs=model_attrs, first_volume=True).cmdloop()
 
 # Собрать все текстовые поля не самая хорошая идея, т.к.  выпадающие списки
