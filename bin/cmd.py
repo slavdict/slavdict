@@ -63,7 +63,7 @@ class DataChangeShell(cmd.Cmd):
                 count = 0
                 if self.first_volume:
                     items = (i for i in model.objects.all()
-                               if i.host_entry.firs_volume)
+                               if i.host_entry.first_volume)
                 else:
                     items = models.objects.all()
                 for item in items:
@@ -89,7 +89,7 @@ class DataChangeShell(cmd.Cmd):
                 count = 0
                 if self.first_volume:
                     items = (i for i in model.objects.all()
-                               if i.host_entry.firs_volume)
+                               if i.host_entry.first_volume)
                 else:
                     items = models.objects.all()
                 for item in items:
@@ -132,7 +132,7 @@ class DataChangeShell(cmd.Cmd):
                 count = 0
                 if self.first_volume:
                     items = (i for i in model.objects.all()
-                               if i.host_entry.firs_volume)
+                               if i.host_entry.first_volume)
                 else:
                     items = models.objects.all()
                 for item in items:
