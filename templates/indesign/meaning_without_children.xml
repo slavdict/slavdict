@@ -56,7 +56,9 @@
     {% if m.meaning or m.greek_equivs %}
         {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
     {% endif %}
-    <gloss aid:cstyle="Em">{{ m.gloss|ind_cslav_injection }}</gloss>
+    <gloss aid:cstyle="Em">{{ m.gloss|
+        ind_cslav_injection|
+        ind_regex('Text', '‘[^’]+’') }}</gloss>
     {{ space }}
 {% endif %}
 
