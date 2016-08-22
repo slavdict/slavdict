@@ -203,6 +203,7 @@ TEXT = u'''
     #'homonym_gloss',
     'nom_sg',
     'short_form',
+    'genitive',
     'sg1',
     'sg2',
     #'additional_info',
