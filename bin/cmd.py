@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import cmd
+import os
 import re
+import subprocess
+import tempfile
 
 from django.db.models import Model
 from django.db.models.fields import TextField, CharField
@@ -12,8 +15,10 @@ class DataChangeShell(cmd.Cmd):
     intro = 'Slavdict shell for data change :)\n'
     prompt = '> '
 
-    def __init__(self, model_attrs=[(_Example, ['address_text'])]):
+    def __init__(self, model_attrs=[(_Example, ['address_text'])],
+                 first_volume=True):
         cmd.Cmd.__init__(self)
+        self.first_volume = first_volume
         self.state = 'find'
         self.model_attrs = model_attrs
         self.intro = self.intro + '\n'.join(
@@ -56,7 +61,12 @@ class DataChangeShell(cmd.Cmd):
             tcount[model.__name__] = {}
             for attrname in attrs:
                 count = 0
-                for item in model.objects.all():
+                if self.first_volume:
+                    items = (i for i in model.objects.all()
+                               if i.host_entry.firs_volume)
+                else:
+                    items = models.objects.all()
+                for item in items:
                     if self.pattern.search(getattr(item, attrname)):
                         txt = getattr(item, attrname)
                         print self.pattern.sub('\033[0;36m\g<0>\033[0m', txt)
@@ -77,7 +87,12 @@ class DataChangeShell(cmd.Cmd):
             tcount[model.__name__] = {}
             for attrname in attrs:
                 count = 0
-                for item in model.objects.all():
+                if self.first_volume:
+                    items = (i for i in model.objects.all()
+                               if i.host_entry.firs_volume)
+                else:
+                    items = models.objects.all()
+                for item in items:
                     if self.pattern.search(getattr(item, attrname)):
                         initial = getattr(item, attrname)
                         try:
@@ -115,7 +130,12 @@ class DataChangeShell(cmd.Cmd):
             tcount[model.__name__] = {}
             for attrname in attrs:
                 count = 0
-                for item in model.objects.all():
+                if self.first_volume:
+                    items = (i for i in model.objects.all()
+                               if i.host_entry.firs_volume)
+                else:
+                    items = models.objects.all()
+                for item in items:
                     if self.pattern.search(getattr(item, attrname)):
                         initial = getattr(item, attrname)
                         try:  # SEE:qSeF4:
@@ -177,8 +197,75 @@ class DataChangeShell(cmd.Cmd):
         elif self.state == 'replace':
             self.onecmd('try')
 
-def shell(model_attrs=[(_Example, ['address_text'])]):
-    DataChangeShell(model_attrs=model_attrs).cmdloop()
+TEXT = u'''
+(Entry, [
+    #'civil_equivalent',
+    #'homonym_gloss',
+    'nom_sg',
+    'short_form',
+    'sg1',
+    'sg2',
+    #'additional_info',
+    #'antconc_query',
+]),
+(Etymology, [
+    'text',
+    'unitext',
+    'translit',
+    'meaning',
+    'gloss',
+    'source',
+    'mark',
+    #'additional_info',
+]),
+(MeaningContext, [
+    'left_text',
+    'context',
+    'right_text',
+]),
+(Meaning, [
+    'meaning',
+    'gloss',
+    #'additional_info',
+]),
+(Example, [
+    'example',
+    'address_text',
+    'note',
+    #'additional_info',
+]),
+(Collocation, [
+    'collocation',
+    #'civil_equivalent',
+]),
+(GreekEquivalentForExample, [
+    'unitext',
+    'mark',
+    'source',
+    #'initial_form',
+    'note',
+    #'additional_info',
+]),
+(OrthographicVariant, [
+    'idem',
+    'use',
+]),
+(Participle, [
+    'idem',
+]),
+    '''
+
+def shell():
+    from slavdict.dictionary.models import *
+    EDITOR = os.environ.get('EDITOR','vi')
+    with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:
+        tf.write(TEXT.encode('utf-8'))
+        tf.flush()
+        subprocess.call([EDITOR, tf.name])
+        tf.seek(0)
+        edited_text = tf.readlines()
+    model_attrs = eval(u'[%s]' % edited_text, locals=locals())
+    DataChangeShell(model_attrs=model_attrs, first_volume=True).cmdloop()
 
 # Собрать все текстовые поля не самая хорошая идея, т.к.  выпадающие списки
 # тоже сохраняются в текстовых полях. Тем не менее, вот как это можно сделать:
