@@ -9,6 +9,7 @@
 
     SCRIPT 1177,123 89 945, 234
 """
+import itertools
 import os
 import re
 import sys
@@ -87,9 +88,41 @@ def sort_key(x):
     return sort_key1(wordform), lexeme.homonym_order or 0, sort_key2(wordform)
 
 entries = sorted(set(entries), key=sort_key)
-entries = [(reference, lexeme) for wordform, reference, lexeme in entries
-                               if in_first_volume(wordform)]
+final_entries = []
+for key, group in itertools.groupby(entries, lambda x: x[:2]):
+    wordform, reference = key
+    if not in_first_volume(wordform):
+        continue
+    lst = list(group)
+    if len(lst) < 2:
+        wordform, reference, lexeme = lst[0]
+        final_entries.append((reference, lexeme))
+    else:
+        if reference is None:  # Статьи не ссылочные
+            for wordform, reference, lexeme in lst:
+                final_entries.append((reference, lexeme))
+        else:  # Статьи ссылочные
+            lst = [x[2] for x in lst]
+            if all(x.homonym_order for x in lst):
+                lexeme = {
+                    'is_reference': True,
+                    'references': [
+                        {'reference_ucs': lst[0].base_vars[0].idem_ucs,
+                         'homonym_order': u',\u00a0'.join(
+                                    str(i.homonym_order) for i in lst if i)
+                        }
+                    ],
+                }
+            else:
+                lexeme = {
+                    'is_reference': True,
+                    'references': [
+                        {'reference_ucs': x.base_vars[0].idem_ucs,
+                         'homonym_order': x.homonym_order or None}
+                        for x in lst],
+                    }
+            final_entries.append((reference, lexeme))
 
-xml = render_to_string('indesign/slavdict.xml', {'entries': entries})
+xml = render_to_string('indesign/slavdict.xml', {'entries': final_entries})
 sys.stdout.write(xml.encode('utf-8'))
 sys.exit(0)
