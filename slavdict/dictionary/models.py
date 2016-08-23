@@ -742,6 +742,8 @@ class Entry(models.Model):
     def host_entry(self):
         return self
 
+    host = host_entry
+
     objects = WithoutHiddenManager()
     objects_all = models.Manager()
 
@@ -928,6 +930,8 @@ class MeaningContext(models.Model):
             return None
         else:
             return host_entry
+
+    host = host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(MeaningContext, self).save(*args, **kwargs)
@@ -1448,6 +1452,8 @@ class CollocationGroup(models.Model):
             else:
                 return host_entry
 
+    host = host_entry
+
     @property
     def first_volume(self):
         host_entry = self.host_entry
@@ -1525,6 +1531,9 @@ class CollocationGroup(models.Model):
     def toJSON(self):
         return json.dumps(self.forJSON(),
                           ensure_ascii=False, separators=(',',':'))
+    @property
+    def civil_equivalent(self):
+        return u'; '.join(c.civil_equivalent for c in self.collocations)
 
     class Meta:
         verbose_name = u'группа словосочетаний'
@@ -1573,6 +1582,8 @@ class Collocation(models.Model):
             return None
         else:
             return host_entry
+
+    host = host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
         self.civil_equivalent = civilrus_convert(self.collocation)
@@ -1652,6 +1663,8 @@ class GreekEquivalentForExample(models.Model):
         else:
             return host_entry
 
+    host = host_entry
+
     def save(self, without_mtime=False, *args, **kwargs):
         super(GreekEquivalentForExample, self).save(*args, **kwargs)
         host_entry = self.host_entry
@@ -1728,6 +1741,8 @@ class OrthographicVariant(models.Model):
     def host_entry(self):
         return self.entry
 
+    host = host_entry
+
     def save(self, without_mtime=False, *args, **kwargs):
         super(OrthographicVariant, self).save(*args, **kwargs)
         host_entry = self.host_entry
@@ -1782,6 +1797,8 @@ class Participle(models.Model):
     @property
     def host_entry(self):
         return self.entry
+
+    host = host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(Participle, self).save(*args, **kwargs)

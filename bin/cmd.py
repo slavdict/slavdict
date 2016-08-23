@@ -69,7 +69,16 @@ class DataChangeShell(cmd.Cmd):
                 for item in items:
                     if self.pattern.search(getattr(item, attrname)):
                         txt = getattr(item, attrname)
-                        print self.pattern.sub('\033[0;36m\g<0>\033[0m', txt)
+                        host = item.host
+                        host_entry = item.host_entry
+                        if host == host_entry:
+                            host_info = host.civil_equivalent
+                        else:
+                            host_info = u'%s < %s' % (host.civil_equivalent,
+                                                      host_entry.civil_equivalent)
+                        print u'%s\t\t%s.%s %s < %s' % (
+                            self.pattern.sub('\033[0;36m\g<0>\033[0m', txt),
+                            model.__name__, attrname, item.id, host_info)
                         count += 1
                 tcount[model.__name__][attrname] = count
         print u'\n   /\033[1;36m%s\033[0m/  \033[1;33m%i\033[0m %r\n' % (
@@ -109,9 +118,17 @@ class DataChangeShell(cmd.Cmd):
                                    u'с шаблоном поиска: %s' % err)
                             return
                         count += 1
-                        print u'%s\n%s\n' % (
+                        host = item.host
+                        host_entry = item.host_entry
+                        if host == host_entry:
+                            host_info = host.civil_equivalent
+                        else:
+                            host_info = u'%s < %s' % (host.civil_equivalent,
+                                                      host_entry.civil_equivalent)
+                        print u'%s\n%s\n%s.%s %s < %s\n' % (
                                 self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
-                                self.pattern.sub('\033[0;31m%s\033[0m' % self.replacement, initial))
+                                self.pattern.sub('\033[0;31m%s\033[0m' % self.replacement, initial),
+                                model.__name__, attrname, item.id, host_info)
                 tcount[model.__name__][attrname] = count
         print (u'  ? \033[1;36m%s\033[0m --> \033[1;31m%s\033[0m ?   '
                u'\033[1;33m%i\033[0m %r\n' % (
@@ -149,9 +166,17 @@ class DataChangeShell(cmd.Cmd):
                         setattr(item, attrname, final)
                         item.save(without_mtime=True)
                         count += 1
-                        print u'%s\n%s\n' % (
+                        host = item.host
+                        host_entry = item.host_entry
+                        if host == host_entry:
+                            host_info = host.civil_equivalent
+                        else:
+                            host_info = u'%s < %s' % (host.civil_equivalent,
+                                                      host_entry.civil_equivalent)
+                        print u'%s\n%s\n%s.%s %s < %s\n' % (
                                 self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
-                                self.pattern.sub('\033[0;32m%s\033[0m' % self.replacement, initial))
+                                self.pattern.sub('\033[0;32m%s\033[0m' % self.replacement, initial),
+                                model.__name__, attrname, item.id, host_info)
                 tcount[model.__name__][attrname] = count
         print (u'  ! \033[1;36m%s\033[0m --> \033[1;32m%s\033[0m !   '
                u'\033[1;33m%i\033[0m %r\n' % (
