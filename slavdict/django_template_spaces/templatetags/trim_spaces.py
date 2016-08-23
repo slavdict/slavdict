@@ -323,7 +323,7 @@ def ind_civil_injection(value, cstyle):
             # и "ѻтє'цъ, ѻц~є'въ" для словосочетаний.
             parts = re.split(RE, elem)
             for j, part in enumerate(parts):
-                if not i % 2:
+                if not j % 2:
                     part = indesign_cslav_words(part, 'CSLSegment')
                     parts[j] = part
             elem = u''.join(parts)
