@@ -931,7 +931,14 @@ class MeaningContext(models.Model):
         else:
             return host_entry
 
-    host = host_entry
+    @property
+    def host(self):
+        try:
+            host = self.meaning.host
+        except:
+            return None
+        else:
+            return host
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(MeaningContext, self).save(*args, **kwargs)
@@ -1109,7 +1116,7 @@ class Meaning(models.Model):
 
     @property
     def greek_equivs(self):
-        return self.greekequivalentformeaning_set.all().order_by('id')
+        return self.greekequivalentformeaning_set.all().order_by('order', 'id')
 
     @property
     def collogroups(self):
@@ -1261,7 +1268,7 @@ class Example(models.Model):
 
     @property
     def greek_equivs(self):
-        return self.greekequivalentforexample_set.all().order_by('id')
+        return self.greekequivalentforexample_set.all().order_by('order', 'id')
 
     audited = BooleanField(u'Пример прошел проверку или взят на проверку',
                            default=False)
@@ -1665,7 +1672,14 @@ class GreekEquivalentForExample(models.Model):
         else:
             return host_entry
 
-    host = host_entry
+    @property
+    def host(self):
+        try:
+            host = self.for_example.host
+        except:
+            return None
+        else:
+            return host
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(GreekEquivalentForExample, self).save(*args, **kwargs)
