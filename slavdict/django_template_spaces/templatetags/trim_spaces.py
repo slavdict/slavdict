@@ -222,7 +222,7 @@ def indesign_cslav_words(value, *args):
 
     segments = []
     if special_cases:
-        RE_SEGMENT = ur'(,\s[-\u2011\u2010]|(?<=ѻтє'цъ),\s(?=ѻц~є'въ)|[\s\u00a0]+)'
+        RE_SEGMENT = ur"(,\s[-\u2011\u2010]|(?<=ѻтє'цъ),\s(?=ѻц~є'въ)|[\s\u00a0]+)"
         # Особая обработка последовательностей символов ", -"
         # и "ѻтє'цъ, ѻц~є'въ" для словосочетаний.
     else:
@@ -231,7 +231,7 @@ def indesign_cslav_words(value, *args):
         # NOTE: скобки в регулярном выражении нельзя опустить, т.к. нужно,
         # чтобы в списке сохранялись не только слова, но и пробелы.
 
-        if segment.isspace()
+        if segment.isspace():
             if u'\u00a0' in segment:
                 segment = NBSP
             else:
