@@ -1583,7 +1583,9 @@ class Collocation(models.Model):
         else:
             return host_entry
 
-    host = host_entry
+    @property
+    def host(self):
+        return self.collogroup
 
     def save(self, without_mtime=False, *args, **kwargs):
         self.civil_equivalent = civilrus_convert(self.collocation)

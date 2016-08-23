@@ -71,11 +71,11 @@ class DataChangeShell(cmd.Cmd):
                         txt = getattr(item, attrname)
                         host = item.host
                         host_entry = item.host_entry
-                        if host == host_entry:
-                            host_info = host.civil_equivalent
-                        else:
-                            host_info = u'%s < %s' % (host.civil_equivalent,
-                                                      host_entry.civil_equivalent)
+                        host_info = u'%s %s' % (host.id, host.civil_equivalent)
+                        if host != host_entry:
+                            host_info = u'%s < %s %s' % (
+                                    host_info, host_entry.id,
+                                    host_entry.civil_equivalent)
                         print u'%s\t\t%s.%s %s < %s' % (
                             self.pattern.sub('\033[0;36m\g<0>\033[0m', txt),
                             model.__name__, attrname, item.id, host_info)
@@ -120,11 +120,11 @@ class DataChangeShell(cmd.Cmd):
                         count += 1
                         host = item.host
                         host_entry = item.host_entry
-                        if host == host_entry:
-                            host_info = host.civil_equivalent
-                        else:
-                            host_info = u'%s < %s' % (host.civil_equivalent,
-                                                      host_entry.civil_equivalent)
+                        host_info = u'%s %s' % (host.id, host.civil_equivalent)
+                        if host != host_entry:
+                            host_info = u'%s < %s %s' % (
+                                    host_info, host_entry.id,
+                                    host_entry.civil_equivalent)
                         print u'%s\n%s\n%s.%s %s < %s\n' % (
                                 self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
                                 self.pattern.sub('\033[0;31m%s\033[0m' % self.replacement, initial),
@@ -168,11 +168,11 @@ class DataChangeShell(cmd.Cmd):
                         count += 1
                         host = item.host
                         host_entry = item.host_entry
-                        if host == host_entry:
-                            host_info = host.civil_equivalent
-                        else:
-                            host_info = u'%s < %s' % (host.civil_equivalent,
-                                                      host_entry.civil_equivalent)
+                        host_info = u'%s %s' % (host.id, host.civil_equivalent)
+                        if host != host_entry:
+                            host_info = u'%s < %s %s' % (
+                                    host_info, host_entry.id,
+                                    host_entry.civil_equivalent)
                         print u'%s\n%s\n%s.%s %s < %s\n' % (
                                 self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
                                 self.pattern.sub('\033[0;32m%s\033[0m' % self.replacement, initial),
