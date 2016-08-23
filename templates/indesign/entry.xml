@@ -40,8 +40,15 @@
                 {{ var.idem_ucs|e }}
             </var>
 
+            {% if var.use %}
+                {{ backspace }}{{ space }}
+                <text aid:cstyle="OrthvarUse">{{ var.use }}</text>
+            {% endif %}
+
             {% if loop.last %}
                 {{ backspace }}<text aid:cstyle="Text">)</text>{{ space }}
+            {% elif var.use %}
+                {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
             {% else %}
                 {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
