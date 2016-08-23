@@ -206,11 +206,8 @@ def indesign_cslav_words(value, *args):
     if value is None:
         value = u''
     cstyle = u'CSLSegment'
-    special_cases = False
     if args:
         cstyle = args[0]
-        if len(args) > 1:
-            special_cases = args[1]
 
     TEXT_TAG = u'%s'
     CSL_TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
@@ -220,13 +217,8 @@ def indesign_cslav_words(value, *args):
     RE_BRACES_SLASH = ur'[\(\)\[\]/]'
     RE = re.compile(u'(%s|%s)' % (RE_DOTS, RE_BRACES_SLASH))
 
+    RE_SEGMENT = ur'([\s\u00a0]+)'
     segments = []
-    if special_cases:
-        RE_SEGMENT = ur"(,\s[-\u2011\u2010]|(?<=ѻтє'цъ),\s(?=ѻц~є'въ)|[\s\u00a0]+)"
-        # Особая обработка последовательностей символов ", -"
-        # и "ѻтє'цъ, ѻц~є'въ" для словосочетаний.
-    else:
-        RE_SEGMENT = ur'([\s\u00a0]+)'
     for segment in re.split(RE_SEGMENT, value):
         # NOTE: скобки в регулярном выражении нельзя опустить, т.к. нужно,
         # чтобы в списке сохранялись не только слова, но и пробелы.
@@ -237,9 +229,6 @@ def indesign_cslav_words(value, *args):
             else:
                 segment = SPACE
             segments.append(segment)
-            continue
-
-        if special_cases and segment.startswith(','):
             continue
 
         parts = []
@@ -329,7 +318,15 @@ def ind_civil_injection(value, cstyle):
         if i % 2:
             elem = TAG % elem
         else:
-            elem = indesign_cslav_words(elem, 'CSLSegment', True)
+            RE = ur"(,\s[-\u2011\u2010]|(?<=ѻтє'цъ),\s(?=ѻц~є'въ))"
+            # Особая обработка последовательностей символов ", -"
+            # и "ѻтє'цъ, ѻц~є'въ" для словосочетаний.
+            parts = re.split(RE, elem)
+            for j, part in enumerate(parts):
+                if not i % 2:
+                    part = indesign_cslav_words(part, 'CSLSegment')
+                    parts[j] = part
+            elem = u''.join(parts)
         lst[i] = elem
     return u''.join(lst)
 
