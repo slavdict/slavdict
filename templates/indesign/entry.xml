@@ -170,10 +170,8 @@
         {% set several_ethnonyms = entry.special_cases('several ethnonyms') %}
         {% if several_ethnonyms %}
             {% for ethnonym, ethnonym_ucs in several_ethnonyms %}
-                {% if not loop.first and not loop.last %}
+                {% if not loop.first %}
                     {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
-                {% elif not loop.first and loop.last %}
-                    {{ backspace }}{{ space }}<x aid:cstyle="Em">или</x>{{ space }}
                 {% endif %}
                 <x>{{ ethnonym_ucs|ind_cslav_words("CSLSegment") }}</x>
                 {% if ethnonym|has_no_accent %}
