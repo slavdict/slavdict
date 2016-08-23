@@ -1,8 +1,13 @@
 {% from 'indesign/collogroup.xml' import collogroup with context %}
 
 {% if m.collogroups_non_phraseological %}
-    {{ backspace }}</p>{{ newline }}<p aid:pstyle="CollogroupParagraph" aid:cstyle="Text">
-    <text aid:cstyle="Diamond">♢{# U+2662 #}</text>{{ nbsp }}
+    {% if entry.is_part_of_speech('conjunction') %}
+        {% include 'indesign/separator.xml' %}
+    {% else %}
+        {{ backspace }}</p>{{ newline }}
+        <p aid:pstyle="CollogroupParagraph" aid:cstyle="Text">
+        <text aid:cstyle="Diamond">♢{# U+2662 #}</text>{{ nbsp }}
+    {% endif %}
     {% for cg in m.collogroups_non_phraseological %}
         {{ collogroup(cg, loop) }}
     {% endfor %}
