@@ -1270,6 +1270,29 @@ class Example(models.Model):
     def greek_equivs(self):
         return self.greekequivalentforexample_set.all().order_by('order', 'id')
 
+    @property
+    def greek_equivs_with_numbers(self):
+        lst = list(self.greek_equivs)
+        L = len(lst)
+        if L == 0:
+            return None
+        elif L == 1:
+            return [(lst[0], 1)]
+        else:
+            groups = []
+            ge_prev = lst[0]
+            n = 1
+            for ge in lst[1:]:
+                if ge.idem == ge_prev.idem:
+                    n += 1
+                else:
+                    groups.append((ge_prev, n))
+                    ge_prev = ge
+                    n = 1
+            groups.append((ge_prev, n))
+            assert sum(x[1] for x in groups) == len(lst)
+            return groups
+
     audited = BooleanField(u'Пример прошел проверку или взят на проверку',
                            default=False)
     audited_time = DateTimeField(u'Когда пример был проверен', blank=True,

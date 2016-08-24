@@ -5,49 +5,26 @@
 </example>{{ space }}
 
 {% if e.greek_equivs %}
+    {% for ge, genum in e.greek_equivs_with_numbers %}
 
-    {% set COMMA = joiner('<text aid:cstyle="Text">,</text>') %}
-    {% for ge in e.greek_equivs %}
-
-        {% set ADDITIONAL_INFO = show_additional_info and ge.additional_info %}
-        {% if ge.unitext or ADDITIONAL_INFO %}
-            {{ backspace }}{{ COMMA() }}{{ space }}
+        {% if not loop.first %}
+            {{ backspace }},{{ space }}
         {% endif %}
-
         <greek aid:cstyle="Greek">
             {{ ge.unitext }}
-        </greek>{{ space }}
+        </greek>
 
-        {% for x in (ge.mark, ge.source, ge.note)|reject('equalto', '') %}
-
-            {% if loop.first %}
-                <text aid:cstyle="Text">[</text>
-            {% else %}
-                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
-            {% endif %}
-
-            <i aid:cstyle="Em">
-                {{ x }}
-            </i>{{ space }}
-
-            {% if loop.last %}
-               {{ backspace }}<text aid:cstyle="Text">]</text>{{ space }}
-            {% endif %}
-
-        {% endfor %}
+        {% if genum == 2 %}
+            {{ backspace }}{{ nbsp }}(bis)
+        {% elif genum > 2 %}
+            {{ backspace }}{{ nbsp }}({{ genum }})
+        {% endif %}
 
     {% endfor %}
-
 {% endif %}
-
-{#
-{% if e.note %}
-    {{ backspace }}{{ space }}
-    <example-note>{{ e.note|ind_cslav_injection }}</example-note>{{ space }}
-{% endif %}
-#}
 
 {% if e.address_text %}
+    {{ backspace }}{{ space }}
     <address aid:cstyle="Address">
         {{ e.address_text|ind_cslav_injection }}
     </address>
