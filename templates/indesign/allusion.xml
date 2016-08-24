@@ -1,4 +1,6 @@
+{% set wingdings3triangle = "\uf075" %}{# ⯈ ▶ ▸ #}
 {{ backspace }}{{ space }}
-<x aid:cstyle="BiblicalAllusion">▶</x>
-{# ⯈ ▶ ▸ #}
+<x aid:cstyle="BiblicalAllusion">{{ wingdings3triangle }}</x>
 {{ nbsp }}
+
+{# vim: set ft=django.xml: #}
