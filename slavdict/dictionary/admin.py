@@ -273,6 +273,7 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
                 'mark',
                 'source',
                 'initial_form',
+                'order',
                 ),
             }),
         (u'Примечание к параллели',
