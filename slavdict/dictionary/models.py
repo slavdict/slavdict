@@ -1275,9 +1275,9 @@ class Example(models.Model):
         lst = list(self.greek_equivs)
         L = len(lst)
         if L == 0:
-            return None
+            groups = []
         elif L == 1:
-            return [(lst[0], 1)]
+            groups = [(lst[0], 1)]
         else:
             groups = []
             ge_prev = lst[0]
@@ -1290,8 +1290,8 @@ class Example(models.Model):
                     ge_prev = ge
                     n = 1
             groups.append((ge_prev, n))
-            assert sum(x[1] for x in groups) == len(lst)
-            return groups
+        assert sum(x[1] for x in groups) == L, u'Число параллелей д.б постоянным'
+        return groups
 
     audited = BooleanField(u'Пример прошел проверку или взят на проверку',
                            default=False)
