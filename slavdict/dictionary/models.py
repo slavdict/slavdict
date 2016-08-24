@@ -1283,7 +1283,7 @@ class Example(models.Model):
             ge_prev = lst[0]
             n = 1
             for ge in lst[1:]:
-                if ge.idem == ge_prev.idem:
+                if ge.unitext == ge_prev.unitext:
                     n += 1
                 else:
                     groups.append((ge_prev, n))
