@@ -181,7 +181,7 @@
     {% endif %}
 
 
-    {% if entry.tantum %}
+    {% if entry.tantum and not several_lexemes %}
         {{ backspace }}{{ space }}
         <x aid:cstyle="Em">
             {{ entry.get_tantum_display() }}
