@@ -414,6 +414,17 @@ SUBSTANTIVUS_TYPE_MAP = {
     'f.pl.': 'f',
 }
 
+SC1, SC2, SC3, SC4, SC5, SC6 = 'abcdef'
+SPECIAL_CASES_CHOICES = (
+    ('', ''),
+    (SC1, u'Несколько лексем одного рода'),
+    (SC2, u'2 лексемы, муж. и жен. рода'),
+    (SC3, u'2 лексемы, ср. и жен. рода'),
+    (SC4, u'2 лексемы, жен. и только мн.'),
+    (SC5, u'2 лексемы, только мн. и жен.'),
+    (SC6, u'3 лексемы, 2 муж. и неизм.'),
+)
+
 class WithoutHiddenManager(models.Manager):
     def get_queryset(self):
         return super(WithoutHiddenManager,
@@ -670,11 +681,49 @@ class Entry(models.Model):
     all_meanings = property(all_meanings)
     has_meanings = property(has_meanings)
 
+    special_case = CharField(u'Статья нуждается в специальной обработке',
+                             max_length=1, choices=SPECIAL_CASES_CHOICES,
+                             default=u'', blank=True)
+
     def special_cases(self, case):
+        RE_COMMA = ur'[,\s]+'
         if case == 'several ethnonyms':
             if self.nom_sg and ',' in self.nom_sg:
-                words = re.split(ur'[,\s]+', self.nom_sg)
+                words = re.split(RE_COMMA, self.nom_sg)
                 return [(word, ucs_convert(word)) for word in words]
+        elif case == 'several lexemes':
+            if (self.genitive and ',' in self.genitive and
+                    len(self.base_vars) > 1):
+                words = re.split(RE_COMMA, self.genitive)
+
+                M_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['masculine']]
+                F_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['feminine']]
+                N_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['neutral']]
+                PL_TANTUM = dict(TANTUM_CHOICES)[TANTUM_MAP['pluraleTantum']]
+                UNINFL = u'неизм.'
+                HIDDEN_GRAM = u''
+
+                sc = self.special_case
+                if SC1 == sc:
+                    grammatical_marks = [''] * (len(words) - 1)
+                    grammatical_marks += [self.get_gender_display()]
+                elif SC2 == sc:
+                    grammatical_marks = [M_GENDER, F_GENDER]
+                elif SC3 == sc:
+                    grammatical_marks = [N_GENDER, F_GENDER]
+                elif SC4 == sc:
+                    grammatical_marks = [F_GENDER, PL_TANTUM]
+                    words += ['']
+                elif SC5 == sc:
+                    grammatical_marks = [PL_TANTUM, F_GENDER]
+                    words = [''] + words
+                elif SC6 == sc:
+                    grammatical_marks = [HIDDEN_GRAM, M_GENDER, UNINFL]
+                    words += ['']
+
+                value = [(word, ucs_convert(word), grammatical_marks[i])
+                         for i, word in enumerate(words)]
+                return value
 
     @property
     def first_volume(self):
@@ -692,8 +741,7 @@ class Entry(models.Model):
             self.mtime = datetime.datetime.now()
         super(Entry, self).save(*args, **kwargs)
 
-    def __unicode__(self):
-        return self.orth_vars[0].idem
+    def __unicode__(self): return self.orth_vars[0].idem
 
     def forJSON(self):
         _fields = (
