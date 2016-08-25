@@ -4,7 +4,7 @@
 <entry>
     <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
 
-    {% set several_lexemes = entry.special_cases("several lexemes") %}
+    {% set sc_several_nouns = entry.special_cases("several nouns") %}
     {% for base_var in entry.base_vars %}
         {% if loop.first %}
             {# pass #}
@@ -54,8 +54,8 @@
 
         {% endfor %}
 
-        {% if several_lexemes %}
-            {% set wordform, wordform_ucs, grammatical_mark = several_lexemes[loop.index0] %}
+        {% if sc_several_nouns %}
+            {% set wordform, wordform_ucs, grammatical_mark = sc_several_nouns[loop.index0] %}
             {% if wordform %}
                 {{ backspace }},{{ space }}
                 <x>{{ wordform_ucs|ind_cslav_words("CSLSegment") }}</x>
@@ -74,7 +74,7 @@
     {% endfor %}
 
 
-    {% if not several_lexemes %}
+    {% if not sc_several_nouns %}
 
         {% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %}
             {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
@@ -163,7 +163,7 @@
             {% endif %}
         {% endif %}
 
-        {% if entry.gender and not several_lexemes %}
+        {% if entry.gender and not sc_several_nouns %}
             {{ backspace }}{{ space }}
             <x aid:cstyle="Em">
                 {{ entry.get_gender_display() }}
@@ -181,7 +181,7 @@
     {% endif %}
 
 
-    {% if entry.tantum and not several_lexemes %}
+    {% if entry.tantum and not sc_several_nouns %}
         {{ backspace }}{{ space }}
         <x aid:cstyle="Em">
             {{ entry.get_tantum_display() }}

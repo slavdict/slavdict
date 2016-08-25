@@ -691,11 +691,10 @@ class Entry(models.Model):
             if self.nom_sg and ',' in self.nom_sg:
                 words = re.split(RE_COMMA, self.nom_sg)
                 return [(word, ucs_convert(word)) for word in words]
-        elif case == 'several lexemes':
+        elif case == 'several nouns':
             if (self.genitive and ',' in self.genitive and
-                    len(self.base_vars) > 1):
-                words = re.split(RE_COMMA, self.genitive)
-
+                    len(self.base_vars) > 1 and
+                    self.special_case in (SC1, SC2, SC3, SC4, SC5, SC6)):
                 M_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['masculine']]
                 F_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['feminine']]
                 N_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['neutral']]
@@ -703,6 +702,7 @@ class Entry(models.Model):
                 UNINFL = u'неизм.'
                 HIDDEN_GRAM = u''
 
+                words = re.split(RE_COMMA, self.genitive)
                 sc = self.special_case
                 if SC1 == sc:
                     grammatical_marks = [''] * (len(words) - 1)
