@@ -713,10 +713,8 @@ class Entry(models.Model):
                     grammatical_marks = [N_GENDER, F_GENDER]
                 elif SC4 == sc:
                     grammatical_marks = [F_GENDER, PL_TANTUM]
-                    words += ['']
                 elif SC5 == sc:
                     grammatical_marks = [PL_TANTUM, F_GENDER]
-                    words = [''] + words
                 elif SC6 == sc:
                     grammatical_marks = [HIDDEN_GRAM, M_GENDER, UNINFL]
                     words += ['']
