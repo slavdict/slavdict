@@ -129,8 +129,9 @@
         {% endif %}
 
         {% if entry.uninflected %}
+            {{ backspace }}{{ space }}
             <x aid:cstyle="Em">
-                неизм.
+                неизм. сущ.
             </x>
             {{ space }}
         {% endif %}
@@ -139,6 +140,7 @@
 
 
     {% if entry.possessive %}
+        {{ backspace }}{{ space }}
         <x aid:cstyle="Em">
             притяж.
         </x>
@@ -147,6 +149,7 @@
 
 
     {% if entry.participle_type %}
+        {{ backspace }}{{ space }}
         <x aid:cstyle="Em">
             {{ entry.get_participle_type_display() }}
         </x>
@@ -157,9 +160,11 @@
                   not entry.is_part_of_speech("number") and
                   not entry.is_part_of_speech("verb") and
                   not entry.is_part_of_speech("noun") %}
+                {{ backspace }}{{ space }}
                 <x aid:cstyle="Em">
                     {{ entry.get_part_of_speech_display() }}
                 </x>
+                {{ space }}
             {% endif %}
         {% endif %}
 
@@ -232,19 +237,20 @@
 
 
     {% if entry.is_onym('anthroponym') %}
+        {{ backspace }}{{ space }}
         <i aid:cstyle="Em">
             имя собств.
-        </i>
+        </i>{{ space }}
         {% if entry.canonical_name %}
             {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             <i aid:cstyle="Em">
                 канонич.
-            </i>
+            </i>{{ space }}
         {% endif %}
-        {{ space }}
     {% endif %}
 
     {% if entry.is_onym('toponym') %}
+        {{ backspace }}{{ space }}
         <i aid:cstyle="Em">
             топоним
         </i>{{ space }}
