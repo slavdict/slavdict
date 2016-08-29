@@ -35,7 +35,9 @@
         /* Убираем заголовки столбцов с длинными названиями в атрибут title */
         var only_titles = ['_parent_meaning', 'metaphorical',
             'figurative', 'substantivus', 'is_valency',
-            'meaning_for_admin', 'examples_for_admin'];
+            'meaning_for_admin', 'examples_for_admin',
+            'substantivus_type', 'transitivity', '_collogroup',
+            '_entry', 'id'];
         for (var i=only_titles.length; i>0; i--) {
             var x = $('th.column-' + only_titles[i-1]);
             x.prop('title', x.text());
@@ -44,7 +46,18 @@
 
         $('select[id$="-transitivity"]').each(function () {
             var x = $(this);
-            x.innerWidth('7em');
+            x.innerWidth('5em');
+        });
+
+        $('select[id$="-substantivus_type"]').each(function () {
+            var x = $(this);
+            x.innerWidth('3.5em');
+        });
+
+        $('textarea[id$="-meaning"],textarea[id$="-gloss"]').each(function () {
+            var x = $(this);
+            x.innerWidth('15em');
+            x.innerHeight('10em');
         });
 
         /* Добавляем ссылки на отображение статей помимо ссылок редактирования */

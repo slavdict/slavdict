@@ -409,25 +409,32 @@ class AdminMeaning(admin.ModelAdmin):
         '_parent_meaning',
         'metaphorical',
         'figurative',
-        'substantivus',
-        'is_valency',
         'transitivity',
+        'is_valency',
+        'substantivus',
+        'substantivus_type',
         'meaning_for_admin',
+        'meaning',
+        'gloss',
         'examples_for_admin',
     )
     list_display_links = ('id',)
     list_editable = (
         'metaphorical',
         'figurative',
-        'substantivus',
-        'is_valency',
         'transitivity',
+        'is_valency',
+        'substantivus',
+        'substantivus_type',
+        'meaning',
+        'gloss',
     )
     list_filter = (
         FirstVolumeMeaningFilter,
         'metaphorical',
         'figurative',
         SubstantivusMeaningFilter,
+        'substantivus_type',
         'is_valency',
         'transitivity',
     )
