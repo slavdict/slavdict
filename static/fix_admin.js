@@ -37,7 +37,7 @@
             'figurative', 'substantivus', 'is_valency',
             'meaning_for_admin', 'examples_for_admin',
             'substantivus_type', 'transitivity', '_collogroup',
-            '_entry', 'id'];
+            '_entry', 'id', 'substantivus_csl'];
         for (var i=only_titles.length; i>0; i--) {
             var x = $('th.column-' + only_titles[i-1]);
             x.prop('title', x.text());
@@ -52,6 +52,11 @@
         $('select[id$="-substantivus_type"]').each(function () {
             var x = $(this);
             x.innerWidth('3.5em');
+        });
+
+        $('input[type="text"][id$="-substantivus_csl"]').each(function () {
+            var x = $(this);
+            x.outerWidth('100px');
         });
 
         $('textarea[id$="-meaning"],textarea[id$="-gloss"]').each(function () {

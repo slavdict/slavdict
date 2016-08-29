@@ -1096,6 +1096,12 @@ class Meaning(models.Model):
     substantivus_type = CharField(u'форма субстантива', max_length=1,
                                   choices=SUBSTANTIVUS_TYPE_CHOICES,
                                   blank=True, default='')
+    substantivus_csl = CharField(u'цсл текст субстантива', max_length=40,
+                                 blank=True, default='')
+    @property
+    def substantivus_csl_ucs(self):
+        return ucs_convert(self.substantivus_csl)
+
     # только для глаголов
     transitivity = CharField(u'переходность', max_length=1, blank=True,
                              choices=TRANSITIVITY_CHOICES, default='')
