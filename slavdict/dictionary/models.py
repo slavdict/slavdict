@@ -398,6 +398,7 @@ LANGUAGE_TRANSLIT_CSS = {
 
 NBSP = u'\u00A0'  # неразрывный пробел
 SUBSTANTIVUS_TYPE_CHOICES = (
+    ('', ''),
     ('a', u'с.' + NBSP + u'ед.'),
     ('b', u'с.' + NBSP + u'мн.'),
     ('c', u'м.' + NBSP + u'ед.'),
