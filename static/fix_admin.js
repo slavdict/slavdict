@@ -62,7 +62,7 @@
         $('textarea[id$="-meaning"],textarea[id$="-gloss"]').each(function () {
             var x = $(this);
             x.innerWidth('15em');
-            x.innerHeight('10em');
+            x.innerHeight('15em');
         });
 
         /* Добавляем ссылки на отображение статей помимо ссылок редактирования */
