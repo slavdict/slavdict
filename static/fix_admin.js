@@ -44,27 +44,6 @@
             x.html('&nbsp;…');
         }
 
-        $('select[id$="-transitivity"]').each(function () {
-            var x = $(this);
-            x.innerWidth('5em');
-        });
-
-        $('select[id$="-substantivus_type"]').each(function () {
-            var x = $(this);
-            x.innerWidth('3.5em');
-        });
-
-        $('input[type="text"][id$="-substantivus_csl"]').each(function () {
-            var x = $(this);
-            x.outerWidth('100px');
-        });
-
-        $('textarea[id$="-meaning"],textarea[id$="-gloss"]').each(function () {
-            var x = $(this);
-            x.innerWidth('15em');
-            x.innerHeight('15em');
-        });
-
         /* Добавляем ссылки на отображение статей помимо ссылок редактирования */
         var RE = /entry\/(\d+)\//;
         $('th.field-headword a').each(function(){

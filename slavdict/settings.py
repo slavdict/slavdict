@@ -74,7 +74,7 @@ MEDIA_URL = '/u/'
 
 STATIC_ROOT = ROOT + '.static/'
 STATIC_URL = '/static/'
-STATIC_RESOURCES_VERSION='2016.08.29'
+STATIC_RESOURCES_VERSION='2016.08.29-12.09'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'td2+2t^tz-)^j^%@4_^c8ds#6-po3sfoqbwaa2u*i3rj3y%hs1'
