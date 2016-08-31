@@ -33,23 +33,49 @@
     </meaning-context>{{ space }}
 {% endif %}
 
+
 {% if m.substantivus %}
-    <i aid:cstyle="Em">в{{ nbsp }}роли сущ.</i>
+
+    {% for substantivus_form in m.substantivus_forms %}
+        {% if not loop.first %}
+            {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
+        {% endif %}
+
+        {% if loop.last and m.substantivus_type == 'b' %}{# ср. род, мн. число #}
+            {{ backspace }}{{ space }}
+            <x aid:cstyle="Em">мн.</x>{{ space }}
+        {% elif loop.last and m.substantivus_type == 'e' %}{# ж. род, ед. число #}
+            {{ backspace }}{{ space }}
+            <x aid:cstyle="Em">ж.</x>{{ space }}
+        {% endif %}
+
+        <x>{{ substantivus_form|ind_cslav_words }}</x>{{ space }}
+    {% endfor %}
+
+    {{ backspace }}{{ space }}
+    <x aid:cstyle="Em">в{{ nbsp }}роли сущ.</x>
     {{ space }}
-    {% if m.substantivus_type %}
-        <i aid:cstyle="Em">{{ m.get_substantivus_type_display() }}</i>{{ space }}
+
+{% else %}
+
+    {% if m.substantivus_csl %}
+        {{ backspace }}{{ space }}
+        <x>{{ m.substantivus_csl|ind_cslav_words }}</x>{{ space }}
     {% endif %}
+
 {% endif %}
 
 
 {% if m.figurative %}
+    {{ backspace }}{{ space }}
     <i aid:cstyle="Em">перен.</i>{{ space }}
 {% endif %}
 
 {% if m.meaning %}
     <meaning aid:cstyle="Text">{{ m.meaning|
         ind_cslav_injection|
-        ind_regex('Em', '(?<![А-Яа-я])(?:перен|зд|букв)\\.') }}</meaning>
+        ind_regex('Em', '(?<![А-Яа-я])(?:перен|зд|букв)\\.')|
+        ind_regex('Greek', '[\u0370-\u03FF\u1F00-\u1FFE]+' }}</meaning>
 {% endif %}
 
 {% if m.gloss %}
@@ -58,7 +84,8 @@
     {% endif %}
     <gloss aid:cstyle="Em">{{ m.gloss|
         ind_cslav_injection|
-        ind_regex('Text', '‘[^’]+’') }}</gloss>
+        ind_regex('Text', '‘[^’]+’')|
+        ind_regex('GreekEm', '[\u0370-\u03FF\u1F00-\u1FFE]+' }}</gloss>
     {{ space }}
 {% endif %}
 
