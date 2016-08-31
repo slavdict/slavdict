@@ -75,7 +75,7 @@
     <meaning aid:cstyle="Text">{{ m.meaning|
         ind_cslav_injection|
         ind_regex('Em', '(?<![А-Яа-я])(?:перен|зд|букв)\\.')|
-        ind_regex('Greek', '[\u0370-\u03FF\u1F00-\u1FFE]+' }}</meaning>
+        ind_regex('Greek', '[\u0370-\u03FF\u1F00-\u1FFE]+') }}</meaning>
 {% endif %}
 
 {% if m.gloss %}
@@ -85,7 +85,7 @@
     <gloss aid:cstyle="Em">{{ m.gloss|
         ind_cslav_injection|
         ind_regex('Text', '‘[^’]+’')|
-        ind_regex('GreekEm', '[\u0370-\u03FF\u1F00-\u1FFE]+' }}</gloss>
+        ind_regex('GreekEm', '[\u0370-\u03FF\u1F00-\u1FFE]+') }}</gloss>
     {{ space }}
 {% endif %}
 
