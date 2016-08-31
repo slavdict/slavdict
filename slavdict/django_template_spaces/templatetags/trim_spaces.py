@@ -101,6 +101,7 @@ from jinja2.ext import Extension
 from coffin import template
 
 from slavdict.dictionary.models import ucs_convert, html_escape, html_unescape
+from .hyphenation import hyphenate_ucs8
 
 register = template.Library()
 BACKSPACE = u'\u0008'
@@ -188,19 +189,6 @@ def cslav_nobr_words(value):
     words = (pattern % word for word in value.split())
     return u'&#32;'.join(words)
 
-def make_soft_hyphens(segment):
-    text = segment[:2]
-    for c in segment[2:-2]:
-        if c not in u'!#$%&+,-.12345678:;<=>?@C\\^_bcdg~·':
-            text += u'\u00AD' + c
-        else:
-            text += c
-    if len(segment) > 3:
-        text += segment[-2:]
-    elif len(segment) == 3:
-        text += segment[-1:]
-    return text
-
 def indesign_cslav_words(value, *args):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
     if value is None:
@@ -240,7 +228,7 @@ def indesign_cslav_words(value, *args):
             right = segment[end:]
 
             if left:
-                parts.append(CSL_TAG % html_escape(make_soft_hyphens(left)))
+                parts.append(CSL_TAG % html_escape(hyphenate_ucs8(left)))
 
             center = re.sub(RE_BRACES_SLASH, TEXT_TAG % u'\g<0>', center)
             # NOTE: Замена точек должна происходить после замены скобок
@@ -251,10 +239,10 @@ def indesign_cslav_words(value, *args):
             segment = right
             m = RE.search(segment)
         if segment:
-            parts.append(CSL_TAG % html_escape(make_soft_hyphens(segment)))
+            parts.append(CSL_TAG % html_escape(hyphenate_ucs8(segment)))
         segments.append(u''.join(parts))
 
-    return u''.join(segments)
+    return u''.join(segments).replace(u'\u00AD', u'<x aid:cstyle="Text">\u00AD</x>')
 
 
 def cslav_subst(x):
