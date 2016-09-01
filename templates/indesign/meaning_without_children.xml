@@ -36,7 +36,7 @@
 
 {% if m.substantivus %}
 
-    {% for substantivus_form in m.substantivus_forms %}
+    {% for substantivus_form_ucs in m.substantivus_forms %}
         {% if not loop.first %}
             {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
@@ -50,7 +50,7 @@
             <x aid:cstyle="Em">ж.</x>{{ space }}
         {% endif %}
 
-        <x>{{ substantivus_form|ind_cslav_words }}</x>{{ space }}
+        <x>{{ substantivus_form_ucs|ind_cslav_words }}</x>{{ space }}
     {% endfor %}
 
     {{ backspace }}{{ space }}
@@ -61,7 +61,7 @@
 
     {% if m.substantivus_csl %}
         {{ backspace }}{{ space }}
-        <x>{{ m.substantivus_csl|ind_cslav_words }}</x>{{ space }}
+        <x>{{ m.substantivus_csl_ucs|ind_cslav_words }}</x>{{ space }}
     {% endif %}
 
 {% endif %}
