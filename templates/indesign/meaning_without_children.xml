@@ -41,7 +41,8 @@
             {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
 
-        {% if loop.last and m.substantivus_type == 'b' %}{# ср. род, мн. число #}
+        {% if (loop.last or loop.index == 3) and
+                m.substantivus_type == 'b' %}{# ср. род, мн. число #}
             {{ backspace }}{{ space }}
             <x aid:cstyle="Em">мн.</x>{{ space }}
         {% elif loop.last and m.substantivus_type == 'e' %}{# ж. род, ед. число #}
