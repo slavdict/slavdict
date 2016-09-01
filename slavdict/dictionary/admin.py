@@ -385,11 +385,11 @@ class AdminMeaning(admin.ModelAdmin):
                 {'fields': (('cf_entries', 'cf_collogroups'), 'cf_meanings'),
                 'classes': ('collapse',)}),
             (u'В роли сущ.',
-                {'fields': ('substantivus_csl', 'substantivus', 'substantivus_type'),
+                {'fields': ('substantivus_csl', 'substantivus'),
                 'classes': ('collapse',)}),
             (None,
-                {'fields': ('metaphorical', 'figurative',
-                            'is_valency', 'transitivity')}),
+                {'fields': ('substantivus_type', 'metaphorical', 'figurative',
+                            'is_valency', 'transitivity', 'special_case')}),
             (None,
                 {'fields': ('meaning', 'gloss')}),
             (None, { 'fields': tuple(), 'classes': ('blank',) }),
@@ -440,6 +440,7 @@ class AdminMeaning(admin.ModelAdmin):
         'substantivus_type',
         'is_valency',
         'transitivity',
+        'special_case',
     )
     search_fields = (
         #'entry_container__civil_equivalent',

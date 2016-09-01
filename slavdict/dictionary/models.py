@@ -416,7 +416,7 @@ SUBSTANTIVUS_TYPE_MAP = {
 }
 
 SC1, SC2, SC3, SC4, SC5, SC6 = 'abcdef'
-SPECIAL_CASES_CHOICES = (
+ENTRY_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (SC1, u'Несколько лексем одного рода'),
     (SC2, u'2 лексемы, муж. и жен. рода'),
@@ -424,6 +424,14 @@ SPECIAL_CASES_CHOICES = (
     (SC4, u'2 лексемы, жен. и только мн.'),
     (SC5, u'2 лексемы, только мн. и жен.'),
     (SC6, u'3 лексемы, 2 муж. и неизм.'),
+)
+MEANING_SPECIAL_CASES_CHOICES = (
+    ('', ''),
+    ('a', u'канонич.'),
+    ('b', u'в роли предл.'),
+    ('c', u'в роли част.'),
+    ('d', u'в роли притяж. мест.'),
+    ('e', u'твор. ед. в роли нареч.'),
 )
 
 class WithoutHiddenManager(models.Manager):
@@ -683,7 +691,7 @@ class Entry(models.Model):
     has_meanings = property(has_meanings)
 
     special_case = CharField(u'Статья нуждается в специальной обработке',
-                             max_length=1, choices=SPECIAL_CASES_CHOICES,
+                             max_length=1, choices=ENTRY_SPECIAL_CASES_CHOICES,
                              default=u'', blank=True)
 
     def special_cases(self, case):
@@ -1120,6 +1128,9 @@ class Meaning(models.Model):
             информация по примеру на значение или лексеме указывается не здесь,
             а в аналогичных полях при примере и лексеме, соответственно.''',
             blank=True)
+
+    special_case = CharField(u'особые случаи', max_length=1,
+            choices=MEANING_SPECIAL_CASES_CHOICES, blank=True, default='')
 
     def meaning_for_admin(self):
         text = u''

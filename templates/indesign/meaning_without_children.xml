@@ -34,6 +34,32 @@
 {% endif %}
 
 
+{% if m.special_case == 'a' %}{# канонич. #}
+
+    <x aid:cstyle="Em">канонич.</x>{{ space }}
+
+{% elif m.special_case == 'b' %}{# в роли предл. #}
+
+    <x aid:cstyle="Em">в{{ nbsp }}роли предл.</x>{{ space }}
+
+{% elif m.special_case == 'c' %}{# в роли част. #}
+
+    <x aid:cstyle="Em">в{{ nbsp }}роли част.</x>{{ space }}
+
+{% elif m.special_case == 'd' %}{# в роли притяж. мест. #}
+
+    <x>{{ substantivus_form_ucs|ind_cslav_words }}</x>{{ space }}
+    <x aid:cstyle="Em">в{{ nbsp }}роли притяж. мест.</x>{{ space }}
+
+{% elif m.special_case == 'e' %}{# твор. ед. в роли нареч. #}
+
+    <x aid:cstyle="Em">твор. ед.</x>{{ space }}
+    <x>{{ substantivus_form_ucs|ind_cslav_words }}</x>{{ space }}
+    <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
+
+{% endif %}
+
+
 {% if m.substantivus %}
 
     {% for substantivus_form_ucs in m.substantivus_forms %}
