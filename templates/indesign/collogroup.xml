@@ -10,10 +10,11 @@
     {% if not loop.first %}
         {{ backspace }}{{ space }}
     {% endif %}
-    <x>{{ c.collocation_ucs|ind_civil_injection('Valency') }}</x>
+    <x>{{ c.collocation_ucs|ind_civil_injection('Valency', 'CSLSegmentEm') }}</x>
     {% if not loop.last %}
         {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
     {% endif %}
+      
 {% endfor %}
 {{ backspace }}{{ space }}
 

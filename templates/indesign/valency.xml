@@ -2,7 +2,7 @@
 {% from 'indesign/example.xml' import example with context %}
 
 {% if m.meaning %}
-    {{ m.host_entry.base_vars[0].idem_ucs|ind_cslav_words("CSLSegment") }}{{ space }}
+    {{ m.host_entry.base_vars[0].idem_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     {% for frame in m.meaning.split(";") %}
         {% if loop.first %}
             {# pass #}
@@ -12,7 +12,7 @@
             {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
         {% endif %}
         <x aid:cstyle="Text">{{ frame|trim|
-            ind_cslav_injection|
+            ind_cslav_injection("CSLSegmentEm")|
             ind_regex('Valency', '[а-я]+[\\-\u2011]л\\.')|
             ind_regex('Em', 'с\\s(?:придат|инф)\\.') }}</x>
     {% endfor %}
@@ -21,7 +21,7 @@
 {% if m.gloss %}
     {{ backspace }}{{ space }}
     <x aid:cstyle="Text">(=</x>{{ nbsp }}
-    <gloss aid:cstyle="Text">{{ m.gloss|ind_cslav_injection }}</gloss>
+    <gloss aid:cstyle="Text">{{ m.gloss|ind_cslav_injection("CSLSegment") }}</gloss>
     <x aid:cstyle="Text">)</x>
     {{ space }}
 {% endif %}

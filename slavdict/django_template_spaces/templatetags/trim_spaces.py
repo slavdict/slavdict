@@ -189,13 +189,12 @@ def cslav_nobr_words(value):
     words = (pattern % word for word in value.split())
     return u'&#32;'.join(words)
 
-def indesign_cslav_words(value, *args):
+CSLCSTYLE = u'CSLSegment'
+
+def indesign_cslav_words(value, cstyle=CSLCSTYLE):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
     if value is None:
         value = u''
-    cstyle = u'CSLSegment'
-    if args:
-        cstyle = args[0]
 
     TEXT_TAG = u'%s'
     CSL_TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
@@ -269,12 +268,12 @@ def subst_func(func):
         return u'%s%s%s' % (x, func(y), z)
     return f
 
-ind_cslav = subst_func(lambda x: indesign_cslav_words(ucs_convert(x)))
-
 @register.filter
-def ind_cslav_injection(value):
+def ind_cslav_injection(value, cstyle=CSLCSTYLE):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
+    ind_cslav = subst_func(lambda x: indesign_cslav_words(
+        ucs_convert(x), cstyle))
     return re.sub(ur'(\s*)##(.*?)##(\s*)', ind_cslav, value)
 
 class MMM(object):
@@ -297,9 +296,9 @@ class MMM(object):
         return self.match_groups[x]
 
 @register.filter
-def ind_civil_injection(value, cstyle):
+def ind_civil_injection(value, civil_cstyle, csl_cstyle=CSLCSTYLE):
     lst = value.split(u'##')
-    TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
+    TAG = u'<x aid:cstyle="{}">%s</x>'.format(civil_cstyle)
     for i, elem in enumerate(lst):
         if not elem:
             continue
@@ -312,7 +311,7 @@ def ind_civil_injection(value, cstyle):
             parts = re.split(RE, elem)
             for j, part in enumerate(parts):
                 if not j % 2:
-                    part = indesign_cslav_words(part, 'CSLSegment')
+                    part = indesign_cslav_words(part, csl_cstyle)
                     parts[j] = part
             elem = u''.join(parts)
         lst[i] = elem

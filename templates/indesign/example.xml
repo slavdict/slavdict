@@ -26,7 +26,7 @@
 {% if e.address_text %}
     {{ backspace }}{{ space }}
     <address aid:cstyle="Address">
-        {{ e.address_text|ind_cslav_injection }}
+        {{ e.address_text|ind_cslav_injection("CSLSegment") }}
     </address>
     <text aid:cstyle="Address">
         {% if not examples_loop.last %}

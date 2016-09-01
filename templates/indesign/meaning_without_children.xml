@@ -48,13 +48,13 @@
 
 {% elif m.special_case == 'd' %}{# в роли притяж. мест. #}
 
-    <x>{{ substantivus_form_ucs|ind_cslav_words }}</x>{{ space }}
+    <x>{{ substantivus_form_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли притяж. мест.</x>{{ space }}
 
 {% elif m.special_case == 'e' %}{# твор. ед. в роли нареч. #}
 
     <x aid:cstyle="Em">твор. ед.</x>{{ space }}
-    <x>{{ substantivus_form_ucs|ind_cslav_words }}</x>{{ space }}
+    <x>{{ substantivus_form_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
 
 {% elif m.special_case == 'f' %}{# нареч. #}
@@ -84,7 +84,7 @@
             <x aid:cstyle="Em">ж.</x>{{ space }}
         {% endif %}
 
-        <x>{{ substantivus_form_ucs|ind_cslav_words }}</x>{{ space }}
+        <x>{{ substantivus_form_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
     {% endfor %}
 
     {{ backspace }}{{ space }}
@@ -95,7 +95,7 @@
 
     {% if m.substantivus_csl %}
         {{ backspace }}{{ space }}
-        <x>{{ m.substantivus_csl_ucs|ind_cslav_words }}</x>{{ space }}
+        <x>{{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
     {% endif %}
 
 {% endif %}
@@ -108,9 +108,9 @@
 
 {% if m.meaning %}
     <meaning aid:cstyle="Text">{{ m.meaning|
-        ind_cslav_injection|
-        ind_regex('Em', '(?<![А-Яа-я])(?:перен|зд|букв)\\.')|
-        ind_regex('Greek', '[\u0370-\u03FF\u1F00-\u1FFE]+') }}</meaning>
+        ind_cslav_injection("CSLSegment")|
+        ind_regex("Em", '(?<![А-Яа-я])(?:перен|зд|букв)\\.')|
+        ind_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') }}</meaning>
 {% endif %}
 
 {% if m.gloss %}
@@ -118,9 +118,9 @@
         {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
     {% endif %}
     <gloss aid:cstyle="Em">{{ m.gloss|
-        ind_cslav_injection|
-        ind_regex('Text', '‘[^’]+’')|
-        ind_regex('GreekEm', '[\u0370-\u03FF\u1F00-\u1FFE]+') }}</gloss>
+        ind_cslav_injection("CSLSegment")|
+        ind_regex("Text", '‘[^’]+’')|
+        ind_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') }}</gloss>
     {{ space }}
 {% endif %}
 
