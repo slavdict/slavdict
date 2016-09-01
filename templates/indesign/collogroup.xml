@@ -10,7 +10,7 @@
     {% if not loop.first %}
         {{ backspace }}{{ space }}
     {% endif %}
-    <x>{{ c.collocation_ucs|ind_civil_injection('Valency', 'CSLSegmentEm') }}</x>
+    <x>{{ c.collocation_ucs|ind_civil_injection('Valency', 'CSLSegmentEm') }}</x>{{ space }}
     {% if not loop.last %}
         {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
     {% endif %}
@@ -24,9 +24,9 @@
     {{ backspace }}{{ space }}
     {% if cg.meanings|length != 1 %}
         {% set cgmnumber = {1:'а', 2:'б', 3:'в', 4:'г', 5:'д'}[loop.index] %}
-        <collogroup-meaning-number aid:cstyle="CgMeaningNumber">
+        <x aid:cstyle="CgMeaningNumber">
             {{ cgmnumber }}.
-        </collogroup-meaning-number>{{ nbsp }}
+        </x>{{ nbsp }}
     {% endif %}
     {% include 'indesign/meaning_with_children.xml' %}
 {% endfor %}

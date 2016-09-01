@@ -296,7 +296,7 @@ class MMM(object):
         return self.match_groups[x]
 
 @register.filter
-def ind_civil_injection(value, civil_cstyle, csl_cstyle=CSLCSTYLE):
+def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE):
     lst = value.split(u'##')
     TAG = u'<x aid:cstyle="{}">%s</x>'.format(civil_cstyle)
     for i, elem in enumerate(lst):
@@ -305,13 +305,13 @@ def ind_civil_injection(value, civil_cstyle, csl_cstyle=CSLCSTYLE):
         if i % 2:
             elem = TAG % elem
         else:
-            RE = ur"(,\s[-\u2011\u2010]|(?<=nтє1цъ),\s(?=nц7є1въ))"
+            RE = ur"(,\s[\-\u2011\u2010]|(?<=nтє1цъ),\s(?=nц7є1въ))"
             # Особая обработка последовательностей символов ", -"
             # и "ѻтє'цъ, ѻц~є'въ" для словосочетаний.
             parts = re.split(RE, elem)
             for j, part in enumerate(parts):
                 if not j % 2:
-                    part = indesign_cslav_words(part, csl_cstyle)
+                    part = indesign_cslav_words(part, cslav_cstyle)
                     parts[j] = part
             elem = u''.join(parts)
         lst[i] = elem
