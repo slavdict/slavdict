@@ -46,15 +46,16 @@
 
     <x aid:cstyle="Em">в{{ nbsp }}роли част.</x>{{ space }}
 
-{% elif m.special_case == 'd' %}{# в роли притяж. мест. #}
+{% elif m.special_case == 'd' %}{# дат. в роли притяж. мест. #}
 
-    <x>{{ substantivus_form_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
+    <x aid:cstyle="Em">дат.</x>{{ space }}
+    {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли притяж. мест.</x>{{ space }}
 
 {% elif m.special_case == 'e' %}{# твор. ед. в роли нареч. #}
 
     <x aid:cstyle="Em">твор. ед.</x>{{ space }}
-    <x>{{ substantivus_form_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
+    {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
 
 {% elif m.special_case == 'f' %}{# нареч. #}
@@ -65,12 +66,9 @@
 
     <x aid:cstyle="Em">межд.</x>{{ space }}
 
-{% endif %}
+{% elif m.substantivus %}
 
-
-{% if m.substantivus %}
-
-    {% for substantivus_form_ucs in m.substantivus_forms %}
+    {% for form_ucs in m.substantivus_forms %}
         {% if not loop.first %}
             {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
@@ -84,19 +82,17 @@
             <x aid:cstyle="Em">ж.</x>{{ space }}
         {% endif %}
 
-        <x>{{ substantivus_form_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
+        <x>{{ form_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
     {% endfor %}
 
     {{ backspace }}{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли сущ.</x>
     {{ space }}
 
-{% else %}
+{% elif m.substantivus_csl %}
 
-    {% if m.substantivus_csl %}
-        {{ backspace }}{{ space }}
-        <x>{{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
-    {% endif %}
+    {{ backspace }}{{ space }}
+    <x>{{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
 
 {% endif %}
 
