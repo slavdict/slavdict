@@ -70,6 +70,10 @@
 
     <x aid:cstyle="Em">имя собств.</x>{{ space }}
 
+{% elif m.special_case == 'i' %}{# топоним #}
+
+    <x aid:cstyle="Em">топоним</x>{{ space }}
+
 {% elif m.substantivus %}
 
     {% for form_ucs in m.substantivus_forms %}
