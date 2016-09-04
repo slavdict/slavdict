@@ -15,9 +15,11 @@ import slavdict.dictionary.models as models
 from slavdict.dictionary.models import *
 
 EDITOR = os.environ.get('EDITOR','vi')
+INDEXES = {1: u'¹', 2: u'²', 3: u'³'}
 TRY_OR_REPLACE_COMMAND = ('.', '/')
 CANCEL_COMMANDS = ('..', '//')
 EDIT_COMMANDS = (u'.edit', u'эээ')
+VERBOSE_COMMANDS = (u'.verbose',)
 
 class DataChangeShell(cmd.Cmd):
     intro = 'Slavdict shell for data change :)\n'
@@ -33,6 +35,7 @@ class DataChangeShell(cmd.Cmd):
                                 for model, attrs in self.model_attrs)
         self.pattern = re.compile('', re.UNICODE)
         self.replacement = None
+        self.verbose = False
         self.reset_found_items()
         self.change_prompt()
 
@@ -76,6 +79,11 @@ class DataChangeShell(cmd.Cmd):
                 self._do_find2(arg)
             else:
                 self._do_find(arg)
+            print u'\n   /\033[1;36m%s\033[0m/  \033[1;33m%i\033[0m %s\n' % (
+                    self.pattern.pattern,
+                    sum(sum(v.values()) for v in self.tcount.values()),
+                    repr(self.tcount) if self.verbose else '',
+                    )
         except (KeyboardInterrupt, Exception) as e:
             print
             print type(e).__name__
@@ -92,53 +100,53 @@ class DataChangeShell(cmd.Cmd):
                                if i.host_entry.first_volume)
                 else:
                     items = models.objects.all()
+                print u'\n\033[1;33m%s.%s\033[0m' % (model.__name__, attrname)
                 for item in items:
                     if self.pattern.search(getattr(item, attrname)):
                         txt = getattr(item, attrname)
                         host = item.host
                         host_entry = item.host_entry
-                        host_info = u'%s %s' % (host.id, host.civil_equivalent)
+                        host_info = u'%s%s' % (
+                                host_entry.civil_equivalent,
+                                INDEXES.get(host_entry.homonym_order, u''))
                         if host != host_entry:
-                            host_info = u'%s < %s %s' % (
-                                    host_info, host_entry.id,
-                                    host_entry.civil_equivalent)
-                        print u'%s\t\t%s.%s %s < %s' % (
-                            self.pattern.sub('\033[0;36m\g<0>\033[0m', txt),
-                            model.__name__, attrname, item.id, host_info)
+                            host_info = u'%s | %s' % (
+                                              host_info, host.civil_equivalent)
+                        host_info = u'\033[1;30m%s\033[0m' % host_info
+                        subst = self.pattern.sub('\033[0;36m\g<0>\033[0m', txt)
+                        if self.verbose:
+                            print u'*  %s\t%s' % (subst, host_info)
+                        else:
+                            print u'* ', subst
                         count += 1
                         key = (model, attrname)
                         value = (item, host, host_entry)
                         self.found_items[key].append(value)
                 self.tcount[model.__name__][attrname] = count
-        print u'\n   /\033[1;36m%s\033[0m/  \033[1;33m%i\033[0m %r\n' % (
-                self.pattern.pattern,
-                sum(sum(v.values()) for v in self.tcount.values()),
-                self.tcount,
-                )
 
     def _do_find2(self, arg):
         for (model, attrname), items in self.found_items.items():
+            print u'\n\033[1;33m%s.%s\033[0m' % (model.__name__, attrname)
             for item, host, host_entry in items:
                 txt = getattr(item, attrname)
-                host_info = u'%s %s' % (host.id, host.civil_equivalent)
+                host_info = u'%s%s' % (
+                                host_entry.civil_equivalent,
+                                INDEXES.get(host_entry.homonym_order, u''))
                 if host != host_entry:
-                    host_info = u'%s < %s %s' % (
-                            host_info, host_entry.id,
-                            host_entry.civil_equivalent)
-                print u'%s\t\t%s.%s %s < %s' % (
-                    self.pattern.sub('\033[0;36m\g<0>\033[0m', txt),
-                    model.__name__, attrname, item.id, host_info)
-        print u'\n   /\033[1;36m%s\033[0m/  \033[1;33m%i\033[0m %r\n' % (
-                self.pattern.pattern,
-                sum(sum(v.values()) for v in self.tcount.values()),
-                self.tcount,
-                )
+                    host_info = u'%s | %s' % (host_info, host.civil_equivalent)
+                host_info = u'\033[1;30m%s\033[0m' % host_info
+                subst = self.pattern.sub('\033[0;36m\g<0>\033[0m', txt)
+                if self.verbose:
+                    print u'*  %s\t%s' % (subst, host_info)
+                else:
+                    print u'* ', subst
 
     def do_try(self, arg):
         if self.replacement is None:
             print u'Установите шаблон замены'
             return
         for (model, attrname), items in self.found_items.items():
+            print u'\n\033[1;33m%s.%s\033[0m' % (model.__name__, attrname)
             for item, host, host_entry in items:
                 if self.pattern.search(getattr(item, attrname)):
                     initial = getattr(item, attrname)
@@ -155,22 +163,29 @@ class DataChangeShell(cmd.Cmd):
                                u'из-за несовместимости '
                                u'с шаблоном поиска: %s' % err)
                         return
-                    host_info = u'%s %s' % (host.id, host.civil_equivalent)
+                    host_info = u'%s%s' % (
+                                    host_entry.civil_equivalent,
+                                    INDEXES.get(host_entry.homonym_order, u''))
                     if host != host_entry:
-                        host_info = u'%s < %s %s' % (
-                                host_info, host_entry.id,
-                                host_entry.civil_equivalent)
-                    print u'%s\n%s\n%s.%s %s < %s\n' % (
+                        host_info = u'%s | %s' % (host_info, host.civil_equivalent)
+                    host_info = u'\033[1;30m%s\033[0m' % host_info
+                    if self.verbose:
+                        print u'*  %s\n*  %s\n%s\n' % (
                             self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
                             self.pattern.sub('\033[0;31m%s\033[0m' % self.replacement, initial),
-                            model.__name__, attrname, item.id, host_info)
+                            host_info)
+                    else:
+                        print u'*  %s\n*  %s\n' % (
+                            self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
+                            self.pattern.sub('\033[0;31m%s\033[0m' % self.replacement, initial))
         print (u'  ? \033[1;36m%s\033[0m --> \033[1;31m%s\033[0m ?   '
-               u'\033[1;33m%i\033[0m %r\n' % (
+               u'\033[1;33m%i\033[0m %s\n' % (
                     self.pattern.pattern,
                     self.replacement,
                     sum(sum(v.values()) for v in self.tcount.values()),
-                    self.tcount,
+                    repr(self.tcount) if self.verbose else '',
                     ))
+
     def do_replace(self, arg):
         try:
             with transaction.atomic():
@@ -185,6 +200,7 @@ class DataChangeShell(cmd.Cmd):
             print u'Установите шаблон замены'
             return
         for (model, attrname), items in self.found_items.items():
+            print u'\n\033[1;33m%s.%s\033[0m' % (model.__name__, attrname)
             for item, host, host_entry in items:
                 if self.pattern.search(getattr(item, attrname)):
                     initial = getattr(item, attrname)
@@ -198,21 +214,27 @@ class DataChangeShell(cmd.Cmd):
                         return
                     setattr(item, attrname, final)
                     item.save(without_mtime=True)
-                    host_info = u'%s %s' % (host.id, host.civil_equivalent)
+                    host_info = u'%s%s' % (
+                                    host_entry.civil_equivalent,
+                                    INDEXES.get(host_entry.homonym_order, u''))
                     if host != host_entry:
-                        host_info = u'%s < %s %s' % (
-                                host_info, host_entry.id,
-                                host_entry.civil_equivalent)
-                    print u'%s\n%s\n%s.%s %s < %s\n' % (
+                        host_info = u'%s | %s' % (host_info, host.civil_equivalent)
+                    host_info = u'\033[1;30m%s\033[0m' % host_info
+                    if self.verbose:
+                        print u'*  %s\n*  %s\n%s\n' % (
                             self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
                             self.pattern.sub('\033[0;32m%s\033[0m' % self.replacement, initial),
                             model.__name__, attrname, item.id, host_info)
+                    else:
+                        print u'*  %s\n*  %s\n' % (
+                            self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
+                            self.pattern.sub('\033[0;32m%s\033[0m' % self.replacement, initial))
         print (u'  ! \033[1;36m%s\033[0m --> \033[1;32m%s\033[0m !   '
-               u'\033[1;33m%i\033[0m %r\n' % (
+               u'\033[1;33m%i\033[0m %s\n' % (
                     self.pattern.pattern,
                     self.replacement,
                     sum(sum(v.values()) for v in self.tcount.values()),
-                    self.tcount,
+                    repr(self.tcount) if self.verbose else '',
                     ))
 
     def do_edit_replace(self, arg):
@@ -239,8 +261,14 @@ class DataChangeShell(cmd.Cmd):
         i = 1
         for (model, attrname), items in self.found_items.items():
             text += u'\n# %s.%s\n\n' % (model.__name__, attrname)
-            for item, _, _ in items:
+            for item, host, host_entry in items:
+                host_info = u'%s%s' % (host_entry.civil_equivalent,
+                                INDEXES.get(host_entry.homonym_order, u''))
+                if host != host_entry:
+                    host_info = u'%s  <  %s' % (host.civil_equivalent, host_info)
                 register[i] = (item, attrname)
+                if self.verbose:
+                    text += u'#\t%s\n' % host_info
                 text += u'%s\t%s\n' % (i, getattr(item, attrname))
                 i += 1
 
@@ -284,6 +312,9 @@ class DataChangeShell(cmd.Cmd):
         elif arg in EDIT_COMMANDS:
             self.state = 'find'
             self.onecmd('edit_replace')
+        elif arg in VERBOSE_COMMANDS:
+            self.verbose = not self.verbose
+            self.onecmd('')
         else:
             if self.state == 'find':
                 try:
