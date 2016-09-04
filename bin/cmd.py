@@ -5,27 +5,35 @@ import re
 import subprocess
 import tempfile
 
+from collections import defaultdict
+
+from django.db import transaction
 from django.db.models import Model
 from django.db.models.fields import TextField, CharField
 
 import slavdict.dictionary.models as models
-from slavdict.dictionary.models import Example as _Example
+from slavdict.dictionary.models import *
+
+EDITOR = os.environ.get('EDITOR','vi')
+TRY_OR_REPLACE_COMMAND = ('.', '/')
+CANCEL_COMMANDS = ('..', '//')
+EDIT_COMMANDS = (u'.edit', u'эээ')
 
 class DataChangeShell(cmd.Cmd):
     intro = 'Slavdict shell for data change :)\n'
     prompt = '> '
 
-    def __init__(self, model_attrs=[(_Example, ['address_text'])],
+    def __init__(self, model_attrs=[(Example, ['address_text'])],
                  first_volume=True):
         cmd.Cmd.__init__(self)
         self.first_volume = first_volume
         self.state = 'find'
         self.model_attrs = model_attrs
-        self.intro = self.intro + '\n'.join(
-                '%s %s' % (model.__name__, attrs)
-                for model, attrs in self.model_attrs)
+        self.intro += '\n'.join('%s %s' % (model.__name__, attrs)
+                                for model, attrs in self.model_attrs)
         self.pattern = re.compile('', re.UNICODE)
         self.replacement = None
+        self.reset_found_items()
         self.change_prompt()
 
 
@@ -41,12 +49,19 @@ class DataChangeShell(cmd.Cmd):
     def change_prompt(self):
         self.prompt = self.state + DataChangeShell.prompt
 
+    def reset_found_items(self):
+        self.found_items = defaultdict(list)
+        self.tcount = {}
+
 
     def do_quit(self, arg):
         return True
 
     def do_pattern(self, arg):
-        self.pattern = re.compile(self.prepare(arg), re.UNICODE)
+        prepared_arg = self.prepare(arg)
+        if self.pattern.pattern != prepared_arg:
+            self.pattern = re.compile(prepared_arg, re.UNICODE)
+            self.reset_found_items()
 
     def do_replacement(self, arg):
         self.replacement = self.prepare(arg)
@@ -56,9 +71,20 @@ class DataChangeShell(cmd.Cmd):
                                               self.replacement)
 
     def do_find(self, arg):
-        tcount = {}
+        try:
+            if self.found_items:
+                self._do_find2(arg)
+            else:
+                self._do_find(arg)
+        except (KeyboardInterrupt, Exception) as e:
+            print
+            print type(e).__name__
+            print u'Поиск прерван...'
+            self.reset_found_items()
+
+    def _do_find(self, arg):
         for model, attrs in self.model_attrs:
-            tcount[model.__name__] = {}
+            self.tcount[model.__name__] = {}
             for attrname in attrs:
                 count = 0
                 if self.first_volume:
@@ -80,118 +106,169 @@ class DataChangeShell(cmd.Cmd):
                             self.pattern.sub('\033[0;36m\g<0>\033[0m', txt),
                             model.__name__, attrname, item.id, host_info)
                         count += 1
-                tcount[model.__name__][attrname] = count
+                        key = (model, attrname)
+                        value = (item, host, host_entry)
+                        self.found_items[key].append(value)
+                self.tcount[model.__name__][attrname] = count
         print u'\n   /\033[1;36m%s\033[0m/  \033[1;33m%i\033[0m %r\n' % (
                 self.pattern.pattern,
-                sum(sum(v.values()) for v in tcount.values()),
-                tcount,
+                sum(sum(v.values()) for v in self.tcount.values()),
+                self.tcount,
+                )
+
+    def _do_find2(self, arg):
+        for (model, attrname), items in self.found_items.items():
+            for item, host, host_entry in items:
+                txt = getattr(item, attrname)
+                host_info = u'%s %s' % (host.id, host.civil_equivalent)
+                if host != host_entry:
+                    host_info = u'%s < %s %s' % (
+                            host_info, host_entry.id,
+                            host_entry.civil_equivalent)
+                print u'%s\t\t%s.%s %s < %s' % (
+                    self.pattern.sub('\033[0;36m\g<0>\033[0m', txt),
+                    model.__name__, attrname, item.id, host_info)
+        print u'\n   /\033[1;36m%s\033[0m/  \033[1;33m%i\033[0m %r\n' % (
+                self.pattern.pattern,
+                sum(sum(v.values()) for v in self.tcount.values()),
+                self.tcount,
                 )
 
     def do_try(self, arg):
         if self.replacement is None:
             print u'Установите шаблон замены'
             return
-        tcount = {}
-        for model, attrs in self.model_attrs:
-            tcount[model.__name__] = {}
-            for attrname in attrs:
-                count = 0
-                if self.first_volume:
-                    items = (i for i in model.objects.all()
-                               if i.host_entry.first_volume)
-                else:
-                    items = models.objects.all()
-                for item in items:
-                    if self.pattern.search(getattr(item, attrname)):
-                        initial = getattr(item, attrname)
-                        try:
-                            # NOTE:qSeF4: В шаблоне замены могут быть
-                            # подстановочные знаки вроде \1, при том что
-                            # в шаблоне поиска не будет никаких групп.
-                            # Если подстрока для замены в этом случае
-                            # будет найдена, то возникнет исключение.
-                            self.pattern.sub(self.replacement, initial)
-                        except re.error as err:
-                            self.replacement = None
-                            print (u'Шаблон замены сброшен '
-                                   u'из-за несовместимости '
-                                   u'с шаблоном поиска: %s' % err)
-                            return
-                        count += 1
-                        host = item.host
-                        host_entry = item.host_entry
-                        host_info = u'%s %s' % (host.id, host.civil_equivalent)
-                        if host != host_entry:
-                            host_info = u'%s < %s %s' % (
-                                    host_info, host_entry.id,
-                                    host_entry.civil_equivalent)
-                        print u'%s\n%s\n%s.%s %s < %s\n' % (
-                                self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
-                                self.pattern.sub('\033[0;31m%s\033[0m' % self.replacement, initial),
-                                model.__name__, attrname, item.id, host_info)
-                tcount[model.__name__][attrname] = count
+        for (model, attrname), items in self.found_items.items():
+            for item, host, host_entry in items:
+                if self.pattern.search(getattr(item, attrname)):
+                    initial = getattr(item, attrname)
+                    try:
+                        # NOTE:qSeF4: В шаблоне замены могут быть
+                        # подстановочные знаки вроде \1, при том что
+                        # в шаблоне поиска не будет никаких групп.
+                        # Если подстрока для замены в этом случае
+                        # будет найдена, то возникнет исключение.
+                        self.pattern.sub(self.replacement, initial)
+                    except re.error as err:
+                        self.replacement = None
+                        print (u'Шаблон замены сброшен '
+                               u'из-за несовместимости '
+                               u'с шаблоном поиска: %s' % err)
+                        return
+                    host_info = u'%s %s' % (host.id, host.civil_equivalent)
+                    if host != host_entry:
+                        host_info = u'%s < %s %s' % (
+                                host_info, host_entry.id,
+                                host_entry.civil_equivalent)
+                    print u'%s\n%s\n%s.%s %s < %s\n' % (
+                            self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
+                            self.pattern.sub('\033[0;31m%s\033[0m' % self.replacement, initial),
+                            model.__name__, attrname, item.id, host_info)
         print (u'  ? \033[1;36m%s\033[0m --> \033[1;31m%s\033[0m ?   '
                u'\033[1;33m%i\033[0m %r\n' % (
                     self.pattern.pattern,
                     self.replacement,
-                    sum(sum(v.values()) for v in tcount.values()),
-                    tcount,
+                    sum(sum(v.values()) for v in self.tcount.values()),
+                    self.tcount,
                     ))
-
     def do_replace(self, arg):
+        try:
+            with transaction.atomic():
+                self._do_replace(arg)
+        except KeyboardInterrupt, Exception:
+            print
+            print u'\n'.join(sys.exc_info()[:])
+            print u'Замена прервана. Все произведённые изменения отменены.'
+
+    def _do_replace(self, arg):
         if self.replacement is None:
             print u'Установите шаблон замены'
             return
-        tcount = {}
-        for model, attrs in self.model_attrs:
-            tcount[model.__name__] = {}
-            for attrname in attrs:
-                count = 0
-                if self.first_volume:
-                    items = (i for i in model.objects.all()
-                               if i.host_entry.first_volume)
-                else:
-                    items = models.objects.all()
-                for item in items:
-                    if self.pattern.search(getattr(item, attrname)):
-                        initial = getattr(item, attrname)
-                        try:  # SEE:qSeF4:
-                            final = self.pattern.sub(self.replacement, initial)
-                        except re.error as err:
-                            self.replacement = None
-                            print (u'Шаблон замены сброшен '
-                                   u'из-за несовместимости '
-                                   u'с шаблоном поиска: %s' % err)
-                            return
-                        setattr(item, attrname, final)
-                        item.save(without_mtime=True)
-                        count += 1
-                        host = item.host
-                        host_entry = item.host_entry
-                        host_info = u'%s %s' % (host.id, host.civil_equivalent)
-                        if host != host_entry:
-                            host_info = u'%s < %s %s' % (
-                                    host_info, host_entry.id,
-                                    host_entry.civil_equivalent)
-                        print u'%s\n%s\n%s.%s %s < %s\n' % (
-                                self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
-                                self.pattern.sub('\033[0;32m%s\033[0m' % self.replacement, initial),
-                                model.__name__, attrname, item.id, host_info)
-                tcount[model.__name__][attrname] = count
+        for (model, attrname), items in self.found_items.items():
+            for item, host, host_entry in items:
+                if self.pattern.search(getattr(item, attrname)):
+                    initial = getattr(item, attrname)
+                    try:  # SEE:qSeF4:
+                        final = self.pattern.sub(self.replacement, initial)
+                    except re.error as err:
+                        self.replacement = None
+                        print (u'Шаблон замены сброшен '
+                               u'из-за несовместимости '
+                               u'с шаблоном поиска: %s' % err)
+                        return
+                    setattr(item, attrname, final)
+                    item.save(without_mtime=True)
+                    host_info = u'%s %s' % (host.id, host.civil_equivalent)
+                    if host != host_entry:
+                        host_info = u'%s < %s %s' % (
+                                host_info, host_entry.id,
+                                host_entry.civil_equivalent)
+                    print u'%s\n%s\n%s.%s %s < %s\n' % (
+                            self.pattern.sub('\033[0;36m\g<0>\033[0m', initial),
+                            self.pattern.sub('\033[0;32m%s\033[0m' % self.replacement, initial),
+                            model.__name__, attrname, item.id, host_info)
         print (u'  ! \033[1;36m%s\033[0m --> \033[1;32m%s\033[0m !   '
                u'\033[1;33m%i\033[0m %r\n' % (
                     self.pattern.pattern,
                     self.replacement,
-                    sum(sum(v.values()) for v in tcount.values()),
-                    tcount,
+                    sum(sum(v.values()) for v in self.tcount.values()),
+                    self.tcount,
                     ))
+
+    def do_edit_replace(self, arg):
+        try:
+            with transaction.atomic():
+                self._do_edit_replace(arg)
+        except KeyboardInterrupt, Exception:
+            print
+            print u'\n'.join(sys.exc_info()[:])
+            print u'Замена прервана. Все произведённые изменения отменены.'
+        else:
+            print u'''
+            Правки внесены. Список отредактированных элементов ещё не сброшен.
+            Пока шаблон поиска не изменён, можно ещё раз отредактировать
+            тот же список с помощью комманд %s''' % u', '.join(
+                    u'"%s"' % c for c in EDIT_COMMANDS)
+
+    def _do_edit_replace(self, arg):
+        if not self.found_items:
+            print u'Нет элементов для правки'
+            return
+        register = {}
+        text = u''
+        i = 1
+        for (model, attrname), items in self.found_items.items():
+            text += u'\n# %s.%s\n\n' % (model.__name__, attrname)
+            for item, _, _ in items:
+                register[i] = (item, attrname)
+                text += u'%s\t%s\n' % (i, getattr(item, attrname))
+                i += 1
+
+        with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:
+            tf.write(text.encode('utf-8'))
+            tf.flush()
+            subprocess.call([EDITOR, tf.name])
+            tf.seek(0)
+            edited_text = tf.readlines()
+
+        lines = filter(lambda x:x.strip() and x[:1] != '#', edited_text)
+        for line in lines:
+            oid, value = line.decode('utf-8').strip().split(u'\t', 1)
+            oid = int(oid)
+            o, attrname = register.get(oid, (None, None))
+            if o is not None:
+                prev_value = getattr(o, attrname)
+                if value != prev_value:
+                    setattr(o, attrname, value)
+                    o.save(without_mtime=True)
+                    del register[oid]
 
 
     def default(self, arg):
         arg = arg.decode('utf-8')
         if arg == 'EOF':
             return self.onecmd('quit')
-        elif arg in ('.', '/'):
+        elif arg in TRY_OR_REPLACE_COMMAND:
             if self.state == 'find':
                 self.state = 'replace'
                 if self.replacement is not None:
@@ -201,9 +278,12 @@ class DataChangeShell(cmd.Cmd):
                 if self.replacement is not None:
                     self.onecmd('replace')
             self.change_prompt()
-        elif arg in ('..', '//') and self.state == 'replace':
+        elif arg in CANCEL_COMMANDS and self.state == 'replace':
             self.state = 'find'
             self.change_prompt()
+        elif arg in EDIT_COMMANDS:
+            self.state = 'find'
+            self.onecmd('edit_replace')
         else:
             if self.state == 'find':
                 try:
@@ -281,16 +361,15 @@ TEXT = u'''
 ]),
     '''
 
-def shell():
-    from slavdict.dictionary.models import *
-    EDITOR = os.environ.get('EDITOR','vi')
-    with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:
-        tf.write(TEXT.encode('utf-8'))
-        tf.flush()
-        subprocess.call([EDITOR, tf.name])
-        tf.seek(0)
-        edited_text = tf.read()
-    model_attrs = eval(u'[%s]' % edited_text, globals(), locals())
+def shell(model_attrs=None):
+    if model_attrs is None:
+        with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:
+            tf.write(TEXT.encode('utf-8'))
+            tf.flush()
+            subprocess.call([EDITOR, tf.name])
+            tf.seek(0)
+            edited_text = tf.read()
+        model_attrs = eval(u'[%s]' % edited_text, globals(), locals())
     DataChangeShell(model_attrs=model_attrs, first_volume=True).cmdloop()
 
 # Собрать все текстовые поля не самая хорошая идея, т.к.  выпадающие списки

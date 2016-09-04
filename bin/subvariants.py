@@ -69,7 +69,7 @@ def subvariants(arg):
             lines = filter(lambda x:x.strip() and x[:1] != u'#', edited_text)
             for line in lines:
                 n += 1
-                oid, wordform = r.split(line.strip())
+                oid, wordform = r.split(line.decode('utf-8').strip())
                 if oid == '+':
                     o = OrthographicVariant(idem=wordform, entry=e)
                 elif oid.strip('-').isdigit():
