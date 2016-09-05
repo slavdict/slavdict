@@ -521,6 +521,12 @@ class Entry(models.Model):
     def genitive_ucs_wax(self):
         return ucs_affix_or_word(self.genitive)
 
+    @property
+    def genitives(self):
+        RE_COMMA = ur'[,\s]+'
+        words = re.split(RE_COMMA, self.genitive)
+        return [(word, ucs_convert(word)) for word in words]
+
     onym = CharField(u'тип имени собственного', max_length=1, blank=True,
                      choices=ONYM_CHOICES, default='')
 
