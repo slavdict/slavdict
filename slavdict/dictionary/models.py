@@ -606,6 +606,12 @@ class Entry(models.Model):
     def sg1_ucs_wax(self):
         return ucs_affix_or_word(self.sg1)
 
+    @property
+    def several_sg1(self):
+        RE_COMMA = ur'[,\s]+'
+        words = re.split(RE_COMMA, self.sg1)
+        return [(word, ucs_convert(word)) for word in words]
+
     sg2 = CharField(u'форма 2 ед.', max_length=50, blank=True,
                     help_text=u'''Целая словоформа или окончание. В случае
                     окончания первым символом должен идти дефис.''')
