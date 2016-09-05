@@ -536,6 +536,12 @@ class Entry(models.Model):
     def nom_sg_ucs_wax(self):
         return ucs_affix_or_word(self.nom_sg)
 
+    @property
+    def ethnonyms(self):
+        RE_COMMA = ur'[,\s]+'
+        words = re.split(RE_COMMA, self.nom_sg)
+        return [(word, ucs_convert(word)) for word in words]
+
     # только для прилагательных
     short_form = CharField(u'краткая форма', help_text=u'''Если Вы указываете
                            не всё слово, а только его часть, предваряйте её
@@ -544,6 +550,12 @@ class Entry(models.Model):
     @property
     def short_form_ucs_wax(self):
         return ucs_affix_or_word(self.short_form)
+
+    @property
+    def short_forms(self):
+        RE_COMMA = ur'[,\s]+'
+        words = re.split(RE_COMMA, self.short_form)
+        return [(word, ucs_convert(word)) for word in words]
 
     possessive = BooleanField(u'притяжательное', default=False,
                               help_text=u'Притяжательное прилагательное.')
@@ -700,11 +712,7 @@ class Entry(models.Model):
 
     def special_cases(self, case):
         RE_COMMA = ur'[,\s]+'
-        if case == 'several ethnonyms':
-            if self.nom_sg and ',' in self.nom_sg:
-                words = re.split(RE_COMMA, self.nom_sg)
-                return [(word, ucs_convert(word)) for word in words]
-        elif case == 'several nouns':
+        if case == 'several nouns':
             if (self.genitive and ',' in self.genitive and
                     len(self.base_vars) > 1 and
                     self.special_case in (SC1, SC2, SC3, SC4, SC5, SC6)):

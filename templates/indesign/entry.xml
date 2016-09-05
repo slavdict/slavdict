@@ -82,14 +82,16 @@
 
 
         {% if entry.short_form %}
-            {% if entry.short_form_ucs_wax.0 %}
-                <x aid:cstyle="Text">{{ nbhyphen }}</x>
-            {% endif %}
-            <x>{{ entry.short_form_ucs_wax.1|ind_cslav_words("CSLSegment") }}</x>
-            {% if entry.short_form|has_no_accent %}
-                {% include 'indesign/noaccent.xml' %}
-            {% endif %}
-            {{ space }}
+            {% for short_form, short_form_ucs in entry.short_forms %}
+                {% if not loop.first %}
+                    {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+                {% endif %}
+                <x>{{ short_form_ucs|ind_cslav_words("CSLSegment") }}</x>
+                {% if short_form|has_no_accent %}
+                    {% include 'indesign/noaccent.xml' %}
+                {% endif %}
+                {{ space }}
+            {% endfor %}
         {% endif %}
 
         {% if entry.genitive %}
@@ -200,28 +202,16 @@
             мн.
         </x>
         {{ space }}
-        {% set several_ethnonyms = entry.special_cases('several ethnonyms') %}
-        {% if several_ethnonyms %}
-            {% for ethnonym, ethnonym_ucs in several_ethnonyms %}
-                {% if not loop.first %}
-                    {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
-                {% endif %}
-                <x>{{ ethnonym_ucs|ind_cslav_words("CSLSegment") }}</x>
-                {% if ethnonym|has_no_accent %}
-                    {% include 'indesign/noaccent.xml' %}
-                {% endif %}
-                {{ space }}
-            {% endfor %}
-        {% else %}
-            {% if entry.nom_sg_ucs_wax.0 %}
-                {{ backspace }}{{ space }}{{ nbhyphen }}
-            {%endif %}
-            <x>{{ entry.nom_sg_ucs_wax.1|ind_cslav_words("CSLSegment") }}</x>
-            {% if entry.nom_sg|has_no_accent %}
+        {% for ethnonym, ethnonym_ucs in entry.ethnonyms %}
+            {% if not loop.first %}
+                {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
+            {% endif %}
+            <x>{{ ethnonym_ucs|ind_cslav_words("CSLSegment") }}</x>
+            {% if ethnonym|has_no_accent %}
                 {% include 'indesign/noaccent.xml' %}
             {% endif %}
             {{ space }}
-        {% endif %}
+        {% endfor %}
     {% endif %}
 
 

@@ -17,6 +17,8 @@ JSLIBS_OLD_VERSION := $(shell cat ${JSLIBS_VERSION_FILE} 2>/dev/null)
 LOCCHDIR = /root/slavdict-local-changes-untracked
 DIFFFILE = /root/slavdict-local-changes-${DATE_TIME}.diff
 
+default: indesign
+
 restart: stop copydiff destroy_loc_changes checkout collectstatic fixown migrate start
 
 run: collectstatic
@@ -114,11 +116,12 @@ listen-indesign:
 	ls .list bin/indesign_xml_dumper.py templates/indesign/* | entr bash -c 'time cat .list | xargs python bin/indesign_xml_dumper.py >/home/nurono/VirtualBox\ SharedFolder/slavdict-indesign.xml'
 
 .PHONY: \
-    destroy_loc_changes \
     checkout \
     clean \
     collectstatic \
     copydiff \
+    default \
+    destroy_loc_changes \
     fixown \
     jslibs \
     listen-indesign \
