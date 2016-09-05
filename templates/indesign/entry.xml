@@ -120,9 +120,8 @@
             {% endfor %}
 
             {% if entry.sg2 %}
-                <x aid:cstyle="Text">,</x>
+                {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
             {%endif %}
-            {{ space }}
         {% endif %}
 
         {% if entry.sg2 %}

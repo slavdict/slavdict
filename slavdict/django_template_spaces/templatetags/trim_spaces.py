@@ -241,7 +241,7 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE):
             parts.append(CSL_TAG % html_escape(hyphenate_ucs8(segment)))
         segments.append(u''.join(parts))
 
-    return u''.join(segments).replace(u'\u00AD', u'<x aid:cstyle="Text">\u00AD</x>')
+    return u''.join(segments).replace(u'\u00AD', u'<h aid:cstyle="Text">\u00AD</h>')
 
 
 def cslav_subst(x):
