@@ -10,21 +10,23 @@
             {# pass #}
         {% else %}
             {{ backspace }}{{ space }}
-            <i aid:cstyle="Em">и</i>{{ space }}
+            <x aid:cstyle="Em">и</x>{{ space }}
         {% endif %}
 
-        <headword aid:cstyle="{% if loop.first %}Headword{% else %}SubHeadword{% endif %}">
-            {{ base_var.idem_ucs|e }}
-        </headword>
+        {% if loop.first %}
+            <x aid:cstyle="Headword">{{ base_var.idem_ucs }}</x>
+        {% else %}
+            {{ base_var.idem_ucs|ind_cslav_words("SubHeadword") }}
+        {% endif %}
         {% if loop.first %}
             {% if entry.homonym_order %}
-                <homonym-number aid:cstyle="HeadwordHomonymNumber">
+                <x aid:cstyle="HeadwordHomonymNumber">
                     {{ entry.homonym_order }}
-                </homonym-number>
+                </x>
                 {{ space }}
             {% endif %}
             {% if entry.questionable_headword %}
-                <questionable>(?)</questionable>
+                <x>(?)</x>
             {% endif %}
         {% endif %}
         {{ backspace }}{{ space }}
@@ -32,24 +34,22 @@
         {% for var in base_var.childvars %}
 
             {% if loop.first %}
-                <text aid:cstyle="Text">(</text>
+                <x aid:cstyle="Text">(</x>
             {% endif %}
 
-            <var aid:cstyle="CSLSegment">
-                {{ var.idem_ucs|e }}
-            </var>
+            {{ var.idem_ucs|ind_cslav_words("CSLSegment") }}
 
             {% if var.use %}
                 {{ backspace }}{{ space }}
-                <text aid:cstyle="OrthvarUse">{{ var.use }}</text>
+                <x aid:cstyle="OrthvarUse">{{ var.use }}</x>
             {% endif %}
 
             {% if loop.last %}
-                {{ backspace }}<text aid:cstyle="Text">)</text>{{ space }}
+                {{ backspace }}<x aid:cstyle="Text">)</x>{{ space }}
             {% elif var.use %}
-                {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
+                {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
             {% else %}
-                {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+                {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
             {% endif %}
 
         {% endfor %}
