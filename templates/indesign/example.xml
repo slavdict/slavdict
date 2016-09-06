@@ -1,8 +1,7 @@
 {% macro example(e, examples_loop, peer_meanings_loop) %}
 
-<example>
-    {{ e.example_ucs|ind_cslav_words("CSLSegment") }}
-</example>{{ space }}
+{{ e.example_ucs|ind_cslav_words("CSLSegment") }}
+{{ space }}
 
 {% if e.greek_equivs %}
     {% for ge, genum in e.greek_equivs_with_numbers %}
@@ -17,11 +16,11 @@
             {{ space }}
         {% endif %}
 
-        <greek aid:cstyle="Greek">
+        <x aid:cstyle="Greek">
             {{ ge.unitext|
                     ind_regex("Text", '[\\(\\)]')|
                     ind_regex("Em", '[а-яА-Я\\.\\s]{2,}') }}
-        </greek>
+        </x>
 
         {% if genum == 2 %}
             {{ backspace }}{{ nbsp }}(bis){{ space }}
@@ -40,20 +39,16 @@
 
 {% if e.address_text %}
     {{ backspace }}{{ space }}
-    <address aid:cstyle="Address">
+    <x aid:cstyle="Address">
         {{ e.address_text|ind_cslav_injection("CSLSegment") }}
-    </address>
-    <text aid:cstyle="Address">
+    </x>
+    <x aid:cstyle="Address">
         {% if not examples_loop.last %}
             {{ backspace }};
-        {% else %}
-            {% if peer_meanings_loop.last or not parent_meanings_loop %}
-                {{ backspace }}{{ onlyDot }}
-            {% else %}
-                {{ backspace }};
-            {% endif %}
+        {% elif peer_meanings_loop.last %}
+            {{ backspace }}{{ onlyDot }}
         {% endif %}
-    </text>
+    </x>
     {{ space }}
 
 {% endif %}
