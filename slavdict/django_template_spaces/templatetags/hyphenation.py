@@ -81,6 +81,120 @@ def sonority_scale_principle(intervocal):
     good = sorted(set(raising) & set(slow) or raising or slow)
     return good
 
+PRE = 0       # - ставить перенос только перед титлосочетанием
+POST = 1      # - только после, если есть согласные
+PRE_POST = 2  # - и до, и после
+titles = (
+    (u'пСтл',   POST),
+    (u'пСл',    POST),
+    #(u'пСт',    []),  # апос[тол]
+    (u'бг~',    PRE),
+    (u'бж~тв',  PRE),
+    (u'бж~',    PRE),
+    (u'бжCтв',  PRE),
+    (u'бз~',    PRE),
+    (u'бл~г',   PRE),
+    (u'бл~ж',   PRE),
+    (u'бл~з',   PRE),
+    (u'блГв',   PRE),
+    (u'блгДт',  PRE_POST),
+    (u'блгСв',  PRE_POST),
+    (u'блгСл',  PRE),
+    (u'блгСт',  PRE),
+    (u'бцД',    PRE),
+    (u'влДк',   PRE),
+    (u'влДц',   PRE),
+    (u'влДчц',  PRE),
+    (u'влДч',   PRE_POST),
+    (u'вГл',    POST),
+    #(u'вГ',     []),
+    (u'гг~л',    POST),
+    (u'гл~г',   PRE),
+    (u'гл~',    PRE),
+    (u'глВ',    PRE),
+    (u'гдСнь',  PRE),
+    (u'гдСв',   PRE),
+    (u'гдС',    PRE),
+    (u'гпСж',   PRE),
+    (u'дв~д',   PRE_POST),
+    (u'дв~',    PRE),
+    (u'двСтв',  PRE),
+    (u'дс~',    PRE),
+    (u'дх~',    PRE),
+    (u'дш~',    PRE),
+    #(u'и~с',    PRE),
+    (u'~л',     POST),  # израил
+    (u'кр~с',   PRE_POST),
+    (u'кр~ш',   PRE_POST),
+    (u'крСт',   PRE_POST),
+    (u'крС',    PRE),
+    (u'мДр',    PRE_POST),
+    (u'мл~тв',  PRE_POST),
+    (u'млДн',   PRE_POST),
+    (u'млСр',   PRE_POST),
+    (u'млСтв',  PRE_POST),
+    (u'млСтн',  PRE_POST),
+    (u'млС',    PRE),
+    (u'мт~р',   PRE_POST),
+    (u'мт~',    PRE),
+    (u'мр~т',   PRE_POST),
+    #(u'мРк',    PRE), # Имярек
+    (u'мч~',    PRE),
+    (u'мцС',    PRE),
+    (u'нбС',    PRE),
+    (u'нб~',    PRE),
+    (u'нлД',    PRE),
+    (u'нн~',    PRE),
+    (u"ч~ь",    POST),
+    (u'првДн',  PRE),
+    (u'прДтч',  PRE), # Предтеча
+    (u'прДт',   PRE), # Предтеча
+    (u'прпДб',  PRE_POST),
+    (u'прОр',   PRE), # Прор или пророк
+    (u'прСн',   PRE),
+    (u'прСт',   PRE),
+    (u'прчСт',  PRE_POST),
+    (u'пСкп',   POST), # епископ
+    #(u'пСк',    []),
+    (u'ржСт',   PRE_POST),
+    #(u'рСл',    []), # Иерусалим
+    (u'сл~нц',  PRE),
+    (u'сл~нч',  PRE_POST),
+    (u'сн~',    PRE),
+    (u'сп~с',   PRE_POST),
+    (u'спС',    PRE),
+    (u'срДц',   PRE),
+    (u'срДч',   PRE_POST),
+    (u'ст~л',   PRE_POST),
+    (u'ст~',    PRE),
+    (u'стрСт',  PRE_POST),
+    #(u'сХ',     []),
+    (u'стХр',   PRE_POST),
+    (u'сщ~',    PRE),
+
+    (u'трОц',   PRE_POST),
+    (u'трОч',   PRE_POST),
+    (u'трСт',   PRE),
+    (u'хрСт',   PRE),
+    (u'цр~к',   PRE_POST),
+    (u'цр~ц',   PRE),
+    (u'цр~',    PRE),
+    (u'црС',    PRE),
+    (u'чл~',    PRE),
+    (u'чСт',    PRE),
+    (u'чтС',    PRE),
+    (u'чт~л',   POST),
+)
+
+def filter_positions(intervocal, r, a, b):
+    a = set(a)
+    b = set(b)
+    for i in sorted(a | b):
+        if (i in a and i in b) or (i in a and not (a & b)) or \
+                (i in a and len(intervocal[i:]) > 1):
+            r.append(i)
+    return r
+
 def hyphenate_civil(word):
     if len(word) < 4:
         return word
@@ -95,8 +209,26 @@ def hyphenate_civil(word):
     while iy:
         iy = iy.start()
         intervocal = word[ix+1:iy]
-        if not intervocal or u'~' in intervocal:
-            r = [0]
+        if not intervocal:
+            r = []
+        elif re.findall(ur'[~А-Я]', intervocal):
+            r = []
+            for title, pos_type in titles:
+                index = intervocal.find(title)
+                if index > -1:
+                    if pos_type in (PRE, PRE_POST):
+                        r.append(index)
+                    if pos_type in (POST, PRE_POST):
+                        cons = intervocal[index + len(title):]
+                        a = distribution_principle(cons)
+                        try:
+                            b = sonority_scale_principle(cons)
+                        except RuntimeError:
+                            pass
+                        else:
+                            r = filter_positions(cons, r, a, b)
+            else:
+                r = []
         else:
             a = distribution_principle(intervocal)
             try:
@@ -105,13 +237,7 @@ def hyphenate_civil(word):
                 ix = iy
                 iy = RE_VOWEL.search(word, ix + 1)
                 continue
-            r = []
-            a = set(a)
-            b = set(b)
-            for i in sorted(a | b):
-                if (i in a and i in b) or (i in a and not (a & b)) or \
-                        (i in a and len(intervocal[i:]) > 1):
-                    r.append(i)
+            r = filter_positions(intervocal, [], a, b)
         positions += [i + ix + 1 for i in r]
         ix = iy
         iy = RE_VOWEL.search(word, ix + 1)
@@ -124,33 +250,33 @@ UCS8_NON_WORD = ur'([\s!"\'()*,\-\./:;\[\]\u007f\u00a0‘’‚‛“”„‟�
 UCS8_DIACRITICS = ur'#$%1234568@^_~'
 UCS8_MAP = {
     u'&': u'~',
-    u'+': u'~в',
+    u'+': u'В',
     u'0': u'о',
     u'7': u'~',
-    u'9': u'~ж',
-    u'<': u'~х',
-    u'=': u'~н',
-    u'>': u'~р',
-    u'?': u'~ч',
+    u'9': u'ж~',
+    u'<': u'Х',
+    u'=': u'Н',
+    u'>': u'Р',
+    u'?': u'Ч',
 
     u'A': u'а',
     u'B': u'е',
-    u'C': u'~с',
-    u'D': u'д~с',
+    u'C': u'С',
+    u'D': u'дС',
     u'E': u'е',
     u'F': u'ф',
-    u'G': u'~г',
+    u'G': u'г~',
     u'H': u'о',
     u'I': u'и',
     u'J': u'и',
     u'K': u'я',
-    u'L': u'л~д',
+    u'L': u'лД',
     u'M': u'и',
     u'N': u'о',
     u'O': u'о',
     u'P': u'пс',
     u'Q': u'о',
-    u'R': u'~р',
+    u'R': u'р~',
     u'S': u'я',
     u'T': u'от',
     u'U': u'у',
@@ -163,23 +289,23 @@ UCS8_MAP = {
     u'\\': u'~',
 
     u'a': u'а',
-    u'b': u'~о',
-    u'c': u'~с',
-    u'd': u'~д',
+    u'b': u'О',
+    u'c': u'С',
+    u'd': u'Д',
     u'e': u'е',
     u'f': u'ф',
-    u'g': u'~г',
+    u'g': u'Г',
     u'h': u'ы',
     u'i': u'и',
     u'j': u'и',
     u'k': u'я',
-    u'l': u'~л',
+    u'l': u'л~',
     u'm': u'и',
     u'n': u'о',
     u'o': u'о',
     u'p': u'пс',
     u'q': u'о',
-    u'r': u'р~с',
+    u'r': u'рС',
     u's': u'я',
     u't': u'от',
     u'u': u'у',
@@ -191,24 +317,24 @@ UCS8_MAP = {
 
     u'{': u'у',
     u'|': u'я',
-    u'}': u'~и',
+    u'}': u'и~',
     u'Ђ': u'и',
     u'Ѓ': u'а',
     u'ѓ': u'а',
-    u'…': u'~кс',
+    u'…': u'кс~',
     u'†': u'а',
     u'‡': u'и',
-    u'€': u'~з',
+    u'€': u'З',
     u'‰': u'я',
     u'Љ': u'я',
-    u'‹': u'и',
+    u'‹': u'и~',
     u'Њ': u'о',
     u'Ќ': u'у',
     u'Ћ': u'я',
     u'Џ': u'о',
-    u'ђ': u'в~г',
-    u'•': u'~ж',
-    u'™': u'~т',
+    u'ђ': u'вГ',
+    u'•': u'Ж',
+    u'™': u'т~',
     u'љ': u'я',
     u'›': u'и',
     u'њ': u'о',
@@ -219,11 +345,11 @@ UCS8_MAP = {
     u'ў': u'у',
     u'Ј': u'и',
     u'Ґ': u'а',
-    u'¦': u'~х',
-    u'§': u'~ч',
+    u'¦': u'х~',
+    u'§': u'ч~',
     u'Ё': u'е',
-    u'©': u'~с',
-    u'®': u'р~д',
+    u'©': u'с~',
+    u'®': u'рД',
     u'Ї': u'и',
     u'±': u'я',
     u'І': u'и',
@@ -231,7 +357,7 @@ UCS8_MAP = {
     u'ґ': u'а',
     u'µ': u'у',
     u'ё': u'е',
-    u'№': u'а',
+    u'№': u'а~',
     u'є': u'е',
     u'ј': u'и',
     u'Ѕ': u'з',
