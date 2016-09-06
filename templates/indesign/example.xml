@@ -10,6 +10,13 @@
         {% if not loop.first %}
             {{ backspace }},{{ space }}
         {% endif %}
+
+        {% if ge.mark %}
+            {{ backspace }}{{ space }}
+            <x aid:cstyle="Em">{{ ge.mark }}</x>
+            {{ space }}
+        {% endif %}
+
         <greek aid:cstyle="Greek">
             {{ ge.unitext|
                     ind_regex("Text", '[\\(\\)]')|
@@ -20,12 +27,6 @@
             {{ backspace }}{{ nbsp }}(bis){{ space }}
         {% elif genum > 2 %}
             {{ backspace }}{{ nbsp }}({{ genum }}){{ space }}
-        {% endif %}
-
-        {% if ge.mark %}
-            {{ backspace }}{{ space }}
-            <x aid:cstyle="Em">{{ ge.mark }}</x>
-            {{ space }}
         {% endif %}
 
         {% if ge.note %}
