@@ -212,6 +212,25 @@ class SubstantivusMeaningFilter(admin.SimpleListFilter):
         if self.value() == '0':
             return queryset.exclude(Q(substantivus=True)|Q(id__in=self.xs()))
 
+class FigurativeMeaningFilter(admin.SimpleListFilter):
+    title = u'перен.'
+    parameter_name = 'figurative'
+    def lookups(self, request, model_admin):
+        return (
+            ('1', u'перен.'),
+            ('0', u'не перен.'),
+        )
+    def xs(self):
+        pattern = u'перен.'
+        return (x.id for x in Meaning.objects.filter(
+                    Q(gloss__icontains=pattern)|
+                    Q(meaning__icontains=pattern)))
+    def queryset(self, request, queryset):
+        if self.value() == '1':
+            return queryset.filter(Q(figurative=True)|Q(id__in=self.xs()))
+        if self.value() == '0':
+            return queryset.exclude(Q(figurative=True)|Q(id__in=self.xs()))
+
 
 
 class OrthVar_Inline(admin.StackedInline):
@@ -435,7 +454,7 @@ class AdminMeaning(admin.ModelAdmin):
     list_filter = (
         FirstVolumeMeaningFilter,
         'metaphorical',
-        'figurative',
+        FigurativeMeaningFilter,
         SubstantivusMeaningFilter,
         'substantivus_type',
         'is_valency',
