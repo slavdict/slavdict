@@ -11,7 +11,9 @@
             {{ backspace }},{{ space }}
         {% endif %}
         <greek aid:cstyle="Greek">
-            {{ ge.unitext }}
+            {{ ge.unitext|
+                    ind_regex("Text", '[\\(\\)]')|
+                    ind_regex("Em", '[а-яА-Я\\.\\s]{2,}') }}
         </greek>
 
         {% if genum == 2 %}
