@@ -10,23 +10,22 @@
                 {% if not loop.first %}
                     {{ backspace }},{{ space }}
                 {% endif %}
-                <csl aid:cstyle="CSLSegment">
-                    {{ x.reference_ucs|e }}
-                </csl>
+
+                {{ x.reference_ucs|ind_cslav_words("CSLSegment") }}
+
                 {% if x.homonym_order %}
-                    <homonym-number aid:cstyle="HomonymNumber">
+                    {{ backspace }}
+                    <x aid:cstyle="HomonymNumber">
                         {{ x.homonym_order }}
-                    </homonym-number>
+                    </x>
                 {% endif %}
             {% endfor %}
         {% else %}
-            <csl aid:cstyle="CSLSegment">
-                    {{ entry.base_vars.0.idem_ucs|e }}
-            </csl>
+            {{ entry.base_vars.0.idem_ucs|ind_cslav_words("CSLSegment") }}
             {% if entry.homonym_order %}
-                <homonym-number aid:cstyle="HomonymNumber">
+                <x aid:cstyle="HomonymNumber">
                     {{ entry.homonym_order }}
-                </homonym-number>
+                </x>
             {% endif %}
         {% endif %}
 
