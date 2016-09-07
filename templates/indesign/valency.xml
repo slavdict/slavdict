@@ -1,4 +1,4 @@
-{% macro valency(m, peer_meanings_loop, parent_meanings_loop) %}
+{% macro valency(m, peer_meanings_loop, parent_meanings_loop, child_meanings) %}
 {% from 'indesign/example.xml' import example with context %}
 
 {% if m.meaning %}
@@ -28,7 +28,10 @@
 {% endif %}
 
 {% for e in m.examples %}
-    {{ example(e, examples_loop=loop, peer_meanings_loop=peer_meanings_loop) }}
+    {{ example(e, examples_loop=loop,
+               peer_meanings_loop=peer_meanings_loop,
+               parent_meanings_loop=parent_meanings_loop,
+               child_meanings=child_meanings) }}
 {% endfor %}
 
 

@@ -36,7 +36,7 @@
     {% include 'indesign/allusion.xml' %}
     {{ meaning(m, peer_meanings_loop=loop,
                   parent_meanings_loop=none,
-                  child_meanings=none) }}
+                  child_meanings=[]) }}
 {% endfor %}
 
 {% endmacro %}

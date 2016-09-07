@@ -1,4 +1,5 @@
-{% macro example(e, examples_loop, peer_meanings_loop) %}
+{% macro example(e, examples_loop, peer_meanings_loop, parent_meanings_loop,
+                    child_meanings) %}
 
 {{ e.example_ucs|ind_cslav_words("CSLSegment") }}
 {{ space }}
@@ -45,7 +46,8 @@
     <x aid:cstyle="Address">
         {% if not examples_loop.last %}
             {{ backspace }};
-        {% elif peer_meanings_loop.last %}
+        {% elif child_meanings|length == 0 and
+                (peer_meanings_loop.last or not parent_meanings_loop) %}
             {{ backspace }}{{ onlyDot }}
         {% endif %}
     </x>

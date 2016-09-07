@@ -21,11 +21,12 @@
 
     {% if m.is_valency %}
         {{ valency(m, peer_meanings_loop=loop,
-                      parent_meanings_loop=parent_meanings_loop) }}
+                      parent_meanings_loop=parent_meanings_loop,
+                      child_meanings=[]) }}
     {% else %}
         {{ meaning(m, peer_meanings_loop=loop,
                       parent_meanings_loop=parent_meanings_loop,
-                      child_meanings=none) }}
+                      child_meanings=[]) }}
     {% endif %}
 {% endfor %}
 
