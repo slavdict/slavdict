@@ -93,7 +93,7 @@
         <x>{{ form_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
     {% endfor %}
 
-    {% if m.special_case == 'h' %}{# преимущ. #}
+    {% if m.special_case == 'j' %}{# преимущ. #}
         {{ backspace }}{{ space }}
         <x aid:cstyle="Em">преимущ.</x>{{ space }}
     {% endif %}

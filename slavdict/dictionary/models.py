@@ -436,7 +436,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
     ('g', u'межд.'),
     ('h', u'имя собств.'),
     ('i', u'топоним'),
-    ('h', u'преимущ.'),
+    ('j', u'преимущ.'),
 )
 
 class WithoutHiddenManager(models.Manager):
