@@ -428,14 +428,15 @@ ENTRY_SPECIAL_CASES_CHOICES = (
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     ('a', u'канонич.'),
-    ('b', u'в роли предл.'),
-    ('c', u'в роли част.'),
+    ('b', u'предл.'),
+    ('c', u'част.'),
     ('d', u'в роли притяж. мест.'),
     ('e', u'твор. ед. в роли нареч.'),
     ('f', u'нареч.'),
     ('g', u'межд.'),
     ('h', u'имя собств.'),
     ('i', u'топоним'),
+    ('h', u'преимущ.'),
 )
 
 class WithoutHiddenManager(models.Manager):

@@ -38,13 +38,13 @@
 
     <x aid:cstyle="Em">канонич.</x>{{ space }}
 
-{% elif m.special_case == 'b' %}{# в роли предл. #}
+{% elif m.special_case == 'b' %}{# предл. #}
 
-    <x aid:cstyle="Em">в{{ nbsp }}роли предл.</x>{{ space }}
+    <x aid:cstyle="Em">предл.</x>{{ space }}
 
-{% elif m.special_case == 'c' %}{# в роли част. #}
+{% elif m.special_case == 'c' %}{# част. #}
 
-    <x aid:cstyle="Em">в{{ nbsp }}роли част.</x>{{ space }}
+    <x aid:cstyle="Em">част.</x>{{ space }}
 
 {% elif m.special_case == 'd' %}{# дат. в роли притяж. мест. #}
 
@@ -92,6 +92,11 @@
 
         <x>{{ form_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
     {% endfor %}
+
+    {% if m.special_case == 'h' %}{# преимущ. #}
+        {{ backspace }}{{ space }}
+        <x aid:cstyle="Em">преимущ.</x>{{ space }}
+    {% endif %}
 
     {{ backspace }}{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли сущ.</x>
