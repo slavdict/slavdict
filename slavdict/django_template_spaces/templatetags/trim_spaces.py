@@ -191,12 +191,15 @@ def cslav_nobr_words(value):
 
 CSLCSTYLE = u'CSLSegment'
 
-def indesign_cslav_words(value, cstyle=CSLCSTYLE):
+def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
     if value is None:
         value = u''
 
-    TEXT_TAG = u'%s'
+    if civil_cstyle is None:
+        TEXT_TAG = u'%s'
+    else:
+        TEXT_TAG = u'<x aid:cstyle="{}">%s</x>'.format(civil_cstyle)
     CSL_TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
     # многоточие
     RE_DOTS = ur'\.\.\.'
@@ -296,7 +299,7 @@ class MMM(object):
         return self.match_groups[x]
 
 @register.filter
-def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE):
+def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE, civil2_cstyle=None):
     lst = value.split(u'##')
     TAG = u'<x aid:cstyle="{}">%s</x>'.format(civil_cstyle)
     for i, elem in enumerate(lst):
@@ -311,7 +314,7 @@ def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE):
             parts = re.split(RE, elem)
             for j, part in enumerate(parts):
                 if not j % 2:
-                    part = indesign_cslav_words(part, cslav_cstyle)
+                    part = indesign_cslav_words(part, cslav_cstyle, civil2_cstyle)
                     parts[j] = part
             elem = u''.join(parts)
         lst[i] = elem
