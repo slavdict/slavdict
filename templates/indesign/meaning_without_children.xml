@@ -126,10 +126,13 @@
     {% if m.meaning or m.greek_equivs %}
         {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
     {% endif %}
-    <gloss aid:cstyle="Em">{{ m.gloss|
-        ind_cslav_injection("CSLSegment")|
-        ind_regex("Text", '‘[^’]+’')|
-        ind_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') }}</gloss>
+    <gloss aid:cstyle="Em">{{ m.gloss |
+        ind_cslav_injection("CSLSegment") |
+        ind_regex("Text", '‘[^’]+’') |
+        ind_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+        ind_regex("Text", '(?<=Син\.\sпер\.\s)Керенгаппух|бдолах|сирияне|сирийский|сириец|земля Уц') |
+        ind_regex("Text", '(?<=Септ\.\s)Авситидийская')
+        }}</gloss>
     {{ space }}
 {% endif %}
 
