@@ -1,12 +1,24 @@
 {% from 'indesign/collogroup.xml' import collogroup with context %}
 
 {% if m.collogroups_non_phraseological %}
-    {% if entry.is_part_of_speech('conjunction') %}
-        {% include 'indesign/separator.xml' %}
+    {% if entry.is_part_of_speech('conjunction') or entry.is_part_of_speech('letter') %}
+        {% if not m.examples %}
+            {% if m.meaning or m.gloss %}
+                {{ backspace }};{{ space }}
+            {% else %}
+                {{ backspace }}{{ space }}
+            {% endif %}
+        {% else %}
+            {% include 'indesign/separator.xml' %}
+        {% endif %}
     {% else %}
-        {{ backspace }}</p>{{ newline }}
-        <p aid:pstyle="CollogroupParagraph" aid:cstyle="Text">
-        <text aid:cstyle="Diamond">♢{# U+2662 #}</text>{{ nbsp }}
+        {% if m.examples %}
+            {{ backspace }}</p>{{ newline }}
+            <p aid:pstyle="CollogroupParagraph" aid:cstyle="Text">
+        {% else %}
+            {{ backspace }}{{ space }}
+        {% endif %}
+        <x aid:cstyle="Diamond">♢{# U+2662 #}</x>{{ nbsp }}
     {% endif %}
     {% for cg in m.collogroups_non_phraseological %}
         {{ collogroup(cg, loop) }}
@@ -14,8 +26,25 @@
 {% endif %}
 
 {% if m.collogroups_phraseological %}
-    {{ backspace }}</p>{{ newline }}<p aid:pstyle="CollogroupParagraph" aid:cstyle="Text">
-    <text aid:cstyle="Diamond">♦{# U+2666 #}</text>{{ nbsp }}
+    {% if entry.is_part_of_speech('conjunction') or entry.is_part_of_speech('letter') %}
+        {% if not m.examples %}
+            {% if m.meaning or m.gloss %}
+                {{ backspace }};{{ space }}
+            {% else %}
+                {{ backspace }}{{ space }}
+            {% endif %}
+        {% else %}
+            {% include 'indesign/separator.xml' %}
+        {% endif %}
+    {% else %}
+        {% if m.examples or m.collogroups_non_phraseological %}
+            {{ backspace }}</p>{{ newline }}
+            <p aid:pstyle="CollogroupParagraph" aid:cstyle="Text">
+        {% else %}
+            {{ backspace }}{{ space }}
+        {% endif %}
+        <x aid:cstyle="Diamond">♦{# U+2666 #}</x>{{ nbsp }}
+    {% endif %}
     {% for cg in m.collogroups_phraseological %}
         {{ collogroup(cg, loop) }}
     {% endfor %}
