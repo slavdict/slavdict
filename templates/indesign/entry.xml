@@ -295,7 +295,7 @@
             {% if not loop.first or entry.cfentries %}
                 {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
             {% endif %}
-            {{ cfcg.collocations.0.collocation_ucs|ind_cslav_words("CSLSegment") }}
+            {{ cfcg.collocations.0.collocation_ucs|ind_cslav_words("CSLSegment", "Text") }}
         {% endfor %}
         {{ backspace }}<text aid:cstyle="Text">.</text>
     {% endif %}

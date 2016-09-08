@@ -2,7 +2,7 @@
 {% from 'indesign/example.xml' import example with context %}
 
 {% if m.meaning %}
-    {{ m.host_entry.base_vars[0].idem_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    {{ m.host_entry.base_vars[0].idem_ucs|ind_cslav_words("CSLSegmentEm", "Text") }}{{ space }}
     {% for frame in m.meaning.split(";") %}
         {% if loop.first %}
             {# pass #}
