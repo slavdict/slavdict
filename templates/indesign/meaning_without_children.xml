@@ -1,17 +1,23 @@
 {% macro meaning(m, peer_meanings_loop, parent_meanings_loop, child_meanings) %}
 {% from 'indesign/example.xml' import example with context %}
 
+
+{% for orthvar_ucs in m.orthvars %}
+    {% if not loop.first %}
+        {% if loop.last %}
+            {{ backspace }}{{ space }}
+            <x aid:cstyle="Em">и</x>{{ space }}
+        {% else %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+    {% endif %}
+    {{ orthvar_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+{% endfor %}
+
+
 {% if m.special_case == 'a' %}{# канонич. #}
 
     <x aid:cstyle="Em">канонич.</x>{{ space }}
-
-{% elif m.special_case == 'b' %}{# предл. #}
-
-    <x aid:cstyle="Em">предл.</x>{{ space }}
-
-{% elif m.special_case == 'c' %}{# част. #}
-
-    <x aid:cstyle="Em">част.</x>{{ space }}
 
 {% elif m.special_case == 'd' %}{# дат. в роли притяж. мест. #}
 
@@ -24,14 +30,6 @@
     <x aid:cstyle="Em">твор. ед.</x>{{ space }}
     {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
-
-{% elif m.special_case == 'f' %}{# нареч. #}
-
-    <x aid:cstyle="Em">нареч.</x>{{ space }}
-
-{% elif m.special_case == 'g' %}{# межд. #}
-
-    <x aid:cstyle="Em">межд.</x>{{ space }}
 
 {% elif m.special_case == 'h' %}{# имя собств. #}
 

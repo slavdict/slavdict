@@ -40,15 +40,8 @@
 
             {{ var.idem_ucs|ind_cslav_words("CSLSegment") }}
 
-            {% if var.use %}
-                {{ backspace }}{{ space }}
-                <x aid:cstyle="OrthvarUse">{{ var.use }}</x>
-            {% endif %}
-
             {% if loop.last %}
                 {{ backspace }}<x aid:cstyle="Text">)</x>{{ space }}
-            {% elif var.use %}
-                {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
             {% else %}
                 {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
             {% endif %}
@@ -261,10 +254,9 @@
             {% endif %}
 
             {% set mgnumber = {1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V'}[loop.index] %}
-            {{ backspace }}{{ space }}
-            <meaning-number aid:cstyle="MeaningNumber">
+            <x aid:cstyle="MeaningNumber">
                 {{ mgnumber }}.
-            </meaning-number>{{ nbsp }}
+            </x>{{ nbsp }}
 
             {% if pos %}
                 <x aid:cstyle="Em">{{ pos }}</x>{{ space }}
@@ -279,21 +271,21 @@
                         {{ backspace }},{{ space }}
                     {% endif %}
                 {% endif %}
-                {{ orthvar_ucs|ind_cslav_words("CSLSegementEm") }}
+                {{ orthvar_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
             {% endfor %}
         {% endif %}
 
         {% for m in meanings %}
             {% set mnumber = loop.index %}
 
-            {% if not loop.first and not mgloop.first %}
+            {% if not loop.first %}
                 {{ backspace }}</p>{{ newline }}<p aid:pstyle="MeaningParagraph" aid:cstyle="Text">
             {% endif %}
 
             {% if loop.length > 1 %}
-            <meaning-number aid:cstyle="MeaningNumber">
+            <x aid:cstyle="MeaningNumber">
                 {{ mnumber }}.
-            </meaning-number>{{ nbsp }}
+            </x>{{ nbsp }}
             {% endif %}
 
             {% include 'indesign/meaning_with_children.xml' with context %}

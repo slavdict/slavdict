@@ -441,7 +441,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
 )
 POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7)
 POS_SPECIAL_CASES_MAP = {
-    MSC2: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['noun']],
+    MSC2: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['preposition']],
     MSC3: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['particle']],
     MSC6: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['adverb']],
     MSC7: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['interjection']],
@@ -764,19 +764,20 @@ class Entry(models.Model):
             several_pos = True
             ENTRY_POS = self.get_part_of_speech_display()
             orthvars = tuple()
-            ppos = meanings[0].special_case
+            pos = meanings[0].special_case
             mm = []
             for m in meanings:
-                if m.special_case != ppos:
-                    pos = POS_SPECIAL_CASES_MAP.get(ppos, ENTRY_POS)
-                    meaning_groups.append((orthvars, pos, mm))
+                if m.special_case != pos:
+                    pos_mark = POS_SPECIAL_CASES_MAP.get(pos, ENTRY_POS)
+                    meaning_groups.append((orthvars, pos_mark, mm))
+                    pos = m.special_case
                     mm = []
                 mm.append(m)
-            pos = POS_SPECIAL_CASES_MAP.get(ppos, ENTRY_POS)
-            meaning_groups.append((orthvars, ppos, mm))
+            pos_mark = POS_SPECIAL_CASES_MAP.get(pos, ENTRY_POS)
+            meaning_groups.append((orthvars, pos_mark, mm))
         else:
-            orthvars, pos = tuple(), None
-            meaning_groups = [(orthvars, pos, meanings)]
+            orthvars, pos_mark = tuple(), None
+            meaning_groups = [(orthvars, pos_mark, meanings)]
         return (several_pos, meaning_groups)
 
     special_case = CharField(u'Статья нуждается в специальной обработке',
