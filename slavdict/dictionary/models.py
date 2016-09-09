@@ -3,7 +3,7 @@ import datetime
 import json
 import re
 
-from collections import Counter
+from collections import Counter, defaultdict
 
 from django.db import models
 from django.db.models import BooleanField
@@ -425,19 +425,27 @@ ENTRY_SPECIAL_CASES_CHOICES = (
     (SC5, u'2 лексемы, только мн. и жен.'),
     (SC6, u'3 лексемы, 2 муж. и неизм.'),
 )
+MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
-    ('a', u'канонич.'),
-    ('b', u'предл.'),
-    ('c', u'част.'),
-    ('d', u'в роли притяж. мест.'),
-    ('e', u'твор. ед. в роли нареч.'),
-    ('f', u'нареч.'),
-    ('g', u'межд.'),
-    ('h', u'имя собств.'),
-    ('i', u'топоним'),
-    ('j', u'преимущ.'),
+    (MSC1,  u'канонич.'),
+    (MSC2,  u'предл.'),
+    (MSC3,  u'част.'),
+    (MSC4,  u'в роли притяж. мест.'),
+    (MSC5,  u'твор. ед. в роли нареч.'),
+    (MSC6,  u'нареч.'),
+    (MSC7,  u'межд.'),
+    (MSC8,  u'имя собств.'),
+    (MSC9,  u'топоним'),
+    (MSC10, u'преимущ.'),
 )
+POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7)
+POS_SPECIAL_CASES_MAP = {
+    MSC2: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['noun']],
+    MSC3: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['particle']],
+    MSC6: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['adverb']],
+    MSC7: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['interjection']],
+}
 
 class WithoutHiddenManager(models.Manager):
     def get_queryset(self):
@@ -718,6 +726,58 @@ class Entry(models.Model):
     metaph_meanings = property(metaph_meanings)
     all_meanings = property(all_meanings)
     has_meanings = property(has_meanings)
+
+    @property
+    def meaning_groups(self):
+        meaning_groups = []
+        meanings = list(self.meanings)
+        several_pos = False
+        if any(o.use for o in self.orth_vars):
+            d = defaultdict(list)
+            dd = defaultdict(list)
+            for o in self.orth_vars:
+                if o.use:
+                    for i in o.use.strip().split(','):
+                        i = int(i)
+                        d[i].append(o.idem_ucs)
+            for i in d:
+                dd[tuple(sorted(d[i]))].append(i)
+            groups = [(key, sorted(value)) for key, value in dd.items()]
+            if all(len(value) == 1 for key, value in groups):
+                for orthvars_list, meaning_numbers in groups:
+                    m = meanings[meaning_numbers[0] - 1]
+                    m.orthvars = orthvars_list
+                orthvars, part_of_speech = None, None
+                group = (orthvars, part_of_speech, meanings)
+                meaning_groups.append(group)
+            else:
+                for orthvars_list, meaning_numbers in groups:
+                    part_of_speech = None
+                    filtered_meanings = [m for i, m in enumerate(meanings)
+                                           if i + 1 in meaning_numbers]
+                    group = (orthvars_list, part_of_speech, filtered_meanings)
+                    meaning_groups.append(group)
+                meaning_groups.sort(key=lambda x: x[2][0])
+
+        elif any(m.special_case and m.special_case in POS_SPECIAL_CASES
+                 for m in meanings):
+            several_pos = True
+            ENTRY_POS = self.get_part_of_speech_display()
+            orthvars = None
+            ppos = meanings[0].special_case
+            mm = []
+            for m in meanings:
+                if m.special_case != ppos:
+                    pos = POS_SPECIAL_CASES_MAP.get(ppos, ENTRY_POS)
+                    meaning_groups.append((orthvars, pos, mm))
+                    mm = []
+                mm.append(m)
+            pos = POS_SPECIAL_CASES_MAP.get(ppos, ENTRY_POS)
+            meaning_groups.append((orthvars, ppos, mm))
+        else:
+            orthvars, pos = None, None
+            meaning_groups = [(orthvars, pos, meanings)]
+        return (several_pos, meaning_groups)
 
     special_case = CharField(u'Статья нуждается в специальной обработке',
                              max_length=1, choices=ENTRY_SPECIAL_CASES_CHOICES,

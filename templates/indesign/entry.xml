@@ -5,6 +5,7 @@
     <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
 
     {% set sc_several_nouns = entry.special_cases("several nouns") %}
+    {% set serveral_pos, meaning_groups = entry.meaning_groups %}
     {% for base_var in entry.base_vars %}
         {% if loop.first %}
             {# pass #}
@@ -162,7 +163,7 @@
         </x>
         {{ space }}
     {% else %}
-        {% if entry.part_of_speech %}
+        {% if entry.part_of_speech and not serveral_pos %}
             {% if not entry.is_part_of_speech("letter") and
                   not entry.is_part_of_speech("number") and
                   not entry.is_part_of_speech("verb") and
@@ -252,21 +253,52 @@
     {% endif %}
 
 
-    {% for m in entry.meanings %}
-        {% set mnumber = loop.index %}
+    {% for orthvars, pos, meanings in meaning_groups %}
+        {% set mgloop = loop %}
+        {% if loop.length > 1 %}
+            {% if not loop.first %}
+                {{ backspace }}</p>{{ newline }}<p aid:pstyle="MeaningParagraph" aid:cstyle="Text">
+            {% endif %}
 
-        {% if not loop.first %}
-            {{ backspace }}</p>{{ newline }}<p aid:pstyle="MeaningParagraph" aid:cstyle="Text">
+            {% set mgnumber = {1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V'}[loop.index] %}
+            {{ backspace }}{{ space }}
+            <meaning-number aid:cstyle="MeaningNumber">
+                {{ mgnumber }}.
+            </meaning-number>{{ nbsp }}
+
+            {% if pos %}
+                <x aid:cstyle="Em">{{ pos }}</x>{{ space }}
+            {% endif %}
+
+            {% for orthvar_ucs in orthvars %}
+                {% if not loop.first %}
+                    {% if loop.last %}
+                        {{ backspace }}{{ space }}
+                        <x aid:cstyle="Em">и</x>{{ space }}
+                    {% else %}
+                        {{ backspace }},{{ space }}
+                    {% endif %}
+                {% endif %}
+                {{ orthvar_ucs|ind_cslav_words("CSLSegementEm") }}
+            {% endfor %}
         {% endif %}
 
-        {% if entry.meanings|length > 1 %}
-        <meaning-number aid:cstyle="MeaningNumber">
-            {{ mnumber }}.
-        </meaning-number>{{ nbsp }}
-        {% endif %}
+        {% for m in meanings %}
+            {% set mnumber = loop.index %}
 
-        {% include 'indesign/meaning_with_children.xml' with context %}
-        {% include 'indesign/meaning_collogroups.xml' with context %}
+            {% if not loop.first and not mgloop.first %}
+                {{ backspace }}</p>{{ newline }}<p aid:pstyle="MeaningParagraph" aid:cstyle="Text">
+            {% endif %}
+
+            {% if loop.length > 1 %}
+            <meaning-number aid:cstyle="MeaningNumber">
+                {{ mnumber }}.
+            </meaning-number>{{ nbsp }}
+            {% endif %}
+
+            {% include 'indesign/meaning_with_children.xml' with context %}
+            {% include 'indesign/meaning_collogroups.xml' with context %}
+        {% endfor %}
     {% endfor %}
 
 
