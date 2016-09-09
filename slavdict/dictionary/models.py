@@ -747,7 +747,7 @@ class Entry(models.Model):
                 for orthvars_list, meaning_numbers in groups:
                     m = meanings[meaning_numbers[0] - 1]
                     m.orthvars = orthvars_list
-                orthvars, part_of_speech = None, None
+                orthvars, part_of_speech = tuple(), None
                 group = (orthvars, part_of_speech, meanings)
                 meaning_groups.append(group)
             else:
@@ -763,7 +763,7 @@ class Entry(models.Model):
                  for m in meanings):
             several_pos = True
             ENTRY_POS = self.get_part_of_speech_display()
-            orthvars = None
+            orthvars = tuple()
             ppos = meanings[0].special_case
             mm = []
             for m in meanings:
@@ -775,7 +775,7 @@ class Entry(models.Model):
             pos = POS_SPECIAL_CASES_MAP.get(ppos, ENTRY_POS)
             meaning_groups.append((orthvars, ppos, mm))
         else:
-            orthvars, pos = None, None
+            orthvars, pos = tuple(), None
             meaning_groups = [(orthvars, pos, meanings)]
         return (several_pos, meaning_groups)
 
