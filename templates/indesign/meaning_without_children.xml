@@ -1,39 +1,6 @@
 {% macro meaning(m, peer_meanings_loop, parent_meanings_loop, child_meanings) %}
 {% from 'indesign/example.xml' import example with context %}
 
-{% if m.contexts %}
-    <meaning-context>
-    {% for mc in m.contexts %}
-
-        {% if loop.first %}
-                <x aid:cstyle="Text">[</x>
-        {% endif %}
-
-        {% if mc.left_text %}
-            <x aid:cstyle="Em">{{ mc.left_text }}</x>
-            {{ space }}
-        {% endif %}
-
-        {% if mc.context %}
-            {{ mc.context_ucs|ind_cslav_words("CSLSegment") }}
-            {{ space }}
-        {% endif %}
-
-        {% if mc.right_text %}
-            <x aid:cstyle="Em">{{ mc.right_text }}</x>
-        {% endif %}
-
-        {% if loop.last %}
-            {{ backspace }}<x aid:cstyle="Text">]</x>
-        {% else %}
-            {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
-        {% endif %}
-
-    {% endfor %}
-    </meaning-context>{{ space }}
-{% endif %}
-
-
 {% if m.special_case == 'a' %}{# канонич. #}
 
     <x aid:cstyle="Em">канонич.</x>{{ space }}
