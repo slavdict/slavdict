@@ -1191,7 +1191,7 @@ class Meaning(models.Model):
     substantivus_type = CharField(u'форма субстантива', max_length=1,
                                   choices=SUBSTANTIVUS_TYPE_CHOICES,
                                   blank=True, default='')
-    substantivus_csl = CharField(u'цсл форма', max_length=40,
+    substantivus_csl = CharField(u'цсл форма', max_length=60,
                                  blank=True, default='')
     @property
     def substantivus_csl_ucs(self):

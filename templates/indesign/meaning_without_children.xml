@@ -70,7 +70,9 @@
 {% elif m.substantivus_csl %}
 
     {{ backspace }}{{ space }}
-    <x>{{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
+    <x>{{ m.substantivus_csl_ucs|
+            ind_civil_injection("Valency", "CSLSegmentEm", "Text") }}</x>
+    {{ space }}
 
 {% endif %}
 
