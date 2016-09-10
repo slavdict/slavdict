@@ -85,8 +85,9 @@ PRE = 0       # - ставить перенос только перед титл
 POST = 1      # - только после, если есть согласные
 PRE_POST = 2  # - и до, и после
 titles = (
-    (u'пСтл',   POST),
-    (u'пСл',    POST),
+    (u'спС',    PRE),
+    (u'пСтл',   POST), # апостол
+    (u'пСл',    POST), # апостол
     #(u'пСт',    []),  # апос[тол]
     (u'бг~',    PRE),
     (u'бж~тв',  PRE),
@@ -123,7 +124,6 @@ titles = (
     (u'дх~',    PRE),
     (u'дш~',    PRE),
     #(u'и~с',    PRE),
-    (u'~л',     POST),  # израил
     (u'кр~с',   PRE_POST),
     (u'кр~ш',   PRE_POST),
     (u'крСт',   PRE_POST),
@@ -162,7 +162,6 @@ titles = (
     (u'сл~нч',  PRE_POST),
     (u'сн~',    PRE),
     (u'сп~с',   PRE_POST),
-    (u'спС',    PRE),
     (u'срДц',   PRE),
     (u'срДч',   PRE_POST),
     (u'ст~л',   PRE_POST),
@@ -184,6 +183,8 @@ titles = (
     (u'чСт',    PRE),
     (u'чтС',    PRE),
     (u'чт~л',   POST),
+
+    (u'~л',     POST),  # израил
 )
 
 def filter_positions(intervocal, r, a, b):
@@ -210,7 +211,7 @@ def hyphenate_civil(word):
         iy = iy.start()
         intervocal = word[ix+1:iy]
         if not intervocal:
-            r = []
+            r = [0]
         elif re.findall(ur'[~А-Я]', intervocal):
             r = []
             for title, pos_type in titles:
@@ -227,6 +228,7 @@ def hyphenate_civil(word):
                             pass
                         else:
                             r = filter_positions(cons, r, a, b)
+                    break
             else:
                 r = []
         else:
