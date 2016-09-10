@@ -1,6 +1,12 @@
 {% macro valency(m, peer_meanings_loop, parent_meanings_loop, child_meanings) %}
 {% from 'indesign/example.xml' import example with context %}
 
+{% if m.substantivus_csl %}
+    {{ m.substantivus_csl_ucs|
+         ind_civil_injection("Valency", "CSLSegmentEm", "Text") }}
+    {{ space }}
+{% endif %}
+
 {% if m.meaning %}
     {{ m.host_entry.base_vars[0].idem_ucs|ind_cslav_words("CSLSegmentEm", "Text") }}{{ space }}
     {% for frame in m.meaning.split(";") %}

@@ -2,7 +2,7 @@
 
 {% if m.collogroups_non_phraseological %}
     {% if entry.is_part_of_speech('conjunction') or entry.is_part_of_speech('letter') %}
-        {% if not m.examples %}
+        {% if not m.examples and not m.child_meanings %}
             {% if m.meaning or m.gloss %}
                 {{ backspace }};{{ space }}
             {% else %}
@@ -12,7 +12,7 @@
             {% include 'indesign/separator.xml' %}
         {% endif %}
     {% else %}
-        {% if m.examples %}
+        {% if m.examples or m.child_meanings %}
             {{ backspace }}</p>{{ newline }}
             <p aid:pstyle="CollogroupParagraph" aid:cstyle="Text">
         {% else %}
@@ -27,7 +27,7 @@
 
 {% if m.collogroups_phraseological %}
     {% if entry.is_part_of_speech('conjunction') or entry.is_part_of_speech('letter') %}
-        {% if not m.examples %}
+        {% if not m.examples and not m.child_meanings %}
             {% if m.meaning or m.gloss %}
                 {{ backspace }};{{ space }}
             {% else %}
@@ -37,7 +37,7 @@
             {% include 'indesign/separator.xml' %}
         {% endif %}
     {% else %}
-        {% if m.examples or m.collogroups_non_phraseological %}
+        {% if m.examples or m.child_meanings or m.collogroups_non_phraseological %}
             {{ backspace }}</p>{{ newline }}
             <p aid:pstyle="CollogroupParagraph" aid:cstyle="Text">
         {% else %}
