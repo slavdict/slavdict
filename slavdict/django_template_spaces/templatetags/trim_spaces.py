@@ -235,7 +235,7 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
                 parts.append(CSL_TAG % html_escape(hyphenate_ucs8(left)))
 
             center = re.sub(RE_BRACES, TEXT_TAG % u'\g<0>', center)
-            center = re.sub(u'%(?!%s)' % (SLASH, ZWS), TEXT_TAG % (SLASH + ZWS), center)
+            center = re.sub(u'%s(?!%s)' % (SLASH, ZWS), TEXT_TAG % (SLASH + ZWS), center)
             # NOTE: Замена точек должна происходить после замены скобок
             # и слэшей, поскольку сам TEXT_TAG содержит слэш.
             center = re.sub(RE_DOTS, TEXT_TAG % u'…', center)
