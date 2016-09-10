@@ -10,9 +10,7 @@
     {% if not loop.first %}
         {{ backspace }}{{ space }}
     {% endif %}
-    {{ c.collocation_ucs|
-            ind_civil_injection("Valency", "CSLSegmentEm", "Text")|
-            replace('/', '/\u200B') }}
+    {{ c.collocation_ucs|ind_civil_injection("Valency", "CSLSegmentEm", "Text") }}
     {% if not loop.last %}
         {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
     {% endif %}
