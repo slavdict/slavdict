@@ -817,6 +817,8 @@ class Entry(models.Model):
                 value = [(word, ucs_convert(word), grammatical_marks[i])
                          for i, word in enumerate(words)]
                 return value
+        elif case == 'be' and self.civil_equivalent == u'быти':
+            return [ucs_convert(x) for x in (u"нѣ'смь", "нѣ'си")]
 
     @property
     def first_volume(self):
