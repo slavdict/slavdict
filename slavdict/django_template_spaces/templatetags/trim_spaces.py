@@ -104,6 +104,12 @@ from slavdict.dictionary.models import ucs_convert, html_escape
 from .hyphenation import hyphenate_ucs8
 
 register = template.Library()
+
+SLASH = u'/'
+ZWS = u'\u200B'
+
+# Специальные двойники нормальных символов, используемые для
+# контроля за пробельным пространством
 BACKSPACE = u'\u0008'
 EXCLAM = u'\u1991'
 NBSP = u'\uEEA0'
@@ -112,8 +118,6 @@ ONLYDOT = u'\u1902'
 PUNCT = u'\u1900'
 SPACE = u'\u0007'
 SPACES = SPACE + NBSP + NEWLINE
-SLASH = u'/'
-ZWS = u'\u200B'
 
 def strip_spaces_between_tags_and_text(value):
     value = re.sub(ur'>\s+', u'>', force_unicode(value.strip()))
@@ -320,7 +324,9 @@ def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE, civil2_csty
             for j, part in enumerate(parts):
                 if not j % 2:
                     part = indesign_cslav_words(part, cslav_cstyle, civil2_cstyle)
-                    parts[j] = part
+                else:
+                    part = part.replace(u' ', SPACE)
+                parts[j] = part
             elem = u''.join(parts)
         lst[i] = elem
     return u''.join(lst)
