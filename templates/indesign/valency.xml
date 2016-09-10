@@ -14,8 +14,7 @@
         <x aid:cstyle="Text">{{ frame|trim|
             ind_cslav_injection("CSLSegmentEm")|
             ind_regex("Valency", '[а-я]+[\\-\u2011]л\\.')|
-            ind_regex("Em", 'с\\s(?:придат|инф)\\.')|
-            ind_regex("Text", '/') }}</x>
+            ind_regex("Em", 'с\\s(?:придат|инф)\\.') }}</x>
         {{ space }}
     {% endfor %}
 {% endif %}
