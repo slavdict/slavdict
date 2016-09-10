@@ -74,6 +74,12 @@ for lexeme in lexemes:
     #    reference = participle.idem_ucs
     #    entries.append((wordform, reference, lexeme))
 
+    # Особые случаи
+    if lexeme.civil_equivalent == u'быти':
+        wordform = u"бꙋ'дꙋчи"
+        reference = ucs_convert(wordform)
+        entries.append((wordform, reference, lexeme))
+
 other_volumes = [e for e in Entry.objects.all() if not e.first_volume]
 for lexeme in other_volumes:
     for participle in lexeme.participles:
