@@ -100,7 +100,7 @@ from jinja2 import nodes
 from jinja2.ext import Extension
 from coffin import template
 
-from slavdict.dictionary.models import ucs_convert, html_escape, html_unescape
+from slavdict.dictionary.models import ucs_convert, html_escape
 from .hyphenation import hyphenate_ucs8
 
 register = template.Library()
@@ -112,6 +112,8 @@ ONLYDOT = u'\u1902'
 PUNCT = u'\u1900'
 SPACE = u'\u0007'
 SPACES = SPACE + NBSP + NEWLINE
+SLASH = u'/'
+ZWS = u'\u200B'
 
 def strip_spaces_between_tags_and_text(value):
     value = re.sub(ur'>\s+', u'>', force_unicode(value.strip()))
@@ -204,8 +206,8 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
     # многоточие
     RE_DOTS = ur'\.\.\.'
     # круглые, квадратные скобки и косая черта
-    RE_BRACES_SLASH = ur'[\(\)\[\]/]'
-    RE = re.compile(u'(%s|%s)' % (RE_DOTS, RE_BRACES_SLASH))
+    RE_BRACES = ur'[\(\)\[\]]'
+    RE = re.compile(u'(%s|%s|%s)' % (RE_DOTS, RE_BRACES, SLASH))
 
     RE_SEGMENT = ur'([\s\u00a0]+)'
     segments = []
@@ -232,7 +234,8 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
             if left:
                 parts.append(CSL_TAG % html_escape(hyphenate_ucs8(left)))
 
-            center = re.sub(RE_BRACES_SLASH, TEXT_TAG % u'\g<0>', center)
+            center = re.sub(RE_BRACES, TEXT_TAG % u'\g<0>', center)
+            center = re.sub(u'%(?!%s)' % (SLASH, ZWS), TEXT_TAG % (SLASH + ZWS), center)
             # NOTE: Замена точек должна происходить после замены скобок
             # и слэшей, поскольку сам TEXT_TAG содержит слэш.
             center = re.sub(RE_DOTS, TEXT_TAG % u'…', center)
