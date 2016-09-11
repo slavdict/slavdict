@@ -149,15 +149,6 @@
     {% endif %}
 
 
-    {% if entry.possessive %}
-        {{ backspace }}{{ space }}
-        <x aid:cstyle="Em">
-            притяж.
-        </x>
-        {{ space }}
-    {% endif %}
-
-
     {% if entry.participle_type %}
         {{ backspace }}{{ space }}
         <x aid:cstyle="Em">
@@ -169,7 +160,7 @@
             {% if not entry.is_part_of_speech("letter") and
                   not entry.is_part_of_speech("number") and
                   not entry.is_part_of_speech("verb") and
-                  not entry.is_part_of_speech("noun") %}
+                  not entry.is_part_of_speech("noun") and not entry.gender %}
                 {{ backspace }}{{ space }}
                 <x aid:cstyle="Em">
                     {{ entry.get_part_of_speech_display() }}
@@ -194,6 +185,16 @@
             {{ space }}
         {% endif %}
     {% endif %}
+
+
+    {% if entry.possessive %}
+        {{ backspace }}{{ space }}
+        <x aid:cstyle="Em">
+            притяж.
+        </x>
+        {{ space }}
+    {% endif %}
+
 
     {% if entry.uninflected and not sc_several_nouns %}
         {{ backspace }}{{ space }}
