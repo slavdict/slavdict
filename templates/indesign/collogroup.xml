@@ -1,4 +1,4 @@
-{% macro collogroup(cg, cg_loop) %}
+{% macro collogroup(cg, collogroups_loop) %}
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
 
@@ -27,7 +27,7 @@
             ({{ cgmnumber }})
         </x>{{ nbsp }}
     {% endif %}
-    {% include 'indesign/meaning_with_children.xml' %}
+    {% include 'indesign/meaning_with_children.xml' with context %}
 {% endfor %}
 
 
@@ -36,6 +36,7 @@
     {% include 'indesign/allusion.xml' %}
     {{ meaning(m, peer_meanings_loop=loop,
                   parent_meanings_loop=none,
+                  collogroups_loop=collogroups_loop,
                   child_meanings=[]) }}
 {% endfor %}
 

@@ -1,5 +1,5 @@
 {% macro example(e, examples_loop, peer_meanings_loop, parent_meanings_loop,
-                    child_meanings) %}
+                    collogroups_loop, child_meanings) %}
 
 {{ e.example_ucs|ind_cslav_words("CSLSegment", "Text") }}
 {{ space }}
@@ -44,10 +44,12 @@
         {{ e.address_text|ind_cslav_injection("CSLSegment") }}
     </x>
     <x aid:cstyle="Address">
-        {% if not examples_loop.last %}
+        {% if not examples_loop.last or
+                collogroups_loop and not peer_meanings_loop.last %}
             {{ backspace }};
         {% elif child_meanings|length == 0 and
-                (peer_meanings_loop.last or not parent_meanings_loop) %}
+                (peer_meanings_loop.last or (
+                    not parent_meanings_loop and not collogroups_loop)) %}
             {{ backspace }}{{ onlyDot }}
         {% endif %}
     </x>

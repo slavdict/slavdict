@@ -5,6 +5,7 @@
 
 {{ meaning(m, peer_meanings_loop=loop,
               parent_meanings_loop=none,
+              collogroups_loop=collogroups_loop,
               child_meanings=child_meanings) }}
 
 {% for m in child_meanings %}
@@ -22,10 +23,12 @@
     {% if m.is_valency %}
         {{ valency(m, peer_meanings_loop=loop,
                       parent_meanings_loop=parent_meanings_loop,
+                      collogroups_loop=collogroups_loop,
                       child_meanings=[]) }}
     {% else %}
         {{ meaning(m, peer_meanings_loop=loop,
                       parent_meanings_loop=parent_meanings_loop,
+                      collogroups_loop=collogroups_loop,
                       child_meanings=[]) }}
     {% endif %}
 {% endfor %}

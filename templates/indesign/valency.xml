@@ -1,4 +1,5 @@
-{% macro valency(m, peer_meanings_loop, parent_meanings_loop, child_meanings) %}
+{% macro valency(m, peer_meanings_loop, parent_meanings_loop,
+                    collogroups_loop, child_meanings) %}
 {% from 'indesign/example.xml' import example with context %}
 
 {% if m.substantivus_csl %}
@@ -37,6 +38,7 @@
     {{ example(e, examples_loop=loop,
                peer_meanings_loop=peer_meanings_loop,
                parent_meanings_loop=parent_meanings_loop,
+               collogroups_loop=collogroups_loop,
                child_meanings=child_meanings) }}
 {% endfor %}
 
