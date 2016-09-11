@@ -133,6 +133,12 @@ for key, group in itertools.groupby(entries, lambda x: x[:2]):
                     }
             entries2.append((wordform, reference, lexeme))
 
+class Reference(unicode):
+    def __new__(cls, string, homonym_order=None):
+        instance = unicode.__new__(cls, string)
+        instance.homonym_order = homonym_order
+        return instance
+
 final_entries = []
 for wordform, group in itertools.groupby(entries2, lambda x: x[0]):
     lst = list(group)
@@ -142,7 +148,7 @@ for wordform, group in itertools.groupby(entries2, lambda x: x[0]):
     else:
         for i, (wordform, reference, lexeme) in enumerate(lst):
             if reference:
-                reference['homonym_order'] = i + 1
+                reference = Reference(reference, homonym_order=i+1)
             else:
                 lexeme.homonym_order = i + 1
             final_entries.append((reference, lexeme))
