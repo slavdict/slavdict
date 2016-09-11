@@ -141,13 +141,13 @@ class Reference(unicode):
 
 letter_parts = []
 part_entries = []
-letter = entries2[0][0][0].upper()
+letter = entries2[0][0][0].lstrip(u'=').upper()
 for wordform, group in itertools.groupby(entries2, lambda x: x[0]):
     lst = list(group)
     if wordform[0].upper() != letter:
         letter_parts.append((letter, part_entries))
         part_entries = []
-        letter = wordform[0].upper()
+        letter = wordform[0].lstrip(u'=').upper()
     if len(lst) < 2:
         wordform, reference, lexeme = lst[0]
         part_entries.append((reference, lexeme))
