@@ -90,11 +90,15 @@ for lexeme in other_volumes:
                 entries.append((wordform, reference, lexeme))
 
 def sort_key(x):
-    wordform, _, lexeme = x
-    return sort_key1(wordform), lexeme.homonym_order or 0, sort_key2(wordform)
+    wordform, reference, lexeme = x
+    if reference:
+        key = sort_key1(wordform), -1, sort_key2(wordform)
+    else:
+        key = sort_key1(wordform), lexeme.homonym_order or 0, sort_key2(wordform)
+    return key
 
 entries = sorted(set(entries), key=sort_key)
-final_entries = []
+entries2 = []
 for key, group in itertools.groupby(entries, lambda x: x[:2]):
     wordform, reference = key
     if not in_first_volume(wordform):
@@ -102,11 +106,11 @@ for key, group in itertools.groupby(entries, lambda x: x[:2]):
     lst = list(group)
     if len(lst) < 2:
         wordform, reference, lexeme = lst[0]
-        final_entries.append((reference, lexeme))
+        entries2.append((wordform, reference, lexeme))
     else:
         if reference is None:  # Статьи не ссылочные
             for wordform, reference, lexeme in lst:
-                final_entries.append((reference, lexeme))
+                entries2.append((wordform, reference, lexeme))
         else:  # Статьи ссылочные
             lst = [x[2] for x in lst]
             if all(x.homonym_order for x in lst):
@@ -127,6 +131,20 @@ for key, group in itertools.groupby(entries, lambda x: x[:2]):
                          'homonym_order': x.homonym_order or None}
                         for x in lst],
                     }
+            entries2.append((wordform, reference, lexeme))
+
+final_entries = []
+for wordform, group in itertools.groupby(entries2, lambda x: x[0]):
+    lst = list(group)
+    if len(lst) < 2:
+        wordform, reference, lexeme = lst[0]
+        final_entries.append((reference, lexeme))
+    else:
+        for i, (wordform, reference, lexeme) in enumerate(lst):
+            if reference:
+                reference['homonym_order'] = i + 1
+            else:
+                lexeme.homonym_order = i + 1
             final_entries.append((reference, lexeme))
 
 xml = render_to_string('indesign/slavdict.xml', {'entries': final_entries})
