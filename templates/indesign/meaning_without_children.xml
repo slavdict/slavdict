@@ -19,11 +19,10 @@
 
     <x aid:cstyle="Em">канонич.</x>{{ space }}
 
-{% elif m.special_case == 'd' %}{# дат. в роли притяж. мест. #}
+{% elif m.special_case == 'd' %}{# дат. #}
 
     <x aid:cstyle="Em">дат.</x>{{ space }}
     {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
-    <x aid:cstyle="Em">в{{ nbsp }}роли притяж. мест.</x>{{ space }}
 
 {% elif m.special_case == 'e' %}{# твор. ед. в роли нареч. #}
 
