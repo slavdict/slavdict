@@ -131,8 +131,8 @@
 
         {% set be_negative_forms = entry.special_cases('be') %}
         {% if be_negative_forms %}
-            {{ backspace }}
-            <x aid:cstyle="Text">; при отрицании</x>
+            {{ backspace }};{{ space }}
+            <x aid:cstyle="Em">при отрицании</x>
             {{ space }}
             {% for neg_form_ucs in be_negative_forms %}
                 {% if not loop.first %}
