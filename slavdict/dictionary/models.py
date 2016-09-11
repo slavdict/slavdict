@@ -426,6 +426,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
     (SC6, u'3 лексемы, 2 муж. и неизм.'),
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
+MSC11 = 'k'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (MSC1,  u'канонич.'),
@@ -438,6 +439,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
     (MSC8,  u'имя собств.'),
     (MSC9,  u'топоним'),
     (MSC10, u'преимущ.'),
+    (MSC11, u'мн.'),
 )
 POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7)
 POS_SPECIAL_CASES_MAP = {

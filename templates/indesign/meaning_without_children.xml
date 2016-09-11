@@ -39,6 +39,11 @@
 
     <x aid:cstyle="Em">топоним</x>{{ space }}
 
+{% elif m.special_case == 'k' %}{# мн. #}
+
+    <x aid:cstyle="Em">мн.</x>{{ space }}
+    {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+
 {% elif m.substantivus %}
 
     {% for form_ucs in m.substantivus_forms %}
