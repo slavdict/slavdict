@@ -139,20 +139,27 @@ class Reference(unicode):
         instance.homonym_order = homonym_order
         return instance
 
-final_entries = []
+letter_parts = []
+part_entries = []
+letter = entries2[0][0][0].upper()
 for wordform, group in itertools.groupby(entries2, lambda x: x[0]):
     lst = list(group)
+    if wordform[0].upper() != letter:
+        letter_parts.append((letter, part_entries))
+        part_entries = []
+        letter = wordform[0].upper()
     if len(lst) < 2:
         wordform, reference, lexeme = lst[0]
-        final_entries.append((reference, lexeme))
+        part_entries.append((reference, lexeme))
     else:
         for i, (wordform, reference, lexeme) in enumerate(lst):
             if reference:
                 reference = Reference(reference, homonym_order=i+1)
             else:
                 lexeme.homonym_order = i + 1
-            final_entries.append((reference, lexeme))
+            part_entries.append((reference, lexeme))
+letter_parts.append((letter, part_entries))
 
-xml = render_to_string('indesign/slavdict.xml', {'entries': final_entries})
+xml = render_to_string('indesign/slavdict.xml', {'letter_parts': letter_parts})
 sys.stdout.write(xml.encode('utf-8'))
 sys.exit(0)
