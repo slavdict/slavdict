@@ -6,7 +6,7 @@
         </headword>{{ space }}
         {% if reference.homonym_order %}
             {{ backspace }}
-            <x aid:cstyle="HomonymNumber">
+            <x aid:cstyle="HeadwordHomonymNumber">
                 {{ reference.homonym_order }}
             </x>{{ space }}
         {% endif %}
