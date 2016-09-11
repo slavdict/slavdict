@@ -143,14 +143,6 @@
             {% endfor %}
         {% endif %}
 
-        {% if entry.uninflected %}
-            {{ backspace }}{{ space }}
-            <x aid:cstyle="Em">
-                неизм. сущ.
-            </x>
-            {{ space }}
-        {% endif %}
-
     {% endif %}
 
 
@@ -198,6 +190,14 @@
             </x>
             {{ space }}
         {% endif %}
+    {% endif %}
+
+    {% if entry.uninflected and not sc_several_nouns %}
+        {{ backspace }}{{ space }}
+        <x aid:cstyle="Em">
+            неизм.
+        </x>
+        {{ space }}
     {% endif %}
 
 

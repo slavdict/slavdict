@@ -423,7 +423,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
     (SC3, u'2 лексемы, ср. и жен. рода'),
     (SC4, u'2 лексемы, жен. и только мн.'),
     (SC5, u'2 лексемы, только мн. и жен.'),
-    (SC6, u'3 лексемы, 2 муж. и неизм.'),
+    (SC6, u'3 лексемы, 3 муж. и последний неизм.'),
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
 MSC11 = 'k'
@@ -813,7 +813,10 @@ class Entry(models.Model):
                 elif SC5 == sc:
                     grammatical_marks = [PL_TANTUM, F_GENDER]
                 elif SC6 == sc:
-                    grammatical_marks = [HIDDEN_GRAM, M_GENDER, UNINFL]
+                    grammatical_marks = [
+                        HIDDEN_GRAM,
+                        M_GENDER,
+                        u'%s %s' % (M_GENDER, UNINFL)]
                     words += ['']
 
                 value = [(word, ucs_convert(word), grammatical_marks[i])
