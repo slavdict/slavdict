@@ -187,6 +187,16 @@
     {% endif %}
 
 
+    {% set bigger_form_ucs = entry.special_cases('bigger') %}
+    {% if bigger_form %}
+        {{ backspace }}{{ space }}
+        <x aid:cstyle="Em">сравн. степ. от</x>
+        {{ space }}
+        {{ bigger_form_ucs|ind_cslav_words("CSLSegment") }}
+        {{ space }}
+    {% endif %}
+
+
     {% if entry.possessive %}
         {{ backspace }}{{ space }}
         <x aid:cstyle="Em">

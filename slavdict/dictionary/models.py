@@ -824,6 +824,8 @@ class Entry(models.Model):
                 return value
         elif case == 'be' and self.civil_equivalent == u'быти':
             return [ucs_convert(x) for x in (u"нѣ'смь", u"нѣ'си")]
+        elif case == 'bigger' and self.civil_equivalent == u'больший':
+            return ucs_convert(u"вели'кій")
 
     @property
     def first_volume(self):
