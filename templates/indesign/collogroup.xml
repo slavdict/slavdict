@@ -22,14 +22,9 @@
 {% for m in cg.meanings %}
     {{ backspace }}{{ space }}
     {% if loop.length != 1 %}
-        {% if loop.first %}
-            {{ backspace }}{{ nbsp }}
-            <x aid:cstyle="DiamondSmall">⋄</x>{# U+22C4 Diamond Operator #}
-            {{ space }}
-        {% endif %}
         {% set cgmnumber = {1:'а', 2:'б', 3:'в', 4:'г', 5:'д'}[loop.index] %}
         <x aid:cstyle="CgMeaningNumber">
-            {{ cgmnumber }}.
+            ({{ cgmnumber }})
         </x>{{ nbsp }}
     {% endif %}
     {% include 'indesign/meaning_with_children.xml' %}
