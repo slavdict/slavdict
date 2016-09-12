@@ -316,7 +316,9 @@
             </x>{{ nbsp }}
             {% endif %}
 
+            {% set is_collogroups = false %}
             {% include 'indesign/meaning_with_children.xml' with context %}
+            {% set is_collogroups = true %}
             {% include 'indesign/meaning_collogroups.xml' with context %}
         {% endfor %}
     {% endfor %}

@@ -47,9 +47,14 @@
         {% if not examples_loop.last or
                 collogroups_loop and not peer_meanings_loop.last %}
             {{ backspace }};
-        {% elif child_meanings|length == 0 and
-                (peer_meanings_loop.last or (
-                    not parent_meanings_loop and not collogroups_loop)) %}
+        {% elif examples_loop.last and child_meanings|length == 0 and
+                (not peer_meanings_loop.last and not parent_meanings_loop and
+                 not collogroups_loop or
+                    (peer_meanings_loop.last and
+                        (parent_meanings_loop or
+                            (not parent_meanings_loop and
+                                (not collogroups_loop or
+                                     collogroups_loop and collogroups_loop.last))))) %}
             {{ backspace }}{{ onlyDot }}
         {% endif %}
     </x>

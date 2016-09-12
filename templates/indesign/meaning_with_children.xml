@@ -3,6 +3,10 @@
 {% set child_meanings = m.child_meanings %}
 {% set parent_meanings_loop = loop %}
 
+{% if not is_collogroups %}
+    {% set collogroups_loop = none %}
+{% endif %}
+
 {{ meaning(m, peer_meanings_loop=loop,
               parent_meanings_loop=none,
               collogroups_loop=collogroups_loop,
