@@ -12,7 +12,7 @@
     {% endif %}
     {{ c.collocation_ucs|
             ind_civil_injection("Valency", "CSLSegmentEm", "Text")|
-            ind_regex("Text", '(?<!<)/\u200B?')
+            good_slash("Text")
             }}
     {% if not loop.last %}
         {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}

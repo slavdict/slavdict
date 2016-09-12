@@ -48,7 +48,7 @@
 
     {% for form_ucs in m.substantivus_forms %}
         {% if not loop.first %}
-            {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
+            {{ backspace }},{{ space }}
         {% endif %}
 
         {% if (loop.last or loop.index == 3) and
@@ -83,19 +83,20 @@
 
 {% if m.figurative %}
     {{ backspace }}{{ space }}
-    <i aid:cstyle="Em">перен.</i>{{ space }}
+    <x aid:cstyle="Em">перен.</x>{{ space }}
 {% endif %}
 
 {% if m.meaning %}
     <meaning aid:cstyle="Text">{{ m.meaning|
         ind_cslav_injection("CSLSegment")|
         ind_regex("Em", '(?<![А-Яа-я])(?:перен|букв|зд|см|ср)\\.')|
-        ind_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') }}</meaning>
+        ind_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+')|
+        good_slash("Text") }}</meaning>
 {% endif %}
 
 {% if m.gloss %}
     {% if m.meaning or m.greek_equivs %}
-        {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
+        {{ backspace }};{{ space }}
     {% endif %}
     <gloss aid:cstyle="Em">{{ m.gloss |
         ind_cslav_injection("CSLSegment") |
@@ -103,13 +104,13 @@
         ind_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
         ind_regex("Text", '(?<=Син\.\sпер\.\s)Керенгаппух|бдолах|сирияне|сирийский|сириец|земля Уц') |
         ind_regex("Text", '(?<=Септ\.\s)Авситидийская') |
-        ind_regex("Text", '(?<!<)/\u200B?')
+        good_slash("Text")
         }}</gloss>
     {{ space }}
 {% endif %}
 
 {% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss) and m.examples %}
-    {{ backspace }}<text aid:cstyle="Text">:</text>{{ space }}
+    {{ backspace }}:{{ space }}
 {% endif %}
 
 {% for e in m.examples %}

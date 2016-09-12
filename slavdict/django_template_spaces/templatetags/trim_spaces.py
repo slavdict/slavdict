@@ -346,5 +346,11 @@ def has_no_accent(value):
         return False
     return True
 
+@register.filter
+def good_slash(value, cstyle='Text'):
+    TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
+    return re.sub(ur"(?<!<)/%s?" % ZWS, TAG % (SLASH + ZWS), value)
+
+
 register.filter(name='cslav_words')(cslav_nobr_words)
 register.filter(name='ind_cslav_words')(indesign_cslav_words)
