@@ -188,7 +188,7 @@
 
 
     {% set bigger_form_ucs = entry.special_cases('bigger') %}
-    {% if bigger_form %}
+    {% if bigger_form_ucs %}
         {{ backspace }}{{ space }}
         <x aid:cstyle="Em">сравн. степ. от</x>
         {{ space }}
