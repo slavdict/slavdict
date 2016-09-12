@@ -2,7 +2,7 @@
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
 
-{% if not cg_loop.first %}
+{% if not collogroups_loop.first %}
     {% include 'indesign/separator.xml' %}
 {% endif %}
 
@@ -10,7 +10,10 @@
     {% if not loop.first %}
         {{ backspace }}{{ space }}
     {% endif %}
-    {{ c.collocation_ucs|ind_civil_injection("Valency", "CSLSegmentEm", "Text") }}
+    {{ c.collocation_ucs|
+            ind_civil_injection("Valency", "CSLSegmentEm", "Text")|
+            ind_regex("Text", '(?<!<)/\u200B?')
+            }}
     {% if not loop.last %}
         {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
     {% endif %}

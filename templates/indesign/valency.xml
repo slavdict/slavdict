@@ -4,7 +4,9 @@
 
 {% if m.substantivus_csl %}
     {{ m.substantivus_csl_ucs|
-         ind_civil_injection("Valency", "CSLSegmentEm", "Text") }}
+         ind_civil_injection("Valency", "CSLSegmentEm", "Text")|
+         ind_regex("Text", '(?<!<)/\u200B?')
+         }}
     {{ space }}
 {% endif %}
 
@@ -21,7 +23,10 @@
         <x aid:cstyle="Text">{{ frame|trim|
             ind_cslav_injection("CSLSegmentEm")|
             ind_regex("Valency", '[а-я]+[\\-\u2011]л\\.')|
-            ind_regex("Em", 'с\\s(?:придат|инф)\\.') }}</x>
+            ind_regex("Em", 'с\\s(?:придат|инф)\\.')|
+            ind_regex("Text", '(?<!<)/\u200B?')
+            }}</x>
+
         {{ space }}
     {% endfor %}
 {% endif %}

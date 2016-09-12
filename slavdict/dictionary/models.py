@@ -1204,7 +1204,14 @@ class Meaning(models.Model):
                                  blank=True, default='')
     @property
     def substantivus_csl_ucs(self):
-        return ucs_convert(self.substantivus_csl)
+        lst = self.substantivus_csl.split(u'##')
+        for i, elem in enumerate(lst):
+            if not elem:
+                continue
+            if not (i % 2):
+                elem = ucs_convert(elem)
+                lst[i] = elem
+        return u'##'.join(lst)
 
     @property
     def substantivus_forms(self):
