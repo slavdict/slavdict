@@ -15,8 +15,6 @@
     {% for frame in m.meaning.split(";") %}
         {% if loop.first %}
             {# pass #}
-        {% elif loop.last %}
-            {{ backspace }}{{ space }}<x aid:cstyle="Em">или</x>{{ space }}
         {% else %}
             {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
         {% endif %}

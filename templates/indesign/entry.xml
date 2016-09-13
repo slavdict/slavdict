@@ -79,7 +79,7 @@
             {% for short_form, short_form_ucs in entry.short_forms %}
                 {% if not loop.first %}
                     {{ backspace }}{{ space }}
-                    <text aid:cstyle="Em">и</text>{{ space }}
+                    <text aid:cstyle="Conj">и</text>{{ space }}
                 {% endif %}
                 <x>{{ short_form_ucs|ind_cslav_words("CSLSegment") }}</x>
                 {% if short_form|has_no_accent %}
@@ -93,7 +93,7 @@
             {% for genitive, genitive_ucs in entry.genitives %}
                 {% if not loop.first %}
                     {{ backspace }}{{ space }}
-                    <text aid:cstyle="Em">и</text>{{ space }}
+                    <text aid:cstyle="Conj">и</text>{{ space }}
                 {% endif %}
                 <x>{{ genitive_ucs|ind_cslav_words("CSLSegment") }}</x>
                 {% if genitive|has_no_accent %}
@@ -107,7 +107,7 @@
             {% for sg1, sg1_ucs in entry.several_sg1 %}
                 {% if not loop.first %}
                     {{ backspace }}{{ space }}
-                    <text aid:cstyle="Em">и</text>{{ space }}
+                    <text aid:cstyle="Conj">и</text>{{ space }}
                 {% endif %}
                 <x>{{ sg1_ucs|ind_cslav_words("CSLSegment") }}</x>
                 {% if sg1|has_no_accent %}
@@ -231,7 +231,8 @@
         {{ space }}
         {% for ethnonym, ethnonym_ucs in entry.ethnonyms %}
             {% if not loop.first %}
-                {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
+                {{ backspace }}{{ space }}
+                <x aid:cstyle="Conj">и</x>{{ space }}
             {% endif %}
             <x>{{ ethnonym_ucs|ind_cslav_words("CSLSegment") }}</x>
             {% if ethnonym|has_no_accent %}
