@@ -88,7 +88,7 @@ class DataChangeShell(cmd.Cmd):
             print
             print type(e).__name__
             print u'Поиск прерван...'
-            self.reset_found_items()
+            #self.reset_found_items()
 
     def _do_find(self, arg):
         for model, attrs in self.model_attrs:
