@@ -112,7 +112,7 @@ for key, group in itertools.groupby(entries, lambda x: x[:2]):
             for wordform, reference, lexeme in lst:
                 entries2.append((wordform, reference, lexeme))
         else:  # Статьи ссылочные
-            lst = [x[2] for x in lst]
+            lst = sorted([x[2] for x in lst], key=sort_key)
             lexeme = {
                 'is_reference': True,
                 'lexemes_ids': [l.id for l in lst],
