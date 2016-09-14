@@ -113,25 +113,38 @@ for key, group in itertools.groupby(entries, lambda x: x[:2]):
                 entries2.append((wordform, reference, lexeme))
         else:  # Статьи ссылочные
             lst = [x[2] for x in lst]
+            lexeme = {
+                'is_reference': True,
+                'lexemes_ids': [l.id for l in lst],
+            }
             if all(x.homonym_order for x in lst):
-                lexeme = {
-                    'is_reference': True,
-                    'references': [
-                        {'reference_ucs': lst[0].base_vars[0].idem_ucs,
-                         'homonym_order': u',\u00a0'.join(
-                                    str(i.homonym_order) for i in lst if i)
-                        }
-                    ],
-                }
+                lexeme['references'] = [
+                            {'reference_ucs': lst[0].base_vars[0].idem_ucs,
+                             'homonym_order': u',\u00a0'.join(
+                                        str(i.homonym_order) for i in lst if i)
+                            }]
             else:
-                lexeme = {
-                    'is_reference': True,
-                    'references': [
-                        {'reference_ucs': x.base_vars[0].idem_ucs,
-                         'homonym_order': x.homonym_order or None}
-                        for x in lst],
-                    }
+                lexeme['references'] = [
+                                    {'reference_ucs': x.base_vars[0].idem_ucs,
+                                     'homonym_order': x.homonym_order or None}
+                                    for x in lst],
             entries2.append((wordform, reference, lexeme))
+
+# Устранение ссылок расположенных вполтную к целевым статьям
+entries3 = []
+for i, (wordform, reference, lexeme) in enumerate(entries2):
+    checklist = set()
+    for j in (i - 1, i + 1):
+        if 0 <= j < len(entries2) and \
+                not entries2[j][1] and not isinstance(entries2[j][2], dict):
+            checklist.add(entries2[j][2].id)
+    if isinstance(lexeme, Entry):
+        in_checklist = lexeme.id in checklist
+    elif isinstance(lexeme, dict):
+        ids = lexeme['lexemes_ids']
+        in_checklist = len(ids) == 1 and ids[0] not in checklist
+    if not reference or not in_checklist:
+        entries3.append((wordform, reference, lexeme))
 
 class Reference(unicode):
     def __new__(cls, string, homonym_order=None):
@@ -141,8 +154,8 @@ class Reference(unicode):
 
 letter_parts = []
 part_entries = []
-letter = entries2[0][0].lstrip(u' =')[0].upper()
-for wordform, group in itertools.groupby(entries2, lambda x: x[0]):
+letter = entries3[0][0].lstrip(u' =')[0].upper()
+for wordform, group in itertools.groupby(entries3, lambda x: x[0]):
     lst = list(group)
     if wordform.lstrip(u' =')[0].upper() != letter:
         letter_parts.append((letter, part_entries))
