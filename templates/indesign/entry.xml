@@ -160,7 +160,7 @@
             {% if not entry.is_part_of_speech("letter") and
                   not entry.is_part_of_speech("number") and
                   not entry.is_part_of_speech("verb") and
-                  not entry.is_part_of_speech("noun") and not entry.gender %}
+                  (not entry.is_part_of_speech("noun") or not entry.gender) %}
                 {{ backspace }}{{ space }}
                 <x aid:cstyle="Em">
                     {{ entry.get_part_of_speech_display() }}
