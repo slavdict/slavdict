@@ -255,16 +255,16 @@
 
 
     {% if entry.is_onym('anthroponym') %}
-        {{ backspace }}{{ space }}
-        <i aid:cstyle="Em">
-            имя собств.
-        </i>{{ space }}
         {% if entry.canonical_name %}
-            {{ backspace }}<text aid:cstyle="Text">,</text>{{ space }}
+            {{ backspace }}{{ space }}
             <i aid:cstyle="Em">
                 канонич.
             </i>{{ space }}
         {% endif %}
+        {{ backspace }}{{ space }}
+        <i aid:cstyle="Em">
+            имя собств.
+        </i>{{ space }}
     {% endif %}
 
     {% if entry.is_onym('toponym') %}
