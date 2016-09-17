@@ -74,7 +74,6 @@
 
 {% elif m.substantivus_csl %}
 
-    {{ backspace }}{{ space }}
     <x>{{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}</x>
     {{ space }}
 
@@ -82,7 +81,6 @@
 
 
 {% if m.figurative %}
-    {{ backspace }}{{ space }}
     <x aid:cstyle="Em">перен.</x>{{ space }}
 {% endif %}
 
@@ -95,7 +93,7 @@
 {% endif %}
 
 {% if m.gloss %}
-    {% if m.meaning or m.greek_equivs %}
+    {% if m.meaning %}
         {{ backspace }};{{ space }}
     {% endif %}
     <gloss aid:cstyle="Em">{{ m.gloss |
