@@ -70,7 +70,7 @@
             <x aid:cstyle="Em">ж.</x>{{ space }}
         {% endif %}
 
-        <x>{{ form_ucs|ind_cslav_words("CSLSegmentEm") }}</x>{{ space }}
+        {{ form_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     {% endfor %}
 
     {% if m.special_case == 'j' %}{# преимущ. #}
@@ -78,14 +78,15 @@
         <x aid:cstyle="Em">преимущ.</x>{{ space }}
     {% endif %}
 
-    {{ backspace }}{{ space }}
+    {% if m.substantivus_forms %}
+        {{ backspace }}{{ space }}
+    {% endif %}
     <x aid:cstyle="Em">в{{ nbsp }}роли сущ.</x>
     {{ space }}
 
 {% elif m.substantivus_csl %}
 
-    <x>{{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}</x>
-    {{ space }}
+    {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
 
 {% endif %}
 

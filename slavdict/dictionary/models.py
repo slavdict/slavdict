@@ -1217,7 +1217,8 @@ class Meaning(models.Model):
     @property
     def substantivus_forms(self):
         RE_COMMA = ur',\s*'
-        return [ucs_convert(x) for x in re.split(RE_COMMA, self.substantivus_csl)]
+        return [ucs_convert(x)
+                for x in re.split(RE_COMMA, self.substantivus_csl) if x]
 
     # только для глаголов
     transitivity = CharField(u'переходность', max_length=1, blank=True,
