@@ -211,7 +211,7 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
     RE_DOTS = ur'\.\.\.'
     # круглые, квадратные скобки и косая черта
     RE_BRACES = ur'[\(\)\[\]]'
-    RE = re.compile(u'(%s|%s|%s)' % (RE_DOTS, RE_BRACES, SLASH))
+    RE = re.compile(u'(%s|%s|%s|\-)' % (RE_DOTS, RE_BRACES, SLASH))
 
     RE_SEGMENT = ur'([\s\u00a0]+)'
     segments = []
