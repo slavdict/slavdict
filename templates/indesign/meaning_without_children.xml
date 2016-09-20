@@ -36,6 +36,11 @@
     {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
 
+{% elif m.special_case == 'l' %}{# в роли нареч. #}
+
+    {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
+
 {% elif m.special_case == 'h' %}{# имя собств. #}
 
     <x aid:cstyle="Em">имя собств.</x>{{ space }}
