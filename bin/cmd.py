@@ -392,7 +392,7 @@ TEXT = u'''
 ]),
     '''
 
-def shell(model_attrs=None):
+def shell(model_attrs=None, first_volume=True):
     if model_attrs is None:
         with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:
             tf.write(TEXT.encode('utf-8'))
@@ -401,7 +401,7 @@ def shell(model_attrs=None):
             tf.seek(0)
             edited_text = tf.read()
         model_attrs = eval(u'[%s]' % edited_text, globals(), locals())
-    DataChangeShell(model_attrs=model_attrs, first_volume=True).cmdloop()
+    DataChangeShell(model_attrs=model_attrs, first_volume=first_volume).cmdloop()
 
 # Собрать все текстовые поля не самая хорошая идея, т.к.  выпадающие списки
 # тоже сохраняются в текстовых полях. Тем не менее, вот как это можно сделать:

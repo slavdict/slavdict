@@ -92,7 +92,9 @@ for lexeme in other_volumes:
 def sort_key(x):
     wordform, reference, lexeme = x
     if reference:
-        key = sort_key1(wordform), -1, sort_key2(wordform)
+        ref_wordform = lexeme.base_vars[0].idem
+        key = (sort_key1(wordform), -1, sort_key2(wordform),
+               sort_key1(ref_wordform), lexeme.homonym_order or 0, sort_key2(ref_wordform))
     else:
         key = sort_key1(wordform), lexeme.homonym_order or 0, sort_key2(wordform)
     return key

@@ -20,7 +20,8 @@
         <x aid:cstyle="Greek">
             {{ ge.unitext|
                     ind_regex("Text", '[\\(\\)]')|
-                    ind_regex("Em", '[а-яА-Я\\.\\s]{2,}') }}
+                    ind_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}')|
+                    replace(" ", "{{ space }}") }}
         </x>
 
         {% if genum == 2 %}

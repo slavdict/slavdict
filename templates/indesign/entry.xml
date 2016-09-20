@@ -274,11 +274,11 @@
     {% endif %}
 
     {% if entry.civil_equivalent == "аггей" %}
-        {{ backspace }}{{ space }}
+        {{ backspace }},{{ space }}
         <x aid:cstyle="Em">произн.</x>{{ space }}
         <x aid:cstyle="Text">[агге́й]</x>{{ space }}
     {% elif entry.civil_equivalent == "аггеев" %}
-        {{ backspace }}{{ space }}
+        {{ backspace }},{{ space }}
         <x aid:cstyle="Em">произн.</x>{{ space }}
         <x aid:cstyle="Text">[агге́ев]</x>{{ space }}
     {% endif %}
