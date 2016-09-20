@@ -17,9 +17,9 @@
     {% if m.metaphorical %}
         {% include 'indesign/allusion.xml' %}
     {% elif loop.first and m.is_valency and not m.parent_meaning.examples %}
-        {{ backspace }}<text aid:cstyle="Text">:</text>{{ space }}
+        {{ backspace }}<x aid:cstyle="Text">:</x>{{ space }}
     {% elif loop.first and not m.metaphorical and not m.parent_meaning.examples %}
-        {{ backspace }}<text aid:cstyle="Text">;</text>{{ space }}
+        {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
     {% elif not m.metaphorical %}
         {% include 'indesign/separator.xml' %}
     {% endif %}

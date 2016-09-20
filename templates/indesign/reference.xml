@@ -1,9 +1,9 @@
-<entry>
+<e>
     <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
 
-        <headword aid:cstyle="Headword">
+        <x aid:cstyle="Headword">
             {{ reference }}
-        </headword>{{ space }}
+        </x>{{ space }}
         {% if reference.homonym_order %}
             {{ backspace }}
             <x aid:cstyle="HeadwordHomonymNumber">
@@ -11,7 +11,7 @@
             </x>{{ space }}
         {% endif %}
 
-        <i aid:cstyle="Em">см.</i>{{ nbsp }}
+        <x aid:cstyle="Em">см.</x>{{ nbsp }}
         {% if entry.is_reference %}
             {% for x in entry.references %}
                 {% if not loop.first %}
@@ -37,6 +37,6 @@
         {% endif %}
         .
     </p>
-</entry>
+</e>
 
 {# vim: set ft=django.xml: #}
