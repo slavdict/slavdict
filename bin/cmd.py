@@ -99,7 +99,7 @@ class DataChangeShell(cmd.Cmd):
                     items = (i for i in model.objects.all()
                                if i.host_entry.first_volume)
                 else:
-                    items = models.objects.all()
+                    items = model.objects.all()
                 print u'\n\033[1;33m%s.%s\033[0m' % (model.__name__, attrname)
                 for item in items:
                     if self.pattern.search(getattr(item, attrname)):
