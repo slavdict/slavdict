@@ -2,7 +2,7 @@
     <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
 
         <headword aid:cstyle="Headword">
-            {{ reference|e }}
+            {{ reference }}
         </headword>{{ space }}
         {% if reference.homonym_order %}
             {{ backspace }}

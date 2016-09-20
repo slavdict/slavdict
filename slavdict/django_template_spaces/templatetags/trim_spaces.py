@@ -100,7 +100,7 @@ from jinja2 import nodes
 from jinja2.ext import Extension
 from coffin import template
 
-from slavdict.dictionary.models import ucs_convert, html_escape
+from slavdict.dictionary.models import ucs_convert, html_escape, html_unescape
 from .hyphenation import hyphenate_ucs8
 
 register = template.Library()
@@ -236,7 +236,10 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
             right = segment[end:]
 
             if left:
-                parts.append(CSL_TAG % html_escape(hyphenate_ucs8(left)))
+                # NOTE::xmlucs8: Текст подаётся уже в экранированном
+                # для xml UCS8, так что прежде расстановки переносов его надо
+                # разэкранировать, а затем снова заэкранировать
+                parts.append(CSL_TAG % html_escape(hyphenate_ucs8(html_unescape(left))))
 
             # NOTE: Замена слэшей должна происходить до замен,
             # где появляются XML-тэги со слэшами в закрывающих тэгах.
@@ -250,7 +253,8 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
             segment = right
             m = RE.search(segment)
         if segment:
-            parts.append(CSL_TAG % html_escape(hyphenate_ucs8(segment)))
+            # NOTE::xmlucs8:
+            parts.append(CSL_TAG % html_escape(hyphenate_ucs8(html_unescape(segment))))
         segments.append(u''.join(parts))
 
     return u''.join(segments).replace(u'\u00AD', u'<h aid:cstyle="Text">\u00AD</h>')
