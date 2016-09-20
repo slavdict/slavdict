@@ -105,6 +105,9 @@ for key, group in itertools.groupby(entries, lambda x: x[:2]):
     wordform, reference = key
     if not in_first_volume(wordform):
         continue
+    # Удаляем из выгрузки отсылочную статью Ассирии, т.к. она неправильно выгружается
+    if wordform == u"ассѵрі'и":
+        continue
     lst = list(group)
     if len(lst) < 2:
         wordform, reference, lexeme = lst[0]
