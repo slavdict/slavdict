@@ -15,6 +15,10 @@
     {{ orthvar_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
 {% endfor %}
 
+{% if m.orthvars == ["ѓггелъ"] %}{# произношение для "аггел" #}
+    <x aid:cstyle="Em">произн.</x>{{ space }}
+    <x aid:cstyle="Text">[а́ггел]</x>{{ space }}
+{% endif %}
 
 {% if m.special_case == 'a' %}{# канонич. #}
 
