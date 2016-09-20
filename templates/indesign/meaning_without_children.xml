@@ -23,7 +23,12 @@
 {% elif m.special_case == 'd' %}{# дат. #}
 
     <x aid:cstyle="Em">дат.</x>{{ space }}
-    {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% for form_ucs in m.substantivus_forms %}
+        {% if not loop.first %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+        {{ form_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% endfor %}
 
 {% elif m.special_case == 'e' %}{# твор. ед. в роли нареч. #}
 
