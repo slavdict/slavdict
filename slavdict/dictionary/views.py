@@ -411,7 +411,7 @@ def single_entry(request, entry_id, extra_context=None,
 
     if request.path.endswith('intermed/'):
         user_groups = [t[0] for t in user.groups.values_list('name')]
-        if not (user.preplock and entry.first_volume) \
+        if not (user.preplock and entry.preplock) \
                 and (not entry.authors.exists() or user.is_superuser
                      or 'editors' in user_groups or 'admins' in user_groups
                      or user in entry.authors.all()):
@@ -702,7 +702,7 @@ def hellinist_workbench(request):
             raise InvalidCookieError(message)
     examples = filters.get_examples(form.cleaned_data)
     if request.user.preplock:
-        examples = [ex for ex in examples if not ex.host_entry.first_volume]
+        examples = [ex for ex in examples if not ex.host_entry.preplock]
 
     paginator = Paginator(examples, per_page=4, orphans=2)
     if request.method == 'POST':
@@ -804,7 +804,7 @@ def edit_entry(request, id):
     entry = get_object_or_404(Entry, id=id)
     user = request.user
     user_groups = [t[0] for t in user.groups.values_list('name')]
-    if not (user.preplock and entry.first_volume) \
+    if not (user.preplock and entry.preplock) \
             and (not entry.authors.exists() or user.is_superuser
                  or 'editors' in user_groups or 'admins' in user_groups
                  or user in entry.authors.all()):
@@ -873,182 +873,3 @@ def dump(request):
     else:
         os.wait()
     return  HttpResponseRedirect('/')
-
-
-
-def useful_urls_redirect(uri, request):
-    cgURI = '/admin/dictionary/collocationgroup/?id__in='
-    mURI = '/admin/dictionary/meaning/?id__in='
-
-    if uri == 'all-collocations':
-        uri = '/admin/dictionary/collocationgroup/?first_volume=1'
-
-    elif uri == 'collocs-same-meaning':
-        cgs = (cg for cg in CollocationGroup.objects.all()
-                  if cg.host_entry.first_volume)
-        meanings = reduce(operator.add, [list(cg.meanings) for cg in cgs])
-        child_meanings = reduce(operator.add, [list(m.child_meanings) for m in meanings])
-        meanings = meanings + child_meanings
-        same = collections.defaultdict(list)
-        for m in meanings:
-            meaning = m.meaning.lower().strip()
-            if meaning:
-                same[meaning].append(m)
-            gloss = m.gloss.lower().strip()
-            if gloss:
-                same[gloss].append(m)
-        groups = [(key, cgURI + ','.join(str(cg.id) for cg in set(
-                   m.collogroup_container
-                   if m.collogroup_container else m.parent_meaning.collogroup_container
-                   for m in values))) for key, values in same.items() if len(values) > 1]
-        groups.sort()
-        context = {
-            'name': u'Словосочетания с одинаковыми значениями',
-            'groups': groups,
-        }
-        return render_to_response('useful_urls2.html', context,
-                                  RequestContext(request))
-
-    elif uri == 'collocs-litsym':
-        cgs = (m.host
-               for m in Meaning.objects.filter(metaphorical=True)
-               if m.host_entry.first_volume and isinstance(m.host, CollocationGroup))
-        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
-
-    elif uri == 'collocs-noun':
-        cgs = (cg for cg in CollocationGroup.objects.all()
-                  if cg.host_entry.first_volume and (
-                      any(m.substantivus for m in cg.meanings) or
-                      any(cm.substantivus for m in cg.meanings
-                                            for cm in m.child_meanings)))
-        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
-
-    elif uri == 'same-collocs-same-entry':
-        cgs = (cg for cg in CollocationGroup.objects.all()
-                  if cg.host_entry.first_volume)
-        cs = (list(cg.collocations) for cg in cgs)
-        same = collections.defaultdict(set)
-        for collocations in cs:
-            for c in collocations:
-                collocation = c.civil_equivalent.lower().strip()
-                if collocation:
-                    same[collocation].add(c.collogroup)
-        same = same.items()
-        same = ((key, value) for key, value in same if len(value) > 1)
-        same = ((key, value) for key, value in same
-                if len(value) > len(set(cg.host_entry for cg in value)))
-        groups = [(key, cgURI + ','.join(str(cg.id) for cg in value))
-                  for key, value in same]
-        groups.sort()
-        context = {
-            'name': u'Одинаковые словосочетания в одной статье',
-            'groups': groups,
-        }
-        return render_to_response('useful_urls2.html', context,
-                                  RequestContext(request))
-
-    elif uri == 'same-collocs-diff-entry':
-        cgs = (cg for cg in CollocationGroup.objects.all()
-                  if cg.host_entry.first_volume)
-        cs = (list(cg.collocations) for cg in cgs)
-        same = collections.defaultdict(set)
-        for collocations in cs:
-            for c in collocations:
-                collocation = c.civil_equivalent.lower().strip()
-                if collocation:
-                    same[collocation].add(c.collogroup)
-        same = same.items()
-        same = ((key, value) for key, value in same if len(value) > 1)
-        same = ((key, value) for key, value in same
-                if len(set(cg.host_entry for cg in value)) > 1)
-        groups = [(key, cgURI + ','.join(str(cg.id) for cg in value))
-                  for key, value in same]
-        groups.sort()
-        context = {
-            'name': u'Одинаковые словосочетания в разных статьях',
-            'groups': groups,
-        }
-        return render_to_response('useful_urls2.html', context,
-                                  RequestContext(request))
-
-    elif uri == 'collocs-2b':
-        cgss = (cg for cg in CollocationGroup.objects.all()
-                   if cg.host_entry.first_volume)
-        cgs = (cg for cg in cgss for c in cg.collocations
-               if [x.startswith(u'б')
-                   for x in re.split(ur'[\s/,\(\)]+', c.collocation.lower())
-                   ].count(True) > 1)
-        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
-
-    elif uri == 'collocs-uniq':
-        cgss = (cg for cg in CollocationGroup.objects.all()
-                   if cg.host_entry.first_volume)
-        cgs = set()
-        for cg in cgss:
-            m = cg.base_meaning
-            e = cg.base_entry
-            empty_meaning = m and not m.meaning.strip() and not m.gloss.strip()
-            no_meanings = not m and e and not list(e.meanings) + list(e.metaph_meanings)
-            if empty_meaning or no_meanings:
-                cgs.add(cg)
-        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
-
-    elif uri == 'collocs-uniqab':
-        cgss = (cg for cg in CollocationGroup.objects.all()
-                   if cg.host_entry.first_volume)
-        cgs = set()
-        for cg in cgss:
-            m = cg.base_meaning
-            e = cg.base_entry
-            empty_meaning = m and not m.meaning.strip() and not m.gloss.strip()
-            no_meanings = not m and e and not list(e.meanings) + list(e.metaph_meanings)
-            several_ABwords = any(
-                len([True
-                     for x in re.split(ur'[\s/,;\(\)]+', c.civil_equivalent)
-                     if x.startswith((u'а', u'А', u'б', u'Б'))]) > 1
-                for c in cg.collocations)
-            if (empty_meaning or no_meanings) and several_ABwords:
-                cgs.add(cg)
-        uri = cgURI + ','.join(str(cg.id) for cg in cgs)
-
-    elif uri == 'all-meanings':
-        uri = '/admin/dictionary/meaning/?first_volume=1'
-
-    elif uri == 'meanings-literal':
-        mark = u'букв.'
-        ms = (m for m in Meaning.objects.all() if m.not_hidden() and
-                (mark in m.meaning or mark in m.gloss))
-        uri = mURI + ','.join(str(m.id) for m in ms)
-
-    return HttpResponseRedirect(uri)
-
-
-@login_required
-@never_cache
-def useful_urls(request, x=None, y=None):
-    urls = (
-            (u'Словосочетания (cc)', (
-                    (u'Все сс', 'all-collocations'),
-                    (u'Сс с одинаковыми значениями', 'collocs-same-meaning'),
-                    (u'Сс – литургические символы', 'collocs-litsym'),
-                    (u'Сс в роли сущ.', 'collocs-noun'),
-                    (u'Одинаковые сс в одной статье', 'same-collocs-same-entry'),
-                    (u'Одинаковые сс в разных статьях', 'same-collocs-diff-entry'),
-                    (u'CC, где 2 слова на Б', 'collocs-2b'),
-                    (u'Такие сс, что кроме них в статье ничего нет', 'collocs-uniq'),
-                    (u'Такие сс, что кроме них в статье ничего нет '
-                     u'и сс содержит несколько слов на А или Б', 'collocs-uniqab'),
-                )),
-            (u'Значения и употребления', (
-                    (u'Все значения и употребления', 'all-meanings'),
-                    (u'Значения с пометой "букв."', 'meanings-literal'),
-                )),
-    )
-    if x:
-        for section, data in urls:
-            for name, uri in data:
-                if x == uri:
-                    return useful_urls_redirect(uri, request)
-    context = { 'urls': urls }
-    return render_to_response('useful_urls.html', context,
-                              RequestContext(request))

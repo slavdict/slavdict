@@ -828,6 +828,9 @@ class Entry(models.Model):
         elif case == 'bigger' and self.civil_equivalent == u'больший':
             return ucs_convert(u"вели'кій")
 
+    preplock = False  # Заглушка для условия, по которому статья д.б. залочена
+        # от всех пользователей кроме работающих над подготовкой тома к печати.
+
     @property
     def first_volume(self):
         letters = (u'а', u'б')
