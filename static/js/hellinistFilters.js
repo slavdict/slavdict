@@ -14,6 +14,7 @@ function GreqForJSON(greq) {
     this.id = greq.id;
     this.unitext = greq.unitext;
     this.initial_form = greq.initial_form;
+    this.note = greq.note;
     this.additional_info = greq.additional_info;
     this.for_example_id = greq.for_example_id;
 }
@@ -25,6 +26,7 @@ function Greq(ex, greq) {
     this.id = ko.observable(greq.id || '');
     this.unitext = ko.observable(greq.unitext || '');
     this.initial_form = ko.observable(greq.initial_form || '');
+    this.note = ko.observable(greq.note || '');
     this.additional_info = ko.observable(greq.additional_info || '');
     this.for_example_id = ex.id;
 
