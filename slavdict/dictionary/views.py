@@ -756,6 +756,7 @@ def hellinist_workbench(request):
             'sortdir': viewmodels.jsonSortdir,
             'sortbase': viewmodels.jsonGreqSortbase,
             },
+        'MAX_LENGTHS': models.MAX_LENGTHS,
         }
     response = render_to_response('hellinist_workbench.html', context,
                                   RequestContext(request))

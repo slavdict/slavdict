@@ -276,14 +276,20 @@
                             <label>греч. параллель</label>
                             <input type="text" data-bind="
                                 textInput: unitext,
-                                event: { change: saveMe }" />
+                                event: { change: saveMe }"
+                                maxlength="{{ MAX_LENGTHS
+                                    .GreekEquivalentForExample
+                                    .unitext }}" />
                         </span>
 
                         <span class="greqFieldContainer">
                             <label>начальная форма</label>
                             <input type="text" data-bind="
                                 textInput: initial_form,
-                                event: { change: saveMe }" />
+                                event: { change: saveMe }"
+                                maxlength="{{ MAX_LENGTHS
+                                    .GreekEquivalentForExample
+                                    .initial_form }}" />
                         </span>
 
                         <span class="greqFieldContainer">
