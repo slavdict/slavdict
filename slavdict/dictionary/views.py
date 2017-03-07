@@ -100,6 +100,9 @@ def all_entries(request, is_paged=False):
 
 ?hide-refentries                Не отображать отсылочные статьи.
 
+?per-page=100                   Отображать по столько-то статей на странице,
+                                по умолчанию, все.
+
 
         ''' % request.path
         response = HttpResponse(text, content_type="text/plain; charset=utf-8")
@@ -112,6 +115,7 @@ def all_entries(request, is_paged=False):
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_LIST = request.GET.get('list')
+    httpGET_PERPAGE = request.GET.get('per-page')
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STARTSWITH = request.GET.get('startswith')
     httpGET_STATUS = urllib.unquote(request.GET.get('status', ''))
@@ -202,8 +206,13 @@ def all_entries(request, is_paged=False):
         title += u', начинающиеся на „{0}-“'.format(httpGET_STARTSWITH)
 
     entries = sorted(entries, key=entry_key)
+    if httpGET_PERPAGE and httpGET_PERPAGE.isdigit():
+        per_page=int(httpGET_PERPAGE)
+        is_paged = True
+    else:
+        per_page = 12
     if is_paged:
-        paginator = Paginator(entries, per_page=12, orphans=2)
+        paginator = Paginator(entries, per_page=per_page, orphans=2)
         try:
             pagenum = int(request.GET.get('page', 1))
         except ValueError:
