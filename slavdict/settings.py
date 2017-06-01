@@ -175,14 +175,6 @@ JSLIBS = {
         'min': '//cdnjs.cloudflare.com/ajax/libs/'
                'knockout/3.2.0/knockout-min.js',
     },
-    'knockoutMapping': {
-        'debug': 'https://raw.githubusercontent.com/SteveSanderson/'
-                 'knockout.mapping/2.4.1/build/output/'
-                 'knockout.mapping-latest.debug.js',
-         'Xmin': 'https://raw.githubusercontent.com/SteveSanderson/'
-                 'knockout.mapping/2.4.1/build/output/'
-                 'knockout.mapping-latest.js',
-    },
     'knockoutSortable': {
         'debug': 'https://rawgit.com/rniemeyer/'
                  'knockout-sortable/v0.9.2/build/knockout-sortable.js',
