@@ -6,7 +6,7 @@
     {% endif %}
 
     <form method="post" action="">
-    <div>{% csrf_token %}</div>
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
     <div class="form">
         <style>
             td input[type="text"],
@@ -20,7 +20,7 @@
                 <td>{{ form.username }}</td>
             </tr>
             <tr>
-                <td>{{ form.password.label_tag }}</td>
+                <td>{{ form.password.label_tag() }}</td>
                 <td>{{ form.password }}</td>
             </tr>
             <tr>
