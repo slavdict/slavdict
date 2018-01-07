@@ -10,7 +10,7 @@ admin.autodiscover()
 
 LOGIN_URL = 'login/'
 urlpatterns = [
-    url( r'^',          include('slavdict.dictionary.urls') ),
+    url( r'^',           include('slavdict.dictionary.urls') ),
     url( r'^admin/',     include(admin.site.urls) ),
     url( r'^admin/doc/', include('django.contrib.admindocs.urls') ),
     url( r'^ui/',        include(ui.urls) ),

@@ -4,11 +4,11 @@
 {% set filters = form.cleaned_data %}
 
 {% block css %}hellinist_workbench.css{% endblock %}
-{% block headerFormAddress %}{% url 'hellinist_workbench' %}{% endblock %}
+{% block headerFormAddress %}{{ url('hellinist_workbench') }}{% endblock %}
 
 {% block header %}
 
-    <a href="{% url 'all_entries_url' %}" class="header--item button">Вернуться к статьям</a>
+    <a href="{{ url('all_entries_url') }}" class="header--item button">Вернуться к статьям</a>
 
     {% if indicators.meaning %}
         <span class="header--item indicator"
@@ -352,9 +352,9 @@
         var vM = {};
 
         vM.urls = {
-            jsonGreqDeleteURL: "{% url 'jsonGreqDeleteURL' %}",
-            jsonGreqSaveURL: "{% url 'jsonGreqSaveURL' %}",
-            jsonExSaveURL: "{% url 'jsonExSaveURL' %}"
+            jsonGreqDeleteURL: "{{ url('jsonGreqDeleteURL') }}",
+            jsonGreqSaveURL: "{{ url('jsonGreqSaveURL') }}",
+            jsonExSaveURL: "{{ url('jsonExSaveURL') }}"
         };
 
         vM.meta = {

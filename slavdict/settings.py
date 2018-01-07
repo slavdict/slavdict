@@ -76,16 +76,6 @@ TEMPLATE_LOADERS = (
         'django.template.loaders.app_directories.Loader',
 )
 
-#from jinja2 import StrictUndefined
-JINJA2_ENVIRONMENT_OPTIONS = {
-    'autoescape': False,
-#    'undefined': StrictUndefined,
-}
-
-JINJA2_EXTENSIONS = (
-    'slavdict.django_template_spaces.templatetags.trim_spaces.trim',
-)
-
 MIDDLEWARE = (
     'slavdict.middleware.ValidCookieMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -110,6 +100,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
+                'django.core.context_processors.static',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -121,25 +112,16 @@ TEMPLATES = [
         'DIRS': [
             ROOT + 'templates/',
         ],
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+            'autoescape': False,
+            'environment': 'slavdict.jinja2.environment',
+            'extensions': [
+                'slavdict.django_template_spaces.templatetags.trim_spaces.trim',
             ],
         },
     },
 ]
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.debug',
-    'django.core.context_processors.static',
-    'django.contrib.auth.context_processors.auth',
-    'django.contrib.messages.context_processors.messages',
-    'slavdict.context_processors.staticfiles',
-)
 
 STATICFILES_DIRS = (
     ROOT + 'static/',

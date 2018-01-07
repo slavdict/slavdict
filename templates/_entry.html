@@ -269,7 +269,7 @@
         <div class="edit-controls">
 
             <div>
-                <a href="{% if user.is_admeditor %}{% url 'admin:dictionary_entry_change' entry.pk %}{% else %}{% url 'UI:dictionary_entry_change' entry.pk %}{% endif %}">
+                <a href="{% if user.is_admeditor %}{{ url('admin:dictionary_entry_change', args=[entry.pk]) }}{% else %}{{ url('UI:dictionary_entry_change', args=[entry.pk]) }}{% endif %}">
                     <img src="{{ STATIC_URL }}pen.png" alt="" />
                     {{ space }}
                     Редактировать информацию о лексеме
@@ -361,7 +361,7 @@
 
         <div>
             <a rel="prefetch"
-               href="{% if user.is_admeditor %}{% url 'admin:dictionary_meaning_add' %}{% else %}{% url 'UI:dictionary_meaning_add' %}{% endif %}?entry={{ entry.id }}">
+               href="{% if user.is_admeditor %}{{ url('admin:dictionary_meaning_add') }}{% else %}{{ url('UI:dictionary_meaning_add') }}{% endif %}?entry={{ entry.id }}">
                 <img src="{{ STATIC_URL }}plus.png" alt="" />
                 {{ space }}
                 Добавить значение
@@ -370,7 +370,7 @@
 
         <div>
             <a rel="prefetch"
-               href="{% if user.is_admeditor %}{% url 'admin:dictionary_collocationgroup_add' %}{% else %}{% url 'UI:dictionary_collocationgroup_add' %}{% endif %}?entry={{ entry.id }}">
+               href="{% if user.is_admeditor %}{{ url('admin:dictionary_collocationgroup_add') }}{% else %}{{ url('UI:dictionary_collocationgroup_add') }}{% endif %}?entry={{ entry.id }}">
                 <img src="{{ STATIC_URL }}plus.png" alt="" />
                 {{ space }}
                 Добавить словосочетание

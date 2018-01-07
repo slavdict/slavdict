@@ -3,7 +3,7 @@
 {% block header %}
 
     {{ space }}
-    <a href="{% url 'all_entries_url' %}"
+    <a href="{{ url('all_entries_url') }}"
         class="header--item button">Все статьи</a>
 
     <span style="position: relative;">
@@ -41,11 +41,11 @@
     </span>
 
     {{ space }}
-    <a href="{% url 'converter' %}" class="header--item button">Конвертър</a>
+    <a href="{{ url('converter') }}" class="header--item button">Конвертър</a>
 
     {% if user.is_admeditor or user.is_hellinist %}
         {{ space }}
-        <a href="{% url 'hellinist_workbench' %}"
+        <a href="{{ url('hellinist_workbench') }}"
             class="header--item button">Греческий кабинет</a>
     {% endif %}
 
