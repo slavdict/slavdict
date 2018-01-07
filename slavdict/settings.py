@@ -95,8 +95,9 @@ JINJA2_EXTENSIONS = (
     'slavdict.django_template_spaces.templatetags.trim_spaces.trim',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'slavdict.middleware.ValidCookieMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
    #'django.middleware.csrf.CsrfViewMiddleware',
@@ -139,8 +140,8 @@ INSTALLED_APPS = (
 
     'coffin',
 
-    'slavdict.dictionary',
     'slavdict.custom_user',
+    'slavdict.dictionary',
     'slavdict.django_template_spaces',
 )
 
