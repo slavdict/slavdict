@@ -5,8 +5,7 @@
     <div class="form-error">Имя пользователя или пороль введены неверно. Попробуйте ещё раз.</div>
     {% endif %}
 
-    <form method="post" action="">
-    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+    <form method="post" action=""> {{ csrf_input }}
     <div class="form">
         <style>
             td input[type="text"],
