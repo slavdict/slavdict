@@ -98,7 +98,7 @@ from django.utils.encoding import force_unicode
 
 from jinja2 import nodes
 from jinja2.ext import Extension
-from coffin import template
+from django import template
 
 from slavdict.dictionary.models import ucs_convert, html_escape, html_unescape
 from .hyphenation import hyphenate_ucs8

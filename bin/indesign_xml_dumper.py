@@ -15,7 +15,7 @@ import re
 import sys
 
 import django
-from coffin.shortcuts import render_to_string
+from django.shortcuts import render_to_string
 
 sys.path.append(os.path.abspath('/var/www/slavdict'))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
