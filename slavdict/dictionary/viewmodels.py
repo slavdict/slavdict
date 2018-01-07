@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-from django.db.models.fields import CharField
+from django.db.utils import OperationalError
 
 from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary import models
@@ -26,19 +26,23 @@ def entry_json(id):
 EMPTY_STRING_ID_OBJECT = {'id': '', 'name': u''}
 NONE_ID_OBJECT = {'id': None, 'name': u''}
 
-AUTHOR_CHOICES = tuple(
-    (user.id, user.__unicode__())
-    for user in CustomUser.objects.filter(groups__name=u'authors')
-)
+try:
+    AUTHOR_CHOICES = tuple(
+        (user.id, user.__unicode__())
+        for user in CustomUser.objects.filter(groups__name=u'authors')
+    )
+    authors = (
+        {'id': 'all',  'name': u'все авторы'},
+        {'id': 'none', 'name': u'статьи без автора'},
+        {'id': 'few',  'name': u'статьи с неск. авторами'},
+    ) + tuple(
+        {'id': str(u.id), 'name': u.__unicode__()}
+        for u in CustomUser.objects.filter(groups__name=u'authors')
+    )
+except OperationalError:
+    AUTHOR_CHOICES = tuple()
+    authors = tuple()
 
-authors = (
-    {'id': 'all',  'name': u'все авторы'},
-    {'id': 'none', 'name': u'статьи без автора'},
-    {'id': 'few',  'name': u'статьи с неск. авторами'},
-) + tuple(
-    {'id': str(u.id), 'name': u.__unicode__()}
-    for u in CustomUser.objects.filter(groups__name=u'authors')
-)
 
 editAuthors = (NONE_ID_OBJECT,) + _choices(AUTHOR_CHOICES)
 
