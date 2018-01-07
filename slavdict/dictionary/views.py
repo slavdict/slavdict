@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
-import collections
 import datetime
-import operator
 import random
 import re
 import StringIO
@@ -30,12 +28,10 @@ from slavdict.dictionary.forms import BilletImportForm
 from slavdict.dictionary.forms import FilterEntriesForm
 from slavdict.dictionary.forms import FilterExamplesForm
 from slavdict.dictionary.models import civilrus_convert
-from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
-from slavdict.dictionary.models import Meaning
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.middleware import InvalidCookieError
 

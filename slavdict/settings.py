@@ -1,13 +1,4 @@
 # -*- coding: UTF-8 -*-
-"""
-Django settings for slavdict project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.7/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.7/ref/settings/
-"""
 from os.path import abspath
 from os.path import dirname
 from os.path import normpath
