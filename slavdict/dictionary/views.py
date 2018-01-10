@@ -15,6 +15,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
+from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.cache import never_cache
@@ -674,7 +675,7 @@ def entry_list(request):
         'user': request.user,
         'title': u'Словарь церковнославянского языка Нового времени',
         }
-    response = render_to_response('entry_list.html', context,
+    response = render(request, 'entry_list.html', context,
                                   RequestContext(request))
     if request.method == 'POST':
         form.cleaned_data['find'] = base64 \

@@ -18,6 +18,7 @@
         {% trim %}
         <form class="headerForm" method="post"
             action="{% block headerFormAddress %}{{ url('all_entries_url') }}{% endblock %}">
+            {{ csrf_input }}
 
             <div class="header"><div class="grid without-overflow">
                 {% block header %}{% endblock %}
