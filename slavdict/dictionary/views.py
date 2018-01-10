@@ -672,6 +672,7 @@ def entry_list(request):
         'form': form,
         'page': page,
         'user': request.user,
+        'title': u'Словарь церковнославянского языка Нового времени',
         }
     response = render_to_response('entry_list.html', context,
                                   RequestContext(request))
