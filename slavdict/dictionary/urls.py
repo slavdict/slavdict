@@ -28,8 +28,7 @@ urlpatterns = [
     url( r'^entries/save/$', jsonviews.json_entry_save ),
     url( r'^entries/jserror/$', jsonviews.js_error_notify ),
 
-    url(r'^materials/$', views.direct_to_template,
-                         kwargs={'template': 'materials.html'}),
+    url(r'^materials/$', views.materials),
     url( r'^switch/additional-info/$', views.switch_additional_info, name='switch_info_url' ),
     url( r'^converter/$', views.antconc2ucs8_converter, name='converter' ),
 

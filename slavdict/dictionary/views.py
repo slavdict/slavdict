@@ -43,9 +43,13 @@ def entry_key(entry):
 
 
 @login_required
-def direct_to_template(request, template):
-    empty_context = {}
-    return render(request, template, empty_context)
+def materials(request):
+    template = 'materials.html'
+    context = {
+        'title': u'Материалы',
+        'user': request.user,
+    }
+    return render(request, template, context)
 
 
 @login_required
@@ -795,7 +799,11 @@ def antconc2ucs8_converter(request):
 
         u"Возведо'хъ ѻ'чи мои` въ го'ры, ѿню'дꙋже пріи'детъ по'мощь моѧ`",
     )
-    context = { 'convertee': random.choice(examples) }
+    context = {
+        'title': u'Конвертър',
+        'user': request.user,
+        'convertee': random.choice(examples),
+    }
     return render(request, 'converter.html', context)
 
 
