@@ -847,11 +847,13 @@ def edit_entry(request, id):
         'part_of_speech': models.PART_OF_SPEECH_MAP,
     }
     context = {
+        'title': u'Статья «%s»' % entry.civil_equivalent,
+        'user': user,
         'entry': viewmodels.entry_json(id),
         'choices': viewmodels._json(choices),
         'labels': viewmodels._json(labels),
         'slugs': viewmodels._json(slugs),
-        'entryURL': Entry.objects.get(pk=id).get_absolute_url(),
+        'entryURL': entry.get_absolute_url(),
         'PARTS_OF_SPEECH': models.PART_OF_SPEECH_CHOICES,
         'GENDERS': models.GENDER_CHOICES,
         'STATUSES': models.STATUS_CHOICES,
