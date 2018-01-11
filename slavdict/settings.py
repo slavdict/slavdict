@@ -117,7 +117,7 @@ TEMPLATES = [
             'autoescape': False,
             'environment': 'slavdict.jinja2.environment',
             'extensions': [
-                'slavdict.django_template_spaces.templatetags.trim_spaces.trim',
+                'slavdict.jinja_extensions.trim_spaces.trim',
             ],
         },
     },
@@ -137,7 +137,6 @@ INSTALLED_APPS = (
 
     'slavdict.custom_user',
     'slavdict.dictionary',
-    'slavdict.django_template_spaces',
 )
 
 ######################################
