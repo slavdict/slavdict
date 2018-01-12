@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import get_model
+from django.apps import apps
 
 class CustomUserModelBackend(ModelBackend):
 
@@ -24,7 +24,7 @@ class CustomUserModelBackend(ModelBackend):
     def user_class(self):
         if not hasattr(self, '_user_class'):
             app, model = settings.CUSTOM_USER_MODEL.split('.', 2)[1:]
-            self._user_class = get_model(app, model)
+            self._user_class = apps.get_model(app, model)
             if not self._user_class:
                 raise ImproperlyConfigured('Could not get custom user model')
         return self._user_class

@@ -98,12 +98,23 @@ from django.utils.encoding import force_unicode
 
 from jinja2 import nodes
 from jinja2.ext import Extension
-from coffin import template
 
 from slavdict.dictionary.models import ucs_convert, html_escape, html_unescape
 from .hyphenation import hyphenate_ucs8
 
-register = template.Library()
+additional_jinja_filters = {}
+def register_filter(arg):
+    if callable(arg):
+        # arg -- функция с реализацией нового фильтра для jinja2
+        additional_jinja_filters[arg.func_name] = arg
+        return arg
+    else:
+        # arg -- имя, под которым нужно зарегистрировать функцию
+        # с реализацией нового фильтра для jinja2
+        def wrapper(func):
+            additional_jinja_filters[arg] = func
+            return func
+        return wrapper
 
 SLASH = u'/'
 ZWS = u'\u200B'
@@ -263,7 +274,7 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
 def cslav_subst(x):
     return EXCLAM + cslav_nobr_words(ucs_convert(x.group(1))) + EXCLAM
 
-@register.filter
+@register_filter
 def cslav_injection(value):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
@@ -284,7 +295,7 @@ def subst_func(func):
         return u'%s%s%s' % (x, func(y), z)
     return f
 
-@register.filter
+@register_filter
 def ind_cslav_injection(value, cstyle=CSLCSTYLE):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
@@ -311,7 +322,7 @@ class MMM(object):
     def group(self, x):
         return self.match_groups[x]
 
-@register.filter
+@register_filter
 def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE, civil2_cstyle=None):
     lst = value.split(u'##')
     TAG = u'<x aid:cstyle="{}">%s</x>'.format(civil_cstyle)
@@ -335,7 +346,7 @@ def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE, civil2_csty
         lst[i] = elem
     return u''.join(lst)
 
-@register.filter
+@register_filter
 def ind_regex(value, cstyle, regex):
     """ Помечает указанным стилем cstyle найденный текст
     """
@@ -343,18 +354,18 @@ def ind_regex(value, cstyle, regex):
     _ind_regex = subst_func(lambda x: TAG % x)
     return re.sub(ur'(\s*)(%s)(\s*)' % regex, _ind_regex, value)
 
-@register.filter
+@register_filter
 def has_no_accent(value):
     r = re.compile(ur"['`\^~А-Щ]")
     if re.findall(r, value):
         return False
     return True
 
-@register.filter
+@register_filter
 def good_slash(value, cstyle='Text'):
     TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
     return re.sub(ur"(?<!<)/%s?" % ZWS, TAG % (SLASH + ZWS), value)
 
 
-register.filter(name='cslav_words')(cslav_nobr_words)
-register.filter(name='ind_cslav_words')(indesign_cslav_words)
+register_filter('cslav_words')(cslav_nobr_words)
+register_filter('ind_cslav_words')(indesign_cslav_words)

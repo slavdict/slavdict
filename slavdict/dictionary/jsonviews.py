@@ -3,11 +3,11 @@ import collections
 import datetime
 import json
 
+from django.apps import apps
 from django.core import mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.db.models.loading import get_model
 from django.http import HttpResponse
 
 from slavdict.dictionary import viewmodels
@@ -275,7 +275,7 @@ def process_json_model(json_model, post):
 
     to_destroy = post['toDestroy']
     for model_name in to_destroy:
-        model = get_model('dictionary', {'Greq': 'GreekEquivalentForExample',
+        model = apps.get_model('dictionary', {'Greq': 'GreekEquivalentForExample',
             'Collogroup': 'CollocationGroup', 'Orthvar': 'OrthographicVariant',
             'Context': 'MeaningContext'}.get(model_name, model_name))
         for item_id in to_destroy[model_name]:

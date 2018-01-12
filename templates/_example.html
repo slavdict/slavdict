@@ -78,7 +78,7 @@
 {% if intermed %}
 
     <span class="edit-controls">
-        <a href="{% url 'UI:dictionary_example_change' e.id %}">
+        <a href="{{ url('UI:dictionary_example_change', args=[e.id]) }}">
             <img src="{{ STATIC_URL }}pen.png" alt="" />
         </a>
     </span>

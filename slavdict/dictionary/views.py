@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 import base64
-import collections
 import datetime
-import operator
 import random
 import re
 import StringIO
 import urllib
 
-from coffin.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
@@ -18,7 +15,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
-from django.template import RequestContext
+from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 
 from slavdict import unicode_csv
@@ -30,12 +27,10 @@ from slavdict.dictionary.forms import BilletImportForm
 from slavdict.dictionary.forms import FilterEntriesForm
 from slavdict.dictionary.forms import FilterExamplesForm
 from slavdict.dictionary.models import civilrus_convert
-from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
-from slavdict.dictionary.models import Meaning
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.middleware import InvalidCookieError
 
@@ -48,9 +43,13 @@ def entry_key(entry):
 
 
 @login_required
-def direct_to_template(request, template):
-    empty_context = {}
-    return render_to_response(template, empty_context, RequestContext(request))
+def materials(request):
+    template = 'materials.html'
+    context = {
+        'title': u'Материалы',
+        'user': request.user,
+    }
+    return render(request, template, context)
 
 
 @login_required
@@ -248,8 +247,7 @@ def all_entries(request, is_paged=False):
             )
         ),
         }
-    return render_to_response('all_entries.html',
-                              context, RequestContext(request))
+    return render(request, 'all_entries.html', context)
 
 
 @login_required
@@ -406,8 +404,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
             url += '?' + context['params_without_page']
         return redirect(url)
 
-    return render_to_response('all_examples.html',
-                              context, RequestContext(request))
+    return render(request, 'all_examples.html', context)
 
 
 @login_required
@@ -435,7 +432,7 @@ def single_entry(request, entry_id, extra_context=None,
         'user': user,
     }
     context.update(extra_context)
-    return render_to_response(template, context, RequestContext(request))
+    return render(request, template, context)
 
 
 @login_required
@@ -610,7 +607,7 @@ def import_csv_billet(request):
         form = BilletImportForm()
 
     get_parameters = '?' + urllib.urlencode(request.GET)
-    return render_to_response('csv_import.html', {'form': form,
+    return render(request, 'csv_import.html', {'form': form,
                   'get_parameters': get_parameters})
 
 
@@ -676,9 +673,9 @@ def entry_list(request):
         'form': form,
         'page': page,
         'user': request.user,
+        'title': u'Словарь церковнославянского языка Нового времени',
         }
-    response = render_to_response('entry_list.html', context,
-                                  RequestContext(request))
+    response = render(request, 'entry_list.html', context)
     if request.method == 'POST':
         form.cleaned_data['find'] = base64 \
             .standard_b64encode(form.cleaned_data['find'].encode('utf8'))
@@ -767,8 +764,7 @@ def hellinist_workbench(request):
             },
         'MAX_LENGTHS': models.MAX_LENGTHS,
         }
-    response = render_to_response('hellinist_workbench.html', context,
-                                  RequestContext(request))
+    response = render(request, 'hellinist_workbench.html', context)
     if request.method == 'POST':
         for key in ('hwPrfx', 'hwAddress', 'hwExample'):
             form.cleaned_data[key] = base64.standard_b64encode(
@@ -803,9 +799,12 @@ def antconc2ucs8_converter(request):
 
         u"Возведо'хъ ѻ'чи мои` въ го'ры, ѿню'дꙋже пріи'детъ по'мощь моѧ`",
     )
-    context = { 'convertee': random.choice(examples) }
-    return render_to_response('converter.html', context,
-                              RequestContext(request))
+    context = {
+        'title': u'Конвертър',
+        'user': request.user,
+        'convertee': random.choice(examples),
+    }
+    return render(request, 'converter.html', context)
 
 
 @login_required
@@ -848,11 +847,13 @@ def edit_entry(request, id):
         'part_of_speech': models.PART_OF_SPEECH_MAP,
     }
     context = {
+        'title': u'Статья «%s»' % entry.civil_equivalent,
+        'user': user,
         'entry': viewmodels.entry_json(id),
         'choices': viewmodels._json(choices),
         'labels': viewmodels._json(labels),
         'slugs': viewmodels._json(slugs),
-        'entryURL': Entry.objects.get(pk=id).get_absolute_url(),
+        'entryURL': entry.get_absolute_url(),
         'PARTS_OF_SPEECH': models.PART_OF_SPEECH_CHOICES,
         'GENDERS': models.GENDER_CHOICES,
         'STATUSES': models.STATUS_CHOICES,
@@ -860,8 +861,7 @@ def edit_entry(request, id):
         'SUBSTANTIVUS_TYPES': models.SUBSTANTIVUS_TYPE_CHOICES,
         'MAX_LENGTHS': models.MAX_LENGTHS,
     }
-    return render_to_response('single_entry_edit.html', context,
-                              RequestContext(request))
+    return render(request, 'single_entry_edit.html', context)
 
 @login_required
 def dump(request):

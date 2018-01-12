@@ -217,7 +217,7 @@
     <div class="edit-controls">
 
         <div>
-            <a href="{% if user.is_admeditor %}{% url 'admin:dictionary_meaning_change' m.pk %}{% else %}{% url 'UI:dictionary_meaning_change' m.pk %}{% endif %}">
+            <a href="{% if user.is_admeditor %}{{ url('admin:dictionary_meaning_change', args=[m.pk]) }}{% else %}{{ url('UI:dictionary_meaning_change', args=[m.pk]) }}{% endif %}">
                 <img src="{{ STATIC_URL }}pen.png" alt="" />
                 {{ space }}
                 Редактировать
@@ -230,7 +230,7 @@
         </div>
 
         <div>
-            <a href="{% if user.is_admeditor %}{% url 'admin:dictionary_example_add' %}{% else %}{% url 'UI:dictionary_example_add' %}{% endif %}?meaning={{ m.id }}">
+            <a href="{% if user.is_admeditor %}{{ url('admin:dictionary_example_add') }}{% else %}{{ url('UI:dictionary_example_add') }}{% endif %}?meaning={{ m.id }}">
                 <img src="{{ STATIC_URL }}plus.png" alt="" />
                 {{ space }}
                 Добавить пример

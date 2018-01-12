@@ -5,6 +5,7 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 from django.db.models import Q
+from django.db.utils import OperationalError
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
 
@@ -540,8 +541,12 @@ def assign_author(author):
     func.short_description = u'Назначить выбранные статьи автору %s' % author
     func.func_name = 'assign_author_%s' % author.pk
     return func
-for author in CustomUser.objects.all():#.filter(groups__name=u'authors'):
-    entry_actions.append(assign_author(author))
+
+try:
+    for author in CustomUser.objects.all():#.filter(groups__name=u'authors'):
+        entry_actions.append(assign_author(author))
+except OperationalError:
+    pass
 
 class AdminEntry(admin.ModelAdmin):
     raw_id_fields = (

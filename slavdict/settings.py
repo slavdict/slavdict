@@ -1,13 +1,4 @@
 # -*- coding: UTF-8 -*-
-"""
-Django settings for slavdict project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.7/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.7/ref/settings/
-"""
 from os.path import abspath
 from os.path import dirname
 from os.path import normpath
@@ -85,21 +76,12 @@ TEMPLATE_LOADERS = (
         'django.template.loaders.app_directories.Loader',
 )
 
-#from jinja2 import StrictUndefined
-JINJA2_ENVIRONMENT_OPTIONS = {
-    'autoescape': False,
-#    'undefined': StrictUndefined,
-}
-
-JINJA2_EXTENSIONS = (
-    'slavdict.django_template_spaces.templatetags.trim_spaces.trim',
-)
-
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'slavdict.middleware.ValidCookieMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-   #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -110,20 +92,36 @@ ROOT_URLCONF = 'slavdict.urls'
 
 WSGI_APPLICATION = 'slavdict.wsgi.application'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    ROOT + 'templates/',
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.debug',
-    'django.core.context_processors.static',
-    'django.contrib.auth.context_processors.auth',
-    'django.contrib.messages.context_processors.messages',
-    'slavdict.context_processors.staticfiles',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.static',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+    {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'DIRS': [
+            ROOT + 'templates/',
+        ],
+        'APP_DIRS': False,
+        'OPTIONS': {
+            'autoescape': False,
+            'environment': 'slavdict.jinja2.environment',
+            'extensions': [
+                'slavdict.jinja_extensions.trim_spaces.trim',
+            ],
+        },
+    },
+]
 
 STATICFILES_DIRS = (
     ROOT + 'static/',
@@ -137,11 +135,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'coffin',
-
-    'slavdict.dictionary',
     'slavdict.custom_user',
-    'slavdict.django_template_spaces',
+    'slavdict.dictionary',
 )
 
 ######################################
