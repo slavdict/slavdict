@@ -4,14 +4,15 @@
 
 {% if m.substantivus_csl %}
     {{ m.substantivus_csl_ucs|
-         ind_civil_injection("Valency", "CSLSegmentEm", "Text")|
-         good_slash("Text")
+         web_civil_injection("Valency", "CSLSegmentEm", "Text")|
+         web_good_slash("Text")
          }}
     {{ space }}
 {% endif %}
 
 {% if m.meaning %}
-    {{ m.host_entry.base_vars[0].idem_ucs|ind_cslav_words("CSLSegmentEm", "Text") }}{{ space }}
+    {{ m.host_entry.base_vars[0].idem_ucs |
+            web_cslav_words("CSLSegmentEm", "Text") }}{{ space }}
     {% for frame in m.meaning.split(";") %}
         {% if loop.first %}
             {# pass #}
@@ -19,10 +20,10 @@
             {{ backspace }}<span class="Text">;</span>{{ space }}
         {% endif %}
         <span class="Text">{{ frame|trim|
-            ind_cslav_injection("CSLSegmentEm")|
-            ind_regex("Valency", '[а-я]+[\\-\u2011]л\\.')|
-            ind_regex("Em", 'с\\s(?:придат|инф)\\.')|
-            good_slash("Text")
+            web_cslav_injection("CSLSegmentEm")|
+            web_regex("Valency", '[а-я]+[\\-\u2011]л\\.')|
+            web_regex("Em", 'с\\s(?:придат|инф)\\.')|
+            web_good_slash("Text")
             }}</span>
 
         {{ space }}
@@ -32,8 +33,9 @@
 {% if m.gloss %}
     {{ backspace }}{{ space }}
     <span class="Text">(=</span>{{ nbsp }}
-    <span class="Text">{{ m.gloss|ind_cslav_injection("CSLSegment")|
-                                good_slash("Text") }}</span>
+    <span class="Text">{{ m.gloss |
+        web_cslav_injection("CSLSegment") |
+        web_good_slash("Text") }}</span>
     <span class="Text">)</span>
     {{ space }}
 {% endif %}

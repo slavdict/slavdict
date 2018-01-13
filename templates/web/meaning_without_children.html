@@ -12,7 +12,8 @@
             {{ backspace }},{{ space }}
         {% endif %}
     {% endif %}
-    {{ orthvar_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    {{ orthvar_ucs |
+            web_cslav_words("CSLSegmentEm", fow_web=True) }}{{ space }}
 {% endfor %}
 
 
@@ -27,18 +28,21 @@
         {% if not loop.first %}
             {{ backspace }},{{ space }}
         {% endif %}
-        {{ form_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+        {{ form_ucs |
+                web_cslav_words("CSLSegmentEm") }}{{ space }}
     {% endfor %}
 
 {% elif m.special_case == 'e' %}{# твор. ед. в роли нареч. #}
 
     <span class="Em">твор. ед.</span>{{ space }}
-    {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    {{ m.substantivus_csl_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
     <span class="Em">в{{ nbsp }}роли нареч.</span>{{ space }}
 
 {% elif m.special_case == 'l' %}{# в роли нареч. #}
 
-    {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    {{ m.substantivus_csl_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
     <span class="Em">в{{ nbsp }}роли нареч.</span>{{ space }}
 
 {% elif m.special_case == 'h' %}{# имя собств. #}
@@ -52,7 +56,8 @@
 {% elif m.special_case == 'k' %}{# мн. #}
 
     <span class="Em">мн.</span>{{ space }}
-    {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    {{ m.substantivus_csl_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
 
 {% elif m.substantivus %}
 
@@ -70,7 +75,8 @@
             <span class="Em">ж.</span>{{ space }}
         {% endif %}
 
-        {{ form_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+        {{ form_ucs |
+               web_cslav_words("CSLSegmentEm") }}{{ space }}
     {% endfor %}
 
     {% if m.special_case == 'j' %}{# преимущ. #}
@@ -86,7 +92,8 @@
 
 {% elif m.substantivus_csl %}
 
-    {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    {{ m.substantivus_csl_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
 
 {% endif %}
 
@@ -96,11 +103,11 @@
 {% endif %}
 
 {% if m.meaning %}
-    <span class="Meaning Text">{{ m.meaning|
-        ind_cslav_injection("CSLSegment")|
-        ind_regex("Em", '(?<![А-Яа-я])(?:перен|букв|зд|см|ср)\\.')|
-        ind_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+')|
-        good_slash("Text") }}</span>
+    <span class="Meaning Text">{{ m.meaning |
+        web_cslav_injection("CSLSegment") |
+        web_regex("Em", '(?<![А-Яа-я])(?:перен|букв|зд|см|ср)\\.') |
+        web_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+        web_good_slash("Text") }}</span>
 {% endif %}
 
 {% if m.gloss %}
@@ -108,12 +115,12 @@
         {{ backspace }};{{ space }}
     {% endif %}
     <span class="Gloss Em">{{ m.gloss |
-        ind_cslav_injection("CSLSegment") |
-        ind_regex("Text", '‘[^’]+’') |
-        ind_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
-        ind_regex("Text", '(?<=Син\.\sпер\.\s)Керенгаппух|бдолах|сирияне|сирийский|сириец|земля Уц') |
-        ind_regex("Text", '(?<=Септ\.\s)Авситидийская') |
-        good_slash("Text")
+        web_cslav_injection("CSLSegment") |
+        web_regex("Text", '‘[^’]+’') |
+        web_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+        web_regex("Text", '(?<=Син\.\sпер\.\s)Керенгаппух|бдолах|сирияне|сирийский|сириец|земля Уц') |
+        web_regex("Text", '(?<=Септ\.\s)Авситидийская') |
+        web_good_slash("Text")
         }}</span>
     {{ space }}
 {% endif %}

@@ -1,7 +1,7 @@
 {% macro example(e, examples_loop, peer_meanings_loop, parent_meanings_loop,
                     collogroups_loop, child_meanings) %}
 
-{{ e.example_ucs|ind_cslav_words("CSLSegment", "Text") }}
+{{ e.example_ucs | web_cslav_words("CSLSegment", "Text") }}
 {{ space }}
 
 {% if e.greek_equivs %}
@@ -19,8 +19,8 @@
 
         <span class="Greek">
             {{ ge.unitext|
-                    ind_regex("Text", '[\\(\\)]')|
-                    ind_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}')|
+                    web_regex("Text", '[\\(\\)]') |
+                    web_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}') |
                     replace(" ", "{{ space }}") }}
         </span>
 
@@ -32,7 +32,8 @@
 
         {% if ge.note %}
             {{ backspace }}{{ space }}
-            <span class="Text">{{ ge.note|ind_regex("Em", 'букв\\.') }}</span>
+            <span class="Text">{{ ge.note |
+                web_regex("Em", 'букв\\.') }}</span>
             {{ space }}
         {% endif %}
 
@@ -42,7 +43,7 @@
 {% if e.address_text %}
     {{ backspace }}{{ space }}
     <span class="Address">
-        {{ e.address_text|ind_cslav_injection("CSLSegment") }}
+        {{ e.address_text | web_cslav_injection("CSLSegment") }}
     </span>
     <span class="Address">
         {% if not examples_loop.last or

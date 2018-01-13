@@ -10,9 +10,9 @@
     {% if not loop.first %}
         {{ backspace }}{{ space }}
     {% endif %}
-    {{ c.collocation_ucs|
-            ind_civil_injection("Valency", "CSLSegmentEm", "Text")|
-            good_slash("Text")
+    {{ c.collocation_ucs |
+            web_civil_injection("Valency", "CSLSegmentEm", "Text") |
+            web_good_slash("Text")
             }}
     {% if not loop.last %}
         {{ backspace }}<span class="Text">;</span>{{ space }}

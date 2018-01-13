@@ -17,7 +17,8 @@
         {% if loop.first %}
             <span class="Headword">{{ base_var.idem_ucs }}</span>
         {% else %}
-            {{ base_var.idem_ucs|ind_cslav_words("SubHeadword") }}
+            {{ base_var.idem_ucs |
+                    web_cslav_words("SubHeadword") }}
         {% endif %}
         {% if loop.first %}
             {% if entry.homonym_order %}
@@ -38,7 +39,7 @@
                 <span class="Text">(</span>
             {% endif %}
 
-            {{ var.idem_ucs|ind_cslav_words("CSLSegment") }}
+            {{ var.idem_ucs|web_cslav_words("CSLSegment") }}
 
             {% if loop.last %}
                 {{ backspace }}<span class="Text">)</span>{{ space }}
@@ -52,7 +53,8 @@
             {% set wordform, wordform_ucs, grammatical_mark = sc_several_nouns[loop.index0] %}
             {% if wordform %}
                 {{ backspace }},{{ space }}
-                <span>{{ wordform_ucs|ind_cslav_words("CSLSegment") }}</span>
+                <span>{{ wordform_ucs |
+                            web_cslav_words("CSLSegment") }}</span>
                 {% if wordform|has_no_accent %}
                     {% include 'web/noaccent.html' %}
                 {% endif %}
@@ -81,7 +83,8 @@
                     {{ backspace }}{{ space }}
                     <span class="Conj">и</span>{{ space }}
                 {% endif %}
-                <span>{{ short_form_ucs|ind_cslav_words("CSLSegment") }}</span>
+                <span>{{ short_form_ucs |
+                         web_cslav_words("CSLSegment") }}</span>
                 {% if short_form|has_no_accent %}
                     {% include 'web/noaccent.html' %}
                 {% endif %}
@@ -95,7 +98,8 @@
                     {{ backspace }}{{ space }}
                     <span class="Conj">и</span>{{ space }}
                 {% endif %}
-                <span>{{ genitive_ucs|ind_cslav_words("CSLSegment") }}</span>
+                <span>{{ genitive_ucs |
+                         web_cslav_words("CSLSegment") }}</span>
                 {% if genitive|has_no_accent %}
                     {% include 'web/noaccent.html' %}
                 {% endif %}
@@ -109,7 +113,8 @@
                     {{ backspace }}{{ space }}
                     <span class="Conj">и</span>{{ space }}
                 {% endif %}
-                <span>{{ sg1_ucs|ind_cslav_words("CSLSegment") }}</span>
+                <span>{{ sg1_ucs |
+                         web_cslav_words("CSLSegment") }}</span>
                 {% if sg1|has_no_accent %}
                     {% include 'web/noaccent.html' %}
                 {% endif %}
@@ -125,7 +130,8 @@
             {% if entry.sg2_ucs_wax.0 %}
                 <span class="Text">{{ nbhyphen }}</span>
             {% endif %}
-            <span>{{ entry.sg2_ucs_wax.1|ind_cslav_words("CSLSegment") }}</span>
+            <span>{{ entry.sg2_ucs_wax.1 |
+                         web_cslav_words("CSLSegment") }}</span>
             {% if entry.sg2|has_no_accent %}
                 {% include 'web/noaccent.html' %}
             {% endif %}
@@ -141,7 +147,8 @@
                 {% if not loop.first %}
                     {{ backspace }}<span class="Text">,</span>{{ space }}
                 {% endif %}
-                {{ neg_form_ucs|ind_cslav_words("CSLSegment") }}
+                {{ neg_form_ucs |
+                       web_cslav_words("CSLSegment") }}
                 {{ space }}
             {% endfor %}
         {% endif %}
@@ -192,7 +199,8 @@
         {{ backspace }}{{ space }}
         <span class="Em">сравн. степ. от</span>
         {{ space }}
-        {{ bigger_form_ucs|ind_cslav_words("CSLSegment") }}
+        {{ bigger_form_ucs |
+                web_cslav_words("CSLSegment") }}
         {{ space }}
     {% endif %}
 
@@ -233,7 +241,8 @@
             {% elif not loop.first %}
                 {{ backspace }},{{ space }}
             {% endif %}
-            <span>{{ ethnonym_ucs|ind_cslav_words("CSLSegment") }}</span>
+            <span>{{ ethnonym_ucs |
+                        web_cslav_words("CSLSegment") }}</span>
             {% if ethnonym|has_no_accent %}
                 {% include 'web/noaccent.html' %}
             {% endif %}
@@ -309,7 +318,8 @@
                         {{ backspace }},{{ space }}
                     {% endif %}
                 {% endif %}
-                {{ orthvar_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+                {{ orthvar_ucs |
+                   web_cslav_words("CSLSegmentEm") }}{{ space }}
             {% endfor %}
         {% endif %}
 
@@ -346,7 +356,8 @@
                 {{ backspace }}<span class="Text">,</span>{{ space }}
             {% endif %}
 
-            {{ cfe.orth_vars.0.idem_ucs|ind_cslav_words("CSLSegment") }}
+            {{ cfe.orth_vars.0.idem_ucs |
+                    web_cslav_words("CSLSegment") }}
 
             {% if cfe.homonym_order %}
                 <span class="HeadwordNumber">
@@ -359,7 +370,8 @@
             {% if not loop.first or entry.cfentries %}
                 {{ backspace }}<span class="Text">,</span>{{ space }}
             {% endif %}
-            {{ cfcg.collocations.0.collocation_ucs|ind_cslav_words("CSLSegment", "Text") }}
+            {{ cfcg.collocations.0.collocation_ucs |
+                        web_cslav_words("CSLSegment", "Text") }}
         {% endfor %}
         {{ backspace }}<span class="Text">.</span>
     {% endif %}
