@@ -313,7 +313,7 @@ def ind_cslav_injection(value, cstyle=CSLCSTYLE, for_web=False):
     return re.sub(ur'(\s*)##(.*?)##(\s*)', ind_cslav, value)
 
 @register_filter
-def web_cslav_injection(value, cstyle=CSLCSTYLE)
+def web_cslav_injection(value, cstyle=CSLCSTYLE):
     return ind_cslav_injection(value, cstyle, for_web=True)
 
 class MMM(object):
