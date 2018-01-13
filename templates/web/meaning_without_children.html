@@ -1,0 +1,142 @@
+{% macro meaning(m, peer_meanings_loop, parent_meanings_loop,
+                    collogroups_loop, child_meanings) %}
+{% from 'web/example.html' import example with context %}
+
+
+{% for orthvar_ucs in m.orthvars %}
+    {% if not loop.first %}
+        {% if loop.last %}
+            {{ backspace }}{{ space }}
+            <span class="Em">и</span>{{ space }}
+        {% else %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+    {% endif %}
+    {{ orthvar_ucs |
+            web_cslav_words("CSLSegmentEm", fow_web=True) }}{{ space }}
+{% endfor %}
+
+
+{% if m.special_case == 'a' %}{# канонич. #}
+
+    <span class="Em">канонич.</span>{{ space }}
+
+{% elif m.special_case == 'd' %}{# дат. #}
+
+    <span class="Em">дат.</span>{{ space }}
+    {% for form_ucs in m.substantivus_forms %}
+        {% if not loop.first %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+        {{ form_ucs |
+                web_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% endfor %}
+
+{% elif m.special_case == 'e' %}{# твор. ед. в роли нареч. #}
+
+    <span class="Em">твор. ед.</span>{{ space }}
+    {{ m.substantivus_csl_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
+    <span class="Em">в{{ nbsp }}роли нареч.</span>{{ space }}
+
+{% elif m.special_case == 'l' %}{# в роли нареч. #}
+
+    {{ m.substantivus_csl_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
+    <span class="Em">в{{ nbsp }}роли нареч.</span>{{ space }}
+
+{% elif m.special_case == 'h' %}{# имя собств. #}
+
+    <span class="Em">имя собств.</span>{{ space }}
+
+{% elif m.special_case == 'i' %}{# топоним #}
+
+    <span class="Em">топоним</span>{{ space }}
+
+{% elif m.special_case == 'k' %}{# мн. #}
+
+    <span class="Em">мн.</span>{{ space }}
+    {{ m.substantivus_csl_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
+
+{% elif m.substantivus %}
+
+    {% for form_ucs in m.substantivus_forms %}
+        {% if not loop.first %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+
+        {% if (loop.last or loop.index == 3) and
+                m.substantivus_type == 'b' %}{# ср. род, мн. число #}
+            {{ backspace }}{{ space }}
+            <span class="Em">мн.</span>{{ space }}
+        {% elif loop.last and m.substantivus_type == 'e' %}{# ж. род, ед. число #}
+            {{ backspace }}{{ space }}
+            <span class="Em">ж.</span>{{ space }}
+        {% endif %}
+
+        {{ form_ucs |
+               web_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% endfor %}
+
+    {% if m.special_case == 'j' %}{# преимущ. #}
+        {{ backspace }}{{ space }}
+        <span class="Em">преимущ.</span>{{ space }}
+    {% endif %}
+
+    {% if m.substantivus_forms %}
+        {{ backspace }}{{ space }}
+    {% endif %}
+    <span class="Em">в{{ nbsp }}роли сущ.</span>
+    {{ space }}
+
+{% elif m.substantivus_csl %}
+
+    {{ m.substantivus_csl_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
+
+{% endif %}
+
+
+{% if m.figurative %}
+    <span class="Em">перен.</span>{{ space }}
+{% endif %}
+
+{% if m.meaning %}
+    <span class="Meaning Text">{{ m.meaning |
+        web_cslav_injection("CSLSegment") |
+        web_regex("Em", '(?<![А-Яа-я])(?:перен|букв|зд|см|ср)\\.') |
+        web_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+        web_good_slash("Text") }}</span>
+{% endif %}
+
+{% if m.gloss %}
+    {% if m.meaning %}
+        {{ backspace }};{{ space }}
+    {% endif %}
+    <span class="Gloss Em">{{ m.gloss |
+        web_cslav_injection("CSLSegment") |
+        web_regex("Text", '‘[^’]+’') |
+        web_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+        web_regex("Text", '(?<=Син\.\sпер\.\s)Керенгаппух|бдолах|сирияне|сирийский|сириец|земля Уц') |
+        web_regex("Text", '(?<=Септ\.\s)Авситидийская') |
+        web_good_slash("Text")
+        }}</span>
+    {{ space }}
+{% endif %}
+
+{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss) and m.examples %}
+    {{ backspace }}:{{ space }}
+{% endif %}
+
+{% for e in m.examples %}
+    {{ example(e, examples_loop=loop,
+               peer_meanings_loop=peer_meanings_loop,
+               parent_meanings_loop=parent_meanings_loop,
+               collogroups_loop=collogroups_loop,
+               child_meanings=child_meanings) }}
+{% endfor %}
+
+
+{% endmacro %}
+{# vim: set ft=django.html: #}

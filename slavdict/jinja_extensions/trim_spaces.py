@@ -208,7 +208,7 @@ def cslav_nobr_words(value):
 
 CSLCSTYLE = u'CSLSegment'
 
-def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
+def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
     if value is None:
         value = u''
@@ -216,8 +216,14 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
     if civil_cstyle is None:
         TEXT_TAG = u'%s'
     else:
-        TEXT_TAG = u'<x aid:cstyle="{}">%s</x>'.format(civil_cstyle)
-    CSL_TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
+        if for_web:
+            TEXT_TAG = u'<span class="{}">%s</span>'.format(civil_cstyle)
+        else:
+            TEXT_TAG = u'<x aid:cstyle="{}">%s</x>'.format(civil_cstyle)
+    if for_web:
+        CSL_TAG = u'<span class="{}">%s</span>'.format(cstyle)
+    else:
+        CSL_TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
     # многоточие
     RE_DOTS = ur'\.\.\.'
     # круглые, квадратные скобки и косая черта
@@ -267,8 +273,11 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
             # NOTE::xmlucs8:
             parts.append(CSL_TAG % html_escape(hyphenate_ucs8(html_unescape(segment))))
         segments.append(u''.join(parts))
-
-    return u''.join(segments).replace(u'\u00AD', u'<h aid:cstyle="Text">\u00AD</h>')
+    if for_web:
+        HYPHEN_TAG = u'<span class="Text">\u00AD</span>'
+    else:
+        HYPHEN_TAG = u'<h aid:cstyle="Text">\u00AD</h>'
+    return u''.join(segments).replace(u'\u00AD', HYPHEN_TAG)
 
 
 def cslav_subst(x):
@@ -296,12 +305,16 @@ def subst_func(func):
     return f
 
 @register_filter
-def ind_cslav_injection(value, cstyle=CSLCSTYLE):
+def ind_cslav_injection(value, cstyle=CSLCSTYLE, for_web=False):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
     ind_cslav = subst_func(lambda x: indesign_cslav_words(
-        ucs_convert(x), cstyle))
+        ucs_convert(x), cstyle, for_web))
     return re.sub(ur'(\s*)##(.*?)##(\s*)', ind_cslav, value)
+
+@register_filter
+def web_cslav_injection(value, cstyle=CSLCSTYLE):
+    return ind_cslav_injection(value, cstyle, for_web=True)
 
 class MMM(object):
     def __init__(self, text):
@@ -323,9 +336,13 @@ class MMM(object):
         return self.match_groups[x]
 
 @register_filter
-def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE, civil2_cstyle=None):
+def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE,
+        civil2_cstyle=None, for_web=False):
     lst = value.split(u'##')
-    TAG = u'<x aid:cstyle="{}">%s</x>'.format(civil_cstyle)
+    if for_web:
+        TAG = u'<span class="{}">%s</span>'.format(civil_cstyle)
+    else:
+        TAG = u'<x aid:cstyle="{}">%s</x>'.format(civil_cstyle)
     for i, elem in enumerate(lst):
         if not elem:
             continue
@@ -338,7 +355,8 @@ def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE, civil2_csty
             parts = re.split(RE, elem)
             for j, part in enumerate(parts):
                 if not j % 2:
-                    part = indesign_cslav_words(part, cslav_cstyle, civil2_cstyle)
+                    part = indesign_cslav_words(part, cslav_cstyle,
+                                                civil2_cstyle, for_web)
                 else:
                     part = part.replace(u' ', SPACE)
                 parts[j] = part
@@ -347,12 +365,25 @@ def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE, civil2_csty
     return u''.join(lst)
 
 @register_filter
-def ind_regex(value, cstyle, regex):
+def web_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE,
+        civil2_cstyle=None):
+    return ind_civil_injection(value, civil_cstyle, cslav_cstyle,
+                               civil2_cstyle, for_web=True)
+
+@register_filter
+def ind_regex(value, cstyle, regex, for_web=False):
     """ Помечает указанным стилем cstyle найденный текст
     """
-    TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
+    if for_web:
+        TAG = u'<span class="{}">%s</span>'.format(cstyle)
+    else:
+        TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
     _ind_regex = subst_func(lambda x: TAG % x)
     return re.sub(ur'(\s*)(%s)(\s*)' % regex, _ind_regex, value)
+
+@register_filter
+def web_regex(value, cstyle, regex):
+    return ind_regex(value, cstyle, regex, for_web=True)
 
 @register_filter
 def has_no_accent(value):
@@ -362,10 +393,20 @@ def has_no_accent(value):
     return True
 
 @register_filter
-def good_slash(value, cstyle='Text'):
-    TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
+def good_slash(value, cstyle='Text', for_web=False):
+    if for_web:
+        TAG = u'<span class="{}">%s</span>'.format(cstyle)
+    else:
+        TAG = u'<x aid:cstyle="{}">%s</x>'.format(cstyle)
     return re.sub(ur"(?<!<)/%s?" % ZWS, TAG % (SLASH + ZWS), value)
 
+@register_filter
+def web_good_slash(value, cstyle='Text'):
+    return good_slash(value, cstyle, for_web=True)
 
 register_filter('cslav_words')(cslav_nobr_words)
 register_filter('ind_cslav_words')(indesign_cslav_words)
+
+@register_filter
+def web_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
+    return indesign_cslav_words(value, cstyle, civil_cstyle, for_web=True)

@@ -1,0 +1,42 @@
+<div class="Entry">
+    <div class="FirstParagraph" class="Text">
+
+        <span class="Headword">
+            {{ reference }}
+        </span>{{ space }}
+        {% if reference.homonym_order %}
+            {{ backspace }}
+            <span class="HeadwordHomonymNumber">
+                {{ reference.homonym_order }}
+            </span>{{ space }}
+        {% endif %}
+
+        <span class="Em">см.</span>{{ nbsp }}
+        {% if entry.is_reference %}
+            {% for x in entry.references %}
+                {% if not loop.first %}
+                    {{ backspace }},{{ space }}
+                {% endif %}
+
+                {{ x.reference_ucs|web_cslav_words("CSLSegment") }}
+
+                {% if x.homonym_order %}
+                    {{ backspace }}
+                    <span class="HomonymNumber">
+                        {{ x.homonym_order }}
+                    </span>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {{ entry.base_vars.0.idem_ucs|web_cslav_words("CSLSegment") }}
+            {% if entry.homonym_order %}
+                <span class="HomonymNumber">
+                    {{ entry.homonym_order }}
+                </span>
+            {% endif %}
+        {% endif %}
+        .
+    </div>
+</div>{# Entry #}
+
+{# vim: set ft=django.html: #}
