@@ -1,5 +1,5 @@
-{% from '_etymology.html'   import etymology    with context %}
-{% from '_meaning_without_children.html' import meaning with context %}
+{% from 'web_old/etymology.html'   import etymology    with context %}
+{% from 'web_old/meaning_without_children.html' import meaning with context %}
 
 {% if cg.meanings or cg.metaph_meanings %}<div{% else %}<span{% endif %}
     class="entry-collogroup">
@@ -68,7 +68,7 @@
             {% if cg.meanings|length != 1 %}
                 {{ loop.index }}.{{ space }}
             {% endif %}
-            {% include '_meaning_with_children.html' %}
+            {% include 'web_old/meaning_with_children.html' %}
         {% endfor %}
 
 

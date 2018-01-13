@@ -1,5 +1,5 @@
-{% from '_etymology.html'   import etymology    with context %}
-{% from '_meaning_without_children.html' import meaning with context %}
+{% from 'web_old/etymology.html'   import etymology    with context %}
+{% from 'web_old/meaning_without_children.html' import meaning with context %}
 
 {% trim %}
 
@@ -292,7 +292,7 @@
                 <b>{{ mnumber }}</b>.{{ space }}
             {% endif %}
 
-            {% include '_meaning_with_children.html' with context %}
+            {% include 'web_old/meaning_with_children.html' with context %}
 
         </div>
 
@@ -300,7 +300,7 @@
         {% if m.collogroups %}
             <div class="entry-collogroups">
                 {% for cg in m.collogroups %}
-                    {% include '_collogroup.html' %}
+                    {% include 'web_old/collogroup.html' %}
                 {% endfor %}
             </div>
         {% endif %}
@@ -326,7 +326,7 @@
         {% if m.collogroups %}
             <div class="entry-collogroups">
                 {% for cg in m.collogroups %}
-                    {% include '_collogroup.html' %}
+                    {% include 'web_old/collogroup.html' %}
                 {% endfor %}
             </div>
         {% endif %}
@@ -336,7 +336,7 @@
     {% if entry.collogroups %}
         <div class="entry-collogroups">
             {% for cg in entry.collogroups %}
-                {% include '_collogroup.html' %}
+                {% include 'web_old/collogroup.html' %}
             {% endfor %}
         </div>
     {% endif %}
