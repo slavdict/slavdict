@@ -1,0 +1,47 @@
+{% macro collogroup(cg, collogroups_loop) %}
+{% from 'web/meaning_without_children.html' import meaning with context %}
+
+
+{% if not collogroups_loop.first %}
+    {% include 'web/separator.html' %}
+{% endif %}
+
+{% for c in cg.collocations %}
+    {% if not loop.first %}
+        {{ backspace }}{{ space }}
+    {% endif %}
+    {{ c.collocation_ucs|
+            ind_civil_injection("Valency", "CSLSegmentEm", "Text")|
+            good_slash("Text")
+            }}
+    {% if not loop.last %}
+        {{ backspace }}<span class="Text">;</span>{{ space }}
+    {% endif %}
+{% endfor %}
+{{ backspace }}{{ space }}
+
+
+{% set mnumber = '' %}
+{% for m in cg.meanings %}
+    {{ backspace }}{{ space }}
+    {% if loop.length != 1 %}
+        {% set cgmnumber = {1:'а', 2:'б', 3:'в', 4:'г', 5:'д'}[loop.index] %}
+        <span class="CgMeaningNumber">
+            ({{ cgmnumber }})
+        </span>{{ nbsp }}
+    {% endif %}
+    {% include 'web/meaning_with_children.html' with context %}
+{% endfor %}
+
+
+{% for m in cg.metaph_meanings %}
+
+    {% include 'web/allusion.html' %}
+    {{ meaning(m, peer_meanings_loop=loop,
+                  parent_meanings_loop=none,
+                  collogroups_loop=collogroups_loop,
+                  child_meanings=[]) }}
+{% endfor %}
+
+{% endmacro %}
+{# vim: set ft=django.html: #}

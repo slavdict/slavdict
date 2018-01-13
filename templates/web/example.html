@@ -1,0 +1,68 @@
+{% macro example(e, examples_loop, peer_meanings_loop, parent_meanings_loop,
+                    collogroups_loop, child_meanings) %}
+
+{{ e.example_ucs|ind_cslav_words("CSLSegment", "Text") }}
+{{ space }}
+
+{% if e.greek_equivs %}
+    {% for ge, genum in e.greek_equivs_with_numbers %}
+
+        {% if not loop.first %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+
+        {% if ge.mark %}
+            {{ backspace }}{{ space }}
+            <span class="Em">{{ ge.mark }}</span>
+            {{ space }}
+        {% endif %}
+
+        <span class="Greek">
+            {{ ge.unitext|
+                    ind_regex("Text", '[\\(\\)]')|
+                    ind_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}')|
+                    replace(" ", "{{ space }}") }}
+        </span>
+
+        {% if genum == 2 %}
+            {{ backspace }}{{ nbsp }}(bis){{ space }}
+        {% elif genum > 2 %}
+            {{ backspace }}{{ nbsp }}({{ genum }}){{ space }}
+        {% endif %}
+
+        {% if ge.note %}
+            {{ backspace }}{{ space }}
+            <span class="Text">{{ ge.note|ind_regex("Em", 'букв\\.') }}</span>
+            {{ space }}
+        {% endif %}
+
+    {% endfor %}
+{% endif %}
+
+{% if e.address_text %}
+    {{ backspace }}{{ space }}
+    <span class="Address">
+        {{ e.address_text|ind_cslav_injection("CSLSegment") }}
+    </span>
+    <span class="Address">
+        {% if not examples_loop.last or
+                collogroups_loop and not peer_meanings_loop.last %}
+            {{ backspace }};
+        {% elif examples_loop.last and child_meanings|length == 0 and
+                (not peer_meanings_loop.last and not parent_meanings_loop and
+                 not collogroups_loop or
+                    (peer_meanings_loop.last and
+                        (parent_meanings_loop or
+                            (not parent_meanings_loop and
+                                (not collogroups_loop or
+                                     collogroups_loop and collogroups_loop.last))))) %}
+            {{ backspace }}{{ onlyDot }}
+        {% endif %}
+    </span>
+    {{ space }}
+
+{% endif %}
+
+
+{% endmacro %}
+{# vim: set ft=django.html: #}
