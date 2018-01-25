@@ -33,6 +33,24 @@
     </style>
 {% endif %}
 
+<script>
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = $.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+</script>
+
 <div{% if not is_paged %} contenteditable{% endif %}>
     {% for entry in entries %}
         <div style="position: relative;">
@@ -61,13 +79,21 @@
                             name="good{{ entry.id }}" value="{{ goodness }}"
                             onchange="
                                 var self = this;
-                                $.ajax('/json/goodness/save/', {
-                                    type: 'POST',
-                                    data: { id: {{entry.id}}, goodness: '{{ goodness }}' },
-                                    success: function(){},
-                                    error: function(){ $(self).parent().parent().addClass('red'); }
-                                }
-                                );"
+                                $.ajax({
+                                    method: 'POST',
+                                    url: '/json/goodness/save/',
+                                    data: { id: {{ entry.id }},
+                                            goodness: '{{ goodness }}' },
+                                    beforeSend: function (request) {
+                                        request.setRequestHeader('X-CSRFToken', csrftoken);
+                                    },
+                                    error: function () {
+                                                $(self)
+                                                    .parent()
+                                                    .parent()
+                                                    .addClass('red');
+                                        }
+                                });"
                             {% if entry.good == goodness %}checked{% endif %} />
                         {{ goodness_text }}
                     </label>

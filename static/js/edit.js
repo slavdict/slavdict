@@ -1,6 +1,24 @@
 try {
 
 
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = $.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+
 var topic = 'entry_change',
     otStyle = 'slavdictOpentip',
     constructors = [Etymology, Participle, Orthvar,
@@ -1167,7 +1185,14 @@ var viewModel = vM.entryEdit,
                 });
 
             // Получаем promise-объект
-            persistingDataPromise = $.post('/entries/save/', {'json': data});
+            persistingDataPromise = $.ajax({
+                method: 'POST',
+                url: '/entries/save/',
+                data: {'json': data},
+                beforeSend: function (request) {
+                    request.setRequestHeader('X-CSRFToken', csrftoken);
+                }
+            });
 
             persistingDataPromise
                 .done(uiModel.saveDialogue.exitWithoutSaving)
@@ -1414,9 +1439,15 @@ var viewModel = vM.entryEdit,
 
 
 } catch(e) {
-    $.post('/entries/jserror/',
-           {entryId: vM.dataToInitialize.entry.id || 'unknown',
-            errorObj: e,
-            userAgent: window.navigator.userAgent});
+    $.ajax({
+        method: 'POST',
+        url: '/entries/jserror/',
+        data: { entryId: vM.dataToInitialize.entry.id || 'unknown',
+                errorObj: e,
+                userAgent: window.navigator.userAgent },
+        beforeSend: function (request) {
+            request.setRequestHeader('X-CSRFToken', csrftoken);
+        }
+    });
     throw e;
 }

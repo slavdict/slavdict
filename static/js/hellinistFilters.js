@@ -1,3 +1,19 @@
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = $.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
 ko.bindingHandlers['visibleActive'] = {
     'update': function (element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());
@@ -36,13 +52,19 @@ function Greq(ex, greq) {
         if (this.id()) {
             this.beingSaved(true);
             var dataToSend = { 'delete': this.id() }
-            $.post(vM.urls.jsonGreqDeleteURL, dataToSend,
-                function(data) {
-                    if (data.action=='deleted') {
-                        ex.greqs.remove(this);
-                    }
-                }.bind(this)
-            );
+            $.ajax({
+                method: 'POST',
+                url: vM.urls.jsonGreqDeleteURL,
+                data: dataToSend,
+                beforeSend: function (request) {
+                    request.setRequestHeader('X-CSRFToken', csrftoken);
+                },
+                success: function (data) {
+                           if (data.action=='deleted') {
+                             ex.greqs.remove(this);
+                           }
+                         }.bind(this)
+            });
         } else {
             ex.greqs.remove(this);
         }
@@ -51,12 +73,20 @@ function Greq(ex, greq) {
     this.saveMe = function() {
         this.beingSaved(true);
         var dataToSend = { 'greq': ko.toJSON(new GreqForJSON(this)) };
-        $.post(vM.urls.jsonGreqSaveURL, dataToSend, function(data) {
-            if (data.action=='created') {
-                this.id(data.id);
-            }
-            this.beingSaved(false);
-        }.bind(this));
+        $.ajax({
+            method: 'POST',
+            url: vM.urls.jsonGreqSaveURL,
+            data: dataToSend,
+            beforeSend: function (request) {
+                request.setRequestHeader('X-CSRFToken', csrftoken);
+            },
+            success: function (data) {
+                       if (data.action=='created') {
+                         this.id(data.id);
+                       }
+                       this.beingSaved(false);
+                     }.bind(this)
+        });
     }.bind(this);
 }
 
@@ -139,9 +169,17 @@ function Example(ex) {
     this.doSave = function () {
         this.beingSaved(true);
         var dataToSend = { 'ex': ko.toJSON(new ExForJSON(this)) };
-        $.post(vM.urls.jsonExSaveURL, dataToSend, function(data) {
-            this.beingSaved(false);
-        }.bind(this));
+        $.ajax({
+            method: 'POST',
+            url: vM.urls.jsonExSaveURL,
+            data: dataToSend,
+            beforeSend: function (request) {
+                request.setRequestHeader('X-CSRFToken', csrftoken);
+            },
+            success: function (data) {
+                       this.beingSaved(false);
+                     }.bind(this)
+        });
     }.bind(this);
 }
 
