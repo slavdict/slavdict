@@ -439,7 +439,7 @@ Meaning.hideFromServer = ['collogroups', 'meanings', 'examples', 'isExpanded'];
 function Entry(data) {
     upsert(this, 'additional_info', data, '');
     upsert(this, 'antconc_query', data, '');
-    upsert(this, 'canonical_name', data, '');
+    upsert(this, 'canonical_name', data, false);
     upsert(this, 'civil_equivalent', data, '');
     upsert(this, 'derivation_entry_id', data, null);
     upsert(this, 'duplicate', data, false);
