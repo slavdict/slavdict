@@ -97,7 +97,7 @@ class DataChangeShell(cmd.Cmd):
                 count = 0
                 if self.first_volume:
                     items = (i for i in model.objects.all()
-                               if i.host_entry.first_volume)
+                               if i.host_entry.volume(1))
                 else:
                     items = model.objects.all()
                 print u'\n\033[1;33m%s.%s\033[0m' % (model.__name__, attrname)

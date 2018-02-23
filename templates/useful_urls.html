@@ -1,0 +1,61 @@
+{% extends 'base--hdrSearch.html' %}
+
+{% block content %}
+
+<style>
+    #materials {
+        font-family: Arial, sans-serif;
+        width: 35em;
+        margin: 2em auto;
+        color: #333;
+    }
+    #materials ul {
+        list-style-type: none;
+        margin-top: 0.5em;
+        text-indent: -1.05em;
+        margin-left: 1.05em;
+    }
+    #materials li:before {
+        content: '—';
+    }
+    #materials li {
+        padding: 0;
+        font-size: 80%;
+        margin-bottom: 0.35em;
+        margin-top: 0.1em;
+    }
+    #materials li a:link,
+    #materials li a:active,
+    #materials li a:hover,
+    #materials li a:visited {
+        color: #00a;
+    }
+    #materials li a:hover {
+        text-decoration: underline;
+    }
+    #materials li a em {
+        color: gray;
+    }
+    h2 {
+        margin-top: 2em;
+    }
+</style>
+
+<div id='materials'>
+
+    <p>Ссылки-ускоряторы для подготовки 2-го тома</p>
+    {% for section, data in urls %}
+    <h2>{{ section }}</h2>
+    <ul>
+        {% for name, uri in data %}
+        <li>
+            <a href="{{ url('usefulURLs') }}{{ uri }}/">{{ name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+

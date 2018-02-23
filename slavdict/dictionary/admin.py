@@ -164,35 +164,38 @@ def entry_for_example(obj):
     return u'%s%s' % (r, i)
 
 
-class FirstVolumeFilter(admin.SimpleListFilter):
-    title = u'1-й том'
-    parameter_name = 'first_volume'
+class VolumeFilter(admin.SimpleListFilter):
+    title = u'Тома'
+    parameter_name = 'volume'
     def lookups(self, request, model_admin):
         return (
             ('1', u'из 1-го тома'),
+            ('2', u'из 2-го тома'),
             ('0', u'остальные'),
         )
     def queryset(self, request, queryset):
-        if self.value() == '1':
-            return queryset.filter(id__in=self.xs())
         if self.value() == '0':
-            return queryset.filter(~Q(id__in=self.xs()))
+            return queryset.filter(id__in=self.xs(volume=None))
+        elif self.value() == '1':
+            return queryset.filter(id__in=self.xs(volume=1))
+        elif self.value() == '2':
+            return queryset.filter(id__in=self.xs(volume=2))
 
-class FirstVolumeEntryFilter(FirstVolumeFilter):
-    def xs(self):
-        return (e.id for e in Entry.objects.all() if e.first_volume)
+class FirstVolumeEntryFilter(VolumeFilter):
+    def xs(self, volume=None):
+        return (e.id for e in Entry.objects.all() if e.volume(volume))
 
-class FirstVolumeCollogroupFilter(FirstVolumeFilter):
-    def xs(self):
-        return (x.id for x in CollocationGroup.objects.all() if x.first_volume)
+class FirstVolumeCollogroupFilter(VolumeFilter):
+    def xs(self, volume=None):
+        return (x.id for x in CollocationGroup.objects.all() if x.volume(volume))
 
-class FirstVolumeMeaningFilter(FirstVolumeFilter):
-    def xs(self):
-        return (m.id for m in Meaning.objects.all() if m.not_hidden() and m.first_volume)
+class FirstVolumeMeaningFilter(VolumeFilter):
+    def xs(self, volume=None):
+        return (m.id for m in Meaning.objects.all() if m.not_hidden() and m.volume(volume))
 
-class FirstVolumeExampleFilter(FirstVolumeFilter):
-    def xs(self):
-        return (x.id for x in Example.objects.all() if x.first_volume)
+class FirstVolumeExampleFilter(VolumeFilter):
+    def xs(self, volume=None):
+        return (x.id for x in Example.objects.all() if x.volume(volume))
 
 class SubstantivusMeaningFilter(admin.SimpleListFilter):
     title = u'в роли сущ.'

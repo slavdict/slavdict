@@ -36,7 +36,7 @@ if len(sys.argv) > 1:
     test_entries = [int(i) for i in r.split(s)]
 if test_entries:
     lexemes = lexemes.filter(pk__in=test_entries)
-lexemes = [e for e in lexemes if e.first_volume]
+lexemes = [e for e in lexemes if e.volume(1)]
 
 for lexeme in lexemes:
 
@@ -80,7 +80,7 @@ for lexeme in lexemes:
         reference = ucs_convert(wordform)
         entries.append((wordform, reference, lexeme))
 
-other_volumes = [e for e in Entry.objects.all() if not e.first_volume]
+other_volumes = [e for e in Entry.objects.all() if not e.volume(1)]
 for lexeme in other_volumes:
     for participle in lexeme.participles:
         if participle.tp not in ('1', '2', '3', '4'):

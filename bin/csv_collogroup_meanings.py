@@ -15,7 +15,7 @@ from slavdict.unicode_csv import UnicodeWriter
 
 uw = UnicodeWriter(open('cg_meanings.csv', 'w'))
 for cg in (cg for cg in CollocationGroup.objects.all()
-              if cg.host_entry.first_volume):
+              if cg.host_entry.volume(1)):
     cgcolumn = u'; '.join(c.collocation for c in cg.collocations)
     for m in list(cg.meanings) + list(cg.metaph_meanings):
         meaning = m.meaning.strip()

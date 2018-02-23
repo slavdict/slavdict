@@ -43,4 +43,6 @@ urlpatterns = [
     # TODO: В последствии всё это должно быть удалено.
     url( r'^adhoc/csv-import/$', views.import_csv_billet ),
     url( r'^adhoc/dump/$', views.dump ),
+    url( r'^urls/$', views.useful_urls, name='usefulURLs' ),
+    url( r'^urls/([^/]+)/$', views.useful_urls, name='usefuleURLsX' ),
 ]

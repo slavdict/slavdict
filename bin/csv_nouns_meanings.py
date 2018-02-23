@@ -15,7 +15,7 @@ from slavdict.unicode_csv import UnicodeWriter
 
 def write_csv(filename, entries):
     uw = UnicodeWriter(open(filename, 'w'))
-    for e in (e for e in entries if e.first_volume):
+    for e in (e for e in entries if e.volume(1)):
         ecolumn = e.civil_equivalent + {1: u'¹', 2: u'²'}.get(e.homonym_order, u'')
         for m in list(e.meanings) + list(e.metaph_meanings):
             meaning = m.meaning.strip()

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-import subprocess
-import tempfile
 
 from django.db import transaction
 
@@ -15,7 +13,7 @@ def edit(ge):
     raw_input()
 
 for ge in GreekEquivalentForExample.objects.all():
-    if (u'...' in ge.unitext or u'…' in ge.unitext) and ge.host_entry.first_volume:
+    if (u'...' in ge.unitext or u'…' in ge.unitext) and ge.host_entry.volume(1):
         host_entry = ge.host_entry.civil_equivalent
         host = ge.host.civil_equivalent
         print host_entry, ':', host if host != host_entry else u''

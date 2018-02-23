@@ -831,10 +831,15 @@ class Entry(models.Model):
     preplock = False  # Заглушка для условия, по которому статья д.б. залочена
         # от всех пользователей кроме работающих над подготовкой тома к печати.
 
-    @property
-    def first_volume(self):
-        letters = (u'а', u'б')
-        return self.civil_equivalent.lstrip(u' =')[:1].lower() in letters
+    def volume(self, volume=None):
+        volume_letters = {
+            1: (u'а', u'б'),
+            2: (u'в',),
+        }
+        if volume is None:
+            used_letters = chain(*volume_letters.values())
+            return self.civil_equivalent.lstrip(u' =')[:1].lower() not in used_letters
+        return self.civil_equivalent.lstrip(u' =')[:1].lower() in volume_letters.get(volume, [])
 
     @models.permalink
     def get_absolute_url(self):
@@ -1342,11 +1347,10 @@ class Meaning(models.Model):
         else:
             return self.collogroup_container
 
-    @property
-    def first_volume(self):
+    def volume(self, volume=None):
         host_entry = self.host_entry
         if host_entry:
-            return host_entry.first_volume
+            return host_entry.volume(volume)
         return False
 
     def save(self, without_mtime=False, *args, **kwargs):
@@ -1516,11 +1520,10 @@ class Example(models.Model):
             else:
                 return self.entry
 
-    @property
-    def first_volume(self):
+    def volume(self, volume=None):
         host_entry = self.host_entry
         if host_entry:
-            return host_entry.first_volume
+            return host_entry.volume(volume)
         return False
 
     def example_for_admin(self):
@@ -1654,11 +1657,10 @@ class CollocationGroup(models.Model):
 
     host = host_entry
 
-    @property
-    def first_volume(self):
+    def volume(self, volume=None):
         host_entry = self.host_entry
         if host_entry:
-            return host_entry.first_volume
+            return host_entry.volume(volume)
         return False
 
     def meanings_for_admin(self):
