@@ -564,7 +564,7 @@ class AdminEntry(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (('untitled_exists', 'reconstructed_headword',
-                'questionable_headword'),),
+                'questionable_headword', 'special_case'),),
             }),
         (None, {
             'fields': ('civil_equivalent',),

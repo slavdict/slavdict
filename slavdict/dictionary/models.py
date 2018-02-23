@@ -415,7 +415,7 @@ SUBSTANTIVUS_TYPE_MAP = {
     'f.pl.': 'f',
 }
 
-SC1, SC2, SC3, SC4, SC5, SC6 = 'abcdef'
+ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6 = 'abcdef'
 ENTRY_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (SC1, u'Несколько лексем одного рода'),
@@ -792,7 +792,7 @@ class Entry(models.Model):
         if case == 'several nouns':
             if (self.genitive and ',' in self.genitive and
                     len(self.base_vars) > 1 and
-                    self.special_case in (SC1, SC2, SC3, SC4, SC5, SC6)):
+                    self.special_case in ENTRY_SPECIAL_CASES):
                 M_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['masculine']]
                 F_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['feminine']]
                 N_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['neutral']]
