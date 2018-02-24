@@ -2,6 +2,7 @@
 import base64
 import collections
 import datetime
+import itertools
 import operator
 import random
 import re
@@ -1081,6 +1082,22 @@ def useful_urls_redirect(uri, request):
                 es.append(e)
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
 
+    elif uri == 'entries-without-examples':
+        es = []
+        for e in Entry.objects.all():
+            meaning_collogroups = (m.collogroups for m in e.all_meanings)
+            all_collogroups = itertools.chain(e.collogroups,
+                                              *meaning_collogroups)
+            collogroup_meanings = (cg.all_meanings for cg in all_collogroups)
+            all_meanings = itertools.chain(e.all_meanings, *collogroup_meanings)
+            no_example = all(
+                not meaning.examples
+                    and all(not cm.examples for cm in meaning.child_meanings)
+                for meaning in all_meanings)
+            if e.volume(VOLUME) and no_example:
+                es.append(e)
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
+
     return HttpResponseRedirect(uri)
 
 
@@ -1093,6 +1110,9 @@ def useful_urls(request, x=None, y=None):
                     (u'Заглавные слова без ударений', 'orthvars-without-accents'),
                     (u'Формы без ударений', 'forms-without-accents'),
                     (u'Несколько форм в одном поле', 'multiple-forms'),
+                )),
+            (u'Статьи', (
+                    (u'Статьи без примеров', 'entries-without-examples'),
                 )),
             (u'Словосочетания (cc)', (
                     (u'Все сс', 'all-collocations'),
