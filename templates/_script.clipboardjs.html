@@ -1,0 +1,13 @@
+{% if debug %}
+
+    <script type="text/javascript"
+            src="{{ JSLIBS.clipboardjs.debugLocal }}"></script>
+
+{% else %}
+
+    <script type="text/javascript"
+            src="{{ JSLIBS.clipboardjs.minLocal }}"></script>
+
+{% endif %}
+
+{# vim: set ft=django.html: #}

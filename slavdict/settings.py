@@ -65,7 +65,7 @@ MEDIA_URL = '/u/'
 
 STATIC_ROOT = ROOT + '.static/'
 STATIC_URL = '/static/'
-STATIC_RESOURCES_VERSION='2018.02.24'
+STATIC_RESOURCES_VERSION='2018.02.26-19.28'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'td2+2t^tz-)^j^%@4_^c8ds#6-po3sfoqbwaa2u*i3rj3y%hs1'
@@ -196,13 +196,11 @@ JSLIBS = {
          'Xmin': 'https://raw.githubusercontent.com/rniemeyer/'
                  'knockout-postbox/v0.4.2/build/knockout-postbox.min.js',
     },
-    'zeroClipboard': {
-        'debug': 'https://rawgit.com/zeroclipboard/'
-                 'ZeroClipboard/v1.1.7/ZeroClipboard.js',
-         'Xmin': 'https://raw.githubusercontent.com/zeroclipboard/'
-                 'ZeroClipboard/v1.1.7/ZeroClipboard.min.js',
-          'swf': 'https://raw.githubusercontent.com/zeroclipboard/'
-                 'ZeroClipboard/v1.1.7/ZeroClipboard.swf',
+    'clipboardjs': {
+        'debug': 'https://raw.githubusercontent.com/zenorocha/'
+                 'clipboard.js/v1.7.1/dist/clipboard.js',
+         'Xmin': 'https://cdnjs.cloudflare.com/ajax/libs/'
+                 'clipboard.js/1.7.1/clipboard.min.js',
     },
     'opentip': {
         'debug': 'https://rawgit.com/enyo/opentip/'

@@ -38,7 +38,8 @@
 <aside>
 
     <input type="button" class="header--item button" id="copy_antconc_query"
-        value="Запрос для AntConc" />
+        value="Запрос для AntConc"
+        data-clipboard-text="{{ antconc_query|e }}" />
 
     {{ space }}
     <a href="http://ruscorpora.ru/search-orthlib.html"
@@ -165,7 +166,7 @@
     <script src="{{ STATIC_URL }}js/libs/ac2ucs8.js?{{ STATIC_RESOURCES_VERSION }}"
         type="text/javascript" charset="utf-8"></script>
 
-    {% include '_script.zeroClipboard.html' %}
+    {% include '_script.clipboardjs.html' %}
 
     {% include '_script.knockout.postbox.html' %}
 

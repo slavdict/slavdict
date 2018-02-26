@@ -89,7 +89,7 @@ migrate:
 clean:
 	-find -name '*.pyc' -execdir rm '{}' \;
 	-rm -f static/*.css
-	-rm -f ${JSLIBS_PATH}*.{js,map,txt}
+	-rm -f ${JSLIBS_PATH}*.{js,map,txt,swf}
 	-rm -fR .sass-cache/
 	-rm -fR .static/*
 

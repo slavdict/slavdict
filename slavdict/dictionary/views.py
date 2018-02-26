@@ -855,6 +855,7 @@ def edit_entry(request, id):
         'title': u'Статья «%s»' % entry.civil_equivalent,
         'user': user,
         'entry': viewmodels.entry_json(id),
+        'antconc_query': entry.antconc_query,
         'choices': viewmodels._json(choices),
         'labels': viewmodels._json(labels),
         'slugs': viewmodels._json(slugs),

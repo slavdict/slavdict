@@ -1420,14 +1420,13 @@ var viewModel = vM.entryEdit,
 
     ko.applyBindings(viewModel, $('body').get(0));
 
-    // Инициализация ZeroClipboard и Opentip для кнопки копирования
+    // Инициализация clipboardjs и Opentip для кнопки копирования
     // AntConc-запроса.
-    var copyButton = $('#copy_antconc_query'),
-        clip = new ZeroClipboard(copyButton),
+    var copyButtonId = '#copy_antconc_query',
+        clipboard = new Clipboard(copyButtonId),
         aqTipText = 'Запрос для AntConc скопирован в буфер обмена.'
-        aqTip = new Opentip(copyButton, aqTipText, { style: otStyle });
-    clip.on('dataRequested', function (client, args) {
-        client.setText(dataModel.entry.antconc_query());
+        aqTip = new Opentip($(copyButtonId), aqTipText, { style: otStyle });
+    clipboard.on('success', function (event) {
         aqTip.show();
         aqTip.hide();
     });
