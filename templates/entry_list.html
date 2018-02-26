@@ -380,9 +380,15 @@
                   and (not entry.authors.exists() or user.is_admeditor
                        or user in entry.authors.all()) %}
                 {% if not entry.duplicate or user.is_admeditor %}
-                <div style="position: absolute; top: -3px; left: -40px;">
+                <div style="position: absolute; top: 5px; left: -45px;">
                     <a class="icon edit" href="{{ url('edit_form_url', args=[entry.pk]) }}">
                         <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
+                    </a>
+                    <br />
+                    <a class="icon clippy nearText"
+                       data-clipboard-text="{{ entry.antconc_query|e }}"
+                       title="Скопировать запрос для АнтКонка">
+                        <img src="{{ STATIC_URL }}transparent.png" alt="v" />
                     </a>
                     {% if user.is_superuser %}
                     <br />
@@ -607,16 +613,36 @@
             stemLength: 12, stemBase: 15, background: '#fcf3d0',
             borderColor: '#e8d5b2'
         };
-        var aqTip = new Opentip('.header',
-                'Запрос для АнтКонка скопирован в буфер обмена.',
-                { style: otStyle });
-        $('a.icon.clippy').each(function () {
-            var clipboard = new Clipboard(this);
-            clipboard.on('success', function (event) {
-                aqTip.show();
-                aqTip.hide();
+        var otStyle2 = 'slavdictOpentip2';
+        Opentip.styles[otStyle2] = { target: true, showOn: null,
+            tipJoint: 'bottom left', hideOn: 'click', stem: false,
+            removeElementsOnHide: true, hideEffectDuration: 2.5,
+            stemLength: 12, stemBase: 15, background: '#fcf3d0',
+            borderColor: '#e8d5b2', offset: [-35, -20]
+        };
+        if ($('a.icon.clippy.nearText').length) {
+            $('a.icon.clippy').each(function () {
+                var clipboard = new Clipboard(this),
+                    aqTip = new Opentip($(this),
+                        'Запрос для АнтКонка скопирован в буфер обмена.',
+                        { style: otStyle2 });
+                clipboard.on('success', function (event) {
+                    aqTip.show();
+                    aqTip.hide();
+                });
             });
-        });
+        } else {
+            var aqTip = new Opentip('.header',
+                    'Запрос для АнтКонка скопирован в буфер обмена.',
+                    { style: otStyle });
+            $('a.icon.clippy').each(function () {
+                var clipboard = new Clipboard(this);
+                clipboard.on('success', function (event) {
+                    aqTip.show();
+                    aqTip.hide();
+                });
+            });
+        }
     });
     </script>
 

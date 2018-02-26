@@ -1,6 +1,7 @@
 {% from 'web/etymology.html'   import etymology    with context %}
 {% from 'web/meaning_without_children.html' import meaning with context %}
 
+{% trim %}
 <div class="Entry">
     <div class="FirstParagraph" class="Text">
 
@@ -378,5 +379,6 @@
 
     {{ backspace }}</div>
 </div>{# Entry #}
+{% endtrim %}
 
 {# vim: set ft=django.html: #}

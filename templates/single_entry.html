@@ -41,13 +41,11 @@
         {% endif %}
     {% endif %}
 
-    {% trim %}
-        {% if intermed %}
-            {% include 'web_old/entry.html' %}
-        {% else %}
-            {% include 'web/entry.html' %}
-        {% endif %}
-    {% endtrim %}
+    {% if intermed %}
+        {% include 'web_old/entry.html' %}
+    {% else %}
+        {% include 'web/entry.html' %}
+    {% endif %}
 
 {% endblock %}
 
