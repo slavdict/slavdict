@@ -18,9 +18,8 @@
               and (not entry.authors.exists() or user.is_admeditor
                    or user in entry.authors.all()) %}
             {% if not entry.duplicate or user.is_admeditor %}
-            <div style="position: absolute; top: -3px; left: -40px;">
-                <a class="icon edit" href="javascript:
-                        chromeOnly('{{ url('edit_form_url', args=[entry.pk]) }}')">
+            <div style="position: absolute; top: 5px; left: -45px;">
+                <a class="icon edit" href="{{ url('edit_form_url', args=[entry.pk]) }}">
                     <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
                 </a>
                 {% if user.is_superuser %}
@@ -34,8 +33,8 @@
         {% endif %}
     {% endif %}
 
-    {% include 'web_old/entry.html' %}
-    {% include 'web_old/ref_entries_with_header.html' %}
-    {% include '_script.chromeOnly.html' %}
+    {% trim %}
+        {% include 'web/entry.html' %}
+    {% endtrim %}
 
 {% endblock %}

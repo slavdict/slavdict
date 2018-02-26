@@ -1,13 +1,31 @@
 @charset 'utf-8'
 
 $cslFont: 'Triodion Ucs'
+$csl1Font: 'Pochaevsk Ucs'
+$csl2Font: 'Pochaevsk Condensed Ucs'
+$greekFont: GentiumPlus, 'Old Standard TT'
 $sansFont: Arial, sans-serif
-$serifFont: 'Old Standard TT', serif
+$serifFont: Octava, 'Old Standard TT', serif
 
 @font-face
     font-family: 'Triodion Ucs'
     src: url('fonts/TriIEUcs.eot')
     src: local('Triodion Ucs'), local('Triodion ieUcs'), local('Triodion ieUcs Regular'), local('Triodion-ieUcs'), url('fonts/TriIEUcs.woff') format('woff'), url('fonts/TriIEUcs.ttf') format('truetype'), url('fonts/TriIEUcs.svg#Triodion-ieUcs') format('svg')
+
+@font-face
+    font-family: 'Pochaevsk Ucs'
+    src: url('fonts/pochucs.eot')
+    src: url('fonts/pochucs.eot?#iefix') format('embedded-opentype'), url('fonts/pochucs.woff2') format('woff2'), url('fonts/pochucs.woff') format('woff')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'Pochaevsk Condensed Ucs'
+    src: url('fonts/pochucscond.eot') /* IE9 Compat Modes */
+    src: url('fonts/pochucscond.eot?#iefix') format('embedded-opentype') /* IE6-IE8 */, url('fonts/pochucscond.woff') format('woff') /* Modern Browsers */, url('fonts/pochucscond.ttf') format('truetype') /* Safari, Android, iOS */
+    font-style: normal
+    font-weight: normal
+    text-rendering: optimizeLegibility
 
 @font-face
     font-family: 'hebrew'
@@ -77,7 +95,62 @@ $serifFont: 'Old Standard TT', serif
     src: url('fonts/antconsol-webfont.eot')
     src: url('fonts/antconsol-webfont.woff') format('woff'), url('fonts/antconsol-webfont.ttf') format('truetype')
 
+@font-face
+    font-family: 'Wingdings 3'
+    src: url('fonts/wingdings-3.eot')
+    src: url('fonts/wingdings-3.woff') format('woff'), url('fonts/wingdings-3.ttf') format('truetype'), url('fonts/wingdings.svg#Wingdings3') format('svg')
 
+@font-face
+    font-family: 'Octava'
+    src: url('fonts/oct55.eot')
+    src: url('fonts/oct55.woff') format('woff'), url('fonts/oct55.ttf') format('truetype'), url('fonts/oct55.otf') format('opentype')
+    font-weight: normal
+    font-style: normal
+
+@font-face
+    font-family: 'Octava'
+    src: url('fonts/oct56.eot')
+    src: url('fonts/oct56.woff') format('woff'), url('fonts/oct56.ttf') format('truetype'), url('fonts/oct56.otf') format('opentype')
+    font-weight: normal
+    font-style: italic
+
+@font-face
+    font-family: 'Octava'
+    src: url('fonts/oct85.eot')
+    src: url('fonts/oct85.woff') format('woff'), url('fonts/oct85.ttf') format('truetype'), url('fonts/oct85.otf') format('opentype')
+    font-weight: bold
+    font-style: normal
+
+@font-face
+    font-family: 'Octava'
+    src: url('fonts/oct86.eot')
+    src: url('fonts/oct86.woff') format('woff'), url('fonts/oct86.ttf') format('truetype'), url('fonts/oct86.otf') format('opentype')
+    font-weight: bold
+    font-style: italic
+
+@font-face
+    font-family: FreeSerifSymbols
+    src: url('fonts/freeserif-symbols.eot') /* IE9 Compat Modes */
+    src: url('fonts/freeserif-symbols.eot?#iefix') format('embedded-opentype') /* IE6-IE8 */, url('fonts/freeserif-symbols.woff') format('woff') /* Modern Browsers */, url('fonts/freeserif-symbols.ttf') format('truetype') /* Safari, Android, iOS */
+    font-style: normal
+    font-weight: normal
+    text-rendering: optimizeLegibility
+
+@font-face
+    font-family: GentiumPlus
+    src: url('fonts/GentiumPlus-R.eot')
+    src: url('fonts/GentiumPlus-R.woff') format('woff'), url('fonts/GentiumPlus-R.ttf') format('truetype')
+    font-style: normal
+    font-weight: normal
+    text-rendering: optimizeLegibility
+
+@font-face
+    font-family: GentiumPlus
+    src: url('fonts/GentiumPlus-I.eot')
+    src: url('fonts/GentiumPlus-I.woff') format('woff'), url('fonts/GentiumPlus-I.ttf') format('truetype')
+    font-style: italic
+    font-weight: normal
+    text-rendering: optimizeLegibility
 
 .serif
     font-family: $serifFont !important

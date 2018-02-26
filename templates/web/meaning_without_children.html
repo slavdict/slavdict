@@ -13,7 +13,7 @@
         {% endif %}
     {% endif %}
     {{ orthvar_ucs |
-            web_cslav_words("CSLSegmentEm", fow_web=True) }}{{ space }}
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
 {% endfor %}
 
 
@@ -103,7 +103,7 @@
 {% endif %}
 
 {% if m.meaning %}
-    <span class="Meaning Text">{{ m.meaning |
+    <span class="Meaning Text" lang="ru">{{ m.meaning |
         web_cslav_injection("CSLSegment") |
         web_regex("Em", '(?<![А-Яа-я])(?:перен|букв|зд|см|ср)\\.') |
         web_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
@@ -114,7 +114,7 @@
     {% if m.meaning %}
         {{ backspace }};{{ space }}
     {% endif %}
-    <span class="Gloss Em">{{ m.gloss |
+    <span class="Gloss Em" lang="ru">{{ m.gloss |
         web_cslav_injection("CSLSegment") |
         web_regex("Text", '‘[^’]+’') |
         web_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |

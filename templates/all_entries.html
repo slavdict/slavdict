@@ -62,12 +62,7 @@ var csrftoken = getCookie('csrftoken');
             </a>
         {% endif %}
 
-
-            {% include 'web_old/entry.html' %}
-            {% if show_refentries %}
-                {% include 'web_old/ref_entries.html' %}
-            {% endif %}
-
+        {% include 'web/entry.html' %}
 
         {% if is_paged %}
             <div class="goodness">

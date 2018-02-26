@@ -27,7 +27,7 @@
                 {{ space }}
             {% endif %}
             {% if entry.questionable_headword %}
-                <x>(?)</x>
+                <x aid:cstyle="Text">(?)</x>
             {% endif %}
         {% endif %}
         {{ backspace }}{{ space }}

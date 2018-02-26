@@ -1,0 +1,118 @@
+@charset 'utf-8'
+
+//div.Letter
+//div.Entry
+//div.FirstParagraph
+//div.CollogroupParagraph
+//div.CfParagraph
+//div.MeaningParagraph
+
+//span.Headword
+//span.SubHeadword
+//span.HeadwordHomonymNumber
+//span.HeadwordNumber
+//span.HomonymNumber
+//span.Text
+//span.CSLSegment
+//span.CSLSegmentEm
+//span.MeaningfulNoAccent
+//span.Em
+//span.MeaningNumber
+//span.CgMeaningNumber
+//span.Meaning.Text
+//span.Gloss.Em
+//span.Address
+//span.Greek
+//span.Latin
+//span.Use
+//span.BiblicalAllusion
+//span.Diamond
+//span.Gloss.Em
+//span.Conj
+//span.Valency
+
+div.Entry
+    margin-top: 4em
+    text-align: justify
+    line-height: 1.5em
+
+div.FirstParagraph
+    text-indent: -0.4em
+
+div.CfParagraph,
+div.MeaningParagraph
+    text-indent: 0.6em
+
+div.CollogroupParagraph
+    text-indent: 0.6em
+
+span.Headword,
+span.SubHeadword,
+span.CSLSegmentEm
+    font-family: $csl1Font
+
+span.Headword,
+span.SubHeadword
+    font-size: 1.4em
+
+span.CSLSegmentEm
+    font-size: 1.24em
+
+span.CSLSegment
+    font-family: $csl2Font
+    font-style: normal
+
+span.Text,
+span.Em,
+span.Conj,
+span.Valency,
+span.Latin,
+span.Address,
+    font-family: $serifFont
+
+span.Address
+    font-size: smaller
+
+span.CgMeaningNumber
+    font-weight: bold
+
+span.Conj,
+span.Valency,
+span.Em
+    font-style: italic
+
+span.Greek
+    font-family: $greekFont
+    font-size: 1.1em
+
+span.MeaningNumber,
+span.CgMeaningNumber,
+    font-family: $serifFont
+    font-weight: bold
+
+span.Meaning.Text,
+span.Gloss.Em
+    hyphens: auto
+
+span.Diamond,
+span.MeaningfulNoAccent,
+span.BiblicalAllusion,
+span.Use
+    font-family: FreeSerifSymbol
+
+span.MeaningfulNoAccent
+    font-size: 0.583em
+    position: relative
+    vertical-align: top
+
+span.Diamond
+    font-size: 1.2em
+    position: relative
+    vertical-align: -0.05em
+
+span.HeadwordHomonymNumber,
+span.HeadwordNumber,
+span.HomonymNumber
+    font-size: 0.583em
+    position: relative
+    vertical-align: top
