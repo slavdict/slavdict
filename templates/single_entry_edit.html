@@ -1,6 +1,7 @@
 {% extends 'base-flex.html' %}
 
 {% block header %}
+{% trim %}
 <div>
 
     <input type="button" data-bind="click: ui.navigationStack.pop"
@@ -56,12 +57,14 @@
 
 </aside>
 
+{% endtrim %}
 {% endblock %}
 
 {% block content %}
 
     <div class="curtain"></div>
 
+    {% trim %}
     <aside class="edit">
 
         <div id="aside--headword">
@@ -127,9 +130,7 @@
             <!-- /ko -->
         </header>
 
-        {% trim %}
         {% include '_entryEdit_tabs.html' %}
-        {% endtrim %}
 
         <!-- ko template: { name: ui.currentForm, data: ui.navigationStack.top,
             if: ui.navigationStack.top } --><!-- /ko -->
@@ -158,6 +159,7 @@
         {% include '_template.entryAdvertisement.html' %}
 
     </article>
+    {% endtrim %}
 {% endblock %}
 
 

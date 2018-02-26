@@ -1,3 +1,5 @@
+{% trim %}
+
 {% if params_without_page %}
     {% set other_get_params = '&' ~ params_without_page %}
 {% else %}
@@ -67,5 +69,7 @@
 
 </div>
 {% endif %}
+
+{% endtrim %}
 
 {# vim: set ft=htmldjango: #}
