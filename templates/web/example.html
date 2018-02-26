@@ -1,6 +1,7 @@
 {% macro example(e, examples_loop, peer_meanings_loop, parent_meanings_loop,
                     collogroups_loop, child_meanings) %}
 
+<span class="Example">
 {{ e.example_ucs | web_cslav_words("CSLSegment", "Text") }}
 {{ space }}
 
@@ -63,6 +64,7 @@
     {{ space }}
 
 {% endif %}
+</span>
 
 
 {% endmacro %}

@@ -21,11 +21,16 @@ default: indesign
 
 restart: stop copydiff destroy_loc_changes checkout collectstatic fixown migrate start
 
-run: collectstatic
+killbg:
+	test ! -e .bgpids || ( xargs -a .bgpids kill ; rm .bgpids ; true )
+
+run: killbg collectstatic
 	@echo "Запуск сервера в тестовом окружении..."
 	@$(IS_DEVELOPMENT)
-	compass watch &
-	python ./manage.py runserver
+	livereload static & echo $$! >>.bgpids
+	compass watch & echo $$! >>.bgpids
+	trap 'trap - INT TERM ERR; $(MAKE) killbg' INT TERM ERR; \
+		python ./manage.py runserver
 
 stop:
 	@$(IS_PRODUCTION)

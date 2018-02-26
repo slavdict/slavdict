@@ -273,11 +273,14 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=Fal
             # NOTE::xmlucs8:
             parts.append(CSL_TAG % html_escape(hyphenate_ucs8(html_unescape(segment))))
         segments.append(u''.join(parts))
+    text = u''.join(segments)
     if for_web:
         HYPHEN_TAG = u'<span class="Text">\u00AD</span>'
+        pass
     else:
         HYPHEN_TAG = u'<h aid:cstyle="Text">\u00AD</h>'
-    return u''.join(segments).replace(u'\u00AD', HYPHEN_TAG)
+        text = text.replace(u'\u00AD', HYPHEN_TAG)
+    return text
 
 
 def cslav_subst(x):
@@ -309,7 +312,7 @@ def ind_cslav_injection(value, cstyle=CSLCSTYLE, for_web=False):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
     ind_cslav = subst_func(lambda x: indesign_cslav_words(
-        ucs_convert(x), cstyle, for_web))
+        ucs_convert(x), cstyle, for_web=for_web))
     return re.sub(ur'(\s*)##(.*?)##(\s*)', ind_cslav, value)
 
 @register_filter
