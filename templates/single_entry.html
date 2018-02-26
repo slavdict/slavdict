@@ -42,7 +42,11 @@
     {% endif %}
 
     {% trim %}
-        {% include 'web/entry.html' %}
+        {% if intermed %}
+            {% include 'web_old/entry.html' %}
+        {% else %}
+            {% include 'web/entry.html' %}
+        {% endif %}
     {% endtrim %}
 
 {% endblock %}
