@@ -466,11 +466,12 @@
                 </td>
 
                 <td class="eli-control">
-                    <a href="{{ entry.get_absolute_url() }}" class="icon view">
+                    <a class="icon clippy"
+                            data-clipboard-text="{{ entry.antconc_query|e }}">
                         <img src="{{ STATIC_URL }}transparent.png" alt="v" />
                     </a>
                     <span class="hint-container">
-                        <div class="hint">Просмотреть<br/>статью</div>
+                        <div class="hint">Сохранить запрос<br/>для АнтКонка</div>
                     </span>
                 </td>
 
@@ -593,6 +594,31 @@
 {% block javascript_links %}
 
     {{ super() }}
+
+    {% include '_script.clipboardjs.html' %}
+    {% include '_script.opentip.html' %}
+
+    <script>
+    jQuery(document).ready(function () {
+        var otStyle = 'slavdictOpentip';
+        Opentip.styles[otStyle] = { target: true, showOn: null,
+            tipJoint: 'bottom center', hideOn: 'click', stem: false,
+            removeElementsOnHide: true, hideEffectDuration: 2.5,
+            stemLength: 12, stemBase: 15, background: '#fcf3d0',
+            borderColor: '#e8d5b2'
+        };
+        var aqTip = new Opentip('.header',
+                'Запрос для АнтКонка скопирован в буфер обмена.',
+                { style: otStyle });
+        $('a.icon.clippy').each(function () {
+            var clipboard = new Clipboard(this);
+            clipboard.on('success', function (event) {
+                aqTip.show();
+                aqTip.hide();
+            });
+        });
+    });
+    </script>
 
     <script src="{{ STATIC_URL }}js/myKnockoutCommon.js?{{ STATIC_RESOURCES_VERSION }}"
         type="application/javascript" charset="utf-8"></script>

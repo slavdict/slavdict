@@ -1424,7 +1424,7 @@ var viewModel = vM.entryEdit,
     // AntConc-запроса.
     var copyButtonId = '#copy_antconc_query',
         clipboard = new Clipboard(copyButtonId),
-        aqTipText = 'Запрос для AntConc скопирован в буфер обмена.'
+        aqTipText = 'Запрос для AntConc скопирован в буфер обмена.',
         aqTip = new Opentip($(copyButtonId), aqTipText, { style: otStyle });
     clipboard.on('success', function (event) {
         aqTip.show();

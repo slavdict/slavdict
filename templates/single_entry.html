@@ -19,8 +19,16 @@
                    or user in entry.authors.all()) %}
             {% if not entry.duplicate or user.is_admeditor %}
             <div style="position: absolute; top: 5px; left: -45px;">
-                <a class="icon edit" href="{{ url('edit_form_url', args=[entry.pk]) }}">
+                <a class="icon edit"
+                        href="{{ url('edit_form_url', args=[entry.pk]) }}"
+                        title="Редактировать статью">
                     <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
+                </a>
+                <br />
+                <a class="icon clippy"
+                   data-clipboard-text="{{ entry.antconc_query|e }}"
+                   title="Скопировать запрос для АнтКонка">
+                    <img src="{{ STATIC_URL }}transparent.png" alt="v" />
                 </a>
                 {% if user.is_superuser %}
                 <br />
@@ -36,5 +44,36 @@
     {% trim %}
         {% include 'web/entry.html' %}
     {% endtrim %}
+
+{% endblock %}
+
+{% block javascript_links %}
+
+    {{ super() }}
+
+    {% include '_script.clipboardjs.html' %}
+    {% include '_script.opentip.html' %}
+
+    <script>
+    jQuery(document).ready(function () {
+        var otStyle = 'slavdictOpentip';
+        Opentip.styles[otStyle] = { target: true, showOn: null,
+            tipJoint: 'bottom center', hideOn: 'click', stem: false,
+            removeElementsOnHide: true, hideEffectDuration: 2.5,
+            stemLength: 12, stemBase: 15, background: '#fcf3d0',
+            borderColor: '#e8d5b2'
+        };
+        var aqTip = new Opentip('.header',
+                'Запрос для АнтКонка скопирован в буфер обмена.',
+                { style: otStyle });
+        $('a.icon.clippy').each(function () {
+            var clipboard = new Clipboard(this);
+            clipboard.on('success', function (event) {
+                aqTip.show();
+                aqTip.hide();
+            });
+        });
+    });
+    </script>
 
 {% endblock %}
