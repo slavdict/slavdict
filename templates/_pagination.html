@@ -1,5 +1,4 @@
 {% trim %}
-{% set REWINDA, REWINDB, TOFIRST, TOLAST, BACKWD, FORWD = '⏪⏩⏮⏭⏴⏵' %}
 {% if params_without_page %}
     {% set other_get_params = '&amp;' ~ params_without_page %}
 {% else %}
@@ -18,6 +17,14 @@
 </a>
 {%- endmacro %}
 
+{% macro fa_icon(class, transforms='') -%}
+<i class="fas fa-{{ class }} fa-fw fa-xs"
+{% if transforms %}
+   data-fa-transform="{{ transforms }}"
+{% endif %}
+    ></i>
+{%- endmacro %}
+
 {% if page.paginator.num_pages > 5 %}
     <div class="binary-search{% if page.A %} active{% endif %}">
         <label>бинарный поиск</label>
@@ -29,7 +36,7 @@
         {% set B = page.number %}
         {% set C = (B - A) // 2 + A %}
         {% set AB = '{0},{1}'.format(A, B) %}
-        {{ pageref(C, label=REWINDA, title=C, AB=AB) }}
+        {{ pageref(C, label=fa_icon('backward', 'up-2'), title=C, AB=AB) }}
 
         {% if page.B %}
             {% set B = page.B %}
@@ -39,7 +46,7 @@
         {% set A = page.number %}
         {% set C = (B - A) // 2 + A %}
         {% set AB = '{0},{1}'.format(A, B) %}
-        {{ pageref(C, label=REWINDB, title=C, AB=AB) }}
+        {{ pageref(C, label=fa_icon('forward', 'up-2'), title=C, AB=AB) }}
     </div>
 
     {% if page.has_previous() %}
@@ -53,17 +60,20 @@
         {% set next_page = page.paginator.num_pages %}
     {% endif %}
     <div class="pagination-rewind">
-        {{ pageref(1, label=TOFIRST, title='Первая страница') }}
+        {{ pageref(1, label=fa_icon('fast-backward'),
+                      title='Первая страница') }}
         {{ space }}
 
-        {{ pageref(prev_page, label=BACKWD, title='Предыдущая страница') }}
+        {{ pageref(prev_page, label=fa_icon('step-backward', 'up-1'),
+                              title='Предыдущая страница') }}
         {{ space }}
 
-        {{ pageref(next_page, label=FORWD, title='Следующая страница') }}
+        {{ pageref(next_page, label=fa_icon('step-forward', 'up-1'),
+                              title='Следующая страница') }}
         {{ space }}
 
-        {{ pageref(page.paginator.num_pages, label=TOLAST,
-                   title='Последняя страница') }}
+        {{ pageref(page.paginator.num_pages, label=fa_icon('fast-forward'),
+                                             title='Последняя страница') }}
     </div>
 {% endif %}
 
@@ -128,5 +138,6 @@
 {% endif %}
 
 {% endtrim %}
+
 
 {# vim: set ft=htmldjango: #}
