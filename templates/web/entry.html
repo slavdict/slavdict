@@ -3,7 +3,7 @@
 
 {% trim %}
 <div class="Entry">
-    <div class="FirstParagraph" class="Text">
+    <div class="FirstParagraph Text">
 
     {% set sc_several_nouns = entry.special_cases("several nouns") %}
     {% set serveral_pos, meaning_groups = entry.meaning_groups %}
@@ -293,6 +293,10 @@
         <span class="Text">[агге́ев]</span>{{ space }}
     {% endif %}
 
+    {% if show_additional_info and entry.additional_info %}
+        <span class="ai ai-entry">{{ entry.additional_info }}</span>
+    {% endif %}
+
 
     {% for orthvars, pos, meanings in meaning_groups %}
         {% set mgloop = loop %}
@@ -380,5 +384,17 @@
     {{ backspace }}</div>
 </div>{# Entry #}
 {% endtrim %}
+
+{% if show_additional_info %}
+    <div class="author">
+        {% if entry.authors.exists() %}
+            {% for author in entry.authors.all() %}
+                {{ author }}<br/>
+            {% endfor %}
+        {% else %}
+            &lt; Автор не назначен &gt;
+        {% endif %}
+    </div>
+{% endif %}
 
 {# vim: set ft=django.html: #}
