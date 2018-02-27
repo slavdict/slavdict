@@ -20,6 +20,10 @@
 {% endfor %}
 {{ backspace }}{{ space }}
 
+{% if show_additional_info and cg.additional_info %}
+    <span class="ai ai-entry Text">{{ cg.additional_info }}</span>
+    {{ space }}
+{% endif %}
 
 {% set mnumber = '' %}
 {% for m in cg.meanings %}

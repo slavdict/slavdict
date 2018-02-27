@@ -21,5 +21,10 @@
     </span>{{ space }}
 {% endif %}
 
+{% if show_additional_info and etym.additional_info %}
+    <span class="ai ai-etym Text">{{ etym.additional_info }}</span>
+    {{ space }}
+{% endif %}
+
 {% endmacro %}
 {# vim: set ft=django.html: #}

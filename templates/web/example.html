@@ -37,6 +37,11 @@
             {{ space }}
         {% endif %}
 
+        {% if show_additional_info and ge.additional_info %}
+            <span class="ai ai-grfex Text">{{ ge.additional_info }}</span>
+            {{ space }}
+        {% endif %}
+
     {% endfor %}
 {% endif %}
 
@@ -61,7 +66,16 @@
         {% endif %}
     </span>
     {{ space }}
+{% else %}
+    {% if show_additional_info %}
+        <span class="noaddress">Нет адреса!</span>
+        {{ space }}
+    {% endif %}
+{% endif %}
 
+{% if show_additional_info and e.additional_info %}
+    <span class="ai ai-example Text">{{ e.additional_info }}</span>
+    {{ space }}
 {% endif %}
 
 

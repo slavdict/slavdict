@@ -251,6 +251,11 @@
         <span class="Text">)</span>{{ space }}
     {% endif %}
 
+    {% if show_additional_info and entry.additional_info %}
+        <span class="ai ai-entry Text">{{ entry.additional_info }}</span>
+        {{ space }}
+    {% endif %}
+
 
     {% for etym in entry.etymologies %}
 
@@ -291,10 +296,6 @@
         {{ backspace }},{{ space }}
         <span class="Em">произн.</span>{{ space }}
         <span class="Text">[агге́ев]</span>{{ space }}
-    {% endif %}
-
-    {% if show_additional_info and entry.additional_info %}
-        <span class="ai ai-entry">{{ entry.additional_info }}</span>
     {% endif %}
 
 
