@@ -46,6 +46,8 @@ from slavdict.middleware import InvalidCookieError
 def entry_key(entry):
     return u'%s %s' % ( entry.civil_equivalent.lower(), entry.homonym_order )
 
+paginator_re = re.compile(r'(\d+)[,;:](\d+)')
+
 
 @login_required
 def materials(request):
@@ -225,6 +227,11 @@ def all_entries(request, is_paged=False):
             page = paginator.page(pagenum)
         except (EmptyPage, InvalidPage):
             page = paginator.page(paginator.num_pages)
+        AB = paginator_re.match(request.GET.get('AB', ''))
+        if AB:
+            A, B = AB.groups()
+            page.A = int(A)
+            page.B = int(B)
         entries = page.object_list
     else:
         page = None
@@ -248,7 +255,7 @@ def all_entries(request, is_paged=False):
             dict(
                 (k, unicode(v).encode('utf-8'))
                 for k, v in request.GET.items()
-                if k != 'page'
+                if k not in  ('page', 'AB')
             )
         ),
         }
@@ -372,6 +379,11 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
             page = paginator.page(pagenum)
         except (EmptyPage, InvalidPage):
             page = paginator.page(paginator.num_pages)
+        AB = paginator_re.match(request.GET.get('AB', ''))
+        if AB:
+            A, B = AB.groups()
+            page.A = int(A)
+            page.B = int(B)
         examples = page.object_list
     else:
         page = None
@@ -392,7 +404,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
             dict(
                 (k, unicode(v).encode('utf-8'))
                 for k, v in request.GET.items()
-                if k != 'page'
+                if k not in  ('page', 'AB')
             )
         ),
         'is_subset': is_subset,
@@ -659,6 +671,11 @@ def entry_list(request):
         page = paginator.page(pagenum)
     except (EmptyPage, InvalidPage):
         page = paginator.page(paginator.num_pages)
+    AB = paginator_re.match(request.GET.get('AB', ''))
+    if AB:
+        A, B = AB.groups()
+        page.A = int(A)
+        page.B = int(B)
 
     context = {
         'viewmodel': {
@@ -727,6 +744,11 @@ def hellinist_workbench(request):
         page = paginator.page(pagenum)
     except (EmptyPage, InvalidPage):
         page = paginator.page(paginator.num_pages)
+    AB = paginator_re.match(request.GET.get('AB', ''))
+    if AB:
+        A, B = AB.groups()
+        page.A = int(A)
+        page.B = int(B)
 
     vM_examples = [
     {

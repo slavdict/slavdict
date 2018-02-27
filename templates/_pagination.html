@@ -1,14 +1,71 @@
 {% trim %}
-
+{% set REWINDA, REWINDB, TOFIRST, TOLAST, BACKWD, FORWD = '⏪⏩⏮⏭⏴⏵' %}
 {% if params_without_page %}
-    {% set other_get_params = '&' ~ params_without_page %}
+    {% set other_get_params = '&amp;' ~ params_without_page %}
 {% else %}
     {% set other_get_params = '' %}
 {% endif %}
 
-{% macro pageref(page) -%}
-    <a href="?page={{ page }}{{ other_get_params }}">{{ page }}</a>
+{% macro pageref(page, label=none, title=none, AB=none) -%}
+<a href="?page={{ page }}{{ other_get_params }}
+{%- if AB %}&amp;AB={{ AB }}{% endif %}"
+{% if title is not none %}title="{{ title }}"{% endif %}>
+    {%- if label is none -%}
+        {{ page }}
+    {%- else -%}
+        {{ label }}
+    {%- endif -%}
+</a>
 {%- endmacro %}
+
+{% if page.paginator.num_pages > 5 %}
+    <div class="binary-search{% if page.A %} active{% endif %}">
+        <label>бинарный поиск</label>
+        {% if page.A %}
+            {% set A = page.A %}
+        {% else %}
+            {% set A = 1 %}
+        {% endif %}
+        {% set B = page.number %}
+        {% set C = (B - A) // 2 + A %}
+        {% set AB = '{0},{1}'.format(A, B) %}
+        {{ pageref(C, label=REWINDA, title=C, AB=AB) }}
+
+        {% if page.B %}
+            {% set B = page.B %}
+        {% else %}
+            {% set B = page.paginator.num_pages %}
+        {% endif %}
+        {% set A = page.number %}
+        {% set C = (B - A) // 2 + A %}
+        {% set AB = '{0},{1}'.format(A, B) %}
+        {{ pageref(C, label=REWINDB, title=C, AB=AB) }}
+    </div>
+
+    {% if page.has_previous() %}
+        {% set prev_page = page.number - 1 %}
+    {% else %}
+        {% set prev_page = 1 %}
+    {% endif %}
+    {% if page.has_next() %}
+        {% set next_page = page.number + 1 %}
+    {% else %}
+        {% set next_page = page.paginator.num_pages %}
+    {% endif %}
+    <div class="pagination-rewind">
+        {{ pageref(1, label=TOFIRST, title='Первая страница') }}
+        {{ space }}
+
+        {{ pageref(prev_page, label=BACKWD, title='Предыдущая страница') }}
+        {{ space }}
+
+        {{ pageref(next_page, label=FORWD, title='Следующая страница') }}
+        {{ space }}
+
+        {{ pageref(page.paginator.num_pages, label=TOLAST,
+                   title='Последняя страница') }}
+    </div>
+{% endif %}
 
 {% if page.paginator.num_pages > 1 %}
 <div class="pagination">
