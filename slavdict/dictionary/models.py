@@ -792,6 +792,7 @@ class Entry(models.Model):
         if case == 'several nouns':
             if (self.genitive and ',' in self.genitive and
                     len(self.base_vars) > 1 and
+                    self.special_case and
                     self.special_case in ENTRY_SPECIAL_CASES):
                 M_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['masculine']]
                 F_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['feminine']]
