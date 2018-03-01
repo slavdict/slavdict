@@ -925,10 +925,10 @@ def useful_urls_redirect(uri, request):
         qs = u'&'.join(u'{0}={1}'.format(k, v) for k, v in kwargs.items())
         return u'{0}?{1}'.format(uri, qs)
 
-    if uri == 'all-collocations':
+    if uri == 'all_collocations':
         uri = uri_qs(cgURI, volume=VOLUME)
 
-    elif uri == 'collocs-same-meaning':
+    elif uri == 'collocs_same_meaning':
         cgs = (cg for cg in CollocationGroup.objects.all()
                   if cg.host_entry.volume(VOLUME))
         meanings = reduce(operator.add, [list(cg.meanings) for cg in cgs])
@@ -954,13 +954,13 @@ def useful_urls_redirect(uri, request):
         }
         return render(request, 'useful_urls2.html', context)
 
-    elif uri == 'collocs-litsym':
+    elif uri == 'collocs_litsym':
         cgs = (m.host
                for m in Meaning.objects.filter(metaphorical=True)
                if m.host_entry.volume(VOLUME) and isinstance(m.host, CollocationGroup))
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs))
 
-    elif uri == 'collocs-noun':
+    elif uri == 'collocs_noun':
         cgs = (cg for cg in CollocationGroup.objects.all()
                   if cg.host_entry.volume(VOLUME) and (
                       any(m.substantivus for m in cg.meanings) or
@@ -968,7 +968,7 @@ def useful_urls_redirect(uri, request):
                                             for cm in m.child_meanings)))
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs))
 
-    elif uri == 'same-collocs-same-entry':
+    elif uri == 'same_collocs_same_entry':
         cgs = (cg for cg in CollocationGroup.objects.all()
                   if cg.host_entry.volume(VOLUME))
         cs = (list(cg.collocations) for cg in cgs)
@@ -992,7 +992,7 @@ def useful_urls_redirect(uri, request):
         }
         return render(request, 'useful_urls2.html', context)
 
-    elif uri == 'same-collocs-diff-entry':
+    elif uri == 'same_collocs_diff_entry':
         cgs = (cg for cg in CollocationGroup.objects.all()
                   if cg.host_entry.volume(VOLUME))
         cs = (list(cg.collocations) for cg in cgs)
@@ -1016,7 +1016,7 @@ def useful_urls_redirect(uri, request):
         }
         return render(request, 'useful_urls2.html', context)
 
-    elif uri == 'collocs-2b':
+    elif uri == 'collocs_2b':
         cgss = (cg for cg in CollocationGroup.objects.all()
                    if cg.host_entry.volume(VOLUME))
         cgs = (cg for cg in cgss for c in cg.collocations
@@ -1025,7 +1025,7 @@ def useful_urls_redirect(uri, request):
                    ].count(True) > 1)
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs))
 
-    elif uri == 'collocs-uniq':
+    elif uri == 'collocs_uniq':
         cgss = (cg for cg in CollocationGroup.objects.all()
                    if cg.host_entry.volume(VOLUME))
         cgs = set()
@@ -1038,7 +1038,7 @@ def useful_urls_redirect(uri, request):
                 cgs.add(cg)
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs))
 
-    elif uri == 'collocs-uniqab':
+    elif uri == 'collocs_uniqab':
         cgss = (cg for cg in CollocationGroup.objects.all()
                    if cg.host_entry.volume(VOLUME))
         cgs = set()
@@ -1056,16 +1056,16 @@ def useful_urls_redirect(uri, request):
                 cgs.add(cg)
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs))
 
-    elif uri == 'all-meanings':
+    elif uri == 'all_meanings':
         uri = uri_qs(mURI, volume=VOLUME)
 
-    elif uri == 'meanings-literal':
+    elif uri == 'meanings_literal':
         mark = u'букв.'
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
                 (mark in m.meaning or mark in m.gloss))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms))
 
-    elif uri == 'orthvars-titles':
+    elif uri == 'headwords_titles':
         es = []
         r = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴ]')
         for e in Entry.objects.all():
@@ -1073,7 +1073,7 @@ def useful_urls_redirect(uri, request):
                 es.append(e)
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
 
-    elif uri == 'orthvars-without-accents':
+    elif uri == 'orthvars_without_accents':
         es = []
         r = re.compile(r"['`\^]")
         for e in Entry.objects.all():
@@ -1081,7 +1081,7 @@ def useful_urls_redirect(uri, request):
                 es.append(e)
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
 
-    elif uri == 'forms-without-accents':
+    elif uri == 'forms_without_accents':
         es = []
         r = re.compile(r"['`\^]")
         for e in Entry.objects.all():
@@ -1094,7 +1094,7 @@ def useful_urls_redirect(uri, request):
                 es.append(e)
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
 
-    elif uri == 'multiple-forms':
+    elif uri == 'multiple_forms':
         es = []
         r = re.compile(r"[,;]")
         for e in Entry.objects.all():
@@ -1105,7 +1105,7 @@ def useful_urls_redirect(uri, request):
                 es.append(e)
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
 
-    elif uri == 'entries-without-examples':
+    elif uri == 'entries_without_examples':
         es = []
         for e in Entry.objects.all():
             meaning_collogroups = (m.collogroups for m in e.all_meanings)
@@ -1129,29 +1129,29 @@ def useful_urls_redirect(uri, request):
 def useful_urls(request, x=None, y=None):
     urls = (
             (u'Формы слова', (
-                    (u'Все заглавные слова с титлами', 'orthvars-titles'),
-                    (u'Заглавные слова без ударений', 'orthvars-without-accents'),
-                    (u'Формы без ударений', 'forms-without-accents'),
-                    (u'Несколько форм в одном поле', 'multiple-forms'),
+                    (u'Все заглавные слова с титлами', 'headwords_titles'),
+                    (u'Орф.варианты без ударений', 'orthvars_without_accents'),
+                    (u'Формы без ударений', 'forms_without_accents'),
+                    (u'Несколько форм в одном поле', 'multiple_forms'),
                 )),
             (u'Статьи', (
-                    (u'Статьи без примеров', 'entries-without-examples'),
+                    (u'Статьи без примеров', 'entries_without_examples'),
                 )),
             (u'Словосочетания (cc)', (
-                    (u'Все сс', 'all-collocations'),
-                    (u'Сс с одинаковыми значениями', 'collocs-same-meaning'),
-                    (u'Сс – литургические символы', 'collocs-litsym'),
-                    (u'Сс в роли сущ.', 'collocs-noun'),
-                    (u'Одинаковые сс в одной статье', 'same-collocs-same-entry'),
-                    (u'Одинаковые сс в разных статьях', 'same-collocs-diff-entry'),
-                    (u'CC, где 2 слова на Б', 'collocs-2b'),
-                    (u'Такие сс, что кроме них в статье ничего нет', 'collocs-uniq'),
+                    (u'Все сс', 'all_collocations'),
+                    (u'Сс с одинаковыми значениями', 'collocs_same_meaning'),
+                    (u'Сс – литургические символы', 'collocs_litsym'),
+                    (u'Сс в роли сущ.', 'collocs_noun'),
+                    (u'Одинаковые сс в одной статье', 'same_collocs_same_entry'),
+                    (u'Одинаковые сс в разных статьях', 'same_collocs_diff_entry'),
+                    (u'CC, где 2 слова на Б', 'collocs_2b'),
+                    (u'Такие сс, что кроме них в статье ничего нет', 'collocs_uniq'),
                     (u'Такие сс, что кроме них в статье ничего нет '
-                     u'и сс содержит несколько слов на А или Б', 'collocs-uniqab'),
+                     u'и сс содержит несколько слов на А или Б', 'collocs_uniqab'),
                 )),
             (u'Значения и употребления', (
-                    (u'Все значения и употребления', 'all-meanings'),
-                    (u'Значения с пометой "букв."', 'meanings-literal'),
+                    (u'Все значения и употребления', 'all_meanings'),
+                    (u'Значения с пометой "букв."', 'meanings_literal'),
                 )),
     )
     if x:
