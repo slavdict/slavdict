@@ -1091,11 +1091,47 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'orthvars_without_accents':
         es = []
-        r = re.compile(r"['`\^]")
+        r1 = re.compile(ur"['`\^]")
+        r2 = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
+            # NOTE: ЪЬ намеренно исключены. Нужны любые титла, но не паерки.
         for e in Entry.objects.all():
-            if any(not r.search(o.idem) for o in e.orth_vars.all()):
+            if any(not r1.search(o.idem) and not r2.search(o.idem)
+                   for o in e.orth_vars.all()):
                 es.append(e)
-        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
+
+    elif uri == 'orthvars_vos_voz':
+        es = []
+        pattern = ur"^[Вв][оѻѡѽ]"
+        r1 = re.compile(pattern + u'з')
+        r2 = re.compile(pattern + u'с')
+        for e in Entry.objects.all():
+            if (any(r1.search(o.idem) for o in e.orth_vars.all())
+                    and any(r2.search(o.idem) for o in e.orth_vars.all())):
+                es.append(e)
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
+
+    elif uri == 'orthvars_ln':
+        es = []
+        pattern1 = ur"{0}[ъЪ]?{1}"
+        pattern2 = ur"{0}ь{1}"
+        patterns = [(u'л', i)
+                    for i in itertools.chain(u'бвгджмнстхцчшщ',
+                                       [u'[зѕ]', u'[кѯ]', u'[пѱ]', u'[фѳ]'])]
+        patterns = [(pattern1.format(*p), pattern2.format(*p))
+                    for p in patterns]
+        regexps = [(re.compile(p1), re.compile(p2))
+                    for p1, p2 in patterns]
+        for e in Entry.objects.all():
+            orthvars = [ov.idem for ov in e.orth_vars.all()]
+            if any(any(r1.search(ov) for ov in orthvars)
+                   and any(r2.search(ov) for ov in orthvars)
+                   for r1, r2 in regexps):
+                es.append(e)
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
 
     elif uri == 'forms_without_accents':
         es = []
@@ -1137,6 +1173,36 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
                      volume=VOLUME)
 
+    elif uri == 'duplicate_entries':
+        es = []
+        r = re.compile(ur'\s*[,;:]\s*|\s+\=?и\s+')
+        entries = []
+        for e in Entry.objects.all():
+            forms = list(itertools.chain(*[r.split(ov.idem)
+                                           for ov in e.orth_vars.all()]))
+            for form in (e.genitive, e.sg1, e.sg2, e.nom_sg, e.short_form):
+                form = form.strip()
+                if form:
+                    forms.extend(r.split(form))
+            forms.extend(itertools.chain(*[r.split(p.idem)
+                                           for p in e.participles]))
+            forms = filter(lambda x: x.strip() and not x.startswith(u'-'),
+                           forms)
+            entries.append(set(civilrus_convert(f) for f in forms))
+        while len(entries) > 1:
+            entry = entries.pop()
+            indices = []
+            for i, e in enumerate(entries):
+                if e.intersection(entry):
+                    es.append(e)
+                    indices.append(i)
+            if indices:
+                es.append(entry)
+                entries = [e for i, e in enumerate(entries)
+                             if i not in indices]
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
+
     return HttpResponseRedirect(uri)
 
 
@@ -1149,9 +1215,12 @@ def useful_urls(request, x=None, y=None):
                     (u'Орф.варианты без ударений', 'orthvars_without_accents'),
                     (u'Формы без ударений', 'forms_without_accents'),
                     (u'Несколько форм в одном поле', 'multiple_forms'),
+                    (u'Варианты с воз-/вос-', 'orthvars_vos_voz'),
+                    (u'Варианты с льн/лн, льм/лм и т.п.', 'orthvars_ln'),
                 )),
             (u'Статьи', (
                     (u'Статьи без примеров', 'entries_without_examples'),
+                    (u'Cтатьи дубликаты', 'duplicate_entries'),
                 )),
             (u'Словосочетания (cc)', (
                     (u'Все сс', 'all_collocations'),
