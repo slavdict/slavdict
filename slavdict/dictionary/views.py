@@ -1189,16 +1189,19 @@ def useful_urls_redirect(uri, request):
                                            for p in e.participles]))
             forms = filter(lambda x: x.strip() and not x.startswith(u'-'),
                            forms)
-            entries.append(set(civilrus_convert(f) for f in forms))
+            record = (e, set(civilrus_convert(f) for f in forms))
+            entries.append(record)
         while len(entries) > 1:
-            entry = entries.pop()
+            entry1, forms1 = entries.pop()
             indices = []
-            for i, e in enumerate(entries):
-                if e.intersection(entry):
-                    es.append(e)
+            for i, (entry2, forms2) in enumerate(entries):
+                if (forms1.intersection(forms2)
+                        and (not entry1.homonym_order
+                             or not entry2.homonym_order)):
+                    es.append(entry2)
                     indices.append(i)
             if indices:
-                es.append(entry)
+                es.append(entry1)
                 entries = [e for i, e in enumerate(entries)
                              if i not in indices]
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
