@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import datetime
+import itertools
 import json
 import re
 
@@ -838,7 +839,7 @@ class Entry(models.Model):
             2: (u'в',),
         }
         if volume is None:
-            used_letters = chain(*volume_letters.values())
+            used_letters = itertools.chain(*volume_letters.values())
             return self.civil_equivalent.lstrip(u' =')[:1].lower() not in used_letters
         return self.civil_equivalent.lstrip(u' =')[:1].lower() in volume_letters.get(volume, [])
 
