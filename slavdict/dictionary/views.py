@@ -942,10 +942,18 @@ def useful_urls_redirect(uri, request):
             gloss = m.gloss.lower().strip()
             if gloss:
                 same[gloss].append(m)
-        groups = [(key, cgURI + ','.join(str(cg.id) for cg in set(
-                   m.collogroup_container
-                   if m.collogroup_container else m.parent_meaning.collogroup_container
-                   for m in values))) for key, values in same.items() if len(values) > 1]
+        groups = [(key,
+                   uri_qs(cgURI,
+                          id__in=','.join(
+                            str(cg.id)
+                            for cg in set(
+                                m.collogroup_container if m.collogroup_container
+                                    else m.parent_meaning.collogroup_container
+                                for m in values)),
+                          volume=VOLUME)
+                  )
+                  for key, values in same.items()
+                  if len(values) > 1]
         groups.sort()
         context = {
             'name': u'Словосочетания с одинаковыми значениями',
@@ -957,16 +965,17 @@ def useful_urls_redirect(uri, request):
     elif uri == 'collocs_litsym':
         cgs = (m.host
                for m in Meaning.objects.filter(metaphorical=True)
-               if m.host_entry.volume(VOLUME) and isinstance(m.host, CollocationGroup))
-        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs))
+               if isinstance(m.host, CollocationGroup))
+        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
+                     volume=VOLUME)
 
     elif uri == 'collocs_noun':
         cgs = (cg for cg in CollocationGroup.objects.all()
-                  if cg.host_entry.volume(VOLUME) and (
-                      any(m.substantivus for m in cg.meanings) or
+                  if (any(m.substantivus for m in cg.meanings) or
                       any(cm.substantivus for m in cg.meanings
                                             for cm in m.child_meanings)))
-        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs))
+        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
+                     volume=VOLUME)
 
     elif uri == 'same_collocs_same_entry':
         cgs = (cg for cg in CollocationGroup.objects.all()
@@ -982,7 +991,10 @@ def useful_urls_redirect(uri, request):
         same = ((key, value) for key, value in same if len(value) > 1)
         same = ((key, value) for key, value in same
                 if len(value) > len(set(cg.host_entry for cg in value)))
-        groups = [(key, cgURI + ','.join(str(cg.id) for cg in value))
+        groups = [(key, uri_qs(cgURI,
+                               id__in=','.join(str(cg.id) for cg in value),
+                               volume=VOLUME
+                               ))
                   for key, value in same]
         groups.sort()
         context = {
@@ -1006,7 +1018,10 @@ def useful_urls_redirect(uri, request):
         same = ((key, value) for key, value in same if len(value) > 1)
         same = ((key, value) for key, value in same
                 if len(set(cg.host_entry for cg in value)) > 1)
-        groups = [(key, cgURI + ','.join(str(cg.id) for cg in value))
+        groups = [(key, uri_qs(cgURI,
+                               id__in=','.join(str(cg.id) for cg in value),
+                               volume=VOLUME
+                               ))
                   for key, value in same]
         groups.sort()
         context = {
@@ -1017,32 +1032,30 @@ def useful_urls_redirect(uri, request):
         return render(request, 'useful_urls2.html', context)
 
     elif uri == 'collocs_2b':
-        cgss = (cg for cg in CollocationGroup.objects.all()
-                   if cg.host_entry.volume(VOLUME))
-        cgs = (cg for cg in cgss for c in cg.collocations
+        cgs = (cg
+               for cg in CollocationGroup.objects.all()
+                 for c in cg.collocations
                if [x.startswith(u'б')
                    for x in re.split(ur'[\s/,\(\)]+', c.collocation.lower())
                    ].count(True) > 1)
-        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs))
+        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
+                     volume=VOLUME)
 
     elif uri == 'collocs_uniq':
-        cgss = (cg for cg in CollocationGroup.objects.all()
-                   if cg.host_entry.volume(VOLUME))
         cgs = set()
-        for cg in cgss:
+        for cg in CollocationGroup.objects.all():
             m = cg.base_meaning
             e = cg.base_entry
             empty_meaning = m and not m.meaning.strip() and not m.gloss.strip()
             no_meanings = not m and e and not list(e.meanings) + list(e.metaph_meanings)
             if empty_meaning or no_meanings:
                 cgs.add(cg)
-        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs))
+        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
+                     volume=VOLUME)
 
     elif uri == 'collocs_uniqab':
-        cgss = (cg for cg in CollocationGroup.objects.all()
-                   if cg.host_entry.volume(VOLUME))
         cgs = set()
-        for cg in cgss:
+        for cg in CollocationGroup.objects.all():
             m = cg.base_meaning
             e = cg.base_entry
             empty_meaning = m and not m.meaning.strip() and not m.gloss.strip()
@@ -1054,7 +1067,8 @@ def useful_urls_redirect(uri, request):
                 for c in cg.collocations)
             if (empty_meaning or no_meanings) and several_ABwords:
                 cgs.add(cg)
-        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs))
+        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
+                     volume=VOLUME)
 
     elif uri == 'all_meanings':
         uri = uri_qs(mURI, volume=VOLUME)
@@ -1063,21 +1077,23 @@ def useful_urls_redirect(uri, request):
         mark = u'букв.'
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
                 (mark in m.meaning or mark in m.gloss))
-        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms))
+        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
+                     volume=VOLUME)
 
     elif uri == 'headwords_titles':
         es = []
         r = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴ]')
         for e in Entry.objects.all():
-            if e.volume(VOLUME) and any(r.search(o.idem) for o in e.orth_vars.all()):
+            if r.search(e.orth_vars.first().idem):
                 es.append(e)
-        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
 
     elif uri == 'orthvars_without_accents':
         es = []
         r = re.compile(r"['`\^]")
         for e in Entry.objects.all():
-            if e.volume(VOLUME) and any(not r.search(o.idem) for o in e.orth_vars.all()):
+            if any(not r.search(o.idem) for o in e.orth_vars.all()):
                 es.append(e)
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
 
@@ -1086,24 +1102,23 @@ def useful_urls_redirect(uri, request):
         r = re.compile(r"['`\^]")
         for e in Entry.objects.all():
             forms = (e.genitive, e.sg1, e.sg2, e.short_form)
-            if e.volume(VOLUME) and any(
-                    form.strip()
-                        and not form.strip().startswith(u'-')
-                        and not r.search(form)
-                    for form in forms):
+            if any(form.strip() and not form.strip().startswith(u'-')
+                   and not r.search(form) for form in forms) \
+               or any(p.idem.strip() and not r.search(p.idem)
+                      for p in e.participles):
                 es.append(e)
-        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
 
     elif uri == 'multiple_forms':
         es = []
         r = re.compile(r"[,;]")
         for e in Entry.objects.all():
             forms = (e.genitive, e.sg1, e.sg2, e.short_form, e.nom_sg)
-            if e.volume(VOLUME) and any(
-                    form.strip() and r.search(form)
-                    for form in forms):
+            if any(form.strip() and r.search(form) for form in forms):
                 es.append(e)
-        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
 
     elif uri == 'entries_without_examples':
         es = []
@@ -1117,9 +1132,10 @@ def useful_urls_redirect(uri, request):
                 not meaning.examples
                     and all(not cm.examples for cm in meaning.child_meanings)
                 for meaning in all_meanings)
-            if e.volume(VOLUME) and no_example:
+            if no_example:
                 es.append(e)
-        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es))
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
 
     return HttpResponseRedirect(uri)
 
