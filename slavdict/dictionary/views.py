@@ -1082,7 +1082,8 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'headwords_titles':
         es = []
-        r = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴ]')
+        r = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
+            # NOTE: ЪЬ намеренно исключены. Нужны любые титла, но не паерки.
         for e in Entry.objects.all():
             if r.search(e.orth_vars.first().idem):
                 es.append(e)
