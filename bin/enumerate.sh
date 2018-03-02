@@ -1,5 +1,9 @@
 #!/bin/bash
 
+INPUT_FILE=$(readlink -f "$1")
+OUTPUT_FILE=$(readlink -f "$2")
+START_PAGE=${3:-1}
+
 # Checking for dependencies
 OS=$(lsb_release -si)
 if ! which pdftk > /dev/null; then
@@ -47,10 +51,6 @@ if ! which pdflatex > /dev/null; then
         exit 1
     fi
 fi
-
-INPUT_FILE=$(readlink -f "$1")
-OUTPUT_FILE=$(readlink -f "$2")
-START_PAGE=${3:-1}
 
 test -z $INPUT_FILE && exit 1
 if [ -z $OUTPUT_FILE ]
