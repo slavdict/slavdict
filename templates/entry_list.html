@@ -384,12 +384,14 @@
                     <a class="icon edit" href="{{ url('edit_form_url', args=[entry.pk]) }}">
                         <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
                     </a>
+                    {% if entry.antconc_query|trim %}
                     <br />
                     <a class="icon clippy nearText"
                        data-clipboard-text="{{ entry.antconc_query|e }}"
                        title="Скопировать запрос для АнтКонка">
                         <img src="{{ STATIC_URL }}transparent.png" alt="v" />
                     </a>
+                    {% endif %}
                     {% if user.is_superuser %}
                     <br />
                     <a class="icon" href="/entries/{{ entry.pk }}/intermed/">
@@ -472,6 +474,7 @@
                 </td>
 
                 <td class="eli-control">
+                    {% if entry.antconc_query|trim %}
                     <a class="icon clippy"
                             data-clipboard-text="{{ entry.antconc_query|e }}">
                         <img src="{{ STATIC_URL }}transparent.png" alt="v" />
@@ -483,6 +486,7 @@
                             в буфер обмена
                         </div>
                     </span>
+                    {% endif %}
                 </td>
 
                 <td class="eli-entry">

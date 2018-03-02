@@ -38,20 +38,27 @@
 
 <aside>
 
+    {% if antconc_query|trim %}
     <input type="button" class="header--item button" id="copy_antconc_query"
         value="Запрос для AntConc"
         data-clipboard-text="{{ antconc_query|e }}" />
-
+    {% else %}
+    <span style="font-size: x-small; display: inline-block;
+        text-align: center; line-height: 10px">
+        Запрос для AntConc у данной статьи отсутствует
+    </span>
+    {% endif %}
     {{ space }}
+
     <a href="http://ruscorpora.ru/search-orthlib.html"
        class="header--item button" target="_new">НКРЯ (цсл)</a>
-
     {{ space }}
+
     <a href="https://docs.google.com/document/d/1AmrZZgBa4BdTlhvyyBEN8n5KYD0-f_AC04Jd-v_pdjU"
        class="header--item button"
        target="_blank">Список сокращений</a>
-
     {{ space }}
+
     <a href="https://docs.google.com/document/d/1F2vnJpp_J48X49tdwrqefmtNd7wJIiAbuExp5TgZuwE/view?hl=en_US"
        class="header--item button" target="_new">Инструкция</a>
 

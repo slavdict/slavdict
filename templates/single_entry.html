@@ -24,12 +24,14 @@
                         title="Редактировать статью">
                     <img src="{{ STATIC_URL }}transparent.png" alt="изменить" />
                 </a>
+                {% if entry.antconc_query|trim %}
                 <br />
                 <a class="icon clippy"
                    data-clipboard-text="{{ entry.antconc_query|e }}"
                    title="Скопировать запрос для АнтКонка">
                     <img src="{{ STATIC_URL }}transparent.png" alt="v" />
                 </a>
+                {% endif %}
                 {% if user.is_superuser %}
                 <br />
                 <a class="icon" href="/entries/{{ entry.pk }}/intermed/">

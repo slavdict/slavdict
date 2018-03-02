@@ -1423,13 +1423,17 @@ var viewModel = vM.entryEdit,
     // Инициализация clipboardjs и Opentip для кнопки копирования
     // AntConc-запроса.
     var copyButtonId = '#copy_antconc_query',
-        clipboard = new Clipboard(copyButtonId),
-        aqTipText = 'Запрос для AntConc скопирован в буфер обмена.',
-        aqTip = new Opentip($(copyButtonId), aqTipText, { style: otStyle });
-    clipboard.on('success', function (event) {
-        aqTip.show();
-        aqTip.hide();
-    });
+        copyButtonElement = $(copyButtonId);
+    if (copyButtonElement.length) {
+        var clipboard = new Clipboard(copyButtonId),
+            aqTipText = 'Запрос для AntConc скопирован в буфер обмена.',
+            aqTip = new Opentip(copyButtonElement, aqTipText,
+                               { style: otStyle });
+        clipboard.on('success', function (event) {
+            aqTip.show();
+            aqTip.hide();
+        });
+    }
 
     // Поднять занавес
     $('.curtain').fadeOut();
