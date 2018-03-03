@@ -38,13 +38,14 @@
         {% set AB = '{0},{1}'.format(A, B) %}
         {{ pageref(C, label=fa_icon('backward', 'up-2'), title=C, AB=AB) }}
 
+        {% set A = page.number %}
         {% if page.B %}
             {% set B = page.B %}
+            {% set C = (B - A) // 2 + A %}
         {% else %}
             {% set B = page.paginator.num_pages %}
+            {% set C = B %}
         {% endif %}
-        {% set A = page.number %}
-        {% set C = (B - A) // 2 + A %}
         {% set AB = '{0},{1}'.format(A, B) %}
         {{ pageref(C, label=fa_icon('forward', 'up-2'), title=C, AB=AB) }}
     </div>
