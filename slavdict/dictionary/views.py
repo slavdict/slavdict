@@ -629,7 +629,7 @@ def import_csv_billet(request):
 
 
 @login_required
-def entry_list(request):
+def entry_list(request, template='entry_list.html'):
     if 'find' in request.COOKIES:
         request.COOKIES['find'] = base64 \
             .standard_b64decode(request.COOKIES['find']) \
@@ -697,7 +697,7 @@ def entry_list(request):
         'user': request.user,
         'title': u'Словарь церковнославянского языка Нового времени',
         }
-    response = render(request, 'entry_list.html', context)
+    response = render(request, template, context)
     if request.method == 'POST':
         form.cleaned_data['find'] = base64 \
             .standard_b64encode(form.cleaned_data['find'].encode('utf8'))
@@ -798,13 +798,6 @@ def hellinist_workbench(request):
                                         form.cleaned_data[key].encode('utf8'))
         for param, value in form.cleaned_data.items():
             response.set_cookie(param, value, path=request.path)
-    return response
-
-
-@login_required
-def hellinist_entries(request):
-    context = {}
-    response = render(request, 'hellinist_workbench.html', context)
     return response
 
 

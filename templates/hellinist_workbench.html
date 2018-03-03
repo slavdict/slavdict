@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% from '_hellinist_example.html' import example with context %}
+{% from '_hellinist_entry.html' import entry with context %}
 
 {% block css %}hellinist_workbench.css{% endblock %}
 {% block headerFormAddress %}{{ url('hellinist_workbench') }}{% endblock %}
@@ -11,49 +12,65 @@
     </a>
     {{ space }}
 
-    <a href="{{ url('hellinist_entries') }}" class="header--item button">
-        Параллели к статьям
-    </a>
+    {% if entries %}
+        <a href="{{ url('hellinist_workbench') }}" class="header--item button">
+            Параллели к иллюстрациям
+        </a>
+    {% else %}
+        <a href="{{ url('hellinist_entries') }}" class="header--item button">
+            Параллели к статьям
+        </a>
 
-    {% if indicators.meaning %}
-        <span class="header--item indicator"
-            data-bind="click: function(){
-                                  vM.filters.getDefaultState();
-                                  vM.filters.hwStatus('M');
-                                  vM.filters.formSubmit();
-                              }" >
-            Необх. для опр. значения{{ space }}
-            <span>{{ indicators.meaning }}</span>
-        </span>
-    {% endif %}
+        {% if indicators.meaning %}
+            <span class="header--item indicator"
+                data-bind="click: function(){
+                                      vM.filters.getDefaultState();
+                                      vM.filters.hwStatus('M');
+                                      vM.filters.formSubmit();
+                                  }" >
+                Необх. для опр. значения{{ space }}
+                <span>{{ indicators.meaning }}</span>
+            </span>
+        {% endif %}
 
-    {% if indicators.urgent %}
-        <span class="header--item indicator"
-            data-bind="click: function(){
-                                  vM.filters.getDefaultState();
-                                  vM.filters.hwStatus('U');
-                                  vM.filters.formSubmit();
-                              }" >
-            Срочных греч. парал.{{ space }}
-            <span>{{ indicators.urgent }}</span>
-        </span>
+        {% if indicators.urgent %}
+            <span class="header--item indicator"
+                data-bind="click: function(){
+                                      vM.filters.getDefaultState();
+                                      vM.filters.hwStatus('U');
+                                      vM.filters.formSubmit();
+                                  }" >
+                Срочных греч. парал.{{ space }}
+                <span>{{ indicators.urgent }}</span>
+            </span>
+        {% endif %}
     {% endif %}
 
 {% endblock %}
 
 {% block subheader %}
-    {% include '_examples_filters.html' %}
+    {% if entries %}
+        {% include '_entry_filters.html' %}
+    {% else %}
+        {% include '_examples_filters.html' %}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
     {% trim %}
+    {% if entries %}
 
-        {% for e in examples %}
-            <div>
-                {{ example(e, loop.changed(e.host), loop.index0) }}
-            </div>
+        {% for e in entries %}
+            <div>{{ entry(e) }}</div>
         {% endfor %}
 
+    {% else %}
+
+        {% for e in examples %}
+            <div>{{ example(e, loop.changed(e.host), loop.index0) }}</div>
+        {% endfor %}
+
+    {% endif %}
     {% endtrim %}
     {% include '_pagination.html' %}
 {% endblock %}
