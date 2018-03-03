@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
-
-{% set sort = form['hwSortdir'].value() + form['hwSortbase'].value() %}
-{% set filters = form.cleaned_data %}
+{% from '_hellinist_example.html' import example with context %}
 
 {% block css %}hellinist_workbench.css{% endblock %}
 {% block headerFormAddress %}{{ url('hellinist_workbench') }}{% endblock %}
@@ -11,6 +9,11 @@
     <a href="{{ url('all_entries_url') }}" class="header--item button">
         Выход из греческого кабинета
     </a>
+    {{ space }}
+
+    <a href="{{ url('hellinist_entries') }}" class="header--item button">
+        Параллели к статьям
+    </a>
 
     {% if indicators.meaning %}
         <span class="header--item indicator"
@@ -19,7 +22,7 @@
                                   vM.filters.hwStatus('M');
                                   vM.filters.formSubmit();
                               }" >
-            Необх. для опр. значения:{{ space }}
+            Необх. для опр. значения{{ space }}
             <span>{{ indicators.meaning }}</span>
         </span>
     {% endif %}
@@ -31,7 +34,7 @@
                                   vM.filters.hwStatus('U');
                                   vM.filters.formSubmit();
                               }" >
-            Срочных греч. парал.:{{ space }}
+            Срочных греч. парал.{{ space }}
             <span>{{ indicators.urgent }}</span>
         </span>
     {% endif %}
@@ -39,306 +42,20 @@
 {% endblock %}
 
 {% block subheader %}
-
-    <div class="hellinist-filters">
-        <div class="f5s--statusbar"><div class="grid">
-
-            <span class="f5sS--total"
-                data-bind="visible: !notInitialState()">
-                {{ space }}
-                Найдено иллюстраций:
-                {{ space }}
-                <strong>{{ number_of_examples }}</strong>
-                {{ space }}
-            </span>
-
-            <strong data-bind="visible: notDefaultState">Выбранные фильтры</strong>
-            <strong data-bind="visible: !notDefaultState()">Ни один фильтр не выбран</strong>
-
-            {{ space }}
-            <span class="f5sS--item" data-bind="visible: hwExamplesIds">
-                {{ space }}
-                Идентификаторы иллюстраций:
-                {{ space }}
-                <span data-bind="text: hwExamplesIds"></span>
-            </span>
-
-            {{ space }}
-            <span class="f5sS--item" data-bind="visible: !hwStatus.hasDefaultValue()">
-                Статус &laquo;<span data-bind="text: hwStatus.obj().name"></span>&raquo;
-            </span>
-
-            {{ space }}
-            <span class="f5sS--item" data-bind="visible: !hwAuthor.hasDefaultValue()">
-                <span data-bind="text: hwAuthor.obj().name"></span>
-            </span>
-
-            {{ space }}
-            <span class="f5sS--item" data-bind="visible: hwPrfx">
-                {{ space }}
-                статьи на
-                {{ space }}
-                <span class="f5sSI--prefix"><span data-bind="text: hwPrfx"></span>...</span>
-            </span>
-
-            {{ space }}
-            <span class="f5sS--item" data-bind="visible: hwAddress">
-                {{ space }}
-                адреса иллюстраций на
-                {{ space }}
-                <span class="f5sSI--prefix"><span data-bind="text: hwAddress"></span>...</span>
-            </span>
-
-            {{ space }}
-            <span class="f5sS--item" data-bind="visible: hwExample">
-                {{ space }}
-                текст иллюстрации
-                {{ space }}
-                <span class="f5sSI--prefix"><span data-bind="text: hwExample"></span>...</span>
-            </span>
-
-        </div></div>
-        <div class="f5s--dashboard"><div class="grid"
-            {% if DEBUG %}
-                ondblclick="
-                    var x = $(this);
-                    if (x.hasClass('grid-debug'))
-                        x.removeClass('grid-debug');
-                    else
-                        x.addClass('grid-debug');
-                "
-            {% endif %}
-                >
-
-            <div class="f5sD--sort">
-            <h3>Упорядочить иллюстрации</h3>
-
-                {{ form.hwSortbase }}
-                {{ form.hwSortdir }}
-
-            </div>
-
-            <div class="f5sD--filter">
-
-                <h3>Отобрать иллюстрации по следующим критериям</h3>
-
-                <div class="M">
-                {{ form.hwStatus.label_tag() }}
-                {{ form.hwStatus }}
-                </div>
-
-                <div class="N">
-                {{ form.hwAuthor.label_tag() }}
-                {{ form.hwAuthor }}
-                </div>
-
-                <div class="O">
-                {{ form.hwAddress.label_tag() }}
-                {{ form.hwAddress }}
-
-                {{ form.hwPrfx.label_tag() }}
-                {{ form.hwPrfx }}
-                </div>
-
-                <div class="R">
-                {{ form.hwExample.label_tag() }}
-                {{ form.hwExample }}
-                </div>
-
-                <div class="P">
-                {{ form.hwExamplesIds.label_tag() }}
-                {{ form.hwExamplesIds }}
-                </div>
-
-            </div>
-
-        </div></div>
-
-        <div class="f5sD--buttons"><div class="grid">
-
-                <span data-bind="click: getDefaultState, visible: notDefaultState"
-                    class="button f5sD--reset">сбросить фильтры</span>
-
-        </div></div>
-
-    </div>
-
+    {% include '_examples_filters.html' %}
 {% endblock %}
 
 {% block content %}
-{% trim %}
+    {% trim %}
 
-    {% for e in examples %}
-        <div>
-            {% set prevFingerprint = fingerprint %}
-            {% set fingerprint = e.host ~ e.meaning.meaning ~ e.meaning.gloss %}
-            {% set isEntryNew = (fingerprint != prevFingerprint) %}
-            {% if isEntryNew %}
-            <div class="exampleHeader">
-                {% if e.host.orth_vars %}
-                    <a href="{{ e.host.get_absolute_url() }}" target="_blank"><span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span></a>{{ space }}
-                    <i>{{ e.host_entry.get_part_of_speech_display() }}</i>{{ space }}
-                {% else %}
-                    {% for c in e.host.collocations %}
-                        <a href="{{ e.host_entry.get_absolute_url() }}" target="_blank"><span class="cslav">{{ c.collocation_ucs }}</span></a>
-                        {% if not loop.last %},{% endif %}{{ space }}
-                    {% endfor %}
-                {% endif %}
-                {% if e.meaning.meaning %}
-                    ‘{{ e.meaning.meaning|cslav_injection }}’
-                    {{ space }}
-                {% endif %}
-                {% if e.meaning.gloss %}
-                    {% if e.meaning.meaning %}
-                        ({{ e.meaning.gloss|cslav_injection }})
-                    {% else %}
-                        {{ e.meaning.gloss|cslav_injection }}
-                    {% endif %}
-                {% endif %}
+        {% for e in examples %}
+            <div>
+                {{ example(e, loop.changed(e.host), loop.index0) }}
             </div>
-            {% endif %}
+        {% endfor %}
 
-            <div class="example" data-bind="with: examples[{{ loop.index0 }}]">
-
-                <span class="example--id">[<span data-bind="text: id"></span>]</span>
-
-                <span class="example--address" data-bind="
-                    contenteditable: address,
-                    event: { change: $data.saveMe }
-                    "></span>
-
-                {{ space }}
-                <span data-bind="visible: comment() || commentEditable()">
-                    <span class="example--comment" data-bind="
-                        text: comment, visible: !commentEditable(), click: toggleComment"></span>
-                    <input class="example--comment" data-bind="
-                        textInput: comment, visibleActive: commentEditable(),
-                        event: {
-                            change: function() { $data.toggleComment(); $data.saveMe(); },
-                            blur: toggleComment
-                        }" />
-                </span>
-
-                {{ space }}
-                <span class="button" data-bind="visible: !comment() && !commentEditable() , click: toggleComment">Добавить примечание к примеру</span>
-                <br />
-
-                <span data-bind="visible: !exampleEditable()">
-                    <span data-bind="visible: !antconcVisible()">
-                        <span class="cslav context" data-bind="text: leftContext"></span>
-                        <span class="cslav" data-bind="text: text"></span>{{ space }}
-                        <span class="cslav context" data-bind="text: leftContext"></span>
-                    </span>
-
-                    <span class="antconsol" data-bind="visible: antconcVisible(), text: antconc"></span>
-
-                    <span class="greqList" data-bind="visible: greqs().length && !antconcVisible()">
-                        &nbsp;&mdash;{{ space }}
-                        <!-- ko foreach: greqs -->
-                            <span data-bind="text: unitext"></span>
-                            <span data-bind="text: note, visible: note()"
-                                class="greqNote"></span>
-                            <span data-bind="text: additional_info,
-                                             visible: additional_info()"
-                                class="greqComment"></span>
-                            <span class="greqList--comma">,</span>{{ space }}
-                        <!-- /ko -->
-                    </span>{{ space }}
-
-                    <span class="button antconcButton" data-bind="click: toggleAntconc">
-                        <span data-bind="visible: antconcVisible()">ЦСЛ</span>
-                        <span data-bind="visible: !antconcVisible()">АнтКонк</span>
-                    </span>{{ space }}
-                </span>
-
-                <div class="antconsol" data-bind="
-                    visible: exampleEditable(), contenteditable: example"></div>
-
-                <span class="button antconcButton">
-                    <span data-bind="visible: exampleEditable(), click: saveExample">Сохранить</span>
-                    <span data-bind="visible: !exampleEditable(), click: editExample">Редактировать</span>
-                </span>{{ space }}
-
-                <span class="button antconcButton"
-                    data-bind="visible: exampleEditable(), click: cancelExample">
-                    Вернуться к изначальному варианту</span>
-
-                <span class="orthoTick">
-                    <label>Выверена ли орфография
-                        <input type="checkbox"
-                               data-bind="checked: audited,
-                                          event: {change: saveExample}" />
-                    </label>
-                </span>{{ space }}
-
-                <ul data-bind="foreach: greqs">
-                    <li class="greqForExample">
-
-                        <span class="greqFieldContainer">
-                            <label>греч. параллель</label>
-                            <input type="text" data-bind="
-                                textInput: unitext,
-                                event: { change: saveMe }"
-                                maxlength="{{ MAX_LENGTHS
-                                    .GreekEquivalentForExample
-                                    .unitext }}" />
-                        </span>
-
-                        <span class="greqFieldContainer">
-                            <label>начальная форма</label>
-                            <input type="text" data-bind="
-                                textInput: initial_form,
-                                event: { change: saveMe }"
-                                maxlength="{{ MAX_LENGTHS
-                                    .GreekEquivalentForExample
-                                    .initial_form }}" />
-                        </span>
-
-                        <span class="greqFieldContainer">
-                            <label>комментарий в словаре</label>
-                            <input type="text" data-bind="
-                                textInput: note,
-                                event: { change: saveMe }" />
-                        </span>
-
-                        <span class="greqFieldContainer">
-                            <label>примечание для авторов</label>
-                            <input type="text" data-bind="
-                                textInput: additional_info,
-                                event: { change: saveMe }" />
-                        </span>
-
-                        <span class="button greqFieldButton"
-                            data-bind="click: removeMe">&#x2716;</span>
-
-                        <span class="greqFieldAjaxLoader"
-                            data-bind="visible: beingSaved()"></span>
-                    </li>
-                </ul>
-
-                <div class="button addGreqButton"
-                    data-bind="click: addGreq">
-                    &#x271a; Добавить греч. параллель
-                </div>
-
-                <div class="greqStatus greqFieldContainer">
-                    <label class="example--formLabel">Статус:</label>
-                    <select data-bind="value: status, event: { change: saveMe }">
-                        {% for option in statusList %}
-                        <option value="{{ option.0 }}">{{ option.1 }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <span class="exFieldAjaxLoader" data-bind="visible: beingSaved()"></span>
-
-            </div>
-        </div>
-    {% endfor %}
-
+    {% endtrim %}
     {% include '_pagination.html' %}
-
-{% endtrim %}
 {% endblock %}
 
 {% block javascript_links %}
@@ -364,6 +81,7 @@
             defaults: []
         };
 
+        {% set filters = form.cleaned_data %}
         vM.valuesToInitialize = {
             hwAuthor: '{{ filters.hwAuthor }}',
             hwAddress: '{{ filters.hwAddress }}',

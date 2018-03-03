@@ -802,6 +802,13 @@ def hellinist_workbench(request):
 
 
 @login_required
+def hellinist_entries(request):
+    context = {}
+    response = render(request, 'hellinist_workbench.html', context)
+    return response
+
+
+@login_required
 def antconc2ucs8_converter(request):
     random.seed()
     examples = (

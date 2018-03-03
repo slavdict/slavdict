@@ -1,0 +1,53 @@
+<span class="f5sS--total"
+    data-bind="visible: !notInitialState()">
+    {{ space }}
+    Найдено иллюстраций:
+    {{ space }}
+    <strong>{{ number_of_examples }}</strong>
+    {{ space }}
+</span>
+
+<strong data-bind="visible: notDefaultState">Выбранные фильтры</strong>
+<strong data-bind="visible: !notDefaultState()">Ни один фильтр не выбран</strong>
+
+{{ space }}
+<span class="f5sS--item" data-bind="visible: hwExamplesIds">
+    {{ space }}
+    Идентификаторы иллюстраций:
+    {{ space }}
+    <span data-bind="text: hwExamplesIds"></span>
+</span>
+
+{{ space }}
+<span class="f5sS--item" data-bind="visible: !hwStatus.hasDefaultValue()">
+    Статус &laquo;<span data-bind="text: hwStatus.obj().name"></span>&raquo;
+</span>
+
+{{ space }}
+<span class="f5sS--item" data-bind="visible: !hwAuthor.hasDefaultValue()">
+    <span data-bind="text: hwAuthor.obj().name"></span>
+</span>
+
+{{ space }}
+<span class="f5sS--item" data-bind="visible: hwPrfx">
+    {{ space }}
+    статьи на
+    {{ space }}
+    <span class="f5sSI--prefix"><span data-bind="text: hwPrfx"></span>...</span>
+</span>
+
+{{ space }}
+<span class="f5sS--item" data-bind="visible: hwAddress">
+    {{ space }}
+    адреса иллюстраций на
+    {{ space }}
+    <span class="f5sSI--prefix"><span data-bind="text: hwAddress"></span>...</span>
+</span>
+
+{{ space }}
+<span class="f5sS--item" data-bind="visible: hwExample">
+    {{ space }}
+    текст иллюстрации
+    {{ space }}
+    <span class="f5sSI--prefix"><span data-bind="text: hwExample"></span>...</span>
+</span>

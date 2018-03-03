@@ -1,0 +1,41 @@
+<div class="f5sD--sort">
+<h3>Упорядочить иллюстрации</h3>
+
+    {{ form.hwSortbase }}
+    {{ form.hwSortdir }}
+
+</div>
+
+<div class="f5sD--filter">
+
+    <h3>Отобрать иллюстрации по следующим критериям</h3>
+
+    <div class="M">
+    {{ form.hwStatus.label_tag() }}
+    {{ form.hwStatus }}
+    </div>
+
+    <div class="N">
+    {{ form.hwAuthor.label_tag() }}
+    {{ form.hwAuthor }}
+    </div>
+
+    <div class="O">
+    {{ form.hwAddress.label_tag() }}
+    {{ form.hwAddress }}
+
+    {{ form.hwPrfx.label_tag() }}
+    {{ form.hwPrfx }}
+    </div>
+
+    <div class="R">
+    {{ form.hwExample.label_tag() }}
+    {{ form.hwExample }}
+    </div>
+
+    <div class="P">
+    {{ form.hwExamplesIds.label_tag() }}
+    {{ form.hwExamplesIds }}
+    </div>
+
+</div>
