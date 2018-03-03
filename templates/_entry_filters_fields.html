@@ -1,0 +1,86 @@
+<div class="f5sD--sort">
+<h3>Упорядочить статьи</h3>
+
+    {{ form.sortdir }}
+
+    <label for="id_sortbase">на основе</label>
+    {{ form.sortbase }}
+
+</div>
+
+<div class="f5sD--filter">
+
+    <div class="A">
+        <h3>Отобрать статьи по следующим критериям</h3>
+
+        <div class="AA">
+        {{ form.find.label_tag(label_suffix='') }}
+        {{ form.find }}
+
+        </div>
+
+        <div class="AB">
+        {{ form.author.label_tag(label_suffix='') }}
+        {{ form.author }}
+
+        {{ form.status.label_tag(label_suffix='') }}
+        {{ form.status }}
+        </div>
+    </div>
+
+    <div class="B">
+        <div class="BA">
+        {{ form.pos.label_tag(label_suffix='') }}
+        {{ form.pos }}
+
+        {{ form.uninflected.label_tag(label_suffix='') }}
+        {{ form.uninflected }}
+
+        {{ form.gender.label_tag(label_suffix='') }}
+        {{ form.gender }}
+
+        {{ form.tantum.label_tag(label_suffix='') }}
+        {{ form.tantum }}
+        </div>
+
+        <div class="BB">
+        {{ form.onym.label_tag(label_suffix='') }}
+        {{ form.onym }}
+
+        {{ form.canonical_name.label_tag(label_suffix='') }}
+        {{ form.canonical_name }}
+
+        {{ form.possessive.label_tag(label_suffix='') }}
+        {{ form.possessive }}
+        </div>
+
+        <div class="BC">
+        {{ form.etymology }}
+        {{ form.etymology.label_tag(label_suffix='') }}
+
+        {{ form.variants }}
+        {{ form.variants.label_tag(label_suffix='') }}
+
+        {{ form.collocations }}
+        {{ form.collocations.label_tag(label_suffix='') }}
+
+        {{ form.meaningcontexts }}
+        {{ form.meaningcontexts.label_tag(label_suffix='') }}
+
+        {{ form.additional_info }}
+        {{ form.additional_info.label_tag(label_suffix='') }}
+
+        {{ form.homonym }}
+        {{ form.homonym.label_tag(label_suffix='') }}
+
+        {{ form.duplicate }}
+        {{ form.duplicate.label_tag(label_suffix='') }}
+        </div>
+    </div>
+
+    <div class="D">
+        {{ form.per_se }}
+        {{ form.per_se.label_tag(label_suffix='') }}
+    </div>
+
+</div>
