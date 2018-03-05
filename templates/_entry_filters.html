@@ -1,0 +1,52 @@
+<div class="filters">
+    <div class="f5s--statusbar"
+         data-bind="slide: shouldShowStatusBar"><div
+             class="grid">
+
+        {% include '_entry_filters_info.html' %}
+
+    </div></div>
+
+    <div class="f5s--buttons" style="display: none;"
+         data-bind="slide: shouldShowFiltersButtons"><div
+            class="grid">
+
+        <span class="A">
+            <span class="AA">Применить изменения?</span>
+
+            {# ::ui_filters_apply #}
+            <span data-bind="click: formSubmit"
+                  class="AB button f5sB--submit">применить</span>
+            {# :/ui_filters_apply #}
+        </span>
+
+    </div></div>
+    <div class="f5s--dashboard" data-bind="slide: isOperated"><div
+            class="grid"
+        {% if DEBUG %}
+            ondblclick="
+                var x = $(this);
+                if (x.hasClass('grid-debug'))
+                    x.removeClass('grid-debug');
+                else
+                    x.addClass('grid-debug');
+            "
+        {% endif %}
+            >
+
+        {% include '_entry_filters_fields.html' %}
+
+    </div></div>
+
+    <div class="f5s--advertiser"><div class="grid">
+
+        <span class="f5sA--label"
+            data-bind="click: isOperated.toggle,
+            show: !isOperated()">фильтры</span>
+        <span class="f5sA--label"
+            data-bind="click: closeFilters,
+            show: isOperated">закрыть</span>
+
+    </div></div>
+
+</div>

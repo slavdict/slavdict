@@ -184,101 +184,106 @@ function Example(ex) {
 }
 
 
+(function () {
 
+    var valuesToInitialize = vM.valuesToInitialize.examplesFilters,
+        listsForWidgets = vM.listsForWidgets.examplesFilters;
 
-vM.filters = {
-    examples: ko.utils.arrayMap(vM.jsonExamples, function(ex) {
-        return new Example(ex); }),
+    vM.filters = {
+        examples: ko.utils.arrayMap(vM.jsonExamples, function(ex) {
+            return new Example(ex); }),
 
-    formSubmit: function(){ $('.headerForm').submit(); },
+        formSubmit: function(){ $('.headerForm').submit(); },
 
-    hwAuthor: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.hwAuthor)
-        .rememberDefault('all')
-        .htmlSelect('hwAuthor', vM.listsForWidgets.authors),
+        hwAuthor: ko.observable()
+            .rememberInitial(valuesToInitialize.hwAuthor)
+            .rememberDefault('all')
+            .htmlSelect('hwAuthor', listsForWidgets.authors),
 
-    hwAddress: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.hwAddress)
-        .rememberDefault('')
-        .htmlTextValue('hwAddress'),
+        hwAddress: ko.observable()
+            .rememberInitial(valuesToInitialize.hwAddress)
+            .rememberDefault('')
+            .htmlTextValue('hwAddress'),
 
-    hwPrfx: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.hwPrfx)
-        .rememberDefault('')
-        .htmlTextValue('hwPrfx'),
+        hwPrfx: ko.observable()
+            .rememberInitial(valuesToInitialize.hwPrfx)
+            .rememberDefault('')
+            .htmlTextValue('hwPrfx'),
 
-    hwExample: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.hwExample)
-        .rememberDefault('')
-        .htmlTextValue('hwExample'),
+        hwExample: ko.observable()
+            .rememberInitial(valuesToInitialize.hwExample)
+            .rememberDefault('')
+            .htmlTextValue('hwExample'),
 
-    hwExamplesIds: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.hwExamplesIds)
-        .rememberDefault('')
-        .htmlTextValue('hwExamplesIds'),
+        hwExamplesIds: ko.observable()
+            .rememberInitial(valuesToInitialize.hwExamplesIds)
+            .rememberDefault('')
+            .htmlTextValue('hwExamplesIds'),
 
-    hwSortbase: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.hwSortbase)
-        // .rememberDefault... Значения по умолчанию
-        // на клиенте намеренно не определяем,
-        // хотя оно есть на сервере
-        .htmlSelect('hwSortbase', vM.listsForWidgets.sortbase),
+        hwSortbase: ko.observable()
+            .rememberInitial(valuesToInitialize.hwSortbase)
+            // .rememberDefault... Значения по умолчанию
+            // на клиенте намеренно не определяем,
+            // хотя оно есть на сервере
+            .htmlSelect('hwSortbase', listsForWidgets.sortbase),
 
-    hwSortdir: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.hwSortdir)
-        // .rememberDefault... Значения по умолчанию
-        // на клиенте намеренно не определяем,
-        // хотя оно есть на сервере
-        .htmlSelect('hwSortdir', vM.listsForWidgets.sortdir),
+        hwSortdir: ko.observable()
+            .rememberInitial(valuesToInitialize.hwSortdir)
+            // .rememberDefault... Значения по умолчанию
+            // на клиенте намеренно не определяем,
+            // хотя оно есть на сервере
+            .htmlSelect('hwSortdir', listsForWidgets.sortdir),
 
-    hwStatus: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.hwStatus)
-        .rememberDefault('all')
-        .htmlSelect('hwStatus', vM.listsForWidgets.statuses)
+        hwStatus: ko.observable()
+            .rememberInitial(valuesToInitialize.hwStatus)
+            .rememberDefault('all')
+            .htmlSelect('hwStatus', listsForWidgets.statuses)
 
-};
-vM.filters.chgg = ko.computed(function () {
-    var x = vM.filters,
-        y = x.hwAuthor() + '|' +
-            x.hwAddress() + '|' +
-            x.hwPrfx() + '|' +
-            x.hwExample() + '|' +
-            x.hwExamplesIds() + '|' +
-            x.hwSortbase() + '|' +
-            x.hwSortdir() + '|' +
-            x.hwStatus();
-    return y;
-}).extend({rateLimit: 500});
-vM.filters.chgg.subscribe(vM.filters.formSubmit);
+    };
+    vM.filters.chgg = ko.computed(function () {
+        var x = vM.filters,
+            y = x.hwAuthor() + '|' +
+                x.hwAddress() + '|' +
+                x.hwPrfx() + '|' +
+                x.hwExample() + '|' +
+                x.hwExamplesIds() + '|' +
+                x.hwSortbase() + '|' +
+                x.hwSortdir() + '|' +
+                x.hwStatus();
+        return y;
+    }).extend({rateLimit: 500});
+    vM.filters.chgg.subscribe(vM.filters.formSubmit);
 
-vM.filters.notDefaultState = ko.computed(function(){
-    var defaults = vM.meta.defaults;
-    for(var i = 0, j = defaults.length; i < j; i++){
-        if (!defaults[i].hasDefaultValue()) return true;
-    }
-    return false;
-}, vM.filters);
+    vM.filters.notDefaultState = ko.computed(function(){
+        var defaults = vM.meta.defaults;
+        for(var i = 0, j = defaults.length; i < j; i++){
+            if (!defaults[i].hasDefaultValue()) return true;
+        }
+        return false;
+    }, vM.filters);
 
-vM.filters.notInitialState = ko.computed(function(){
-    var initials = vM.meta.initials;
-    for(var i = 0, j = initials.length; i < j; i++){
-        if (!initials[i].hasInitialValue()) return true;
-    }
-    return false;
-}, vM.filters);
+    vM.filters.notInitialState = ko.computed(function(){
+        var initials = vM.meta.initials;
+        for(var i = 0, j = initials.length; i < j; i++){
+            if (!initials[i].hasInitialValue()) return true;
+        }
+        return false;
+    }, vM.filters);
 
-vM.filters.getDefaultState = function(){
-    var defaults = vM.meta.defaults;
-    for(var i = 0, j = defaults.length; i < j; i++){
-        defaults[i].getDefaultValue();
-    }
-};
+    vM.filters.getDefaultState = function(){
+        var defaults = vM.meta.defaults;
+        for(var i = 0, j = defaults.length; i < j; i++){
+            defaults[i].getDefaultValue();
+        }
+    };
 
-vM.filters.getInitialState = function(){
-    var initials = vM.meta.initials;
-    for(var i = 0, j = initials.length; i < j; i++){
-        initials[i].getInitialValue();
-    }
-};
+    vM.filters.getInitialState = function(){
+        var initials = vM.meta.initials;
+        for(var i = 0, j = initials.length; i < j; i++){
+            initials[i].getInitialValue();
+        }
+    };
+
+})();
 
 ko.applyBindings(vM.filters);

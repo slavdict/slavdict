@@ -1,0 +1,169 @@
+{% macro example(e, changedHost, loopPos) %}
+
+{% if changedHost %}
+  <div class="exampleHeader">
+      {% if e.host.orth_vars %}
+          <a href="{{ e.host.get_absolute_url() }}" target="_blank">
+              <span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span>
+          </a>{{ space }}
+          <i>{{ e.host_entry.get_part_of_speech_display() }}</i>{{ space }}
+      {% else %}
+          {% for c in e.host.collocations %}
+              <a href="{{ e.host_entry.get_absolute_url() }}" target="_blank">
+                  <span class="cslav">{{ c.collocation_ucs }}</span>
+              </a>
+              {% if not loop.last %},{% endif %}{{ space }}
+          {% endfor %}
+      {% endif %}
+      {% if e.meaning.meaning %}
+          ‘{{ e.meaning.meaning|cslav_injection }}’
+          {{ space }}
+      {% endif %}
+      {% if e.meaning.gloss %}
+          {% if e.meaning.meaning %}
+              ({{ e.meaning.gloss|cslav_injection }})
+          {% else %}
+              {{ e.meaning.gloss|cslav_injection }}
+          {% endif %}
+      {% endif %}
+  </div>
+{% endif %}
+
+<div class="example" data-bind="with: examples[{{ loopPos }}]">
+
+    <span class="example--id">[<span data-bind="text: id"></span>]</span>
+
+    <span class="example--address" data-bind="
+        contenteditable: address,
+        event: { change: $data.saveMe }
+        "></span>
+
+    {{ space }}
+    <span data-bind="visible: comment() || commentEditable()">
+        <span class="example--comment" data-bind="
+            text: comment, visible: !commentEditable(), click: toggleComment"></span>
+        <input class="example--comment" data-bind="
+            textInput: comment, visibleActive: commentEditable(),
+            event: {
+                change: function() { $data.toggleComment(); $data.saveMe(); },
+                blur: toggleComment
+            }" />
+    </span>
+
+    {{ space }}
+    <span class="button" data-bind="visible: !comment() && !commentEditable() , click: toggleComment">Добавить примечание к примеру</span>
+    <br />
+
+    <span data-bind="visible: !exampleEditable()">
+        <span data-bind="visible: !antconcVisible()">
+            <span class="cslav context" data-bind="text: leftContext"></span>
+            <span class="cslav" data-bind="text: text"></span>{{ space }}
+            <span class="cslav context" data-bind="text: leftContext"></span>
+        </span>
+
+        <span class="antconsol" data-bind="visible: antconcVisible(), text: antconc"></span>
+
+        <span class="greqList" data-bind="visible: greqs().length && !antconcVisible()">
+            &nbsp;&mdash;{{ space }}
+            <!-- ko foreach: greqs -->
+                <span data-bind="text: unitext"></span>
+                <span data-bind="text: note, visible: note()"
+                    class="greqNote"></span>
+                <span data-bind="text: additional_info,
+                                 visible: additional_info()"
+                    class="greqComment"></span>
+                <span class="greqList--comma">,</span>{{ space }}
+            <!-- /ko -->
+        </span>{{ space }}
+
+        <span class="button antconcButton" data-bind="click: toggleAntconc">
+            <span data-bind="visible: antconcVisible()">ЦСЛ</span>
+            <span data-bind="visible: !antconcVisible()">АнтКонк</span>
+        </span>{{ space }}
+    </span>
+
+    <div class="antconsol" data-bind="
+        visible: exampleEditable(), contenteditable: example"></div>
+
+    <span class="button antconcButton">
+        <span data-bind="visible: exampleEditable(),
+                         click: saveExample">Сохранить</span>
+        <span data-bind="visible: !exampleEditable(),
+                         click: editExample">Редактировать</span>
+    </span>{{ space }}
+
+    <span class="button antconcButton"
+        data-bind="visible: exampleEditable(), click: cancelExample">
+        Вернуться к изначальному варианту</span>
+
+    <span class="orthoTick">
+        <label>Выверена ли орфография
+            <input type="checkbox" data-bind="checked: audited,
+                                              event: {change: saveExample}" />
+        </label>
+    </span>{{ space }}
+
+    <ul data-bind="foreach: greqs">
+        <li class="greqForExample">
+
+            <span class="greqFieldContainer">
+                <label>греч. параллель</label>
+                <input type="text" data-bind="
+                    textInput: unitext,
+                    event: { change: saveMe }"
+                    maxlength="{{ MAX_LENGTHS
+                        .GreekEquivalentForExample
+                        .unitext }}" />
+            </span>
+
+            <span class="greqFieldContainer">
+                <label>начальная форма</label>
+                <input type="text" data-bind="
+                    textInput: initial_form,
+                    event: { change: saveMe }"
+                    maxlength="{{ MAX_LENGTHS
+                        .GreekEquivalentForExample
+                        .initial_form }}" />
+            </span>
+
+            <span class="greqFieldContainer">
+                <label>комментарий в словаре</label>
+                <input type="text" data-bind="
+                    textInput: note,
+                    event: { change: saveMe }" />
+            </span>
+
+            <span class="greqFieldContainer">
+                <label>примечание для авторов</label>
+                <input type="text" data-bind="
+                    textInput: additional_info,
+                    event: { change: saveMe }" />
+            </span>
+
+            <span class="button greqFieldButton"
+                data-bind="click: removeMe">&#x2716;</span>
+
+            <span class="greqFieldAjaxLoader"
+                data-bind="visible: beingSaved()"></span>
+        </li>
+    </ul>
+
+    <div class="button addGreqButton"
+        data-bind="click: addGreq">
+        &#x271a; Добавить греч. параллель
+    </div>
+
+    <div class="greqStatus greqFieldContainer">
+        <label class="example--formLabel">Статус:</label>
+        <select data-bind="value: status, event: { change: saveMe }">
+            {% for option in statusList %}
+            <option value="{{ option.0 }}">{{ option.1 }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <span class="exFieldAjaxLoader" data-bind="visible: beingSaved()"></span>
+
+</div>
+{% endmacro %}
+{# vi:set ft=django.html: #}

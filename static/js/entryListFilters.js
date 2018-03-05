@@ -1,10 +1,17 @@
+(function () {
+
 vM.meta = {
     initials: [],
     defaults: []
 };
 
+var valuesToInitialize = vM.valuesToInitialize.entryFilters,
+    listsForWidgets = vM.listsForWidgets.entryFilters;
+
 vM.filters = {
-    formSubmit: vM.hdrSearch.formSubmit,
+    formSubmit: vM.hdrSearch && vM.hdrSearch.formSubmit || function () {
+            $('.headerForm').submit();
+        },
     isOperated: ko.observable(false)
         .extend({ rateLimit: { method: 'notifyWhenChangesStop', delay: 400 } }),
     showResetAll: ko.observable(false)
@@ -15,106 +22,106 @@ vM.filters = {
         },
 
     per_se: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.per_se)
+        .rememberInitial(valuesToInitialize.per_se)
         .rememberDefault(false)
         .htmlCheckbox('per_se'),
 
     find: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.find)
+        .rememberInitial(valuesToInitialize.find)
         .rememberDefault('')
         .htmlTextInput('find'),
 
     author: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.author)
+        .rememberInitial(valuesToInitialize.author)
         .rememberDefault('all')
-        .htmlSelect('author', vM.listsForWidgets.authors),
+        .htmlSelect('author', listsForWidgets.authors),
 
     sortbase: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.sortbase)
+        .rememberInitial(valuesToInitialize.sortbase)
         // .rememberDefault... Значения по умолчанию
         // на клиенте намеренно не определяем,
         // хотя оно есть на сервере
-        .htmlSelect('sortbase', vM.listsForWidgets.sortbase),
+        .htmlSelect('sortbase', listsForWidgets.sortbase),
 
     sortdir: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.sortdir)
+        .rememberInitial(valuesToInitialize.sortdir)
         // .rememberDefault... Значения по умолчанию
         // на клиенте намеренно не определяем,
         // хотя оно есть на сервере
-        .htmlSelect('sortdir', vM.listsForWidgets.sortdir),
+        .htmlSelect('sortdir', listsForWidgets.sortdir),
 
     status: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.status)
+        .rememberInitial(valuesToInitialize.status)
         .rememberDefault('all')
-        .htmlSelect('status', vM.listsForWidgets.statuses),
+        .htmlSelect('status', listsForWidgets.statuses),
 
     pos: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.pos)
+        .rememberInitial(valuesToInitialize.pos)
         .rememberDefault('all')
-        .htmlSelect('pos', vM.listsForWidgets.pos),
+        .htmlSelect('pos', listsForWidgets.pos),
 
     uninflected: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.uninflected)
+        .rememberInitial(valuesToInitialize.uninflected)
         .rememberDefault(false)
         .htmlCheckbox('uninflected'),
 
     gender: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.gender)
+        .rememberInitial(valuesToInitialize.gender)
         .rememberDefault('all')
-        .htmlSelect('gender', vM.listsForWidgets.gender),
+        .htmlSelect('gender', listsForWidgets.gender),
 
     tantum: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.tantum)
+        .rememberInitial(valuesToInitialize.tantum)
         .rememberDefault('all')
-        .htmlSelect('tantum', vM.listsForWidgets.tantum),
+        .htmlSelect('tantum', listsForWidgets.tantum),
 
     possessive: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.possessive)
+        .rememberInitial(valuesToInitialize.possessive)
         .rememberDefault('all')
-        .htmlSelect('possessive', vM.listsForWidgets.possessive),
+        .htmlSelect('possessive', listsForWidgets.possessive),
 
     onym: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.onym)
+        .rememberInitial(valuesToInitialize.onym)
         .rememberDefault('all')
-        .htmlSelect('onym', vM.listsForWidgets.onym),
+        .htmlSelect('onym', listsForWidgets.onym),
 
     canonical_name: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.canonical_name)
+        .rememberInitial(valuesToInitialize.canonical_name)
         .rememberDefault('all')
-        .htmlSelect('canonical_name', vM.listsForWidgets.canonical_name),
+        .htmlSelect('canonical_name', listsForWidgets.canonical_name),
 
     etymology: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.etymology)
+        .rememberInitial(valuesToInitialize.etymology)
         .rememberDefault(false)
         .htmlCheckbox('etymology'),
 
     variants: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.variants)
+        .rememberInitial(valuesToInitialize.variants)
         .rememberDefault(false)
         .htmlCheckbox('variants'),
 
     collocations: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.collocations)
+        .rememberInitial(valuesToInitialize.collocations)
         .rememberDefault(false)
         .htmlCheckbox('collocations'),
 
     meaningcontexts: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.meaningcontexts)
+        .rememberInitial(valuesToInitialize.meaningcontexts)
         .rememberDefault(false)
         .htmlCheckbox('meaningcontexts'),
 
     additional_info: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.additional_info)
+        .rememberInitial(valuesToInitialize.additional_info)
         .rememberDefault(false)
         .htmlCheckbox('additional_info'),
 
     homonym: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.homonym)
+        .rememberInitial(valuesToInitialize.homonym)
         .rememberDefault(false)
         .htmlCheckbox('homonym'),
 
     duplicate: ko.observable()
-        .rememberInitial(vM.valuesToInitialize.duplicate)
+        .rememberInitial(valuesToInitialize.duplicate)
         .rememberDefault(false)
         .htmlCheckbox('duplicate')
 };
@@ -194,6 +201,8 @@ vM.filters.shouldShowFiltersButtons = ko.computed(
                 ##ui_filters_apply без ``rateLimit`` будет появляться раньше
                 статусной строки, что в пользовательском интерфейсе
                 выглядит достаточно странно.  */
+
+})();
 
 $('#id_find')
     .attr('data-bind', 'textInput: find')

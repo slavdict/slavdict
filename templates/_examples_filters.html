@@ -1,0 +1,30 @@
+<div class="hellinist-filters">
+    <div class="f5s--statusbar"><div class="grid">
+
+        {% include '_examples_filters_info.html' %}
+
+    </div></div>
+    <div class="f5s--dashboard"><div class="grid"
+        {% if DEBUG %}
+            ondblclick="
+                var x = $(this);
+                if (x.hasClass('grid-debug'))
+                    x.removeClass('grid-debug');
+                else
+                    x.addClass('grid-debug');
+            "
+        {% endif %}
+            >
+
+        {% include '_examples_filters_fields.html' %}
+
+    </div></div>
+
+    <div class="f5sD--buttons"><div class="grid">
+
+            <span data-bind="click: getDefaultState, visible: notDefaultState"
+                class="button f5sD--reset">сбросить фильтры</span>
+
+    </div></div>
+
+</div>

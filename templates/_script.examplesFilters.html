@@ -1,0 +1,35 @@
+<script>
+
+    if (!vM) var vM = {};
+    if (!vM.valuesToInitialize) vM.valuesToInitialize = {};
+    if (!vM.valuesToInitialize.examplesFilters)
+        vM.valuesToInitialize.examplesFilters = {};
+    if (!vM.listsForWidgets) vM.listsForWidgets = {};
+    if (!vM.listsForWidgets.examplesFilters)
+        vM.listsForWidgets.examplesFilters = {};
+
+    {% set filters = form.cleaned_data %}
+    (function () {
+        var exf = vM.valuesToInitialize.examplesFilters;
+        exf.hwAuthor = '{{ filters.hwAuthor }}';
+        exf.hwAddress = '{{ filters.hwAddress }}';
+        exf.hwPrfx = '{{ filters.hwPrfx }}';
+        exf.hwExample = '{{ filters.hwExample }}';
+        exf.hwExamplesIds = '{{ filters.hwExamplesIds }}';
+        exf.hwSortbase = '{{ filters.hwSortbase }}';
+        exf.hwSortdir = '{{ filters.hwSortdir }}';
+        exf.hwStatus = '{{ filters.hwStatus }}';
+    })();
+
+    (function () {
+        var w = vM.listsForWidgets.examplesFilters;
+        w.authors = {{ viewmodel.authors }};
+        w.sortbase = {{ viewmodel.sortbase }};
+        w.sortdir = {{ viewmodel.sortdir }};
+        w.statuses = {{ viewmodel.statuses }};
+    })();
+
+    vM.jsonExamples = {{ jsonExamples|safe }};
+
+</script>
+{# vim: set ft=htmldjango: #}

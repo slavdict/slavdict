@@ -1,0 +1,17 @@
+{% macro entry(entry) %}
+
+<div class="exampleHeader">
+    <a href="{{ entry.get_absolute_url() }}" target="_blank">
+        <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
+        {% if entry.homonym_order %}
+            <sup>{{ entry.homonym_order }}</sup>
+        {% endif %}
+    </a>{{ space }}
+    <i>{{ entry.get_part_of_speech_display() }}</i>{{ space }}
+    {% if entry.homonym_gloss %}
+        ‘{{ entry.homonym_gloss }}’
+    {% endif %}
+</div>
+
+{% endmacro %}
+{# vi:set ft=django.html: #}
