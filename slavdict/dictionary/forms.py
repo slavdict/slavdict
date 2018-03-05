@@ -33,21 +33,26 @@ class FilterEntriesForm(forms.Form):
     per_se = forms.BooleanField(label=u'Отображать помимо заголовочных '
             u'слов сами статьи', required=False)
     sortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
-    sortbase = forms.ChoiceField(choices=SORTBASE_CHOICES)
+    sortbase = forms.ChoiceField(choices=SORTBASE_CHOICES, required=False)
     find = forms.CharField(required=False, label=u'Начинается с')
-    author = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор')
-    status = forms.ChoiceField(choices=STATUS_CHOICES, label=u'Статус статьи')
-    pos = forms.ChoiceField(choices=POS_CHOICES, label=u'Часть речи')
+    author = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор',
+            required=False)
+    status = forms.ChoiceField(choices=STATUS_CHOICES, label=u'Статус статьи',
+            required=False)
+    pos = forms.ChoiceField(choices=POS_CHOICES, label=u'Часть речи',
+            required=False)
     uninflected = forms.BooleanField(label=u'Неизменяемые сущ. / прил.',
             required=False)
-    gender = forms.ChoiceField(choices=GENDER_CHOICES, label=u'Род')
-    tantum = forms.ChoiceField(choices=TANTUM_CHOICES, label=u'Число')
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, label=u'Род',
+            required=False)
+    tantum = forms.ChoiceField(choices=TANTUM_CHOICES, label=u'Число',
+            required=False)
     onym = forms.ChoiceField(choices=ONYM_CHOICES,
-            label=u'Тип имени собст.')
+            label=u'Тип имени собст.', required=False)
     canonical_name = forms.ChoiceField(choices=CANONNAME_CHOICES,
-            label=u'Канонические имена')
+            label=u'Канонические имена', required=False)
     possessive = forms.ChoiceField(choices=POSSESSIVE_CHOICES,
-            label=u'Притяжательность')
+            label=u'Притяжательность', required=False)
     etymology = forms.BooleanField(label=u'Статьи с этимологией',
             required=False)
     additional_info = forms.BooleanField(label=u'Статьи с примечаниями',
