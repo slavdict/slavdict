@@ -3,7 +3,13 @@
 {% from '_hellinist_entry.html' import entry with context %}
 
 {% block css %}hellinist_workbench.css{% endblock %}
-{% block headerFormAddress %}{{ url('hellinist_workbench') }}{% endblock %}
+{% block headerFormAddress %}
+    {% if entries is defined %}
+        {{ url('hellinist_entries') }}
+    {% else %}
+        {{ url('hellinist_workbench') }}
+    {% endif %}
+{% endblock %}
 
 {% block header %}
 
@@ -12,7 +18,7 @@
     </a>
     {{ space }}
 
-    {% if entries %}
+    {% if entries is defined %}
         <a href="{{ url('hellinist_workbench') }}" class="header--item button">
             Параллели к иллюстрациям
         </a>
@@ -49,7 +55,7 @@
 {% endblock %}
 
 {% block subheader %}
-    {% if entries %}
+    {% if entries is defined %}
         {% include '_entry_filters.html' %}
     {% else %}
         {% include '_examples_filters.html' %}
@@ -58,7 +64,7 @@
 
 {% block content %}
     {% trim %}
-    {% if entries %}
+    {% if entries is defined %}
 
         {% for e in entries %}
             <div>{{ entry(e) }}</div>
@@ -78,50 +84,42 @@
 {% block javascript_links %}
 
 <script src="{{ STATIC_URL }}js/libs/ac2ucs8.js?{{ STATIC_RESOURCES_VERSION }}"
-        type="text/javascript" charset="utf-8"></script>
+        type="application/javascript" charset="utf-8"></script>
 
 <script src="{{ STATIC_URL }}js/myKnockoutCommon.js?{{ STATIC_RESOURCES_VERSION }}"
         type="application/javascript" charset="utf-8"></script>
 
-    <script>
+<script>
 
-        var vM = {};
+    if (!vM) var vM = {};
 
-        vM.urls = {
-            jsonGreqDeleteURL: "{{ url('jsonGreqDeleteURL') }}",
-            jsonGreqSaveURL: "{{ url('jsonGreqSaveURL') }}",
-            jsonExSaveURL: "{{ url('jsonExSaveURL') }}"
-        };
+    vM.urls = {
+        jsonGreqDeleteURL: "{{ url('jsonGreqDeleteURL') }}",
+        jsonGreqSaveURL: "{{ url('jsonGreqSaveURL') }}",
+        jsonExSaveURL: "{{ url('jsonExSaveURL') }}"
+    };
 
-        vM.meta = {
-            initials: [],
-            defaults: []
-        };
+    vM.meta = {
+        initials: [],
+        defaults: []
+    };
 
-        {% set filters = form.cleaned_data %}
-        vM.valuesToInitialize = {
-            hwAuthor: '{{ filters.hwAuthor }}',
-            hwAddress: '{{ filters.hwAddress }}',
-            hwPrfx: '{{ filters.hwPrfx }}',
-            hwExample: '{{ filters.hwExample }}',
-            hwExamplesIds: '{{ filters.hwExamplesIds }}',
-            hwSortbase: '{{ filters.hwSortbase }}',
-            hwSortdir: '{{ filters.hwSortdir }}',
-            hwStatus: '{{ filters.hwStatus }}'
-        };
+</script>
 
-        vM.listsForWidgets = {
-            authors: {{ viewmodel.authors }},
-            sortbase: {{ viewmodel.sortbase }},
-            sortdir: {{ viewmodel.sortdir }},
-            statuses: {{ viewmodel.statuses }}
-        };
+{% if entries is defined %}
 
-        vM.jsonExamples = {{ jsonExamples|safe }};
+    {% include '_script.entryFilters.html' %}
 
-    </script>
+    <script src="{{ STATIC_URL }}js/entryListFilters.js?{{ STATIC_RESOURCES_VERSION }}"
+        type="application/javascript" charset="utf-8"></script>
+
+{% else %}
+
+    {% include '_script.examplesFilters.html' %}
 
     <script src="{{ STATIC_URL }}js/hellinistFilters.js?{{ STATIC_RESOURCES_VERSION }}"
         type="application/javascript" charset="utf-8"></script>
+
+{% endif %}
 
 {% endblock %}

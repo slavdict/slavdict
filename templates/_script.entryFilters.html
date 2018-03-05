@@ -1,0 +1,51 @@
+<script>
+
+    if (!vM) var vM = {};
+    if (!vM.valuesToInitialize) vM.valuesToInitialize = {};
+    if (!vM.valuesToInitialize.entryFilters)
+        vM.valuesToInitialize.entryFilters = {};
+    if (!vM.listsForWidgets) vM.listsForWidgets = {};
+    if (!vM.listsForWidgets.entryFilters)
+        vM.listsForWidgets.entryFilters = {};
+
+    {% set filters = form.cleaned_data %}
+    (function () {
+        var ef = vM.valuesToInitialize.entryFilters;
+        ef.per_se = {{ 'true' if filters.per_se else 'false' }};
+        ef.find = '{{ filters.find }}';
+        ef.author = '{{ filters.author }}';
+        ef.sortbase = '{{ filters.sortbase }}';
+        ef.sortdir = '{{ filters.sortdir }}';
+        ef.status = '{{ filters.status }}';
+        ef.pos = '{{ filters.pos }}';
+        ef.uninflected = {{ 'true' if filters.uninflected else 'false' }};
+        ef.gender = '{{ filters.gender }}';
+        ef.tantum = '{{ filters.tantum }}';
+        ef.possessive = '{{ filters.possessive }}';
+        ef.onym = '{{ filters.onym }}';
+        ef.canonical_name = '{{ filters.canonical_name }}';
+        ef.etymology = {{ 'true' if filters.etymology else 'false' }};
+        ef.variants = {{ 'true' if filters.variants else 'false' }};
+        ef.collocations = {{ 'true' if filters.collocations else 'false' }};
+        ef.meaningcontexts = {{ 'true' if filters.meaningcontexts else 'false' }};
+        ef.additional_info = {{ 'true' if filters.additional_info else 'false' }};
+        ef.homonym = {{ 'true' if filters.homonym else 'false' }};
+        ef.duplicate = {{ 'true' if filters.duplicate else 'false' }};
+    })();
+
+    (function () {
+        var w = vM.listsForWidgets.entryFilters;
+        w.authors = {{ viewmodel.authors }};
+        w.sortbase = {{ viewmodel.sortbase }};
+        w.sortdir = {{ viewmodel.sortdir }};
+        w.statuses = {{ viewmodel.statuses }};
+        w.pos = {{ viewmodel.pos }};
+        w.gender = {{ viewmodel.gender }};
+        w.tantum = {{ viewmodel.tantum }};
+        w.possessive = {{ viewmodel.possessive }};
+        w.onym = {{ viewmodel.onym }};
+        w.canonical_name = {{ viewmodel.canonical_name }};
+    })();
+
+</script>
+{# vim: set ft=htmldjango: #}

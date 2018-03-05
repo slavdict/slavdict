@@ -2,6 +2,7 @@
 import base64
 import collections
 import datetime
+import hashlib
 import itertools
 import operator
 import random
@@ -629,10 +630,12 @@ def import_csv_billet(request):
 
 
 @login_required
-def entry_list(request, template='entry_list.html'):
-    if 'find' in request.COOKIES:
-        request.COOKIES['find'] = base64 \
-            .standard_b64decode(request.COOKIES['find']) \
+def entry_list(request, template='entry_list.html', per_page=12):
+    cookie_salt = hashlib.md5(request.path).hexdigest()
+    cookie_name = 'find{0}'.format(cookie_salt)
+    if cookie_name in request.COOKIES:
+        request.COOKIES[cookie_name] = base64 \
+            .standard_b64decode(request.COOKIES[cookie_name]) \
             .decode('utf8')
 
     if request.method == 'POST' and len(request.POST) > 1:
@@ -640,11 +643,13 @@ def entry_list(request, template='entry_list.html'):
         # является неизменяемым. Метод ``copy()`` делает его полную уже
         # доступную для изменения копию.
         data = request.POST.copy()
-        if request.POST['hdrSearch']:
+        if request.POST.get('hdrSearch'):
             data['find'] = request.POST['hdrSearch']
     else:
         data = dict(FilterEntriesForm.default_data)
-        data.update(request.COOKIES)
+        data.update((key[:-len(cookie_salt)], value)
+                for key, value in request.COOKIES.items()
+                if key.endswith(cookie_salt))
         if (request.method == 'POST' and len(request.POST) == 1
         and 'hdrSearch' in request.POST):
             data['find'] = request.POST['hdrSearch']
@@ -659,7 +664,7 @@ def entry_list(request, template='entry_list.html'):
             raise InvalidCookieError(message)
     entries = filters.get_entries(form.cleaned_data)
 
-    paginator = Paginator(entries, per_page=12, orphans=2)
+    paginator = Paginator(entries, per_page=per_page, orphans=2)
     if request.method == 'POST':
         pagenum = 1
     else:
@@ -702,12 +707,15 @@ def entry_list(request, template='entry_list.html'):
         form.cleaned_data['find'] = base64 \
             .standard_b64encode(form.cleaned_data['find'].encode('utf8'))
         for param, value in form.cleaned_data.items():
-            response.set_cookie(param, value, path=request.path)
+            cookie_name = param + cookie_salt
+            response.set_cookie(cookie_name, value, path=request.path)
     return response
 
 
+HELLINIST_PER_PAGE = 4
+
 @login_required
-def hellinist_workbench(request):
+def hellinist_workbench(request, per_page=HELLINIST_PER_PAGE):
     for key in ('hwPrfx', 'hwAddress', 'hwExample'):
         if key in request.COOKIES:
             request.COOKIES[key] = base64 \
@@ -732,7 +740,7 @@ def hellinist_workbench(request):
     if request.user.preplock:
         examples = [ex for ex in examples if not ex.host_entry.preplock]
 
-    paginator = Paginator(examples, per_page=4, orphans=2)
+    paginator = Paginator(examples, per_page=per_page, orphans=2)
     if request.method == 'POST':
         pagenum = 1
     else:
