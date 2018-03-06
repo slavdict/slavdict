@@ -20,11 +20,11 @@ def get_entries(form):
 
     # Сортировка
     DEFAULT_SORT = '-t'
-    sortdir = form['sortdir']
-    sortbase = form['sortbase']
+    sortdir = form.get('sortdir', '')
+    sortbase = form.get('sortbase', '')
     sort = sortdir + sortbase
     if not sort:
-        sort = form['sort'] or DEFAULT_SORT
+        sort = form.get('sort') or DEFAULT_SORT
     VALID_SORT_PARAMS = {
         'alph': ('civil_equivalent', 'homonym_order'),
         '-alph': ('-civil_equivalent', '-homonym_order'),
@@ -37,12 +37,12 @@ def get_entries(form):
         PARSING_ERRORS.append('sort')
 
     # Статьи начинаются с
-    find = form['find']
+    find = form.get('find')
     if find:
         FILTER_PARAMS['civil_equivalent__istartswith'] = find
 
     # Автор статьи
-    value = form['author'] or 'all'
+    value = form.get('author') or 'all'
     if value=='all':
         pass
     elif value=='none':
@@ -66,7 +66,7 @@ def get_entries(form):
                 or none_value == "DOESNT_HAVE"), u'Неверное значение параметра'
 
         model_property = model_property or param
-        value = form[param] or 'all'
+        value = form.get(param) or 'all'
         if value=='all':
             pass
         elif value=='none':
@@ -104,25 +104,25 @@ def get_entries(form):
     _set_enumerable_param('possessive', none_value='DOESNT_HAVE')
 
     # Омонимы
-    if form['homonym']:
+    if form.get('homonym'):
         FILTER_PARAMS['homonym_order__isnull'] = False
 
     # Есть примечание
-    if form['additional_info']:
+    if form.get('additional_info'):
         FILTER_EXCLUDE_PARAMS['additional_info'] = ''
 
     # Есть этимологии
-    if form['etymology']:
+    if form.get('etymology'):
         etyms = Etymology.objects.values_list('entry')
         FILTER_PARAMS['id__in'] = set(item[0] for item in set(etyms))
 
     # Есть орфографические и т.п. варианты
-    if form['variants']:
+    if form.get('variants'):
         entries = entries.annotate(orthvar_num=Count('orthographic_variants'))
         FILTER_PARAMS['orthvar_num__gt'] = 1
 
     # Статьи с словосочетаниями
-    if form['collocations']:
+    if form.get('collocations'):
         good_entries = set(cg.host_entry.id for cg in CollocationGroup.objects.all() if cg and cg.host_entry)
         if 'id__in' in FILTER_PARAMS:
             FILTER_PARAMS['id__in'] = \
@@ -131,7 +131,7 @@ def get_entries(form):
             FILTER_PARAMS['id__in'] = good_entries
 
     # Статьи с контекстами значений
-    if form['meaningcontexts']:
+    if form.get('meaningcontexts'):
         good_entries = set(mc.host_entry.id
                            for mc in MeaningContext.objects.all()
                            if mc.show_in_dictionary)
@@ -142,11 +142,11 @@ def get_entries(form):
             FILTER_PARAMS['id__in'] = good_entries
 
     # Статьи-дубликаты
-    if form['duplicate']:
+    if form.get('duplicate'):
         FILTER_PARAMS['duplicate'] = True
 
     # Неизменяемое
-    if form['uninflected']:
+    if form.get('uninflected'):
         FILTER_PARAMS['uninflected'] = True
 
     assert not PARSING_ERRORS, u'Недопустимые значения параметров: %s' % PARSING_ERRORS
@@ -167,11 +167,11 @@ def get_examples(form):
 
     # Сортировка
     DEFAULT_SORT = 'addr'
-    sortdir = form['hwSortdir']
-    sortbase = form['hwSortbase']
+    sortdir = form.get('hwSortdir')
+    sortbase = form.get('hwSortbase')
     sort = sortdir + sortbase
     if not sort:
-        sort = form['hwSort'] or DEFAULT_SORT
+        sort = form.get('hwSort') or DEFAULT_SORT
     VALID_SORT_PARAMS = {
         'id': ('id',),
         '-id': ('-id',),
@@ -186,7 +186,7 @@ def get_examples(form):
         PARSING_ERRORS.append('sort')
 
     # Автор статьи
-    value = form['hwAuthor'] or 'all'
+    value = form.get('hwAuthor') or 'all'
     if value == 'all':
         pass
     elif value == 'none':
@@ -198,25 +198,25 @@ def get_examples(form):
         PARSING_ERRORS.append('hwAuthor')
 
     # Статьи начинаются с
-    prfx = form['hwPrfx']
+    prfx = form.get('hwPrfx')
     if prfx:
         entries = Entry.objects if entries is None else entries
         entries = entries.filter(civil_equivalent__istartswith=prfx)
 
     # Адреса начинаются на
-    address = form['hwAddress']
+    address = form.get('hwAddress')
     if address:
         FILTER_PARAMS['address_text__istartswith'] = address
 
     # Текст иллюстраций
-    example = form['hwExample']
+    example = form.get('hwExample')
     if example:
         RE = re.compile(u'[^абвгдеёжзийклмнопрстуфхцчшщъыьэюя]+')
         example = u''.join(re.split(RE, example.lower()))
         FILTER_PARAMS['ts_example__contains'] = example
 
     # Статус греческих параллелей
-    greq_status = form['hwStatus'] or 'L'
+    greq_status = form.get('hwStatus') or 'L'
     if greq_status == 'all':
         pass
     elif greq_status.isalpha() and len(greq_status) == 1:
