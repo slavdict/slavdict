@@ -89,6 +89,11 @@ class FilterEntriesForm(forms.Form):
         'variants': False,
         'meaningcontexts': False,
     }
+    default_data_for_hellinists = default_data.copy()
+    default_data_for_hellinists.update({
+        'sortdir': '',
+        'sortbase': 'alph',
+    })
 
 class FilterExamplesForm(forms.Form):
     hwAddress = forms.CharField(required=False, label=u'Адрес начинается на')

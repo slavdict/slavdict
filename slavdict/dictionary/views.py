@@ -628,9 +628,9 @@ def import_csv_billet(request):
     return render(request, 'csv_import.html', {'form': form,
                   'get_parameters': get_parameters})
 
-
+_DEFAULT_TEMPLATE = 'entry_list.html'
 @login_required
-def entry_list(request, template='entry_list.html', per_page=12):
+def entry_list(request, template=_DEFAULT_TEMPLATE, per_page=12):
     cookie_salt = hashlib.md5(request.path).hexdigest()
     cookie_name = 'find{0}'.format(cookie_salt)
     if cookie_name in request.COOKIES:
@@ -646,7 +646,10 @@ def entry_list(request, template='entry_list.html', per_page=12):
         if request.POST.get('hdrSearch'):
             data['find'] = request.POST['hdrSearch']
     else:
-        data = dict(FilterEntriesForm.default_data)
+        if template == _DEFAULT_TEMPLATE:
+            data = dict(FilterEntriesForm.default_data)
+        else:
+            data = dict(FilterEntriesForm.default_data_for_hellinists)
         data.update((key[:-len(cookie_salt)], value)
                 for key, value in request.COOKIES.items()
                 if key.endswith(cookie_salt))
