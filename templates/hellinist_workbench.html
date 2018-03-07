@@ -91,12 +91,21 @@
 
 <script>
 
+    $(window).on('beforeunload', function () {
+        // Все поля форм делаем неактивными, чтобы вызвать событие changed
+        // для того поля, где стоял курсор и тем самым запустить процесс
+        // сохранения значения.
+        $('input').blur();
+    });
+
     if (!vM) var vM = {};
 
     vM.urls = {
-        jsonGreqDeleteURL: "{{ url('jsonGreqDeleteURL') }}",
-        jsonGreqSaveURL: "{{ url('jsonGreqSaveURL') }}",
-        jsonExSaveURL: "{{ url('jsonExSaveURL') }}"
+        jsonGreqDeleteURL: {{ url('jsonGreqDeleteURL') | tojson }},
+        jsonGreqSaveURL: {{ url('jsonGreqSaveURL') | tojson }},
+        jsonExSaveURL: {{ url('jsonExSaveURL') | tojson }},
+        jsonEtymDeleteURL: {{ url('jsonEtymDeleteURL') | tojson }},
+        jsonEtymSaveURL: {{ url('jsonEtymSaveURL') | tojson }}
     };
 
     vM.meta = {
@@ -104,11 +113,37 @@
         defaults: []
     };
 
+    {% if entries is defined %}
+        vM.jsonEtymologies = [
+            {% set comma = joiner(',') %}
+            {% for entry in entries %}
+                {% for et in entry.etymologies %}
+                    {{ comma() }}
+                    { 'id': {{ et.id }},
+                      'entry_id': {{ entry.id }},
+                      'unitext': {{ et.unitext|tojson }},
+                      'additional_info': {{ et.additional_info|tojson }}
+                    }
+                {% endfor %}
+            {% endfor %}
+        ];
+        if (!vM.filters) vM.filters = {};
+        vM.filters.etymsForEntries = {
+            {% for entry in entries %}
+                {% if not loop.first %},{% endif %}
+                {{ entry.id }}: ko.observableArray([])
+            {% endfor %}
+        };
+    {% endif %}
+
 </script>
 
 {% if entries is defined %}
 
     {% include '_script.entryFilters.html' %}
+
+    <script src="{{ STATIC_URL }}js/entryListForHellinists.js?{{ STATIC_RESOURCES_VERSION }}"
+        type="application/javascript" charset="utf-8"></script>
 
     <script src="{{ STATIC_URL }}js/entryListFilters.js?{{ STATIC_RESOURCES_VERSION }}"
         type="application/javascript" charset="utf-8"></script>

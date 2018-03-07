@@ -37,10 +37,12 @@ urlpatterns = [
     url( r'^greek/$', views.hellinist_workbench, name='hellinist_workbench' ),
     url( r'^greek/entries/$', views.entry_list, name='hellinist_entries',
                               kwargs={'template': 'hellinist_workbench.html',
-                                      'per_page': views.HELLINIST_PER_PAGE}),
+                                      'per_page': 8}),
     url( r'^json/greq/save/$', jsonviews.json_greq_save, name="jsonGreqSaveURL"),
     url( r'^json/greq/delete/$', jsonviews.json_greq_delete, name="jsonGreqDeleteURL"),
     url( r'^json/ex/save/$', jsonviews.json_ex_save, name="jsonExSaveURL"),
+    url( r'^json/etym/save/$', jsonviews.json_etym_save, name="jsonEtymSaveURL"),
+    url( r'^json/etym/delete/$', jsonviews.json_etym_delete, name="jsonEtymDeleteURL"),
     url( r'^json/goodness/save/$', jsonviews.json_goodness_save, name="jsonGoodnessSaveURL"),
 
     # TODO: В последствии всё это должно быть удалено.
