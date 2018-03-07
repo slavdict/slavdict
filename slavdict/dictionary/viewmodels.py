@@ -70,8 +70,8 @@ greqStatuses = ({'id': 'all', 'name': u'— любой —'},) \
 
 onyms = (
     {'id': 'all',  'name': u'любой'},
-    {'id': 'none', 'name': u'не имя собственное'},
-) + _choices(models.ONYM_CHOICES)
+    {'id': 'none', 'name': u'не имя собст.'},
+) + _choices(filter(lambda x: x[0], models.ONYM_CHOICES))
 
 editOnyms = (EMPTY_STRING_ID_OBJECT,) + _choices(models.ONYM_CHOICES)
 
