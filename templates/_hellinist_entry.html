@@ -3,14 +3,59 @@
 <div class="exampleHeader">
     <a href="{{ entry.get_absolute_url() }}" target="_blank">
         <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
-        {% if entry.homonym_order %}
-            <sup>{{ entry.homonym_order }}</sup>
-        {% endif %}
-    </a>{{ space }}
+    </a>
+    {% if entry.homonym_order %}
+        <sup style="font-family: Arial, sans; font-size: x-small">
+            {{ entry.homonym_order }}
+        </sup>
+    {% endif %}
+    {{ space }}
     <i>{{ entry.get_part_of_speech_display() }}</i>{{ space }}
     {% if entry.homonym_gloss %}
         ‘{{ entry.homonym_gloss }}’
     {% endif %}
+    {{ space }}
+    <span class="etymList"
+        data-bind="visible: etymsForEntries[{{ entry.id }}]().length">
+        <!-- ko foreach: etymsForEntries[{{ entry.id }}] -->
+            <span data-bind="text: unitext"></span>
+            <span data-bind="text: additional_info,
+                             visible: additional_info()"
+                class="greqComment"></span>
+            <span data-bind="css: { hidden: $index == $parent.length }">,</span>
+            {{ space }}
+        <!-- /ko -->
+    </span>{{ space }}
+    <ul data-bind="foreach: etymsForEntries[{{ entry.id }}]()">
+        <li class="greqForExample">
+
+            <span class="greqFieldContainer">
+                <label>греч. параллель</label>
+                <input type="text" data-bind="
+                    textInput: unitext,
+                    event: { change: saveMe }"
+                    maxlength="{{ MAX_LENGTHS.Etymology.unitext }}" />
+            </span>
+
+            <span class="greqFieldContainer">
+                <label>примечание для авторов</label>
+                <input type="text" data-bind="
+                    textInput: additional_info,
+                    event: { change: saveMe }" />
+            </span>
+
+            <span class="button greqFieldButton"
+                data-bind="click: removeMe">&#x2716;</span>
+
+            <span class="greqFieldAjaxLoader"
+                data-bind="visible: beingSaved()"></span>
+        </li>
+    </ul>
+
+    <div class="button addGreqButton"
+        data-bind="click: function () { addEtymology({{ entry.id }}); }">
+        &#x271a; Добавить греч. параллель
+    </div>
 </div>
 
 {% endmacro %}

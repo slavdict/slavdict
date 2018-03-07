@@ -2,6 +2,7 @@
 import collections
 import datetime
 import json
+import re
 
 from django.apps import apps
 from django.core import mail
@@ -17,6 +18,7 @@ from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
+from slavdict.dictionary.models import LANGUAGE_MAP
 from slavdict.dictionary.models import Meaning
 from slavdict.dictionary.models import MeaningContext
 from slavdict.dictionary.models import OrthographicVariant
@@ -113,6 +115,51 @@ def json_greq_delete(request):
         if id:
             gr = GreekEquivalentForExample.objects.get(pk=id)
             gr.delete()
+            data = _json({ 'action': 'deleted' })
+            response = HttpResponse(data, content_type=IMT_JSON, status=200)
+        else:
+            response = HttpResponse(status=400)
+    else:
+        response = HttpResponse(status=400)
+    return response
+
+
+GREEK_RANGE = re.compile(ur'[\u0370-\u0373\u0376-\u037D\u0386\u0388-\u03E1'
+                         ur'\u1f00-\u1fbc\u1fc2-\u1fcc\u1fd0-\u1fdb'
+                         ur'\u1fe0-\u1fec\u1ff2-\u1ffc]')
+@login_required
+def json_etym_save(request):
+    jsonEtym = request.POST.get('etym')
+    if jsonEtym:
+        etym = json.loads(jsonEtym)
+        if GREEK_RANGE.search(etym['unitext']):
+            etym['language'] = LANGUAGE_MAP['greek']
+        else:
+            etym['language'] = LANGUAGE_MAP['latin']
+        if not etym['id']:
+            del etym['id']
+            et = Etymology(**etym)
+            et.save()
+            data = _json({ 'action': 'created', 'id': et.id })
+        else:
+            et = Etymology.objects.get(pk=int(etym['id']))
+            et.__dict__.update(etym)
+            et.save()
+            data = _json({ 'action': 'saved' })
+        response = HttpResponse(data, content_type=IMT_JSON, status=200)
+    else:
+        response = HttpResponse(status=400)
+    return response
+
+
+@login_required
+def json_etym_delete(request):
+    jsonDelete = request.POST.get('delete')
+    if jsonDelete:
+        id = int( json.loads(jsonDelete) )
+        if id:
+            et = Etymology.objects.get(pk=id)
+            et.delete()
             data = _json({ 'action': 'deleted' })
             response = HttpResponse(data, content_type=IMT_JSON, status=200)
         else:

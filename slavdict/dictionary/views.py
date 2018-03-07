@@ -701,6 +701,7 @@ def entry_list(request, template='entry_list.html', per_page=12):
         'page': page,
         'user': request.user,
         'title': u'Словарь церковнославянского языка Нового времени',
+        'MAX_LENGTHS': models.MAX_LENGTHS,
         }
     response = render(request, template, context)
     if request.method == 'POST':
@@ -712,10 +713,8 @@ def entry_list(request, template='entry_list.html', per_page=12):
     return response
 
 
-HELLINIST_PER_PAGE = 4
-
 @login_required
-def hellinist_workbench(request, per_page=HELLINIST_PER_PAGE):
+def hellinist_workbench(request, per_page=4):
     for key in ('hwPrfx', 'hwAddress', 'hwExample'):
         if key in request.COOKIES:
             request.COOKIES[key] = base64 \

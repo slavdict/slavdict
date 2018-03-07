@@ -926,7 +926,7 @@ class Etymology(models.Model):
                 help_text=u'''Словосочетание, к которому относится данная
                 этимология.''', blank=True, null=True)
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
 
     etymon_to = ForeignKey('self', verbose_name=u'этимон для',
                 help_text=u'''Возможный/несомненный этимон для другого этимона,
@@ -1043,7 +1043,7 @@ class Etymology(models.Model):
 class MeaningContext(models.Model):
 
     meaning = ForeignKey('Meaning', verbose_name=u'значение')
-    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
 
     left_text = CharField(u'дополнительный текст слева', max_length=50,
             help_text=u'''Здесь указывается текст на <span class="green"
@@ -1631,7 +1631,7 @@ class CollocationGroup(models.Model):
     cf_meanings = ManyToManyField(Meaning, verbose_name=u'ср. (значения)',
             related_name='cf_collogroup_set', blank=True, null=True)
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
     ctime = DateTimeField(editable=False, auto_now_add=True)
     mtime = DateTimeField(editable=False, auto_now=True)
     additional_info = TextField(u'примечание', blank=True)
@@ -1768,7 +1768,7 @@ class Collocation(models.Model):
                                  blank=True)
     civil_inverse = CharField(u'гражд. инв.', max_length=350)
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=10)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
 
     @property
     def etymologies(self):
@@ -1858,7 +1858,7 @@ class GreekEquivalentForExample(models.Model):
 
     corrupted = BooleanField(u'текст испорчен', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
-    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
 
     @property
     def host_entry(self):
@@ -1946,7 +1946,7 @@ class OrthographicVariant(models.Model):
     def idem_letter_ucs(self):
         return ucs_convert_affix(self.idem.lower())
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
     no_ref_entry = BooleanField(u'Не делать отсылочной статьи', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
 
@@ -2004,7 +2004,7 @@ class Participle(models.Model):
     def idem_ucs(self):
         return ucs_convert(self.idem)
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=0)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
     mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
