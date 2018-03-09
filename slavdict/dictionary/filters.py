@@ -116,6 +116,11 @@ def get_entries(form):
         etyms = Etymology.objects.values_list('entry')
         FILTER_PARAMS['id__in'] = set(item[0] for item in set(etyms))
 
+    # Без этимологии
+    if form.get('etymology_sans'):
+        etyms = Etymology.objects.values_list('entry')
+        FILTER_EXCLUDE_PARAMS['id__in'] = set(item[0] for item in set(etyms))
+
     # Есть орфографические и т.п. варианты
     if form.get('variants'):
         entries = entries.annotate(orthvar_num=Count('orthographic_variants'))

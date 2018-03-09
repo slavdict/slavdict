@@ -25,6 +25,7 @@
         ef.onym = '{{ filters.onym }}';
         ef.canonical_name = '{{ filters.canonical_name }}';
         ef.etymology = {{ 'true' if filters.etymology else 'false' }};
+        ef.etymology_sans = {{ 'true' if filters.etymology_sans else 'false' }};
         ef.variants = {{ 'true' if filters.variants else 'false' }};
         ef.collocations = {{ 'true' if filters.collocations else 'false' }};
         ef.meaningcontexts = {{ 'true' if filters.meaningcontexts else 'false' }};

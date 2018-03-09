@@ -55,6 +55,8 @@ class FilterEntriesForm(forms.Form):
             label=u'Притяжательность', required=False)
     etymology = forms.BooleanField(label=u'Статьи с этимологией',
             required=False)
+    etymology_sans = forms.BooleanField(label=u'Статьи без этимологии',
+            required=False)
     additional_info = forms.BooleanField(label=u'Статьи с примечаниями',
             required=False)
     homonym = forms.BooleanField(label=u'Статьи-омонимы',
@@ -82,6 +84,7 @@ class FilterEntriesForm(forms.Form):
         'canonical_name': 'all',
         'possessive': 'all',
         'etymology': False,
+        'etymology_sans': False,
         'additional_info': False,
         'homonym': False,
         'duplicate': False,

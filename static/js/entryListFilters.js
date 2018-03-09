@@ -95,6 +95,11 @@
             .rememberDefault(false)
             .htmlCheckbox('etymology');
 
+    f.etymology_sans = ko.observable()
+            .rememberInitial(valuesToInitialize.etymology_sans)
+            .rememberDefault(false)
+            .htmlCheckbox('etymology_sans');
+
     f.variants = ko.observable()
             .rememberInitial(valuesToInitialize.variants)
             .rememberDefault(false)

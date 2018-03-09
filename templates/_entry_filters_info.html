@@ -117,6 +117,14 @@
 </span>
 
 {{ space }}
+<span class="f5sS--item" data-bind="visible: etymology_sans">
+    без этимологии
+    <span class="f5sSI--reset"
+          data-bind="click: function() { etymology_sans.getDefaultValue(); }">
+    </span>
+</span>
+
+{{ space }}
 <span class="f5sS--item" data-bind="visible: variants">
     с вариантами написания
     <span class="f5sSI--reset"
