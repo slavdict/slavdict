@@ -2,7 +2,10 @@
 from os.path import abspath
 from os.path import dirname
 from os.path import normpath
+from os.path import exists
 import sys
+import json
+import hashlib
 
 # Базовые настройки проекта,
 # от которых могут зависеть другие настройки
@@ -65,7 +68,16 @@ MEDIA_URL = '/u/'
 
 STATIC_ROOT = ROOT + '.static/'
 STATIC_URL = '/static/'
-STATIC_RESOURCES_VERSION='2018.03.09'
+
+_hash_file = ROOT + '.hash'
+_default_hash = 'NOHASH'
+
+if exists(_hash_file):
+    try:
+        STATIC_RESOURCES_VERSION = open(_hash_file).read().strip()
+    except:
+        print _hash_file, 'could not be read'
+        sys.exit(1)
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'td2+2t^tz-)^j^%@4_^c8ds#6-po3sfoqbwaa2u*i3rj3y%hs1'
@@ -151,7 +163,6 @@ AUTHENTICATION_BACKENDS = (
 CUSTOM_USER_MODEL = 'slavdict.custom_user.CustomUser'
 
 # Сторонние библиотеки JavaScript
-JSLIBS_VERSION = '2014.10.31'
 JSLIBS_URL = STATIC_URL + 'js/outsourcing/'
 JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
 JSLIBS = {
@@ -212,6 +223,7 @@ JSLIBS = {
          'Xmin': 'http://use.fontawesome.com/releases/v5.0.7/js/all.js',
     },
 }
+JSLIBS_VERSION = hashlib.md5(json.dumps(JSLIBS)).hexdigest()[:8]
 
 _postfix = 'Local'
 for lib in JSLIBS:
@@ -220,7 +232,7 @@ for lib in JSLIBS:
         if version == 'Xmin':
             JSLIBS[lib]['min'] = JSLIBS_URL + filename
             version = 'min'
-        JSLIBS[lib][version + _postfix] = JSLIBS_URL + filename + '?' + STATIC_RESOURCES_VERSION
+        JSLIBS[lib][version + _postfix] = JSLIBS_URL + filename + '?' + JSLIBS_VERSION
 
 
 # Локальное для компьютера переопределение настроек проекта

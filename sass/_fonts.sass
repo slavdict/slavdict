@@ -1,4 +1,5 @@
 @charset 'utf-8'
+@import resource_version
 
 $cslFont: 'Triodion Ucs'
 $csl1Font: 'Pochaevsk Ucs'
@@ -9,143 +10,143 @@ $serifFont: Octava, 'Old Standard TT', serif
 
 @font-face
     font-family: 'Triodion Ucs'
-    src: url('fonts/TriIEUcs.eot')
-    src: local('Triodion Ucs'), local('Triodion ieUcs'), local('Triodion ieUcs Regular'), local('Triodion-ieUcs'), url('fonts/TriIEUcs.woff') format('woff'), url('fonts/TriIEUcs.ttf') format('truetype'), url('fonts/TriIEUcs.svg#Triodion-ieUcs') format('svg')
+    src: url('fonts/TriIEUcs.eot?#{$shash}')
+    src: local('Triodion Ucs'), local('Triodion ieUcs'), local('Triodion ieUcs Regular'), local('Triodion-ieUcs'), url('fonts/TriIEUcs.woff?#{$shash}') format('woff'), url('fonts/TriIEUcs.ttf?#{$shash}') format('truetype'), url('fonts/TriIEUcs.svg?#{$shash}#Triodion-ieUcs') format('svg')
 
 @font-face
     font-family: 'Pochaevsk Ucs'
-    src: url('fonts/pochucs.eot')
-    src: url('fonts/pochucs.eot?#iefix') format('embedded-opentype'), url('fonts/pochucs.woff2') format('woff2'), url('fonts/pochucs.woff') format('woff')
+    src: url('fonts/pochucs.eot?#{$shash}')
+    src: url('fonts/pochucs.eot?#{$shash}#iefix') format('embedded-opentype'), url('fonts/pochucs.woff2?#{$shash}') format('woff2'), url('fonts/pochucs.woff?#{$shash}') format('woff')
     font-weight: normal
     font-style: normal
 
 @font-face
     font-family: 'Pochaevsk Condensed Ucs'
-    src: url('fonts/pochucscond.eot') /* IE9 Compat Modes */
-    src: url('fonts/pochucscond.eot?#iefix') format('embedded-opentype') /* IE6-IE8 */, url('fonts/pochucscond.woff') format('woff') /* Modern Browsers */, url('fonts/pochucscond.ttf') format('truetype') /* Safari, Android, iOS */
+    src: url('fonts/pochucscond.eot?#{$shash}') /* IE9 Compat Modes */
+    src: url('fonts/pochucscond.eot?#{$shash}#iefix') format('embedded-opentype') /* IE6-IE8 */, url('fonts/pochucscond.woff?#{$shash}') format('woff') /* Modern Browsers */, url('fonts/pochucscond.ttf?#{$shash}') format('truetype') /* Safari, Android, iOS */
     font-style: normal
     font-weight: normal
     text-rendering: optimizeLegibility
 
 @font-face
     font-family: 'hebrew'
-    src: url('fonts/hebrew-webfont.eot')
-    src: local('hebrew'), url('fonts/hebrew-webfont.woff') format('woff'), url('fonts/hebrew-webfont.ttf') format('truetype')
+    src: url('fonts/hebrew-webfont.eot?#{$shash}')
+    src: local('hebrew'), url('fonts/hebrew-webfont.woff?#{$shash}') format('woff'), url('fonts/hebrew-webfont.ttf?#{$shash}') format('truetype')
     font-weight: normal
     font-style: normal
 
 @font-face
     font-family: 'Hebrew-Russian!'
-    src: url('fonts/heb-rus-webfont.eot')
-    src: local('Hebrew-Russian!'), url('fonts/heb-rus-webfont.woff') format('woff'), url('fonts/heb-rus-webfont.ttf') format('truetype')
+    src: url('fonts/heb-rus-webfont.eot?#{$shash}')
+    src: local('Hebrew-Russian!'), url('fonts/heb-rus-webfont.woff?#{$shash}') format('woff'), url('fonts/heb-rus-webfont.ttf?#{$shash}') format('truetype')
     font-weight: normal
     font-style: normal
 
 @font-face
     font-family: 'Estrangelo Edessa'
-    src: url('fonts/estre-webfont.eot')
-    src: local('Estrangelo Edessa'), url('fonts/estre-webfont.woff') format('woff'), url('fonts/estre-webfont.ttf') format('truetype')
+    src: url('fonts/estre-webfont.eot?#{$shash}')
+    src: local('Estrangelo Edessa'), url('fonts/estre-webfont.woff?#{$shash}') format('woff'), url('fonts/estre-webfont.ttf?#{$shash}') format('truetype')
     font-weight: normal
     font-style: normal
 
 @font-face
     font-family: 'GEO-LitNusx'
-    src: url('fonts/ltzura2-webfont.eot')
-    src: local('GEO-LitNusx'), url('fonts/ltzura2-webfont.woff') format('woff'), url('fonts/ltzura2-webfont.ttf') format('truetype')
+    src: url('fonts/ltzura2-webfont.eot?#{$shash}')
+    src: local('GEO-LitNusx'), url('fonts/ltzura2-webfont.woff?#{$shash}') format('woff'), url('fonts/ltzura2-webfont.ttf?#{$shash}') format('truetype')
     font-weight: normal
     font-style: normal
 
 @font-face
     font-family: 'SPEdessa'
-    src: url('fonts/spedessa-webfont.eot')
-    src: url('fonts/spedessa-webfont.eot?#iefix') format('embedded-opentype'), url('fonts/spedessa-webfont.woff') format('woff'), url('fonts/spedessa-webfont.ttf') format('truetype')
+    src: url('fonts/spedessa-webfont.eot?#{$shash}')
+    src: url('fonts/spedessa-webfont.eot?#{$shash}#iefix') format('embedded-opentype'), url('fonts/spedessa-webfont.woff?#{$shash}') format('woff'), url('fonts/spedessa-webfont.ttf?#{$shash}') format('truetype')
     font-weight: normal
     font-style: normal
 
 @font-face
     font-family: 'Coptic'
-    src: url('fonts/coptic2-webfont.eot')
-    src: local('Coptic'), url('fonts/coptic2-webfont.woff') format('woff'), url('fonts/coptic2-webfont.ttf') format('truetype')
+    src: url('fonts/coptic2-webfont.eot?#{$shash}')
+    src: local('Coptic'), url('fonts/coptic2-webfont.woff?#{$shash}') format('woff'), url('fonts/coptic2-webfont.ttf?#{$shash}') format('truetype')
     font-weight: normal
     font-style: normal
 
 @font-face
     font-family: 'Old Standard TT'
-    src: url('fonts/oldstandard-regular-webfont.eot')
-    src: url('fonts/oldstandard-regular-webfont.woff') format('woff'), url('fonts/oldstandard-regular-webfont.ttf') format('truetype')
+    src: url('fonts/oldstandard-regular-webfont.eot?#{$shash}')
+    src: url('fonts/oldstandard-regular-webfont.woff?#{$shash}') format('woff'), url('fonts/oldstandard-regular-webfont.ttf?#{$shash}') format('truetype')
     font-weight: normal
     font-style: normal
 
 @font-face
     font-family: 'Old Standard TT'
-    src: url('fonts/oldstandard-italic-webfont.eot')
-    src: url('fonts/oldstandard-italic-webfont.woff') format('woff'), url('fonts/oldstandard-italic-webfont.ttf') format('truetype')
+    src: url('fonts/oldstandard-italic-webfont.eot?#{$shash}')
+    src: url('fonts/oldstandard-italic-webfont.woff?#{$shash}') format('woff'), url('fonts/oldstandard-italic-webfont.ttf?#{$shash}') format('truetype')
     font-weight: normal
     font-style: italic
 
 @font-face
     font-family: 'Old Standard TT'
-    src: url('fonts/oldstandard-bold-webfont.eot')
-    src: url('fonts/oldstandard-bold-webfont.woff') format('woff'), url('fonts/oldstandard-bold-webfont.ttf') format('truetype')
+    src: url('fonts/oldstandard-bold-webfont.eot?#{$shash}')
+    src: url('fonts/oldstandard-bold-webfont.woff?#{$shash}') format('woff'), url('fonts/oldstandard-bold-webfont.ttf?#{$shash}') format('truetype')
     font-weight: bold
     font-style: normal
 
 @font-face
     font-family: 'AntConSol'
-    src: url('fonts/antconsol-webfont.eot')
-    src: url('fonts/antconsol-webfont.woff') format('woff'), url('fonts/antconsol-webfont.ttf') format('truetype')
+    src: url('fonts/antconsol-webfont.eot?#{$shash}')
+    src: url('fonts/antconsol-webfont.woff?#{$shash}') format('woff'), url('fonts/antconsol-webfont.ttf?#{$shash}') format('truetype')
 
 @font-face
     font-family: 'Wingdings 3'
-    src: url('fonts/wingdings-3.eot')
-    src: url('fonts/wingdings-3.woff') format('woff'), url('fonts/wingdings-3.ttf') format('truetype'), url('fonts/wingdings.svg#Wingdings3') format('svg')
+    src: url('fonts/wingdings-3.eot?#{$shash}')
+    src: url('fonts/wingdings-3.woff?#{$shash}') format('woff'), url('fonts/wingdings-3.ttf?#{$shash}') format('truetype'), url('fonts/wingdings.svg?#{$shash}#Wingdings3') format('svg')
 
 @font-face
     font-family: 'Octava'
-    src: url('fonts/oct55.eot')
-    src: url('fonts/oct55.woff') format('woff'), url('fonts/oct55.ttf') format('truetype'), url('fonts/oct55.otf') format('opentype')
+    src: url('fonts/oct55.eot?#{$shash}')
+    src: url('fonts/oct55.woff?#{$shash}') format('woff'), url('fonts/oct55.ttf?#{$shash}') format('truetype'), url('fonts/oct55.otf?#{$shash}') format('opentype')
     font-weight: normal
     font-style: normal
 
 @font-face
     font-family: 'Octava'
-    src: url('fonts/oct56.eot')
-    src: url('fonts/oct56.woff') format('woff'), url('fonts/oct56.ttf') format('truetype'), url('fonts/oct56.otf') format('opentype')
+    src: url('fonts/oct56.eot?#{$shash}')
+    src: url('fonts/oct56.woff?#{$shash}') format('woff'), url('fonts/oct56.ttf?#{$shash}') format('truetype'), url('fonts/oct56.otf?#{$shash}') format('opentype')
     font-weight: normal
     font-style: italic
 
 @font-face
     font-family: 'Octava'
-    src: url('fonts/oct85.eot')
-    src: url('fonts/oct85.woff') format('woff'), url('fonts/oct85.ttf') format('truetype'), url('fonts/oct85.otf') format('opentype')
+    src: url('fonts/oct85.eot?#{$shash}')
+    src: url('fonts/oct85.woff?#{$shash}') format('woff'), url('fonts/oct85.ttf?#{$shash}') format('truetype'), url('fonts/oct85.otf?#{$shash}') format('opentype')
     font-weight: bold
     font-style: normal
 
 @font-face
     font-family: 'Octava'
-    src: url('fonts/oct86.eot')
-    src: url('fonts/oct86.woff') format('woff'), url('fonts/oct86.ttf') format('truetype'), url('fonts/oct86.otf') format('opentype')
+    src: url('fonts/oct86.eot?#{$shash}')
+    src: url('fonts/oct86.woff?#{$shash}') format('woff'), url('fonts/oct86.ttf?#{$shash}') format('truetype'), url('fonts/oct86.otf?#{$shash}') format('opentype')
     font-weight: bold
     font-style: italic
 
 @font-face
     font-family: FreeSerifSymbols
-    src: url('fonts/freeserif-symbols.eot') /* IE9 Compat Modes */
-    src: url('fonts/freeserif-symbols.eot?#iefix') format('embedded-opentype') /* IE6-IE8 */, url('fonts/freeserif-symbols.woff') format('woff') /* Modern Browsers */, url('fonts/freeserif-symbols.ttf') format('truetype') /* Safari, Android, iOS */
+    src: url('fonts/freeserif-symbols.eot?#{$shash}') /* IE9 Compat Modes */
+    src: url('fonts/freeserif-symbols.eot?#{$shash}#iefix') format('embedded-opentype') /* IE6-IE8 */, url('fonts/freeserif-symbols.woff?#{$shash}') format('woff') /* Modern Browsers */, url('fonts/freeserif-symbols.ttf?#{$shash}') format('truetype') /* Safari, Android, iOS */
     text-rendering: optimizeLegibility
 
 @font-face
     font-family: GentiumPlus
-    src: url('fonts/GentiumPlus-R.eot')
-    src: url('fonts/GentiumPlus-R.woff') format('woff'), url('fonts/GentiumPlus-R.ttf') format('truetype')
+    src: url('fonts/GentiumPlus-R.eot?#{$shash}')
+    src: url('fonts/GentiumPlus-R.woff?#{$shash}') format('woff'), url('fonts/GentiumPlus-R.ttf?#{$shash}') format('truetype')
     font-style: normal
     font-weight: normal
     text-rendering: optimizeLegibility
 
 @font-face
     font-family: GentiumPlus
-    src: url('fonts/GentiumPlus-I.eot')
-    src: url('fonts/GentiumPlus-I.woff') format('woff'), url('fonts/GentiumPlus-I.ttf') format('truetype')
+    src: url('fonts/GentiumPlus-I.eot?#{$shash}')
+    src: url('fonts/GentiumPlus-I.woff?#{$shash}') format('woff'), url('fonts/GentiumPlus-I.ttf?#{$shash}') format('truetype')
     font-style: italic
     font-weight: normal
     text-rendering: optimizeLegibility

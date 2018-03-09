@@ -218,7 +218,7 @@
 
         <div>
             <a href="{% if user.is_admeditor %}{{ url('admin:dictionary_meaning_change', args=[m.pk]) }}{% else %}{{ url('UI:dictionary_meaning_change', args=[m.pk]) }}{% endif %}">
-                <img src="{{ STATIC_URL }}pen.png" alt="" />
+                <img src="{{ STATIC_URL }}pen.png?{{ STATIC_RESOURCES_VERSION }}" alt="" />
                 {{ space }}
                 Редактировать
                 {% if not m.parent_meaning %}
@@ -231,7 +231,7 @@
 
         <div>
             <a href="{% if user.is_admeditor %}{{ url('admin:dictionary_example_add') }}{% else %}{{ url('UI:dictionary_example_add') }}{% endif %}?meaning={{ m.id }}">
-                <img src="{{ STATIC_URL }}plus.png" alt="" />
+                <img src="{{ STATIC_URL }}plus.png?{{ STATIC_RESOURCES_VERSION }}" alt="" />
                 {{ space }}
                 Добавить пример
             </a>

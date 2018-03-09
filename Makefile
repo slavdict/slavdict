@@ -10,12 +10,15 @@ IS_PRODUCTION = test ${SLAVDICT_ENVIRONMENT} = production || (echo "Окруже
 IS_DEVELOPMENT = test ${SLAVDICT_ENVIRONMENT} = development || (echo "Окружение не являетя тестовым" && exit 1)
 
 JSLIBS_PATH := $(shell python ${SETTINGS_FILE} --jslibs-path)
+JSLIBS_FILES := ${JSLIBS_PATH}*.{js,map,txt,swf}
 JSLIBS_VERSION_FILE := ${JSLIBS_PATH}version.txt
 JSLIBS_NEW_VERSION := $(shell python ${SETTINGS_FILE} --jslibs-version)
 JSLIBS_OLD_VERSION := $(shell cat ${JSLIBS_VERSION_FILE} 2>/dev/null)
 
 LOCCHDIR = /root/slavdict-local-changes-untracked
 DIFFFILE = /root/slavdict-local-changes-${DATE_TIME}.diff
+
+RESOURCE_VERSION = sass/_resource_version.sass
 
 default: indesign
 
@@ -79,7 +82,8 @@ fixown:
 	chown -R git:www-is /home/git/slavdict.*
 	chmod u+x bin/*.sh
 
-collectstatic: jslibs
+collectstatic: hash
+	test -e ${RESOURCE_VERSION} || touch ${RESOURCE_VERSION}
 	compass compile -e ${SLAVDICT_ENVIRONMENT}
 	python ./manage.py collectstatic --noinput
 
@@ -89,17 +93,27 @@ migrate:
 clean:
 	-find -name '*.pyc' -execdir rm '{}' \;
 	-rm -f static/*.css
-	-rm -f ${JSLIBS_PATH}*.{js,map,txt,swf}
+	-rm -f ${JSLIBS_FILES}
 	-rm -fR .sass-cache/
 	-rm -fR .static/*
 
 jslibs:
 	if [ "${JSLIBS_OLD_VERSION}" != "${JSLIBS_NEW_VERSION}" ];\
 	then \
-		rm -f ${JSLIBS_PATH}*.{js,map,txt} ; \
+		rm -f ${JSLIBS_FILES} ; \
 		python ${SETTINGS_FILE} --jslibs | xargs -n3 wget ; \
 		echo ${JSLIBS_NEW_VERSION} > ${JSLIBS_VERSION_FILE} ; \
 	fi
+
+hash: jslibs
+	test -e .temp_hash && rm .temp_hash || true
+	git ls-tree --name-only -r HEAD -- sass static \
+		| xargs sha256sum >>.temp_hash
+	find static/js/outsourcing -type f -iname '*.js' \
+		-exec sha256sum '{}' \; >>.temp_hash
+	sort .temp_hash -o .temp_hash
+	sha256sum .temp_hash | cut -c1-8 >.hash
+	echo '$$shash:' "'$$(cat .hash)'" >${RESOURCE_VERSION}
 
 scp:
 	rsync bin/indesign_xml_dumper.py dilijnt0:/var/www/slavdict/bin/
@@ -129,6 +143,7 @@ listen-indesign:
     destroy_loc_changes \
     fixown \
     jslibs \
+    hash \
     listen-indesign \
     migrate \
     migrestart \

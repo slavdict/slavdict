@@ -2,7 +2,7 @@
 {% from '_hellinist_example.html' import example with context %}
 {% from '_hellinist_entry.html' import entry with context %}
 
-{% block css %}hellinist_workbench.css{% endblock %}
+{% block css %}hellinist_workbench.css?{{ STATIC_RESOURCES_VERSION }}{% endblock %}
 {% block headerFormAddress %}
     {% if entries is defined %}
         {{ url('hellinist_entries') }}

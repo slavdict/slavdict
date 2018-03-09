@@ -68,27 +68,27 @@ table.entry-list tr.last div.shade
 div.shade div.left
     width: 80px
     left: -16px
-    background: url(fadeBarLeft.gif) no-repeat top left
+    background: url(fadeBarLeft.gif?#{$shash}) no-repeat top left
 
 div.shade div.center
     width: 556px
     left: 44px
-    background: url(fadeBarCenter.gif) repeat-x top left
+    background: url(fadeBarCenter.gif?#{$shash}) repeat-x top left
 
 div.shade div.right
     width: 80px
     left: 600px
-    background: url(fadeBarRight.gif) no-repeat top left
+    background: url(fadeBarRight.gif?#{$shash}) no-repeat top left
 
 div.fade div
     position: absolute
     height: 60px
     width: 100%
-    background: url("fade-right-white.png") repeat-y right top
+    background: url("fade-right-white.png?#{$shash}") repeat-y right top
     // fade-right-white: 100px заготовкав в ширину в фотошопе, цвет белый, // градиентная заливка из белого в прозрачный/бесцветный цвет, // начало на 90-м пикселе, конец на 40-м. Получается около 10px справа
     // заполнены непрозрачным белым, а далее влево он выцветает.
 tr.hover div.fade div
-    background-image: url("fade-right-blue.png")
+    background-image: url("fade-right-blue.png?#{$shash}")
 
 /* Выделения текста в списке статей */
 .ss, .ssn /* Sans-Serif, Sans-Serif Note */
@@ -155,31 +155,31 @@ a.icon img
     cursor: pointer
 
 a.icon.edit
-    background: url(edit-gray-faded.png) no-repeat 50% 50%
+    background: url(edit-gray-faded.png?#{$shash}) no-repeat 50% 50%
 
 a:hover.icon.edit
-    background: url(edit-gray.png) no-repeat 50% 50%
+    background: url(edit-gray.png?#{$shash}) no-repeat 50% 50%
 
 tr.entry-list-item.hover a.icon.edit
-    background: url(edit-white.png) no-repeat 50% 50%
+    background: url(edit-white.png?#{$shash}) no-repeat 50% 50%
 
 a.icon.view
-    background: url(eye-gray-faded.png) no-repeat 50% 50%
+    background: url(eye-gray-faded.png?#{$shash}) no-repeat 50% 50%
 
 a:hover.icon.view
-    background: url(eye-gray.png) no-repeat 50% 50%
+    background: url(eye-gray.png?#{$shash}) no-repeat 50% 50%
 
 tr.entry-list-item.hover a.icon.view
-    background: url(eye-white.png) no-repeat 50% 50%
+    background: url(eye-white.png?#{$shash}) no-repeat 50% 50%
 
 a.icon.clippy
-    background: url(clippy-gray-faded.png) no-repeat 50% 50%
+    background: url(clippy-gray-faded.png?#{$shash}) no-repeat 50% 50%
 
 a:hover.icon.clippy
-    background: url(clippy-gray.png) no-repeat 50% 50%
+    background: url(clippy-gray.png?#{$shash}) no-repeat 50% 50%
 
 tr.entry-list-item.hover a.icon.clippy
-    background: url(clippy-white.png) no-repeat 50% 50%
+    background: url(clippy-white.png?#{$shash}) no-repeat 50% 50%
 
 
 table.entry-list tr.control-row td
