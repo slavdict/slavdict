@@ -240,9 +240,11 @@ class FigurativeMeaningFilter(admin.SimpleListFilter):
 class OrthVar_Inline(admin.StackedInline):
     model = OrthographicVariant
     extra = 0
+    raw_id_fields = ('parent',)
+    readonly_fields = ('id',)
     fieldsets = (
         (None, {
-            'fields': (('idem', 'no_ref_entry'),),
+            'fields': (('idem', 'no_ref_entry', 'order', 'id', 'parent'),),
             }),
         )
 
