@@ -193,7 +193,6 @@ function Etymology() {
 
     upsert(this, 'additional_info', data, '');
     upsert(this, 'collocation_id', data, collocation_id);
-    upsert(this, 'corrupted', data, false);
     upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'etymon_to_id', data, etymonTo_id);
     upsert(this, 'gloss', data, '');
@@ -296,7 +295,6 @@ function Greq() {
     else data = arguments[0];
 
     upsert(this, 'additional_info', data, '');
-    upsert(this, 'corrupted', data, false);
     upsert(this, 'for_example_id', data, example_id);
     upsert(this, 'id', data, 'greq' + Greq.all.length);
     upsert(this, 'initial_form', data, '');

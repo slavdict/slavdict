@@ -978,7 +978,6 @@ class Etymology(models.Model):
     questionable = BooleanField(u'этимология спорна', default=False)
     mark = CharField(u'грамматическая помета', max_length=20, blank=True)
     additional_info = TextField(u'примечание', blank=True)
-    corrupted = BooleanField(u'текст испорчен', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
@@ -1019,7 +1018,6 @@ class Etymology(models.Model):
         _fields = (
             'additional_info',
             'collocation_id',
-            'corrupted',
             'entry_id',
             'etymon_to_id',
             'gloss',
@@ -1866,7 +1864,6 @@ class GreekEquivalentForExample(models.Model):
                                 греческому эквиваленту, которая в текст
                                 статьи не войдет''', blank=True)
 
-    corrupted = BooleanField(u'текст испорчен', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
     order = SmallIntegerField(u'порядок следования', blank=True, default=345)
 
@@ -1903,7 +1900,6 @@ class GreekEquivalentForExample(models.Model):
     def forJSON(self):
         _fields = (
             'additional_info',
-            'corrupted',
             'for_example_id',
             'id',
             'initial_form',

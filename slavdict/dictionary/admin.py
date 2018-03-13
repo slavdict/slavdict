@@ -259,7 +259,7 @@ ETYMOLOGY_FIELDSETS = (
     (None,
         {'fields': (
             'language',
-            ('text', 'unitext', 'corrupted'),
+            ('text', 'unitext'),
             'translit',
             'meaning',
             'gloss',
@@ -294,7 +294,7 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
     fieldsets = (
         (None, {
             'fields': (
-                ('unitext', 'corrupted'),
+                'unitext',
                 'mark',
                 'source',
                 'initial_form',

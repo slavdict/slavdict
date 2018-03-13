@@ -84,8 +84,6 @@ def all_entries(request, is_paged=False):
 
 ?duplicates                     Отображать только статьи-дубликаты.
 
-?corrupted-greek                Статьи, где есть примеры с испорченными
-                                греческими соответствиями.
 
 ?goodness                       Отображать только "хорошие" статьи.
 
@@ -116,7 +114,6 @@ def all_entries(request, is_paged=False):
         return response
 
     httpGET_AUTHORS = urllib.unquote(request.GET.get('authors', ''))
-    httpGET_CORRUPTED_GREEK = 'corrupted-greek' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
     httpGET_GOODNESS = request.GET.get('goodness')
     httpGET_HIDEAI = 'hide-ai' in request.GET
@@ -185,19 +182,6 @@ def all_entries(request, is_paged=False):
         else:
             entries = entries.filter(pk__in=httpGET_LIST)
 
-    if httpGET_CORRUPTED_GREEK:
-        greek_etymons = Etymology.objects.filter(
-                language=models.LANGUAGE_MAP['greek'],
-                corrupted=True)
-        greqex = GreekEquivalentForExample.objects.filter(corrupted=True)
-
-        # WARNING: Переменная entries теперь будет содержать обычный список
-        # вместо объекта django.db.models.query.QuerySet, так что теперь на
-        # entries больше нельзя нанизывать никаких фильтров.
-        entries = set([i.host_entry for i in greek_etymons])
-        entries.update([i.host_entry for i in greqex])
-        entries = list(entries)
-        entries.sort(key=lambda entry: entry.civil_equivalent)
 
     # Формирование заголовка страницы в зависимости от переданных
     # GET-параметров

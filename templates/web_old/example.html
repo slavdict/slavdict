@@ -14,7 +14,7 @@
             {{ backspace }}{{ COMMA() }}{{ space }}
         {% endif %}
 
-        <span class="unigrec{% if ge.corrupted %} cinnabar{% endif %}">{{ ge.unitext }}</span>
+        <span class="unigrec">{{ ge.unitext }}</span>
         {{ space }}
 
         {% for x in (ge.mark, ge.source, ge.note)|reject('equalto', '') %}
