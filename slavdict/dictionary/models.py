@@ -277,11 +277,13 @@ GENDER_CHOICES = (
     ('m', u'м.'),
     ('f', u'ж.'),
     ('n', u'с.'),
+    ('d', u'м. и ж.'),
 )
 GENDER_MAP = {
     'masculine': 'm',
     'feminine': 'f',
     'neutral': 'n',
+    'dual': 'd',
 }
 
 ONYM_CHOICES = (
