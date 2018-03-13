@@ -233,14 +233,13 @@
     {% endif %}
 
     {% if entry.is_onym('ethnonym') and entry.nom_sg %}
-        {{ backspace }}{{ space }}
-        <span class="Text">(</span>
+        {{ backspace }}<span class="Text">,</span>{{ space }}
         {% for ethnonym, ethnonym_ucs in entry.ethnonyms %}
             {% if loop.last and not loop.first %}
                 {{ backspace }}{{ space }}
                 <span class="Conj">и</span>{{ space }}
             {% elif not loop.first %}
-                {{ backspace }},{{ space }}
+                {{ backspace }}<span class="Text">,</span>{{ space }}
             {% endif %}
             <span>{{ ethnonym_ucs |
                         web_cslav_words("CSLSegment") }}</span>
@@ -248,7 +247,7 @@
                 {% include 'web/noaccent.html' %}
             {% endif %}
         {% endfor %}
-        <span class="Text">)</span>{{ space }}
+        {{ space }}<span class="Em">мн.</span>{{ space }}
     {% endif %}
 
     {% if show_additional_info and entry.additional_info %}

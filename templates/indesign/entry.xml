@@ -224,21 +224,20 @@
     {% endif %}
 
     {% if entry.is_onym('ethnonym') and entry.nom_sg %}
-        {{ backspace }}{{ space }}
-        <x aid:cstyle="Text">(</x>
+        {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% for ethnonym, ethnonym_ucs in entry.ethnonyms %}
             {% if loop.last and not loop.first %}
                 {{ backspace }}{{ space }}
                 <x aid:cstyle="Conj">и</x>{{ space }}
             {% elif not loop.first %}
-                {{ backspace }},{{ space }}
+                {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
             {% endif %}
             <x>{{ ethnonym_ucs|ind_cslav_words("CSLSegment") }}</x>
             {% if ethnonym|has_no_accent %}
                 {% include 'indesign/noaccent.xml' %}
             {% endif %}
         {% endfor %}
-        <x aid:cstyle="Text">)</x>{{ space }}
+        {{ space }}<x aid:cstyle="Em">мн.</x>{{ space }}
     {% endif %}
 
 
