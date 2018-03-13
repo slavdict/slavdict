@@ -84,6 +84,8 @@ def all_entries(request, is_paged=False):
 
 ?duplicates                     Отображать только статьи-дубликаты.
 
+?aliud-greek                    Статьи, где есть примеры с пометой
+                                "в греч. иначе".
 
 ?goodness                       Отображать только "хорошие" статьи.
 
@@ -114,6 +116,7 @@ def all_entries(request, is_paged=False):
         return response
 
     httpGET_AUTHORS = urllib.unquote(request.GET.get('authors', ''))
+    httpGET_ALIUD_GREEK = 'aliud-greek' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
     httpGET_GOODNESS = request.GET.get('goodness')
     httpGET_HIDEAI = 'hide-ai' in request.GET
@@ -182,6 +185,10 @@ def all_entries(request, is_paged=False):
         else:
             entries = entries.filter(pk__in=httpGET_LIST)
 
+    if httpGET_ALIUD_GREEK:
+        greqex = GreekEquivalentForExample.objects.filter(aliud=True)
+        entries = list(set(i.host_entry for i in greqex))
+        entries.sort(key=lambda entry: entry.civil_equivalent)
 
     # Формирование заголовка страницы в зависимости от переданных
     # GET-параметров
@@ -758,6 +765,7 @@ def hellinist_workbench(request, per_page=4):
             {
                 'unitext': greq.unitext,
                 'initial_form': greq.initial_form,
+                'aliud': greq.aliud,
                 'id': greq.id,
                 'additional_info': greq.additional_info
             }

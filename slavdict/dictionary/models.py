@@ -1864,6 +1864,7 @@ class GreekEquivalentForExample(models.Model):
                                 греческому эквиваленту, которая в текст
                                 статьи не войдет''', blank=True)
 
+    aliud = BooleanField(u'в греч. иначе', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
     order = SmallIntegerField(u'порядок следования', blank=True, default=345)
 
@@ -1900,6 +1901,7 @@ class GreekEquivalentForExample(models.Model):
     def forJSON(self):
         _fields = (
             'additional_info',
+            'aliud',
             'for_example_id',
             'id',
             'initial_form',

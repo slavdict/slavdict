@@ -140,11 +140,20 @@
                     event: { change: saveMe }" />
             </span>
 
-            <span class="button greqFieldButton"
+            <span class="button greqFieldButton onSide"
                 data-bind="click: removeMe">&#x2716;</span>
 
             <span class="greqFieldAjaxLoader"
                 data-bind="visible: beingSaved()"></span>
+
+            <span class="greqFieldContainer checkbox">
+                <input type="checkbox" data-bind="
+                    checked: aliud,
+                    event: { change: saveMe },
+                    attr: { id: 'greq' + id() }" />
+                <label data-bind="attr: { for: 'greq' + id() }"
+                    >в греч. иначе</label>
+            </span>
         </li>
     </ul>
 

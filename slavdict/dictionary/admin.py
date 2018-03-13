@@ -294,7 +294,7 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
     fieldsets = (
         (None, {
             'fields': (
-                'unitext',
+                ('unitext', 'aliud'),
                 'mark',
                 'source',
                 'initial_form',

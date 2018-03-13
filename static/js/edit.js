@@ -295,6 +295,7 @@ function Greq() {
     else data = arguments[0];
 
     upsert(this, 'additional_info', data, '');
+    upsert(this, 'aliud', data, false);
     upsert(this, 'for_example_id', data, example_id);
     upsert(this, 'id', data, 'greq' + Greq.all.length);
     upsert(this, 'initial_form', data, '');
