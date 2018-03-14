@@ -418,12 +418,13 @@ SUBSTANTIVUS_TYPE_MAP = {
     'f.pl.': 'f',
 }
 
-ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6 = 'abcdef'
+ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7 = 'abcdef'
 ENTRY_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (SC1, u'Несколько лексем одного рода'),
     (SC2, u'2 лексемы, муж. и жен. рода'),
     (SC3, u'2 лексемы, ср. и жен. рода'),
+    (SC7, u'2 лексемы, жен. и ср. рода'),
     (SC4, u'2 лексемы, жен. и только мн.'),
     (SC5, u'2 лексемы, только мн. и жен.'),
     (SC6, u'3 лексемы, 3 муж. и последний неизм.'),
@@ -831,6 +832,8 @@ class Entry(models.Model):
                         M_GENDER,
                         u'%s %s' % (M_GENDER, UNINFL)]
                     words += ['']
+                elif SC7 == sc:
+                    grammatical_marks = [F_GENDER, N_GENDER]
 
                 value = [(word, ucs_convert(word), grammatical_marks[i])
                          for i, word in enumerate(words)]
