@@ -126,8 +126,8 @@
 {% endif %}
 
 {% if show_additional_info and m.additional_info %}
-    <span class="ai ai-meaning Text">{{ m.additional_info }}</span>
-    {{ space }}
+    <span class="ai ai-meaning Text hyphenate"
+        lang="ru">{{ m.additional_info }}</span>{{ space }}
 {% endif %}
 
 {% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss) and m.examples %}

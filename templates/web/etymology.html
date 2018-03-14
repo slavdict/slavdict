@@ -22,8 +22,8 @@
 {% endif %}
 
 {% if show_additional_info and etym.additional_info %}
-    <span class="ai ai-etym Text">{{ etym.additional_info }}</span>
-    {{ space }}
+    <span class="ai ai-etym Text hyphenate"
+        lang="ru">{{ etym.additional_info }}</span>{{ space }}
 {% endif %}
 
 {% endmacro %}

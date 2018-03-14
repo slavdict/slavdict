@@ -40,8 +40,8 @@
         {% endif %}
 
         {% if show_additional_info and ge.additional_info %}
-            <span class="ai ai-grfex Text">{{ ge.additional_info }}</span>
-            {{ space }}
+            <span class="ai ai-grfex Text hyphenate"
+                lang="ru">{{ ge.additional_info }}</span>{{ space }}
         {% endif %}
 
     {% endfor %}
@@ -49,7 +49,7 @@
 
 {% if e.address_text %}
     {{ backspace }}{{ space }}
-    <span class="Address">
+    <span class="Address hyphenate" lang="ru">
         {{ e.address_text | web_cslav_injection("CSLSegment") }}
     </span>
     <span class="Address">
@@ -135,8 +135,8 @@
 {% endif %}
 
 {% if show_additional_info and e.additional_info %}
-    <span class="ai ai-example Text">{{ e.additional_info }}</span>
-    {{ space }}
+    <span class="ai ai-example Text hyphenate"
+        lang="ru">{{ e.additional_info }}</span>{{ space }}
 {% endif %}
 
 
