@@ -25,9 +25,11 @@
         </span>
 
         {% if genum == 2 %}
-            {{ backspace }}{{ nbsp }}(bis){{ space }}
+            {{ backspace }}{{ nbsp }}
+            <span class="Text">(bis)</span>{{ space }}
         {% elif genum > 2 %}
-            {{ backspace }}{{ nbsp }}({{ genum }}){{ space }}
+            {{ backspace }}{{ nbsp }}
+            <span class="Text">({{ genum }})</span>{{ space }}
         {% endif %}
 
         {% if ge.note %}
