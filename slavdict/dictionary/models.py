@@ -418,7 +418,7 @@ SUBSTANTIVUS_TYPE_MAP = {
     'f.pl.': 'f',
 }
 
-ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7 = 'abcdef'
+ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7 = 'abcdefg'
 ENTRY_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (SC1, u'Несколько лексем одного рода'),
