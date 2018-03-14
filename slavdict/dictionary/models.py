@@ -517,8 +517,10 @@ class Entry(models.Model):
             choices=BLANK_CHOICE + PART_OF_SPEECH_CHOICES, default='',
             blank=True)
 
-    def is_part_of_speech(self, slug):
-        return PART_OF_SPEECH_MAP[slug] == self.part_of_speech
+    def is_part_of_speech(self, *slugs):
+        for slug in slugs:
+            if PART_OF_SPEECH_MAP[slug] == self.part_of_speech:
+                return True
 
     # Для сущ. и прил.
     uninflected = BooleanField(u'неизменяемое', default=False)

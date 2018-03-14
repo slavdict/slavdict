@@ -171,8 +171,8 @@
                             {% endif %}
 
                             <span class="ss transparent">
-                                {% if not entry.is_part_of_speech("letter") and
-                                      not entry.is_part_of_speech("number") %}
+                                {% if not entry.is_part_of_speech("letter",
+                                                                  "number") %}
                                     <i>{{ entry.get_part_of_speech_display() }}</i>
                                 {% endif %}
                                 {% if entry.homonym_gloss %}
@@ -198,8 +198,8 @@
                     </a>
                         <span class="ss">
                             &nbsp;&nbsp;&nbsp;
-                            {% if not entry.is_part_of_speech("letter") and
-                                  not entry.is_part_of_speech("number") %}
+                            {% if not entry.is_part_of_speech("letter",
+                                                              "number") %}
                                 <i>{{ entry.get_part_of_speech_display() }}</i>
                             {% endif %}
                             {% if entry.homonym_gloss %}
