@@ -43,7 +43,8 @@
                peer_meanings_loop=peer_meanings_loop,
                parent_meanings_loop=parent_meanings_loop,
                collogroups_loop=collogroups_loop,
-               child_meanings=child_meanings) }}
+               child_meanings=child_meanings,
+               entry=m.host_entry, meaning=m) }}
 {% endfor %}
 
 
