@@ -40,13 +40,10 @@
 
     </span>
 
-    {{ space }}
-    <a href="{{ url('converter') }}" class="header--item button">Конвертър</a>
-
     {% if user.is_admeditor or user.is_hellinist %}
         {{ space }}
         <a href="{{ url('hellinist_workbench') }}"
-            class="header--item button">Греческий кабинет</a>
+            class="header--item button">Греч. кабинет</a>
     {% endif %}
 
     {% if not user.preplock %}
@@ -58,10 +55,13 @@
     <span class="right-justification">
         <a href="https://docs.google.com/document/d/1AmrZZgBa4BdTlhvyyBEN8n5KYD0-f_AC04Jd-v_pdjU"
            class="header--item button"
-           target="_blank">Список сокращений</a>{{ space }}
+           target="_blank">Сокращения</a>{{ space }}
         <a href="/materials/" class="header--item button"
            target="_blank">Материалы</a>
-        <a href="{{ url('logout') }}" class="header--item">Выход</a>
+        <a href="{{ url('logout') }}" class="header--item">
+            <i class="fas fa-sign-out-alt"
+               data-fa-transform="down-2"></i>
+        </a>
     </span>
 {% endblock %}
 
