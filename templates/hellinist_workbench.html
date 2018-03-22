@@ -22,6 +22,14 @@
         <a href="{{ url('hellinist_workbench') }}" class="header--item button">
             Параллели к иллюстрациям
         </a>
+        <span class="header--item">
+            <input type="checkbox" id="withExamples" style="margin-left: 0.3em"
+                data-bind="checked: per_se" />
+            <label for="withExamples" style="margin-left: 0.3em">
+                Отображать примеры
+            </label>
+        </span>
+
     {% else %}
         <a href="{{ url('hellinist_entries') }}" class="header--item button">
             Параллели к статьям
