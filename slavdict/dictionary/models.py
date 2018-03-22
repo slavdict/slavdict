@@ -226,6 +226,7 @@ def collogroup_sort_key(cg):
     text = resolve_titles(text)
     return [sort_key1(word) for word in text.split()]
 
+NBSP = u'\u00A0'  # неразрывный пробел
 
 BLANK_CHOICE = (('',''),)
 
@@ -277,7 +278,7 @@ GENDER_CHOICES = (
     ('m', u'м.'),
     ('f', u'ж.'),
     ('n', u'с.'),
-    ('d', u'м. и ж.'),
+    ('d', u'м. и' + NBSP + u'ж.'),
 )
 GENDER_MAP = {
     'masculine': 'm',
@@ -399,7 +400,6 @@ LANGUAGE_TRANSLIT_CSS = {
         LANGUAGE_MAP['syriac']: 'syriac-translit',
 }
 
-NBSP = u'\u00A0'  # неразрывный пробел
 SUBSTANTIVUS_TYPE_CHOICES = (
     ('', ''),
     ('a', u'с.' + NBSP + u'ед.'),
