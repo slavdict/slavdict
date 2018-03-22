@@ -621,7 +621,8 @@ def import_csv_billet(request):
 
 _DEFAULT_TEMPLATE = 'entry_list.html'
 @login_required
-def entry_list(request, template=_DEFAULT_TEMPLATE, per_page=12):
+def entry_list(request, template=_DEFAULT_TEMPLATE, per_page=12,
+        context=None):
     cookie_salt = hashlib.md5(request.path).hexdigest()
     cookie_name = 'find{0}'.format(cookie_salt)
     if cookie_name in request.COOKIES:
@@ -676,7 +677,9 @@ def entry_list(request, template=_DEFAULT_TEMPLATE, per_page=12):
         page.A = int(A)
         page.B = int(B)
 
-    context = {
+    if context is None:
+        context = dict()
+    context.update({
         'viewmodel': {
             'authors': viewmodels.jsonAuthors,
             'canonical_name': viewmodels.jsonCanonicalName,
@@ -696,7 +699,8 @@ def entry_list(request, template=_DEFAULT_TEMPLATE, per_page=12):
         'user': request.user,
         'title': u'Словарь церковнославянского языка Нового времени',
         'MAX_LENGTHS': models.MAX_LENGTHS,
-        }
+    })
+
     response = render(request, template, context)
     if request.method == 'POST':
         form.cleaned_data['find'] = base64 \

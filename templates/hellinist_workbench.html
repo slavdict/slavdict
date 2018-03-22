@@ -56,7 +56,7 @@
 
 {% block subheader %}
     {% if entries is defined %}
-        {% include '_entry_filters.html' %}
+        {% include '_entry_filters.html' with context %}
     {% else %}
         {% include '_examples_filters.html' %}
     {% endif %}
