@@ -430,7 +430,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
     (SC6, u'3 лексемы, 3 муж. и последний неизм.'),
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
-MSC11, MSC12 = 'kl'
+MSC11, MSC12, MSC13 = 'klm'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (u'Имена', (
@@ -440,6 +440,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
     )),
     (u'Части речи', (
         (MSC6,  u'нареч.'),
+        (MSC13, u'союз'),
         (MSC2,  u'предл.'),
         (MSC3,  u'част.'),
         (MSC7,  u'межд.'),
@@ -454,12 +455,13 @@ MEANING_SPECIAL_CASES_CHOICES = (
         (MSC10, u'преимущ.'),
     )),
 )
-POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7)
+POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7, MSC13)
 POS_SPECIAL_CASES_MAP = {
     MSC2: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['preposition']],
     MSC3: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['particle']],
     MSC6: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['adverb']],
     MSC7: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['interjection']],
+    MSC13: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['conjunction']],
 }
 
 class WithoutHiddenManager(models.Manager):
