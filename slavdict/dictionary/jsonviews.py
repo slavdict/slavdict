@@ -95,13 +95,14 @@ def json_greq_save(request):
             del greq['id']
             gr = GreekEquivalentForExample(**greq)
             gr.save()
-            data = _json({ 'action': 'created', 'id': gr.id })
+            data = { 'action': 'created', 'id': gr.id }
         else:
             gr = GreekEquivalentForExample.objects.get(pk=int(greq['id']))
             gr.__dict__.update(greq)
             gr.save()
-            data = _json({ 'action': 'saved' })
-        response = HttpResponse(data, content_type=IMT_JSON, status=200)
+            data = { 'action': 'saved' }
+        data['greek_eq_status'] = gr.for_example.greek_eq_status
+        response = HttpResponse(_json(data), content_type=IMT_JSON, status=200)
     else:
         response = HttpResponse(status=400)
     return response
@@ -114,8 +115,10 @@ def json_greq_delete(request):
         id = int( json.loads(jsonDelete) )
         if id:
             gr = GreekEquivalentForExample.objects.get(pk=id)
+            example = gr.for_example
             gr.delete()
-            data = _json({ 'action': 'deleted' })
+            data = _json({ 'action': 'deleted',
+                           'greek_eq_status': example.greek_eq_status })
             response = HttpResponse(data, content_type=IMT_JSON, status=200)
         else:
             response = HttpResponse(status=400)

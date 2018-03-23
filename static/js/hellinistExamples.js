@@ -49,6 +49,9 @@ function Greq(ex, greq) {
                            if (data.action=='deleted') {
                              ex.greqs.remove(this);
                            }
+                           if (data.greek_eq_status != ex.status()) {
+                               ex.status(data.greek_eq_status);
+                           }
                          }.bind(this)
             });
         } else {
@@ -71,6 +74,9 @@ function Greq(ex, greq) {
                          this.id(data.id);
                        }
                        this.beingSaved(false);
+                       if (data.greek_eq_status != ex.status()) {
+                           ex.status(data.greek_eq_status);
+                       }
                      }.bind(this)
         });
     }.bind(this);
