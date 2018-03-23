@@ -77,15 +77,15 @@
     {% if entries is defined %}
 
         {% for e in entries %}
-            <div>{{ entry(e) }}</div>
+            <div class="FirstParagraph">{{ entry(e) }}</div>
             {% if form.cleaned_data.per_se %}
             {% for label, structure_examples in e.structures_for_hellinists() %}
-                <span class="exampleHeader">
-                    {{ label | web_cslav_injection('cslav') }}
-                </span>
+                <div class=" exampleHeader Text">
+                    {{ label | web_cslav_injection('CSLSegmentEm') }}
+                </div>
                 {% set parentloop = loop %}
                 {% for ex in structure_examples %}
-                    <div>{{ example_for_entry(ex, e.id, loop, parentloop) }}</div>
+                    <div style="margin-left: 1em">{{ example_for_entry(ex, e.id, loop, parentloop) }}</div>
                 {% endfor %}
             {% endfor %}
             {% endif %}

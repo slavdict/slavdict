@@ -1999,6 +1999,8 @@ class GreekEquivalentForExample(models.Model):
         example = self.for_example
         if self.unitext.strip() and example.greek_eq_status in (
                 Example.GREEK_EQ_LOOK_FOR,
+                Example.GREEK_EQ_NOT_FOUND,
+                Example.GREEK_EQ_CHECK_ADDRESS,
                 Example.GREEK_EQ_MEANING,
                 Example.GREEK_EQ_URGENT):
             example.greek_eq_status = Example.GREEK_EQ_FOUND

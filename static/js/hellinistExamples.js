@@ -114,6 +114,20 @@ function Example(ex) {
     this.initialExample = ex.example;
     this.example = ko.observable(ex.example);
     this.exampleEditable = ko.observable(false);
+    this.exampleBackups = ko.observableArray([]);
+    this.howManyBackups = ko.computed(function () {
+        var ret,
+            backups = self.exampleBackups(),
+            example = self.example();
+        if (backups.length == 0) {
+            ret = 0;
+        } else if (backups[backups.length - 1] != example) {
+            ret = backups.length;
+        } else {
+            ret = backups.length - 1;
+        }
+        return ret;
+     });
 
     this.greqs = ko.observableArray(
         ko.utils.arrayMap(
@@ -137,7 +151,11 @@ function Example(ex) {
 
     this.toggleAntconc = this.TOGGLE(this.antconcVisible);
     this.toggleComment = this.TOGGLE(this.commentEditable);
-    this.editExample = function () { self.exampleEditable(true); };
+    this.editExample = function () {
+        self.exampleEditable(true);
+        self.exampleBackups.push(self.example());
+        self.backups = self.exampleBackups().slice();
+    };
     this.saveExample = function () {
         self.exampleEditable(false);
         self.antconc(self.example());
@@ -147,7 +165,17 @@ function Example(ex) {
         self.saveMe();
     };
     this.cancelExample = function () {
-        self.example(self.initialExample);
+        self.exampleEditable(false);
+        self.example(self.backups.pop());
+        self.exampleBackups(self.backups);
+    };
+    this.revertExample = function () {
+        if (self.exampleBackups().length > self.howManyBackups()) {
+            self.exampleBackups.pop();
+            self.example(self.exampleBackups.pop());
+        } else {
+            self.example(self.exampleBackups.pop());
+        }
     };
 
     this.timeoutId = null;
