@@ -855,22 +855,25 @@ class Entry(models.Model):
         for i, (orthvars, pos, meanings) in enumerate(meaning_groups):
             if len(meaning_groups) > 1:
                 group_number = {1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V'}[i + 1]
-                group_label = u'{0}. '.format(group_number)
+                group_label = u'<b>%s.</b>&nbsp;' % group_number
                 if pos:
-                    group_label += u'{0} '.format(pos)
+                    group_label += u'<i>%s</i>&#32;' % pos
                 if orthvars:
-                    orthvars = u', '.join(orthvars)
-                    group_label += u'{0} '.format(orthvars)
+                    orthvars = u',&#32;'.join(u'##%s##' % o for o in orthvars)
+                    group_label += u'%s&#32;' % orthvars
             else:
                 group_label = u''
             for mi, meaning in enumerate(meanings):
                 meaning_label = u''
                 if len(meanings) > 1:
-                    meaning_label += u'{0}. '.format(mi + 1)
+                    meaning_label += u'<b>%s.</b>&nbsp;' % (mi + 1)
                 if meaning.meaning.strip():
-                    meaning_label += u'‘{0}’ '.format(meaning.meaning.strip())
+                    meaning_label += meaning.meaning.strip()
                 if meaning.gloss.strip():
-                    meaning_label += u'{0} '.format(meaning.gloss.strip())
+                    if meaning.meaning.strip():
+                        meaning_label += u';&#32;<i>%s</i>' % meaning.gloss.strip()
+                    else:
+                        meaning_label += u'<i>%s</i>' % meaning.gloss.strip()
                 if mi == 0:
                     meaning_label = group_label + meaning_label
                 examples = []
@@ -883,18 +886,25 @@ class Entry(models.Model):
                         meaning.collogroups_non_phraseological + \
                         meaning.collogroups_phraseological
                 for cg in collogroups:
-                    cs = u'; '.join(c.collocation for c in cg.collocations)
-                    collogroup_label = u'{0} '.format(cs)
-                    meanings = tuple(cg.meanings) + tuple(cg.metaph_meanings)
+                    cs = u';&#32;'.join(u'##%s##' % c.collocation
+                                        for c in cg.collocations)
+                    collogroup_label = u'%s&#32;' % cs
+                    cg_meanings = tuple(cg.meanings)
+                    cg_metaph_meanings = tuple(cg.metaph_meanings)
+                    meanings = cg_meanings + cg_metaph_meanings
                     for i, meaning in enumerate(meanings):
                         meaning_label = u''
-                        if len(meanings) > 1:
-                            meaning_label += u'{0}. '.format(mi + 1)
+                        if len(meanings) > 1 and i < len(cg_meanings):
+                            meaning_label += \
+                                u'<b>%s.</b>&#32;' % (i + 1)
                         if meaning.meaning.strip():
-                            meaning_label += u'‘{0}’ '.format(meaning.meaning.strip())
+                            meaning_label += meaning.meaning.strip()
                         if meaning.gloss.strip():
-                            meaning_label += u'{0} '.format(meaning.gloss.strip())
-                        if mi == 0:
+                            if meaning.meaning.strip():
+                                meaning_label += u';&#32;<i>%s</i>' % meaning.gloss.strip()
+                            else:
+                                meaning_label += u'<i>%s</i>' % meaning.gloss.strip()
+                        if i == 0:
                             meaning_label = collogroup_label + meaning_label
                         examples = meaning.examples
                         structures.append((meaning_label, examples))

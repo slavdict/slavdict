@@ -80,7 +80,9 @@
             <div>{{ entry(e) }}</div>
             {% if form.cleaned_data.per_se %}
             {% for label, structure_examples in e.structures_for_hellinists() %}
-                {{ label }}
+                <span class="exampleHeader">
+                    {{ label | web_cslav_injection('cslav') }}
+                </span>
                 {% set parentloop = loop %}
                 {% for ex in structure_examples %}
                     <div>{{ example_for_entry(ex, e.id, loop, parentloop) }}</div>
