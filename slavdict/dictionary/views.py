@@ -699,6 +699,7 @@ def entry_list(request, template=_DEFAULT_TEMPLATE, per_page=12,
         'user': request.user,
         'title': u'Словарь церковнославянского языка Нового времени',
         'MAX_LENGTHS': models.MAX_LENGTHS,
+        'statusList': models.Example.GREEK_EQ_STATUS,
     })
 
     response = render(request, template, context)

@@ -1,11 +1,9 @@
 {% macro example(e, entryID, loop, parentloop) %}
 
-<div class="example"
+<div class="example" style="margin-left: -3em;"
     data-bind="with: examplesForEntries[{{ entryID }}]
                                        [{{ parentloop.index0 }}]
                                        [{{ loop.index0 }}]">
-
-    <span class="example--id">[<span data-bind="text: id"></span>]</span>
 
     <span class="example--address" data-bind="
         contenteditable: address,
