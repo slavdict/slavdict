@@ -847,6 +847,60 @@ class Entry(models.Model):
         elif case == 'bigger' and self.civil_equivalent == u'больший':
             return ucs_convert(u"вели'кій")
 
+    def structures_for_hellinists(self):
+        if hasattr(self, '_structures'):
+            return self._structures
+        several_pos, meaning_groups = self.meaning_groups
+        structures = []
+        for i, (orthvars, pos, meanings) in enumerate(meaning_groups):
+            if len(meaning_groups) > 1:
+                group_number = {1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V'}[i + 1]
+                group_label = u'{0}. '.format(group_number)
+                if pos:
+                    group_label += u'{0} '.format(pos)
+                if orthvars:
+                    orthvars = u', '.join(orthvars)
+                    group_label += u'{0} '.format(orthvars)
+            else:
+                group_label = u''
+            for mi, meaning in enumerate(meanings):
+                meaning_label = u''
+                if len(meanings) > 1:
+                    meaning_label += u'{0}. '.format(mi + 1)
+                if meaning.meaning.strip():
+                    meaning_label += u'‘{0}’ '.format(meaning.meaning.strip())
+                if meaning.gloss.strip():
+                    meaning_label += u'{0} '.format(meaning.gloss.strip())
+                if mi == 0:
+                    meaning_label = group_label + meaning_label
+                examples = []
+                if meaning.examples:
+                    examples.extend(meaning.examples)
+                for submeaning in meaning.child_meanings:
+                    examples.extend(submeaning.examples)
+                structures.append((meaning_label, examples))
+                collogroups = \
+                        meaning.collogroups_non_phraseological + \
+                        meaning.collogroups_phraseological
+                for cg in collogroups:
+                    cs = u'; '.join(c.collocation for c in cg.collocations)
+                    collogroup_label = u'{0} '.format(cs)
+                    meanings = tuple(cg.meanings) + tuple(cg.metaph_meanings)
+                    for i, meaning in enumerate(meanings):
+                        meaning_label = u''
+                        if len(meanings) > 1:
+                            meaning_label += u'{0}. '.format(mi + 1)
+                        if meaning.meaning.strip():
+                            meaning_label += u'‘{0}’ '.format(meaning.meaning.strip())
+                        if meaning.gloss.strip():
+                            meaning_label += u'{0} '.format(meaning.gloss.strip())
+                        if mi == 0:
+                            meaning_label = collogroup_label + meaning_label
+                        examples = meaning.examples
+                        structures.append((meaning_label, examples))
+        self._structures = structures
+        return structures
+
     preplock = False  # Заглушка для условия, по которому статья д.б. залочена
         # от всех пользователей кроме работающих над подготовкой тома к печати.
 
@@ -1605,6 +1659,33 @@ class Example(models.Model):
     def toJSON(self):
         return json.dumps(self.forJSON(),
                           ensure_ascii=False, separators=(',',':'))
+
+    def forHellinistJSON(self):
+        data = {
+            'id': self.id,
+            'triplet': self.context_ucs,
+            'antconc': self.context.strip() or self.example,
+            'example': self.example,
+            'address': self.address_text,
+            'status': self.greek_eq_status,
+            'audited': self.audited_time and self.audited,
+            'comment': self.additional_info,
+            'greqs': [
+                {
+                    'unitext': greq.unitext,
+                    'initial_form': greq.initial_form,
+                    'aliud': greq.aliud,
+                    'id': greq.id,
+                    'additional_info': greq.additional_info
+                }
+                for greq in self.greek_equivs
+            ]
+        }
+        return data
+
+    def toHellinistJSON(self):
+        return json.dumps(self.forHellinistJSON(),
+                          ensure_ascii=False, separators=(',', ':'))
 
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)

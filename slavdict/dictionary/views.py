@@ -755,27 +755,7 @@ def hellinist_workbench(request, per_page=4):
         page.A = int(A)
         page.B = int(B)
 
-    vM_examples = [
-    {
-        'id': e.id,
-        'triplet': e.context_ucs,
-        'antconc': e.context.strip() or e.example,
-        'example': e.example,
-        'address': e.address_text,
-        'status': e.greek_eq_status,
-        'audited': e.audited_time and e.audited,
-        'comment': e.additional_info,
-        'greqs': [
-            {
-                'unitext': greq.unitext,
-                'initial_form': greq.initial_form,
-                'aliud': greq.aliud,
-                'id': greq.id,
-                'additional_info': greq.additional_info
-            }
-            for greq in e.greek_equivs]
-    }
-    for e in page.object_list]
+    vM_examples = [e.forHellinistJSON() for e in page.object_list]
 
     context = {
         'examples': page.object_list,

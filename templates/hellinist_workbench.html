@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% from '_hellinist_example.html' import example with context %}
+{% from '_hellinist_example_for_entry.html'
+   import example as example_for_entry with context %}
 {% from '_hellinist_entry.html' import entry with context %}
 
 {% block css %}hellinist_workbench.css?{{ STATIC_RESOURCES_VERSION }}{% endblock %}
@@ -76,6 +78,13 @@
 
         {% for e in entries %}
             <div>{{ entry(e) }}</div>
+            {% for label, structure_examples in e.structures_for_hellinists() %}
+                {{ label }}
+                {% set parentloop = loop %}
+                {% for ex in structure_examples %}
+                    <div>{{ example_for_entry(ex, e.id, loop, parentloop) }}</div>
+                {% endfor %}
+            {% endfor %}
         {% endfor %}
 
     {% else %}
@@ -135,6 +144,23 @@
                 {% endfor %}
             {% endfor %}
         ];
+        vM.jsonExamplesForEntries = {
+            {% set comma1 = joiner(',') %}
+            {% for entry in entries %}
+                {{ comma1() }} {{ entry.id }}: [
+                {% set comma2 = joiner(',') %}
+                {% for _, structure_examples in entry.structures_for_hellinists() %}
+                    {{ comma2() }} [
+                    {% set comma3 = joiner(',') %}
+                    {% for ex in structure_examples %}
+                        {{ comma3() }}
+                        {{ ex.toHellinistJSON() }}
+                    {% endfor %}
+                    ]
+                {% endfor %}
+                ]
+            {% endfor %}
+        };
         if (!vM.filters) vM.filters = {};
         vM.filters.etymsForEntries = {
             {% for entry in entries %}
@@ -147,6 +173,8 @@
 </script>
 
 <script src="{{ STATIC_URL }}js/getCookie.js?{{ STATIC_RESOURCES_VERSION }}"
+    type="application/javascript" charset="utf-8"></script>
+<script src="{{ STATIC_URL }}js/hellinistExamples.js?{{ STATIC_RESOURCES_VERSION }}"
     type="application/javascript" charset="utf-8"></script>
 
 {% if entries is defined %}
