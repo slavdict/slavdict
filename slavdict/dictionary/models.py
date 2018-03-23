@@ -2009,6 +2009,10 @@ class GreekEquivalentForExample(models.Model):
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(GreekEquivalentForExample, self).delete(*args, **kwargs)
+        if not self.for_example.greek_equivs.exists():
+            example = self.for_example
+            example.greek_eq_status = Example.GREEK_EQ_LOOK_FOR
+            example.save(without_mtime=without_mtime)
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
