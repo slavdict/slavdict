@@ -1563,19 +1563,28 @@ class Example(models.Model):
             а в аналогичных полях при значении и лексеме, соответственно.''',
             blank=True)
 
+    GREEK_EQ_LOOK_FOR = u'L'  # Следует найти греческие параллели для примера
+    GREEK_EQ_STOP = u'S'  # Греческие параллели не нужны
+    GREEK_EQ_CHECK_ADDRESS = u'C'
+        # Необходимо уточнить адрес примера, чтобы грецист смог найти пример
+    GREEK_EQ_NOT_FOUND = u'N'  # Греч.параллель для примера найти не удалось
+    GREEK_EQ_FOUND = u'F'  # Греч.параллель для примера найдена
+    GREEK_EQ_MEANING = u'M'
+        # Греч.параллели для примера нужны, чтобы определить значение слова
+    GREEK_EQ_URGENT = u'U'  # Греч.параллели для примера нужны в срочном порядке
+
     GREEK_EQ_STATUS = (
-        (u'L', u'следует найти'),   # look for
-        (u'S', u'не нужны'),        # stop
-        (u'C', u'уточнить адрес'),  # check the address
-        (u'N', u'найти не удалось'),  # not found
-        (u'F', u'найдены'),         # found
-        (u'M', u'необходимы для опр-я значения'),  # meaning
-        (u'U', u'срочное'),         # urgent
-        )
+        (GREEK_EQ_LOOK_FOR, u'следует найти'),
+        (GREEK_EQ_STOP, u'не нужны'),
+        (GREEK_EQ_CHECK_ADDRESS, u'уточнить адрес'),
+        (GREEK_EQ_NOT_FOUND, u'найти не удалось'),
+        (GREEK_EQ_FOUND, u'найдены'),
+        (GREEK_EQ_MEANING, u'необходимы для опр-я значения'),
+        (GREEK_EQ_URGENT, u'срочное'),
+    )
 
     greek_eq_status = CharField(u'параллели', max_length=1,
-            choices=GREEK_EQ_STATUS, default=u'L')
-            # 'L' -- статус "следует найти (греч.параллели)"
+            choices=GREEK_EQ_STATUS, default=GREEK_EQ_LOOK_FOR)
 
     mtime = DateTimeField(editable=False, auto_now=True)
 
@@ -1985,7 +1994,15 @@ class GreekEquivalentForExample(models.Model):
             return host
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.unitext = self.unitext.strip()
         super(GreekEquivalentForExample, self).save(*args, **kwargs)
+        example = self.for_example
+        if self.unitext.strip() and example.greek_eq_status in (
+                Example.GREEK_EQ_LOOK_FOR,
+                Example.GREEK_EQ_MEANING,
+                Example.GREEK_EQ_URGENT):
+            example.greek_eq_status = Example.GREEK_EQ_FOUND
+            example.save(without_mtime=without_mtime)
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
