@@ -1,5 +1,5 @@
-$('#main, #main > div')
-    .css('witdht', '32em')
+$('#main')
+    .css('width', 'auto')
     .css('padding', 0)
     .css('margin', 0);
 
