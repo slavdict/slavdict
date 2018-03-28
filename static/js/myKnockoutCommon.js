@@ -115,3 +115,13 @@ ko.bindingHandlers.contenteditable = {
         $(element).html(value);
     }
 };
+
+ko.bindingHandlers.visibleFocus = {
+    update: function(element, valueAccessor){
+        if (ko.utils.unwrapObservable(valueAccessor())){
+            $(element).show().focus();
+        } else {
+            $(element).hide();
+        }
+    }
+};

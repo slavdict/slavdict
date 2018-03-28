@@ -15,6 +15,18 @@
     ">Все фильтры сброшены</strong>
 
 {{ space }}
+<span class="f5sS--item" data-bind="visible: per_se">
+    {{ space }}
+    {% if hellinist_workbench %}
+        Отображать примеры
+    {% else %}
+        Отображать статьи полностью
+    {% endif %}
+    <span class="f5sSI--reset"
+          data-bind="click: function() { per_se.getDefaultValue(); }"></span>
+</span>
+
+{{ space }}
 <span class="f5sS--item" data-bind="visible: find">
     {{ space }}
     статьи на

@@ -2,35 +2,37 @@
 
 <div class="exampleHeader">
     <a href="{{ entry.get_absolute_url() }}" target="_blank">
-        <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
+        <span class="Headword">{{ entry.orth_vars.0.idem_ucs }}</span>
     </a>
     {% if entry.homonym_order %}
-        <sup style="font-family: Arial, sans; font-size: x-small">
+        <span class="HeadwordHomonymNumber">
             {{ entry.homonym_order }}
-        </sup>
+        </span>
     {% endif %}
     {{ space }}
-    <i>{{ entry.get_part_of_speech_display() }}</i>{{ space }}
+    <span class="Em">{{ entry.get_part_of_speech_display() }}</span>{{ space }}
     {% if entry.homonym_gloss %}
-        ‘{{ entry.homonym_gloss }}’
+        <span class="Text">‘{{ entry.homonym_gloss }}’</span>
     {% endif %}
     {{ space }}
-    <span class="etymList"
+    <span class="etymList greqList"
         data-bind="visible: etymsForEntries[{{ entry.id }}]().length">
         <!-- ko foreach: etymsForEntries[{{ entry.id }}] -->
-            <span data-bind="text: unitext"></span>
+            <span class="Greek" data-bind="text: unitext"></span>
             <span data-bind="text: additional_info,
                              visible: additional_info()"
                 class="greqComment"></span>
-            <span data-bind="css: { hidden: $index == $parent.length }">,</span>
+            <span data-bind="css: { hidden:
+                     $index != $parent.etymsForEntries[{{ entry.id }}]().length
+                  }">,</span>
             {{ space }}
         <!-- /ko -->
     </span>{{ space }}
     <ul data-bind="foreach: etymsForEntries[{{ entry.id }}]()">
-        <li class="greqForExample">
+        <li class="greqForExample" style="margin-left: 0.9em;">
 
             <span class="greqFieldContainer">
-                <label>греч. параллель</label>
+                <label style="left: 0">греч. параллель</label>
                 <input type="text" data-bind="
                     textInput: unitext,
                     event: { change: saveMe }"
@@ -38,7 +40,7 @@
             </span>
 
             <span class="greqFieldContainer">
-                <label>примечание для авторов</label>
+                <label style="left: 0">примечание для авторов</label>
                 <input type="text" data-bind="
                     textInput: additional_info,
                     event: { change: saveMe }" />
@@ -52,7 +54,7 @@
         </li>
     </ul>
 
-    <div class="button addGreqButton"
+    <div class="button addGreqButton" style="margin-bottom: 3em;"
         data-bind="click: function () { addEtymology({{ entry.id }}); }">
         &#x271a; Добавить греч. параллель
     </div>

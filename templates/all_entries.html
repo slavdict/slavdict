@@ -33,23 +33,8 @@
     </style>
 {% endif %}
 
-<script>
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = $.trim(cookies[i]);
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-var csrftoken = getCookie('csrftoken');
-</script>
+<script src="{{ STATIC_URL }}js/getCookie.js?{{ STATIC_RESOURCES_VERSION }}"
+    type="application/javascript" charset="utf-8"></script>
 
 <div{% if not is_paged %} contenteditable{% endif %}>
     {% for entry in entries %}

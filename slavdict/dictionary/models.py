@@ -226,6 +226,7 @@ def collogroup_sort_key(cg):
     text = resolve_titles(text)
     return [sort_key1(word) for word in text.split()]
 
+NBSP = u'\u00A0'  # неразрывный пробел
 
 BLANK_CHOICE = (('',''),)
 
@@ -277,7 +278,7 @@ GENDER_CHOICES = (
     ('m', u'м.'),
     ('f', u'ж.'),
     ('n', u'с.'),
-    ('d', u'м. и ж.'),
+    ('d', u'м. и' + NBSP + u'ж.'),
 )
 GENDER_MAP = {
     'masculine': 'm',
@@ -399,7 +400,6 @@ LANGUAGE_TRANSLIT_CSS = {
         LANGUAGE_MAP['syriac']: 'syriac-translit',
 }
 
-NBSP = u'\u00A0'  # неразрывный пробел
 SUBSTANTIVUS_TYPE_CHOICES = (
     ('', ''),
     ('a', u'с.' + NBSP + u'ед.'),
@@ -430,7 +430,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
     (SC6, u'3 лексемы, 3 муж. и последний неизм.'),
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
-MSC11, MSC12 = 'kl'
+MSC11, MSC12, MSC13 = 'klm'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (u'Имена', (
@@ -440,6 +440,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
     )),
     (u'Части речи', (
         (MSC6,  u'нареч.'),
+        (MSC13, u'союз'),
         (MSC2,  u'предл.'),
         (MSC3,  u'част.'),
         (MSC7,  u'межд.'),
@@ -454,12 +455,13 @@ MEANING_SPECIAL_CASES_CHOICES = (
         (MSC10, u'преимущ.'),
     )),
 )
-POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7)
+POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7, MSC13)
 POS_SPECIAL_CASES_MAP = {
     MSC2: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['preposition']],
     MSC3: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['particle']],
     MSC6: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['adverb']],
     MSC7: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['interjection']],
+    MSC13: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['conjunction']],
 }
 
 class WithoutHiddenManager(models.Manager):
@@ -844,6 +846,70 @@ class Entry(models.Model):
             return [ucs_convert(x) for x in (u"нѣ'смь", u"нѣ'си")]
         elif case == 'bigger' and self.civil_equivalent == u'больший':
             return ucs_convert(u"вели'кій")
+
+    def structures_for_hellinists(self):
+        if hasattr(self, '_structures'):
+            return self._structures
+        several_pos, meaning_groups = self.meaning_groups
+        structures = []
+        for i, (orthvars, pos, meanings) in enumerate(meaning_groups):
+            if len(meaning_groups) > 1:
+                group_number = {1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V'}[i + 1]
+                group_label = u'<b>%s.</b>&nbsp;' % group_number
+                if pos:
+                    group_label += u'<i>%s</i>&#32;' % pos
+                if orthvars:
+                    orthvars = u',&#32;'.join(u'##%s##' % o for o in orthvars)
+                    group_label += u'%s&#32;' % orthvars
+            else:
+                group_label = u''
+            for mi, meaning in enumerate(meanings):
+                meaning_label = u''
+                if len(meanings) > 1:
+                    meaning_label += u'<b>%s.</b>&nbsp;' % (mi + 1)
+                if meaning.meaning.strip():
+                    meaning_label += meaning.meaning.strip()
+                if meaning.gloss.strip():
+                    if meaning.meaning.strip():
+                        meaning_label += u';&#32;<i>%s</i>' % meaning.gloss.strip()
+                    else:
+                        meaning_label += u'<i>%s</i>' % meaning.gloss.strip()
+                if mi == 0:
+                    meaning_label = group_label + meaning_label
+                examples = []
+                if meaning.examples:
+                    examples.extend(meaning.examples)
+                for submeaning in meaning.child_meanings:
+                    examples.extend(submeaning.examples)
+                structures.append((meaning_label, examples))
+                collogroups = \
+                        meaning.collogroups_non_phraseological + \
+                        meaning.collogroups_phraseological
+                for cg in collogroups:
+                    cs = u';&#32;'.join(u'##%s##' % c.collocation
+                                        for c in cg.collocations)
+                    collogroup_label = u'%s&#32;' % cs
+                    cg_meanings = tuple(cg.meanings)
+                    cg_metaph_meanings = tuple(cg.metaph_meanings)
+                    meanings = cg_meanings + cg_metaph_meanings
+                    for i, meaning in enumerate(meanings):
+                        meaning_label = u''
+                        if len(meanings) > 1 and i < len(cg_meanings):
+                            meaning_label += \
+                                u'<b>%s.</b>&#32;' % (i + 1)
+                        if meaning.meaning.strip():
+                            meaning_label += meaning.meaning.strip()
+                        if meaning.gloss.strip():
+                            if meaning.meaning.strip():
+                                meaning_label += u';&#32;<i>%s</i>' % meaning.gloss.strip()
+                            else:
+                                meaning_label += u'<i>%s</i>' % meaning.gloss.strip()
+                        if i == 0:
+                            meaning_label = collogroup_label + meaning_label
+                        examples = meaning.examples
+                        structures.append((meaning_label, examples))
+        self._structures = structures
+        return structures
 
     preplock = False  # Заглушка для условия, по которому статья д.б. залочена
         # от всех пользователей кроме работающих над подготовкой тома к печати.
@@ -1497,19 +1563,28 @@ class Example(models.Model):
             а в аналогичных полях при значении и лексеме, соответственно.''',
             blank=True)
 
+    GREEK_EQ_LOOK_FOR = u'L'  # Следует найти греческие параллели для примера
+    GREEK_EQ_STOP = u'S'  # Греческие параллели не нужны
+    GREEK_EQ_CHECK_ADDRESS = u'C'
+        # Необходимо уточнить адрес примера, чтобы грецист смог найти пример
+    GREEK_EQ_NOT_FOUND = u'N'  # Греч.параллель для примера найти не удалось
+    GREEK_EQ_FOUND = u'F'  # Греч.параллель для примера найдена
+    GREEK_EQ_MEANING = u'M'
+        # Греч.параллели для примера нужны, чтобы определить значение слова
+    GREEK_EQ_URGENT = u'U'  # Греч.параллели для примера нужны в срочном порядке
+
     GREEK_EQ_STATUS = (
-        (u'L', u'следует найти'),   # look for
-        (u'S', u'не нужны'),        # stop
-        (u'C', u'уточнить адрес'),  # check the address
-        (u'N', u'найти не удалось'),  # not found
-        (u'F', u'найдены'),         # found
-        (u'M', u'необходимы для опр-я значения'),  # meaning
-        (u'U', u'срочное'),         # urgent
-        )
+        (GREEK_EQ_LOOK_FOR, u'следует найти'),
+        (GREEK_EQ_STOP, u'не нужны'),
+        (GREEK_EQ_CHECK_ADDRESS, u'уточнить адрес'),
+        (GREEK_EQ_NOT_FOUND, u'найти не удалось'),
+        (GREEK_EQ_FOUND, u'найдены'),
+        (GREEK_EQ_MEANING, u'необходимы для опр-я значения'),
+        (GREEK_EQ_URGENT, u'срочное'),
+    )
 
     greek_eq_status = CharField(u'параллели', max_length=1,
-            choices=GREEK_EQ_STATUS, default=u'L')
-            # 'L' -- статус "следует найти (греч.параллели)"
+            choices=GREEK_EQ_STATUS, default=GREEK_EQ_LOOK_FOR)
 
     mtime = DateTimeField(editable=False, auto_now=True)
 
@@ -1603,6 +1678,33 @@ class Example(models.Model):
     def toJSON(self):
         return json.dumps(self.forJSON(),
                           ensure_ascii=False, separators=(',',':'))
+
+    def forHellinistJSON(self):
+        data = {
+            'id': self.id,
+            'triplet': self.context_ucs,
+            'antconc': self.context.strip() or self.example,
+            'example': self.example,
+            'address': self.address_text,
+            'status': self.greek_eq_status,
+            'audited': self.audited_time and self.audited,
+            'comment': self.additional_info,
+            'greqs': [
+                {
+                    'unitext': greq.unitext,
+                    'initial_form': greq.initial_form,
+                    'aliud': greq.aliud,
+                    'id': greq.id,
+                    'additional_info': greq.additional_info
+                }
+                for greq in self.greek_equivs
+            ]
+        }
+        return data
+
+    def toHellinistJSON(self):
+        return json.dumps(self.forHellinistJSON(),
+                          ensure_ascii=False, separators=(',', ':'))
 
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
@@ -1892,13 +1994,27 @@ class GreekEquivalentForExample(models.Model):
             return host
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.unitext = self.unitext.strip()
         super(GreekEquivalentForExample, self).save(*args, **kwargs)
+        example = self.for_example
+        if self.unitext.strip() and example.greek_eq_status in (
+                Example.GREEK_EQ_LOOK_FOR,
+                Example.GREEK_EQ_NOT_FOUND,
+                Example.GREEK_EQ_CHECK_ADDRESS,
+                Example.GREEK_EQ_MEANING,
+                Example.GREEK_EQ_URGENT):
+            example.greek_eq_status = Example.GREEK_EQ_FOUND
+            example.save(without_mtime=without_mtime)
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(GreekEquivalentForExample, self).delete(*args, **kwargs)
+        if not self.for_example.greek_equivs.exists():
+            example = self.for_example
+            example.greek_eq_status = Example.GREEK_EQ_LOOK_FOR
+            example.save(without_mtime=without_mtime)
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)

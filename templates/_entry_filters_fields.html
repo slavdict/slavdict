@@ -83,7 +83,13 @@
 
     <div class="D">
         {{ form.per_se }}
-        {{ form.per_se.label_tag(label_suffix='') }}
+        {% if hellinist_workbench %}
+            {{ form.per_se.label_tag(
+                 contents='Отображать при статьях иллюстрации',
+                 label_suffix='') }}
+        {% else %}
+            {{ form.per_se.label_tag(label_suffix='') }}
+        {% endif %}
     </div>
 
 </div>
