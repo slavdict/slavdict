@@ -100,19 +100,62 @@ ko.bindingHandlers.show = {
     }
 };
 
+function getCaretPosition(element) {
+    var caretPos = 0, sel, range;
+    if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.rangeCount) {
+            range = sel.getRangeAt(0);
+            if (range.commonAncestorContainer.parentNode == element) {
+                caretPos = range.endOffset;
+            }
+        }
+    } else if (document.selection && document.selection.createRange) {
+        range = document.selection.createRange();
+        if (range.parentElement() == element) {
+            var tempEl = document.createElement("span");
+            element.insertBefore(tempEl, element.firstChild);
+            var tempRange = range.duplicate();
+            tempRange.moveToElementText(tempEl);
+            tempRange.setEndPoint("EndToEnd", range);
+            caretPos = tempRange.text.length;
+        }
+    }
+    return caretPos;
+}
+
+function setCaretPosition(element, caretPos) {
+    var textNode = element.firstChild,
+        range = document.createRange(),
+        sel;
+    element.focus();
+    range.setStart(textNode, caretPos);
+    range.setEnd(textNode, caretPos);
+    sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
 ko.bindingHandlers.contenteditable = {
     init: function (element, valueAccessor) {
-        var observable = valueAccessor();
-        element = $(element);
-        element.attr('contenteditable', 'true')
-        element.on('input cut paste drag dragdrop', function() {
-            observable(element.text());
-            element.trigger('change');
+        var observable = valueAccessor(),
+            $element = $(element);
+        $element.attr('contenteditable', 'true')
+        $element.on('input cut paste drag dragdrop', function() {
+            var cursorPos = getCaretPosition(element);
+            $element.attr('data-cursor-position', cursorPos);
+            observable($element.text());
+            $element.trigger('change');
         });
     },
     update: function(element, valueAccessor) {
-        var value = ko.utils.unwrapObservable(valueAccessor());
-        $(element).html(value);
+        var value = ko.utils.unwrapObservable(valueAccessor()),
+            $element = $(element);
+        if ((value === null) || (value === undefined)) {
+            value = "";
+        }
+        $element.html(value);
+        setCaretPosition(element, $element.attr('data-cursor-position'));
     }
 };
 
