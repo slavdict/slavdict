@@ -73,7 +73,13 @@
 {% endblock %}
 
 {% block content %}
+
+    {% if form.cleaned_data.per_se %}
+        {% include '_pagination.html' %}
+    {% endif %}
+
     {% trim %}
+
     {% if entries is defined %}
 
         {% for e in entries %}
@@ -98,7 +104,9 @@
         {% endfor %}
 
     {% endif %}
+
     {% endtrim %}
+
     {% include '_pagination.html' %}
 {% endblock %}
 
