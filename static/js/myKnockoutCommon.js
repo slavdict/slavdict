@@ -128,7 +128,6 @@ function setCaretPosition(element, caretPos) {
     var textNode = element.firstChild,
         range = document.createRange(),
         sel;
-    element.focus();
     range.setStart(textNode, caretPos);
     range.setEnd(textNode, caretPos);
     sel = window.getSelection();
