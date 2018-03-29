@@ -867,6 +867,9 @@ class Entry(models.Model):
                 meaning_label = u''
                 if len(meanings) > 1:
                     meaning_label += u'<b>%s.</b>&nbsp;' % (mi + 1)
+                    href = mi + 1
+                else:
+                    href = None
                 if meaning.meaning.strip():
                     meaning_label += meaning.meaning.strip()
                 if meaning.gloss.strip():
@@ -881,7 +884,7 @@ class Entry(models.Model):
                     examples.extend(meaning.examples)
                 for submeaning in meaning.child_meanings:
                     examples.extend(submeaning.examples)
-                structures.append((meaning_label, examples))
+                structures.append((meaning_label, href, examples))
                 collogroups = \
                         meaning.collogroups_non_phraseological + \
                         meaning.collogroups_phraseological
@@ -907,7 +910,8 @@ class Entry(models.Model):
                         if i == 0:
                             meaning_label = collogroup_label + meaning_label
                         examples = meaning.examples
-                        structures.append((meaning_label, examples))
+                        href = None
+                        structures.append((meaning_label, href, examples))
         self._structures = structures
         return structures
 

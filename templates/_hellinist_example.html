@@ -4,13 +4,13 @@
   <div class="exampleHeader">
       {% if e.host.orth_vars %}
           <a href="{{ e.host.get_absolute_url() }}" target="_blank">
-              <span class="cslav">{{ e.host.orth_vars.0.idem_ucs }}</span>
+              <span class="Headword">{{ e.host.orth_vars.0.idem_ucs }}</span>
           </a>{{ space }}
           <i>{{ e.host_entry.get_part_of_speech_display() }}</i>{{ space }}
       {% else %}
           {% for c in e.host.collocations %}
               <a href="{{ e.host_entry.get_absolute_url() }}" target="_blank">
-                  <span class="cslav">{{ c.collocation_ucs }}</span>
+                  <span class="CSLSegmentEm">{{ c.collocation_ucs }}</span>
               </a>
               {% if not loop.last %},{% endif %}{{ space }}
           {% endfor %}
@@ -33,7 +33,7 @@
 
     <span class="example--id">[<span data-bind="text: id"></span>]</span>
 
-    <span class="example--address" data-bind="
+    <span class="example--address Address" data-bind="
         contenteditable: address,
         event: { change: $data.saveMe }
         "></span>
@@ -51,22 +51,25 @@
     </span>
 
     {{ space }}
-    <span class="button" data-bind="visible: !comment() && !commentEditable() , click: toggleComment">Добавить примечание к примеру</span>
+    <span class="button" data-bind="visible:
+                !comment() && !commentEditable() && !exampleEditable(),
+                click: toggleComment">Добавить примечание к примеру</span>
     <br />
 
     <span data-bind="visible: !exampleEditable()">
         <span data-bind="visible: !antconcVisible()">
-            <span class="cslav context" data-bind="text: leftContext"></span>
-            <span class="cslav" data-bind="text: text"></span>{{ space }}
-            <span class="cslav context" data-bind="text: leftContext"></span>
+            <span class="CSLSegment context" data-bind="text: leftContext"></span>
+            <span class="CSLSegment" data-bind="text: text"></span>{{ space }}
+            <span class="CSLSegment context" data-bind="text: leftContext"></span>
         </span>
 
-        <span class="antconsol" data-bind="visible: antconcVisible(), text: antconc"></span>
+        <span class="antconsol"
+            data-bind="visible: antconcVisible(), text: antconc"></span>
 
         <span class="greqList" data-bind="visible: greqs().length && !antconcVisible()">
-            &nbsp;&mdash;{{ space }}
+            {{ space }}
             <!-- ko foreach: greqs -->
-                <span data-bind="text: unitext"></span>
+                <span class="Greek" data-bind="text: unitext"></span>
                 <span data-bind="text: note, visible: note()"
                     class="greqNote"></span>
                 <span data-bind="text: additional_info,
@@ -76,25 +79,37 @@
             <!-- /ko -->
         </span>{{ space }}
 
-        <span class="button antconcButton" data-bind="click: toggleAntconc">
+        <span class="button antconcButton" data-bind="click: toggleAntconc,
+                visible: !exampleEditable()">
             <span data-bind="visible: antconcVisible()">ЦСЛ</span>
             <span data-bind="visible: !antconcVisible()">АнтКонк</span>
         </span>{{ space }}
     </span>
 
-    <div class="antconsol" data-bind="
-        visible: exampleEditable(), contenteditable: example"></div>
-
-    <span class="button antconcButton">
-        <span data-bind="visible: exampleEditable(),
-                         click: saveExample">Сохранить</span>
-        <span data-bind="visible: !exampleEditable(),
-                         click: editExample">Редактировать</span>
-    </span>{{ space }}
+    <div class="antconsol" style="color: #a00" data-bind="
+        visibleFocus: exampleEditable(), contenteditable: example"></div>
 
     <span class="button antconcButton"
+        data-bind="visible: !exampleEditable(),
+                   click: editExample">Редактировать</span>
+    </span>{{ space }}
+
+    <span class="button antconcButton dark"
+        data-bind="visible: exampleEditable(),
+                   click: saveExample">Сохранить</span>
+    </span>{{ space }}
+
+    <span class="button antconcButton dark"
         data-bind="visible: exampleEditable(), click: cancelExample">
-        Вернуться к изначальному варианту</span>
+        Отмена
+    </span>{{ space }}
+
+    <span class="button antconcButton dark"
+        data-bind="visible: exampleEditable() && howManyBackups() > 0,
+            click: revertExample">
+        Вернуть предыдущий вариант
+        (<span data-bind="text: howManyBackups"></span>)
+    </span>{{ space }}
 
     <span class="orthoTick">
         <label>Выверена ли орфография
