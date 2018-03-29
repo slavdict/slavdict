@@ -1,4 +1,5 @@
 {% trim %}
+<div>
 {% if params_without_page %}
     {% set other_get_params = '&amp;' ~ params_without_page %}
 {% else %}
@@ -79,65 +80,66 @@
 {% endif %}
 
 {% if page.paginator.num_pages > 1 %}
-<div class="pagination">
+    <div class="pagination">
 
-    {% if page.has_previous() %}
-        {% if page.number > 4 %}
-
-            {{ pageref(1) }}
-            {{ space }}...{{ space }}
-
-        {% else %}
-            {% if page.number > 2 %}
+        {% if page.has_previous() %}
+            {% if page.number > 4 %}
 
                 {{ pageref(1) }}
-                {{ space }}
+                {{ space }}...{{ space }}
 
-                {% if page.number == 4 %}
+            {% else %}
+                {% if page.number > 2 %}
 
-                    {{ pageref(2) }}
+                    {{ pageref(1) }}
                     {{ space }}
 
+                    {% if page.number == 4 %}
+
+                        {{ pageref(2) }}
+                        {{ space }}
+
+                    {% endif %}
                 {% endif %}
             {% endif %}
+
+            {{ pageref(page.previous_page_number()) }}
+            {{ space }}
+
         {% endif %}
 
-        {{ pageref(page.previous_page_number()) }}
-        {{ space }}
+        <a class="current-page">{{ page.number }}</a>
 
-    {% endif %}
+        {% if page.has_next() %}
 
-    <a class="current-page">{{ page.number }}</a>
+            {{ space }}
+            {{ pageref(page.next_page_number()) }}
 
-    {% if page.has_next() %}
+            {% if page.number < (page.paginator.num_pages - 3) %}
 
-        {{ space }}
-        {{ pageref(page.next_page_number()) }}
-
-        {% if page.number < (page.paginator.num_pages - 3) %}
-
-            {{ space }}...{{ space }}
-            {{ pageref(page.paginator.num_pages) }}
-
-        {% else %}
-            {% if page.number < (page.paginator.num_pages - 1) %}
-                {% if page.number < (page.paginator.num_pages - 2) %}
-
-                    {{ space }}
-                    {{ pageref(page.paginator.num_pages - 1) }}
-
-                {% endif %}
-
-                {{ space }}
+                {{ space }}...{{ space }}
                 {{ pageref(page.paginator.num_pages) }}
 
+            {% else %}
+                {% if page.number < (page.paginator.num_pages - 1) %}
+                    {% if page.number < (page.paginator.num_pages - 2) %}
+
+                        {{ space }}
+                        {{ pageref(page.paginator.num_pages - 1) }}
+
+                    {% endif %}
+
+                    {{ space }}
+                    {{ pageref(page.paginator.num_pages) }}
+
+                {% endif %}
             {% endif %}
         {% endif %}
-    {% endif %}
 
-</div>
+    </div>
 {% endif %}
 
+</div>
 {% endtrim %}
 
 
