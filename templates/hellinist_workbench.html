@@ -81,19 +81,53 @@
     {% trim %}
 
     {% if entries is defined %}
+        {% if form.cleaned_data.per_se %}
+        <div class="quickJump">
+            <label>Быстрый перерход</label>
+            <ul>
+            {% for e in entries %}
+                <li>
+                <a href="#e{{ e.id }}">
+                    <span class="CSLSegment">{{ e.orth_vars.0.idem_ucs }}</span>
+                    {% if e.homonym_order %}
+                        <span class="HeadwordHomonymNumber">
+                            {{ e.homonym_order }}
+                        </span>
+                    {% endif %}
+                </a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
 
         {% for e in entries %}
             <div class="FirstParagraph">{{ entry(e) }}</div>
             {% if form.cleaned_data.per_se %}
-            {% for label, structure_examples in e.structures_for_hellinists() %}
-                <div class=" exampleHeader Text">
-                    {{ label | web_cslav_injection('CSLSegmentEm') }}
+                {% if e.meanings.count() > 1 %}
+                <div class="quickJump">
+                    <label>Быстрый перерход</label>
+                    <ul>
+                    {% for mm in e.meanings %}
+                        <li>
+                        <a href="#e{{ e.id }}m{{ loop.index }}">
+                            Значение {{ loop.index }}
+                        </a>
+                        </li>
+                    {% endfor %}
+                    </ul>
                 </div>
-                {% set parentloop = loop %}
-                {% for ex in structure_examples %}
-                    <div style="margin-left: 1em">{{ example_for_entry(ex, e.id, loop, parentloop) }}</div>
+                {% endif %}
+                {% for label, href, structure_examples in e.structures_for_hellinists() %}
+                    <div class="exampleHeader Text"
+                        {% if href %}id="e{{ e.id }}m{{ href }}"{% endif %}>
+                        {{ label | web_cslav_injection('CSLSegmentEm') }}
+                    </div>
+                    {% set parentloop = loop %}
+                    {% for ex in structure_examples %}
+                        <div style="margin-left: 1em">{{ example_for_entry(ex, e.id, loop, parentloop) }}</div>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
             {% endif %}
         {% endfor %}
 
@@ -163,7 +197,7 @@
             {% for entry in entries %}
                 {{ comma1() }} {{ entry.id }}: [
                 {% set comma2 = joiner(',') %}
-                {% for _, structure_examples in entry.structures_for_hellinists() %}
+                {% for _, _, structure_examples in entry.structures_for_hellinists() %}
                     {{ comma2() }} [
                     {% set comma3 = joiner(',') %}
                     {% for ex in structure_examples %}
