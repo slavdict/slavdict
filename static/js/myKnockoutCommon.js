@@ -155,7 +155,7 @@ ko.bindingHandlers.contenteditable = {
             value = "";
         }
         $element.html(value);
-        setCaretPosition(element, $element.attr('data-cursor-position'));
+        setCaretPosition(element, $element.attr('data-cursor-position') || 0);
     }
 };
 
