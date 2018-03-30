@@ -32,7 +32,7 @@
 {% endif %}
 
 {% trim %}
-<div{% if not is_paged %} contenteditable{% endif %}>
+<div{% if not is_paged %} contenteditable="true"{% endif %}>
 
     <table style="table-layout: fixed;">
     {% for example in examples %}
