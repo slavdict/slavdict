@@ -751,6 +751,34 @@ class Entry(models.Model):
         meaning_groups = []
         meanings = list(self.meanings)
         several_pos = False
+
+        class MeaningGroup(object):
+            def __init__(self, meanings, orthvars=tuple(), pos_mark=None):
+                self.meanings = meanings
+                self.orthvars = tuple(orthvars)
+                self.pos_mark = pos_mark
+                self.index_mark = None
+                if len(meanings) > 1:
+                    for i, meaning in enumerate(meanings):
+                        meaning.index_mark = unicode(i + 1)
+            def __len__(self):
+                return len(self.meanings)
+            def __iter__(self):
+                return iter(self.meanings)
+
+        class MeaningGroups(object):
+            def __init__(self, meaning_groups, several_pos):
+                self.meaning_groups = meaning_groups
+                self.several_pos = several_pos
+                if len(meaning_groups) > 1:
+                    for i, mgroup in enumerate(meaning_groups):
+                        mgroup.index_mark = {1: u'I', 2: u'II', 3: u'III',
+                                             4: u'IV', 5: u'V'}[i + 1]
+            def __len__(self):
+                return len(self.meaning_groups)
+            def __iter__(self):
+                return iter(self.meaning_groups)
+
         if any(o.use for o in self.orth_vars):
             d = defaultdict(list)
             dd = defaultdict(list)
@@ -766,15 +794,13 @@ class Entry(models.Model):
                 for orthvars_list, meaning_numbers in groups:
                     m = meanings[meaning_numbers[0] - 1]
                     m.orthvars = orthvars_list
-                orthvars, part_of_speech = tuple(), None
-                group = (orthvars, part_of_speech, meanings)
+                group = MeaningGroup(meanings)
                 meaning_groups.append(group)
             else:
                 for orthvars_list, meaning_numbers in groups:
-                    part_of_speech = None
                     filtered_meanings = [m for i, m in enumerate(meanings)
                                            if i + 1 in meaning_numbers]
-                    group = (orthvars_list, part_of_speech, filtered_meanings)
+                    group = MeaningGroup(filtered_meanings, orthvars=orthvars_list)
                     meaning_groups.append(group)
                 meaning_groups.sort(key=lambda x: (x[2][0].order, x[2][0].id))
 
@@ -782,22 +808,22 @@ class Entry(models.Model):
                  for m in meanings):
             several_pos = True
             ENTRY_POS = self.get_part_of_speech_display()
-            orthvars = tuple()
             pos = meanings[0].special_case
             mm = []
             for m in meanings:
                 if m.special_case != pos:
                     pos_mark = POS_SPECIAL_CASES_MAP.get(pos, ENTRY_POS)
-                    meaning_groups.append((orthvars, pos_mark, mm))
+                    group = MeaningGroup(mm, pos_mark=pos_mark)
+                    meaning_groups.append(group)
                     pos = m.special_case
                     mm = []
                 mm.append(m)
             pos_mark = POS_SPECIAL_CASES_MAP.get(pos, ENTRY_POS)
-            meaning_groups.append((orthvars, pos_mark, mm))
+            group = MeaningGroup(mm, pos_mark=pos_mark)
+            meaning_groups.append(group)
         else:
-            orthvars, pos_mark = tuple(), None
-            meaning_groups = [(orthvars, pos_mark, meanings)]
-        return (several_pos, meaning_groups)
+            meaning_groups = [MeaningGroup(meanings)]
+        return MeaningGroups(meaning_groups, several_pos)
 
     special_case = CharField(u'Статья нуждается в специальной обработке',
                              max_length=1, choices=ENTRY_SPECIAL_CASES_CHOICES,
@@ -847,73 +873,43 @@ class Entry(models.Model):
         elif case == 'bigger' and self.civil_equivalent == u'больший':
             return ucs_convert(u"вели'кій")
 
-    def structures_for_hellinists(self):
-        if hasattr(self, '_structures'):
-            return self._structures
-        several_pos, meaning_groups = self.meaning_groups
-        structures = []
-        for i, (orthvars, pos, meanings) in enumerate(meaning_groups):
-            if len(meaning_groups) > 1:
-                group_number = {1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V'}[i + 1]
-                group_label = u'<b>%s.</b>&nbsp;' % group_number
-                if pos:
-                    group_label += u'<i>%s</i>&#32;' % pos
-                if orthvars:
-                    orthvars = u',&#32;'.join(u'##%s##' % o for o in orthvars)
-                    group_label += u'%s&#32;' % orthvars
-            else:
-                group_label = u''
-            for mi, meaning in enumerate(meanings):
-                meaning_label = u''
-                if len(meanings) > 1:
-                    meaning_label += u'<b>%s.</b>&nbsp;' % (mi + 1)
-                    href = mi + 1
-                else:
-                    href = None
-                if meaning.meaning.strip():
-                    meaning_label += meaning.meaning.strip()
-                if meaning.gloss.strip():
-                    if meaning.meaning.strip():
-                        meaning_label += u';&#32;<i>%s</i>' % meaning.gloss.strip()
-                    else:
-                        meaning_label += u'<i>%s</i>' % meaning.gloss.strip()
-                if mi == 0:
-                    meaning_label = group_label + meaning_label
+    def examples_groups_for_hellinists(self):
+        if hasattr(self, '_exgroups'):
+            return self._exgroups
+
+        class ExamplesGroup(object):
+            def __init__(self, examples, mg, m, cg=None):
+                self.examples = examples
+                self.meaning_group = mg
+                self.meaning = m
+                self.collogroup = cg
+            def __len__(self):
+                return len(self.examples)
+            def __iter__(self):
+                return iter(self.examples)
+
+        exgroups = []
+        for mgroup in self.meaning_groups:
+            for meaning in mgroup.meanings:
                 examples = []
                 if meaning.examples:
                     examples.extend(meaning.examples)
                 for submeaning in meaning.child_meanings:
                     examples.extend(submeaning.examples)
-                structures.append((meaning_label, href, examples))
+                exgroups.append(ExamplesGroup(examples, mgroup, meaning))
                 collogroups = \
                         meaning.collogroups_non_phraseological + \
                         meaning.collogroups_phraseological
                 for cg in collogroups:
-                    cs = u';&#32;'.join(u'##%s##' % c.collocation
-                                        for c in cg.collocations)
-                    collogroup_label = u'%s&#32;' % cs
                     cg_meanings = tuple(cg.meanings)
                     cg_metaph_meanings = tuple(cg.metaph_meanings)
                     meanings = cg_meanings + cg_metaph_meanings
-                    for i, meaning in enumerate(meanings):
-                        meaning_label = u''
-                        if len(meanings) > 1 and i < len(cg_meanings):
-                            meaning_label += \
-                                u'<b>%s.</b>&#32;' % (i + 1)
-                        if meaning.meaning.strip():
-                            meaning_label += meaning.meaning.strip()
-                        if meaning.gloss.strip():
-                            if meaning.meaning.strip():
-                                meaning_label += u';&#32;<i>%s</i>' % meaning.gloss.strip()
-                            else:
-                                meaning_label += u'<i>%s</i>' % meaning.gloss.strip()
-                        if i == 0:
-                            meaning_label = collogroup_label + meaning_label
-                        examples = meaning.examples
-                        href = None
-                        structures.append((meaning_label, href, examples))
-        self._structures = structures
-        return structures
+                    for meaning in meanings:
+                        exgroup = ExamplesGroup(meaning.examples,
+                                                mgroup, meaning, cg)
+                        exgroups.append(exgroup)
+        self._exgroups = exgroups
+        return exgroups
 
     preplock = False  # Заглушка для условия, по которому статья д.б. залочена
         # от всех пользователей кроме работающих над подготовкой тома к печати.

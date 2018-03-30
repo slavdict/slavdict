@@ -81,14 +81,16 @@
     {% trim %}
 
     {% if entries is defined %}
-        {% if form.cleaned_data.per_se %}
+        {% if form.cleaned_data.per_se and entries|length > 1 %}
         <div class="quickJump">
             <label>Быстрый перерход</label>
             <ul>
             {% for e in entries %}
                 <li>
                 <a href="#e{{ e.id }}">
-                    <span class="CSLSegment">{{ e.orth_vars.0.idem_ucs }}</span>
+                    <span class="CSLSegmentEm">
+                        {{ e.orth_vars.0.idem_ucs }}
+                    </span>
                     {% if e.homonym_order %}
                         <span class="HeadwordHomonymNumber">
                             {{ e.homonym_order }}
@@ -108,24 +110,66 @@
                 <div class="quickJump">
                     <label>Быстрый перерход</label>
                     <ul>
-                    {% for mm in e.meanings %}
+                    {% for exgroup in e.examples_groups_for_hellinists() %}
+                        {% if not exgroup.collogroup %}
                         <li>
-                        <a href="#e{{ e.id }}m{{ loop.index }}">
-                            Значение {{ loop.index }}
-                        </a>
+                            {% if exgroup.meaning_group.index_mark and
+                                  loop.changed(exgroup.meaning_group.index_mark) %}
+                                {{ exgroup.meaning_group.index_mark }}.{{ space }}
+                            {% endif %}
+                            <a href="#{{ e.id }}g{{ exgroup.meaning_group.index_mark }}m{{ exgroup.meaning.index_mark }}">
+                                <span>
+                                    Значение
+                                    {{ exgroup.meaning.index_mark }}
+                                </span>
+                            </a>
                         </li>
+                        {% endif %}
                     {% endfor %}
                     </ul>
                 </div>
                 {% endif %}
-                {% for label, href, structure_examples in e.structures_for_hellinists() %}
-                    <div class="exampleHeader Text"
-                        {% if href %}id="e{{ e.id }}m{{ href }}"{% endif %}>
-                        {{ label | web_cslav_injection('CSLSegmentEm') }}
+                {% for exgroup in e.examples_groups_for_hellinists() %}
+                    <div class="exampleHeader Text"{% if not exgroup.collogroup %}
+                         id="{{ e.id }}g{{ exgroup.meaning_group.index_mark }}m{{ exgroup.meaning.index_mark }}"
+                         {% endif %}>
+                        {% if exgroup.collogroup %}
+                            {% for collocation in exgroup.collogroup.collocations %}
+                                {% set semicolon = joiner('{{ backspace }};{{ space }}') %}
+                                {{ semicolon() }}
+                                <span class="CSLSegmentEm">
+                                    {{ collocation.collocation_ucs |
+                                            web_civil_injection('Em') }}
+                                </span>{{ space }}
+                            {% endfor %}
+                        {% endif %}
+                        {% if exgroup.meaning_group.index_mark and
+                              loop.changed(exgroup.meaning_group.index_mark) %}
+                            <b>
+                            {{ exgroup.meaning_group.index_mark }}.
+                            </b>{{ space }}
+                        {% endif %}
+                        {% if exgroup.meaning.index_mark %}
+                            <b>{{ exgroup.meaning.index_mark }}.</b>{{ space }}
+                        {% endif %}
+                        {% set meaning = exgroup.meaning.meaning|trim %}
+                        {% set gloss = exgroup.meaning.gloss|trim %}
+                        {% if meaning %}
+                            <span class="Text">
+                                {{ meaning | web_cslav_injection('CSLSegment') }}
+                            </span>{% if gloss %};{% endif %}{{ space }}
+                        {% endif %}
+                        {% if gloss %}
+                            <span class="Em">
+                                {{ gloss | web_cslav_injection('CSLSegment') }}
+                            </span>
+                        {% endif %}
                     </div>
                     {% set parentloop = loop %}
-                    {% for ex in structure_examples %}
-                        <div style="margin-left: 1em">{{ example_for_entry(ex, e.id, loop, parentloop) }}</div>
+                    {% for ex in exgroup.examples %}
+                        <div style="margin-left: 1em">
+                            {{ example_for_entry(ex, e.id, loop, parentloop) }}
+                        </div>
                     {% endfor %}
                 {% endfor %}
             {% endif %}
@@ -133,8 +177,8 @@
 
     {% else %}
 
-        {% for e in examples %}
-            <div>{{ example(e, loop.changed(e.host), loop.index0) }}</div>
+        {% for ex in examples %}
+            <div>{{ example(ex, loop.changed(ex.host), loop.index0) }}</div>
         {% endfor %}
 
     {% endif %}
@@ -197,10 +241,10 @@
             {% for entry in entries %}
                 {{ comma1() }} {{ entry.id }}: [
                 {% set comma2 = joiner(',') %}
-                {% for _, _, structure_examples in entry.structures_for_hellinists() %}
+                {% for exgroup in entry.examples_groups_for_hellinists() %}
                     {{ comma2() }} [
                     {% set comma3 = joiner(',') %}
-                    {% for ex in structure_examples %}
+                    {% for ex in exgroup.examples %}
                         {{ comma3() }}
                         {{ ex.toHellinistJSON() }}
                     {% endfor %}

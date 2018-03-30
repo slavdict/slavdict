@@ -6,7 +6,6 @@
     <div class="FirstParagraph Text">
 
     {% set sc_several_nouns = entry.special_cases("several nouns") %}
-    {% set serveral_pos, meaning_groups = entry.meaning_groups %}
     {% for base_var in entry.base_vars %}
         {% if loop.first %}
             {# pass #}
@@ -164,7 +163,7 @@
         </span>
         {{ space }}
     {% else %}
-        {% if entry.part_of_speech and not serveral_pos %}
+        {% if entry.part_of_speech and not entry.meaning_groups.serveral_pos %}
             {% if not entry.is_part_of_speech("letter", "number", "verb") and
                   (not entry.is_part_of_speech("noun") or not entry.gender) %}
                 {{ backspace }}{{ space }}
@@ -296,7 +295,7 @@
     {% endif %}
 
 
-    {% for orthvars, pos, meanings in meaning_groups %}
+    {% for mgroup in entry.meaning_groups %}
         {% set mgloop = loop %}
         {% if loop.length > 1 %}
             {% if not loop.first %}
@@ -308,11 +307,11 @@
                 {{ mgnumber }}.
             </span>{{ nbsp }}
 
-            {% if pos %}
-                <span class="Em">{{ pos }}</span>{{ space }}
+            {% if mgroup.pos_mark %}
+                <span class="Em">{{ mgroup.pos_mark }}</span>{{ space }}
             {% endif %}
 
-            {% for orthvar_ucs in orthvars %}
+            {% for orthvar_ucs in mgroup.orthvars %}
                 {% if not loop.first %}
                     {% if loop.last %}
                         {{ backspace }}{{ space }}
@@ -326,7 +325,7 @@
             {% endfor %}
         {% endif %}
 
-        {% for m in meanings %}
+        {% for m in mgroup.meanings %}
             {% set mnumber = loop.index %}
 
             {% if not loop.first %}
