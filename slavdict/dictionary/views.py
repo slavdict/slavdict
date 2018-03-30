@@ -735,8 +735,8 @@ def hellinist_workbench(request, per_page=4):
             # Кидаем исключение для обработки в мидлваре и стирания всех кук.
             raise InvalidCookieError(message)
     examples = filters.get_examples(form.cleaned_data)
-    if request.user.preplock:
-        examples = [ex for ex in examples if not ex.host_entry.preplock]
+    #if request.user.preplock:
+    #    examples = [ex for ex in examples if not ex.host_entry.preplock]
 
     paginator = Paginator(examples, per_page=per_page, orphans=2)
     if request.method == 'POST':

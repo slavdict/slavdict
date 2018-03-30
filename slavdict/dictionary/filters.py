@@ -167,6 +167,7 @@ def get_examples(form):
     examples = Example.objects
     entries = None
     FILTER_PARAMS = {}
+    FILTER_EXCLUDE_PARAMS = {'meaning_id__isnull': True}
     SORT_PARAMS = []
     PARSING_ERRORS = []
 
@@ -274,6 +275,7 @@ def get_examples(form):
             FILTER_PARAMS['id__in'] = examples_ids
 
     examples = examples.filter(**FILTER_PARAMS)
+    examples = examples.exclude(**FILTER_EXCLUDE_PARAMS)
     examples = examples.order_by(*SORT_PARAMS)
 
     return examples
