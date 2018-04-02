@@ -48,6 +48,11 @@
             // хотя оно есть на сервере
             .htmlSelect('hwSortdir', listsForWidgets.sortdir),
 
+        hwAllExamples: ko.observable()
+            .rememberInitial(valuesToInitialize.hwAllExamples)
+            .rememberDefault(false)
+            .htmlCheckbox('hwAllExamples'),
+
         hwStatus: ko.observable()
             .rememberInitial(valuesToInitialize.hwStatus)
             .rememberDefault('all')
@@ -63,6 +68,7 @@
                 x.hwExamplesIds() + '|' +
                 x.hwSortbase() + '|' +
                 x.hwSortdir() + '|' +
+                x.hwAllExamples() + '|' +
                 x.hwStatus();
         return y;
     }).extend({rateLimit: 500});

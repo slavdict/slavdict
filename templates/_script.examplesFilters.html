@@ -19,6 +19,7 @@
         exf.hwSortbase = '{{ filters.hwSortbase }}';
         exf.hwSortdir = '{{ filters.hwSortdir }}';
         exf.hwStatus = '{{ filters.hwStatus }}';
+        exf.hwAllExamples = {{ 'true' if filters.hwAllExamples else 'false' }};
     })();
 
     (function () {

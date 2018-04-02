@@ -108,6 +108,8 @@ class FilterExamplesForm(forms.Form):
     hwSortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
     hwStatus = forms.ChoiceField(choices=GREQSTATUS_CHOICES,
             label=u'Статус греч. парал.')
+    hwAllExamples = forms.BooleanField(label=u'Отображать все примеры',
+            required=False)
     default_data = {
         'hwAddress': u'',
         'hwAuthor': 'all',
@@ -117,4 +119,5 @@ class FilterExamplesForm(forms.Form):
         'hwSortbase': 'addr',
         'hwSortdir': '',
         'hwStatus': 'all',
+        'hwAllExamples': False,
     }
