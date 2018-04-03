@@ -38,13 +38,13 @@
         </a>
 
         {% if indicators.meaning %}
-            <span class="header--item indicator"
+            <span class="header--item indicator orange"
                 data-bind="click: function(){
                                       vM.filters.getDefaultState();
                                       vM.filters.hwStatus('M');
                                       vM.filters.formSubmit();
                                   }" >
-                Необх. для опр. значения{{ space }}
+                Для опр. значения{{ space }}
                 <span>{{ indicators.meaning }}</span>
             </span>
         {% endif %}
@@ -56,7 +56,7 @@
                                       vM.filters.hwStatus('U');
                                       vM.filters.formSubmit();
                                   }" >
-                Срочных греч. парал.{{ space }}
+                Срочно{{ space }}
                 <span>{{ indicators.urgent }}</span>
             </span>
         {% endif %}
