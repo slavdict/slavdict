@@ -619,10 +619,15 @@ def import_csv_billet(request):
     return render(request, 'csv_import.html', {'form': form,
                   'get_parameters': get_parameters})
 
-_DEFAULT_TEMPLATE = 'entry_list.html'
+MEANING_INDICATOR = 'meaning'
+URGENT_INDICATOR = 'urgent'
+
 @login_required
-def entry_list(request, template=_DEFAULT_TEMPLATE, per_page=12,
+def entry_list(request, for_hellinists=False, per_page=12,
         context=None):
+    template = 'entry_list.html'
+    if for_hellinists:
+        template = 'hellinist_workbench.html'
     cookie_salt = hashlib.md5(request.path).hexdigest()
     cookie_name = 'find{0}'.format(cookie_salt)
     if cookie_name in request.COOKIES:
@@ -638,10 +643,10 @@ def entry_list(request, template=_DEFAULT_TEMPLATE, per_page=12,
         if request.POST.get('hdrSearch'):
             data['find'] = request.POST['hdrSearch']
     else:
-        if template == _DEFAULT_TEMPLATE:
-            data = dict(FilterEntriesForm.default_data)
+        if for_hellinists:
+            data = FilterEntriesForm.default_data_for_hellinists.copy()
         else:
-            data = dict(FilterEntriesForm.default_data_for_hellinists)
+            data = FilterEntriesForm.default_data.copy()
         data.update((key[:-len(cookie_salt)], value)
                 for key, value in request.COOKIES.items()
                 if key.endswith(cookie_salt))
@@ -700,7 +705,17 @@ def entry_list(request, template=_DEFAULT_TEMPLATE, per_page=12,
         'title': u'Словарь церковнославянского языка Нового времени',
         'MAX_LENGTHS': models.MAX_LENGTHS,
         'statusList': models.Example.GREEK_EQ_STATUS,
+        'MEANING_INDICATOR': MEANING_INDICATOR,
+        'URGENT_INDICATOR': URGENT_INDICATOR,
     })
+    if for_hellinists:
+        context['hellinist_workbench'] = True
+        context['indicators'] = {
+            URGENT_INDICATOR: Example.objects.filter(
+                greek_eq_status=Example.GREEK_EQ_URGENT).count(),
+            MEANING_INDICATOR: Example.objects.filter(
+                greek_eq_status=Example.GREEK_EQ_MEANING).count(),
+        }
 
     response = render(request, template, context)
     if request.method == 'POST':
@@ -710,7 +725,6 @@ def entry_list(request, template=_DEFAULT_TEMPLATE, per_page=12,
             cookie_name = param + cookie_salt
             response.set_cookie(cookie_name, value, path=request.path)
     return response
-
 
 @login_required
 def hellinist_workbench(request, per_page=4):
@@ -723,8 +737,13 @@ def hellinist_workbench(request, per_page=4):
     if request.method == 'POST':
         data = request.POST
     else:
-        data = FilterExamplesForm.default_data
-        data.update(request.COOKIES)
+        data = FilterExamplesForm.default_data.copy()
+        if MEANING_INDICATOR in request.GET:
+            data['hwStatus'] = Example.GREEK_EQ_MEANING
+        elif URGENT_INDICATOR in request.GET:
+            data['hwStatus'] = Example.GREEK_EQ_URGENT
+        else:
+            data.update(request.COOKIES)
 
     form = FilterExamplesForm(data)
     if not form.is_valid():
@@ -764,8 +783,10 @@ def hellinist_workbench(request, per_page=4):
         'jsonExamples': viewmodels._json(vM_examples),
         'number_of_examples': paginator.count,
         'indicators': {
-            'urgent': Example.objects.filter(greek_eq_status=u'U').count(),
-            'meaning': Example.objects.filter(greek_eq_status=u'M').count(),
+            URGENT_INDICATOR: Example.objects.filter(
+                greek_eq_status=Example.GREEK_EQ_URGENT).count(),
+            MEANING_INDICATOR: Example.objects.filter(
+                greek_eq_status=Example.GREEK_EQ_MEANING).count(),
             },
         'page': page,
         'statusList': models.Example.GREEK_EQ_STATUS,
@@ -777,6 +798,8 @@ def hellinist_workbench(request, per_page=4):
             'sortbase': viewmodels.jsonGreqSortbase,
             },
         'MAX_LENGTHS': models.MAX_LENGTHS,
+        'MEANING_INDICATOR': MEANING_INDICATOR,
+        'URGENT_INDICATOR': URGENT_INDICATOR,
         }
     response = render(request, 'hellinist_workbench.html', context)
     if request.method == 'POST':

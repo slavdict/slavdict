@@ -9,57 +9,60 @@
     {% if entries is defined %}
         {{ url('hellinist_entries') }}
     {% else %}
-        {{ url('hellinist_workbench') }}
+        {{ url('hellinist_examples') }}
     {% endif %}
 {% endblock %}
 
 {% block header %}
 
     <a href="{{ url('all_entries_url') }}" class="header--item">
-        Выход из греч. кабинета
+        На главную
+    </a>{{ space }}
+
+    <a href="{{ url('hellinist_examples') }}" class="header--item button">
+        Поиск по примерам
+    </a>{{ space }}
+
+    <a href="{{ url('hellinist_entries') }}" class="header--item button">
+        Статьи
     </a>
-    {{ space }}
 
-    {% if entries is defined %}
-        <a href="{{ url('hellinist_workbench') }}" class="header--item button">
-            Параллели к иллюстрациям
-        </a>
-        <span class="header--item">
-            <input type="checkbox" id="withExamples" style="margin-left: 0.3em"
-                data-bind="checked: per_se" />
-            <label for="withExamples" style="margin-left: 0.3em">
-                Отображать примеры
-            </label>
+    {% if indicators.get(MEANING_INDICATOR) %}
+        <span class="header--item indicator orange"
+        {% if entries is defined %}
+            onclick="window.location.replace(
+                '{{ url('hellinist_examples') }}?{{ MEANING_INDICATOR }}'
+            );"
+        {% else %}
+            data-bind="click: function () {
+                                  vM.filters.getDefaultState();
+                                  vM.filters.hwStatus('M');
+                                  vM.filters.formSubmit();
+                              }"
+        {% endif %}
+                              >
+            Для опр. значения{{ space }}
+            <span>{{ indicators.get(MEANING_INDICATOR) }}</span>
         </span>
+    {% endif %}
 
-    {% else %}
-        <a href="{{ url('hellinist_entries') }}" class="header--item button">
-            Параллели к статьям
-        </a>
-
-        {% if indicators.meaning %}
-            <span class="header--item indicator orange"
-                data-bind="click: function(){
-                                      vM.filters.getDefaultState();
-                                      vM.filters.hwStatus('M');
-                                      vM.filters.formSubmit();
-                                  }" >
-                Для опр. значения{{ space }}
-                <span>{{ indicators.meaning }}</span>
-            </span>
+    {% if indicators.get(URGENT_INDICATOR) %}
+        <span class="header--item indicator"
+        {% if entries is defined %}
+            onclick="window.location.replace(
+                '{{ url('hellinist_examples') }}?{{ URGENT_INDICATOR }}'
+            );"
+        {% else %}
+            data-bind="click: function () {
+                                  vM.filters.getDefaultState();
+                                  vM.filters.hwStatus('U');
+                                  vM.filters.formSubmit();
+                              }"
         {% endif %}
-
-        {% if indicators.urgent %}
-            <span class="header--item indicator"
-                data-bind="click: function(){
-                                      vM.filters.getDefaultState();
-                                      vM.filters.hwStatus('U');
-                                      vM.filters.formSubmit();
-                                  }" >
-                Срочно{{ space }}
-                <span>{{ indicators.urgent }}</span>
-            </span>
-        {% endif %}
+                              >
+            Срочно{{ space }}
+            <span>{{ indicators.get(URGENT_INDICATOR) }}</span>
+        </span>
     {% endif %}
 
 {% endblock %}
