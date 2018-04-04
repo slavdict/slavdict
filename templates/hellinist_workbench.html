@@ -60,7 +60,7 @@
                               }"
         {% endif %}
                               >
-            Срочно{{ space }}
+            Срочное{{ space }}
             <span>{{ indicators.get(URGENT_INDICATOR) }}</span>
         </span>
     {% endif %}
@@ -77,14 +77,12 @@
 
 {% block content %}
 
-    {% if form.cleaned_data.per_se %}
-        {% include '_pagination.html' %}
-    {% endif %}
+    {% include '_pagination.html' %}
 
     {% trim %}
 
     {% if entries is defined %}
-        {% if form.cleaned_data.per_se and entries|length > 1 %}
+        {% if not form.cleaned_data.per_se and entries|length > 1 %}
         <div class="quickJump">
             <label>Быстрый перерход</label>
             <ul>
@@ -108,7 +106,7 @@
 
         {% for e in entries %}
             <div class="FirstParagraph">{{ entry(e) }}</div>
-            {% if form.cleaned_data.per_se %}
+            {% if not form.cleaned_data.per_se %}
                 {% if e.meanings.count() > 1 %}
                 <div class="quickJump">
                     <label>Быстрый перерход</label>
@@ -238,7 +236,7 @@
             {% endfor %}
         ];
 
-        {% if form.cleaned_data.per_se %}
+        {% if not form.cleaned_data.per_se %}
         vM.jsonExamplesForEntries = {
             {% set comma1 = joiner(',') %}
             {% for entry in entries %}
