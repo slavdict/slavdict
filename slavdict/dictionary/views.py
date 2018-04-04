@@ -662,7 +662,11 @@ def entry_list(request, for_hellinists=False, per_page=12,
         else:
             # Кидаем исключение для обработки в мидлваре и стирания всех кук.
             raise InvalidCookieError(message)
-    entries = filters.get_entries(form.cleaned_data)
+
+    if for_hellinists and 'id' in request.GET and request.GET['id'].isdigit():
+        entries = Entry.objects.filter(pk=int(request.GET['id']))
+    else:
+        entries = filters.get_entries(form.cleaned_data)
 
     paginator = Paginator(entries, per_page=per_page, orphans=2)
     if request.method == 'POST':

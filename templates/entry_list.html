@@ -50,6 +50,15 @@
                     <a class="icon edit" href="{{ url('edit_form_url', args=[entry.pk]) }}">
                         <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="изменить" />
                     </a>
+                    {% if user.is_admeditor or user.is_hellinist %}
+                    <br />
+                    <a class="icon edit"
+                            href="{{ url('hellinist_entries') }}?id={{ entry.id }}"
+                            title="Редактировать греч. параллели">
+                        <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="изменить" />
+                        <span>αβ</span>
+                    </a>
+                    {% endif %}
                     {% if entry.antconc_query|trim %}
                     <br />
                     <a class="icon clippy nearText"
