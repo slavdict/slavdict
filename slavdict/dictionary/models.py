@@ -1446,6 +1446,9 @@ class Meaning(models.Model):
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
+    def get_url_fragment(self):
+        return 'm{0}'.format(self.id)
+
     def __unicode__(self):
         return self.meaning
 

@@ -2,7 +2,6 @@
                     collogroups_loop, child_meanings) %}
 {% from 'web/example.html' import example with context %}
 
-
 {% for orthvar_ucs in m.orthvars %}
     {% if not loop.first %}
         {% if loop.last %}
@@ -16,6 +15,7 @@
             web_cslav_words("CSLSegmentEm") }}{{ space }}
 {% endfor %}
 
+<span class="anchor"><a id="{{ m.get_url_fragment() }}"></a></span>
 
 {% if m.special_case == 'a' %}{# канонич. #}
 

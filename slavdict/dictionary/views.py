@@ -732,7 +732,9 @@ def entry_list(request, for_hellinists=False, per_page=12,
 
 @login_required
 def hellinist_workbench(request, per_page=4):
+    cookie_salt = hashlib.md5(request.path).hexdigest()
     for key in ('hwPrfx', 'hwAddress', 'hwExample'):
+        key = key + cookie_salt
         if key in request.COOKIES:
             request.COOKIES[key] = base64 \
                 .standard_b64decode(request.COOKIES[key]) \
@@ -747,7 +749,9 @@ def hellinist_workbench(request, per_page=4):
         elif URGENT_INDICATOR in request.GET:
             data['hwStatus'] = Example.GREEK_EQ_URGENT
         else:
-            data.update(request.COOKIES)
+            data.update((key[:-len(cookie_salt)], value)
+                         for key, value in request.COOKIES.items()
+                         if key.endswith(cookie_salt))
 
     form = FilterExamplesForm(data)
     if not form.is_valid():
@@ -811,6 +815,7 @@ def hellinist_workbench(request, per_page=4):
             form.cleaned_data[key] = base64.standard_b64encode(
                                         form.cleaned_data[key].encode('utf8'))
         for param, value in form.cleaned_data.items():
+            param = param + cookie_salt
             response.set_cookie(param, value, path=request.path)
     return response
 

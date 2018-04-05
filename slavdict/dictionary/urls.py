@@ -34,8 +34,9 @@ urlpatterns = [
 
     url( r'^json/singleselect/entries/urls/$', jsonviews.json_singleselect_entries_urls),
 
+    url( r'^greek/$', RedirectView.as_view(pattern_name='hellinist_examples', permanent=True)),
     url( r'^greek/find-example/$', views.hellinist_workbench, name='hellinist_examples' ),
-    url( r'^greek/$', views.entry_list, name='hellinist_entries',
+    url( r'^greek/entries/$', views.entry_list, name='hellinist_entries',
                               kwargs={'for_hellinists': True, 'per_page': 5}),
     url( r'^json/greq/save/$', jsonviews.json_greq_save, name="jsonGreqSaveURL"),
     url( r'^json/greq/delete/$', jsonviews.json_greq_delete, name="jsonGreqDeleteURL"),

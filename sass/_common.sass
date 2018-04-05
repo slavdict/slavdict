@@ -144,3 +144,30 @@ div#main
 img.tipIcon
     opacity: 0.4
     vertical-align: sub
+
+span.anchor
+    position: relative
+    width: 0
+    height: 0
+    margin: 0 !important
+    padding: 0 !important
+    a
+        position: absolute
+        border-radius: 50%
+        width: 0
+        height: 0
+        left: 50%
+        top: 50%
+        transform: translate(-50%, -50%)
+    a:target
+        animation: anchor 2s
+
+@keyframes anchor
+    0%
+        border: 0 solid rgba(255, 69, 0, 1)
+    70%
+        border: 10em solid rgba(255, 69, 0, 0.3)
+    99%
+        border: 0 solid rgba(255, 69, 0, 1)
+    100%
+        border: 0 solid transparent
