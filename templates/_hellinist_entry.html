@@ -22,9 +22,7 @@
             <span data-bind="text: additional_info,
                              visible: additional_info()"
                 class="greqComment"></span>
-            <span data-bind="css: { hidden:
-                     $index != $parent.etymsForEntries[{{ entry.id }}]().length
-                  }">,</span>
+            <span class="greqList--comma">,</span>
             {{ space }}
         <!-- /ko -->
     </span>{{ space }}
