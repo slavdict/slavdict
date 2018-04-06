@@ -84,7 +84,7 @@
     {% if entries is defined %}
         {% if not form.cleaned_data.per_se and entries|length > 1 %}
         <div class="quickJump">
-            <label>Быстрый перерход</label>
+            <label>Быстрый переход</label>
             <ul>
             {% for e in entries %}
                 <li>
@@ -109,7 +109,7 @@
             {% if not form.cleaned_data.per_se %}
                 {% if e.meanings.count() > 1 %}
                 <div class="quickJump">
-                    <label>Быстрый перерход</label>
+                    <label>Быстрый переход</label>
                     <ul>
                     {% for exgroup in e.examples_groups_for_hellinists() %}
                         {% if not exgroup.collogroup %}
