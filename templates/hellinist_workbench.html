@@ -120,8 +120,19 @@
                             {% endif %}
                             <a href="#{{ e.id }}g{{ exgroup.meaning_group.index_mark }}m{{ exgroup.meaning.index_mark }}">
                                 <span>
-                                    Значение
-                                    {{ exgroup.meaning.index_mark }}
+                                    <b>{{ exgroup.meaning.index_mark }}.</b>{{ space }}
+                                    {% set meaning = exgroup.meaning.meaning|trim %}
+                                    {% set gloss = exgroup.meaning.gloss|trim %}
+                                    {% if meaning %}
+                                        <span class="Text">
+                                            {{ meaning | web_cslav_injection('CSLSegment') }}
+                                        </span>{% if gloss %};{% endif %}{{ space }}
+                                    {% endif %}
+                                    {% if gloss %}
+                                        <span class="Em">
+                                            {{ gloss | web_cslav_injection('CSLSegment') }}
+                                        </span>
+                                    {% endif %}
                                 </span>
                             </a>
                         </li>
