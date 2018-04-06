@@ -149,10 +149,10 @@
                             {% for collocation in exgroup.collogroup.collocations %}
                                 {% set semicolon = joiner('{{ backspace }};{{ space }}') %}
                                 {{ semicolon() }}
-                                <span class="CSLSegmentEm">
-                                    {{ collocation.collocation_ucs |
-                                            web_civil_injection('Em') }}
-                                </span>{{ space }}
+                                {{ collocation.collocation_ucs |
+                                      web_civil_injection("Valency", "CSLSegmentEm", "Text") |
+                                      web_good_slash("Text") }}
+                                {{ space }}
                             {% endfor %}
                         {% endif %}
                         {% if exgroup.meaning_group.index_mark and
