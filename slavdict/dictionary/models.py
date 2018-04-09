@@ -765,6 +765,8 @@ class Entry(models.Model):
                 return len(self.meanings)
             def __iter__(self):
                 return iter(self.meanings)
+            def __getitem__(self, key):
+                return self.meanings[key]
 
         class MeaningGroups(object):
             def __init__(self, meaning_groups, several_pos):
@@ -778,6 +780,8 @@ class Entry(models.Model):
                 return len(self.meaning_groups)
             def __iter__(self):
                 return iter(self.meaning_groups)
+            def __getitem__(self, key):
+                return self.meaning_groups[key]
 
         if any(o.use for o in self.orth_vars):
             d = defaultdict(list)
@@ -802,7 +806,8 @@ class Entry(models.Model):
                                            if i + 1 in meaning_numbers]
                     group = MeaningGroup(filtered_meanings, orthvars=orthvars_list)
                     meaning_groups.append(group)
-                meaning_groups.sort(key=lambda x: (x[2][0].order, x[2][0].id))
+                meaning_groups.sort(key=lambda mg: (mg.meanings[0].order,
+                                                    mg.meanings[0].id))
 
         elif any(m.special_case and m.special_case in POS_SPECIAL_CASES
                  for m in meanings):
