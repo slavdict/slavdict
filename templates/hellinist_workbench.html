@@ -19,13 +19,13 @@
         На главную
     </a>{{ space }}
 
+    <a href="{{ url('hellinist_entries') }}" class="header--item button">
+        Статьи
+    </a>{{ space }}
+
     <a href="{{ url('hellinist_examples') }}" class="header--item button">
         Поиск по примерам
     </a>{{ space }}
-
-    <a href="{{ url('hellinist_entries') }}" class="header--item button">
-        Статьи
-    </a>
 
     {% if indicators.get(MEANING_INDICATOR) %}
         <span class="header--item indicator orange"
