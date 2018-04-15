@@ -113,14 +113,18 @@
                     <ul>
                     {% for exgroup in e.examples_groups_for_hellinists() %}
                         {% if not exgroup.collogroup %}
-                        <li>
-                            {% if exgroup.meaning_group.index_mark and
-                                  loop.changed(exgroup.meaning_group.index_mark) %}
+                            {% if not loop.first %}</li>{% endif %}
+                            <li>
+                        {% endif %}
+                        {% if not exgroup.collogroup %}
+                            {% if exgroup.meaning_group.index_mark %}
                                 {{ exgroup.meaning_group.index_mark }}.{{ space }}
                             {% endif %}
                             <a href="#{{ e.id }}g{{ exgroup.meaning_group.index_mark }}m{{ exgroup.meaning.index_mark }}">
                                 <span>
-                                    <b>{{ exgroup.meaning.index_mark }}.</b>{{ space }}
+                                    {% if exgroup.meaning.index_mark %}
+                                        <b>{{ exgroup.meaning.index_mark }}.</b>{{ space }}
+                                    {% endif %}
                                     {% set meaning = exgroup.meaning.meaning|trim %}
                                     {% set gloss = exgroup.meaning.gloss|trim %}
                                     {% if meaning %}
@@ -135,17 +139,44 @@
                                     {% endif %}
                                 </span>
                             </a>
-                        </li>
+                        {% else %}
+                            {% set egcg = exgroup.collogroup %}
+                            {% if loop.changed((egcg and true, egcg and egcg.phraseological)) %}
+                                <span class="Diamond">
+                                    {% if egcg.phraseological %}
+                                        ♦{# U+2666 #}
+                                    {% else %}
+                                        ♢{# U+2662 #}
+                                    {% endif %}
+                                </span>{{ nbsp }}
+                            {% else %}
+                                {% include 'web/separator.html' %}
+                            {% endif %}
+                            <a href="#{{ egcg.get_url_fragment() }}">
+                            {% for collocation in egcg.collocations %}
+                                {% set semicolon = joiner('{{ backspace }};{{ space }}') %}
+                                {{ semicolon() }}
+                                {{ collocation.collocation_ucs |
+                                      web_civil_injection("Valency", "CSLSegmentEm", "Text") |
+                                      web_good_slash("Text") }}
+                                {{ space }}
+                            {% endfor %}
+                            </a>
                         {% endif %}
+                        {% if loop.last %}</li>{% endif %}
                     {% endfor %}
                     </ul>
                 </div>
                 {% endif %}
                 {% for exgroup in e.examples_groups_for_hellinists() %}
-                    <div class="exampleHeader Text"{% if not exgroup.collogroup %}
-                         id="{{ e.id }}g{{ exgroup.meaning_group.index_mark }}m{{ exgroup.meaning.index_mark }}"
+                    <div class="exampleHeader Text"
+                         {% if not exgroup.collogroup %}
+                             id="{{ e.id }}g{{ exgroup.meaning_group.index_mark }}m{{ exgroup.meaning.index_mark }}"
+                         {% else %}
+                             id="{{ exgroup.collogroup.get_url_fragment() }}"
                          {% endif %}>
                         {% if exgroup.collogroup %}
+                            <a href="{{ e.get_absolute_url() }}#{{ exgroup.meaning.get_url_fragment() }}">
                             {% for collocation in exgroup.collogroup.collocations %}
                                 {% set semicolon = joiner('{{ backspace }};{{ space }}') %}
                                 {{ semicolon() }}
@@ -154,6 +185,7 @@
                                       web_good_slash("Text") }}
                                 {{ space }}
                             {% endfor %}
+                            </a>
                         {% endif %}
                         {% if exgroup.meaning_group.index_mark and
                               loop.changed(exgroup.meaning_group.index_mark) %}

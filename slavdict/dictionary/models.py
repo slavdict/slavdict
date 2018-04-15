@@ -1828,6 +1828,9 @@ class CollocationGroup(models.Model):
     all_meanings = property(all_meanings)
     has_meanings = property(has_meanings)
 
+    def get_url_fragment(self):
+        return 'cg{0}'.format(self.id)
+
     def save(self, without_mtime=False, *args, **kwargs):
         super(CollocationGroup, self).save(*args, **kwargs)
         host_entry = self.host_entry
