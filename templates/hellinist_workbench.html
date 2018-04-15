@@ -112,12 +112,18 @@
                     <label>Быстрый переход</label>
                     <ul>
                     {% for exgroup in e.examples_groups_for_hellinists() %}
-                        {% if not exgroup.collogroup %}
+                        {% set egcg = exgroup.collogroup %}
+                        {% set cgchanged = loop.changed(egcg and true,
+                                               egcg and egcg.phraseological) %}
+                        {% set mgchanged = (not loop.previtem or
+                                    loop.previtem.meaning_group.index_mark !=
+                                    exgroup.meaning_group.index_mark) %}
+                        {% if not egcg %}
                             {% if not loop.first %}</li>{% endif %}
-                            <li>
+                            <li style="padding-left: 1em; text-indent: -1em;">
                         {% endif %}
-                        {% if not exgroup.collogroup %}
-                            {% if exgroup.meaning_group.index_mark %}
+                        {% if not egcg %}
+                            {% if mgchanged %}
                                 {{ exgroup.meaning_group.index_mark }}.{{ space }}
                             {% endif %}
                             <a href="#{{ e.id }}g{{ exgroup.meaning_group.index_mark }}m{{ exgroup.meaning.index_mark }}">
@@ -140,9 +146,8 @@
                                 </span>
                             </a>
                         {% else %}
-                            {% set egcg = exgroup.collogroup %}
-                            {% if loop.changed((egcg and true, egcg and egcg.phraseological)) %}
-                                <span class="Diamond">
+                            {% if cgchanged %}
+                                <span class="Diamond" style="text-indent: 0">
                                     {% if egcg.phraseological %}
                                         ♦{# U+2666 #}
                                     {% else %}
