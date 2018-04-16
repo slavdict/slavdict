@@ -158,8 +158,8 @@
                                 {% include 'web/separator.html' %}
                             {% endif %}
                             <a href="#{{ egcg.get_url_fragment() }}">
+                            {% set semicolon = joiner('{{ backspace }};{{ space }}') %}
                             {% for collocation in egcg.collocations %}
-                                {% set semicolon = joiner('{{ backspace }};{{ space }}') %}
                                 {{ semicolon() }}
                                 {{ collocation.collocation_ucs |
                                       web_civil_injection("Valency", "CSLSegmentEm", "Text") |
@@ -182,8 +182,8 @@
                          {% endif %}>
                         {% if exgroup.collogroup %}
                             <a href="{{ e.get_absolute_url() }}#{{ exgroup.meaning.get_url_fragment() }}">
+                            {% set semicolon = joiner('{{ backspace }};{{ space }}') %}
                             {% for collocation in exgroup.collogroup.collocations %}
-                                {% set semicolon = joiner('{{ backspace }};{{ space }}') %}
                                 {{ semicolon() }}
                                 {{ collocation.collocation_ucs |
                                       web_civil_injection("Valency", "CSLSegmentEm", "Text") |
