@@ -1540,7 +1540,7 @@ class Example(models.Model):
         if show_info:
             lst = list(self.greek_equivs)
         else:
-            lst = [ge for ge self.greek_equivs if ge.unitext.strip()]
+            lst = [ge for ge in self.greek_equivs if ge.unitext.strip()]
         L = len(lst)
         if L == 0:
             groups = []
