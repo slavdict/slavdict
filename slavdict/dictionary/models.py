@@ -1533,9 +1533,14 @@ class Example(models.Model):
     def greek_equivs(self):
         return self.greekequivalentforexample_set.all().order_by('order', 'id')
 
-    @property
-    def greek_equivs_with_numbers(self):
-        lst = list(self.greek_equivs)
+    def greek_equivs_with_numbers(self, show_info=False):
+        # Если не надо отображать авторские комментарии, то выводим
+        # только реальные греч. параллели с заполненным полем unitext,
+        # остальные пропускаем.
+        if show_info:
+            lst = list(self.greek_equivs)
+        else:
+            lst = [ge for ge self.greek_equivs if ge.unitext.strip()]
         L = len(lst)
         if L == 0:
             groups = []

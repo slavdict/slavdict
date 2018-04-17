@@ -5,7 +5,7 @@
 {{ space }}
 
 {% if e.greek_equivs %}
-    {% for ge, genum in e.greek_equivs_with_numbers %}
+    {% for ge, genum in e.greek_equivs_with_numbers(show_info=False) %}
 
         {% if not loop.first %}
             {{ backspace }},{{ space }}
