@@ -1,5 +1,9 @@
 @charset 'utf-8'
 
+@media print
+    .headerForm
+        display: none
+
 .header
     padding: 5px
     background-color: $headerBackgroundColor
@@ -7,6 +11,9 @@
     position: relative
     line-height: 12px
     height: 23px
+
+    @media print
+        display: none
 
     .header--item,
     .header--item-left,

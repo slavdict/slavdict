@@ -18,7 +18,7 @@
               and (not entry.authors.exists() or user.is_admeditor
                    or user in entry.authors.all()) %}
             {% if not entry.duplicate or user.is_admeditor %}
-            <div style="position: absolute; top: 5px; left: -45px;">
+            <div class="editButtons">
                 <a class="icon edit"
                         href="{{ url('edit_form_url', args=[entry.pk]) }}"
                         title="Редактировать статью">
