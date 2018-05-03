@@ -674,7 +674,7 @@ def entry_list(request, for_hellinists=False, per_page=12,
             data = FilterEntriesForm.default_data.copy()
         data.update((key[:-len(cookie_salt)], value)
                 for key, value in request.COOKIES.items()
-                if key.endswith(cookie_salt))
+                if key.endswith(cookie_salt) and value)
         if (request.method == 'POST' and len(request.POST) == 1
         and 'hdrSearch' in request.POST):
             data['find'] = request.POST['hdrSearch']
@@ -776,7 +776,7 @@ def hellinist_workbench(request, per_page=4):
         else:
             data.update((key[:-len(cookie_salt)], value)
                          for key, value in request.COOKIES.items()
-                         if key.endswith(cookie_salt))
+                         if key.endswith(cookie_salt) and value)
 
     form = FilterExamplesForm(data)
     if not form.is_valid():
