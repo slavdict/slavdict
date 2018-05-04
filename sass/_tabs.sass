@@ -269,6 +269,7 @@ ul.meaningContexts li,
         width: percentage($listElementWidth) !important
 
 .orthvars ul li
+    position: relative
 
     input[type="text"]
         margin-left: 20px
@@ -276,18 +277,17 @@ ul.meaningContexts li,
     .cslav
         margin-left: 10px
 
-#orthvars--reconstructedHeadword
-    margin-bottom: 1.2em
-    display: block
-    float: none
+    input[type="checkbox"]
+        position: relative
+        margin-left: 1em
+        top: -0.4em
 
-    & input
-        @include column(1, true)
-        margin: 2px 5px auto 5px
+    label
+        margin-left: 0.5em
 
 
 .meaningContexts *
-    overflow: visible 
+    overflow: visible
 
 .meaningContexts li
     label

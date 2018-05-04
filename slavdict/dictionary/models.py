@@ -487,12 +487,6 @@ class Entry(models.Model):
     def base_vars(self):
         return self.orthographic_variants.filter(parent__isnull=True)
 
-    reconstructed_headword = BooleanField(u'Заглавное слово реконструировано',
-            default=False)
-
-    questionable_headword = BooleanField(u'''Реконструкция заглавного слова
-            вызывает сомнения''', default=False)
-
     untitled_exists = BooleanField(u'''Вариант без титла представлен
             в текстах''', default=False)
 
@@ -969,8 +963,6 @@ class Entry(models.Model):
             'part_of_speech',
             'participle_type',
             'possessive',
-            'questionable_headword',
-            'reconstructed_headword',
             'sg1',
             'sg2',
             'short_form',
@@ -2072,6 +2064,8 @@ class OrthographicVariant(models.Model):
     entry = ForeignKey(Entry, related_name='orthographic_variants', blank=True,
                        null=True)
     parent = ForeignKey('self', related_name='children', blank=True, null=True)
+    reconstructed = BooleanField(u'реконструирован', default=False)
+    questionable = BooleanField(u'реконструкция вызывает сомнения', default=False)
 
     @property
     def childvars(self):
@@ -2107,6 +2101,8 @@ class OrthographicVariant(models.Model):
     host = host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
+        if self.questionable and not self.reconstructed:
+            self.reconstructed = True
         super(OrthographicVariant, self).save(*args, **kwargs)
         host_entry = self.host_entry
         if host_entry is not None:
@@ -2124,8 +2120,11 @@ class OrthographicVariant(models.Model):
     def forJSON(self):
         _fields = (
             'entry_id',
+            'parent_id',
             'id',
             'idem',
+            'reconstructed',
+            'questionable',
             'order',
         )
         return dict((key, self.__dict__[key]) for key in _fields)

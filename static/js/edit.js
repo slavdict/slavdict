@@ -226,6 +226,24 @@ function Orthvar() {
     upsert(this, 'order', data, 345);
     upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'id', data, 'orthvar' + Orthvar.all.length);
+    upsert(this, 'questionable', data, false);
+    upsert(this, 'reconstructed', data, false);
+
+    // У любого вариант, для которого поднимается флаг "реконструкция вызывает
+    // сомнения", должна быть галочка "реконструирован".
+    this.questionable.subscribe(function () {
+        if (!this.questionable() && !this.reconstructed()) {
+            this.reconstructed(true);
+        }
+    }, this, 'beforeChange');
+    // Если галочка "реконструирован" снимается, опускаем также
+    // флаг "реконструкция вызывает сомнения".
+    this.reconstructed.subscribe(function () {
+        if (this.reconstructed() && this.questionable()) {
+            this.questionable(false);
+        }
+    }, this, 'beforeChange');
+
     Orthvar.all.append(this);
 }
 
@@ -436,8 +454,6 @@ function Entry(data) {
     upsert(this, 'part_of_speech', data, '');
     upsert(this, 'participle_type', data, '');
     upsert(this, 'possessive', data, false);
-    upsert(this, 'questionable_headword', data, false);
-    upsert(this, 'reconstructed_headword', data, false);
     upsert(this, 'sg1', data, '');
     upsert(this, 'sg2', data, '');
     upsert(this, 'short_form', data, '');

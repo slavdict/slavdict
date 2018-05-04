@@ -2,11 +2,6 @@
 <section class="tabcontent orthvars"
     data-bind="if: constructor.name === 'Entry'">
 
-    <label id="orthvars--reconstructedHeadword">
-        <input type="checkbox" data-bind="checked: reconstructed_headword">
-        <span>Заглавное слов реконструировано</span>
-    </label>
-
     <ul data-bind="sortable: orthvars">
         <li>
             <a class="dragItem"
@@ -16,6 +11,24 @@
             <input type="text" data-bind="textInput: idem"
                    maxlength="{{ MAX_LENGTHS.OrthographicVariant.idem }}"/>
             <span data-bind="wax: idem"></span>
+
+            <input type="checkbox"
+                data-bind="checked: reconstructed,
+                           attr: { 'id': 'ovrecon' + id() }"
+                >
+            <label data-bind="attr: { 'for': 'ovrecon' + id() }">
+                Реконструирован
+            </label>
+
+            <input type="checkbox"
+                data-bind="checked: questionable,
+                           attr: { 'id': 'ovquest' + id() },
+                           visible: reconstructed"
+                >
+            <label data-bind="attr: { 'for': 'ovquest' + id() },
+                              visible: reconstructed">
+                Под сомнением
+            </label>
         </li>
     </ul>
 

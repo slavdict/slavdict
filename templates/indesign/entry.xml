@@ -25,9 +25,9 @@
                 </x>
                 {{ space }}
             {% endif %}
-            {% if entry.questionable_headword %}
-                <x aid:cstyle="Text">(?)</x>
-            {% endif %}
+        {% endif %}
+        {% if base_var.questionable %}
+            <x aid:cstyle="Text">(?)</x>
         {% endif %}
         {{ backspace }}{{ space }}
 

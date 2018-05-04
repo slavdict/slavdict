@@ -27,9 +27,9 @@
                 </span>
                 {{ space }}
             {% endif %}
-            {% if entry.questionable_headword %}
-                <span class="Text">(?)</span>
-            {% endif %}
+        {% endif %}
+        {% if base_var.questionable %}
+            <span class="Text">(?)</span>
         {% endif %}
         {{ backspace }}{{ space }}
 

@@ -244,7 +244,8 @@ class OrthVar_Inline(admin.StackedInline):
     readonly_fields = ('id',)
     fieldsets = (
         (None, {
-            'fields': (('idem', 'no_ref_entry', 'order', 'id', 'parent'),),
+            'fields': (('idem', 'no_ref_entry', 'reconstructed', 'questionable'),
+                       ('order', 'id', 'parent'),),
             }),
         )
 
@@ -565,8 +566,7 @@ class AdminEntry(admin.ModelAdmin):
     )
     fieldsets = (
         (None, {
-            'fields': (('untitled_exists', 'reconstructed_headword',
-                'questionable_headword', 'special_case'),),
+            'fields': (('untitled_exists', 'special_case'),),
             }),
         (None, {
             'fields': ('civil_equivalent',),
@@ -631,7 +631,7 @@ class AdminEntry(admin.ModelAdmin):
         'headword',
         )
     list_filter = (
-    	FirstVolumeEntryFilter,
+        FirstVolumeEntryFilter,
         'authors',
         'status',
         'part_of_speech',

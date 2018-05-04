@@ -529,7 +529,7 @@ def import_csv_billet(request):
 
                 # Обработка поля с орфографическими вариантами.
                 # Орфографические варианты разделяются любой чертой (прямой,
-                # косой или обратной косой).  Звездочка означает, что
+                # косой или обратной косой). Звездочка означает, что
                 # орфогр.вариант был реконструирован. Вопросительный знак --
                 # сомнения в правильности реконструкции. Черты и знаки могут
                 # отделяться друг от друга и от орф.вариантов любым количеством
@@ -598,10 +598,6 @@ def import_csv_billet(request):
                     entry = Entry()
                     if not intersection or (force == 'add'):
                         entry.__dict__.update(from_csv)
-                        entry.__dict__.update({
-                            'reconstructed_headword': orthvars_list[0][1],
-                            'questionable_headword': orthvars_list[0][2],
-                            })
                         entry.save()
                         if author is not None:
                             entry.authors.add(author)
@@ -609,7 +605,9 @@ def import_csv_billet(request):
                         for i in orthvars_list:
                             orthvar = i[0]
                             ov = OrthographicVariant.objects.create(
-                                                entry=entry, idem=orthvar)
+                                                entry=entry, idem=orthvar,
+                                                reconstructed=(i[2] or i[1]),
+                                                questionable=i[2])
                             ov.save()
                             idems.add(orthvar)
                     elif intersection and (force=='update'):

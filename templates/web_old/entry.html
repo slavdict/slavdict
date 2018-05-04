@@ -15,16 +15,6 @@
 
     <div style="line-height: 100%;">
 
-        {% if show_additional_info %}
-            {% if entry.questionable_headword %}
-                <sup>?</sup>
-            {% else %}
-                {% if entry.reconstructed_headword %}*{% endif %}
-            {% endif %}
-        {% else %}
-            {% if entry.questionable_headword %}*{% endif %}
-        {% endif %}
-
         <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
         {{ space }}
 
