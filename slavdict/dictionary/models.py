@@ -418,7 +418,7 @@ SUBSTANTIVUS_TYPE_MAP = {
     'f.pl.': 'f',
 }
 
-ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7 = 'abcdefg'
+ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8 = 'abcdefgh'
 ENTRY_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (SC1, u'Несколько лексем одного рода'),
@@ -428,6 +428,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
     (SC4, u'2 лексемы, жен. и только мн.'),
     (SC5, u'2 лексемы, только мн. и жен.'),
     (SC6, u'3 лексемы, 3 муж. и последний неизм.'),
+    (SC8, u'4 лексемы [вихрь]'),
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
 MSC11, MSC12, MSC13 = 'klm'
@@ -848,10 +849,10 @@ class Entry(models.Model):
                 UNINFL = u'неизм.'
                 HIDDEN_GRAM = u''
 
-                words = re.split(RE_COMMA, self.genitive)
+                wordforms = re.split(RE_COMMA, self.genitive)
                 sc = self.special_case
                 if SC1 == sc:
-                    grammatical_marks = [''] * (len(words) - 1)
+                    grammatical_marks = [HIDDEN_GRAM] * (len(wordforms) - 1)
                     grammatical_marks += [self.get_gender_display()]
                 elif SC2 == sc:
                     grammatical_marks = [M_GENDER, F_GENDER]
@@ -866,12 +867,16 @@ class Entry(models.Model):
                         HIDDEN_GRAM,
                         M_GENDER,
                         u'%s %s' % (M_GENDER, UNINFL)]
-                    words += ['']
+                    wordforms += ['']
                 elif SC7 == sc:
                     grammatical_marks = [F_GENDER, N_GENDER]
+                elif SC8 == sc:
+                    grammatical_marks = [HIDDEN_GRAM] * 3
+                    grammatical_marks += [self.get_gender_display()]
+                    wordforms = [u'', wordforms[0], u'', wordforms[1]]
 
-                value = [(word, ucs_convert(word), grammatical_marks[i])
-                         for i, word in enumerate(words)]
+                value = [(wordform, ucs_convert(wordform), grammatical_marks[i])
+                         for i, wordform in enumerate(wordforms)]
                 return value
         elif case == 'be' and self.civil_equivalent == u'быти':
             return [ucs_convert(x) for x in (u"нѣ'смь", u"нѣ'си")]
