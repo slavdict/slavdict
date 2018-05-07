@@ -1699,16 +1699,7 @@ class Example(models.Model):
             'status': self.greek_eq_status,
             'audited': self.audited_time and self.audited,
             'comment': self.additional_info,
-            'greqs': [
-                {
-                    'unitext': greq.unitext,
-                    'initial_form': greq.initial_form,
-                    'aliud': greq.aliud,
-                    'id': greq.id,
-                    'additional_info': greq.additional_info
-                }
-                for greq in self.greek_equivs
-            ]
+            'greqs': [greq.forJSON() for greq in self.greek_equivs],
         }
         return data
 
