@@ -109,7 +109,7 @@ class FilterExamplesForm(forms.Form):
     hwStatus = forms.ChoiceField(choices=GREQSTATUS_CHOICES,
             label=u'Статус греч. парал.')
     hwAllExamples = forms.BooleanField(
-            label=u'Отображать примеры из не законченных статей',
+            label=u'Отображать примеры из незаконченных статей',
             required=False)
     default_data = {
         'hwAddress': u'',
