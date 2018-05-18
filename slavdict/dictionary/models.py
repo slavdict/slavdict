@@ -1503,6 +1503,7 @@ class Example(models.Model):
 
     example = TextField(u'пример')
     ts_example = TextField(default=u'')
+    translation = TextField(u'Перевод', blank=True, default=u'')
 
     @property
     def example_ucs(self):
@@ -1680,6 +1681,7 @@ class Example(models.Model):
             'meaning_id',
             'note',
             'order',
+            'translation',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['greqs'] = [ge.forJSON() for ge in self.greek_equivs]

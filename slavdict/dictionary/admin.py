@@ -324,8 +324,10 @@ funcTemp.short_description = u'Лексема / Словосоч.'
 Example.entry_for_example = funcTemp
 
 EXAMPLE_FIELDSETS = (
-        (None, {'fields': (('example', 'context'), 'address_text', 'greek_eq_status')}),
-        (u'Примечание к примеру', {'fields': ('additional_info', 'note'), 'classes': ('collapse',)}),
+        (None, {'fields': (('example', 'context'), 'address_text',
+                           'greek_eq_status', 'translation')}),
+        (u'Примечание к примеру', {'fields': ('additional_info', 'note'),
+                                   'classes': ('collapse',)}),
     )
 
 class Example_Inline(admin.StackedInline):
