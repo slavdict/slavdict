@@ -21,6 +21,7 @@ from slavdict.dictionary.models import Meaning
 from slavdict.dictionary.models import MeaningContext
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import Participle
+from slavdict.dictionary.models import Translation
 
 admin.site.login_template = ui.login_template
 
@@ -311,6 +312,20 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
 
 
 
+class Translation_Inline(admin.StackedInline):
+    model = Translation
+    extra = 0
+    fieldsets = (
+        (None, {
+            'fields': (
+                ('translation', 'additional_info'),
+                ('hidden', 'position', 'order'),
+                ),
+            }),
+        )
+
+
+
 
 
 funcTemp = lambda self: meaning_for_example(self)
@@ -325,7 +340,7 @@ Example.entry_for_example = funcTemp
 
 EXAMPLE_FIELDSETS = (
         (None, {'fields': (('example', 'context'), 'address_text',
-                           'greek_eq_status', 'translation')}),
+                           'greek_eq_status')}),
         (u'Примечание к примеру', {'fields': ('additional_info', 'note'),
                                    'classes': ('collapse',)}),
     )
@@ -337,7 +352,7 @@ class Example_Inline(admin.StackedInline):
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
 
 class AdminExample(admin.ModelAdmin):
-    inlines = (GreekEquivalentForExample_Inline,)
+    inlines = (Translation_Inline, GreekEquivalentForExample_Inline)
     raw_id_fields = ('meaning',)
     fieldsets = ((None, {'fields': ('meaning',), 'classes': ('hidden',)}),) + EXAMPLE_FIELDSETS
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }

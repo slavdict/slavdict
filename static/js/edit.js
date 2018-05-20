@@ -4,9 +4,20 @@ try {
 var topic = 'entry_change',
     otStyle = 'slavdictOpentip',
     constructors = [Etymology, Participle, Orthvar,
-                    Collocation, Context, Greq,
+                    Collocation, Context, Greq, Translation,
                     Example, Collogroup, Meaning,
-                    Entry];
+                    Entry],
+
+    // Порядок -- номер следования в массиве однородных объектов, например,
+    // примера в группе примеров. Позиция -- номер слова, после которого
+    // ставится греч. параллель или [частичный] перевод. По умолчанию порядок
+    // и позиция делаются достаточно большими, чтобы вновь добавленный
+    // элемент оставался в конце списка, если все другие элементы будут
+    // иметь нумерацию последовательно от единицы. Практически это нужно
+    // для того, чтобы новые элементы добавлялись в конец, а не зависали
+    // в начале списка.
+    defaultOrder = 345,
+    defaultPosition = 345;
 
 Opentip.styles[otStyle] = { target: true, showOn: null, hideOn: 'click',
     tipJoint: 'bottom center', removeElementsOnHide: true,
@@ -16,7 +27,7 @@ Opentip.styles[otStyle] = { target: true, showOn: null, hideOn: 'click',
 constructors.nameMap = {'Etymology': Etymology, 'Participle': Participle,
     'Orthvar': Orthvar, 'Collocation': Collocation, 'Context': Context,
     'Greq': Greq, 'Example': Example, 'Collogroup': Collogroup,
-    'Meaning': Meaning, 'Entry': Entry};
+    'Meaning': Meaning, 'Entry': Entry, 'Translation': Translation};
 
 // Функция создающая датчики, оповещающие о том, что словарная статья
 // изменилась.
@@ -182,7 +193,7 @@ function Etymology() {
     upsert(this, 'language', data, 'a' /* греческий */);
     upsert(this, 'mark', data, '');
     upsert(this, 'meaning', data, '');
-    upsert(this, 'order', data, 345);
+    upsert(this, 'order', data, defaultOrder);
     upsert(this, 'questionable', data, false);
     upsert(this, 'source', data, '');
     upsert(this, 'text', data, '');
@@ -206,7 +217,7 @@ function Participle() {
 
     upsert(this, 'idem', data, '');
     upsert(this, 'tp', data, '');
-    upsert(this, 'order', data, 345);
+    upsert(this, 'order', data, defaultOrder);
     upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'id', data, 'participle' + Participle.all.length);
     Participle.all.append(this);
@@ -223,7 +234,7 @@ function Orthvar() {
     else data = arguments[0];
 
     upsert(this, 'idem', data, '');
-    upsert(this, 'order', data, 345);
+    upsert(this, 'order', data, defaultOrder);
     upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'id', data, 'orthvar' + Orthvar.all.length);
     upsert(this, 'questionable', data, false);
@@ -261,7 +272,7 @@ function Collocation() {
     upsert(this, 'collocation', data, '');
     upsert(this, 'collogroup_id', data, collogroup_id);
     upsert(this, 'id', data, 'collocation' + Collocation.all.length);
-    upsert(this, 'order', data, 345);
+    upsert(this, 'order', data, defaultOrder);
     Collocation.all.append(this);
 }
 
@@ -279,7 +290,7 @@ function Context() {
     upsert(this, 'id', data, 'context' + Context.all.length);
     upsert(this, 'left_text', data, '');
     upsert(this, 'meaning_id', data, meaning_id);
-    upsert(this, 'order', data, 345);
+    upsert(this, 'order', data, defaultOrder);
     upsert(this, 'right_text', data, '');
     Context.all.append(this);
 }
@@ -301,11 +312,31 @@ function Greq() {
     upsert(this, 'initial_form', data, '');
     upsert(this, 'mark', data, '');
     upsert(this, 'note', data, '');
-    upsert(this, 'position', data, 0);
+    upsert(this, 'position', data, defaultPosition);
     upsert(this, 'source', data, '');
     upsert(this, 'unitext', data, '');
-    upsert(this, 'order', data, 345);
+    upsert(this, 'order', data, defaultOrder);
     Greq.all.append(this);
+}
+
+function Translation() {
+    /* Translation(example)
+     * Translation(data)
+     */
+    var data = {},
+        example_id = null;
+
+    if (arguments[0] instanceof Example) example_id = arguments[0].id();
+    else data = arguments[0];
+
+    upsert(this, 'additional_info', data, '');
+    upsert(this, 'for_example_id', data, example_id);
+    upsert(this, 'id', data, 'greq' + Translation.all.length);
+    upsert(this, 'hidden', data, true);
+    upsert(this, 'translation', data, '');
+    upsert(this, 'position', data, defaultPosition);
+    upsert(this, 'order', data, defaultOrder);
+    Translation.all.append(this);
 }
 
 function Example() {
@@ -333,15 +364,15 @@ function Example() {
     upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'example', data, '');
     upsert(this, 'context', data, '');
-    upsert(this, 'translation', data, '');
     upsert(this, 'greek_eq_status', data, 'L');  // NOTE: По умолчанию ставить
                   // статус 'L' -- "необходимо найти греческие параллели".
     upsertArray(this, 'greqs', Greq, data);
+    upsertArray(this, 'translations', Translation, data);
     upsert(this, 'hidden', data, false);
     upsert(this, 'id', data, 'example' + Example.all.length);
     upsert(this, 'meaning_id', data, meaning_id);
     upsert(this, 'note', data, '');
-    upsert(this, 'order', data, 345);
+    upsert(this, 'order', data, defaultOrder);
 
     this.context.isVisible || (this.context.isVisible = ko.observable(false));
     Example.all.append(this);
@@ -368,7 +399,7 @@ function Collogroup() {
     upsert(this, 'base_entry_id', data, entry_id);
     upsert(this, 'base_meaning_id', data, meaning_id);
     upsert(this, 'id', data, 'collogroup' + Collogroup.all.length);
-    upsert(this, 'order', data, 345);
+    upsert(this, 'order', data, defaultOrder);
     upsertArray(this, 'meanings', Meaning, data);
     upsertArray(this, 'unsorted_examples', Example, data);
     upsertArray(this, 'etymologies', Etymology, data);
@@ -424,7 +455,7 @@ function Meaning() {
     upsert(this, 'collogroup_container_id', data, collogroup_id);
     upsert(this, 'parent_meaning_id', data, meaning_id);
     upsert(this, 'id', data, 'meaning' + Meaning.all.length);
-    upsert(this, 'order', data, 345);
+    upsert(this, 'order', data, defaultOrder);
     upsertArray(this, 'collogroups', Collogroup, data);
     upsertArray(this, 'meanings', Meaning, data);
     upsertArray(this, 'examples', Example, data);
@@ -688,6 +719,7 @@ function etymologiesGuarantor(object, attrname) {
     Context.guarantor = orderGuarantor;
     Collocation.guarantor = orderGuarantor;
     Greq.guarantor = orderGuarantor;
+    Translation.guarantor = orderGuarantor;
     Participle.guarantor = orderGuarantor;
     Orthvar.guarantor = orderGuarantor;
 

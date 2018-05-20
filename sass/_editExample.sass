@@ -25,7 +25,6 @@ nav
 #eE--address
     +column(10)
     margin-bottom: 1em
-    clear: all
 
     label,
     textarea
@@ -43,6 +42,13 @@ nav
     +column(10)
     margin-top: 1.6em
 
+    .CSLSegment,
+    .Text,
+    .Em
+        font-size: 1.5em
+        line-height: 1.7em
+
+
 #eE--address
     margin-top: 2em
     +push(0)
@@ -50,6 +56,8 @@ nav
 .eE--status
     margin-top: 2em
     +column(10)
+    float: none
+    clear: both
 
     & > label
         +column(10, true)
@@ -74,3 +82,15 @@ nav
                 @include border-radius(5px)
                 background-color: rgb(252, 243, 208)
                 color: sienna
+
+.eE--translation
+    +column(6)
+    margin-bottom: 1em
+
+    label,
+    textarea
+        +column(6, true)
+        +box-sizing(border-box)
+    textarea
+        height: 5em
+        padding: 0 0.5em

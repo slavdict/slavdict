@@ -8,7 +8,7 @@
             <textarea data-bind="textInput: example"></textarea>
         </div>
 
-        <div class="eE--exampleWax" data-bind="wax: example"></div>
+        <div class="eE--exampleWax" data-bind="exampleWithTranslation: example"></div>
     </div>
 
     <div id="eE--address">
@@ -44,10 +44,8 @@
         {% endfor %}</div>
     </div>
 
-    <div class="eE--example" style="margin-top: 2em"><div>
-        <label>Перевод</label>
-        <textarea data-bind="textInput: translation"></textarea>
-    </div></div>
+    <div style="clear: both; margin-top: 24em"
+        data-bind="template: { name: 'translations', data: $data }"></div>
 
 </div>
 </section>

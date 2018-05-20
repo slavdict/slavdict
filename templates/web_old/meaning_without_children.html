@@ -55,39 +55,8 @@
     <span class="eM--meaning">{{ m.meaning|cslav_injection }}</span>
 {% endif %}
 
-{% if m.greek_equivs %}
-
-    {% if m.meaning %}
-        {{ backspace }},{{ space }}
-    {% endif %}
-
-    <i>греч.</i>&nbsp;
-
-    {% for ge in m.greek_equivs %}
-
-        <span class="unigrec">
-            {{ ge.unitext }}
-        </span>
-        {{ space }}
-
-        {% if ge.mark %}
-            (<i>{{ ge.mark }}</i>)
-            {{ space }}
-        {% endif %}
-
-        {% if not loop.last %}
-            {% if show_additional_info and ge.additional_info %}
-                {{ space }}
-                <span class="ai ai-grfmnng">{{ ge.additional_info }}</span>
-            {% endif %}
-            {{ backspace }},{{ space }}
-        {% endif %}
-
-    {% endfor %}
-{% endif %}
-
 {% if m.gloss %}
-    {% if m.meaning or m.greek_equivs %}
+    {% if m.meaning %}
         {{ backspace }};{{ space }}
     {% endif %}
     <span class="eM--gloss">{{ m.gloss|cslav_injection }}</span>

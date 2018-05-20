@@ -470,7 +470,17 @@ class WithoutHiddenManager(models.Manager):
         return super(WithoutHiddenManager,
                      self).get_queryset().filter(hidden=False)
 
-class Entry(models.Model):
+class JSONSerializable(object):
+
+    def forJSON(self):
+        raise NotImplementedError
+
+    def toJSON(self):
+        return json.dumps(self.forJSON(),
+                          ensure_ascii=False, separators=(',',':'))
+
+
+class Entry(models.Model, JSONSerializable):
 
     civil_equivalent = CharField(u'гражд. написание', max_length=50)
     civil_inverse = CharField(u'гражд. инв.', max_length=50)
@@ -981,9 +991,6 @@ class Entry(models.Model):
                 for e in self.example_set.filter(meaning__isnull=True)]
         return dct
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
     @property
     def host_entry(self):
         return self
@@ -999,7 +1006,7 @@ class Entry(models.Model):
         ordering = ('-id',)
 
 
-class Etymology(models.Model):
+class Etymology(models.Model, JSONSerializable):
 
     entry = ForeignKey(Entry, verbose_name=u'словарная статья',
                 help_text=u'''Словарная статья, к которой относится данная
@@ -1074,12 +1081,16 @@ class Etymology(models.Model):
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(Etymology, self).save(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Etymology, self).delete(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
@@ -1111,17 +1122,13 @@ class Etymology(models.Model):
                 for e in Etymology.objects.filter(etymon_to=self)]
         return dct
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     class Meta:
         verbose_name = u'этимон'
         verbose_name_plural = u'этимология'
         ordering = ('id',)
 
 
-class MeaningContext(models.Model):
+class MeaningContext(models.Model, JSONSerializable):
 
     meaning = ForeignKey('Meaning', verbose_name=u'значение')
     order = SmallIntegerField(u'порядок следования', blank=True, default=345)
@@ -1186,12 +1193,16 @@ class MeaningContext(models.Model):
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(MeaningContext, self).save(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(MeaningContext, self).delete(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
@@ -1212,15 +1223,12 @@ class MeaningContext(models.Model):
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
     class Meta:
         verbose_name = u'контекст значения'
         verbose_name_plural = u'контексты значения'
 
 
-class Meaning(models.Model):
+class Meaning(models.Model, JSONSerializable):
 
     entry_container = ForeignKey(Entry, blank=True, null=True,
             verbose_name=u'лексема', help_text=u'''Лексема, к которой
@@ -1381,10 +1389,6 @@ class Meaning(models.Model):
                    if mc.show_in_dictionary]
 
     @property
-    def greek_equivs(self):
-        return self.greekequivalentformeaning_set.all().order_by('order', 'id')
-
-    @property
     def collogroups(self):
         return self.collocationgroup_set.all().order_by('order', 'id')
 
@@ -1438,12 +1442,16 @@ class Meaning(models.Model):
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(Meaning, self).save(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Meaning, self).delete(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
@@ -1477,17 +1485,13 @@ class Meaning(models.Model):
         dct['examples'] = [e.forJSON() for e in self.examples]
         return dct
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     class Meta:
         verbose_name = u'значение'
         verbose_name_plural = u'ЗНАЧЕНИЯ'
         ordering = ('id',)
 
 
-class Example(models.Model):
+class Example(models.Model, JSONSerializable):
 
     meaning = ForeignKey(Meaning, verbose_name=u'значение',
               help_text=u'Значение, к которому относится данный пример.',
@@ -1503,7 +1507,6 @@ class Example(models.Model):
 
     example = TextField(u'пример')
     ts_example = TextField(default=u'')
-    translation = TextField(u'Перевод', blank=True, default=u'')
 
     @property
     def example_ucs(self):
@@ -1529,7 +1532,11 @@ class Example(models.Model):
 
     @property
     def greek_equivs(self):
-        return self.greekequivalentforexample_set.all().order_by('order', 'id')
+        return self.greq_set.all().order_by('order', 'id')
+
+    @property
+    def translations(self):
+        return self.translation_set.all().order_by('order', 'id')
 
     def greek_equivs_with_numbers(self, show_info=False):
         # Если не надо отображать авторские комментарии, то выводим
@@ -1657,12 +1664,16 @@ class Example(models.Model):
         if host and 'base_meaning_id' in host.__dict__:
             self.collogroup = host
         super(Example, self).save(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Example, self).delete(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
@@ -1681,15 +1692,11 @@ class Example(models.Model):
             'meaning_id',
             'note',
             'order',
-            'translation',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['greqs'] = [ge.forJSON() for ge in self.greek_equivs]
+        dct['translations'] = [ge.forJSON() for ge in self.translations]
         return dct
-
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
 
     def forHellinistJSON(self):
         data = {
@@ -1718,7 +1725,73 @@ class Example(models.Model):
         ordering = ('id',)
 
 
-class CollocationGroup(models.Model):
+class Translation(models.Model, JSONSerializable):
+
+    for_example = ForeignKey(Example, related_name='translation_set')
+    position = SmallIntegerField(u'позиция в примере', blank=True, default=1000,
+            help_text=u'Номер слова, после которого следует поставить перевод.')
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
+    hidden = BooleanField(u'скрывать перевод', default=True,
+            help_text=u'отображать перевод только в комментариях для авторов')
+    translation = TextField(u'перевод')
+    additional_info = TextField(u'примечание', blank=True)
+
+    @property
+    def host_entry(self):
+        try:
+            host_entry = self.for_example.host_entry
+        except:
+            return None
+        else:
+            return host_entry
+
+    @property
+    def host(self):
+        try:
+            host = self.for_example.host
+        except:
+            return None
+        else:
+            return host
+
+    def forJSON(self):
+        data = {
+            'additional_info': self.additional_info,
+            'example_id': self.example_id,
+            'hidden': self.hidden,
+            'id': self.id,
+            'order': self.order,
+            'position': self.position,
+            'translation': self.translation,
+        }
+        return data
+
+    def save(self, without_mtime=False, *args, **kwargs):
+        super(Translation, self).save(*args, **kwargs)
+        if without_mtime:
+            return
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
+
+    def delete(self, without_mtime=False, *args, **kwargs):
+        super(Translation, self).delete(*args, **kwargs)
+        if without_mtime:
+            return
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
+
+    def __unicode__(self):
+        return u'(%s) %s' % (self.position, self.translation)
+
+    class Meta:
+        verbose_name = u'перевод'
+        verbose_name_plural = u'ПЕРЕВОДЫ'
+        ordering = ('id',)
+
+
+class CollocationGroup(models.Model, JSONSerializable):
 
     base_entry = ForeignKey(Entry, verbose_name=u'лексема',
             help_text=u'''Лексема, при которой будет стоять словосочетание.
@@ -1828,12 +1901,16 @@ class CollocationGroup(models.Model):
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(CollocationGroup, self).save(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(CollocationGroup, self).delete(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
@@ -1853,9 +1930,6 @@ class CollocationGroup(models.Model):
                 for e in self.example_set.filter(meaning__isnull=True)]
         return dct
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
     @property
     def civil_equivalent(self):
         return u'; '.join(c.civil_equivalent for c in self.collocations)
@@ -1866,7 +1940,7 @@ class CollocationGroup(models.Model):
         ordering = ('-id',)
 
 
-class Collocation(models.Model):
+class Collocation(models.Model, JSONSerializable):
 
     collogroup = ForeignKey(CollocationGroup,
                             verbose_name=u'группа словосочетаний',
@@ -1916,12 +1990,16 @@ class Collocation(models.Model):
         self.civil_equivalent = civilrus_convert(self.collocation)
         self.civil_inverse = self.civil_equivalent[::-1]
         super(Collocation, self).save(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Collocation, self).delete(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
@@ -1939,19 +2017,15 @@ class Collocation(models.Model):
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     class Meta:
         verbose_name = u'словосочетание'
         verbose_name_plural = u'ОТДЕЛЬНЫЕ СЛОВОСОЧЕТАНИЯ'
         ordering = ('id',)
 
 
-class GreekEquivalentForExample(models.Model):
+class GreekEquivalentForExample(models.Model, JSONSerializable):
 
-    for_example = ForeignKey(Example)
+    for_example = ForeignKey(Example, related_name='greq_set')
     unitext = CharField(u'греч. параллель (Unicode)', max_length=100,
                         blank=True)
 
@@ -1961,9 +2035,8 @@ class GreekEquivalentForExample(models.Model):
                        Септуагинта или, более узко, разные редакции одного
                        текста.''', max_length=40, blank=True)
 
-    position = PositiveIntegerField(u'позиция в примере', help_text=u'''Номер
-                       слова, после которого следует поставить параллель.''',
-                       blank=True, null=True)
+    position = SmallIntegerField(u'позиция в примере', blank=True, default=1000,
+            help_text=u'Номер слова, после которого следует поставить перевод.')
 
     initial_form = CharField(u'начальная форма', max_length=100, blank=True)
 
@@ -2011,6 +2084,8 @@ class GreekEquivalentForExample(models.Model):
                 Example.GREEK_EQ_URGENT):
             example.greek_eq_status = Example.GREEK_EQ_FOUND
             example.save(without_mtime=without_mtime)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
@@ -2021,6 +2096,8 @@ class GreekEquivalentForExample(models.Model):
             example = self.for_example
             example.greek_eq_status = Example.GREEK_EQ_LOOK_FOR
             example.save(without_mtime=without_mtime)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
@@ -2041,17 +2118,13 @@ class GreekEquivalentForExample(models.Model):
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     class Meta:
         verbose_name = u'греческая параллель для примера'
         verbose_name_plural = u'греческие параллели'
         ordering = ('order', 'id')
 
 
-class OrthographicVariant(models.Model):
+class OrthographicVariant(models.Model, JSONSerializable):
 
     # словарная статья, к которой относится данный орф. вариант
     entry = ForeignKey(Entry, related_name='orthographic_variants', blank=True,
@@ -2097,12 +2170,16 @@ class OrthographicVariant(models.Model):
         if self.questionable and not self.reconstructed:
             self.reconstructed = True
         super(OrthographicVariant, self).save(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(OrthographicVariant, self).delete(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
@@ -2122,17 +2199,13 @@ class OrthographicVariant(models.Model):
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
-
     class Meta:
         verbose_name = u'вариант'
         verbose_name_plural = u'варианты'
         ordering = ('order', 'id')
 
 
-class Participle(models.Model):
+class Participle(models.Model, JSONSerializable):
 
     # словарная статья, к которой относится данная словоформа
     entry = ForeignKey(Entry, blank=True, null=True)
@@ -2157,12 +2230,16 @@ class Participle(models.Model):
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(Participle, self).save(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Participle, self).delete(*args, **kwargs)
+        if without_mtime:
+            return
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
@@ -2179,10 +2256,6 @@ class Participle(models.Model):
             'tp',
         )
         return dict((key, self.__dict__[key]) for key in _fields)
-
-    def toJSON(self):
-        return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
 
     class Meta:
         verbose_name = u'причастие'
@@ -2207,7 +2280,8 @@ Models = (
     Meaning,
     MeaningContext,
     OrthographicVariant,
-    Participle
+    Participle,
+    Translation,
 )
 for Model in Models:
     x = get_max_lengths(Model)

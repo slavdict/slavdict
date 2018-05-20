@@ -1,0 +1,41 @@
+<script type="text/html" id="translations">
+<section class="orthvars">
+
+    <ul class="translations" data-bind="sortable: translations">
+        <li>
+
+            <a class="dragItem" data-bind="visible:
+                $parent.translations().length > 1"></a>
+            <a class="deleteItem" data-bind="click:
+                $parent.translations.itemDestroyer($data).do"></a>
+
+            <label>
+                <span>Не отображать в статье</span>
+                <input type="checkbox" data-bind="checked: hidden" />
+            </label>
+
+            <label data-bind="visible: !hidden()" style="margin-left: 2em">
+                <span>Поместить в примере после слова с номером</span>
+                <input type="text" data-bind="value: position" maxlength="3"
+                    style="width: 3em"/>
+            </label>
+
+            <div style="clear: both; position: relative; height: 1em;"></div>
+            <div class="eE--translation">
+                <label>Перевод</label>
+                <textarea data-bind="textInput: translation"></textarea>
+            </div>
+            <div class="eE--translation">
+                <label>Примечание</label>
+                <textarea data-bind="textInput: additional_info"></textarea>
+            </div>
+
+            <br style="float:none; clear:both">
+        </li>
+    </ul>
+
+    <a class="addItem"
+        data-bind="click: translations.itemAdder($data).do"></a>
+
+</section>
+</script>
