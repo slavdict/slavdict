@@ -47,7 +47,11 @@ snapshotObservable.counter = 0;
 // Вспомогательные для конструкторов-реставраторов функции.
 function upsert(object, attrname, data, defaultValue, observable) {
     // Upsert property ``attrname`` in the ``object``
-    var value = data && data[attrname] || defaultValue;
+    var value = data && data[attrname];  // NOTE: Если следующую строку
+        // добавить к этой в виде ``|| defaultValue``, то вариант будет
+        // неправильно срабатывать в случае булевских значений, если
+        // data[attrname] === false.
+    if (typeof value === 'undefined') value = defaultValue;
     observable = observable || snapshotObservable();
     if (typeof object[attrname] !== 'undefined') {
         if (ko.isSubscribable(object[attrname])) {

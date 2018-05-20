@@ -24,6 +24,7 @@ from slavdict.dictionary.models import MeaningContext
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import Participle
 from slavdict.dictionary.models import PART_OF_SPEECH_MAP
+from slavdict.dictionary.models import Translation
 
 IMT_JSON = 'application/json; charset=utf-8'
 
@@ -203,7 +204,8 @@ def json_entry_save(request):
             'terminals': {'contexts': MeaningContext}},
 
         {'name': 'examples', 'model': Example,
-            'terminals': {'greqs': GreekEquivalentForExample}},
+            'terminals': {'greqs': GreekEquivalentForExample,
+                          'translations': Translation}},
 
     )
     process_json_model(model, request.POST)

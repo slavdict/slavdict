@@ -1695,7 +1695,7 @@ class Example(models.Model, JSONSerializable):
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['greqs'] = [ge.forJSON() for ge in self.greek_equivs]
-        dct['translations'] = [ge.forJSON() for ge in self.translations]
+        dct['translations'] = [t.forJSON() for t in self.translations]
         return dct
 
     def forHellinistJSON(self):
@@ -1755,16 +1755,16 @@ class Translation(models.Model, JSONSerializable):
             return host
 
     def forJSON(self):
-        data = {
-            'additional_info': self.additional_info,
-            'example_id': self.example_id,
-            'hidden': self.hidden,
-            'id': self.id,
-            'order': self.order,
-            'position': self.position,
-            'translation': self.translation,
-        }
-        return data
+        _fields = (
+            'additional_info',
+            'for_example_id',
+            'hidden',
+            'id',
+            'order',
+            'position',
+            'translation',
+        )
+        return dict((key, self.__dict__[key]) for key in _fields)
 
     def save(self, without_mtime=False, *args, **kwargs):
         super(Translation, self).save(*args, **kwargs)
