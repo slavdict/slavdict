@@ -2036,7 +2036,8 @@ class GreekEquivalentForExample(models.Model, JSONSerializable):
                        текста.''', max_length=40, blank=True)
 
     position = SmallIntegerField(u'позиция в примере', blank=True, default=1000,
-            help_text=u'Номер слова, после которого следует поставить перевод.')
+            help_text=u'Номер слова, после которого следует поставить перевод.',
+            null=True)
 
     initial_form = CharField(u'начальная форма', max_length=100, blank=True)
 
