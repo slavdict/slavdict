@@ -279,7 +279,8 @@
                         for (i = 0; i < words.length; i++) {
                             word = words[i];
                             x = word[word.length - 1];
-                            if ([',', ':', '.'].indexOf(x) > -1) {
+                            if ([',', ':', '.'].indexOf(x) > -1 &&
+                            word.slice(word.length - 3, word.length) !== '...') {
                                 punct = x;
                                 word = word.slice(0, word.length-1);
                             } else {
