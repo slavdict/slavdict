@@ -1733,7 +1733,7 @@ class Translation(models.Model, JSONSerializable):
     for_example = ForeignKey(Example, related_name='translation_set')
     fragmented = BooleanField(u'перевод только части примера', default=False)
     fragment_start = SmallIntegerField(u'номер слова начала фрагмента',
-            blank=True, default=1000)
+            blank=True, default=1)
     fragment_end = SmallIntegerField(u'номер слова конца фрагмента',
             blank=True, default=1000)
     order = SmallIntegerField(u'порядок следования', blank=True, default=345)
