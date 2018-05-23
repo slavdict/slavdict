@@ -275,7 +275,7 @@ def indesign_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=Fal
         segments.append(u''.join(parts))
     text = u''.join(segments)
     if for_web:
-        HYPHEN_TAG = u'<span class="Text">\u00AD</span>'
+        #HYPHEN_TAG = u'<span class="Text">\u00AD</span>'
         pass
     else:
         HYPHEN_TAG = u'<h aid:cstyle="Text">\u00AD</h>'

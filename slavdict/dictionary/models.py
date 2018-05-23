@@ -1538,6 +1538,9 @@ class Example(models.Model, JSONSerializable):
     def translations(self):
         return self.translation_set.all().order_by('order', 'id')
 
+    frag_translations = SmallIntegerField(u'кол-во частичных переводов примера',
+            blank=True, default=0)
+
     def greek_equivs_with_numbers(self, show_info=False):
         # Если не надо отображать авторские комментарии, то выводим
         # только реальные греч. параллели с заполненным полем unitext,
@@ -1730,6 +1733,11 @@ class Translation(models.Model, JSONSerializable):
     for_example = ForeignKey(Example, related_name='translation_set')
     position = SmallIntegerField(u'позиция в примере', blank=True, default=1000,
             help_text=u'Номер слова, после которого следует поставить перевод.')
+    fragmented = BooleanField(u'перевод только части примера', default=False)
+    fragment_start = SmallIntegerField(u'номер слова начала фрагмента',
+            blank=True, default=1000)
+    fragment_end = SmallIntegerField(u'номер слова конца фрагмента',
+            blank=True, default=1000)
     order = SmallIntegerField(u'порядок следования', blank=True, default=345)
     hidden = BooleanField(u'скрывать перевод', default=True,
             help_text=u'отображать перевод только в комментариях для авторов')
