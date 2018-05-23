@@ -1731,8 +1731,6 @@ class Example(models.Model, JSONSerializable):
 class Translation(models.Model, JSONSerializable):
 
     for_example = ForeignKey(Example, related_name='translation_set')
-    position = SmallIntegerField(u'позиция в примере', blank=True, default=1000,
-            help_text=u'Номер слова, после которого следует поставить перевод.')
     fragmented = BooleanField(u'перевод только части примера', default=False)
     fragment_start = SmallIntegerField(u'номер слова начала фрагмента',
             blank=True, default=1000)
@@ -1766,10 +1764,12 @@ class Translation(models.Model, JSONSerializable):
         _fields = (
             'additional_info',
             'for_example_id',
+            'fragmented',
+            'fragment_start',
+            'fragment_end',
             'hidden',
             'id',
             'order',
-            'position',
             'translation',
         )
         return dict((key, self.__dict__[key]) for key in _fields)
@@ -1791,7 +1791,11 @@ class Translation(models.Model, JSONSerializable):
             host_entry.save(without_mtime=without_mtime)
 
     def __unicode__(self):
-        return u'(%s) %s' % (self.position, self.translation)
+        if self.fragmented:
+            return u'(%s, %s) %s' % (self.fragment_start, self.fragment_end,
+                                     self.translation)
+        else:
+            return self.translation
 
     class Meta:
         verbose_name = u'перевод'

@@ -338,7 +338,9 @@ function Translation() {
     upsert(this, 'id', data, 'greq' + Translation.all.length);
     upsert(this, 'hidden', data, true);
     upsert(this, 'translation', data, '');
-    upsert(this, 'position', data, defaultPosition);
+    upsert(this, 'fragmented', data, false);
+    upsert(this, 'fragment_start', data, 1);
+    upsert(this, 'fragment_end', data, defaultPosition);
     upsert(this, 'order', data, defaultOrder);
     Translation.all.append(this);
 }

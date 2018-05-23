@@ -256,8 +256,8 @@
                             words = text.split(/\s+/g),
                             i, j, t, punct, word, x,
                             compare = function (a, b) {
-                                var ap = a.position.peep,
-                                    bp = b.position.peep,
+                                var ap = a.fragment_end.peep,
+                                    bp = b.fragment_end.peep,
                                     ao = a.order.peep,
                                     bo = b.order.peep,
                                     ai = a.id.peep,
@@ -293,8 +293,8 @@
                             t = translations[i];
                             if (!t.hidden() &&
                                         t.translation().replace(/\s+/g, '')) {
-                                if (t.position() < words.length + 1) {
-                                    words[t.position() - 1].translations.push(t)
+                                if (t.fragment_end() < words.length + 1) {
+                                    words[t.fragment_end() - 1].translations.push(t)
                                 } else {
                                     words[words.length - 1].translations.push(t)
                                 }
