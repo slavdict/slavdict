@@ -14,11 +14,26 @@
                 <input type="checkbox" data-bind="checked: hidden" />
             </label>
 
-            <label data-bind="visible: !hidden()" style="margin-left: 2em">
-                <span>Поместить в примере после слова с номером</span>
-                <input type="text" data-bind="value: fragment_end" maxlength="3"
-                    style="width: 3em"/>
+            <label>
+                <span>Перевод только фрагмента примера</span>
+                <input type="checkbox" data-bind="checked: fragmented" />
             </label>
+
+            <div style="clear: both" data-bind="visible: fragmented">
+
+                <label>
+                    <span>Номер слова в начале фрагмента</span>
+                    <input type="text" data-bind="value: fragment_start"
+                        maxlength="3" style="width: 3em"/>
+                </label>
+
+                <label style="margin-left: 2em">
+                    <span>Номер слова в конце фрагмента</span>
+                    <input type="text" data-bind="value: fragment_end"
+                        maxlength="3" style="width: 3em"/>
+                </label>
+
+            </div>
 
             <div style="clear: both; position: relative; height: 1em;"></div>
             <div class="eE--translation">
