@@ -1538,9 +1538,6 @@ class Example(models.Model, JSONSerializable):
     def translations(self):
         return self.translation_set.all().order_by('order', 'id')
 
-    frag_translations = SmallIntegerField(u'кол-во частичных переводов примера',
-            blank=True, default=0)
-
     def greek_equivs_with_numbers(self, show_info=False):
         # Если не надо отображать авторские комментарии, то выводим
         # только реальные греч. параллели с заполненным полем unitext,

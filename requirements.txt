@@ -1,7 +1,6 @@
 Django>=1.11,<1.12
 psycopg2>=2.7
 Jinja2>=2.10
-simplediff>=1.0
 
 # HIP2Unicode
 git+https://github.com/while0pass/hip2unicode.git#egg=HIP2Unicode
