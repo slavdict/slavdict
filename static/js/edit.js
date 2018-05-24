@@ -342,6 +342,20 @@ function Translation() {
     upsert(this, 'fragment_start', data, 1);
     upsert(this, 'fragment_end', data, defaultPosition);
     upsert(this, 'order', data, defaultOrder);
+    ko.computed(function () {
+        var ex = Example.all.idMap[this.for_example_id()],
+            n = ex.numberOfWords();
+        if (this.fragment_end() > n) {
+            this.fragment_end(n);
+        }
+        if (this.fragment_start() > n) {
+            this.fragment_start(n);
+        }
+    }, this);
+    this.fragment = ko.computed(function () {
+        var ex = Example.all.idMap[this.for_example_id()];
+        return ex.getFragment(this.fragment_start(), this.fragment_end());
+    }, this);
     Translation.all.append(this);
 }
 
@@ -381,8 +395,58 @@ function Example() {
     upsert(this, 'order', data, defaultOrder);
 
     this.context.isVisible || (this.context.isVisible = ko.observable(false));
+    this.ucs = ko.computed(function () {
+        var isAffix = false,
+            text = ac2ucs8(this.example(), isAffix);
+        return text
+    }, this);
+    this.words = ko.computed(function () {
+        var text = this.ucs(),
+            words = text.split(this.UCS8WordSplitRE);
+        if (words[0] === '') {
+            words.splice(0, 1);
+        }
+        if (words[words.length - 1] === '') {
+            words.splice(words.length - 1, 1);
+        }
+        return words;
+    }, this);
+    this.segments = ko.computed(function () {
+        var text = this.ucs(),
+            segments = text.split(this.UCS8SegmentSplitRE);
+        if (segments[0] === '') {
+            segments.splice(0, 2);
+        }
+        if (segments[segments.length - 1] === '') {
+            segments.splice(segments.length - 2, 2);
+        }
+        return segments;
+    }, this);
+    this.numberOfWords = ko.computed(function () {
+        return this.words().length;
+    }, this);
     Example.all.append(this);
 }
+Example.prototype.UCS8WordSplitRE = /[\s\.,:;!\/"'«»“”‘’\[\]\(\)]+/gum;
+Example.prototype.UCS8SegmentSplitRE =
+    RegExp('(' + Example.prototype.UCS8WordSplitRE.source + ')', 'gum');
+/* NOTE: 1. В регулярном выражении разбивки примера на слова нельзя
+   использовать обратный слэш (\\\\), потому что в UCS8 ему соответствует
+   титло. 2. Регулярное выражение без обрамляющих скобок при разбивке даст
+   только слова, а со скобками и слова, и сгруппированные последовательности
+   символов, которые их разделяют, причем во втором случае общее число
+   элементов массива всегда будет нечетным и массив будет и начинаться,
+   и кончаться словом или пустым словом. */
+Example.prototype.getFragment = function (start, end) {
+    var s = 2 * (start - 1),
+        e = 2 * (end - 1),
+        fragment = '',
+        segments = this.segments();
+    if (s >= 0 && e < segments.length) {
+        fragment = segments.slice(s, e + 1).join('');
+    }
+    return fragment;
+};
 
 function Collogroup() {
     /* Collogroup(container)

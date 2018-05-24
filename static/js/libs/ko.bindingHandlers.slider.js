@@ -1,32 +1,24 @@
 ﻿ko.bindingHandlers.slider = {
-    init: function (element, valueAccessor, allBindingsAccessor) {
-        var sliderOptions = allBindingsAccessor().sliderOptions || {};
-
-        // Merge sliderOptions with bound value of the element - value has priority
-        var options = ko.unwrap(valueAccessor());
-
-        if (typeof (ko.unwrap(options.min)) != 'undefined') {
-            sliderOptions.min = ko.unwrap(options.min);
-        }
-
-        if (typeof (ko.unwrap(options.max)) != 'undefined') {
-            sliderOptions.max = ko.unwrap(options.max);
-        }
-
-        if (typeof (ko.unwrap(options.step)) != 'undefined') {
-            sliderOptions.step = ko.unwrap(options.step);
-        }
-
-        if (typeof (ko.unwrap(options.enabled)) != 'undefined') {
-            sliderOptions.disabled = (!ko.unwrap(options.enabled));
-        }
+    init: function (element, valueAccessor, allBindingsAccessor, viewModel,
+                    bindingContext) {
+        var sliderOptions = allBindingsAccessor().jQueryUISliderOptions || {},
+            options = ko.unwrap(valueAccessor());
 
         $(element).slider(sliderOptions);
 
-        var slideHandler = function (event, ui, isCompleted) {
-            var options = ko.unwrap(valueAccessor()); // TODO: rename options
+        for (var prop of Object.keys(sliderOptions)) {
+            if (ko.isObservable(sliderOptions[prop])) {
+                (function (prop) {
+                    ko.computed(function () {
+                        $(element).slider('option', prop, sliderOptions[prop]());
+                    });
+                })(prop);
+            }
+        }
 
-            var lazy = false;
+        var slideHandler = function (event, ui, isCompleted) {
+            var options = ko.unwrap(valueAccessor()),
+                lazy = false;
             if (typeof (ko.unwrap(options.lazy)) != 'undefined') {
                 lazy = (ko.unwrap(options.lazy) === true);
             }
@@ -61,15 +53,18 @@
         };
 
         // change
-        // Triggered after the user slides a handle, if the value has changed; or if the value is changed programmatically via the value method.
+        // Triggered after the user slides a handle, if the value has changed;
+        // or if the value is changed programmatically via the value method.
         ko.utils.registerEventHandler(element, 'slidechange', function (event, ui) {
             slideHandler(event, ui, false);
         });
 
         // slide
         // Triggered on every mouse move during slide. 
-        // The value provided in the event as ui.value represents the value that the handle will have as a result of the current movement.
-        // Canceling the event will prevent the handle from moving and the handle will continue to have its previous value.
+        // The value provided in the event as ui.value represents the value
+        // that the handle will have as a result of the current movement.
+        // Canceling the event will prevent the handle from moving and the
+        // handle will continue to have its previous value.
         ko.utils.registerEventHandler(element, 'slide', function (event, ui) {
             slideHandler(event, ui, false);
         });
@@ -86,26 +81,6 @@
     },
     update: function (element, valueAccessor) {
         var options = ko.unwrap(valueAccessor());
-
-        if (typeof (ko.unwrap(options.min)) != 'undefined') {
-            $(element).slider('option', 'min', ko.unwrap(options.min));
-        }
-
-        if (typeof (ko.unwrap(options.max)) != 'undefined') {
-            $(element).slider('option', 'max', ko.unwrap(options.max));
-        }
-
-        if (typeof (ko.unwrap(options.step)) != 'undefined') {
-            $(element).slider('option', 'step', ko.unwrap(options.step));
-        }
-
-        if (typeof (ko.unwrap(options.enabled)) != 'undefined') {
-            $(element).slider('option', 'disabled', (!ko.unwrap(options.enabled)));
-        }
-
-        if (typeof (ko.unwrap(options.values)) != 'undefined') {
-            $(element).slider('option', 'values', ko.unwrap(options.values));
-        }
 
         if ((typeof (ko.unwrap(options.valueMin)) != 'undefined') &&
             (typeof (ko.unwrap(options.valueMax)) != 'undefined')) {

@@ -253,23 +253,14 @@
                     cslavCSS = allBindingsAccessor().cslavCSS || 'CSLSegment',
                     translationCSS = allBindingsAccessor().translationCSS || 'Text';
                 value.eWT = ko.computed(function () {
-                        var example = value(),
-                            translations = bindingContext.$data.translations(),
+                        var data = bindingContext.$data,
+                            example = value(),
+                            translations = data.translations(),
                             nonFragmentedTranslations = [],
                             isAffix = false,
                             text = ac2ucs8(example, isAffix),
-                            segments = text.split(
-                                /([\s\.,:;!\/"'«»“”‘’\[\]\(\)]+)/g),
-
-/* NOTE: 1. В регулярном выражении разбивки примера на слова нельзя
-   использовать обратный слэш (\\), потому что в UCS8 ему соответствует титло.
-   2. Из рег.  выражения нельзя убрать обрамляющие скобки, без них в списке
-   будут только слова, а с ними и слова, и сгруппированные последовательности
-   символов, которые их разделяют, причем общее число элементов массива всегда
-   будет нечетным и начинаться и кончаться словом или пустым словом. */
-
-                            words = [],
-                            i, j, t, midword, word, x,
+                            segments = text.split(data.UCS8SegmentSplitRE),
+                            words = [], i, j, t, midword, word, x,
                             x1css, x2css, fs, fe,
                             compare = function (a, b) {
                                 var af = a.fragmented.peep,
@@ -330,12 +321,8 @@
                                 }
                                 if (fs < words.length + 1 && fs <= fe) {
                                     for (j = 0; j < fe - fs + 1; j++) {
-                                        console.log('pre', x, fs, j);
                                         x = fs + j - 1;
-                                        console.log('post', x, fs, j);
-                                        console.log(fs, fe, fe - fs + 1, j, x);
                                         if (x >= 0 && x <= fe) {
-                                            console.log(words[x]);
                                             words[x].withinFragment = true;
                                         }
                                     }

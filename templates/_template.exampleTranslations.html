@@ -22,11 +22,15 @@
             <div style="clear: both; margin-top: 1em;"
                 data-bind="visible: fragmented">
 
-                <label>Выбрать фрагмент</label>
+                <div style="width: 90%">
+                    <span style="padding-right: 1em">Фрагмент:</span>
+                    <span class="CSLSegment" data-bind="text: fragment"
+                        style="font-size: 1.25em"></span>
+                </div>
                 <div data-bind="slider: { valueMin: fragment_start,
-                    valueMax: fragment_end }, sliderOptions: {
-                    min: 1, max: 40, step: 1, range: true }"
-                    style="width: 85%"></div>
+                    valueMax: fragment_end }, jQueryUISliderOptions: {
+                    min: 1, max: $parent.numberOfWords, step: 1, range: true }"
+                    style="width: 90%; margin-top: 1em"></div>
 
             </div>
 
