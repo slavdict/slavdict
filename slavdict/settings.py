@@ -172,9 +172,11 @@ JSLIBS = {
         'map': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.map',
     },
     'jqueryUi': {
-      'debug': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.js',
+      'debug': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js',
         'min': '//cdnjs.cloudflare.com/ajax/libs/'
-               'jqueryui/1.10.4/jquery-ui.min.js',
+               'jqueryui/1.12.1/jquery-ui.min.js',
+        'css': '//cdnjs.cloudflare.com/ajax/libs/'
+               'jqueryui/1.12.1/jquery-ui.min.css',
     },
     'knockout': {
         'debug': 'http://knockoutjs.com/downloads/knockout-3.2.0.debug.js',

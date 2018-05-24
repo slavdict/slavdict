@@ -14,24 +14,19 @@
                 <input type="checkbox" data-bind="checked: hidden" />
             </label>
 
-            <label>
-                <span>Перевод только фрагмента примера</span>
+            <label style="margin-left: 3em">
+                <span>Перевод не всего примера, а только части</span>
                 <input type="checkbox" data-bind="checked: fragmented" />
             </label>
 
-            <div style="clear: both" data-bind="visible: fragmented">
+            <div style="clear: both; margin-top: 1em;"
+                data-bind="visible: fragmented">
 
-                <label>
-                    <span>Номер слова в начале фрагмента</span>
-                    <input type="text" data-bind="value: fragment_start"
-                        maxlength="3" style="width: 3em"/>
-                </label>
-
-                <label style="margin-left: 2em">
-                    <span>Номер слова в конце фрагмента</span>
-                    <input type="text" data-bind="value: fragment_end"
-                        maxlength="3" style="width: 3em"/>
-                </label>
+                <label>Выбрать фрагмент</label>
+                <div data-bind="slider: { valueMin: fragment_start,
+                    valueMax: fragment_end }, sliderOptions: {
+                    min: 1, max: 40, step: 1, range: true }"
+                    style="width: 85%"></div>
 
             </div>
 

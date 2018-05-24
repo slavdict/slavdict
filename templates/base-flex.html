@@ -5,6 +5,8 @@
         <title>{{ title }}</title>
         <link href="{{ STATIC_URL }}{% block css %}flex.css?{{ STATIC_RESOURCES_VERSION }}{% endblock %}"
             rel="stylesheet" type="text/css">
+        <link href="{{ JSLIBS['jqueryUi']['cssLocal'] }}" rel="stylesheet"
+            type="text/css">
     </head>
     <body>
         <noscript>Для правильной работы данной лексикографической
