@@ -358,6 +358,7 @@ function Translation() {
     }, this);
     Translation.all.append(this);
 }
+Translation.hideFromServer = ['fragment'];
 
 function Example() {
     /* Example(meaning, entry[, collogroup])
@@ -427,6 +428,7 @@ function Example() {
     }, this);
     Example.all.append(this);
 }
+Example.hideFromServer = ['ucs', 'words', 'segments', 'numberOfWords'];
 Example.prototype.UCS8WordSplitRE = /[\s\.,:;!\/"'«»“”‘’\[\]\(\)]+/gum;
 Example.prototype.UCS8SegmentSplitRE =
     RegExp('(' + Example.prototype.UCS8WordSplitRE.source + ')', 'gum');
