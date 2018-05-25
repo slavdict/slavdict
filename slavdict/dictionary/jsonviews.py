@@ -9,6 +9,7 @@ from django.core import mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.db.models.fields import Field
 from django.http import HttpResponse
 
 from slavdict.dictionary import viewmodels
@@ -265,10 +266,18 @@ def process_json_model(json_model, post):
                         items_and_models.append((subitem, model))
                     del item[prop]
 
+    model_field_names = {}
+    invalid_keys_notifications = []
     items_to_process = len(items_and_models)
     while items_to_process:
         PREVIOUS_VALUE = items_to_process
         for item, ItemModel in items_and_models:
+            if ItemModel.__name__ not in model_field_names:
+                model_field_names[ItemModel.__name__] = [
+                        f.attname for f in ItemModel._meta.get_fields()
+                        if isinstance(f, Field)]
+            valid_field_names = model_field_names[ItemModel.__name__]
+
             if '#status#' in item:
                 if item['#status#'] == 'good':
                     continue
@@ -302,6 +311,11 @@ def process_json_model(json_model, post):
 
             del item['#status#']
             del item['id']
+            for key in item.keys():
+                if key not in valid_field_names:
+                    del item[key]
+                    invalid_keys_notifications.append(
+                            '%s.%s' % (ItemModel.__name__, key))
             if in_db:
                 existent_item = ItemModel.objects.get(pk=item_id)
                 if to_be_destroyed:
@@ -337,3 +351,12 @@ def process_json_model(json_model, post):
                 pass
             else:
                 item.delete()
+
+    if invalid_keys_notifications:
+        from django.core.mail import mail_admins
+        subject = u'[slavdict] JSON моделей содержит отсутствующие поля'
+        message = u'''
+При сохранении статей в JSON-данных содержались
+следующие лишние поля, которых нет в соответствующих
+моделях: ''' u', '.join(invalid_keys_notifications)
+        mail_admins(subject, message, fail_silently=True)
