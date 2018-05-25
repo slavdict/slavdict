@@ -24,12 +24,12 @@
 
                 <div style="width: 90%">
                     <span style="padding-right: 1em">Фрагмент:</span>
-                    <span class="CSLSegment" data-bind="text: fragment"
+                    <span class="CSLSegment" data-bind="text: fragmented.fragment"
                         style="font-size: 1.25em"></span>
                 </div>
                 <div data-bind="slider: { valueMin: fragment_start,
-                    valueMax: fragment_end }, jQueryUISliderOptions: {
-                    min: 1, max: $parent.numberOfWords, step: 1, range: true }"
+                    valueMax: fragment_end }, jQueryUISliderOptions: { min: 1,
+                    max: $parent.example.numberOfWords, step: 1, range: true }"
                     style="width: 90%; margin-top: 1em"></div>
 
             </div>

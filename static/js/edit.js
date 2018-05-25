@@ -344,21 +344,22 @@ function Translation() {
     upsert(this, 'order', data, defaultOrder);
     ko.computed(function () {
         var ex = Example.all.idMap[this.for_example_id()],
-            n = ex.numberOfWords();
+            n = ex.example.numberOfWords();
         if (this.fragment_end() > n) {
             this.fragment_end(n);
         }
         if (this.fragment_start() > n) {
             this.fragment_start(n);
         }
-    }, this);
-    this.fragment = ko.computed(function () {
-        var ex = Example.all.idMap[this.for_example_id()];
-        return ex.getFragment(this.fragment_start(), this.fragment_end());
-    }, this);
+    }, this, { deferEvaluation: true });
+    this.fragmented.fragment || (this.fragmented.fragment = ko.computed(
+        function () {
+            var ex = Example.all.idMap[this.for_example_id()];
+            return ex.getFragment(this.fragment_start(), this.fragment_end());
+        }, this, { deferEvaluation: true })
+    );
     Translation.all.append(this);
 }
-Translation.hideFromServer = ['fragment'];
 
 function Example() {
     /* Example(meaning, entry[, collogroup])
@@ -396,13 +397,13 @@ function Example() {
     upsert(this, 'order', data, defaultOrder);
 
     this.context.isVisible || (this.context.isVisible = ko.observable(false));
-    this.ucs = ko.computed(function () {
+    this.example.ucs || (this.example.ucs = ko.computed(function () {
         var isAffix = false,
             text = ac2ucs8(this.example(), isAffix);
         return text
-    }, this);
-    this.words = ko.computed(function () {
-        var text = this.ucs(),
+    }, this));
+    this.example.words || (this.example.words = ko.computed(function () {
+        var text = this.example.ucs(),
             words = text.split(this.UCS8WordSplitRE);
         if (words[0] === '') {
             words.splice(0, 1);
@@ -411,9 +412,9 @@ function Example() {
             words.splice(words.length - 1, 1);
         }
         return words;
-    }, this);
-    this.segments = ko.computed(function () {
-        var text = this.ucs(),
+    }, this));
+    this.example.segments || (this.example.segments = ko.computed(function () {
+        var text = this.example.ucs(),
             segments = text.split(this.UCS8SegmentSplitRE);
         if (segments[0] === '') {
             segments.splice(0, 2);
@@ -422,13 +423,14 @@ function Example() {
             segments.splice(segments.length - 2, 2);
         }
         return segments;
-    }, this);
-    this.numberOfWords = ko.computed(function () {
-        return this.words().length;
-    }, this);
+    }, this));
+    this.example.numberOfWords || (this.example.numberOfWords = ko.computed(
+        function () {
+            return this.example.words().length;
+        }, this)
+    );
     Example.all.append(this);
 }
-Example.hideFromServer = ['ucs', 'words', 'segments', 'numberOfWords'];
 Example.prototype.UCS8WordSplitRE = /[\s\.,:;!\/"'«»“”‘’\[\]\(\)]+/gum;
 Example.prototype.UCS8SegmentSplitRE =
     RegExp('(' + Example.prototype.UCS8WordSplitRE.source + ')', 'gum');
@@ -443,7 +445,7 @@ Example.prototype.getFragment = function (start, end) {
     var s = 2 * (start - 1),
         e = 2 * (end - 1),
         fragment = '',
-        segments = this.segments();
+        segments = this.example.segments();
     if (s >= 0 && e < segments.length) {
         fragment = segments.slice(s, e + 1).join('');
     }
