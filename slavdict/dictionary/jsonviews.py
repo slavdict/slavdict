@@ -267,7 +267,7 @@ def process_json_model(json_model, post):
                     del item[prop]
 
     model_field_names = {}
-    invalid_keys_notifications = []
+    invalid_keys_notifications = set()
     items_to_process = len(items_and_models)
     while items_to_process:
         PREVIOUS_VALUE = items_to_process
@@ -314,7 +314,7 @@ def process_json_model(json_model, post):
             for key in item.keys():
                 if key not in valid_field_names:
                     del item[key]
-                    invalid_keys_notifications.append(
+                    invalid_keys_notifications.add(
                             '%s.%s' % (ItemModel.__name__, key))
             if in_db:
                 existent_item = ItemModel.objects.get(pk=item_id)
