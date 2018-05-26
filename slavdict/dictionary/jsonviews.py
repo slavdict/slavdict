@@ -354,9 +354,10 @@ def process_json_model(json_model, post):
 
     if invalid_keys_notifications:
         from django.core.mail import mail_admins
-        subject = u'[slavdict] JSON моделей содержит отсутствующие поля'
+        subject = u'[slavdict] JSON содержит отсутствующие в моделях поля'
         message = u'''
 При сохранении статей в JSON-данных содержались
 следующие лишние поля, которых нет в соответствующих
-моделях: ''' u', '.join(invalid_keys_notifications)
+моделях: '''
+        message += u', '.join(invalid_keys_notifications)
         mail_admins(subject, message, fail_silently=True)
