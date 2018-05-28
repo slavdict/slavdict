@@ -404,7 +404,7 @@ function Example() {
     }, this));
     this.example.words || (this.example.words = ko.computed(function () {
         var text = this.example.ucs(),
-            words = text.split(this.UCS8WordSplitRE);
+            words = text.split(Example.UCS8WordSplitRE);
         if (words[0] === '') {
             words.splice(0, 1);
         }
@@ -415,7 +415,7 @@ function Example() {
     }, this));
     this.example.segments || (this.example.segments = ko.computed(function () {
         var text = this.example.ucs(),
-            segments = text.split(this.UCS8SegmentSplitRE);
+            segments = text.split(Example.UCS8SegmentSplitRE);
         if (segments[0] === '') {
             segments.splice(0, 2);
         }
@@ -431,9 +431,9 @@ function Example() {
     );
     Example.all.append(this);
 }
-Example.prototype.UCS8WordSplitRE = /[\s\.,:;!\/"'«»“”‘’\[\]\(\)]+/gum;
-Example.prototype.UCS8SegmentSplitRE =
-    RegExp('(' + Example.prototype.UCS8WordSplitRE.source + ')', 'gum');
+Example.UCS8WordSplitRE = /[\s\.,:;!\/"'«»“”‘’\[\]\(\)]+/gum;
+Example.UCS8SegmentSplitRE =
+    RegExp('(' + Example.UCS8WordSplitRE.source + ')', 'gum');
 /* NOTE: 1. В регулярном выражении разбивки примера на слова нельзя
    использовать обратный слэш (\\\\), потому что в UCS8 ему соответствует
    титло. 2. Регулярное выражение без обрамляющих скобок при разбивке даст
