@@ -162,8 +162,7 @@
                             {% for collocation in egcg.collocations %}
                                 {{ semicolon() }}
                                 {{ collocation.collocation_ucs |
-                                      web_civil_injection("Valency", "CSLSegmentEm", "Text") |
-                                      web_good_slash("Text") }}
+                                      web_civil_injection("Valency", "CSLSegmentEm", "Text") }}
                                 {{ space }}
                             {% endfor %}
                             </a>
@@ -186,8 +185,7 @@
                             {% for collocation in exgroup.collogroup.collocations %}
                                 {{ semicolon() }}
                                 {{ collocation.collocation_ucs |
-                                      web_civil_injection("Valency", "CSLSegmentEm", "Text") |
-                                      web_good_slash("Text") }}
+                                      web_civil_injection("Valency", "CSLSegmentEm", "Text") }}
                                 {{ space }}
                             {% endfor %}
                             </a>

@@ -12,8 +12,7 @@
     {% endif %}
     {{ c.collocation_ucs |
             web_civil_injection("Valency", "CSLSegmentEm", "Text") |
-            web_good_slash("Text")
-            }}
+            web_collocation_special_cases }}
     {% if not loop.last %}
         {{ backspace }}<span class="Text">;</span>{{ space }}
     {% endif %}

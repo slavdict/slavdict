@@ -47,26 +47,26 @@
 
         {% if entry.short_form %}
             {% if entry.short_form_ucs_wax.0 %}-{% endif %}
-            {{ entry.short_form_ucs_wax.1|cslav_words }}
+            {{ entry.short_form_ucs_wax.1|old_cslav_words }}
             {{ space }}
         {% endif %}
 
         {% if entry.genitive %}
             {% if entry.genitive_ucs_wax.0 %}-{% endif %}
-            {{ entry.genitive_ucs_wax.1|cslav_words }}
+            {{ entry.genitive_ucs_wax.1|old_cslav_words }}
             {{ space }}
         {% endif %}
 
         {% if entry.sg1 %}
             {% if entry.sg1_ucs_wax.0 %}-{% endif %}
-            {{ entry.sg1_ucs_wax.1|cslav_words }}
+            {{ entry.sg1_ucs_wax.1|old_cslav_words }}
             {% if entry.sg2 %},{%endif %}
             {{ space }}
         {% endif %}
 
         {% if entry.sg2 %}
             {% if entry.sg2_ucs_wax.0 %}-{% endif %}
-            {{ entry.sg2_ucs_wax.1|cslav_words }}
+            {{ entry.sg2_ucs_wax.1|old_cslav_words }}
             {{ space }}
         {% endif %}
 
@@ -122,7 +122,7 @@
                 <i>мн.</i>
                 {{ space }}
                 {% if entry.nom_sg_ucs_wax.0 %}-{%endif %}
-                {{ entry.nom_sg_ucs_wax.1|cslav_words }}
+                {{ entry.nom_sg_ucs_wax.1|old_cslav_words }}
             </div>
     {% endif %}
 
