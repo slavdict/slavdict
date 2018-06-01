@@ -93,11 +93,11 @@
                 <td class="eli-control first"></td>
                 <td class="eli-control"></td>
                 <td class="eli-entry">
-                    <span class="ssn anchor"
-                          data-bind="css: { on: sort() === 'alph' },
-                                   click: doSort.bind($data, 'alph')"
+                    <span class="ssn sortHandle"
+                          data-bind="css: { on: sort() === '+alph' },
+                                   click: doSort.bind($data, '+alph')"
                           title="Упорядочить по возрастанию">↓</span>
-                      <span class="ssn anchor"
+                      <span class="ssn sortHandle"
                           data-bind="css: { on: sort() === '-alph' },
                                    click: doSort.bind($data, '-alph')"
                           title="Упорядочить по убыванию">↑</span>
@@ -106,11 +106,11 @@
                 </td>
                 <td class="eli-author"></td>
                 <td class="eli-mtime">
-                    <span class="ssn anchor"
-                          data-bind="css: { on: sort() === 't' },
-                                   click: doSort.bind($data, 't')"
+                    <span class="ssn sortHandle"
+                          data-bind="css: { on: sort() === '+t' },
+                                   click: doSort.bind($data, '+t')"
                           title="Упорядочить по возрастанию">↓</span>
-                    <span class="ssn anchor"
+                    <span class="ssn sortHandle"
                           data-bind="css: { on: sort() === '-t' },
                                    click: doSort.bind($data, '-t')"
                           title="Упорядочить по убыванию">↑</span>

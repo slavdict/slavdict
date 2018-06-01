@@ -651,7 +651,7 @@ def entry_list(request, for_hellinists=False, per_page=12,
     template = 'entry_list.html'
     if for_hellinists:
         template = 'hellinist_workbench.html'
-    cookie_salt = hashlib.md5(request.path).hexdigest()
+    cookie_salt = hashlib.md5(request.path + request.user.username).hexdigest()
     cookie_name = 'find{0}'.format(cookie_salt)
     if cookie_name in request.COOKIES:
         request.COOKIES[cookie_name] = base64 \
@@ -689,7 +689,7 @@ def entry_list(request, for_hellinists=False, per_page=12,
     if for_hellinists and 'id' in request.GET and request.GET['id'].isdigit():
         entries = Entry.objects.filter(pk=int(request.GET['id']))
     else:
-        entries = filters.get_entries(form.cleaned_data)
+        entries = filters.get_entries(form, for_hellinists)
 
     paginator = Paginator(entries, per_page=per_page, orphans=2)
     if request.method == 'POST':
@@ -755,7 +755,7 @@ def entry_list(request, for_hellinists=False, per_page=12,
 
 @login_required
 def hellinist_workbench(request, per_page=4):
-    cookie_salt = hashlib.md5(request.path).hexdigest()
+    cookie_salt = hashlib.md5(request.path + request.user.username).hexdigest()
     for key in ('hwPrfx', 'hwAddress', 'hwExample'):
         key = key + cookie_salt
         if key in request.COOKIES:
@@ -784,7 +784,7 @@ def hellinist_workbench(request, per_page=4):
         else:
             # Кидаем исключение для обработки в мидлваре и стирания всех кук.
             raise InvalidCookieError(message)
-    examples = filters.get_examples(form.cleaned_data)
+    examples = filters.get_examples(form)
     #if request.user.preplock:
     #    examples = [ex for ex in examples if not ex.host_entry.preplock]
 

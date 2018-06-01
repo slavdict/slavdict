@@ -94,7 +94,7 @@ class FilterEntriesForm(forms.Form):
     }
     default_data_for_hellinists = default_data.copy()
     default_data_for_hellinists.update({
-        'sortdir': '',
+        'sortdir': '+',
         'sortbase': 'alph',
     })
 
@@ -118,7 +118,7 @@ class FilterExamplesForm(forms.Form):
         'hwExample': u'',
         'hwExamplesIds': '',
         'hwSortbase': 'addr',
-        'hwSortdir': '',
+        'hwSortdir': '+',
         'hwStatus': 'all',
         'hwAllExamples': False,
     }

@@ -36,18 +36,18 @@
             .rememberDefault('all')
             .htmlSelect('author', listsForWidgets.authors);
 
-    f.sortbase = ko.observable()
-            .rememberInitial(valuesToInitialize.sortbase)
-            // .rememberDefault... Значения по умолчанию
-            // на клиенте намеренно не определяем,
-            // хотя оно есть на сервере
+    f.sortbase = ko.observable(valuesToInitialize.sortbase)
+            // Не определяем здесь дефолтного значение ``.rememberDefault``,
+            // и не запоминаем начальное значение ``.rememberInitial``,
+            // чтобы изменение значений не влияло на отображение информационной
+            // панели фильтров.
             .htmlSelect('sortbase', listsForWidgets.sortbase);
 
-    f.sortdir = ko.observable()
-            .rememberInitial(valuesToInitialize.sortdir)
-            // .rememberDefault... Значения по умолчанию
-            // на клиенте намеренно не определяем,
-            // хотя оно есть на сервере
+    f.sortdir = ko.observable(valuesToInitialize.sortdir)
+            // Не определяем здесь дефолтного значение ``.rememberDefault``,
+            // и не запоминаем начальное значение ``.rememberInitial``,
+            // чтобы изменение значений не влияло на отображение информационной
+            // панели фильтров.
             .htmlSelect('sortdir', listsForWidgets.sortdir);
 
     f.status = ko.observable()
@@ -135,13 +135,8 @@
             return this.sortdir() + this.sortbase();
         },
         write: function(value){
-            if (value.charAt(0) === '-') {
-                this.sortdir('-');
-                this.sortbase(value.slice(1));
-            } else {
-                this.sortdir('');
-                this.sortbase(value);
-            }
+            this.sortdir(value[0]);
+            this.sortbase(value.slice(1));
         },
         owner: f
     });
@@ -211,6 +206,23 @@ $('#id_find')
     .attr('data-bind', 'textInput: find')
     .attr('autocomplete', 'off')
     .attr('spellcheck', 'false');
+
+function showFilterButtons() {
+    $('.f5s--buttons').slideDown();
+}
+function goInsensitive() {
+    $(this)
+        .unbind('change', showFilterButtons)
+        .unbind('blur', goInsensitive);
+}
+function goSensitive() {
+    $(this)
+        .bind('change', showFilterButtons)
+        .bind('blur', goInsensitive);
+}
+
+$('#id_sortdir').on('focus', goSensitive);
+$('#id_sortbase').on('focus', goSensitive);
 
 ko.applyBindings(vM.filters, $('.filters').get(0));
 ko.applyBindings(vM.filters, $('#main').get(0));
