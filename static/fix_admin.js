@@ -28,10 +28,6 @@
             };
         }
 
-        /* Меняем заголовок в списке лексем для колонки с флажками,
-         * указывающими представлен ли вариант без титла в текстах или нет */
-        $('.column-untitled_exists').html('Титл');
-
         /* Убираем заголовки столбцов с длинными названиями в атрибут title */
         var only_titles = ['_parent_meaning', 'metaphorical',
             'figurative', 'substantivus', 'is_valency',

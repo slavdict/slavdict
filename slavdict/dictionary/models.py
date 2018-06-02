@@ -497,10 +497,6 @@ class Entry(models.Model, JSONSerializable):
     def base_vars(self):
         return self.orthographic_variants.filter(parent__isnull=True)
 
-    untitled_exists = BooleanField(u'''Вариант без титла представлен
-            в текстах''', default=False)
-
-
     hidden = BooleanField(u'Скрыть лексему', help_text=u'''Не отображать лексему
             в списке словарных статей.''', default=False, editable=False)
 

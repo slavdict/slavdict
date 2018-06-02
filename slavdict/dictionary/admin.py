@@ -245,7 +245,8 @@ class OrthVar_Inline(admin.StackedInline):
     readonly_fields = ('id',)
     fieldsets = (
         (None, {
-            'fields': (('idem', 'no_ref_entry', 'reconstructed', 'questionable'),
+            'fields': (('idem', 'no_ref_entry', 'reconstructed',
+                        'questionable', 'untitled_exists'),
                        ('order', 'id', 'parent'),),
             }),
         )
