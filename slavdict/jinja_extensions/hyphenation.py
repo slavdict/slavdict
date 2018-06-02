@@ -260,6 +260,7 @@ def hyphenate_civil(word):
     low = 2
     high = len(word) - 2
     positions = [i for i in positions if low <= i <= high]
+    positions.sort()
     return positions
 
 UCS8_NON_WORD = ur'([\s!"\'()*,\-\./:;\[\]\u007f\u00a0‘’‚‛“”„‟–—¤Є«»¬\u00ad°¶·]+)'
