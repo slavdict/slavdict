@@ -46,7 +46,7 @@
             class="header--item button">Греч. кабинет</a>
     {% endif %}
 
-    {% if not user.preplock %}
+    {% if user.has_key_for_preplock %}
         {{ space }}
         <a href="{{ url('usefulURLs') }}"
            class="header--item button">Закладки</a>

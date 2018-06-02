@@ -29,7 +29,7 @@ def staff_has_permission(self, request, obj=None):
     if obj is None:
         pass
     elif isinstance(obj, Entry):
-        if request.user.preplock and obj.preplock:
+        if not request.user.has_key_for_preplock and obj.preplock:
             return False
     else:
         try:
@@ -37,7 +37,7 @@ def staff_has_permission(self, request, obj=None):
         except:
             return False
         else:
-            if request.user.preplock and entry.preplock:
+            if not request.user.has_key_for_preplock and entry.preplock:
                 return False
     return request.user.is_staff
 
@@ -45,7 +45,7 @@ def superuser_has_permission(self, request, obj=None):
     if obj is None:
         pass
     elif isinstance(obj, Entry):
-        if request.user.preplock and obj.preplock:
+        if not request.user.has_key_for_preplock and obj.preplock:
             return False
     else:
         try:
@@ -53,7 +53,7 @@ def superuser_has_permission(self, request, obj=None):
         except:
             return False
         else:
-            if request.user.preplock and entry.preplock:
+            if not request.user.has_key_for_preplock and entry.preplock:
                 return False
     return request.user.is_superuser
 

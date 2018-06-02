@@ -426,7 +426,7 @@ def single_entry(request, entry_id, extra_context=None,
 
     if request.path.endswith('intermed/'):
         user_groups = [t[0] for t in user.groups.values_list('name')]
-        if not (user.preplock and entry.preplock) \
+        if not (not user.has_key_for_preplock and entry.preplock) \
                 and (not entry.authors.exists() or user.is_superuser
                      or 'editors' in user_groups or 'admins' in user_groups
                      or user in entry.authors.all()):
@@ -785,7 +785,7 @@ def hellinist_workbench(request, per_page=4):
             # Кидаем исключение для обработки в мидлваре и стирания всех кук.
             raise InvalidCookieError(message)
     examples = filters.get_examples(form)
-    #if request.user.preplock:
+    #if not request.user.has_key_for_preplock:
     #    examples = [ex for ex in examples if not ex.host_entry.preplock]
 
     paginator = Paginator(examples, per_page=per_page, orphans=2)
@@ -882,7 +882,7 @@ def edit_entry(request, id):
     entry = get_object_or_404(Entry, id=id)
     user = request.user
     user_groups = [t[0] for t in user.groups.values_list('name')]
-    if not (user.preplock and entry.preplock) \
+    if not (not user.has_key_for_preplock and entry.preplock) \
             and (not entry.authors.exists() or user.is_superuser
                  or 'editors' in user_groups or 'admins' in user_groups
                  or user in entry.authors.all()):

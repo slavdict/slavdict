@@ -42,7 +42,7 @@
     {% if filters.per_se %}
         {% for entry in entries %}
             <div style="position: relative;">
-            {% if not (user.preplock and entry.preplock)
+            {% if not (not user.has_key_for_preplock and entry.preplock)
                   and (not entry.authors.exists() or user.is_admeditor
                        or user in entry.authors.all()) %}
                 {% if not entry.duplicate or user.is_admeditor %}
@@ -132,7 +132,7 @@
                         <div class="right"></div>
                     </div>
 
-                    {% if not (user.preplock and entry.preplock)
+                    {% if not (not user.has_key_for_preplock and entry.preplock)
                           and (not entry.authors.exists() or user.is_admeditor
                                or user in entry.authors.all()) %}
                         {% if not entry.duplicate or user.is_admeditor %}

@@ -925,8 +925,13 @@ class Entry(models.Model, JSONSerializable):
         self._exgroups = exgroups
         return exgroups
 
-    preplock = False  # Заглушка для условия, по которому статья д.б. залочена
-        # от всех пользователей кроме работающих над подготовкой тома к печати.
+    # Залочена статья для редактирования,
+    # во время подготовки тома к печати или нет.
+    @property
+    def preplock(self):
+        if self.volume():
+            return True
+        return False
 
     def volume(self, volume=None):
         volume_letters = {

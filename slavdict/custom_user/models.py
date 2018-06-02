@@ -23,12 +23,12 @@ class CustomUser(User):
     objects = UserManager()
 
     # Различение пользователей,
-    # занимающихся подготовкой тома к печати (False), и остальных (True).
+    # занимающихся подготовкой тома к печати (True), и остальных (False).
     @property
-    def preplock(self):
+    def has_key_for_preplock(self):
         l = (u'\u0434\u043e\u0431\u0440\u043e\u0432',
              u'\u0445\u0438\u0442\u0440')
-        return not self.last_name.lower().startswith(l)
+        return self.last_name.lower().startswith(l)
 
     # принадлежит ли пользователь к одной из привиллегированных групп (является
     # суперпользователем, администратором или редактором [в отл. от авторов])
