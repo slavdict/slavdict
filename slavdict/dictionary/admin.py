@@ -584,7 +584,7 @@ class AdminEntry(admin.ModelAdmin):
     )
     fieldsets = (
         (None, {
-            'fields': (('untitled_exists', 'special_case'),),
+            'fields': ('special_case',),
             }),
         (None, {
             'fields': ('civil_equivalent',),
@@ -638,7 +638,6 @@ class AdminEntry(admin.ModelAdmin):
     list_display = (
         'civil_inv',
         'headword',
-        'untitled_exists',
         'part_of_speech',
         'genitive',
         'short_form',
@@ -663,7 +662,6 @@ class AdminEntry(admin.ModelAdmin):
         'participle_type',
         )
     list_editable = (
-        'untitled_exists',
         'part_of_speech',
         'genitive',
         'short_form',
