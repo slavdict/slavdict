@@ -426,7 +426,7 @@ def single_entry(request, entry_id, extra_context=None,
 
     if request.path.endswith('intermed/'):
         user_groups = [t[0] for t in user.groups.values_list('name')]
-        if not (not user.has_key_for_preplock and entry.preplock) \
+        if (not entry.preplock or user.has_key_for_preplock) \
                 and (not entry.authors.exists() or user.is_superuser
                      or 'editors' in user_groups or 'admins' in user_groups
                      or user in entry.authors.all()):
@@ -882,10 +882,12 @@ def edit_entry(request, id):
     entry = get_object_or_404(Entry, id=id)
     user = request.user
     user_groups = [t[0] for t in user.groups.values_list('name')]
-    if not (not user.has_key_for_preplock and entry.preplock) \
-            and (not entry.authors.exists() or user.is_superuser
-                 or 'editors' in user_groups or 'admins' in user_groups
-                 or user in entry.authors.all()):
+
+    prepareCond = not entry.preplock or user.has_key_for_preplock
+    authorlessCond = not entry.authors.exists()
+    authorCond = user in entry.authors.all()
+    editorCond = user.is_admeditor
+    if prepareCond and (authorlessCond or authorCond or editorCond):
         pass
     else:
         return redirect(entry.get_absolute_url())

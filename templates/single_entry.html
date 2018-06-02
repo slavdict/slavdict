@@ -14,42 +14,51 @@
 {% block content %}
 
     {% if not intermed %}
-        {% if not (not user.has_key_for_preplock and entry.preplock)
-              and (not entry.authors.exists() or user.is_admeditor
-                   or user in entry.authors.all()) %}
-            {% if not entry.duplicate or user.is_admeditor %}
-            <div class="editButtons">
+        {% set prepareCond = not entry.preplock or user.has_key_for_preplock %}
+        {% set authorlessCond = not entry.authors.exists() %}
+        {% set authorCond = user in entry.authors.all() %}
+        {% set editorCond = user.is_admeditor %}
+        {% set hellinistCond = user.is_hellinist %}
+        <div class="editButtons">
+
+            {% if prepareCond and (authorlessCond or authorCond or editorCond) %}
                 <a class="icon edit"
                         href="{{ url('edit_form_url', args=[entry.pk]) }}"
                         title="Редактировать статью">
-                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="изменить" />
+                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}"
+                         alt="изменить" />
                 </a>
-                {% if user.is_admeditor or user.is_hellinist %}
-                <br />
+                <br>
+            {% endif %}
+
+            {% if editorCond or hellinistCond %}
                 <a class="icon edit"
                         href="{{ url('hellinist_entries') }}?id={{ entry.id }}"
                         title="Редактировать греч. параллели">
-                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="изменить" />
+                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}"
+                         alt="изменить" />
                     <span>αβ</span>
                 </a>
-                {% endif %}
-                {% if entry.antconc_query|trim %}
-                <br />
+                <br>
+            {% endif %}
+
+            {% if entry.antconc_query|trim %}
                 <a class="icon clippy"
                    data-clipboard-text="{{ entry.antconc_query|e }}"
                    title="Скопировать запрос для АнтКонка">
-                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="v" />
+                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}"
+                         alt="v" />
                 </a>
-                {% endif %}
-                {% if user.is_superuser %}
-                <br />
-                <a class="icon" href="/entries/{{ entry.pk }}/intermed/">
-                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="изменить" />
-                </a>
-                {% endif %}
-            </div>
+                <br>
             {% endif %}
-        {% endif %}
+
+            {% if editorCond %}
+                <a class="icon" href="/entries/{{ entry.pk }}/intermed/">
+                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}"
+                         alt="изменить" />
+                </a>
+            {% endif %}
+        </div>
     {% endif %}
 
     {% if intermed %}
