@@ -2147,13 +2147,24 @@ class OrthographicVariant(models.Model, JSONSerializable):
     parent = ForeignKey('self', related_name='children', blank=True, null=True)
     reconstructed = BooleanField(u'реконструирован', default=False)
     questionable = BooleanField(u'реконструкция вызывает сомнения', default=False)
-
+    untitled_exists = BooleanField(u'Вариант без титла представлен в текстах',
+                                   default=False)
     @property
     def childvars(self):
         childvars = self.children.all()
-        if self.entry:
-            if self.pk ==  self.entry.orth_vars[0].pk and self.entry.untitled_exists:
-                childvars = tuple(childvars) + (self,)
+
+        # Проверяем есть ли титла в текущей словоформе.
+        # Для этого обрезаем начальные пробелы и знаки снятия придыхания.
+        var = self.idem.lstrip(u' =')
+        # Удаляем первый символ, т.к. он может иметь верхний регистр.
+        var = var[1:]
+        # Смотрим, есть ли титла, при этом намеренно исключаем из поиска
+        # паерки (ЪЬ).
+        r = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
+        has_no_title = not r.search(var)
+
+        if self.untitled_exists and has_no_title:
+            childvars = tuple(childvars) + (self,)
         return childvars
 
     # сам орфографический вариант
