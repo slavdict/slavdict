@@ -936,8 +936,9 @@ class Entry(models.Model, JSONSerializable):
         }
         if volume is None:
             used_letters = itertools.chain(*volume_letters.values())
-            return self.civil_equivalent.lstrip(u' =')[:1].lower() not in used_letters
-        return self.civil_equivalent.lstrip(u' =')[:1].lower() in volume_letters.get(volume, [])
+        else:
+            used_letters = volume_letters.get(volume, [])
+        return self.civil_equivalent.lstrip(u' =')[:1].lower() in used_letters
 
     @models.permalink
     def get_absolute_url(self):
