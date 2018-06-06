@@ -1,8 +1,54 @@
 {% macro example(e, examples_loop, peer_meanings_loop, parent_meanings_loop,
                     collogroups_loop, child_meanings, entry, meaning) %}
 
-{{ e.example_ucs | web_cslav_words("CSLSegment", "Text") }}
+{% set partial_translations = e.get_translations(fragmented=True, hidden=False) %}
+{% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
+
+{% if show_additional_info %}
+    {% set hidden_partial_translations = e.get_translations(fragmented=True, hidden=True) %}
+    {% set hidden_full_translations = e.get_translations(fragmented=False, hidden=True) %}
+{% else %}
+    {% set hidden_partial_translations = {} %}
+    {% set hidden_full_translations = [] %}
+{% endif %}
+
+{{ e.example_ucs | web_cslav_words("CSLSegment", "Text") |
+        insert_translations(partial_translations, show_additional_info, hidden_partial_translations) }}
 {{ space }}
+
+{% if full_translations %}
+    {% for t in full_translations %}
+        {% if not loop.first %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+        <span class="Text hyphenate">‘{{ t.translation|e }}’</span>
+        {% if show_additional_info and t.additional_info|trim %}
+            {{ space }}
+            <span class="ai ai-grfex Text hyphenate">
+                [{{ t.additional_info|e }}]
+            </span>
+        {% endif %}
+    {% endfor %}
+    {{ space }}
+{% endif %}
+
+{% if hidden_full_translations and show_additional_info %}
+    <span class="ai ai-grfex">
+    {% for t in hidden_full_translations %}
+        {% if not loop.first %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+        <span class="Text hyphenate">‘{{ t.translation|e }}’</span>
+        {% if show_additional_info and t.additional_info|trim %}
+            {{ space }}
+            <span class="Text hyphenate">
+                [{{ t.additional_info|e }}]
+            </span>
+        {% endif %}
+    {% endfor %}
+    </span>
+    {{ space }}
+{% endif %}
 
 {% if e.greek_equivs %}
     {% for ge, genum in e.greek_equivs_with_numbers(show_info=show_additional_info) %}

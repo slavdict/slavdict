@@ -1718,6 +1718,18 @@ class Example(models.Model, JSONSerializable):
         return json.dumps(self.forHellinistJSON(),
                           ensure_ascii=False, separators=(',', ':'))
 
+    def get_translations(self, fragmented, hidden):
+        translations = self.translation_set.filter(fragmented=fragmented,
+                hidden=hidden)
+        if fragmented:
+            translations = translations.order_by('fragment_end', 'order', 'id')
+            data = defaultdict(list)
+            for t in translations:
+                data[t.fragment_end].append(t)
+        else:
+            data = tuple(translations.order_by('order', 'id'))
+        return data
+
     def __unicode__(self):
         return u'(%s) %s' % (self.address_text, self.example)
 

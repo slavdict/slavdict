@@ -257,6 +257,7 @@ class Segment(Tag):
     TYPE_SPACE = 'space'
     TYPE_HYPHEN = 'hyphen'
     TYPE_SLASH = 'slash'
+    TYPE_EXTERNAL = 'external'
 
     TYPES_LEFT_PAIRING = (TYPE_LEFT_BRACKET, TYPE_LEFT_QUOTE)
     TYPES_RIGHT_PAIRING = (TYPE_RIGHT_BRACKET, TYPE_RIGHT_QUOTE)
@@ -343,7 +344,9 @@ class Segment(Tag):
 
     def __unicode__(self):
         tag = self.tag.get_tag(self.output_script)
-        if self.type == self.TYPE_WORD:
+        if self.type == self.TYPE_EXTERNAL:
+            segment = self.segment
+        elif self.type == self.TYPE_WORD:
             segment = html_escape(hyphenate_ucs8(self.segment))
             if self.tag.for_web:
                 #HYPHEN_TAG = u'<span class="Text">\u00AD</span>'
@@ -354,6 +357,14 @@ class Segment(Tag):
         else:
             segment = html_escape(self.segment)
         return tag % segment
+
+class ExternalSegment(Segment):
+    def __init__(self, segment, tag, base_script=SCRIPT_CIVIL):
+        self.segment = segment
+        self.tag = tag
+        self.base_script = base_script
+        self.output_script = base_script
+        self.type = Segment.TYPE_EXTERNAL
 
 
 RE_CSLAV_SEGMENT = re.compile(u'(%s)' % u'|'.join([
@@ -384,8 +395,8 @@ class Word(object):
         assert isinstance(words, Words)
         assert 0 <= index < len(words.words)
         self.word = words.words[index]
-        self.left_in_between = words.in_betweens[index * 2]
-        self.right_in_between = words.in_betweens[index * 2 + 2]
+        self.left_in_between = words.in_betweens[index]
+        self.right_in_between = words.in_betweens[index + 1]
 
 class Words(object):
     def __init__(self):
@@ -418,7 +429,7 @@ class Words(object):
             raise TypeError
 
     def __getitem__(self, index):
-        return Word(self.words, index)
+        return Word(self, index)
 
     def __len__(self):
         return len(self.words)
@@ -495,6 +506,92 @@ def civil_words(value, civil_cstyle=None, for_web=False):
             words.add(in_between)
     return words
 
+def _prepare_translation_data(data, n):
+    if not data:
+        return {}
+
+    sortfunc = lambda t: (t.fragment_end, t.order, t.id)
+    for index in data.keys():
+        translations = data[index]
+        if index > n:
+            data[n].extend(translations)
+            del data[index]
+        else:
+            translations.sort(key=sortfunc)
+    translations = data[n]
+    translations.sort(key=sortfunc)
+
+    return data
+
+def _insert_translation_data(words, data, show_additional_info=False,
+                             hidden_data=None):
+    for_web = words[0].word.tag.for_web
+    if hidden_data is None or not show_additional_info or not for_web:
+        hidden_data = {}  # В InDesign комментарии авторов не нужны
+    if for_web:
+        cstyle = 'Text hyphenate'
+    else:
+        cstyle = 'Text'
+    tag0 = Tag(cslav_style=None, civil_style='Text', for_web=for_web)
+    tag1 = Tag(cslav_style=None, civil_style=cstyle, for_web=for_web)
+    if show_additional_info:
+        cstyle2 = 'ai ai-grfex ' + cstyle
+        tag2 = Tag(cslav_style=None, civil_style=cstyle2, for_web=for_web)
+
+    # Расстановка частичных переводов, отображаемых в статье
+    for index, lst in data.items():
+        if not lst:
+            continue
+        translations = [
+                u'‘%s’%s' % (
+                    html_escape(t.translation),
+                    (u' <span class="ai ai-grfex Text hyphenate">%s</span>' %
+                            html_escape(t.additional_info))
+                        if show_additional_info and t.additional_info.strip()
+                            and for_web
+                        else u''
+                )
+                for t in lst]
+        translations = u', '.join(translations)
+        translations = u'(%s)' % translations
+        seg = ExternalSegment(translations, tag1, SCRIPT_CIVIL)
+        space = Segment(u' ', tag0, SCRIPT_CIVIL)
+        words[index - 1].right_in_between[:0] = [space, seg]
+
+    # Расстановка частичных переводов, отображаемых в авторских комментах
+    for index, lst in hidden_data.items():
+        if not lst:
+            continue
+        translations = [
+                u'‘%s’%s' % (
+                    html_escape(t.translation),
+                    (u' [%s]' % html_escape(t.additional_info))
+                        if show_additional_info and t.additional_info.strip()
+                            and for_web
+                        else u''
+                )
+                for t in lst]
+        translations = u', '.join(translations)
+        seg = ExternalSegment(translations, tag2, SCRIPT_CIVIL)
+        space = Segment(u' ', tag0, SCRIPT_CIVIL)
+        right_in_between = words[index - 1].right_in_between
+        x = [s.type == Segment.TYPE_EXTERNAL for s in right_in_between]
+        if True in x:
+            ix = x.index(True) + 1
+        else:
+            ix = 0
+        right_in_between[ix:ix] = [space, seg]
+    return words
+
+@register_filter
+def insert_translations(words, data, show_additional_info=False, hidden_data=None):
+    data = _prepare_translation_data(data, len(words))
+    if show_additional_info:
+        hidden_data = _prepare_translation_data(hidden_data, len(words))
+    else:
+        hidden_data = None
+    words = _insert_translation_data(words, data, show_additional_info, hidden_data)
+    return words
 
 def cslav_subst(x):
     return EXCLAM + cslav_nobr_words(ucs_convert(x.group(1))) + EXCLAM

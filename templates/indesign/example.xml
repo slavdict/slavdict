@@ -1,8 +1,22 @@
 {% macro example(e, examples_loop, peer_meanings_loop, parent_meanings_loop,
                     collogroups_loop, child_meanings, entry, meaning) %}
 
-{{ e.example_ucs|ind_cslav_words("CSLSegment", "Text") }}
+{% set partial_translations = e.get_translations(fragmented=True, hidden=False) %}
+{% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
+
+{{ e.example_ucs | ind_cslav_words("CSLSegment", "Text") |
+        insert_translations(partial_translations) }}
 {{ space }}
+
+{% if full_translations %}
+    {% for t in full_translations %}
+        {% if not loop.first %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+        <x aid:cstyle="Text">‘{{ t.translation|e }}’</x>
+    {% endfor %}
+    {{ space }}
+{% endif %}
 
 {% if e.greek_equivs %}
     {% for ge, genum in e.greek_equivs_with_numbers(show_info=False) %}
