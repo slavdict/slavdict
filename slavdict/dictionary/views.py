@@ -1134,6 +1134,17 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
                      volume=VOLUME)
 
+    elif uri == 'headwords_symbols':
+        es = []
+        r = re.compile(ur'[^=~\'`\^'
+                       ur'абвгдеєжзѕийіклмноѻпрстѹуꙋфхѿцчшщѣьыъюꙗѡѽѧѯѱѳѵ'
+                       ur'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУꙊФХѾЦЧШЩѢЬЫЪЮꙖѠѼѦѮѰѲѴ]')
+        for e in Entry.objects.all():
+            if r.search(e.orth_vars.first().idem):
+                es.append(e)
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
+
     elif uri == 'orthvars_without_accents':
         es = []
         r1 = re.compile(ur"['`\^]")
@@ -1260,6 +1271,7 @@ def useful_urls(request, x=None, y=None):
     urls = (
             (u'Формы слова', (
                     (u'Все заглавные слова с титлами', 'headwords_titles'),
+                    (u'Все заглавные слова с чужеродными символами', 'headwords_symbols'),
                     (u'Орф.варианты без ударений', 'orthvars_without_accents'),
                     (u'Формы без ударений', 'forms_without_accents'),
                     (u'Несколько форм в одном поле', 'multiple_forms'),
