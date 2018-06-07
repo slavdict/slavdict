@@ -7,7 +7,8 @@ import re
 from collections import Counter, defaultdict
 
 from django.db import models
-from django.db.models import BooleanField
+from django.db.models import NOT_PROVIDED
+from django.db.models import BooleanField as _BooleanField
 from django.db.models import CharField
 from django.db.models import DateTimeField
 from django.db.models import ForeignKey
@@ -26,6 +27,20 @@ from hip2unicode.conversions import antconc_civilrus
 from hip2unicode.conversions import antconc_antconc_wo_titles
 
 from slavdict.custom_user.models import CustomUser
+
+class BooleanField(_BooleanField):
+    ''' Видоизмененное булевское поле, которое, получая в качестве значения
+    None, сверяется с настройками для базы, допустимо ли там значение NULL.
+    Если недопустимо и определено значение по умолчанию, то назначает это
+    значение. В противном случае ничего не делает.
+    '''
+
+    # https://docs.djangoproject.com/en/1.11/ref/models/fields/#django.db.models.Field.pre_save
+    def pre_save(self, model_instance, add):
+        if getattr(model_instance, self.attname) is None and \
+                not self.null and self.default is not NOT_PROVIDED :
+            setattr(model_instance, self.attname, self.default)
+        return super(BooleanField, self).pre_save(model_instance, add)
 
 compiled_conversion_wo_titles = compile_conversion(
         antconc_antconc_wo_titles.conversion)
