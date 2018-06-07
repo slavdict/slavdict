@@ -1725,9 +1725,11 @@ class Example(models.Model, JSONSerializable):
             translations = translations.order_by('fragment_end', 'order', 'id')
             data = defaultdict(list)
             for t in translations:
-                data[t.fragment_end].append(t)
+                if t.translation.strip():
+                    data[t.fragment_end].append(t)
         else:
-            data = tuple(translations.order_by('order', 'id'))
+            data = tuple(t for t in translations.order_by('order', 'id')
+                           if t.translation.strip())
         return data
 
     def __unicode__(self):
