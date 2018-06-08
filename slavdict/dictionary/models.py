@@ -7,13 +7,12 @@ import re
 from collections import Counter, defaultdict
 
 from django.db import models
-from django.db.models import NOT_PROVIDED
+from django.db import transaction
 from django.db.models import BooleanField
 from django.db.models import CharField
 from django.db.models import DateTimeField
 from django.db.models import ForeignKey
 from django.db.models import ManyToManyField
-from django.db.models import PositiveIntegerField
 from django.db.models import PositiveSmallIntegerField
 from django.db.models import SmallIntegerField
 from django.db.models import TextField
@@ -226,6 +225,32 @@ def collogroup_sort_key(cg):
     text = text.strip()
     text = resolve_titles(text)
     return [sort_key1(word) for word in text.split()]
+
+def _double_check(item1, item2, m2m=(), kwargs=None, model=None):
+    if 'object_map' not in kwargs:
+        kwargs['object_map'] = defaultdict(defaultdict)
+    for x in m2m:
+        x1 = getattr(item1, x)
+        x2 = getattr(item2, x)
+        for y in x1.all():
+            y, z = y.make_double(**kwargs)
+            kwargs['object_map'][y.__class__.__name__][y.pk] = z.pk
+            x2.add(z)
+        for y in x2.all():
+            for f in y.__class__._meta.get_fields():
+                if f.many_to_one and not hasattr(f, 'field'):
+                    z = getattr(y, f.attname)
+                    if z in kwargs['object_map'][y.__class__.__name__]:
+                        setattr(y, f.attname,
+                                kwargs['object_map'][y.__class__.__name__][z])
+                        y.save()
+    for f in model._meta.get_fields():
+        if f.many_to_many and not hasattr(f, 'field'):
+            x1 = getattr(item1, f.attname)
+            x2 = getattr(item2, f.attname)
+            for y in x1.all():
+                x2.add(y)
+    return item1, item2
 
 NBSP = u'\u00A0'  # неразрывный пробел
 
@@ -954,7 +979,40 @@ class Entry(models.Model, JSONSerializable):
             self.mtime = datetime.datetime.now()
         super(Entry, self).save(*args, **kwargs)
 
-    def __unicode__(self): return self.orth_vars[0].idem
+    def make_double(self):
+        with transaction.atomic():
+          id1 = self.pk
+          e2 = self
+          e2.pk = None
+          e2.homonym_gloss = u''
+          e2.save()
+          e1 = Entry.objects.get(pk=id1)
+          m2m = ('participle_set', 'orthographic_variants', 'etymology_set',
+                 'collocationgroup_set', 'meaning_set')
+                 # NOTE: example_set намеренно не добавляем, примеры имеет
+                 # смысл обрабатывать только после того, как они будут
+                 # добавлены к значениям.
+          kwargs = {
+              'entry': e2,
+              'object_map': defaultdict(defaultdict),
+          }
+          e1, e2 = _double_check(e1, e2, m2m=m2m, kwargs=kwargs, model=Entry)
+
+          # Очищаем kwargs от всех накопившихся ключей кроме исходных
+          kwargs = {
+              'entry': kwargs['entry'],
+              'object_map': kwargs['object_map'],
+          }
+          # Дублируем только те примеры, которые относятся к статье в целом,
+          # но не к словосочетанию и не к значению.
+          for ex1 in e1.example_set.filter(meaning_id__isnull=True,
+                                          collogroup_id__isnull=True):
+              ex1, ex2 = ex1.make_double(**kwargs)
+          return e1, e2
+        return None, None
+
+    def __unicode__(self):
+        return self.orth_vars[0].idem
 
     def forJSON(self):
         _fields = (
@@ -1098,6 +1156,20 @@ class Etymology(models.Model, JSONSerializable):
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+            id1 = self.pk
+            et2 = self
+            et2.pk = None
+            if 'entry' in kwargs and 'collocation' not in kwargs:
+                et2.entry = kwargs['entry']
+            if 'collocation' in kwargs:
+                et2.collocation = kwargs['entry']
+            et2.save()
+            et1 = Etymology.objects.get(pk=id1)
+            return et1, et2
+        return None, None
+
     def __unicode__(self):
         return u'%s %s %s' % (self.get_language_display(), self.entry,
                               self.translit)
@@ -1209,6 +1281,18 @@ class MeaningContext(models.Model, JSONSerializable):
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
+
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+          id1 = self.pk
+          mc2 = self
+          mc2.pk = None
+          if 'meaning' in kwargs:
+              mc2.meaning = kwargs['meaning']
+          mc2.save()
+          mc1 = MeaningContext.objects.get(pk=id1)
+          return mc1, mc2
+        return None, None
 
     def __unicode__(self):
         SPACE = u' '
@@ -1459,6 +1543,22 @@ class Meaning(models.Model, JSONSerializable):
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+          id1 = self.pk
+          m2 = self
+          m2.pk = None
+          if 'entry' in kwargs and 'collogroup' not in kwargs:
+              m2.entry_container = kwargs['entry']
+          if 'collogroup' in kwargs:
+              m2.collogroup_container = kwargs['collogroup']
+          m2.save()
+          m1 = Meaning.objects.get(pk=id1)
+          m2m = ('meaningcontext_set', 'example_set', 'collocationgroup_set')
+          kwargs['meaning'] = m2
+          return _double_check(m1, m2, m2m=m2m, kwargs=kwargs, model=Meaning)
+        return None, None
+
     def get_url_fragment(self):
         return 'm{0}'.format(self.id)
 
@@ -1681,6 +1781,24 @@ class Example(models.Model, JSONSerializable):
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+          id1 = self.pk
+          ex2 = self
+          ex2.pk = None
+          if 'meaning' in kwargs:
+              ex2.meaning = kwargs['meaning']
+          if 'entry' in kwargs:
+              ex2.entry = kwargs['entry']
+          if 'collogroup' in kwargs:
+              ex2.collogroup = kwargs['collogroup']
+          ex2.save()
+          ex1 = Example.objects.get(pk=id1)
+          m2m = ('greq_set', 'translation_set')
+          kwargs['example'] = ex2
+          return _double_check(ex1, ex2, m2m=m2m, kwargs=kwargs, model=Example)
+        return None, None
+
     def forJSON(self):
         _fields = (
             'additional_info',
@@ -1803,6 +1921,18 @@ class Translation(models.Model, JSONSerializable):
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
+
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+          id1 = self.pk
+          t2 = self
+          t2.pk = None
+          if 'example' in kwargs:
+              t2.for_example = kwargs['example']
+          t2.save()
+          t1 = Translation.objects.get(pk=id1)
+          return t1, t2
+        return None, None
 
     def __unicode__(self):
         if self.fragmented:
@@ -1941,6 +2071,34 @@ class CollocationGroup(models.Model, JSONSerializable):
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+          id1 = self.pk
+          cg2 = self
+          cg2.pk = None
+          if 'entry' in kwargs and 'meaning' not in kwargs:
+              cg2.base_entry = kwargs['entry']
+          if 'meaning' in kwargs:
+              cg2.base_meaning = kwargs['meaning']
+          cg2.save()
+          cg1 = CollocationGroup.objects.get(pk=id1)
+          m2m = ('collocation_set', 'meaning_set')
+          kwargs['collogroup'] = cg2
+          cg1, cg2 = _double_check(cg1, cg2, m2m=m2m, kwargs=kwargs,
+                                   model=CollocationGroup)
+          # Очищаем kwargs от всех накопившихся ключей кроме необходимых
+          kwargs = {
+              'entry': kwargs['entry'],
+              'collogroup': kwargs['collogroup'],
+              'object_map': kwargs['object_map'],
+          }
+          # Дублируем только те примеры, которые относятся к словосочетанию
+          # в целом, но не к значению и не в целом ко статье.
+          for ex1 in cg1.example_set.filter(meaning_id__isnull=True):
+              ex1, ex2 = ex1.make_double(**kwargs)
+          return cg1, cg2
+        return None, None
+
     def forJSON(self):
         _fields = (
             'base_entry_id',
@@ -2029,6 +2187,20 @@ class Collocation(models.Model, JSONSerializable):
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
+
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+          id1 = self.pk
+          c2 = self
+          c2.pk = None
+          if 'collogroup' in kwargs:
+              c2.collogroup = kwargs['collogroup']
+          c2.save()
+          c1 = Collocation.objects.get(pk=id1)
+          m2m = ('etymology_set',)
+          kwargs['collocation'] = c2
+          return _double_check(c1, c2, m2m=m2m, kwargs=kwargs, model=Collocation)
+        return None, None
 
     def __unicode__(self):
         return self.collocation
@@ -2129,6 +2301,18 @@ class GreekEquivalentForExample(models.Model, JSONSerializable):
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+          id1 = self.pk
+          ge2 = self
+          ge2.pk = None
+          if 'example' in kwargs:
+              ge2.for_example = kwargs['example']
+          ge2.save()
+          ge1 = GreekEquivalentForExample.objects.get(pk=id1)
+          return ge1, ge2
+        return None, None
+
     def forJSON(self):
         _fields = (
             'additional_info',
@@ -2222,6 +2406,18 @@ class OrthographicVariant(models.Model, JSONSerializable):
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+          id1 = self.pk
+          ov2 = self
+          ov2.pk = None
+          if 'entry' in kwargs:
+              ov2.entry = kwargs['entry']
+          ov2.save()
+          ov1 = OrthographicVariant.objects.get(pk=id1)
+          return ov1, ov2
+        return None, None
+
     def __unicode__(self):
         return self.idem
 
@@ -2281,6 +2477,18 @@ class Participle(models.Model, JSONSerializable):
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
+
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+          id1 = self.pk
+          p2 = self
+          p2.pk = None
+          if 'entry' in kwargs:
+              p2.entry = kwargs['entry']
+          p2.save()
+          p1 = Participle.objects.get(pk=id1)
+          return p1, p2
+        return None, None
 
     def __unicode__(self):
         return self.idem
