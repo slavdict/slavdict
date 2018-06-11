@@ -52,6 +52,17 @@
                 <br>
             {% endif %}
 
+            {% if prepareCond and editorCond %}
+            <a class="icon" style="color: #aaa"
+               onmouseover="this.style.color='#444'"
+               onmouseout="this.style.color='#aaa'"
+               href="{{ url('duplicate_entry', args=[entry.id]) }}"
+               title="Создать полный дубликат статьи">
+                    <i class="far fa-copy" data-fa-transform="down-4 right-6"></i>
+                </a>
+                <br>
+            {% endif %}
+
             {% if editorCond %}
                 <a class="icon" href="/entries/{{ entry.pk }}/intermed/">
                     <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}"

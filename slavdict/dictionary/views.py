@@ -935,6 +935,21 @@ def edit_entry(request, id):
     }
     return render(request, 'single_entry_edit.html', context)
 
+
+@login_required
+@never_cache
+def duplicate_entry(request, id):
+    entry = get_object_or_404(Entry, id=id)
+    prepareCond = not entry.preplock or request.user.has_key_for_preplock
+    editorCond = request.user.is_admeditor
+    if prepareCond and editorCond:
+        pass
+    else:
+        return redirect(entry.get_absolute_url())
+    entry.save()
+    entry, entry_copy = entry.make_double()
+    return redirect('all_entries_url')
+
 @login_required
 def dump(request):
     import os
