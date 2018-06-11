@@ -1172,6 +1172,33 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
                      volume=VOLUME)
 
+    elif uri == 'orthvars_titles':
+        es = []
+        r = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
+            # NOTE: ЪЬ намеренно исключены. Нужны любые титла, но не паерки.
+        for e in Entry.objects.all():
+            if any(r.search(o.idem) for o in e.orth_vars.all()):
+                es.append(e)
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
+
+    elif uri == 'orthvars_paerok':
+        es = []
+        r = re.compile(ur'[ЪЬ]')
+        for e in Entry.objects.all():
+            if any(r.search(o.idem) for o in e.orth_vars.all()):
+                es.append(e)
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
+
+    elif uri == 'orthvars_questionable':
+        es = []
+        for e in Entry.objects.all():
+            if any(o.questionable for o in e.orth_vars.all()):
+                es.append(e)
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
+
     elif uri == 'orthvars_vos_voz':
         es = []
         pattern = ur"^[Вв][оѻѡѽ]"
@@ -1287,7 +1314,10 @@ def useful_urls(request, x=None, y=None):
             (u'Формы слова', (
                     (u'Все заглавные слова с титлами', 'headwords_titles'),
                     (u'Все заглавные слова с чужеродными символами', 'headwords_symbols'),
-                    (u'Орф.варианты без ударений', 'orthvars_without_accents'),
+                    (u'Все заглавные слова, где реконструкция вызывает сомнения', 'orthvars_questionable'),
+                    (u'Орф. варианты без ударений', 'orthvars_without_accents'),
+                    (u'Орф. варианты под титлом', 'orthvars_titles'),
+                    (u'Орф. варианты с паерком', 'orthvars_paerok'),
                     (u'Формы без ударений', 'forms_without_accents'),
                     (u'Несколько форм в одном поле', 'multiple_forms'),
                     (u'Варианты с воз-/вос-', 'orthvars_vos_voz'),
