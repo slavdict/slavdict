@@ -2341,6 +2341,7 @@ class OrthographicVariant(models.Model, JSONSerializable):
     entry = ForeignKey(Entry, related_name='orthographic_variants', blank=True,
                        null=True)
     parent = ForeignKey('self', related_name='children', blank=True, null=True)
+    without_accent = BooleanField(u'без ударения', default=False)
     reconstructed = BooleanField(u'реконструирован', default=False)
     questionable = BooleanField(u'реконструкция вызывает сомнения', default=False)
     untitled_exists = BooleanField(u'Вариант без титла представлен в текстах',

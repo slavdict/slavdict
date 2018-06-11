@@ -31,6 +31,13 @@
         {% endif %}
         {{ backspace }}{{ space }}
 
+        {% if base_var.without_accent %}
+            <x aid:cstyle="Text">(</x>
+            <x aid:cstyle="Em">без удар.</x>
+            <x aid:cstyle="Text">)</x>
+            {{ backspace }}{{ space }}
+        {% endif %}
+
         {% for var in base_var.childvars %}
 
             {% if loop.first %}

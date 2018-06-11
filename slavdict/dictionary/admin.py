@@ -246,7 +246,7 @@ class OrthVar_Inline(admin.StackedInline):
     fieldsets = (
         (None, {
             'fields': (('idem', 'no_ref_entry', 'reconstructed',
-                        'questionable', 'untitled_exists'),
+                        'questionable', 'untitled_exists', 'without_accent'),
                        ('order', 'id', 'parent'),),
             }),
         )
