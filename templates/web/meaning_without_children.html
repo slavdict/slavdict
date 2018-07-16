@@ -17,11 +17,21 @@
 
 <span class="anchor"><a id="{{ m.get_url_fragment() }}"></a></span>
 
-{% if m.special_case == 'a' %}{# канонич. #}
+{# см. slavdict.dictionary.models.MEANING_SPECIAL_CASES_CHOICES #}
+{% set MSC1 = 'a' %}{# канонич. #}
+{% set MSC4 = 'd' %}{# дат. #}
+{% set MSC5 = 'e' %}{# твор. ед. в роли нареч. #}
+{% set MSC8 = 'h' %}{# имя собств. #}
+{% set MSC9 = 'i' %}{# топоним #}
+{% set MSC10 = 'j' %}{# преимущ. #}
+{% set MSC11 = 'k' %}{# мн. #}
+{% set MSC12 = 'l' %}{# в роли нареч. #}
+
+{% if m.special_case == MSC1 %}{# канонич. #}
 
     <span class="Em">канонич.</span>{{ space }}
 
-{% elif m.special_case == 'd' %}{# дат. #}
+{% elif m.special_case == MSC4 %}{# дат. #}
 
     <span class="Em">дат.</span>{{ space }}
     {% for form_ucs in m.substantivus_forms %}
@@ -32,28 +42,28 @@
                 web_cslav_words("CSLSegmentEm") }}{{ space }}
     {% endfor %}
 
-{% elif m.special_case == 'e' %}{# твор. ед. в роли нареч. #}
+{% elif m.special_case == MSC5 %}{# твор. ед. в роли нареч. #}
 
     <span class="Em">твор. ед.</span>{{ space }}
     {{ m.substantivus_csl_ucs |
             web_cslav_words("CSLSegmentEm") }}{{ space }}
     <span class="Em">в{{ nbsp }}роли нареч.</span>{{ space }}
 
-{% elif m.special_case == 'l' %}{# в роли нареч. #}
+{% elif m.special_case == MSC12 %}{# в роли нареч. #}
 
     {{ m.substantivus_csl_ucs |
             web_cslav_words("CSLSegmentEm") }}{{ space }}
     <span class="Em">в{{ nbsp }}роли нареч.</span>{{ space }}
 
-{% elif m.special_case == 'h' %}{# имя собств. #}
+{% elif m.special_case == MSC8 %}{# имя собств. #}
 
     <span class="Em">имя собств.</span>{{ space }}
 
-{% elif m.special_case == 'i' %}{# топоним #}
+{% elif m.special_case == MSC9 %}{# топоним #}
 
     <span class="Em">топоним</span>{{ space }}
 
-{% elif m.special_case == 'k' %}{# мн. #}
+{% elif m.special_case == MSC11 %}{# мн. #}
 
     <span class="Em">мн.</span>{{ space }}
     {{ m.substantivus_csl_ucs |
@@ -67,10 +77,10 @@
         {% endif %}
 
         {% if (loop.last or loop.index == 3) and
-                m.substantivus_type == 'b' %}{# ср. род, мн. число #}
+                m.is_substantivus_type('n.pl.') %}{# ср. род, мн. число #}
             {{ backspace }}{{ space }}
             <span class="Em">мн.</span>{{ space }}
-        {% elif loop.last and m.substantivus_type == 'e' %}{# ж. род, ед. число #}
+        {% elif loop.last and m.is_substantivus_type('f.sg.') %}{# ж. род, ед. число #}
             {{ backspace }}{{ space }}
             <span class="Em">ж.</span>{{ space }}
         {% endif %}
@@ -79,7 +89,7 @@
                web_cslav_words("CSLSegmentEm") }}{{ space }}
     {% endfor %}
 
-    {% if m.special_case == 'j' %}{# преимущ. #}
+    {% if m.special_case == MSC10 %}{# преимущ. #}
         {{ backspace }}{{ space }}
         <span class="Em">преимущ.</span>{{ space }}
     {% endif %}

@@ -16,11 +16,21 @@
 {% endfor %}
 
 
-{% if m.special_case == 'a' %}{# канонич. #}
+{# см. slavdict.dictionary.models.MEANING_SPECIAL_CASES_CHOICES #}
+{% set MSC1 = 'a' %}{# канонич. #}
+{% set MSC4 = 'd' %}{# дат. #}
+{% set MSC5 = 'e' %}{# твор. ед. в роли нареч. #}
+{% set MSC8 = 'h' %}{# имя собств. #}
+{% set MSC9 = 'i' %}{# топоним #}
+{% set MSC10 = 'j' %}{# преимущ. #}
+{% set MSC11 = 'k' %}{# мн. #}
+{% set MSC12 = 'l' %}{# в роли нареч. #}
+
+{% if m.special_case == MSC1 %}{# канонич. #}
 
     <x aid:cstyle="Em">канонич.</x>{{ space }}
 
-{% elif m.special_case == 'd' %}{# дат. #}
+{% elif m.special_case == MSC4 %}{# дат. #}
 
     <x aid:cstyle="Em">дат.</x>{{ space }}
     {% for form_ucs in m.substantivus_forms %}
@@ -30,26 +40,26 @@
         {{ form_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     {% endfor %}
 
-{% elif m.special_case == 'e' %}{# твор. ед. в роли нареч. #}
+{% elif m.special_case == MSC5 %}{# твор. ед. в роли нареч. #}
 
     <x aid:cstyle="Em">твор. ед.</x>{{ space }}
     {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
 
-{% elif m.special_case == 'l' %}{# в роли нареч. #}
+{% elif m.special_case == MSC12 %}{# в роли нареч. #}
 
     {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
 
-{% elif m.special_case == 'h' %}{# имя собств. #}
+{% elif m.special_case == MSC8 %}{# имя собств. #}
 
     <x aid:cstyle="Em">имя собств.</x>{{ space }}
 
-{% elif m.special_case == 'i' %}{# топоним #}
+{% elif m.special_case == MSC9 %}{# топоним #}
 
     <x aid:cstyle="Em">топоним</x>{{ space }}
 
-{% elif m.special_case == 'k' %}{# мн. #}
+{% elif m.special_case == MSC11 %}{# мн. #}
 
     <x aid:cstyle="Em">мн.</x>{{ space }}
     {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
@@ -62,10 +72,10 @@
         {% endif %}
 
         {% if (loop.last or loop.index == 3) and
-                m.substantivus_type == 'b' %}{# ср. род, мн. число #}
+                m.is_substantivus_type('n.pl.') %}{# ср. род, мн. число #}
             {{ backspace }}{{ space }}
             <x aid:cstyle="Em">мн.</x>{{ space }}
-        {% elif loop.last and m.substantivus_type == 'e' %}{# ж. род, ед. число #}
+        {% elif loop.last and m.is_substantivus_type('f.sg.') %}{# ж. род, ед. число #}
             {{ backspace }}{{ space }}
             <x aid:cstyle="Em">ж.</x>{{ space }}
         {% endif %}
@@ -73,7 +83,7 @@
         {{ form_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     {% endfor %}
 
-    {% if m.special_case == 'j' %}{# преимущ. #}
+    {% if m.special_case == MSC10 %}{# преимущ. #}
         {{ backspace }}{{ space }}
         <x aid:cstyle="Em">преимущ.</x>{{ space }}
     {% endif %}
