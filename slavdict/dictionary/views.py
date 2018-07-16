@@ -33,11 +33,12 @@ from slavdict.dictionary.forms import FilterExamplesForm
 from slavdict.dictionary.models import civilrus_convert
 from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
-from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
 from slavdict.dictionary.models import Meaning
+from slavdict.dictionary.models import MSC5
 from slavdict.dictionary.models import MSC11
+from slavdict.dictionary.models import MSC12
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.middleware import InvalidCookieError
 
@@ -520,7 +521,7 @@ def import_csv_billet(request):
             # Регулярное выражение для отыскания любой черты (прямой, косой,
             # обратной косой), обрамленной любым количеством пробельного
             # материала.
-            bar = re.compile(r"\s*[/\|\\]\s*", re.MULTILINE + re.UNICODE)
+            bar = re.compile(r"\s*[/\|\\]\s*", re.MULTILINE | re.UNICODE)
 
             for row in csv_reader:
                 # Столбцы в CSV-файле
@@ -1143,16 +1144,28 @@ def useful_urls_redirect(uri, request):
     elif uri == 'meanings_pl':
         mark = u'мн.'
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
-                (mark in m.meaning
+                (m.special_case == MSC11
+                 or m.substantivus
+                    and m.is_substantivus_type('m.pl.', 'f.pl.', 'n.pl.')
+                 or mark in m.meaning
                  or mark in m.gloss
-                 or m.special_case == MSC11
-                 or m.substantivus and m.is_substantivus_type('m.pl.', 'f.pl.',
-                                                              'n.pl.')
                  or any(mc.show_in_dictionary and
                         mark in (mc.left_text.strip(),
                                  mc.right_text.strip())
                         for mc in m.meaningcontext_set.all()
                         )
+                 )
+              )
+        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
+                     volume=VOLUME)
+
+    elif uri == 'meanings_ps':
+        regex = re.compile(ur'в\s+роли\s',
+                           flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
+        ms = (m for m in Meaning.objects.all() if m.not_hidden() and
+                (m.substantivus
+                 or m.special_case in (MSC5, MSC12)
+                 or regex.search(m.meaning + m.gloss)
                  )
               )
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
@@ -1362,6 +1375,7 @@ def useful_urls(request, x=None, y=None):
                     (u'Все значения и употребления', 'all_meanings'),
                     (u'С пометой "букв."', 'meanings_literal'),
                     (u'С пометой "мн."', 'meanings_pl'),
+                    (u'С пометой "в роли .."', 'meanings_ps'),
                 )),
     )
     if x:
