@@ -290,12 +290,10 @@ PART_OF_SPEECH_MAP = {
 }
 
 TANTUM_CHOICES = (
-    ('s', u'только ед.'),
     ('d', u'только дв.'),
     ('p', u'только мн.'),
 )
 TANTUM_MAP = {
-    'singulareTantum': 's',
     'dualeTantum': 'd',
     'pluraleTantum': 'p',
 }
