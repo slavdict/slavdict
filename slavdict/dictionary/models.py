@@ -1412,8 +1412,9 @@ class Meaning(models.Model, JSONSerializable):
     transitivity = CharField(u'переходность', max_length=1, blank=True,
                              choices=TRANSITIVITY_CHOICES, default='')
 
-    def is_substantivus_type(self, slug):
-        return SUBSTANTIVUS_TYPE_MAP[slug] == self.substantivus_type
+    def is_substantivus_type(self, *slugs):
+        return any(SUBSTANTIVUS_TYPE_MAP[slug] == self.substantivus_type
+                   for slug in slugs)
 
     additional_info = TextField(u'примечание', help_text=u'''Любая
             дополнительная информация по данному ЗНАЧЕНИЮ. Дополнительная
