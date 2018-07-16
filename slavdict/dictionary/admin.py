@@ -22,6 +22,7 @@ from slavdict.dictionary.models import MeaningContext
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import Participle
 from slavdict.dictionary.models import Translation
+from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
 
 admin.site.login_template = ui.login_template
 
@@ -176,26 +177,28 @@ class VolumeFilter(admin.SimpleListFilter):
         )
     def queryset(self, request, queryset):
         if self.value() == '0':
-            return queryset.filter(id__in=self.xs(volume=None))
+            return queryset.filter(id__in=self.xs(volume=YET_NOT_IN_VOLUMES))
         elif self.value() == '1':
             return queryset.filter(id__in=self.xs(volume=1))
         elif self.value() == '2':
             return queryset.filter(id__in=self.xs(volume=2))
 
-class FirstVolumeEntryFilter(VolumeFilter):
-    def xs(self, volume=None):
+class VolumeEntryFilter(VolumeFilter):
+    def xs(self, volume=YET_NOT_IN_VOLUMES):
         return (e.id for e in Entry.objects.all() if e.volume(volume))
 
-class FirstVolumeCollogroupFilter(VolumeFilter):
-    def xs(self, volume=None):
-        return (x.id for x in CollocationGroup.objects.all() if x.volume(volume))
+class VolumeCollogroupFilter(VolumeFilter):
+    def xs(self, volume=YET_NOT_IN_VOLUMES):
+        return (x.id for x in CollocationGroup.objects.all()
+                     if x.volume(volume))
 
-class FirstVolumeMeaningFilter(VolumeFilter):
-    def xs(self, volume=None):
-        return (m.id for m in Meaning.objects.all() if m.not_hidden() and m.volume(volume))
+class VolumeMeaningFilter(VolumeFilter):
+    def xs(self, volume=YET_NOT_IN_VOLUMES):
+        return (m.id for m in Meaning.objects.all()
+                     if m.not_hidden() and m.volume(volume))
 
-class FirstVolumeExampleFilter(VolumeFilter):
-    def xs(self, volume=None):
+class VolumeExampleFilter(VolumeFilter):
+    def xs(self, volume=YET_NOT_IN_VOLUMES):
         return (x.id for x in Example.objects.all() if x.volume(volume))
 
 class SubstantivusMeaningFilter(admin.SimpleListFilter):
@@ -362,7 +365,7 @@ class AdminExample(admin.ModelAdmin):
     list_display = ('entry_for_example', 'meaning_for_example', 'id', 'example', 'address_text', 'greek_eq_status')
     list_display_links = ('id', 'example')
     list_editable = ('greek_eq_status', 'address_text')
-    list_filter = (FirstVolumeExampleFilter, 'greek_eq_status',)
+    list_filter = (VolumeExampleFilter, 'greek_eq_status',)
     search_fields = (
         'example',
         'address_text',
@@ -478,7 +481,7 @@ class AdminMeaning(admin.ModelAdmin):
         'gloss',
     )
     list_filter = (
-        FirstVolumeMeaningFilter,
+        VolumeMeaningFilter,
         'metaphorical',
         FigurativeMeaningFilter,
         SubstantivusMeaningFilter,
@@ -649,7 +652,7 @@ class AdminEntry(admin.ModelAdmin):
         'headword',
         )
     list_filter = (
-        FirstVolumeEntryFilter,
+        VolumeEntryFilter,
         'authors',
         'status',
         'part_of_speech',
@@ -779,7 +782,7 @@ class AdminCollocationGroup(admin.ModelAdmin):
     )
     list_display_links = ('id', '__unicode__')
     list_editable = ('phraseological',)
-    list_filter = (FirstVolumeCollogroupFilter, 'phraseological',)
+    list_filter = (VolumeCollogroupFilter, 'phraseological',)
     search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')
     class Media:
         css = {"all": ("fix_admin.css",)}

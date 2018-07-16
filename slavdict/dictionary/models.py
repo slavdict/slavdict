@@ -489,6 +489,8 @@ POS_SPECIAL_CASES_MAP = {
     MSC13: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['conjunction']],
 }
 
+YET_NOT_IN_VOLUMES = None
+
 class WithoutHiddenManager(models.Manager):
     def get_queryset(self):
         return super(WithoutHiddenManager,
@@ -953,16 +955,22 @@ class Entry(models.Model, JSONSerializable):
             return True
         return False
 
-    def volume(self, volume=None):
+    def volume(self, volume=YET_NOT_IN_VOLUMES):
         volume_letters = {
             1: (u'а', u'б'),
             2: (u'в',),
         }
-        if volume is None:
+        first_letter = self.civil_equivalent.lstrip(u' =')[:1].lower()
+
+        # Если аргумент volume не передан, то выбираем только те статьи,
+        # для которых том ещё не определен.
+        if volume is YET_NOT_IN_VOLUMES:
             used_letters = itertools.chain(*volume_letters.values())
+            match = first_letter not in used_letters
         else:
             used_letters = volume_letters.get(volume, [])
-        return self.civil_equivalent.lstrip(u' =')[:1].lower() in used_letters
+            match = first_letter in used_letters
+        return match
 
     @models.permalink
     def get_absolute_url(self):
@@ -1520,7 +1528,7 @@ class Meaning(models.Model, JSONSerializable):
         else:
             return self.collogroup_container
 
-    def volume(self, volume=None):
+    def volume(self, volume=YET_NOT_IN_VOLUMES):
         host_entry = self.host_entry
         if host_entry:
             return host_entry.volume(volume)
@@ -1730,7 +1738,7 @@ class Example(models.Model, JSONSerializable):
             else:
                 return self.entry
 
-    def volume(self, volume=None):
+    def volume(self, volume=YET_NOT_IN_VOLUMES):
         host_entry = self.host_entry
         if host_entry:
             return host_entry.volume(volume)
@@ -2005,7 +2013,7 @@ class CollocationGroup(models.Model, JSONSerializable):
 
     host = host_entry
 
-    def volume(self, volume=None):
+    def volume(self, volume=YET_NOT_IN_VOLUMES):
         host_entry = self.host_entry
         if host_entry:
             return host_entry.volume(volume)
