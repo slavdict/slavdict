@@ -490,6 +490,10 @@ POS_SPECIAL_CASES_MAP = {
 }
 
 YET_NOT_IN_VOLUMES = None
+VOLUME_LETTERS = {
+    1: (u'а', u'б'),
+    2: (u'в',),
+}
 
 class WithoutHiddenManager(models.Manager):
     def get_queryset(self):
@@ -956,19 +960,15 @@ class Entry(models.Model, JSONSerializable):
         return False
 
     def volume(self, volume=YET_NOT_IN_VOLUMES):
-        volume_letters = {
-            1: (u'а', u'б'),
-            2: (u'в',),
-        }
         first_letter = self.civil_equivalent.lstrip(u' =')[:1].lower()
 
         # Если аргумент volume не передан, то выбираем только те статьи,
         # для которых том ещё не определен.
         if volume is YET_NOT_IN_VOLUMES:
-            used_letters = itertools.chain(*volume_letters.values())
+            used_letters = itertools.chain(*VOLUME_LETTERS.values())
             match = first_letter not in used_letters
         else:
-            used_letters = volume_letters.get(volume, [])
+            used_letters = VOLUME_LETTERS.get(volume, [])
             match = first_letter in used_letters
         return match
 

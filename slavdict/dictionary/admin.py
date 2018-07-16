@@ -22,6 +22,7 @@ from slavdict.dictionary.models import MeaningContext
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import Participle
 from slavdict.dictionary.models import Translation
+from slavdict.dictionary.models import VOLUME_LETTERS
 from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
 
 admin.site.login_template = ui.login_template
@@ -170,18 +171,20 @@ class VolumeFilter(admin.SimpleListFilter):
     title = u'Тома'
     parameter_name = 'volume'
     def lookups(self, request, model_admin):
-        return (
-            ('1', u'из 1-го тома'),
-            ('2', u'из 2-го тома'),
-            ('0', u'остальные'),
-        )
+        choices = tuple(
+            (str(volume),
+             u'из %s-го тома (%s)' % (volume, u', '.join(letters).upper()))
+            for volume, letters in sorted(VOLUME_LETTERS.items()))
+        choices = choices + (('0', u'остальные'),)
+        return choices
+
     def queryset(self, request, queryset):
         if self.value() == '0':
             return queryset.filter(id__in=self.xs(volume=YET_NOT_IN_VOLUMES))
-        elif self.value() == '1':
-            return queryset.filter(id__in=self.xs(volume=1))
-        elif self.value() == '2':
-            return queryset.filter(id__in=self.xs(volume=2))
+        elif self.value().isdigit():
+            return queryset.filter(id__in=self.xs(volume=int(self.value())))
+        else:
+            return queryset.none()
 
 class VolumeEntryFilter(VolumeFilter):
     def xs(self, volume=YET_NOT_IN_VOLUMES):
