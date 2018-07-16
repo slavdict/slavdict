@@ -37,6 +37,7 @@ from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
 from slavdict.dictionary.models import Meaning
+from slavdict.dictionary.models import MSC11
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.middleware import InvalidCookieError
 
@@ -1139,6 +1140,24 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
+    elif uri == 'meanings_pl':
+        mark = u'мн.'
+        ms = (m for m in Meaning.objects.all() if m.not_hidden() and
+                (mark in m.meaning
+                 or mark in m.gloss
+                 or m.special_case == MSC11
+                 or m.substantivus and m.is_substantivus_type('m.pl.', 'f.pl.',
+                                                              'n.pl.')
+                 or any(mc.show_in_dictionary and
+                        mark in (mc.left_text.strip(),
+                                 mc.right_text.strip())
+                        for mc in m.meaningcontext_set.all()
+                        )
+                 )
+              )
+        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
+                     volume=VOLUME)
+
     elif uri == 'headwords_titles':
         es = []
         r = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
@@ -1341,7 +1360,8 @@ def useful_urls(request, x=None, y=None):
                 )),
             (u'Значения и употребления', (
                     (u'Все значения и употребления', 'all_meanings'),
-                    (u'Значения с пометой "букв."', 'meanings_literal'),
+                    (u'С пометой "букв."', 'meanings_literal'),
+                    (u'С пометой "мн."', 'meanings_pl'),
                 )),
     )
     if x:
