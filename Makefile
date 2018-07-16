@@ -154,6 +154,10 @@ ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
 	ls .list bin/indesign_xml_dumper.py templates/indesign/* | entr bash -c 'time cat .list | xargs python bin/indesign_xml_dumper.py >/home/nurono/VirtualBox\ SharedFolder/slavdict-indesign.xml'
 endif
 
+install:
+	command -v gem && sudo gem install || echo 'gem is not installed'; false
+	command -v pipenv && pipenv install || echo 'pipenv is not installed'; false
+
 .PHONY: \
     checkout \
     clean \
@@ -162,6 +166,7 @@ endif
     default \
     destroy_loc_changes \
     fixown \
+	install \
     jslibs \
     hash \
     listen-indesign \
