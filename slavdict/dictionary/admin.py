@@ -179,9 +179,12 @@ class VolumeFilter(admin.SimpleListFilter):
         return choices
 
     def queryset(self, request, queryset):
-        if self.value() == '0':
+        value = self.value()
+        if value is None:
+            return queryset
+        elif value == '0':
             return queryset.filter(id__in=self.xs(volume=YET_NOT_IN_VOLUMES))
-        elif self.value().isdigit():
+        elif value.isdigit():
             return queryset.filter(id__in=self.xs(volume=int(self.value())))
         else:
             return queryset.none()
