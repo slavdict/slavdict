@@ -955,9 +955,9 @@ class Entry(models.Model, JSONSerializable):
     # во время подготовки тома к печати или нет.
     @property
     def preplock(self):
-        if self.volume():
-            return True
-        return False
+        if self.volume(volume=YET_NOT_IN_VOLUMES):
+            return False
+        return True
 
     def volume(self, volume=YET_NOT_IN_VOLUMES):
         first_letter = self.civil_equivalent.lstrip(u' =')[:1].lower()
