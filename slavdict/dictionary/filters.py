@@ -24,8 +24,8 @@ def get_entries(form, for_hellinists):
     PARSING_ERRORS = []
 
     # Сортировка
-    sortdir = form.get('sortdir', default_data['sortdir'])
-    sortbase = form.get('sortbase', default_data['sortbase'])
+    sortdir = form.get('sortdir') or default_data['sortdir']
+    sortbase = form.get('sortbase') or default_data['sortbase']
     sort = sortdir + sortbase
     VALID_SORT_PARAMS = {
         '+alph': ('civil_equivalent', 'homonym_order'),
@@ -176,8 +176,8 @@ def get_examples(form):
     PARSING_ERRORS = []
 
     # Сортировка
-    sortdir = form.get('hwSortdir', default_data['hwSortdir'])
-    sortbase = form.get('hwSortbase', default_data['hwSortbase'])
+    sortdir = form.get('hwSortdir') or default_data['hwSortdir']
+    sortbase = form.get('hwSortbase') or default_data['hwSortbase']
     sort = sortdir + sortbase
     VALID_SORT_PARAMS = {
         '+id': ('id',),
