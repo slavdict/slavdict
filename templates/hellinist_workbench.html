@@ -19,11 +19,13 @@
         На главную
     </a>{{ space }}
 
-    <a href="{{ url('hellinist_entries') }}" class="header--item button">
+    <a href="{{ url('hellinist_entries') }}"
+       class="header--item button{% if entries is defined %} active{% endif %}">
         Статьи
     </a>{{ space }}
 
-    <a href="{{ url('hellinist_examples') }}" class="header--item button">
+    <a href="{{ url('hellinist_examples') }}"
+       class="header--item button{% if entries is not defined %} active{% endif %}">
         Поиск по примерам
     </a>{{ space }}
 
