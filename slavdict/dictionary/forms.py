@@ -37,8 +37,8 @@ class FilterEntriesForm(forms.Form):
     find = forms.CharField(required=False, label=u'Начинается с')
     author = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор',
             required=False)
-    status = forms.ChoiceField(choices=STATUS_CHOICES, label=u'Статус статьи',
-            required=False)
+    status = forms.ChoiceField(choices=STATUS_CHOICES,
+            label=u'Статус статьи', required=False)
     pos = forms.ChoiceField(choices=POS_CHOICES, label=u'Часть речи',
             required=False)
     uninflected = forms.BooleanField(label=u'Неизменяемые сущ. / прил.',

@@ -5,11 +5,18 @@ from django.db.models import Count
 from django.db.models import Q
 
 from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary.forms import GREQSORTBASE_CHOICES
+from slavdict.dictionary.forms import SORTBASE_CHOICES
+from slavdict.dictionary.forms import SORTDIR_CHOICES
 from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import MeaningContext
+
+valid_greqsortbase_values = [c[0] for c in GREQSORTBASE_CHOICES]
+valid_sortbase_values = [c[0] for c in SORTBASE_CHOICES]
+valid_sortdir_values = [c[0] for c in SORTDIR_CHOICES]
 
 def get_entries(form, for_hellinists):
     if for_hellinists:
@@ -24,8 +31,12 @@ def get_entries(form, for_hellinists):
     PARSING_ERRORS = []
 
     # Сортировка
-    sortdir = form.get('sortdir') or default_data['sortdir']
-    sortbase = form.get('sortbase') or default_data['sortbase']
+    sortdir = form.get('sortdir')
+    if sortdir not in valid_sortdir_values:
+        sortdir = default_data['sortdir']
+    sortbase = form.get('sortbase')
+    if sortbase not in valid_sortbase_values:
+        sortbase = default_data['sortbase']
     sort = sortdir + sortbase
     VALID_SORT_PARAMS = {
         '+alph': ('civil_equivalent', 'homonym_order'),
@@ -176,16 +187,16 @@ def get_examples(form):
     PARSING_ERRORS = []
 
     # Сортировка
-    sortdir = form.get('hwSortdir') or default_data['hwSortdir']
-    sortbase = form.get('hwSortbase') or default_data['hwSortbase']
+    sortdir = form.get('hwSortdir')
+    if sortdir not in valid_sortdir_values:
+        sortdir = default_data['hwSortdir']
+    sortbase = form.get('hwSortbase')
+    if sortbase not in valid_greqsortbase_values:
+        sortbase = default_data['hwSortbase']
     sort = sortdir + sortbase
     VALID_SORT_PARAMS = {
-        '+id': ('id',),
-        '-id': ('-id',),
         '+addr': ('address_text', 'id'),
         '-addr': ('-address_text', '-id'),
-        '+txt': ('ts_example', 'id'),
-        '-txt': ('-ts_example', '-id'),
         }
     if sort in VALID_SORT_PARAMS:
         SORT_PARAMS = VALID_SORT_PARAMS[sort]
