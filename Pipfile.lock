@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "730592ee64dc68803cd592e0337be2a4472709aacea2d74ec81fc78bcd13b2e5"
+            "sha256": "99f5f14044fe9880105bb348f46b1ced6e7831e4f3b829dc5ca9e222397eaff1"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -18,14 +18,14 @@
     "default": {
         "django": {
             "hashes": [
-                "sha256:b7f77c0d168de4c4ad30a02ae31b9dca04fb3c10472f04918d5c02b4117bba68",
-                "sha256:eb9271f0874f53106a2719c0c35ce67631f6cc27cf81a60c6f8c9817b35a3f6e"
+                "sha256:8176ac7985fe6737ce3d6b2531b4a2453cb7c3377c9db00bacb2b3320f4a1311",
+                "sha256:b18235d82426f09733d2de9910cee975cf52ff05e5f836681eb957d105a05a40"
             ],
             "index": "pypi",
-            "version": "==1.11.14"
+            "version": "==1.11.15"
         },
         "hip2unicode": {
-            "git": "https://github.com/while0pass/hip2unicode.git",
+            "git": "https://github.com/slavdict/hip2unicode.git",
             "ref": "31d1c58b97ed06b3d95327da3919fe2786dadfcf"
         },
         "jinja2": {
