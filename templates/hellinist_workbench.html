@@ -182,6 +182,11 @@
                              id="{{ exgroup.collogroup.get_url_fragment() }}"
                          {% endif %}>
                         {% if exgroup.collogroup %}
+                            <span style="color: #888;">
+                                [<span class="CSLSegment">
+                                {{ e.orth_vars.0.idem_ucs }}
+                                </span>]
+                            </span>{{ space }}
                             <a href="{{ e.get_absolute_url() }}#{{ exgroup.meaning.get_url_fragment() }}">
                             {% set semicolon = joiner('{{ backspace }};{{ space }}') %}
                             {% for collocation in exgroup.collogroup.collocations %}
