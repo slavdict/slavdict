@@ -106,13 +106,23 @@
             </span>
 
             <span class="greqFieldContainer">
-                <label>начальная форма</label>
+                <label>начальная форма лексемы</label>
                 <input type="text" data-bind="
                     textInput: initial_form,
                     event: { change: saveMe }"
                     maxlength="{{ MAX_LENGTHS
                         .GreekEquivalentForExample
                         .initial_form }}" />
+            </span>
+
+            <span class="greqFieldContainer">
+                <label>начальная форма фразеологизма</label>
+                <input type="text" data-bind="
+                    textInput: initial_form_phraseology,
+                    event: { change: saveMe }"
+                    maxlength="{{ MAX_LENGTHS
+                        .GreekEquivalentForExample
+                        .initial_form_phraseology }}" />
             </span>
 
             <span class="greqFieldContainer">

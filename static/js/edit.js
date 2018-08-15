@@ -314,6 +314,7 @@ function Greq() {
     upsert(this, 'for_example_id', data, example_id);
     upsert(this, 'id', data, 'greq' + Greq.all.length);
     upsert(this, 'initial_form', data, '');
+    upsert(this, 'initial_form_phraseology', data, '');
     upsert(this, 'mark', data, '');
     upsert(this, 'note', data, '');
     upsert(this, 'position', data, defaultPosition);

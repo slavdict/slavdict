@@ -45,6 +45,7 @@ for ge in GreekEquivalentForExample.objects.all():
                     else:
                         ge = GreekEquivalentForExample(for_example=example,
                                 unitext=part, initial_form=u'',
+                                initial_form_phraseology=u'',
                                 mark=u'', source=u'', note=u'',
                                 additional_info=u'', order=i+position)
                         ge.save(without_mtime=True)

@@ -380,6 +380,7 @@ TEXT = u'''
     'mark',
     'source',
     #'initial_form',
+    #'initial_form_phraseology',
     'note',
     #'additional_info',
 ]),

@@ -2330,6 +2330,7 @@ class GreekEquivalentForExample(models.Model, JSONSerializable):
             'for_example_id',
             'id',
             'initial_form',
+            'initial_form_phraseology',
             'mark',
             'note',
             'position',

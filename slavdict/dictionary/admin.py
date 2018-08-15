@@ -310,6 +310,7 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
                 'mark',
                 'source',
                 'initial_form',
+                'initial_form_phraseology',
                 'order',
                 ),
             }),
