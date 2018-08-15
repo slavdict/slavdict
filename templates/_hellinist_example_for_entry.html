@@ -95,7 +95,7 @@
     <ul data-bind="foreach: greqs" style="margin-top: 1em">
         <li class="greqForExample">
 
-            <span class="greqFieldContainer">
+            <span class="greqFieldContainer c1">
                 <label>греч. параллель</label>
                 <input type="text" data-bind="
                     textInput: unitext,
@@ -105,7 +105,7 @@
                         .unitext }}" />
             </span>
 
-            <span class="greqFieldContainer">
+            <span class="greqFieldContainer c2">
                 <label>начальная форма лексемы</label>
                 <input type="text" data-bind="
                     textInput: initial_form,
@@ -123,6 +123,17 @@
                     maxlength="{{ MAX_LENGTHS
                         .GreekEquivalentForExample
                         .initial_form_phraseology }}" />
+            </span>
+
+            <br/>
+
+            <span class="greqFieldContainer checkbox">
+                <input type="checkbox" data-bind="
+                    checked: aliud,
+                    event: { change: saveMe },
+                    attr: { id: 'greq' + id() }" />
+                <label data-bind="attr: { for: 'greq' + id() }"
+                    >в греч. иначе</label>
             </span>
 
             <span class="greqFieldContainer">
@@ -144,15 +155,6 @@
 
             <span class="greqFieldAjaxLoader"
                 data-bind="visible: beingSaved()"></span>
-
-            <span class="greqFieldContainer checkbox">
-                <input type="checkbox" data-bind="
-                    checked: aliud,
-                    event: { change: saveMe },
-                    attr: { id: 'greq' + id() }" />
-                <label data-bind="attr: { for: 'greq' + id() }"
-                    >в греч. иначе</label>
-            </span>
         </li>
     </ul>
 
