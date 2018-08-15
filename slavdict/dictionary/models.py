@@ -2244,7 +2244,10 @@ class GreekEquivalentForExample(models.Model, JSONSerializable):
             help_text=u'Номер слова, после которого следует поставить перевод.',
             null=True)
 
-    initial_form = CharField(u'начальная форма', max_length=100, blank=True)
+    initial_form = CharField(u'начальная форма лексемы',
+                             max_length=100, blank=True)
+    initial_form_phraseology = CharField(u'начальная форма фразеологизма',
+                             max_length=100, blank=True)
 
     note = TextField(u'комментарий', help_text=u'''Любая дополнительная
                      информация по данному греческому эквиваленту, которая
