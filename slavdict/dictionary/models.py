@@ -1697,6 +1697,9 @@ class Example(models.Model, JSONSerializable):
         # Необходимо уточнить адрес примера, чтобы грецист смог найти пример
     GREEK_EQ_NOT_FOUND = u'N'  # Греч.параллель для примера найти не удалось
     GREEK_EQ_FOUND = u'F'  # Греч.параллель для примера найдена
+    GREEK_EQ_POSTPONED = u'P'  # Нахождение греч. параллели отложено, например,
+        # потому что у грециста в данный момент нет греч. текста, но впоследствии
+        # может появиться.
     GREEK_EQ_MEANING = u'M'
         # Греч.параллели для примера нужны, чтобы определить значение слова
     GREEK_EQ_URGENT = u'U'  # Греч.параллели для примера нужны в срочном порядке
@@ -1706,6 +1709,7 @@ class Example(models.Model, JSONSerializable):
         (GREEK_EQ_STOP, u'не нужны'),
         (GREEK_EQ_CHECK_ADDRESS, u'уточнить адрес'),
         (GREEK_EQ_NOT_FOUND, u'найти не удалось'),
+        (GREEK_EQ_POSTPONED, u'когда-нибудь позже, отложенные на потом'),
         (GREEK_EQ_FOUND, u'найдены'),
         (GREEK_EQ_MEANING, u'необходимы для опр-я значения'),
         (GREEK_EQ_URGENT, u'срочное'),
