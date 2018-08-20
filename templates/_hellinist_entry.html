@@ -37,7 +37,7 @@
                     maxlength="{{ MAX_LENGTHS.Etymology.unitext }}" />
             </span>
 
-            <span class="greqFieldContainer">
+            <span class="greqFieldContainer" data-bind="visible: unitext">
                 <label style="left: 0">значение</label>
                 <input type="text" data-bind="
                     textInput: meaning,
@@ -45,7 +45,7 @@
                     maxlength="{{ MAX_LENGTHS.Etymology.meaning }}" />
             </span>
 
-            <span class="greqFieldContainer">
+            <span class="greqFieldContainer" data-bind="visible: unitext">
                 <label style="left: 0">примечание для авторов</label>
                 <input type="text" data-bind="
                     textInput: additional_info,

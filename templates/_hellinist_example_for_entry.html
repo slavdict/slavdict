@@ -105,7 +105,7 @@
                         .unitext }}" />
             </span>
 
-            <span class="greqFieldContainer c2">
+            <span class="greqFieldContainer c2" data-bind="visible: unitext">
                 <label>начальная форма лексемы</label>
                 <input type="text" data-bind="
                     textInput: initial_form,
@@ -115,7 +115,7 @@
                         .initial_form }}" />
             </span>
 
-            <span class="greqFieldContainer">
+            <span class="greqFieldContainer" data-bind="visible: unitext">
                 <label>начальная форма фразеологизма</label>
                 <input type="text" data-bind="
                     textInput: initial_form_phraseology,
@@ -136,14 +136,14 @@
                     >в греч. иначе</label>
             </span>
 
-            <span class="greqFieldContainer">
+            <span class="greqFieldContainer" data-bind="visible: unitext">
                 <label>комментарий в словаре</label>
                 <input type="text" data-bind="
                     textInput: note,
                     event: { change: saveMe }" />
             </span>
 
-            <span class="greqFieldContainer">
+            <span class="greqFieldContainer" data-bind="visible: unitext">
                 <label>примечание для авторов</label>
                 <input type="text" data-bind="
                     textInput: additional_info,
