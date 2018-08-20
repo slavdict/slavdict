@@ -11,14 +11,16 @@
 {% endif %}
 
 {{ backspace }}{{ space }}
-{% if etym.unitext and etym.is_language('greek') %}
-    <x aid:cstyle="Greek">
+
+{% if etym.unitext and etym.has_etymology_language() %}
+    <x aid:cstyle="{{ etym.get_etymology_language_cstyle() }}">
         {{ etym.unitext }}
     </x>{{ space }}
-{% elif etym.text and etym.is_language('latin') %}
-    <x aid:cstyle="Latin">
-        {{ etym.text }}
-    </x>{{ space }}
+    {% if etym.meaning %}
+        <x aid:cstyle="Text">
+            ‘{{ etym.meaning }}’
+        </x>{{ space }}
+    {% endif %}
 {% endif %}
 
 {% endmacro %}

@@ -13,11 +13,11 @@
     {% endif %}
 {% endif %}
 
-{% if etym.unitext and etym.is_language('greek') %}
-    <span>{{ etym.unitext }}</span>{{ space }}
-{% elif etym.text %}
-    <span class="{{ etym.get_language_css() }}"
-        >{{ etym.text }}</span>{{ space }}
+{% if etym.unitext and etym.has_etymology_language() %}
+    {{ etym.unitext }}{{ space }}
+    {% if etym.meaning %}
+        ‘{{ etym.meaning }}’{{ space }}
+    {% endif %}
 {% endif %}
 
 {% if show_additional_info and etym.additional_info %}

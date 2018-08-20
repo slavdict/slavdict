@@ -112,9 +112,8 @@
          * проводится и при загрузке страницы и вешается на событие изменения
          * значения поля языка конкретной этимологии.
          *
-         * Для всех языков кроме того отображаем поле text, но скрываем
-         * unitext. Для греческого поле unitext отображаем всегда, а text
-         * только, если там что-нибудь есть. */
+         * Для греческого и латинского отображаем поле unitext, а для остальных
+         * языков -- поле text. */
         lang2cssclass = {
             'a': 'grec',
             'b': 'hebrew',
@@ -148,10 +147,11 @@
                 show = function(field) { field.parent().removeClass('hidden'); },
                 hide = function(field) { field.parent().addClass('hidden'); };
             if (v){
-                isGreek = (lang2cssclass[v] == 'grec');
-                if( isGreek ) {
+                isGreekOrLatin = ['grec', 'latin'
+                                 ].indexOf(lang2cssclass[v]) > -1;
+                if( isGreekOrLatin ) {
                     show(unitext);
-                    if( text.val() ) { show(text); } else { hide(text); }
+                    hide(text);
                 } else {
                     show(text);
                     hide(unitext);

@@ -397,10 +397,11 @@ LANGUAGE_MAP = {
     'latin': 'h',
     'syriac': 'i',
 }
-ETYMOLOGY_LANGUAGES = [
-    LANGUAGE_MAP['greek'],
-    LANGUAGE_MAP['latin'],
-]
+ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE = {
+    LANGUAGE_MAP['greek']: 'Greek',
+    LANGUAGE_MAP['latin']: 'Latin',
+}
+ETYMOLOGY_LANGUAGES = ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.keys()
 LANGUAGE_CSS = {
         LANGUAGE_MAP['greek']: 'grec',
         LANGUAGE_MAP['hebrew']: 'hebrew',
@@ -737,7 +738,8 @@ class Entry(models.Model, JSONSerializable):
     @property
     def etymologies(self):
         etyms = self.etymology_set.filter(language__in=ETYMOLOGY_LANGUAGES)
-        etyms = etyms.filter(etymon_to__isnull=True).order_by('order', 'id')
+        etyms = list(etyms)
+        etyms.sort(key=lambda x:(bool(x.etymon_to), x.order, x.id))
         return etyms
 
     @property
@@ -1102,6 +1104,12 @@ class Etymology(models.Model, JSONSerializable):
             return self.language in [ix for ix in LANGUAGE_MAP if ix in x]
         else:
             return self.language == LANGUAGE_MAP[x]
+
+    def has_etymology_language(self):
+        return self.language in ETYMOLOGY_LANGUAGES
+
+    def get_etymology_language_cstyle(self):
+        return ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.get(self.language, u'')
 
     def get_language_css(self):
         return LANGUAGE_CSS[self.language]
@@ -2163,7 +2171,8 @@ class Collocation(models.Model, JSONSerializable):
     @property
     def etymologies(self):
         etyms = self.etymology_set.filter(language__in=ETYMOLOGY_LANGUAGES)
-        etyms = etyms.filter(etymon_to__isnull=True).order_by('order', 'id')
+        etyms = list(etyms)
+        etyms.sort(key=lambda x:(bool(x.etymon_to), x.order, x.id))
         return etyms
 
     mtime = DateTimeField(editable=False, auto_now=True)

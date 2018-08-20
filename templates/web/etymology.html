@@ -11,14 +11,16 @@
 {% endif %}
 
 {{ backspace }}{{ space }}
-{% if etym.unitext and etym.is_language('greek') %}
-    <span class="Greek">
+
+{% if etym.unitext and etym.has_etymology_language() %}
+    <span class="{{ etym.get_etymology_language_cstyle() }}">
         {{ etym.unitext }}
     </span>{{ space }}
-{% elif etym.text and etym.is_language('latin') %}
-    <span class="Latin">
-        {{ etym.text }}
-    </span>{{ space }}
+    {% if etym.meaning %}
+        <span class="Text hyphenate" lang="ru">
+            ‘{{ etym.meaning }}’
+        </span>{{ space }}
+    {% endif %}
 {% endif %}
 
 {% if show_additional_info and etym.additional_info %}
