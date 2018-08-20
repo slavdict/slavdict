@@ -1,6 +1,7 @@
 function EtymologyForJSON(etym) {
     this.id = etym.id;
     this.unitext = etym.unitext;
+    this.meaning = etym.meaning;
     this.additional_info = etym.additional_info;
     this.entry_id = etym.entry_id;
 }
@@ -11,6 +12,7 @@ function Etymology(etym) {
 
     this.id = ko.observable(etym.id || '');
     this.unitext = ko.observable(etym.unitext || '');
+    this.meaning = ko.observable(etym.meaning || '');
     this.additional_info = ko.observable(etym.additional_info || '');
     this.entry_id = etym.entry_id;
 

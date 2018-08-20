@@ -38,6 +38,14 @@
             </span>
 
             <span class="greqFieldContainer">
+                <label style="left: 0">значение</label>
+                <input type="text" data-bind="
+                    textInput: meaning,
+                    event: { change: saveMe }"
+                    maxlength="{{ MAX_LENGTHS.Etymology.meaning }}" />
+            </span>
+
+            <span class="greqFieldContainer">
                 <label style="left: 0">примечание для авторов</label>
                 <input type="text" data-bind="
                     textInput: additional_info,

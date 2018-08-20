@@ -283,6 +283,7 @@
                     { 'id': {{ et.id }},
                       'entry_id': {{ entry.id }},
                       'unitext': {{ et.unitext|tojson }},
+                      'meaning': {{ et.meaning|tojson }},
                       'additional_info': {{ et.additional_info|tojson }}
                     }
                 {% endfor %}
