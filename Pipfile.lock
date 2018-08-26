@@ -26,7 +26,7 @@
         },
         "hip2unicode": {
             "git": "https://github.com/slavdict/hip2unicode.git",
-            "ref": "31d1c58b97ed06b3d95327da3919fe2786dadfcf"
+            "ref": "31d54cc5114753ba4a78bc96b624101e112147cd"
         },
         "jinja2": {
             "hashes": [

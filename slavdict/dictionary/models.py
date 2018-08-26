@@ -1542,11 +1542,43 @@ class Meaning(models.Model, JSONSerializable):
             return host_entry.volume(volume)
         return False
 
+    _RE1 = re.compile(ur'[\s,;\\/\(\)]*##[^#]*?##[\s,;\\/\(\)]*|[\s,;\\/\(\)]+',
+                      re.UNICODE)
+    _RE2 = re.compile(ur'[\-' u'\u2010]' ur'л\.$', re.UNICODE)  # NOTE: В py3
+            # нельзя использовать юникодные экранирующие последовательнсти
+            # в сырых строках. \u2010 -- неразрывный дефис.
+
+    def looks_like_valency(self, host_entry):
+        if not host_entry.is_part_of_speech('verb', 'preposition'):
+            return False
+        if not self.parent_meaning:
+            return False
+        if self.is_valency:
+            return False
+        meaning = self.meaning.strip()
+        gloss = self.gloss.strip()
+        if not meaning and gloss:  #::AUHACK:: Авторы иногда помещают
+            # информацию об управлении в поле gloss, чтобы оно в статье
+            # отображалось курсивом. Это авторский хак. По нормальному
+            # управление должно быть в поле meaning, а в поле gloss при
+            # этом может быть комментарий к модели управления.
+            string = gloss
+        else:
+            string = meaning
+        words = [w for w in self._RE1.split(string) if w]
+        if len(words) > 0 and all(self._RE2.search(w) for w in words):
+            return True
+
     def save(self, without_mtime=False, *args, **kwargs):
+        host_entry = self.host_entry
+        if self.looks_like_valency(host_entry):
+            if self.gloss.strip() and not self.meaning.strip():  #::AUHACK::
+                self.meaning = self.gloss
+                self.gloss = u''
+            self.is_valency = True
         super(Meaning, self).save(*args, **kwargs)
         if without_mtime:
             return
-        host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
