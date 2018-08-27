@@ -1549,6 +1549,8 @@ class Meaning(models.Model, JSONSerializable):
             # в сырых строках. \u2010 -- неразрывный дефис.
 
     def looks_like_valency(self, host_entry):
+        if host_entry is None:
+            return False
         if not host_entry.is_part_of_speech('verb', 'preposition'):
             return False
         if not self.parent_meaning:
