@@ -53,9 +53,8 @@ def transitivity(arg):
             elif not x:
                 break
             else:
-                print u'!' * 15
-                print u'Символ %r недопустим для выбора. Введите снова.'
-                print u'!' * 15
+                print u'''
+    Символ %r недопустим для выбора. Введите заново.''' % x
 
 
 # vi: set ai et sw=4 ts=4 :
