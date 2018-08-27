@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
+ipython = "*"
 
 [packages]
 "psycopg2" = ">=2.7"
