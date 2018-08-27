@@ -29,18 +29,33 @@ def transitivity(arg):
                 *(m.examples for m in meaning.child_meanings)):
             print u'\t\t* %s' % ex.example
 
-        x = raw_input(u'\nЧто с переходностью? '
-            u'Перех./неперех./смешанный [t/i/l]\n'
-            u'(Enter = ничего не менять): '.encode('utf-8'))
-        x = x.lower().strip()
-        if x in (u't', u'е'):
-            meaning.transitivity = u't'
-            meaning.save(without_mtime=True)
-        elif x in (u'i', u'ш'):
-            meaning.transitivity = u'i'
-            meaning.save(without_mtime=True)
-        elif x in (u'l', u'д'):
-            meaning.transitivity = u'i'
-            meaning.save(without_mtime=True)
+        while True:
+            x = raw_input((u'''
+    Что с переходностью? Перех./неперех./смешанный [%s/%s/%s]
+    (Enter = ничего не менять): ''' % (
+            TRANSITIVITY_MAP['transitive'],
+            TRANSITIVITY_MAP['intransitive'],
+            TRANSITIVITY_MAP['labile'],
+            )).encode('utf-8'))
+            x = x.lower().strip()
+            if x == TRANSITIVITY_MAP['transitive']:
+                meaning.transitivity = TRANSITIVITY_MAP['transitive']
+                meaning.save(without_mtime=True)
+                break
+            elif x == TRANSITIVITY_MAP['intransitive']:
+                meaning.transitivity = TRANSITIVITY_MAP['intransitive']
+                meaning.save(without_mtime=True)
+                break
+            elif x == TRANSITIVITY_MAP['labile']:
+                meaning.transitivity = TRANSITIVITY_MAP['labile']
+                meaning.save(without_mtime=True)
+                break
+            elif not x:
+                break
+            else:
+                print u'!' * 15
+                print u'Символ %r недопустим для выбора. Введите снова.'
+                print u'!' * 15
+
 
 # vi: set ai et sw=4 ts=4 :
