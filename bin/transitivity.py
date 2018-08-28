@@ -18,7 +18,7 @@ def transitivity(arg):
 
     for meaning in e.meanings:
         print
-        print e.civil_equivalent
+        print u'\033[1;36m%s\033[0m' % e.civil_equivalent
         if meaning.transitivity:
             print u'\t' + meaning.get_transitivity_display()
         else:
@@ -27,7 +27,11 @@ def transitivity(arg):
 
         for ex in chain(meaning.examples,
                 *(m.examples for m in meaning.child_meanings)):
-            print u'\t\t* %s' % ex.example
+            example = civilrus_convert(ex.example)
+            words = [u'\033[1;33m%s\033[0m' % w
+                     if w.lower()[:4] == e.civil_equivalent[:4]
+                     else w for w in example.split()]
+            print u'\t\t*  %s' % u' '.join(words)
 
         while True:
             x = raw_input((u'''
