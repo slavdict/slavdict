@@ -20,6 +20,18 @@ def distance(a, b):
             cur_row[j] = min(add, delete, change)
     return cur_row[n]
 
+def leading_similariry(a, b):
+    "Определяет сколько символов в начале слов совпадает"
+    i = 0
+    a = a.lower()
+    b = b.lower()
+    for c1, c2 in zip(a, b):
+        if c1 == c2:
+            i += 1
+        else:
+            break
+    return i
+
 def transitivity(arg):
     if isinstance(arg, int):
         e = Entry.objects.get(pk=arg)
@@ -46,7 +58,7 @@ def transitivity(arg):
                 *(m.examples for m in meaning.child_meanings)):
             example = civilrus_convert(ex.example)
             words_lds = [(w, distance(e.civil_equivalent, w.lower()) -
-                             w.lower().startswith(e.civil_equivalent[:1]) * 2)
+                             leading_similariry(e.civil_equivalent, w.lower()))
                          for w in example.split()]
             ld_min = min(ld for w, ld in words_lds)
             words = [u'\033[1;33m%s\033[0m' % w if ld == ld_min else w
