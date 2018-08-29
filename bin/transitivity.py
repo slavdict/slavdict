@@ -56,10 +56,11 @@ def transitivity(arg):
 
         for ex in chain(meaning.examples,
                 *(m.examples for m in meaning.child_meanings)):
-            example = civilrus_convert(ex.example)
-            words_lds = [(w, distance(e.civil_equivalent, w.lower()) -
-                             leading_similariry(e.civil_equivalent, w.lower()))
-                         for w in example.split()]
+            words = [civilrus_convert(w) for w in ex.example.split()]
+            lexeme = e.civil_equivalent
+            words_lds = [(w, distance(lexeme, w.lower()) -
+                             leading_similariry(lexeme, w.lower()))
+                         for w in words]
             ld_min = min(ld for w, ld in words_lds)
             words = [u'\033[1;33m%s\033[0m' % w if ld == ld_min else w
                      for w, ld in words_lds]
