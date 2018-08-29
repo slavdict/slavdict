@@ -56,7 +56,8 @@ def transitivity(arg):
 
         for ex in chain(meaning.examples,
                 *(m.examples for m in meaning.child_meanings)):
-            words = [civilrus_convert(w) for w in ex.example.split()]
+            words = [civilrus_convert(w[:1].lower() + w[1:])
+                     for w in ex.example.split()]
             lexeme = e.civil_equivalent
             words_lds = [(w, distance(lexeme, w.lower()) -
                              leading_similariry(lexeme, w.lower()))
