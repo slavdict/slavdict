@@ -270,6 +270,7 @@ PART_OF_SPEECH_CHOICES = (
     ('k', u'[число]'),
     ('l', u'[буква]'),
     ('m', u'прич.-прил.'),
+    ('n', u'предик. нареч.'),
 )
 PART_OF_SPEECH_MAP = {
     'noun': 'a',
@@ -287,6 +288,7 @@ PART_OF_SPEECH_MAP = {
     'number': 'k',
     'letter': 'l',
     'participle-adjective': 'm',
+    'predicative adverb': 'n',
 }
 
 TANTUM_CHOICES = (
