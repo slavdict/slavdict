@@ -273,22 +273,22 @@ PART_OF_SPEECH_CHOICES = (
     ('n', u'предик. нареч.'),
 )
 PART_OF_SPEECH_MAP = {
-    'noun': 'a',
     'adjective': 'b',
-    'pronoun': 'c',
-    'verb': 'd',
-    'participle': 'e',
+    'adposition': 'h',
     'adverb': 'f',
     'conjunction': 'g',
-    'adposition': 'h',
-    'preposition': 'h',
-    'postposition': 'h',
-    'particle': 'i',
     'interjection': 'j',
-    'number': 'k',
     'letter': 'l',
+    'noun': 'a',
+    'number': 'k',
     'participle-adjective': 'm',
+    'participle': 'e',
+    'particle': 'i',
+    'postposition': 'h',
     'predicative adverb': 'n',
+    'preposition': 'h',
+    'pronoun': 'c',
+    'verb': 'd',
 }
 
 TANTUM_CHOICES = (
@@ -369,12 +369,12 @@ STATUS_CHOICES = (
     ('a', u'утверждена'),
 )
 STATUS_MAP = {
-    'created': 'c',
-    'inWork': 'w',
-    'greek': 'g',
-    'finished': 'f',
-    'beingEdited': 'e',
     'approved': 'a',
+    'beingEdited': 'e',
+    'created': 'c',
+    'finished': 'f',
+    'greek': 'g',
+    'inWork': 'w',
 }
 
 LANGUAGE_CHOICES = (
@@ -389,13 +389,13 @@ LANGUAGE_CHOICES = (
     ('i', u'сир.'),
 )
 LANGUAGE_MAP = {
-    'greek': 'a',
-    'hebrew': 'b',
     'akkadian': 'c',
     'aramaic': 'd',
     'armenian': 'e',
-    'georgian': 'f',
     'coptic': 'g',
+    'georgian': 'f',
+    'greek': 'a',
+    'hebrew': 'b',
     'latin': 'h',
     'syriac': 'i',
 }
@@ -405,24 +405,24 @@ ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE = {
 }
 ETYMOLOGY_LANGUAGES = ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.keys()
 LANGUAGE_CSS = {
-        LANGUAGE_MAP['greek']: 'grec',
-        LANGUAGE_MAP['hebrew']: 'hebrew',
         LANGUAGE_MAP['akkadian']: 'akkadian',
         LANGUAGE_MAP['aramaic']: 'aramaic',
         LANGUAGE_MAP['armenian']: 'armenian',
-        LANGUAGE_MAP['georgian']: 'georgian',
         LANGUAGE_MAP['coptic']: 'coptic',
+        LANGUAGE_MAP['georgian']: 'georgian',
+        LANGUAGE_MAP['greek']: 'grec',
+        LANGUAGE_MAP['hebrew']: 'hebrew',
         LANGUAGE_MAP['latin']: '',
         LANGUAGE_MAP['syriac']: 'syriac',
 }
 LANGUAGE_TRANSLIT_CSS = {
-        LANGUAGE_MAP['greek']: '',
-        LANGUAGE_MAP['hebrew']: 'hebrew-translit',
         LANGUAGE_MAP['akkadian']: '',
         LANGUAGE_MAP['aramaic']: 'aramaic-translit',
         LANGUAGE_MAP['armenian']: '',
-        LANGUAGE_MAP['georgian']: '',
         LANGUAGE_MAP['coptic']: '',
+        LANGUAGE_MAP['georgian']: '',
+        LANGUAGE_MAP['greek']: '',
+        LANGUAGE_MAP['hebrew']: 'hebrew-translit',
         LANGUAGE_MAP['latin']: '',
         LANGUAGE_MAP['syriac']: 'syriac-translit',
 }
