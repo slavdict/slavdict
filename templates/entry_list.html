@@ -41,41 +41,47 @@
     {% if entries %}
     {% if filters.per_se %}
         {% for entry in entries %}
+            {% set prepareCond = not entry.preplock or user.has_key_for_preplock %}
+            {% set authorlessCond = not entry.authors.exists() %}
+            {% set authorCond = user in entry.authors.all() %}
+            {% set editorCond = user.is_admeditor %}
+            {% set hellinistCond = user.is_hellinist %}
             <div style="position: relative;">
-            {% if (not entry.preplock or user.has_key_for_preplock)
-                  and (not entry.authors.exists() or user.is_admeditor
-                       or user in entry.authors.all()) %}
-                {% if not entry.duplicate or user.is_admeditor %}
                 <div class="editButtons">
-                    <a class="icon edit" href="{{ url('edit_form_url', args=[entry.pk]) }}">
-                        <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="изменить" />
-                    </a>
-                    {% if user.is_admeditor or user.is_hellinist %}
-                    <br />
+                {% if prepareCond and (authorlessCond or authorCond or editorCond) %}
                     <a class="icon edit"
-                            href="{{ url('hellinist_entries') }}?id={{ entry.id }}"
+                       href="{{ url('edit_form_url', args=[entry.pk]) }}">
+                        <img src="{{ STATIC_URL }}transparent.png?{{
+                                STATIC_RESOURCES_VERSION }}" alt="изменить" />
+                    </a>
+                    <br />
+                {% endif %}
+                {% if editorCond or hellinistCond %}
+                    <a class="icon edit" href="{{
+                            url('hellinist_entries') }}?id={{ entry.id }}"
                             title="Редактировать греч. параллели">
-                        <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="изменить" />
+                        <img src="{{ STATIC_URL }}transparent.png?{{
+                                STATIC_RESOURCES_VERSION }}" alt="изменить" />
                         <span>αβ</span>
                     </a>
-                    {% endif %}
-                    {% if entry.antconc_query|trim %}
                     <br />
+                {% endif %}
+                {% if entry.antconc_query|trim %}
                     <a class="icon clippy nearText"
                        data-clipboard-text="{{ entry.antconc_query|e }}"
                        title="Скопировать запрос для АнтКонка">
-                        <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="v" />
+                        <img src="{{ STATIC_URL }}transparent.png?{{
+                                STATIC_RESOURCES_VERSION }}" alt="v" />
                     </a>
-                    {% endif %}
-                    {% if user.is_superuser %}
                     <br />
-                    <a class="icon" href="/entries/{{ entry.pk }}/intermed/">
-                        <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="изменить" />
-                    </a>
-                    {% endif %}
-                </div>
                 {% endif %}
-            {% endif %}
+                {% if prepareCond and editorCond %}
+                    <a class="icon" href="/entries/{{ entry.pk }}/intermed/">
+                        <img src="{{ STATIC_URL }}transparent.png?{{
+                                STATIC_RESOURCES_VERSION }}" alt="изменить" />
+                    </a>
+                {% endif %}
+                </div>
             {% include 'web/entry.html' %}
             </div>
         {% endfor %}
@@ -136,8 +142,10 @@
                           and (not entry.authors.exists() or user.is_admeditor
                                or user in entry.authors.all()) %}
                         {% if not entry.duplicate or user.is_admeditor %}
-                        <a class="icon edit" href="{{ url('edit_form_url', args=[entry.pk]) }}">
-                            <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="e" />
+                        <a class="icon edit" href="{{ url('edit_form_url',
+                                                          args=[entry.pk]) }}">
+                            <img src="{{ STATIC_URL }}transparent.png?{{
+                                         STATIC_RESOURCES_VERSION }}" alt="e" />
                         </a>
                         <span class="hint-container">
                             <div class="hint">Редактировать<br/>статью</div>
@@ -152,7 +160,8 @@
                     {% if entry.antconc_query|trim %}
                     <a class="icon clippy"
                             data-clipboard-text="{{ entry.antconc_query|e }}">
-                        <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}" alt="v" />
+                        <img src="{{ STATIC_URL }}transparent.png?{{
+                                     STATIC_RESOURCES_VERSION }}" alt="v" />
                     </a>
                     <span class="hint-container">
                         <div class="hint">

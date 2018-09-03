@@ -63,7 +63,7 @@
                 <br>
             {% endif %}
 
-            {% if editorCond %}
+            {% if prepareCond and editorCond %}
                 <a class="icon" href="/entries/{{ entry.pk }}/intermed/">
                     <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}"
                          alt="изменить" />
