@@ -78,9 +78,9 @@
             <span class="Text">({{ genum }})</span>{{ space }}
         {% endif %}
 
-        {% if ge.note %}
+        {% if show_additional_info and ge.note %}
             {{ backspace }}{{ space }}
-            <span class="Text">{{ ge.note |
+            <span class="ai ai-grfex Text hyphenate">{{ ge.note |
                 web_regex("Em", 'букв\\.') }}</span>
             {{ space }}
         {% endif %}

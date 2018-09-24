@@ -46,11 +46,13 @@
             <x aid:cstyle="Text">({{ genum }})</x>{{ space }}
         {% endif %}
 
+        {#
         {% if ge.note %}
             {{ backspace }}{{ space }}
             <x aid:cstyle="Text">{{ ge.note|ind_regex("Em", 'букв\\.') }}</x>
             {{ space }}
         {% endif %}
+        #}
 
     {% endfor %}
 {% endif %}
