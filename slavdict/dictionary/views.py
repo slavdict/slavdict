@@ -438,7 +438,7 @@ def single_entry(request, entry_id, extra_context=None,
 
     context = {
         'entry': entry,
-        'title': u'Статья «%s»' % entry.civil_equivalent,
+        'title': entry.civil_equivalent,
         'show_additional_info': 'ai' in request.COOKIES,
         'user': user,
     }
@@ -920,7 +920,7 @@ def edit_entry(request, id):
         'part_of_speech': models.PART_OF_SPEECH_MAP,
     }
     context = {
-        'title': u'Статья «%s»' % entry.civil_equivalent,
+        'title': entry.civil_equivalent,
         'user': user,
         'entry': viewmodels.entry_json(id),
         'antconc_query': entry.antconc_query,
