@@ -15,7 +15,10 @@
         {% endif %}
 
         {% if loop.first %}
-            <span class="Headword">{{ base_var.idem_ucs }}</span>
+            <a href="{{ entry.get_absolute_url() }}">
+            {{ base_var.idem_ucs |
+                    web_cslav_words("Headword") }}
+            </a>
         {% else %}
             {{ base_var.idem_ucs |
                     web_cslav_words("SubHeadword") }}
