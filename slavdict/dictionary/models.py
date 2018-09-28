@@ -458,7 +458,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
     (SC8, u'4 лексемы [вихрь]'),
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
-MSC11, MSC12, MSC13 = 'klm'
+MSC11, MSC12, MSC13, MSC14 = 'klmn'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (u'Имена', (
@@ -478,6 +478,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
         (MSC11, u'мн.'),
         (MSC5,  u'твор. ед. в роли нареч.'),
         (MSC12, u'в роли нареч.'),
+        (MSC14, u'в роли прил.'),
     )),
     (u'Другое', (
         (MSC10, u'преимущ.'),

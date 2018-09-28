@@ -25,6 +25,7 @@
 {% set MSC10 = 'j' %}{# преимущ. #}
 {% set MSC11 = 'k' %}{# мн. #}
 {% set MSC12 = 'l' %}{# в роли нареч. #}
+{% set MSC14 = 'n' %}{# в роли прил. #}
 
 {% if m.special_case == MSC1 %}{# канонич. #}
 
@@ -50,6 +51,13 @@
 
     {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
+
+{% elif m.special_case == MSC14 %}{# в роли прил. #}
+
+    {% if m.substantivus_csl %}
+        {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% endif %}
+    <x aid:cstyle="Em">в{{ nbsp }}роли прил.</x>{{ space }}
 
 {% elif m.special_case == MSC8 %}{# имя собств. #}
 
