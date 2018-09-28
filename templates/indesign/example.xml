@@ -11,7 +11,7 @@
 {% if full_translations %}
     {% for t in full_translations %}
         {% if not loop.first %}
-            {{ backspace }},{{ space }}
+            {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
         <x aid:cstyle="Text">‘{{ t.translation|e }}’</x>
     {% endfor %}
@@ -22,7 +22,7 @@
     {% for ge, genum in e.greek_equivs_with_numbers(show_info=False) %}
 
         {% if not loop.first %}
-            {{ backspace }},{{ space }}
+            {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
 
         {% if ge.mark %}

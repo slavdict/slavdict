@@ -36,7 +36,7 @@
     <span class="ai ai-grfex">
     {% for t in hidden_full_translations %}
         {% if not loop.first %}
-            {{ backspace }},{{ space }}
+            {{ backspace }}<span class="Text">,</span>{{ space }}
         {% endif %}
         <span class="Text hyphenate">‘{{ t.translation|e }}’</span>
         {% if show_additional_info and t.additional_info|trim %}
@@ -54,7 +54,7 @@
     {% for ge, genum in e.greek_equivs_with_numbers(show_info=show_additional_info) %}
 
         {% if not loop.first %}
-            {{ backspace }},{{ space }}
+            {{ backspace }}<span class="Text">,</span>{{ space }}
         {% endif %}
 
         {% if ge.mark %}
