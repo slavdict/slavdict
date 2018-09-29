@@ -1547,9 +1547,12 @@ class Meaning(models.Model, JSONSerializable):
 
     _RE1 = re.compile(ur'[\s,;\\/\(\)]*##[^#]*?##[\s,;\\/\(\)]*|[\s,;\\/\(\)]+',
                       re.UNICODE)
-    _RE2 = re.compile(ur'[\-' u'\u2010]' ur'л\.$', re.UNICODE)  # NOTE: В py3
-            # нельзя использовать юникодные экранирующие последовательнсти
-            # в сырых строках. \u2010 -- неразрывный дефис.
+    _RE2 = re.compile(ur'[\-'
+                      u'\u2010]'
+                      ur'л\.$|^с$|^инф\.$|^придат\.$',
+                      re.UNICODE)  # NOTE: В py3 нельзя использовать юникодные
+            # экранирующие последовательнсти в сырых строках. \u2010 --
+            # неразрывный дефис.
 
     def looks_like_valency(self, host_entry):
         if host_entry is None:
