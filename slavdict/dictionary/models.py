@@ -445,7 +445,7 @@ SUBSTANTIVUS_TYPE_MAP = {
     'f.pl.': 'f',
 }
 
-ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8 = 'abcdefgh'
+ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9 = 'abcdefghi'
 ENTRY_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (SC1, u'Несколько лексем одного рода'),
@@ -456,6 +456,8 @@ ENTRY_SPECIAL_CASES_CHOICES = (
     (SC5, u'2 лексемы, только мн. и жен.'),
     (SC6, u'3 лексемы, 3 муж. и последний неизм.'),
     (SC8, u'4 лексемы [вихрь]'),
+    (SC9, u'Вынудить отображение пометы «неперех. и перех.» '
+          u'при равном кол-ве перех. и неперех. значений'),
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
 MSC11, MSC12, MSC13, MSC14 = 'klmn'
@@ -645,21 +647,20 @@ class Entry(models.Model, JSONSerializable):
         lst = filter(None, (m.transitivity for m in self.meanings))
         template = u'%s и\u00a0%s'
         if len(lst) == 0:
-            self.transitivity_label = u''
             return u''
-        elif len(set(lst)) == 1:
-            self.transitivity_label = lst[0]
+        elif len(set(lst)) == 1 and \
+                not (lst[0] == labile and self.special_case == SC9):
             return tmap.get(lst[0], u'')
         else:
-            self.transitivity_label = labile
             c = Counter(lst)
             if labile in c:
                 c[trans] += c[labile]
                 c[intrans] += c[labile]
-            if c[trans] >= c[intrans]:
-                return template % (tmap[trans], tmap[intrans])
-            else:
+            if c[trans] < c[intrans] or \
+                    c[trans] >= c[intrans] and self.special_case == SC9:
                 return template % (tmap[intrans], tmap[trans])
+            else:
+                return template % (tmap[trans], tmap[intrans])
 
     sg1 = CharField(u'форма 1 ед.', max_length=50, blank=True,
                     help_text=u'''Целая словоформа или окончание. В случае
