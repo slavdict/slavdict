@@ -741,8 +741,10 @@ def entry_list(request, for_hellinists=False, per_page=12,
         context['hellinist_workbench'] = True
         context['indicators'] = {
             URGENT_INDICATOR: Example.objects.filter(
+                meaning__isnull=False,
                 greek_eq_status=Example.GREEK_EQ_URGENT).count(),
             MEANING_INDICATOR: Example.objects.filter(
+                meaning__isnull=False,
                 greek_eq_status=Example.GREEK_EQ_MEANING).count(),
         }
 
@@ -817,8 +819,10 @@ def hellinist_workbench(request, per_page=4):
         'number_of_examples': paginator.count,
         'indicators': {
             URGENT_INDICATOR: Example.objects.filter(
+                meaning__isnull=False,
                 greek_eq_status=Example.GREEK_EQ_URGENT).count(),
             MEANING_INDICATOR: Example.objects.filter(
+                meaning__isnull=False,
                 greek_eq_status=Example.GREEK_EQ_MEANING).count(),
             },
         'page': page,
