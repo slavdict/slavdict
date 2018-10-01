@@ -432,7 +432,7 @@ function Example() {
     );
     Example.all.append(this);
 }
-Example.UCS8WordSplitRE = /[\s\.,:;!\/"'«»“”‘’\[\]\(\)]+/gum;
+Example.UCS8WordSplitRE = /[\s\.,:;!\/"'«»“”‘’\[\]\(\)\{\}=]+/gum;
 Example.UCS8SegmentSplitRE =
     RegExp('(' + Example.UCS8WordSplitRE.source + ')', 'gum');
 /* NOTE: 1. В регулярном выражении разбивки примера на слова нельзя

@@ -257,6 +257,7 @@ class Segment(Tag):
     TYPE_SPACE = 'space'
     TYPE_HYPHEN = 'hyphen'
     TYPE_SLASH = 'slash'
+    TYPE_EQUAL_SIGN = 'equal_sign'
     TYPE_EXTERNAL = 'external'
 
     TYPES_LEFT_PAIRING = (TYPE_LEFT_BRACKET, TYPE_LEFT_QUOTE)
@@ -266,9 +267,10 @@ class Segment(Tag):
     TYPES_ADHERING_SEPARATORS = (TYPE_PERIOD, TYPE_ELLIPSIS, TYPE_COMMA,
                                  TYPE_COLON, TYPE_SEMICOLON, TYPE_EXCL)
 
-    def __init__(self, segment, tag, base_script=SCRIPT_CSLAV):
+    def __init__(self, segment, tag, base_script=SCRIPT_CSLAV, non_word=None):
         self.segment = segment
         self.tag = tag
+        self.non_word = non_word
         self.base_script = base_script
         self.output_script = base_script
 
@@ -299,7 +301,7 @@ class Segment(Tag):
         elif self.segment == u'»':
             self.type = self.TYPE_RIGHT_QUOTE
 
-        elif self.segment in list(u'“”„"‘’‛\''):
+        elif self.segment in list(u'“”„"‘’‛'):
             self.type = self.TYPE_QUOTE
             self.output_script = SCRIPT_CIVIL
 
@@ -315,6 +317,14 @@ class Segment(Tag):
             self.output_script = SCRIPT_CIVIL
 
         elif self.segment in list(u')]'):
+            self.type = self.TYPE_RIGHT_BRACKET
+            self.output_script = SCRIPT_CIVIL
+
+        elif self.segment == u'{' and self.non_word:
+            self.type = self.TYPE_LEFT_BRACKET
+            self.output_script = SCRIPT_CIVIL
+
+        elif self.segment == u'}' and self.non_word:
             self.type = self.TYPE_RIGHT_BRACKET
             self.output_script = SCRIPT_CIVIL
 
@@ -339,6 +349,10 @@ class Segment(Tag):
             self.type = self.TYPE_HYPHEN
             self.output_script = SCRIPT_CIVIL
 
+        elif self.segment == u'=' and self.non_word:
+            self.type = self.TYPE_EQUAL_SIGN
+            self.output_script = SCRIPT_CIVIL
+
         else:
             self.type = self.TYPE_WORD
 
@@ -347,7 +361,7 @@ class Segment(Tag):
         if self.type == self.TYPE_EXTERNAL:
             segment = self.segment
         elif self.type == self.TYPE_WORD:
-            segment = html_escape(hyphenate_ucs8(self.segment))
+            segment = html_escape(hyphenate_ucs8(ucs_convert(self.segment)))
             if self.tag.for_web:
                 #HYPHEN_TAG = u'<span class="Text">\u00AD</span>'
                 pass
@@ -359,9 +373,10 @@ class Segment(Tag):
         return tag % segment
 
 class ExternalSegment(Segment):
-    def __init__(self, segment, tag, base_script=SCRIPT_CIVIL):
+    def __init__(self, segment, tag, base_script=SCRIPT_CIVIL, non_word=None):
         self.segment = segment
         self.tag = tag
+        self.non_word = non_word
         self.base_script = base_script
         self.output_script = base_script
         self.type = Segment.TYPE_EXTERNAL
@@ -369,12 +384,12 @@ class ExternalSegment(Segment):
 
 RE_CSLAV_SEGMENT = re.compile(u'(%s)' % u'|'.join([
         ur'\.\.\.',
-        ur'[\(\)\[\]\.,;:!«»“”„"‘’‛\'—–\-\u2011\u2010\*°]',
+        ur'[\(\)\[\]\{\}\.,;:!«»“”„"‘’‛=—–\-\u2011\u2010\*°]',
         ur'\/{0}?'.format(ZWS),
         ur'[\s\u00a0]+']))
 RE_CIVIL_SEGMENT = re.compile(u'(%s)' % u'|'.join([
         ur'\.\.\.',
-        ur'[\(\)\[\]\.,;:!?…\\/«»“”„"‘’‛\'—–\-\u2011\u2010\*]',
+        ur'[\(\)\[\]\{\}\.,;:!?…\\/«»“”„"‘’‛=—–\-\u2011\u2010\*]',
         ur'\/{0}?'.format(ZWS),
         ur'[\s\u00a0]+']))
 
@@ -385,7 +400,7 @@ def get_nonword_segments(string, tag, base_script):
         regexp = RE_CIVIL_SEGMENT
     else:
         raise NotImplementedError
-    segments = [Segment(s, tag)
+    segments = [Segment(s, tag, non_word=True)
                 for s in re.split(regexp, string)
                 if s]  # Исключаем сегменты, состоящие из пустых строк
     return segments
@@ -447,8 +462,8 @@ class Words(object):
 
 
 CSLCSTYLE = u'CSLSegment'
-RE_CSLAV_SPLIT = ur'([\s\u00a0.,;:!/«»“”„"‘’‛\'—–\-\u2011\u2010*°\(\)\[\]]+)'
-RE_CIVIL_SPLIT = ur'([\s\u00a0.…,;:!?\\/«»“”„"‘’‛\'—–\-\u2011\u2010*\(\)\[\]]+)'
+RE_CSLAV_SPLIT = ur'([\s\u00a0.,;:!/«»“”„"‘’‛=—–\-\u2011\u2010*°\(\)\[\]\{\}]+)'
+RE_CIVIL_SPLIT = ur'([\s\u00a0.…,;:!?\\/«»“”„"‘’‛=—–\-\u2011\u2010*\(\)\[\]]+)'
 
 def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
@@ -467,7 +482,7 @@ def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
     for i in range(len(segments) / 2 + 1):
         s1 = i * 2
         s2 = s1 + 1
-        word = Segment(segments[s1], tag)
+        word = Segment(segments[s1], tag, non_word=False)
         if s2 < len(segments):
             in_between = get_nonword_segments(segments[s2], tag, SCRIPT_CSLAV)
         else:
@@ -492,7 +507,8 @@ def civil_words(value, civil_cstyle=None, for_web=False):
     for i in range(len(segments) / 2 + 1):
         s1 = i * 2
         s2 = s1 + 1
-        word = Segment(segments[s1], tag, base_script=SCRIPT_CIVIL)
+        word = Segment(segments[s1], tag, non_word=False,
+                       base_script=SCRIPT_CIVIL)
         if s2 < len(segments):
             in_between = get_nonword_segments(segments[s2], tag, SCRIPT_CIVIL)
         else:
@@ -554,8 +570,8 @@ def _insert_translation_data(words, data, show_additional_info=False,
                 for t in lst]
         translations = u', '.join(translations)
         translations = u'(%s)' % translations
-        seg = ExternalSegment(translations, tag1, SCRIPT_CIVIL)
-        space = Segment(u' ', tag0, SCRIPT_CIVIL)
+        seg = ExternalSegment(translations, tag1, base_script=SCRIPT_CIVIL)
+        space = Segment(u' ', tag0, base_script=SCRIPT_CIVIL, non_word=True)
         words[index - 1].right_in_between[:0] = [space, seg]
 
     # Расстановка частичных переводов, отображаемых в авторских комментах
@@ -572,8 +588,8 @@ def _insert_translation_data(words, data, show_additional_info=False,
                 )
                 for t in lst]
         translations = u', '.join(translations)
-        seg = ExternalSegment(translations, tag2, SCRIPT_CIVIL)
-        space = Segment(u' ', tag0, SCRIPT_CIVIL)
+        seg = ExternalSegment(translations, tag2, base_script=SCRIPT_CIVIL)
+        space = Segment(u' ', tag0, SCRIPT_CIVIL, non_word=True)
         right_in_between = words[index - 1].right_in_between
         x = [s.type == Segment.TYPE_EXTERNAL for s in right_in_between]
         if True in x:

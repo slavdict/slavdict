@@ -12,7 +12,7 @@
     {% set hidden_full_translations = [] %}
 {% endif %}
 
-{{ e.example_ucs | web_cslav_words("CSLSegment", "Text") |
+{{ e.example | web_cslav_words("CSLSegment", "Text") |
         insert_translations(partial_translations, show_additional_info, hidden_partial_translations) }}
 {{ space }}
 
