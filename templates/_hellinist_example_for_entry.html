@@ -50,6 +50,12 @@
     </span>{{ space }}
     <br />
 
+    <span class="button" data-bind="visible: !address(), click: function () {
+            address('…');
+        }">
+        Указать адрес примера
+    </span>{{ space }}
+
     <span class="button" data-bind="visible:
             !comment() && !commentEditable() && !exampleEditable(),
             click: toggleComment">
