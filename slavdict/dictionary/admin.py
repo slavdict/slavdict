@@ -554,7 +554,7 @@ def headword(self):
                 style="font-size: smaller">%s</span>''' % (
         self.get_part_of_speech_display(),
         self.orth_vars[0].idem_ucs,
-        hmap[self.homonym_order],
+        hmap.get(self.homonym_order, u''),
         u'<br>%s' % self.homonym_gloss if self.homonym_gloss else u'',
         )
 headword.short_description = u''  # Делаем заголовок столбца пустым
