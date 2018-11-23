@@ -7,8 +7,10 @@ NOW=$(date +"%Y.%m.%d--%H.%M")
 DUMPDIR="${1:-$PRJDIR/.dumps}"
 LASTFILE=$(ls -tA "$DUMPDIR"/.dictionary*.xml | head -1)
 FILE="$DUMPDIR/.dictionary--$NOW---$DBS_VERSION.xml"
+VERBOSITY=${2:-0}
 
-python $PRJDIR/manage.py dumpdata dictionary --all --format=xml --indent=4 > $FILE
+python $PRJDIR/manage.py dumpdata --verbosity=$VERBOSITY \
+    dictionary --all --format=xml --indent=4 > $FILE
 
 if [ "$LASTFILE" ]
 then
