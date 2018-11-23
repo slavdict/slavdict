@@ -29,6 +29,10 @@ constructors.nameMap = {'Etymology': Etymology, 'Participle': Participle,
     'Greq': Greq, 'Example': Example, 'Collogroup': Collogroup,
     'Meaning': Meaning, 'Entry': Entry, 'Translation': Translation};
 
+function getId() {
+    return (+new Date()).toString();
+}
+
 // Функция создающая датчики, оповещающие о том, что словарная статья
 // изменилась.
 function snapshotObservable(observable) {
@@ -193,7 +197,7 @@ function Etymology() {
     upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'etymon_to_id', data, etymonTo_id);
     upsert(this, 'gloss', data, '');
-    upsert(this, 'id', data, 'etymon' + Etymology.all.length);
+    upsert(this, 'id', data, 'etymon' + getId());
     upsert(this, 'language', data, 'a' /* греческий */);
     upsert(this, 'mark', data, '');
     upsert(this, 'meaning', data, '');
@@ -223,7 +227,7 @@ function Participle() {
     upsert(this, 'tp', data, '');
     upsert(this, 'order', data, defaultOrder);
     upsert(this, 'entry_id', data, entry_id);
-    upsert(this, 'id', data, 'participle' + Participle.all.length);
+    upsert(this, 'id', data, 'participle' + getId());
     Participle.all.append(this);
 }
 
@@ -240,7 +244,7 @@ function Orthvar() {
     upsert(this, 'idem', data, '');
     upsert(this, 'order', data, defaultOrder);
     upsert(this, 'entry_id', data, entry_id);
-    upsert(this, 'id', data, 'orthvar' + Orthvar.all.length);
+    upsert(this, 'id', data, 'orthvar' + getId());
     upsert(this, 'questionable', data, false);
     upsert(this, 'reconstructed', data, false);
 
@@ -275,7 +279,7 @@ function Collocation() {
     upsert(this, 'civil_equivalent', data, '');
     upsert(this, 'collocation', data, '');
     upsert(this, 'collogroup_id', data, collogroup_id);
-    upsert(this, 'id', data, 'collocation' + Collocation.all.length);
+    upsert(this, 'id', data, 'collocation' + getId());
     upsert(this, 'order', data, defaultOrder);
     Collocation.all.append(this);
 }
@@ -291,7 +295,7 @@ function Context() {
     else data = arguments[0];
 
     upsert(this, 'context', data, '');
-    upsert(this, 'id', data, 'context' + Context.all.length);
+    upsert(this, 'id', data, 'context' + getId());
     upsert(this, 'left_text', data, '');
     upsert(this, 'meaning_id', data, meaning_id);
     upsert(this, 'order', data, defaultOrder);
@@ -312,7 +316,7 @@ function Greq() {
     upsert(this, 'additional_info', data, '');
     upsert(this, 'aliud', data, false);
     upsert(this, 'for_example_id', data, example_id);
-    upsert(this, 'id', data, 'greq' + Greq.all.length);
+    upsert(this, 'id', data, 'greq' + getId());
     upsert(this, 'initial_form', data, '');
     upsert(this, 'initial_form_phraseology', data, '');
     upsert(this, 'mark', data, '');
@@ -336,7 +340,7 @@ function Translation() {
 
     upsert(this, 'additional_info', data, '');
     upsert(this, 'for_example_id', data, example_id);
-    upsert(this, 'id', data, 'greq' + Translation.all.length);
+    upsert(this, 'id', data, 'greq' + getId());
     upsert(this, 'hidden', data, true);
     upsert(this, 'translation', data, '');
     upsert(this, 'fragmented', data, false);
@@ -392,7 +396,7 @@ function Example() {
     upsertArray(this, 'greqs', Greq, data);
     upsertArray(this, 'translations', Translation, data);
     upsert(this, 'hidden', data, false);
-    upsert(this, 'id', data, 'example' + Example.all.length);
+    upsert(this, 'id', data, 'example' + getId());
     upsert(this, 'meaning_id', data, meaning_id);
     upsert(this, 'note', data, '');
     upsert(this, 'order', data, defaultOrder);
@@ -473,7 +477,7 @@ function Collogroup() {
     upsertArray(this, 'collocations', Collocation, data);
     upsert(this, 'base_entry_id', data, entry_id);
     upsert(this, 'base_meaning_id', data, meaning_id);
-    upsert(this, 'id', data, 'collogroup' + Collogroup.all.length);
+    upsert(this, 'id', data, 'collogroup' + getId());
     upsert(this, 'order', data, defaultOrder);
     upsertArray(this, 'meanings', Meaning, data);
     upsertArray(this, 'unsorted_examples', Example, data);
@@ -529,7 +533,7 @@ function Meaning() {
     upsert(this, 'entry_container_id', data, entry_id);
     upsert(this, 'collogroup_container_id', data, collogroup_id);
     upsert(this, 'parent_meaning_id', data, meaning_id);
-    upsert(this, 'id', data, 'meaning' + Meaning.all.length);
+    upsert(this, 'id', data, 'meaning' + getId());
     upsert(this, 'order', data, defaultOrder);
     upsertArray(this, 'collogroups', Collogroup, data);
     upsertArray(this, 'meanings', Meaning, data);
