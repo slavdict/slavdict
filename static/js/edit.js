@@ -143,6 +143,17 @@ function itemDestroyer(item) {
     var array = this;
     return {
         do: function () {
+            var dependantsToDestroy = item.constructor.dependantsToDestroy;
+            if (dependantsToDestroy) {
+                var dependant, dependants, i, j;
+                for (i = 0; i < dependantsToDestroy.length; i++) {
+                    dependants = item[dependantsToDestroy[i]];
+                    for (j = dependants().length; j > 0; j--) {
+                        dependant = dependants()[j - 1];
+                        dependants.itemDestroyer(dependant).do();
+                    }
+                }
+            }
             if (typeof item.id() === 'number') {
                 array.itemConstructor.shredder.push(item.id());
             }
@@ -212,6 +223,7 @@ function Etymology() {
     Etymology.all.append(this);
 }
 Etymology.hideFromServer = ['etymologies'];
+Etymology.dependantsToDestroy = ['etymologies'];
 
 function Participle() {
     /* Participle(entry)
@@ -436,6 +448,7 @@ function Example() {
     );
     Example.all.append(this);
 }
+Example.dependantsToDestroy = ['greqs', 'translations'];
 Example.UCS8WordSplitRE = /[\s\.,:;!\/"'«»“”‘’\[\]\(\)]+/gum;
 Example.UCS8SegmentSplitRE =
     RegExp('(' + Example.UCS8WordSplitRE.source + ')', 'gum');
@@ -492,8 +505,10 @@ function Collogroup() {
     }, this);
     Collogroup.all.append(this);
 }
-Collogroup.hideFromServer = ['meanings', 'unsorted_examples', 'etymologies',
-    'isExpanded'];
+Collogroup.hideFromServer = [
+    'meanings', 'unsorted_examples', 'etymologies', 'isExpanded'];
+Collogroup.dependantsToDestroy = [
+    'meanings', 'unsorted_examples', 'etymologies', 'collocations'];
 
 function Meaning() {
     /* Meaning(container[, parentMeaning])
@@ -545,6 +560,8 @@ function Meaning() {
     Meaning.all.append(this);
 }
 Meaning.hideFromServer = ['collogroups', 'meanings', 'examples', 'isExpanded'];
+Meaning.dependantsToDestroy = [
+    'collogroups', 'meanings', 'examples', 'contexts'];
 
 function Entry(data) {
     upsert(this, 'additional_info', data, '');
@@ -585,6 +602,8 @@ function Entry(data) {
 }
 Entry.hideFromServer = ['unsorted_examples', 'meanings', 'collogroups',
     'etymologies', 'author_ids'];
+Entry.dependantsToDestroy = ['participles', 'orthvars', 'unsorted_examples',
+    'meanings', 'collogroups', 'etymologies'];
 
 // У meaning возможны следующие сочетания значений полей
 // entry_container_id (E), collogroup_container_id (C)
