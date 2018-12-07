@@ -16,6 +16,7 @@ from django.db.models import ManyToManyField
 from django.db.models import PositiveSmallIntegerField
 from django.db.models import SmallIntegerField
 from django.db.models import TextField
+from django.db.utils import OperationalError
 from django.utils.safestring import mark_safe
 
 from hip2unicode.functions import convert
@@ -500,6 +501,7 @@ VOLUME_LETTERS = {
     1: (u'а', u'б'),
     2: (u'в',),
 }
+ANY_LETTER = None
 
 class WithoutHiddenManager(models.Manager):
     def get_queryset(self):
@@ -978,6 +980,13 @@ class Entry(models.Model, JSONSerializable):
             match = first_letter in used_letters
         return match
 
+    def letter(self, letter=ANY_LETTER):
+        # Если аргумент letter не передан, то выбираем все статьи
+        if letter is ANY_LETTER:
+            return True
+        first_letter = self.civil_equivalent.lstrip(u' =')[:1].lower()
+        return first_letter == letter.lower()
+
     @models.permalink
     def get_absolute_url(self):
         return ('single_entry_url', [str(self.id)])
@@ -1077,7 +1086,6 @@ class Entry(models.Model, JSONSerializable):
         verbose_name = u'словарная статья'
         verbose_name_plural = u'СЛОВАРНЫЕ СТАТЬИ'
         ordering = ('-id',)
-
 
 class Etymology(models.Model, JSONSerializable):
 
@@ -1546,6 +1554,12 @@ class Meaning(models.Model, JSONSerializable):
             return host_entry.volume(volume)
         return False
 
+    def letter(self, letter=ANY_LETTER):
+        host_entry = self.host_entry
+        if host_entry:
+            return host_entry.letter(letter)
+        return False
+
     _RE1 = re.compile(ur'[\s,;\\/\(\)]*##[^#]*?##[\s,;\\/\(\)]*|[\s,;\\/\(\)]+',
                       re.UNICODE)
     _RE2 = re.compile(ur'[\-'
@@ -1795,6 +1809,12 @@ class Example(models.Model, JSONSerializable):
         host_entry = self.host_entry
         if host_entry:
             return host_entry.volume(volume)
+        return False
+
+    def letter(self, letter=ANY_LETTER):
+        host_entry = self.host_entry
+        if host_entry:
+            return host_entry.letter(letter)
         return False
 
     def example_for_admin(self):
@@ -2070,6 +2090,12 @@ class CollocationGroup(models.Model, JSONSerializable):
         host_entry = self.host_entry
         if host_entry:
             return host_entry.volume(volume)
+        return False
+
+    def letter(self, letter=ANY_LETTER):
+        host_entry = self.host_entry
+        if host_entry:
+            return host_entry.letter(letter)
         return False
 
     def meanings_for_admin(self):
@@ -2599,3 +2625,12 @@ for Model in Models:
     x = get_max_lengths(Model)
     if x:
         MAX_LENGTHS[Model.__name__] = x
+
+try:
+    LETTERS = set(e.civil_equivalent.lstrip(u' =')[0].lower()
+                  for e in Entry.objects.all())
+except OperationalError:
+    LETTERS = []
+else:
+    LETTERS = list(LETTERS)
+    LETTERS.sort()

@@ -27,6 +27,8 @@ from slavdict.dictionary.models import Participle
 from slavdict.dictionary.models import Translation
 from slavdict.dictionary.models import VOLUME_LETTERS
 from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
+from slavdict.dictionary.models import LETTERS
+from slavdict.dictionary.models import ANY_LETTER
 
 admin.site.login_template = ui.login_template
 
@@ -220,6 +222,43 @@ class VolumeExampleFilter(VolumeFilter):
     def xs(self, volume=YET_NOT_IN_VOLUMES):
         return (x.id for x in Example.objects.all() if x.volume(volume))
 
+
+class LetterFilter(admin.SimpleListFilter):
+    title = u'Буквы'
+    parameter_name = 'letter'
+    def lookups(self, request, model_admin):
+        choices = tuple(
+            (letter, letter.upper())
+            for letter in LETTERS)
+        return choices
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value is None:
+            return queryset
+        elif value.isalpha():
+            return queryset.filter(id__in=self.xs(letter=self.value()))
+        else:
+            return queryset.none()
+
+class LetterEntryFilter(LetterFilter):
+    def xs(self, letter=ANY_LETTER):
+        return (e.id for e in Entry.objects.all() if e.letter(letter))
+
+class LetterCollogroupFilter(LetterFilter):
+    def xs(self, letter=ANY_LETTER):
+        return (x.id for x in CollocationGroup.objects.all()
+                     if x.letter(letter))
+
+class LetterMeaningFilter(LetterFilter):
+    def xs(self, letter=ANY_LETTER):
+        return (m.id for m in Meaning.objects.all()
+                     if m.not_hidden() and m.letter(letter))
+
+class LetterExampleFilter(LetterFilter):
+    def xs(self, letter=ANY_LETTER):
+        return (x.id for x in Example.objects.all() if x.letter(letter))
+
 class SubstantivusMeaningFilter(admin.SimpleListFilter):
     title = u'в роли сущ.'
     parameter_name = 'substantivus'
@@ -385,7 +424,7 @@ class AdminExample(admin.ModelAdmin):
     list_display = ('entry_for_example', 'meaning_for_example', 'id', 'example', 'address_text', 'greek_eq_status')
     list_display_links = ('id', 'example')
     list_editable = ('greek_eq_status', 'address_text')
-    list_filter = (VolumeExampleFilter, 'greek_eq_status',)
+    list_filter = (VolumeExampleFilter, LetterExampleFilter, 'greek_eq_status')
     search_fields = (
         'example',
         'address_text',
@@ -503,6 +542,7 @@ class AdminMeaning(admin.ModelAdmin):
     )
     list_filter = (
         VolumeMeaningFilter,
+        LetterMeaningFilter,
         'metaphorical',
         FigurativeMeaningFilter,
         SubstantivusMeaningFilter,
@@ -675,6 +715,7 @@ class AdminEntry(admin.ModelAdmin):
         )
     list_filter = (
         VolumeEntryFilter,
+        LetterEntryFilter,
         'authors',
         'status',
         'part_of_speech',
@@ -806,7 +847,7 @@ class AdminCollocationGroup(admin.ModelAdmin):
     )
     list_display_links = ('id', '__unicode__')
     list_editable = ('phraseological',)
-    list_filter = (VolumeCollogroupFilter, 'phraseological',)
+    list_filter = (VolumeCollogroupFilter, LetterCollogroupFilter, 'phraseological')
     search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')
     class Media:
         css = {"all": ("fix_admin.css",)}
