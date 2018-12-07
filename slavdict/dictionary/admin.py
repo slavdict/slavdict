@@ -224,8 +224,8 @@ class VolumeExampleFilter(VolumeFilter):
 
 
 class LetterFilter(admin.SimpleListFilter):
-    title = u'Буквы'
-    parameter_name = 'letter'
+    title = u'Буквы (или начальные сочетания букв)'
+    parameter_name = 'starts_with'
     def lookups(self, request, model_admin):
         choices = tuple(
             (letter, letter.upper())
@@ -236,28 +236,28 @@ class LetterFilter(admin.SimpleListFilter):
         value = self.value()
         if value is None:
             return queryset
-        elif value.isalpha():
-            return queryset.filter(id__in=self.xs(letter=self.value()))
         else:
-            return queryset.none()
+            return queryset.filter(id__in=self.xs(starts_with=value))
 
 class LetterEntryFilter(LetterFilter):
-    def xs(self, letter=ANY_LETTER):
-        return (e.id for e in Entry.objects.all() if e.letter(letter))
+    def xs(self, starts_with=ANY_LETTER):
+        return (e.id for e in Entry.objects.all()
+                     if e.starts_with(starts_with))
 
 class LetterCollogroupFilter(LetterFilter):
-    def xs(self, letter=ANY_LETTER):
+    def xs(self, starts_with=ANY_LETTER):
         return (x.id for x in CollocationGroup.objects.all()
-                     if x.letter(letter))
+                     if x.starts_with(starts_with))
 
 class LetterMeaningFilter(LetterFilter):
-    def xs(self, letter=ANY_LETTER):
+    def xs(self, starts_with=ANY_LETTER):
         return (m.id for m in Meaning.objects.all()
-                     if m.not_hidden() and m.letter(letter))
+                     if m.not_hidden() and m.starts_with(starts_with))
 
 class LetterExampleFilter(LetterFilter):
-    def xs(self, letter=ANY_LETTER):
-        return (x.id for x in Example.objects.all() if x.letter(letter))
+    def xs(self, starts_with=ANY_LETTER):
+        return (x.id for x in Example.objects.all()
+                     if x.starts_with(starts_with))
 
 class SubstantivusMeaningFilter(admin.SimpleListFilter):
     title = u'в роли сущ.'

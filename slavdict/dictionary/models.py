@@ -980,12 +980,12 @@ class Entry(models.Model, JSONSerializable):
             match = first_letter in used_letters
         return match
 
-    def letter(self, letter=ANY_LETTER):
-        # Если аргумент letter не передан, то выбираем все статьи
-        if letter is ANY_LETTER:
+    def starts_with(self, starts_with=ANY_LETTER):
+        # Если аргумент starts_with не передан, то выбираем все статьи
+        if starts_with is ANY_LETTER:
             return True
-        first_letter = self.civil_equivalent.lstrip(u' =')[:1].lower()
-        return first_letter == letter.lower()
+        leading = self.civil_equivalent.lstrip(u' =')[:len(starts_with)]
+        return leading.lower() == starts_with.lower()
 
     @models.permalink
     def get_absolute_url(self):
@@ -1554,10 +1554,10 @@ class Meaning(models.Model, JSONSerializable):
             return host_entry.volume(volume)
         return False
 
-    def letter(self, letter=ANY_LETTER):
+    def starts_with(self, starts_with=ANY_LETTER):
         host_entry = self.host_entry
         if host_entry:
-            return host_entry.letter(letter)
+            return host_entry.starts_with(starts_with)
         return False
 
     _RE1 = re.compile(ur'[\s,;\\/\(\)]*##[^#]*?##[\s,;\\/\(\)]*|[\s,;\\/\(\)]+',
@@ -1811,10 +1811,10 @@ class Example(models.Model, JSONSerializable):
             return host_entry.volume(volume)
         return False
 
-    def letter(self, letter=ANY_LETTER):
+    def starts_with(self, starts_with=ANY_LETTER):
         host_entry = self.host_entry
         if host_entry:
-            return host_entry.letter(letter)
+            return host_entry.starts_with(starts_with)
         return False
 
     def example_for_admin(self):
@@ -2092,10 +2092,10 @@ class CollocationGroup(models.Model, JSONSerializable):
             return host_entry.volume(volume)
         return False
 
-    def letter(self, letter=ANY_LETTER):
+    def starts_with(self, starts_with=ANY_LETTER):
         host_entry = self.host_entry
         if host_entry:
-            return host_entry.letter(letter)
+            return host_entry.starts_with(starts_with)
         return False
 
     def meanings_for_admin(self):
