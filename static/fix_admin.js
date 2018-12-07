@@ -322,6 +322,25 @@
             x.parent().click(eventHandler);
         });
 
+        /* Возможность сворачивать фильтры со списками
+         * */
+        var changeCssProp = function (index, oldValue) {
+            if (oldValue === '0px') { return '15px'; }
+            else { return '0px'; }
+        }
+        $('#changelist-filter > h3').each(function () {
+            var x = $(this);
+            if (x.next().find(':first-child').hasClass('selected')) {
+                x.next().css('padding-bottom', changeCssProp);
+                x.next().find('li').toggle();
+            }
+            x.css("cursor", "pointer");
+            x.click(function () {
+                x.next().css('padding-bottom', changeCssProp);
+                x.next().find('li').slideToggle();
+            });
+        });
+
         /* Действия, которые необходимо отложить хотя бы на секунду, чтобы они
          * были успешно выполнены. */
         function returnToPostponed(){

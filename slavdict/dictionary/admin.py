@@ -2,10 +2,13 @@
 import copy
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from django.db.models import Q
 from django.db.utils import OperationalError
+from django.forms.widgets import Media
+from django.forms.widgets import MEDIA_TYPES
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
 
@@ -26,6 +29,16 @@ from slavdict.dictionary.models import VOLUME_LETTERS
 from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
 
 admin.site.login_template = ui.login_template
+
+original_render = Media.render
+def patched_render(self):
+    result = original_render(self)
+    for media_type in MEDIA_TYPES:
+        result = result.replace('.%s' % media_type,
+            '.%s?v=%s' % (media_type, settings.STATIC_RESOURCES_VERSION))
+    return result
+Media.render = patched_render
+
 
 def staff_has_permission(self, request, obj=None):
     if obj is None:
@@ -385,7 +398,8 @@ class AdminExample(admin.ModelAdmin):
         )
     class Media:
         css = {"all": ("fix_admin.css",)}
-        js = ("js/libs/ac2ucs8.js", "fix_admin.js",)
+        js = ("js/libs/ac2ucs8.js",
+              "fix_admin.js")
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -507,7 +521,8 @@ class AdminMeaning(admin.ModelAdmin):
         )
     class Media:
         css = {"all": ("fix_admin.css",)}
-        js = ("js/libs/ac2ucs8.js", "fix_admin.js",)
+        js = ("js/libs/ac2ucs8.js",
+              "fix_admin.js")
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -691,7 +706,8 @@ class AdminEntry(admin.ModelAdmin):
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     class Media:
         css = {"all": ("fix_admin.css",)}
-        js = ("js/libs/ac2ucs8.js", "fix_admin.js",)
+        js = ("js/libs/ac2ucs8.js",
+              "fix_admin.js")
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -728,7 +744,8 @@ ui.register(Entry, AdminEntryUI)
 #        )
 #    class Media:
 #        css = {"all": ("fix_admin.css",)}
-#        js = ("js/libs/ac2ucs8.js", "fix_admin.js",)
+#        js = ("js/libs/ac2ucs8.js",
+#              "fix_admin.js")
 #    def response_add(self, request, obj, post_url_continue='/'):
 #        post_url_continue = obj.host_entry.get_absolute_url()
 #        return HttpResponseRedirect(post_url_continue + 'intermed/')
@@ -793,7 +810,8 @@ class AdminCollocationGroup(admin.ModelAdmin):
     search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')
     class Media:
         css = {"all": ("fix_admin.css",)}
-        js = ("js/libs/ac2ucs8.js", "fix_admin.js",)
+        js = ("js/libs/ac2ucs8.js",
+              "fix_admin.js")
     def response_add(self, request, obj, post_url_continue='/'):
         post_url_continue = obj.host_entry.get_absolute_url()
         return HttpResponseRedirect(post_url_continue + 'intermed/')
