@@ -25,6 +25,12 @@
             {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
 
+        {% if ge.aliud %}
+            {{ backspace }}{{ space }}
+            <x aid:cstyle="Em">в{{ nbsp }}греч. иначе</x>
+            {{ space }}
+        {% endif %}
+
         {% if ge.mark %}
             {{ backspace }}{{ space }}
             <x aid:cstyle="Em">{{ ge.mark }}</x>
