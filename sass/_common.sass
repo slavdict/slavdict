@@ -106,12 +106,24 @@ div#main
         width: auto
         margin: 0
         padding: 0
+        column-count: 2
+        column-width: 6.5cm
+        column-fill: balance
 
 @media print
     @page
-        margin: 1cm
+        margin: 3cm
+
         @top-right-corner
             content: counter(page)
+
+    .FirstParagraph,
+    .MeaningParagraph,
+    .CollogroupParagraph,
+    .CfParagraph
+        line-height: 4.9mm
+        font-size: 82%
+        text-align: left
 
 #main-flex
     display: flex
@@ -134,6 +146,11 @@ div#main
     margin-top: 20px
     margin-right: 50px
     text-align: right
+
+    @media print
+        margin-right: 1em
+        margin-top: .66em
+        font-size: 60%
 
 .cinnabar
     color: #f00
