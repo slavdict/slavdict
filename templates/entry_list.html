@@ -49,37 +49,39 @@
             <div style="position: relative;">
                 <div class="editButtons">
                 {% if prepareCond and (authorlessCond or authorCond or editorCond) %}
-                    <a class="icon edit"
+                    <a class="icon edit" title="Редактировать статью"
                        href="{{ url('edit_form_url', args=[entry.pk]) }}">
                         <img src="{{ STATIC_URL }}transparent.png?{{
-                                STATIC_RESOURCES_VERSION }}" alt="изменить" />
+                                     STATIC_RESOURCES_VERSION }}" alt="" />
                     </a>
-                    <br />
+                    <br>
+                    <a class="icon edit"
+                       title="Редактировать статью в старом интерфейсе"
+                       href="/entries/{{ entry.pk }}/intermed/">
+                        <img src="{{ STATIC_URL }}transparent.png?{{
+                                     STATIC_RESOURCES_VERSION }}" alt="" />
+                        <span>ꙮ</span>
+                    </a>
+                    <br>
                 {% endif %}
                 {% if editorCond or hellinistCond %}
                     <a class="icon edit" href="{{
                             url('hellinist_entries') }}?id={{ entry.id }}"
                             title="Редактировать греч. параллели">
                         <img src="{{ STATIC_URL }}transparent.png?{{
-                                STATIC_RESOURCES_VERSION }}" alt="изменить" />
+                                     STATIC_RESOURCES_VERSION }}" alt="" />
                         <span>αβ</span>
                     </a>
-                    <br />
+                    <br>
                 {% endif %}
                 {% if entry.antconc_query|trim %}
                     <a class="icon clippy nearText"
                        data-clipboard-text="{{ entry.antconc_query|e }}"
                        title="Скопировать запрос для АнтКонка">
                         <img src="{{ STATIC_URL }}transparent.png?{{
-                                STATIC_RESOURCES_VERSION }}" alt="v" />
+                                     STATIC_RESOURCES_VERSION }}" alt="" />
                     </a>
-                    <br />
-                {% endif %}
-                {% if prepareCond and editorCond %}
-                    <a class="icon" href="/entries/{{ entry.pk }}/intermed/">
-                        <img src="{{ STATIC_URL }}transparent.png?{{
-                                STATIC_RESOURCES_VERSION }}" alt="изменить" />
-                    </a>
+                    <br>
                 {% endif %}
                 </div>
             {% include 'web/entry.html' %}

@@ -25,8 +25,16 @@
                 <a class="icon edit"
                         href="{{ url('edit_form_url', args=[entry.pk]) }}"
                         title="Редактировать статью">
-                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}"
-                         alt="изменить" />
+                    <img src="{{ STATIC_URL }}transparent.png?{{
+                                 STATIC_RESOURCES_VERSION }}" alt="" />
+                </a>
+                <br>
+
+                <a class="icon edit" href="/entries/{{ entry.pk }}/intermed/"
+                    title="Редактировать статью в старом интерфейсе">
+                    <img src="{{ STATIC_URL }}transparent.png?{{
+                                 STATIC_RESOURCES_VERSION }}" alt="" />
+                    <span>ꙮ</span>
                 </a>
                 <br>
             {% endif %}
@@ -35,8 +43,8 @@
                 <a class="icon edit"
                         href="{{ url('hellinist_entries') }}?id={{ entry.id }}"
                         title="Редактировать греч. параллели">
-                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}"
-                         alt="изменить" />
+                    <img src="{{ STATIC_URL }}transparent.png?{{
+                                 STATIC_RESOURCES_VERSION }}" alt="" />
                     <span>αβ</span>
                 </a>
                 <br>
@@ -46,8 +54,8 @@
                 <a class="icon clippy"
                    data-clipboard-text="{{ entry.antconc_query|e }}"
                    title="Скопировать запрос для АнтКонка">
-                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}"
-                         alt="v" />
+                    <img src="{{ STATIC_URL }}transparent.png?{{
+                                 STATIC_RESOURCES_VERSION }}" alt="" />
                 </a>
                 <br>
             {% endif %}
@@ -56,18 +64,13 @@
             <a class="icon" style="color: #aaa"
                onmouseover="this.style.color='#444'"
                onmouseout="this.style.color='#aaa'"
+               onclick="if (!confirm('Вы действительно хотите создать ' +
+                                     'полный дубликат статьи?')) return false;"
                href="{{ url('duplicate_entry', args=[entry.id]) }}"
                title="Создать полный дубликат статьи">
                     <i class="far fa-copy" data-fa-transform="down-4 right-6"></i>
                 </a>
                 <br>
-            {% endif %}
-
-            {% if prepareCond and editorCond %}
-                <a class="icon" href="/entries/{{ entry.pk }}/intermed/">
-                    <img src="{{ STATIC_URL }}transparent.png?{{ STATIC_RESOURCES_VERSION }}"
-                         alt="изменить" />
-                </a>
             {% endif %}
         </div>
     {% endif %}
