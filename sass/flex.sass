@@ -32,11 +32,14 @@ body
         & > nav
             width: 77%
             display: flex
+            justify-content: space-between
+            overflow: hidden
 
-            & > div,
+            & > div
+                flex: 0 0 auto
+
             & > aside
-                flex-grow: 1
-                justify-content: space-between
+                flex: 1 0 auto
 
             & > aside
                 text-align: right
