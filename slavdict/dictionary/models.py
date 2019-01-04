@@ -461,7 +461,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
           u'при равном кол-ве перех. и неперех. значений'),
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
-MSC11, MSC12, MSC13, MSC14 = 'klmn'
+MSC11, MSC12, MSC13, MSC14, MSC15 = 'klmno'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (u'Имена', (
@@ -482,6 +482,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
         (MSC5,  u'твор. ед. в роли нареч.'),
         (MSC12, u'в роли нареч.'),
         (MSC14, u'в роли прил.'),
+        (MSC15, u'в роли част.'),
     )),
     (u'Другое', (
         (MSC10, u'преимущ.'),

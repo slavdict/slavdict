@@ -26,6 +26,7 @@
 {% set MSC11 = 'k' %}{# мн. #}
 {% set MSC12 = 'l' %}{# в роли нареч. #}
 {% set MSC14 = 'n' %}{# в роли прил. #}
+{% set MSC15 = 'o' %}{# в роли част. #}
 
 {% if m.special_case == MSC1 %}{# канонич. #}
 
@@ -47,17 +48,17 @@
     {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
 
-{% elif m.special_case == MSC12 %}{# в роли нареч. #}
+{% elif m.special_case in [MSC12, MSC14, MSC15] %}
+    {# в роли нареч./прил./част. #}
 
-    {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
-    <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
-
-{% elif m.special_case == MSC14 %}{# в роли прил. #}
-
+    {% if m.special_case == MSC12 %}{% set pos_mark = 'нареч.' %}
+    {% elif m.special_case == MSC14 %}{% set pos_mark = 'прил.' %}
+    {% elif m.special_case == MSC15 %}{% set pos_mark = 'част.' %}{% endif %}
     {% if m.substantivus_csl %}
-        {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+        {{ m.substantivus_csl_ucs |
+             ind_cslav_words("CSLSegmentEm") }}{{ space }}
     {% endif %}
-    <x aid:cstyle="Em">в{{ nbsp }}роли прил.</x>{{ space }}
+    <x aid:cstyle="Em">в{{ nbsp }}роли {{ pos_mark }}</x>{{ space }}
 
 {% elif m.special_case == MSC8 %}{# имя собств. #}
 
