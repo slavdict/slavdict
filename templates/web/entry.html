@@ -368,14 +368,16 @@
                 {{ backspace }}<span class="Text">,</span>{{ space }}
             {% endif %}
 
-            {{ cfe.orth_vars.0.idem_ucs |
-                    web_cslav_words("CSLSegment") }}
+            <a href="{{ cfe.get_absolute_url() }}">
+                {{ cfe.orth_vars.0.idem_ucs | web_cslav_words("CSLSegment") }}
 
-            {% if cfe.homonym_order %}
-                <span class="HeadwordNumber">
-                    {{ cfe.homonym_order }}
-                </span>
-            {% endif %}
+                {% if cfe.homonym_order %}
+                    <span class="HeadwordNumber">
+                        {{ cfe.homonym_order }}
+                    </span>
+                {% endif %}
+            </a>
+
         {% endfor %}
 
         {% for cfcg in entry.cfcollogroups %}
