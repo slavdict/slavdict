@@ -20,7 +20,8 @@
         <span class="Text">{{ frame|trim|
             web_cslav_injection("CSLSegmentEm")|
             web_regex("Valency", '[а-я]+[\\-\u2011]л\\.')|
-            web_regex("Em", 'с\\s(?:придат|инф)\\.') }}</span>
+            web_regex("Em", 'с\\sпридат\\.|с\\sинф\\.|с\\sпрям\\.\\sречью')
+            }}</span>
 
         {{ space }}
     {% endfor %}
