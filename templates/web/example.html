@@ -120,8 +120,7 @@
                    которые предваряются не буквами, а треугольником. #}
         {% set before_submeaning =
             examples_loop.last
-                and not parent_meaning_loop
-                and not collogroups_loop
+                and not parent_meanings_loop
                 and child_meanings
             or examples_loop.last
                 and parent_meanings_loop

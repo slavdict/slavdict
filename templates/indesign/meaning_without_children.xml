@@ -82,10 +82,10 @@
 
         {% if (loop.last or loop.index == 3) and
                 m.is_substantivus_type('n.pl.') %}{# ср. род, мн. число #}
-            {{ backspace }}{{ space }}
+            {% if not loop.first %}{{ backspace }}{{ space }}{% endif %}
             <x aid:cstyle="Em">мн.</x>{{ space }}
         {% elif loop.last and m.is_substantivus_type('f.sg.') %}{# ж. род, ед. число #}
-            {{ backspace }}{{ space }}
+            {% if not loop.first %}{{ backspace }}{{ space }}{% endif %}
             <x aid:cstyle="Em">ж.</x>{{ space }}
         {% endif %}
 
