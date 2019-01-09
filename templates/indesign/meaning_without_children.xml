@@ -27,6 +27,7 @@
 {% set MSC12 = 'l' %}{# в роли нареч. #}
 {% set MSC14 = 'n' %}{# в роли прил. #}
 {% set MSC15 = 'o' %}{# в роли част. #}
+{% set MSC16 = 'p' %}{# полувспом. #}
 
 {% if m.special_case == MSC1 %}{# канонич. #}
 
@@ -72,6 +73,10 @@
 
     <x aid:cstyle="Em">мн.</x>{{ space }}
     {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
+
+{% elif m.special_case == MSC16 %}{# полувспомогательный глагол #}
+
+    <x aid:cstyle="Em">полувспом.</x>{{ space }}
 
 {% elif m.substantivus %}
 

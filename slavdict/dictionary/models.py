@@ -461,7 +461,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
           u'при равном кол-ве перех. и неперех. значений'),
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
-MSC11, MSC12, MSC13, MSC14, MSC15 = 'klmno'
+MSC11, MSC12, MSC13, MSC14, MSC15, MSC16 = 'klmnop'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (u'Имена', (
@@ -486,6 +486,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
     )),
     (u'Другое', (
         (MSC10, u'преимущ.'),
+        (MSC16, u'полувспом.'),  # Полувспомогательный глагол
     )),
 )
 POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7, MSC13)
