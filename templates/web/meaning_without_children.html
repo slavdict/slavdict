@@ -29,6 +29,7 @@
 {% set MSC14 = 'n' %}{# в роли прил. #}
 {% set MSC15 = 'o' %}{# в роли част. #}
 {% set MSC16 = 'p' %}{# полувспом. #}
+{% set MSC17 = 'q' %}{# безличное упортеление глагола #}
 
 {% if m.special_case == MSC1 %}{# канонич. #}
 
@@ -81,6 +82,10 @@
 {% elif m.special_case == MSC16 %}{# полувспомогательный глагол #}
 
     <span class="Em">полувспом.</span>{{ space }}
+
+{% elif m.special_case == MSC17 %}{# безличное употребление глагола #}
+
+    <span class="Em">безл.</span>{{ space }}
 
 {% elif m.substantivus %}
 
