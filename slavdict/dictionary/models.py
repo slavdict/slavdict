@@ -891,6 +891,7 @@ class Entry(models.Model, JSONSerializable):
                 PL_TANTUM = dict(TANTUM_CHOICES)[TANTUM_MAP['pluraleTantum']]
                 UNINFL = u'неизм.'
                 HIDDEN_GRAM = u''
+                HIDDEN_FORM = u''
 
                 wordforms = re.split(RE_COMMA, self.genitive)
                 sc = self.special_case
@@ -910,13 +911,13 @@ class Entry(models.Model, JSONSerializable):
                         HIDDEN_GRAM,
                         M_GENDER,
                         u'%s %s' % (M_GENDER, UNINFL)]
-                    wordforms += ['']
+                    wordforms += [HIDDEN_FORM]
                 elif SC7 == sc:
                     grammatical_marks = [F_GENDER, N_GENDER]
                 elif SC8 == sc:
                     grammatical_marks = [HIDDEN_GRAM] * 3
                     grammatical_marks += [self.get_gender_display()]
-                    wordforms = [u'', wordforms[0], u'', wordforms[1]]
+                    wordforms = [HIDDEN_FORM, wordforms[0], HIDDEN_FORM, wordforms[1]]
                 elif SC10 == sc:
                     grammatical_marks = [M_GENDER, N_GENDER]
 
