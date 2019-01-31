@@ -446,11 +446,13 @@ SUBSTANTIVUS_TYPE_MAP = {
     'f.pl.': 'f',
 }
 
-ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9 = 'abcdefghi'
+SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10 = 'abcdefghij'
+ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10
 ENTRY_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (SC1, u'Несколько лексем одного рода'),
     (SC2, u'2 лексемы, муж. и жен. рода'),
+    (SC10, u'2 лексемы, муж. и ср. рода'),
     (SC3, u'2 лексемы, ср. и жен. рода'),
     (SC7, u'2 лексемы, жен. и ср. рода'),
     (SC4, u'2 лексемы, жен. и только мн.'),
@@ -915,6 +917,8 @@ class Entry(models.Model, JSONSerializable):
                     grammatical_marks = [HIDDEN_GRAM] * 3
                     grammatical_marks += [self.get_gender_display()]
                     wordforms = [u'', wordforms[0], u'', wordforms[1]]
+                elif SC10 == sc:
+                    grammatical_marks = [M_GENDER, N_GENDER]
 
                 value = [(wordform, ucs_convert(wordform), grammatical_marks[i])
                          for i, wordform in enumerate(wordforms)]
