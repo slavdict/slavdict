@@ -6,7 +6,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import TemplateView
 
-from slavdict.admin import ui
+from slavdict.dictionary.admin import ui
 admin.autodiscover()
 
 urlpatterns = [

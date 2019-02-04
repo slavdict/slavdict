@@ -12,7 +12,6 @@ from django.forms.widgets import MEDIA_TYPES
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
 
-from slavdict.admin import ui
 from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary.models import Collocation
 from slavdict.dictionary.models import CollocationGroup
@@ -30,6 +29,8 @@ from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
 from slavdict.dictionary.models import LETTERS
 from slavdict.dictionary.models import ANY_LETTER
 
+ui = admin.sites.AdminSite(name='UI')
+ui.login_template = 'registration/login.html'
 admin.site.login_template = ui.login_template
 
 original_render = Media.render
@@ -574,13 +575,8 @@ AdminMeaning.has_add_permission = staff_has_permission
 AdminMeaning.has_change_permission = staff_has_permission
 AdminMeaning.has_delete_permission = staff_has_permission
 
-class AdminMeaningUI(AdminMeaning):
-    pass
-AdminMeaningUI.fieldsets = copy.deepcopy(AdminMeaning.fieldsets)
-AdminMeaningUI.fieldsets = AdminMeaningUI.fieldsets[0:1] + AdminMeaningUI.fieldsets[3:]
-
 admin.site.register(Meaning, AdminMeaning)
-ui.register(Meaning, AdminMeaningUI)
+ui.register(Meaning, AdminMeaning)
 
 
 
@@ -640,7 +636,6 @@ except OperationalError:
 
 class AdminEntry(admin.ModelAdmin):
     raw_id_fields = (
-        'derivation_entry',
         'link_to_entry',
         'link_to_collogroup',
         'link_to_meaning',
@@ -648,54 +643,6 @@ class AdminEntry(admin.ModelAdmin):
         'cf_collogroups',
         'cf_meanings',
     )
-    fieldsets = (
-        (None, {
-            'fields': ('special_case',),
-            }),
-        (None, {
-            'fields': ('civil_equivalent',),
-            }),
-        (u'Омонимия', {
-            'fields': ('homonym_order', 'homonym_gloss'),
-            'classes': ('collapse',) } ),
-        (None, {
-            'fields': ('part_of_speech',),
-            }),
-        (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (None, { # Для сущ. и прил.
-            'fields': ('uninflected',),
-            'classes': ('hidden noun adjective',) } ),
-        (None, { # Для сущ.
-            'fields': ('genitive', 'gender', 'tantum'),
-            'classes': ('hidden noun',) } ),
-        (None, { # Для имен собств.
-            'fields': ('onym', 'canonical_name', 'nom_sg'),
-            'classes': ('hidden noun',) } ),
-        (None, { # Для прил.
-            'fields': ('short_form', 'possessive'),
-            'classes': ('hidden adjective',) } ),
-        (None, { # Для глаг.
-            'fields': ('sg1', 'sg2'),
-            'classes': ('hidden verb',) } ),
-        (None, { # Для прич.
-            'fields': ('participle_type',),
-            'classes': ('hidden participle',) } ),
-        (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (None, { 'fields': ('derivation_entry',) }),
-        (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (u'См.',
-            {'fields': ('link_to_entry', 'link_to_collogroup', 'link_to_meaning'),
-            'classes': ('collapse',)}),
-        (u'Ср.',
-            {'fields': ('cf_entries', 'cf_collogroups', 'cf_meanings'),
-            'classes': ('collapse',)}),
-        (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (u'Примечание к статье', {
-            'fields':  ('additional_info',),
-            'classes': ('collapse',) }),
-        (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (None, { 'fields': ('status',) }),
-        )
     inlines = (
         OrthVar_Inline,
         Participle_Inline,
@@ -762,15 +709,103 @@ AdminEntry.has_delete_permission = superuser_has_permission
 
 
 class AdminEntryADMIN(AdminEntry):
-    pass
+    fieldsets = (
+        (None, {
+            'fields': ('special_case',),
+            }),
+        (None, {
+            'fields': ('civil_equivalent',),
+            }),
+        (u'Омонимия', {
+            'fields': ('homonym_order', 'homonym_gloss'),
+            'classes': ('collapse',) } ),
+        (None, {
+            'fields': ('part_of_speech',),
+            }),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (None, { # Для сущ. и прил.
+            'fields': ('uninflected',),
+            'classes': ('hidden noun adjective',) } ),
+        (None, { # Для сущ.
+            'fields': ('genitive', 'gender', 'tantum'),
+            'classes': ('hidden noun',) } ),
+        (None, { # Для имен собств.
+            'fields': ('onym', 'canonical_name', 'nom_sg'),
+            'classes': ('hidden noun',) } ),
+        (None, { # Для прил.
+            'fields': ('short_form', 'possessive'),
+            'classes': ('hidden adjective',) } ),
+        (None, { # Для глаг.
+            'fields': ('sg1', 'sg2'),
+            'classes': ('hidden verb',) } ),
+        (None, { # Для прич.
+            'fields': ('participle_type',),
+            'classes': ('hidden participle',) } ),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (u'См.',
+            {'fields': ('link_to_entry', 'link_to_collogroup', 'link_to_meaning'),
+            'classes': ('collapse',)}),
+        (u'Ср.',
+            {'fields': ('cf_entries', 'cf_collogroups', 'cf_meanings'),
+            'classes': ('collapse',)}),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (u'Примечание к статье', {
+            'fields':  ('additional_info',),
+            'classes': ('collapse',) }),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (None, { 'fields': ('authors', 'status', 'antconc_query') })
+    )
 
-AdminEntryADMIN.fieldsets = copy.deepcopy(AdminEntry.fieldsets)
-AdminEntryADMIN.fieldsets[-1][1]['fields'] = ('authors', 'status', 'antconc_query')
 
 class AdminEntryUI(AdminEntry):
-    pass
-
-AdminEntryUI.fieldsets = AdminEntry.fieldsets[:14] + AdminEntry.fieldsets[16:]
+    fieldsets = (
+        (None, {
+            'fields': ('special_case',),
+            }),
+        (None, {
+            'fields': ('civil_equivalent',),
+            }),
+        (u'Омонимия', {
+            'fields': ('homonym_order', 'homonym_gloss'),
+            'classes': ('collapse',) } ),
+        (None, {
+            'fields': ('part_of_speech',),
+            }),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (None, { # Для сущ. и прил.
+            'fields': ('uninflected',),
+            'classes': ('hidden noun adjective',) } ),
+        (None, { # Для сущ.
+            'fields': ('genitive', 'gender', 'tantum'),
+            'classes': ('hidden noun',) } ),
+        (None, { # Для имен собств.
+            'fields': ('onym', 'canonical_name', 'nom_sg'),
+            'classes': ('hidden noun',) } ),
+        (None, { # Для прил.
+            'fields': ('short_form', 'possessive'),
+            'classes': ('hidden adjective',) } ),
+        (None, { # Для глаг.
+            'fields': ('sg1', 'sg2'),
+            'classes': ('hidden verb',) } ),
+        (None, { # Для прич.
+            'fields': ('participle_type',),
+            'classes': ('hidden participle',) } ),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (u'См.',
+            {'fields': ('link_to_entry', 'link_to_collogroup', 'link_to_meaning'),
+            'classes': ('collapse',)}),
+        (u'Ср.',
+            {'fields': ('cf_entries', 'cf_collogroups', 'cf_meanings'),
+            'classes': ('collapse',)}),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (u'Примечание к статье', {
+            'fields':  ('additional_info',),
+            'classes': ('collapse',) }),
+        (None, { 'fields': tuple(), 'classes': ('blank',) }),
+        (None, { 'fields': ('status', 'antconc_query') })
+    )
 
 admin.site.register(Entry, AdminEntryADMIN)
 ui.register(Entry, AdminEntryUI)
@@ -824,17 +859,14 @@ class AdminCollocationGroup(admin.ModelAdmin):
         'cf_meanings',
     )
     fieldsets = (
-            (None,
-                {'fields': (('base_meaning', 'base_entry'),),
-                'classes': ('hidden',)}),
-            (u'См.',
-                {'fields': ('link_to_entry', 'link_to_meaning'),
-                'classes': ('collapse',)}),
-            (u'Ср.',
-                {'fields': ('cf_entries', 'cf_meanings'),
-                'classes': ('collapse',)}),
-            (None, {'fields': (('phraseological',),) }),
-        )
+        (None,
+            {'fields': (('base_meaning', 'base_entry'),),
+            'classes': ('hidden',)}),
+        (u'Ср.',
+            {'fields': ('cf_entries', 'cf_meanings'),
+            'classes': ('collapse',)}),
+        (None, {'fields': (('phraseological',),) }),
+    )
     ordering = ('collocation_set__collocation',)
     filter_horizontal = ('cf_entries', 'cf_meanings')
     list_display = (
@@ -864,10 +896,5 @@ AdminCollocationGroup.has_add_permission = staff_has_permission
 AdminCollocationGroup.has_change_permission = staff_has_permission
 AdminCollocationGroup.has_delete_permission = staff_has_permission
 
-class AdminCollocationGroupUI(AdminCollocationGroup):
-    pass
-AdminCollocationGroupUI.fieldsets = copy.deepcopy(AdminCollocationGroup.fieldsets)
-AdminCollocationGroupUI.fieldsets = AdminCollocationGroupUI.fieldsets[0:1]
-
 admin.site.register(CollocationGroup, AdminCollocationGroup)
-ui.register(CollocationGroup, AdminCollocationGroupUI)
+ui.register(CollocationGroup, AdminCollocationGroup)
