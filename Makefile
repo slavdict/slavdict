@@ -54,7 +54,7 @@ endif
 start:
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_PRODUCTION})
 	sudo /etc/init.d/cherokee start
-	curl slavdict.ruslang.ru:8088
+	curl slavdict.ruslang.ru:8088 || true
 	sudo service nginx start
 endif
 
