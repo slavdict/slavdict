@@ -1,7 +1,7 @@
 SHELL = /bin/bash
 
 GITWORKTREE = /var/www/slavdict
-GITDIR = /home/git/slavdict.www
+GITDIR = /usr/local/src/wwwgit/slavdict.git
 SETTINGS_FILE = slavdict/settings.py
 DATE_TIME := $(shell date +%Y-%m-%d--%H-%M)
 
@@ -59,14 +59,11 @@ endif
 copydiff:
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_PRODUCTION})
 	mkdir -p ${LOCCHDIR}
-	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
-		diff --no-color >${DIFFFILE}
+	${GIT} diff --no-color >${DIFFFILE}
 	test -s ${DIFFFILE} || rm -f ${DIFFFILE}
-	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
-		status -s | grep --color=never '?? ' | cut -c4- \
+	${GIT} status -s | grep --color=never '?? ' | cut -c4- \
 		| xargs -I '{}' rsync -av '{}' ${LOCCHDIR}/
-	git --work-tree=${GITWORKTREE} --git-dir=${GITDIR} \
-		status -s | grep --color=never '?? ' | cut -c4- \
+	${GIT} status -s | grep --color=never '?? ' | cut -c4- \
 		| xargs -I '{}' rm -fr '{}'
 endif
 
@@ -89,8 +86,7 @@ revert: _revert collectstatic fixown
 
 fixown:
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_PRODUCTION})
-	chown -R www-data:www-is ./
-	chown -R git:www-is /home/git/slavdict.*
+	chown -R www-data:www-data ./
 	chmod u+x bin/*.sh
 endif
 
@@ -130,9 +126,9 @@ hash: jslibs
 scp:
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
 	rsync bin/indesign_xml_dumper.py dilijnt0:/var/www/slavdict/bin/
-	ssh dilijnt0 chown www-data:www-is /var/www/slavdict/bin/indesign_xml_dumper.py
+	ssh dilijnt0 chown www-data:www-data /var/www/slavdict/bin/indesign_xml_dumper.py
 	rsync -av templates/indesign dilijnt0:/var/www/slavdict/templates/
-	ssh dilijnt0 chown -R www-data:www-is /var/www/slavdict/templates/indesign/
+	ssh dilijnt0 chown -R www-data:www-data /var/www/slavdict/templates/indesign/
 endif
 
 indesign:
@@ -142,7 +138,7 @@ ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
 	rsync -av  templates/indesign dilijnt0:/var/www/slavdict/templates/
 	[ ! -e .list ] && touch .list || echo "file '.list' exists"
 	rsync .list dilijnt0:/root/
-	ssh dilijnt0 chown -R www-data:www-is /var/www/slavdict/
+	ssh dilijnt0 chown -R www-data:www-data /var/www/slavdict/
 	ssh dilijnt0 nohup /var/www/slavdict/bin/remote_indesign_xml_dumper.sh
 	scp dilijnt0:/root/slavdict-dump.xml ~/VirtualBox\ SharedFolder/slavdict-indesign.xml
 endif
