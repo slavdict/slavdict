@@ -1,0 +1,1 @@
+50 4 * * * root /var/www/slavdict/bin/dump_for_cron.sh
