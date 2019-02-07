@@ -47,15 +47,12 @@ endif
 stop:
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_PRODUCTION})
 	sudo service nginx stop
-	sudo /etc/init.d/cherokee stop
-	-sudo killall -9 uwsgi
+	sudo service uwsgi stop slavdict
 endif
 
 start:
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_PRODUCTION})
-	sudo /etc/init.d/cherokee start
-	sleep 1
-	curl slavdict.ruslang.ru:8088
+	sudo service uwsgi start slavdict
 	sudo service nginx start
 endif
 
