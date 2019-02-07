@@ -88,12 +88,6 @@
         y = $('#id_sg1').closest('fieldset');
         x.insertAfter(y);
 
-        /* Переносим группу полей с этимологиями в расположение после поля
-         * "образовано от" (морфолгическая деривация). */
-        x = $('#etymology_set-group').detach();
-        y = $('.field-derivation_entry').parent('fieldset');
-        x.insertAfter(y);
-
         /* Переносим группу полей контекстов значения в расположение
          * непосредственно перед полем значения. */
         x = $('#meaningcontext_set-group').detach();
@@ -105,76 +99,6 @@
         x = $('#greekequivalentformeaning_set-group').detach();
         y = $('#meaningcontext_set-group');
         x.insertAfter(y);
-
-
-        /* Для текста этимологии и для транслита устанавливаем нужные
-         * CSS-классы в зависимости от конкретного языка. Такая установка
-         * проводится и при загрузке страницы и вешается на событие изменения
-         * значения поля языка конкретной этимологии.
-         *
-         * Для греческого и латинского отображаем поле unitext, а для остальных
-         * языков -- поле text. */
-        lang2cssclass = {
-            'a': 'grec',
-            'b': 'hebrew',
-            'c': 'akkadian',
-            'd': 'aramaic',
-            'e': 'armenian',
-            'f': 'georgian',
-            'g': 'coptic',
-            'h': 'latin',
-            'i': 'syriac'
-        }
-        langclsss1 = 'grec hebrew akkadian aramaic armenian georgian coptic latin syriac'
-        langclsss2 = 'grec-translit hebrew-translit akkadian-translit aramaic-translit armenian-translit georgian-translit coptic-translit latin-translit syriac-translit'
-
-        function changeLangCSSClass(x, v){
-            if (v){
-                var c1 = lang2cssclass[v];
-                var c2 = c1 + '-translit';
-                x.nextAll('.field-text').find('input[id$="-text"]')
-                    .removeClass( langclsss1 )
-                    .addClass( c1 );
-                x.nextAll('.field-translit').find('input[id$="-translit"]')
-                    .removeClass( langclsss2 )
-                    .addClass( c2 );
-            }
-        }
-        function textAndUnitext(x, v) {
-            var isGreek,
-                text = x.nextAll('.field-text').find('input[id$="-text"]'),
-                unitext = x.nextAll('.field-unitext').find('input[id$="-unitext"]'),
-                show = function(field) { field.parent().removeClass('hidden'); },
-                hide = function(field) { field.parent().addClass('hidden'); };
-            if (v){
-                isGreekOrLatin = ['grec', 'latin'
-                                 ].indexOf(lang2cssclass[v]) > -1;
-                if( isGreekOrLatin ) {
-                    show(unitext);
-                    hide(text);
-                } else {
-                    show(text);
-                    hide(unitext);
-                }
-            } else {
-                show(text);
-                show(unitext);
-            }
-        }
-
-        $('#etymology_set-group .form-row.field-language').each(function(){
-            var x = $(this);
-            var v = x.find('select').val();
-            changeLangCSSClass(x, v);
-            textAndUnitext(x, v);
-        });
-        $('#etymology_set-group .form-row.field-language select').change(function(){
-            var i = $(this);
-            var x = i.closest('.form-row.field-language');
-            var v = i.val();
-            changeLangCSSClass(x, v);
-            textAndUnitext(x, v);
-        });
 
 
         /* Скрываем и отображаем поля в зависимости от выбранной части речи. */

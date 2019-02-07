@@ -15,7 +15,6 @@ from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary.models import Collocation
 from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
-from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
 from slavdict.dictionary.models import Meaning
@@ -336,19 +335,6 @@ ETYMOLOGY_FIELDSETS = (
         'classes': ('collapse',)}
         ),
     )
-class Etymology_Inline(admin.StackedInline):
-    model = Etymology
-    extra = 0
-    fieldsets = ETYMOLOGY_FIELDSETS
-
-
-
-
-class EtymologyForCollocation_Inline(admin.StackedInline):
-    model = Etymology
-    extra = 1
-    fieldsets = ETYMOLOGY_FIELDSETS
-
 
 
 
@@ -645,7 +631,6 @@ class AdminEntry(admin.ModelAdmin):
     inlines = (
         OrthVar_Inline,
         Participle_Inline,
-        Etymology_Inline,
         )
     list_display = (
         'civil_inv',
@@ -810,30 +795,6 @@ admin.site.register(Entry, AdminEntryADMIN)
 ui.register(Entry, AdminEntryUI)
 
 
-
-
-#class AdminCollocation(admin.ModelAdmin):
-#    inlines = (EtymologyForCollocation_Inline,)
-#    fieldsets = (
-#            (None, {'fields': ('collocation', 'civil_equivalent')}),
-#        )
-#    class Media:
-#        css = {"all": ("fix_admin.css",)}
-#        js = ("js/libs/ac2ucs8.js",
-#              "fix_admin.js")
-#    def response_add(self, request, obj, post_url_continue='/'):
-#        post_url_continue = obj.host_entry.get_absolute_url()
-#        return HttpResponseRedirect(post_url_continue + 'intermed/')
-#    def response_change(self, request, obj):
-#        post_url_continue = obj.host_entry.get_absolute_url()
-#        return HttpResponseRedirect(post_url_continue + 'intermed/')
-#
-#AdminCollocation.has_add_permission = staff_has_permission
-#AdminCollocation.has_change_permission = staff_has_change_permission
-#AdminCollocation.has_delete_permission = staff_has_delete_permission
-#
-#admin.site.register(Collocation, AdminCollocation)
-#ui.register(Collocation, AdminCollocation)
 
 class Collocation_Inline(admin.StackedInline):
     model = Collocation
