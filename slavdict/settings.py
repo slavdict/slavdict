@@ -21,8 +21,6 @@ except ImportError:
 
 # Настройки, зависящие от базовых
 # либо от которых не зависят другие настройки.
-TEMPLATE_DEBUG = DEBUG
-
 ADMINS = ()
 MANAGERS = ADMINS
 BACKUP_MANAGERS = MANAGERS
@@ -81,12 +79,6 @@ if exists(_hash_file):
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'td2+2t^tz-)^j^%@4_^c8ds#6-po3sfoqbwaa2u*i3rj3y%hs1'
-
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
 
 MIDDLEWARE = (
     'slavdict.middleware.ValidCookieMiddleware',
