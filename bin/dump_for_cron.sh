@@ -1,5 +1,5 @@
-service nginx stop
-service uwsgi stop slavdict
+/usr/sbin/service nginx stop
+/usr/sbin/service uwsgi stop slavdict
 /usr/bin/python /var/www/slavdict/bin/mail_dumper.py
-service uwsgi start slavdict
-service nginx start
+/usr/sbin/service uwsgi start slavdict
+/usr/sbin/service nginx start
