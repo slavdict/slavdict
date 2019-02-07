@@ -7,10 +7,10 @@ name = "pypi"
 ipython = "*"
 
 [packages]
-"psycopg2" = ">=2.7"
 "hip2unicode" = {git = "https://github.com/slavdict/hip2unicode.git"}
 Django = "<1.12,>=1.11"
 "Jinja2" = ">=2.10"
+"psycopg2-binary" = "*"
 
 [requires]
 python_version = "2.7"
