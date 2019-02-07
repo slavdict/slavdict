@@ -17,6 +17,7 @@ from django.db.models import PositiveSmallIntegerField
 from django.db.models import SmallIntegerField
 from django.db.models import TextField
 from django.db.utils import OperationalError
+from django.db.utils import ProgrammingError
 from django.utils.safestring import mark_safe
 
 from hip2unicode.functions import convert
@@ -2637,7 +2638,7 @@ for Model in Models:
 try:
     LETTERS = set(e.civil_equivalent.lstrip(u' =')[0].lower()
                   for e in Entry.objects.all())
-except OperationalError:
+except (OperationalError, ProgrammingError):
     LETTERS = []
 else:
     LETTERS = list(LETTERS)

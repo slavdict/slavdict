@@ -2,6 +2,7 @@
 import json
 
 from django.db.utils import OperationalError
+from django.db.utils import ProgrammingError
 
 from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary import models
@@ -39,7 +40,7 @@ try:
         {'id': str(u.id), 'name': u.__unicode__()}
         for u in CustomUser.objects.filter(groups__name=u'authors')
     )
-except OperationalError:
+except (OperationalError, ProgrammingError):
     AUTHOR_CHOICES = tuple()
     authors = tuple()
 

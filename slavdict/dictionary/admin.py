@@ -1,12 +1,11 @@
 # encoding: UTF-8
-import copy
-
 from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from django.db.models import Q
 from django.db.utils import OperationalError
+from django.db.utils import ProgrammingError
 from django.forms.widgets import Media
 from django.forms.widgets import MEDIA_TYPES
 from django.http import HttpResponseRedirect
@@ -631,7 +630,7 @@ def assign_author(author):
 try:
     for author in CustomUser.objects.all():#.filter(groups__name=u'authors'):
         entry_actions.append(assign_author(author))
-except OperationalError:
+except (OperationalError, ProgrammingError):
     pass
 
 class AdminEntry(admin.ModelAdmin):
