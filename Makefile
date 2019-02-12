@@ -134,13 +134,14 @@ endif
 indesign:
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
 	rsync -av bin dilijnt0:/var/www/slavdict/
-	rsync -av slavdict/django_template_spaces dilijnt0:/var/www/slavdict/slavdict/
+	rsync -av slavdict/jinja_extensions dilijnt0:/var/www/slavdict/slavdict/
 	rsync -av  templates/indesign dilijnt0:/var/www/slavdict/templates/
 	[ ! -e .list ] && touch .list || echo "file '.list' exists"
 	rsync .list dilijnt0:/root/
 	ssh dilijnt0 chown -R www-data:www-data /var/www/slavdict/
 	ssh dilijnt0 nohup /var/www/slavdict/bin/remote_indesign_xml_dumper.sh
-	scp dilijnt0:/root/slavdict-dump.xml ~/VirtualBox\ SharedFolder/slavdict-indesign.xml
+	scp dilijnt0:/root/slavdict-dump.xml .temp/slavdict-indesign.xml
+	#scp dilijnt0:/root/slavdict-dump.xml ~/VirtualBox\ SharedFolder/slavdict-indesign.xml
 endif
 
 listen-indesign:
@@ -160,7 +161,7 @@ install:
     default \
     destroy_loc_changes \
     fixown \
-	install \
+    install \
     jslibs \
     hash \
     listen-indesign \
