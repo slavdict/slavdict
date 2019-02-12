@@ -353,7 +353,7 @@ class Segment(Tag):
                 pass
             else:
                 HYPHEN_TAG = u'<h aid:cstyle="Text">\u00AD</h>'
-                text = text.replace(u'\u00AD', HYPHEN_TAG)
+                segment = segment.replace(u'\u00AD', HYPHEN_TAG)
         else:
             segment = html_escape(self.segment)
         return tag % segment
