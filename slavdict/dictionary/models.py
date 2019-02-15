@@ -2353,6 +2353,11 @@ class GreekEquivalentForExample(models.Model, JSONSerializable):
     order = SmallIntegerField(u'порядок следования', blank=True, default=345)
 
     @property
+    def is_aliud_latin(self):
+        text = self.unitext
+        return self.aliud and re.sub('[a-zA-Z]', '', text) != text
+
+    @property
     def host_entry(self):
         try:
             host_entry = self.for_example.host_entry

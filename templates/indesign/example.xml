@@ -26,8 +26,9 @@
         {% endif %}
 
         {% if ge.aliud %}
+            {% set aliud_lang = 'лат.' if ge.is_aliud_latin else 'греч.' %}
             {{ backspace }}{{ space }}
-            <x aid:cstyle="Em">в{{ nbsp }}греч. иначе</x>
+            <x aid:cstyle="Em">в{{ nbsp }}{{ aliud_lang }} иначе</x>
             {{ space }}
         {% endif %}
 
