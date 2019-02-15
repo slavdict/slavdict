@@ -2,6 +2,11 @@
                     collogroups_loop, child_meanings) %}
 {% from 'indesign/example.xml' import example with context %}
 
+{% set MSC17 = 'q' %}{# безличное упортеление глагола #}
+{% if m.special_case == MSC17 %}
+    <x aid:cstyle="Em">безл.</x>{{ space }}
+{% endif %}
+
 {% if m.substantivus_csl %}
     {{ m.substantivus_csl_ucs|
          ind_civil_injection("Valency", "CSLSegmentEm", "Text") }}

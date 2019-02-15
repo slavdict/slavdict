@@ -2,6 +2,11 @@
                     collogroups_loop, child_meanings) %}
 {% from 'web/example.html' import example with context %}
 
+{% set MSC17 = 'q' %}{# безличное упортеление глагола #}
+{% if m.special_case == MSC17 %}
+    <span class="Em">безл.</span>{{ space }}
+{% endif %}
+
 {% if m.substantivus_csl %}
     {{ m.substantivus_csl_ucs|
          web_civil_injection("Valency", "CSLSegmentEm", "Text") }}
