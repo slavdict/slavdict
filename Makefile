@@ -10,14 +10,16 @@ IS_DEVELOPMENT = development
 SLAVDICT_ENVIRONMENT ?= ${IS_PRODUCTION}
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_PRODUCTION})
   GIT = git --work-tree=${GITWORKTREE} --git-dir=${GITDIR}
+  PYTHON = python
 else
   GIT = git
+  PYTHON = pipenv run python
 endif
 
-JSLIBS_PATH := $(shell python ${SETTINGS_FILE} --jslibs-path)
+JSLIBS_PATH := $(shell ${PYTHON} ${SETTINGS_FILE} --jslibs-path)
 JSLIBS_FILES := ${JSLIBS_PATH}*.{js,map,txt,swf}
 JSLIBS_VERSION_FILE := ${JSLIBS_PATH}version.txt
-JSLIBS_NEW_VERSION := $(shell python ${SETTINGS_FILE} --jslibs-version)
+JSLIBS_NEW_VERSION := $(shell ${PYTHON} ${SETTINGS_FILE} --jslibs-version)
 JSLIBS_OLD_VERSION := $(shell cat ${JSLIBS_VERSION_FILE} 2>/dev/null)
 
 LOCCHDIR = /root/slavdict-local-changes-untracked
@@ -38,7 +40,7 @@ ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
 	livereload static & echo $$! >>.bgpids
 	compass watch & echo $$! >>.bgpids
 	trap 'trap - INT TERM ERR; $(MAKE) killbg' INT TERM ERR; \
-		python ./manage.py runserver
+		${PYTHON} ./manage.py runserver
 else
 	@echo "Окружение не является тестовым"
 	false
@@ -93,10 +95,10 @@ endif
 collectstatic: hash
 	test -e ${RESOURCE_VERSION} || touch ${RESOURCE_VERSION}
 	compass compile -e ${SLAVDICT_ENVIRONMENT}
-	python ./manage.py collectstatic --noinput
+	${PYTHON} ./manage.py collectstatic --noinput
 
 migrate:
-	python ./manage.py migrate
+	${PYTHON} ./manage.py migrate
 
 clean:
 	-find -name '*.pyc' -execdir rm '{}' \;
@@ -109,7 +111,7 @@ jslibs:
 	if [ "${JSLIBS_OLD_VERSION}" != "${JSLIBS_NEW_VERSION}" ];\
 	then \
 		rm -f ${JSLIBS_FILES} ; \
-		python ${SETTINGS_FILE} --jslibs | xargs -n3 wget ; \
+		${PYTHON} ${SETTINGS_FILE} --jslibs | xargs -n3 wget ; \
 		echo ${JSLIBS_NEW_VERSION} > ${JSLIBS_VERSION_FILE} ; \
 	fi
 
@@ -146,7 +148,7 @@ endif
 
 listen-indesign:
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
-	ls .list bin/indesign_xml_dumper.py templates/indesign/* | entr bash -c 'time cat .list | xargs python bin/indesign_xml_dumper.py >/home/nurono/VirtualBox\ SharedFolder/slavdict-indesign.xml'
+	ls .list bin/indesign_xml_dumper.py templates/indesign/* | entr bash -c 'time cat .list | xargs ${PYTHON} bin/indesign_xml_dumper.py >/home/nurono/VirtualBox\ SharedFolder/slavdict-indesign.xml'
 endif
 
 install:
