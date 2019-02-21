@@ -29,6 +29,9 @@ RESOURCE_VERSION = sass/_resource_version.sass
 
 default: indesign
 
+shell:
+	PYTHONSTARTUP=etc/django_shell_rc.py ${PYTHON} ./manage.py shell
+
 restart: stop copydiff destroy_loc_changes checkout collectstatic fixown migrate start
 
 killbg:
