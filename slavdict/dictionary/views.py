@@ -1301,6 +1301,18 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
                      volume=VOLUME)
 
+    elif uri == 'entries_all_figurative':
+        es = []
+        for e in Entry.objects.all():
+            FIG = u'перен.'
+            all_figurative = all(
+                m.figurative or FIG in m.meaning or FIG in m.gloss
+                for m in e.meanings)
+            if all_figurative:
+                es.append(e)
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
+
     elif uri == 'entries_without_examples':
         es = []
         for e in Entry.objects.all():
@@ -1373,6 +1385,7 @@ def useful_urls(request, x=None, y=None):
             (u'Статьи', (
                     (u'Статьи без примеров', 'entries_without_examples'),
                     (u'Cтатьи дубликаты', 'duplicate_entries'),
+                    (u'Cтатьи, где все значения "перен."', 'entries_all_figurative'),
                 )),
             (u'Словосочетания (cc)', (
                     (u'Все сс', 'all_collocations'),
