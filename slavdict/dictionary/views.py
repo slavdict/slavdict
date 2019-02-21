@@ -1034,6 +1034,13 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
                      volume=VOLUME)
 
+    elif uri == 'entries_litsym':
+        eids = set(m.host_entry.id
+                   for m in Meaning.objects.filter(metaphorical=True)
+                   if isinstance(m.host, CollocationGroup))
+        uri = uri_qs(eURI, id__in=','.join(str(eid) for eid in eids),
+                     volume=VOLUME)
+
     elif uri == 'phraseological_collocs':
         uri = uri_qs(cgURI, phraseological__exact=1, volume=VOLUME)
 
@@ -1395,6 +1402,7 @@ def useful_urls(request, x=None, y=None):
                     (u'Статьи без примеров', 'entries_without_examples'),
                     (u'Cтатьи дубликаты', 'duplicate_entries'),
                     (u'Cтатьи, где все значения "перен."', 'entries_all_figurative'),
+                    (u'Cтатьи с литургическими символами', 'entries_litsym'),
                     (u'Глаголы с пометой "в роли сущ."', 'verbs_noun'),
                 )),
             (u'Словосочетания (cc)', (
