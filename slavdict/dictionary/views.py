@@ -994,10 +994,10 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(cgURI, volume=VOLUME)
 
     elif uri == 'collocs_same_meaning':
-        cgs = (cg for cg in CollocationGroup.objects.all()
-                  if cg.host_entry.volume(VOLUME))
-        meanings = reduce(operator.add, [list(cg.meanings) for cg in cgs])
-        child_meanings = reduce(operator.add, [list(m.child_meanings) for m in meanings])
+        meanings = reduce(operator.add,
+                [list(cg.meanings) for cg in CollocationGroup.objects.all()])
+        child_meanings = reduce(operator.add,
+                [list(m.child_meanings) for m in meanings])
         meanings = meanings + child_meanings
         same = collections.defaultdict(list)
         for m in meanings:
@@ -1026,6 +1026,13 @@ def useful_urls_redirect(uri, request):
             'user': request.user,
         }
         return render(request, 'useful_urls2.html', context)
+
+    elif uri == 'collocs_oneword':
+        cgs = (cg for cg in CollocationGroup.objects.all()
+                  if all(not re.search(r'\s', c.collocation.strip())
+                         for c in cg.collocations))
+        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
+                     volume=VOLUME)
 
     elif uri == 'collocs_litsym':
         cgs = (m.host
@@ -1408,6 +1415,7 @@ def useful_urls(request, x=None, y=None):
             (u'Словосочетания (cc)', (
                     (u'Все сс', 'all_collocations'),
                     (u'Фразеологизмы', 'phraseological_collocs'),
+                    (u'Cc из одного слова', 'collocs_oneword'),
                     (u'Сс с одинаковыми значениями', 'collocs_same_meaning'),
                     (u'Сс – литургические символы', 'collocs_litsym'),
                     (u'Сс в роли сущ.', 'collocs_noun'),
