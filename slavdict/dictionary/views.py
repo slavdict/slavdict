@@ -1037,6 +1037,15 @@ def useful_urls_redirect(uri, request):
     elif uri == 'phraseological_collocs':
         uri = uri_qs(cgURI, phraseological__exact=1, volume=VOLUME)
 
+    elif uri == 'verbs_noun':
+        es = (e for e in Entry.objects.all()
+                if e.is_part_of_speech('verb') and (
+                any(m.substantivus for m in e.meanings) or
+                any(cm.substantivus for m in e.meanings
+                                      for cm in m.child_meanings)))
+        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
+                     volume=VOLUME)
+
     elif uri == 'collocs_noun':
         cgs = (cg for cg in CollocationGroup.objects.all()
                   if (any(m.substantivus for m in cg.meanings) or
@@ -1386,6 +1395,7 @@ def useful_urls(request, x=None, y=None):
                     (u'Статьи без примеров', 'entries_without_examples'),
                     (u'Cтатьи дубликаты', 'duplicate_entries'),
                     (u'Cтатьи, где все значения "перен."', 'entries_all_figurative'),
+                    (u'Глаголы с пометой "в роли сущ."', 'verbs_noun'),
                 )),
             (u'Словосочетания (cc)', (
                     (u'Все сс', 'all_collocations'),
