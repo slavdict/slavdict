@@ -1223,6 +1223,12 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
+    elif uri == 'meanings_sobstv':
+        ms = (m for m in Meaning.objects.all()
+                if m.not_hidden() and u'собств' in m.meaning + m.gloss)
+        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
+                     volume=VOLUME)
+
     elif uri == 'meanings_quest':
         regex = re.compile(ur'[?!]',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
@@ -1457,6 +1463,7 @@ def useful_urls(request, x=None, y=None):
                     (u'С текстом "в знач...."', 'meanings_ps2'),
                     (u'С текстом "с прям. речью"', 'meanings_direct_speech'),
                     (u'С текстом "[?!]"', 'meanings_quest'),
+                    (u'С текстом "с именем собств."', 'meanings_sobstv'),
                 )),
     )
     if x:
