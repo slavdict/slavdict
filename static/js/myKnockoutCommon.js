@@ -1,6 +1,8 @@
-ko.observable.fn['htmlSelect'] = function(fieldName, objList){
+ko.observable.fn['htmlSelect'] = function(fieldName, objList, defaultValue){
     this.list = ko.observableArray(objList);
-    this.obj = ko.computed(function(){ return this.index2obj(this()); }, this);
+    this.obj = ko.computed(function(){
+        return this.index2obj(this(), defaultValue);
+    }, this);
     $('#id_' + fieldName).attr('data-bind',
         'options: ' + fieldName + '.list, ' +
         'value: ' + fieldName + ', ' +
@@ -38,15 +40,12 @@ ko.observable.fn['htmlTextValue'] = function(name){
     return this;
 };
 
-ko.observable.fn['index2obj'] = function(value){
+ko.observable.fn['index2obj'] = function(value, defaultValue){
     var representer = function(item){ return item.id; },
         arr = ko.utils.arrayMap(this.list(), representer),
         index = ko.utils.arrayIndexOf(arr, value);
     if (index < 0){
-        console.log('Object list: ', this.list());
-        console.log('Array: ', arr);
-        console.log('Value to find in the array: ', value);
-        throw new Error('Элемент в массиве не найден.');
+        return defaultValue;
     }
     return this.list()[index];
 };

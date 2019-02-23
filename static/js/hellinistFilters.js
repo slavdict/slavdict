@@ -12,7 +12,7 @@
         hwAuthor: ko.observable()
             .rememberInitial(valuesToInitialize.hwAuthor)
             .rememberDefault('all')
-            .htmlSelect('hwAuthor', listsForWidgets.authors),
+            .htmlSelect('hwAuthor', listsForWidgets.authors, 'all'),
 
         hwAddress: ko.observable()
             .rememberInitial(valuesToInitialize.hwAddress)
@@ -39,14 +39,16 @@
             // .rememberDefault... Значения по умолчанию
             // на клиенте намеренно не определяем,
             // хотя оно есть на сервере
-            .htmlSelect('hwSortbase', listsForWidgets.sortbase),
+            .htmlSelect('hwSortbase', listsForWidgets.sortbase,
+                        valuesToInitialize.hwSortbase),
 
         hwSortdir: ko.observable()
             .rememberInitial(valuesToInitialize.hwSortdir)
             // .rememberDefault... Значения по умолчанию
             // на клиенте намеренно не определяем,
             // хотя оно есть на сервере
-            .htmlSelect('hwSortdir', listsForWidgets.sortdir),
+            .htmlSelect('hwSortdir', listsForWidgets.sortdir,
+                        valuesToInitialize.hwSortdir),
 
         hwAllExamples: ko.observable()
             .rememberInitial(valuesToInitialize.hwAllExamples)
@@ -56,7 +58,7 @@
         hwStatus: ko.observable()
             .rememberInitial(valuesToInitialize.hwStatus)
             .rememberDefault('all')
-            .htmlSelect('hwStatus', listsForWidgets.statuses)
+            .htmlSelect('hwStatus', listsForWidgets.statuses, 'all')
 
     };
     vM.filters.chgg = ko.computed(function () {

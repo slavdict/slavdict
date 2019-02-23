@@ -34,31 +34,33 @@
     f.author = ko.observable()
             .rememberInitial(valuesToInitialize.author)
             .rememberDefault('all')
-            .htmlSelect('author', listsForWidgets.authors);
+            .htmlSelect('author', listsForWidgets.authors, 'all');
 
     f.sortbase = ko.observable(valuesToInitialize.sortbase)
             // Не определяем здесь дефолтного значение ``.rememberDefault``,
             // и не запоминаем начальное значение ``.rememberInitial``,
             // чтобы изменение значений не влияло на отображение информационной
             // панели фильтров.
-            .htmlSelect('sortbase', listsForWidgets.sortbase);
+            .htmlSelect('sortbase', listsForWidgets.sortbase,
+                        valuesToInitialize.sortbase);
 
     f.sortdir = ko.observable(valuesToInitialize.sortdir)
             // Не определяем здесь дефолтного значение ``.rememberDefault``,
             // и не запоминаем начальное значение ``.rememberInitial``,
             // чтобы изменение значений не влияло на отображение информационной
             // панели фильтров.
-            .htmlSelect('sortdir', listsForWidgets.sortdir);
+            .htmlSelect('sortdir', listsForWidgets.sortdir,
+                        valuesToInitialize.sortdir);
 
     f.status = ko.observable()
             .rememberInitial(valuesToInitialize.status)
             .rememberDefault('all')
-            .htmlSelect('status', listsForWidgets.statuses);
+            .htmlSelect('status', listsForWidgets.statuses, 'all');
 
     f.pos = ko.observable()
             .rememberInitial(valuesToInitialize.pos)
             .rememberDefault('all')
-            .htmlSelect('pos', listsForWidgets.pos);
+            .htmlSelect('pos', listsForWidgets.pos, 'all');
 
     f.uninflected = ko.observable()
             .rememberInitial(valuesToInitialize.uninflected)
@@ -68,27 +70,27 @@
     f.gender = ko.observable()
             .rememberInitial(valuesToInitialize.gender)
             .rememberDefault('all')
-            .htmlSelect('gender', listsForWidgets.gender);
+            .htmlSelect('gender', listsForWidgets.gender, 'all');
 
     f.tantum = ko.observable()
             .rememberInitial(valuesToInitialize.tantum)
             .rememberDefault('all')
-            .htmlSelect('tantum', listsForWidgets.tantum);
+            .htmlSelect('tantum', listsForWidgets.tantum, 'all');
 
     f.possessive = ko.observable()
             .rememberInitial(valuesToInitialize.possessive)
             .rememberDefault('all')
-            .htmlSelect('possessive', listsForWidgets.possessive);
+            .htmlSelect('possessive', listsForWidgets.possessive, 'all');
 
     f.onym = ko.observable()
             .rememberInitial(valuesToInitialize.onym)
             .rememberDefault('all')
-            .htmlSelect('onym', listsForWidgets.onym);
+            .htmlSelect('onym', listsForWidgets.onym, 'all');
 
     f.canonical_name = ko.observable()
             .rememberInitial(valuesToInitialize.canonical_name)
             .rememberDefault('all')
-            .htmlSelect('canonical_name', listsForWidgets.canonical_name);
+            .htmlSelect('canonical_name', listsForWidgets.canonical_name, 'all');
 
     f.etymology = ko.observable()
             .rememberInitial(valuesToInitialize.etymology)
