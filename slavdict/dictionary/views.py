@@ -1224,8 +1224,11 @@ def useful_urls_redirect(uri, request):
                      volume=VOLUME)
 
     elif uri == 'meanings_sobstv':
+        regex = re.compile(
+                ur'им[^\s\.]*\.?\s*собст|собст[^\s\.]*\.?\s*им)',
+                flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and u'собств' in m.meaning + m.gloss)
+                if m.not_hidden() and regex.search(m.meaning + m.gloss))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
