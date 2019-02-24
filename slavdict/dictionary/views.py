@@ -1057,15 +1057,6 @@ def useful_urls_redirect(uri, request):
     elif uri == 'phraseological_collocs':
         uri = uri_qs(cgURI, phraseological__exact=1, volume=VOLUME)
 
-    elif uri == 'verbs_noun':
-        es = (e for e in Entry.objects.all()
-                if e.is_part_of_speech('verb') and (
-                any(m.substantivus for m in e.meanings) or
-                any(cm.substantivus for m in e.meanings
-                                      for cm in m.child_meanings)))
-        uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
-                     volume=VOLUME)
-
     elif uri == 'collocs_noun':
         cgs = (cg for cg in CollocationGroup.objects.all()
                   if (any(m.substantivus for m in cg.meanings) or
@@ -1203,6 +1194,19 @@ def useful_urls_redirect(uri, request):
                  or m.special_case in (MSC5, MSC12)
                  or regex.search(m.meaning + m.gloss)
                  )
+              )
+        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
+                     volume=VOLUME)
+
+    elif uri == 'meanings_verbs_noun':
+        regex = re.compile(ur'в\s+роли\s+сущ',
+                           flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
+        ms = (m for m in Meaning.objects.all()
+                if m.not_hidden()
+                and (m.substantivus
+                    or m.special_case in (MSC5, MSC12)
+                    or regex.search(m.meaning + m.gloss))
+                and m.host_entry.is_part_of_speech('verb')
               )
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
@@ -1441,7 +1445,6 @@ def useful_urls(request, x=None, y=None):
                     (u'Cтатьи дубликаты', 'duplicate_entries'),
                     (u'Cтатьи, где все значения "перен."', 'entries_all_figurative'),
                     (u'Cтатьи с литургическими символами', 'entries_litsym'),
-                    (u'Глаголы с пометой "в роли сущ."', 'verbs_noun'),
                 )),
             (u'Словосочетания (cc)', (
                     (u'Все сс', 'all_collocations'),
@@ -1463,6 +1466,8 @@ def useful_urls(request, x=None, y=None):
                     (u'С пометой "букв."', 'meanings_literal'),
                     (u'С пометой "мн."', 'meanings_pl'),
                     (u'С пометой "в роли .."', 'meanings_ps'),
+                    (u'C пометой "в роли сущ." только у глаголов',
+                      'meanings_verbs_noun'),
                     (u'С текстом "в знач...."', 'meanings_ps2'),
                     (u'С текстом "с прям. речью"', 'meanings_direct_speech'),
                     (u'С текстом "[?!]"', 'meanings_quest'),
