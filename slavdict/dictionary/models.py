@@ -75,6 +75,8 @@ def ucs_convert_affix(text):
 def civilrus_convert(word):
     return convert(word, compiled_conversion_civil)
 
+def convert_for_index(word):
+    return re.sub(ur'[ъЪ\s=]', u'', civilrus_convert(resolve_titles(word)))
 
 def ucs_affix_or_word(atr):
     """
@@ -985,7 +987,13 @@ class Entry(models.Model, JSONSerializable):
             used_letters = itertools.chain(*VOLUME_LETTERS.values())
             match = first_letter not in used_letters
         else:
-            used_letters = VOLUME_LETTERS.get(volume, [])
+            if isinstance(volume, (list, tuple)):
+                volumes = volume
+                used_letters = []
+                for volume in volumes:
+                    used_letters.extend(VOLUME_LETTERS.get(volume, []))
+            else:
+                used_letters = VOLUME_LETTERS.get(volume, [])
             match = first_letter in used_letters
         return match
 

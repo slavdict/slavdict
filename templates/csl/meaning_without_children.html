@@ -1,0 +1,168 @@
+{% macro meaning(m, peer_meanings_loop, parent_meanings_loop,
+                    collogroups_loop, child_meanings) %}
+{% from 'web/example.html' import example with context %}
+
+{% for orthvar_ucs in m.orthvars %}
+    {% if not loop.first %}
+        {% if loop.last %}
+            {{ backspace }}{{ space }}
+            <span class="Em">и</span>{{ space }}
+        {% else %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+    {% endif %}
+    {{ orthvar_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
+{% endfor %}
+
+<span class="anchor"><a id="{{ m.get_url_fragment() }}"></a></span>
+
+{# см. slavdict.dictionary.models.MEANING_SPECIAL_CASES_CHOICES #}
+{% set MSC1 = 'a' %}{# канонич. #}
+{% set MSC4 = 'd' %}{# дат. #}
+{% set MSC5 = 'e' %}{# твор. ед. в роли нареч. #}
+{% set MSC8 = 'h' %}{# имя собств. #}
+{% set MSC9 = 'i' %}{# топоним #}
+{% set MSC10 = 'j' %}{# преимущ. #}
+{% set MSC11 = 'k' %}{# мн. #}
+{% set MSC12 = 'l' %}{# в роли нареч. #}
+{% set MSC14 = 'n' %}{# в роли прил. #}
+{% set MSC15 = 'o' %}{# в роли част. #}
+{% set MSC16 = 'p' %}{# полувспом. #}
+{% set MSC17 = 'q' %}{# безличное упортеление глагола #}
+
+{% if m.special_case == MSC1 %}{# канонич. #}
+
+    <span class="Em">канонич.</span>{{ space }}
+
+{% elif m.special_case == MSC4 %}{# дат. #}
+
+    <span class="Em">дат.</span>{{ space }}
+    {% for form_ucs in m.substantivus_forms %}
+        {% if not loop.first %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+        {{ form_ucs |
+                web_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% endfor %}
+
+{% elif m.special_case == MSC5 %}{# твор. ед. в роли нареч. #}
+
+    <span class="Em">твор. ед.</span>{{ space }}
+    {{ m.substantivus_csl_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
+    <span class="Em">в{{ nbsp }}роли нареч.</span>{{ space }}
+
+{% elif m.special_case in [MSC12, MSC14, MSC15] %}
+    {# в роли нареч./прил./част. #}
+
+    {% if m.special_case == MSC12 %}{% set pos_mark = 'нареч.' %}
+    {% elif m.special_case == MSC14 %}{% set pos_mark = 'прил.' %}
+    {% elif m.special_case == MSC15 %}{% set pos_mark = 'част.' %}{% endif %}
+    {% if m.substantivus_csl %}
+        {{ m.substantivus_csl_ucs |
+             web_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% endif %}
+    <span class="Em">в{{ nbsp }}роли {{ pos_mark }}</span>{{ space }}
+
+{% elif m.special_case == MSC8 %}{# имя собств. #}
+
+    <span class="Em">имя собств.</span>{{ space }}
+
+{% elif m.special_case == MSC9 %}{# топоним #}
+
+    <span class="Em">топоним</span>{{ space }}
+
+{% elif m.special_case == MSC11 %}{# мн. #}
+
+    <span class="Em">мн.</span>{{ space }}
+    {{ m.substantivus_csl_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
+
+{% elif m.special_case == MSC16 %}{# полувспомогательный глагол #}
+
+    <span class="Em">полувспом.</span>{{ space }}
+
+{% elif m.special_case == MSC17 %}{# безличное употребление глагола #}
+
+    <span class="Em">безл.</span>{{ space }}
+
+{% elif m.substantivus %}
+
+    {% for form_ucs in m.substantivus_forms %}
+        {% if not loop.first %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+
+        {% if (loop.last or loop.index == 3) and
+                m.is_substantivus_type('n.pl.') %}{# ср. род, мн. число #}
+            {% if not loop.first %}{{ backspace }}{{ space }}{% endif %}
+            <span class="Em">мн.</span>{{ space }}
+        {% elif loop.last and m.is_substantivus_type('f.sg.') %}{# ж. род, ед. число #}
+            {% if not loop.first %}{{ backspace }}{{ space }}{% endif %}
+            <span class="Em">ж.</span>{{ space }}
+        {% endif %}
+
+        {{ form_ucs |
+               web_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% endfor %}
+
+    {% if m.special_case == MSC10 %}{# преимущ. #}
+        {{ backspace }}{{ space }}
+        <span class="Em">преимущ.</span>{{ space }}
+    {% endif %}
+
+    {% if m.substantivus_forms %}
+        {{ backspace }}{{ space }}
+    {% endif %}
+    <span class="Em">в{{ nbsp }}роли сущ.</span>
+    {{ space }}
+
+{% elif m.substantivus_csl %}
+
+    {{ m.substantivus_csl_ucs |
+            web_cslav_words("CSLSegmentEm") }}{{ space }}
+
+{% endif %}
+
+
+{% if m.figurative %}
+    <span class="Em">перен.</span>{{ space }}
+{% endif %}
+
+{% if m.meaning %}
+    <span class="Meaning Text hyphenate" lang="ru">{{ m.meaning |
+        web_cslav_injection("CSLSegment") |
+        web_regex("Em", '(?<![А-Яа-я])(?:перен|букв|зд|см|ср)\\.') |
+        web_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') }}</span>
+{% endif %}
+
+{% if m.gloss %}
+    {% if m.meaning %}
+        {{ backspace }};{{ space }}
+    {% endif %}
+    <span class="Gloss Em hyphenate" lang="ru">{{ m.gloss |
+        web_cslav_injection("CSLSegment") |
+        web_regex("Text", '‘[^’]+’') |
+        web_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+        web_regex("Text", '(?<=Син\.\sпер\.\s)Керенгаппух|бдолах|сирияне|сирийский|сириец|земля Уц') |
+        web_regex("Text", '(?<=Септ\.\s)Авситидийская') }}</span>
+    {{ space }}
+{% endif %}
+
+{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss) and m.examples %}
+    {{ backspace }}:{{ space }}
+{% endif %}
+
+{% for e in m.examples %}
+    {{ example(e, examples_loop=loop,
+               peer_meanings_loop=peer_meanings_loop,
+               parent_meanings_loop=parent_meanings_loop,
+               collogroups_loop=collogroups_loop,
+               child_meanings=child_meanings,
+               entry=m.host_entry, meaning=m) }}
+{% endfor %}
+
+
+{% endmacro %}
+{# vim: set ft=django.html: #}

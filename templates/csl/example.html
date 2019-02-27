@@ -1,0 +1,141 @@
+{% macro example(e, examples_loop, peer_meanings_loop, parent_meanings_loop,
+                    collogroups_loop, child_meanings, entry, meaning) %}
+
+{% set partial_translations = e.get_translations(fragmented=True, hidden=False) %}
+{% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
+
+{{ e.example_ucs | web_cslav_words("CSLSegment", "Text")
+        | insert_translations(partial_translations) }}
+{{ space }}
+
+{% if full_translations %}
+    {% for t in full_translations %}
+        {% if not loop.first %}
+            {{ backspace }},{{ space }}
+        {% endif %}
+        <span class="Text hyphenate">‘{{ t.translation|e }}’</span>
+    {% endfor %}
+    {{ space }}
+{% endif %}
+
+{% if e.greek_equivs %}
+    {% for ge, genum in e.greek_equivs_with_numbers() %}
+
+        {% if not loop.first %}
+            {{ backspace }}<span class="Text">,</span>{{ space }}
+        {% endif %}
+
+        {% if ge.aliud %}
+            {% set aliud_lang = 'лат.' if ge.is_aliud_latin else 'греч.' %}
+            {{ backspace }}{{ space }}
+            <span class="Em hyphenate">в{{ nbsp }}{{ aliud_lang }} иначе</span>
+            {{ space }}
+        {% endif %}
+
+        {% if ge.mark %}
+            {{ backspace }}{{ space }}
+            <span class="Em">{{ ge.mark }}</span>
+            {{ space }}
+        {% endif %}
+
+        <span class="Greek">
+            {{ ge.unitext|
+                    web_regex("Text", '[\\(\\)]') |
+                    web_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}') |
+                    replace(" ", "{{ space }}") }}
+        </span>
+
+        {% if genum == 2 %}
+            {{ backspace }}{{ nbsp }}
+            <span class="Text">(bis)</span>{{ space }}
+        {% elif genum > 2 %}
+            {{ backspace }}{{ nbsp }}
+            <span class="Text">({{ genum }})</span>{{ space }}
+        {% endif %}
+
+    {% endfor %}
+{% endif %}
+
+{% if e.address_text %}
+    {{ backspace }}{{ space }}
+    <span class="Address hyphenate" lang="ru">
+        {{ e.address_text | web_cslav_injection("CSLSegment") }}
+    </span>
+    <span class="Address">
+        {% set before_example = not examples_loop.last %}
+            {# before_example: Сразу за текущим примером следует ещё один
+                   пример, т.е. пример не последний в череде непрерывно
+                   идущих примеров на данное значение или употребление #}
+        {% set before_collogroup_meaning_number =
+            collogroups_loop
+                and not peer_meanings_loop.last
+                and not peer_meanings_loop.nextitem.metaphorical %}
+            {# before_collogroup_meaning_number: Пример стоит сразу перед
+                   номером значения, которое относится к словосочетанию.
+                   На данный момент эти намера передаются буквами в скобках:
+                   (а), (б) и т.д. Но отсюда исключаем библейские метафоры,
+                   которые предваряются не буквами, а треугольником. #}
+        {% set before_submeaning =
+            examples_loop.last
+                and not parent_meanings_loop
+                and child_meanings
+            or examples_loop.last
+                and parent_meanings_loop
+                and not peer_meanings_loop.last %}
+            {# before_submeaning: Пример расположен прямо перед употреблением
+                    (подзначением значения). #}
+        {% set before_valency = before_submeaning %}
+            {# before_valency: Пример расположен прямо перед моделью
+                    управления глагола или предлога. #}
+        {% set before_non_first_collogroup =
+            examples_loop.last
+                and collogroups_loop
+                and not collogroups_loop.last %}
+            {# before_non_first_collogroup: Пример расположен прямо перед
+                    словосочетанием, но не первым для данного значения. #}
+        {% set before_special_collogroup =
+            before_non_first_collogroup
+            or examples_loop.last
+                and entry.is_part_of_speech('conjunction', 'letter')
+                and (meaning.collogroups|length > 0
+                     or parent_meanings_loop
+                        and meaning.parent_meaning.collogroups|length > 0) %}
+            {# before_special_collogroup: Пример расположен прямо перед
+                    словосочетанием, но не первым для данного значения. #}
+        {% set before_submeaning_sign = before_submeaning or before_valency or
+            before_non_first_collogroup or before_special_collogroup %}
+            {# before_submeaning_sign: После примера последует знак
+                    вертикальной двойной черты. Это значит, что дальше
+                    последует либо 1) употребление (~ подзначение),
+                    либо 2) управление глагола или предлога, либо
+                    3) не первое словосочетание для данного значения,
+                    либо 4) любое словосочетание в статьях с частью речи
+                    "союз" или без части речи (буква). #}
+        {% set before_allusion_sign =
+            examples_loop.last
+                and peer_meanings_loop.nextitem
+                and peer_meanings_loop.nextitem.metaphorical
+            or examples_loop.last
+                and child_meanings|length > 0
+                and (child_meanings|first).metaphorical
+            or examples_loop.last
+                and peer_meanings_loop.last
+                and not meaning.metaphorical
+                and collogroups_loop
+                and meaning.host.metaph_meanings|length > 0 %}
+            {# before_allusion_sign: После примера последует знак
+                    библейской метафоры. #}
+
+        {% if before_example or before_collogroup_meaning_number %}
+            {{ backspace }};
+        {% elif before_submeaning_sign or before_allusion_sign %}
+            {{ backspace }}
+        {% else %}
+            {{ backspace }}{{ onlyDot }}
+        {% endif %}
+    </span>
+    {{ space }}
+{% endif %}
+
+{% endmacro %}
+{# vim: set ft=django.html: #}

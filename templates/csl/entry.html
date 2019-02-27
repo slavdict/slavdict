@@ -1,0 +1,390 @@
+{% trim %}
+
+{% from 'web/etymology.html' import etymology with context %}
+{% from 'web/meaning_without_children.html' import meaning with context %}
+
+
+    <div class="FirstParagraph Text">
+
+    {% set sc_several_nouns = entry.special_cases("several nouns") %}
+    {% for base_var in entry.base_vars %}
+        {% if loop.first %}
+            {# pass #}
+        {% else %}
+            {{ backspace }}{{ space }}
+            <span class="Em">и</span>{{ space }}
+        {% endif %}
+
+        {% if loop.first %}
+            {{ base_var.idem_ucs |
+                    web_cslav_words("Headword") }}
+        {% else %}
+            {{ base_var.idem_ucs |
+                    web_cslav_words("SubHeadword") }}
+        {% endif %}
+        {% if loop.first %}
+            {% if entry.homonym_order %}
+                <span class="HeadwordHomonymNumber">
+                    {{ entry.homonym_order }}
+                </span>
+                {{ space }}
+            {% endif %}
+        {% endif %}
+        {% if base_var.questionable %}
+            <span class="Text">(?)</span>
+        {% endif %}
+        {{ backspace }}{{ space }}
+
+        {% if base_var.without_accent %}
+            <span class="Text">(</span>
+            <span class="Em">без удар.</span>
+            <span class="Text">)</span>
+            {{ backspace }}{{ space }}
+        {% endif %}
+
+        {% for var in base_var.childvars %}
+
+            {% if loop.first %}
+                <span class="Text">(</span>
+            {% endif %}
+
+            {{ var.idem_ucs|web_cslav_words("CSLSegment") }}
+
+            {% if loop.last %}
+                {{ backspace }}<span class="Text">)</span>{{ space }}
+            {% else %}
+                {{ backspace }}<span class="Text">,</span>{{ space }}
+            {% endif %}
+
+        {% endfor %}
+
+        {% if sc_several_nouns %}
+            {% set wordform, wordform_ucs, grammatical_mark = sc_several_nouns[loop.index0] %}
+            {% if wordform %}
+                {{ backspace }},{{ space }}
+                <span>{{ wordform_ucs |
+                            web_cslav_words("CSLSegment") }}</span>
+                {% if wordform|has_no_accent %}
+                    {% include 'web/noaccent.html' %}
+                {% endif %}
+                {{ space }}
+            {% endif %}
+            {% if grammatical_mark %}
+                {{ backspace }}{{ space }}
+                <span class="Em">{{ grammatical_mark }}</span>
+                {{ space }}
+            {% endif %}
+        {% endif %}
+
+    {% endfor %}
+
+
+    {% if not sc_several_nouns %}
+
+        {% if entry.short_form or entry.genitive or entry.sg1 or entry.sg2 %}
+            {{ backspace }}<span class="Text">,</span>{{ space }}
+        {% endif %}
+
+
+        {% if entry.short_form %}
+            {% for short_form, short_form_ucs in entry.short_forms %}
+                {% if not loop.first %}
+                    {{ backspace }}{{ space }}
+                    <span class="Conj">и</span>{{ space }}
+                {% endif %}
+                <span>{{ short_form_ucs |
+                         web_cslav_words("CSLSegment") }}</span>
+                {% if short_form|has_no_accent %}
+                    {% include 'web/noaccent.html' %}
+                {% endif %}
+                {{ space }}
+            {% endfor %}
+        {% endif %}
+
+        {% if entry.genitive %}
+            {% for genitive, genitive_ucs in entry.genitives %}
+                {% if not loop.first %}
+                    {{ backspace }}{{ space }}
+                    <span class="Conj">и</span>{{ space }}
+                {% endif %}
+                <span>{{ genitive_ucs |
+                         web_cslav_words("CSLSegment") }}</span>
+                {% if genitive|has_no_accent %}
+                    {% include 'web/noaccent.html' %}
+                {% endif %}
+                {{ space }}
+            {% endfor %}
+        {% endif %}
+
+        {% if entry.sg1 %}
+            {% for sg1, sg1_ucs in entry.several_sg1 %}
+                {% if not loop.first %}
+                    {{ backspace }}{{ space }}
+                    <span class="Conj">и</span>{{ space }}
+                {% endif %}
+                <span>{{ sg1_ucs |
+                         web_cslav_words("CSLSegment") }}</span>
+                {% if sg1|has_no_accent %}
+                    {% include 'web/noaccent.html' %}
+                {% endif %}
+                {{ space }}
+            {% endfor %}
+
+            {% if entry.sg2 %}
+                {{ backspace }}<span class="Text">,</span>{{ space }}
+            {%endif %}
+        {% endif %}
+
+        {% if entry.sg2 %}
+            {% if entry.sg2_ucs_wax.0 %}
+                <span class="Text">{{ nbhyphen }}</span>
+            {% endif %}
+            <span>{{ entry.sg2_ucs_wax.1 |
+                         web_cslav_words("CSLSegment") }}</span>
+            {% if entry.sg2|has_no_accent %}
+                {% include 'web/noaccent.html' %}
+            {% endif %}
+            {{ space }}
+        {% endif %}
+
+        {% set be_negative_forms = entry.special_cases('be') %}
+        {% if be_negative_forms %}
+            {{ backspace }};{{ space }}
+            <span class="Em">при отрицании</span>
+            {{ space }}
+            {% for neg_form_ucs in be_negative_forms %}
+                {% if not loop.first %}
+                    {{ backspace }}<span class="Text">,</span>{{ space }}
+                {% endif %}
+                {{ neg_form_ucs |
+                       web_cslav_words("CSLSegment") }}
+                {{ space }}
+            {% endfor %}
+        {% endif %}
+
+    {% endif %}
+
+
+    {% if entry.participle_type %}
+        {{ backspace }}{{ space }}
+        <span class="Em">
+            {{ entry.get_participle_type_display() }}
+        </span>
+        {{ space }}
+    {% else %}
+        {% if entry.part_of_speech and not entry.meaning_groups.serveral_pos %}
+            {% if not entry.is_part_of_speech("letter", "number", "verb") and
+                  (not entry.is_part_of_speech("noun") or not entry.gender) %}
+                {{ backspace }}{{ space }}
+                <span class="Em">
+                    {{ entry.get_part_of_speech_display() }}
+                </span>
+                {{ space }}
+            {% endif %}
+        {% endif %}
+
+        {% if entry.gender and not sc_several_nouns %}
+            {{ backspace }}{{ space }}
+            <span class="Em">
+                {{ entry.get_gender_display() }}
+            </span>
+            {{ space }}
+        {% endif %}
+
+        {% if entry.is_part_of_speech("verb") %}
+            {{ backspace }}{{ space }}
+            <span class="Em">
+                {{ entry.transitivity_from_meanings }}
+            </span>
+            {{ space }}
+        {% endif %}
+    {% endif %}
+
+
+    {% set bigger_form_ucs = entry.special_cases('bigger') %}
+    {% if bigger_form_ucs %}
+        {{ backspace }}{{ space }}
+        <span class="Em">сравн. степ. от</span>
+        {{ space }}
+        {{ bigger_form_ucs |
+                web_cslav_words("CSLSegment") }}
+        {{ space }}
+    {% endif %}
+
+
+    {% if entry.possessive %}
+        {{ backspace }}{{ space }}
+        <span class="Em">
+            притяж.
+        </span>
+        {{ space }}
+    {% endif %}
+
+
+    {% if entry.uninflected and not sc_several_nouns %}
+        {{ backspace }}{{ space }}
+        <span class="Em">
+            неизм.
+        </span>
+        {{ space }}
+    {% endif %}
+
+
+    {% if entry.tantum and not sc_several_nouns %}
+        {{ backspace }}{{ space }}
+        <span class="Em">
+            {{ entry.get_tantum_display() }}
+        </span>
+        {{ space }}
+    {% endif %}
+
+    {% if entry.is_onym('ethnonym') and entry.nom_sg %}
+        {{ backspace }}<span class="Text">,</span>{{ space }}
+        {% for ethnonym, ethnonym_ucs in entry.ethnonyms %}
+            {% if loop.last and not loop.first %}
+                {{ backspace }}{{ space }}
+                <span class="Conj">и</span>{{ space }}
+            {% elif not loop.first %}
+                {{ backspace }}<span class="Text">,</span>{{ space }}
+            {% endif %}
+            <span>{{ ethnonym_ucs |
+                        web_cslav_words("CSLSegment") }}</span>
+            {% if ethnonym|has_no_accent %}
+                {% include 'web/noaccent.html' %}
+            {% endif %}
+        {% endfor %}
+        {{ space }}<span class="Em">мн.</span>{{ space }}
+    {% endif %}
+
+
+    {% for etym in entry.etymologies %}
+
+        {% set prevLang = Lang %}
+        {% set Lang = etym.get_language_display() %}
+        {% set isLanguageChanged = (Lang != prevLang) %}
+
+        {{ etymology(etym, isLanguageChanged, loop) }}
+
+    {% endfor %}
+
+
+    {% if entry.is_onym('anthroponym') %}
+        {% if entry.canonical_name %}
+            {{ backspace }}{{ space }}
+            <span class="Em">
+                канонич.
+            </span>{{ space }}
+        {% endif %}
+        {{ backspace }}{{ space }}
+        <span class="Em">
+            имя собств.
+        </span>{{ space }}
+    {% endif %}
+
+    {% if entry.is_onym('toponym') %}
+        {{ backspace }}{{ space }}
+        <span class="Em">
+            топоним
+        </span>{{ space }}
+    {% endif %}
+
+    {% if entry.civil_equivalent == "аггей" %}
+        {{ backspace }},{{ space }}
+        <span class="Em">произн.</span>{{ space }}
+        <span class="Text">[агге́й]</span>{{ space }}
+    {% elif entry.civil_equivalent == "аггеев" %}
+        {{ backspace }},{{ space }}
+        <span class="Em">произн.</span>{{ space }}
+        <span class="Text">[агге́ев]</span>{{ space }}
+    {% endif %}
+
+
+    {% for mgroup in entry.meaning_groups %}
+        {% set mgloop = loop %}
+        {% if loop.length > 1 %}
+            {% if not loop.first %}
+                {{ backspace }}</div>{{ newline }}<div class="MeaningParagraph" class="Text">
+            {% endif %}
+
+            {% set mgnumber = {1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V'}[loop.index] %}
+            <span class="MeaningNumber">
+                {{ mgnumber }}.
+            </span>{{ nbsp }}
+
+            {% if mgroup.pos_mark %}
+                <span class="Em">{{ mgroup.pos_mark }}</span>{{ space }}
+            {% endif %}
+
+            {% for orthvar_ucs in mgroup.orthvars %}
+                {% if not loop.first %}
+                    {% if loop.last %}
+                        {{ backspace }}{{ space }}
+                        <span class="Em">и</span>{{ space }}
+                    {% else %}
+                        {{ backspace }},{{ space }}
+                    {% endif %}
+                {% endif %}
+                {{ orthvar_ucs |
+                   web_cslav_words("CSLSegmentEm") }}{{ space }}
+            {% endfor %}
+        {% endif %}
+
+        {% for m in mgroup.meanings %}
+            {% set mnumber = loop.index %}
+
+            {% if not loop.first %}
+                {{ backspace }}</div>{{ newline }}<div class="MeaningParagraph" class="Text">
+            {% endif %}
+
+            {% if loop.length > 1 %}
+            <span class="MeaningNumber">
+                {{ mnumber }}.
+            </span>{{ nbsp }}
+            {% endif %}
+
+            {% set is_collogroups = false %}
+            {% include 'web/meaning_with_children.html' with context %}
+            {% set is_collogroups = true %}
+            {% include 'web/meaning_collogroups.html' with context %}
+        {% endfor %}
+    {% endfor %}
+
+
+    {% if entry.cfentries or entry.cfcollogroups %}
+        {{ backspace }}</div>{{ newline }}
+        <div class="CfParagraph Text"><span class="Em">
+            Ср.
+        </span>{{ nbsp }}
+
+        {% for cfe in entry.cfentries %}
+
+            {% if not loop.first %}
+                {{ backspace }}<span class="Text">,</span>{{ space }}
+            {% endif %}
+
+            <a href="{{ csl_url(cfe) }}">
+                {{ cfe.orth_vars.0.idem_ucs | web_cslav_words("CSLSegment") }}
+
+                {% if cfe.homonym_order %}
+                    <span class="HeadwordNumber">
+                        {{ cfe.homonym_order }}
+                    </span>
+                {% endif %}
+            </a>
+
+        {% endfor %}
+
+        {% for cfcg in entry.cfcollogroups %}
+            {% if not loop.first or entry.cfentries %}
+                {{ backspace }}<span class="Text">,</span>{{ space }}
+            {% endif %}
+            {{ cfcg.collocations.0.collocation_ucs |
+                        web_cslav_words("CSLSegment", "Text") }}
+        {% endfor %}
+        {{ backspace }}<span class="Text">.</span>
+    {% endif %}
+
+    {{ backspace }}</div>
+
+{% endtrim %}
+{# vim: set ft=django.html: #}

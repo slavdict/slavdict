@@ -1,0 +1,35 @@
+{% trim %}
+{% set ankira = false %}
+{% for letter, entries in letter_parts %}
+    <div class="Letter">
+        <div class="Letter">{{ letter }}</div>{{ newline }}
+
+        {% for reference, entry in entries %}
+            {% if reference %}
+                {# Специальный случай -- создание ссылки
+                   с многоточием для слов на анкир... #}
+                {% if reference[:5] == "ґгкЂр" and not ankira %}
+                    {% set ankira = true %}
+                    <div class="Entry">
+                        <div class="FirstParagraph" class="Text">
+                            <span class="Headword">ґгкЂр</span>
+                            <span class="Text">…</span>{{ space }}
+                            <span class="Em">см.</span>{{ nbsp }}
+                            <span class="CSLSegment">ґнкЂр</span>
+                            <span class="Text">…</span>
+                        </div>
+                    </div>
+                {% elif reference[:5] == "ґгкЂр" and ankira %}
+                    {# pass #}
+                {% else %}
+                    {% include 'web/reference.html' with context %}
+                {% endif %}
+            {% else %}
+                {% include 'web/entry.html' with context %}
+            {% endif %}
+            {{ backspace }}{{ newline }}
+        {% endfor %}
+    </div>{# Letter #}
+{% endfor %}
+{# vim: set ft=django.html: #}
+{% endtrim %}

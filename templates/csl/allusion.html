@@ -1,0 +1,8 @@
+{% set triangle = "\u25b6" %}{# ▶25b6 ▸25b8 Эти символы у нас есть
+в веб-шрифте FreeSerifSymbols. А вот эти символы присутствуют в
+Wingdings3 \uf075 ⯈2bc8, но их нету на Маке. #}
+{{ backspace }}{{ space }}
+<span class="BiblicalAllusion">{{ triangle }}</span>
+{{ nbsp }}
+
+{# vim: set ft=django.html: #}

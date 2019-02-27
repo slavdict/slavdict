@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: UTF-8 -*-
 """
-Скрипт делает XML-выгрузку словарной базы для InDesign.
+Скрипт делает выгрузку словарной базы для портала "Цсл язык сегодня"
 
 При необходимости сделать выборочную выгрузку скрипту допустимо передавать
 номера статей в качестве аргументов. Каждый номер можно отделять от другого
@@ -22,6 +22,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
+from slavdict.dictionary.models import convert_for_index
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import resolve_titles
 from slavdict.dictionary.models import sort_key1
@@ -29,17 +30,24 @@ from slavdict.dictionary.models import sort_key2
 from slavdict.dictionary.models import ucs_convert
 from slavdict.dictionary.models import VOLUME_LETTERS
 
-OUTPUT_VOLUMES = (2,)
-OUTPUT_VOLUMES_LETTERS = reduce(lambda x, y: x + y, (VOLUME_LETTERS[volume]
-    for volume in OUTPUT_VOLUMES if volume in VOLUME_LETTERS), ())
+OUTPUT_DIR = '../csl/.temp/entries'
+URL_PATTERN = u'./словарь/статьи/%s'
+READY_VOLUMES = (1, 2)
+READY_VOLUMES_LETTERS = reduce(lambda x, y: x + y, (VOLUME_LETTERS[volume]
+    for volume in READY_VOLUMES if volume in VOLUME_LETTERS), ())
 
-print >> sys.stderr
-print >> sys.stderr, 'Volumes:', u', '.join(str(volume) for volume in OUTPUT_VOLUMES)
-print >> sys.stderr, 'Letters:', u', '.join(letter for letter in OUTPUT_VOLUMES_LETTERS)
-print >> sys.stderr
+def csl_url(entry):
+    return URL_PATTERN % entry.id
 
-def in_output_volumes(wordform):
-    return wordform.lstrip(u' =')[:1].lower() in OUTPUT_VOLUMES_LETTERS
+print
+print 'Volumes:', u', '.join(str(volume) for volume in READY_VOLUMES)
+print 'Letters:', u', '.join(letter for letter in READY_VOLUMES_LETTERS)
+print 'Output Folder:', OUTPUT_DIR
+print 'Url Pattern:', URL_PATTERN % '<EntryID>'
+print
+
+def in_ready_volumes(wordform):
+    return wordform.lstrip(u' =')[:1].lower() in READY_VOLUMES_LETTERS
 
 entries1 = []
 # Это список всех потенциально возможных статей для выбранных томов,
@@ -52,13 +60,13 @@ if len(sys.argv) > 1:
     s = u' '.join(sys.argv[1:]).strip(' ,')
     test_entries = [int(i) for i in r.split(s)]
 if test_entries:
-    print >> sys.stderr, 'Entries to dump:', u', '.join(str(i) for i in test_entries)
+    print 'Entries to dump:', u', '.join(str(i) for i in test_entries)
     lexemes = lexemes.filter(pk__in=test_entries)
 else:
-    print >> sys.stderr, 'Entries to dump: ALL for the selected volumes'
-lexemes = [e for e in lexemes if e.volume(OUTPUT_VOLUMES)]
-print >> sys.stderr, 'Number of selected lexemes:', len(lexemes)
-print >> sys.stderr
+    print 'Entries to dump: ALL for the selected volumes'
+lexemes = [e for e in lexemes if e.volume(READY_VOLUMES)]
+print 'Number of selected lexemes:', len(lexemes)
+print
 
 for lexeme in lexemes:
 
@@ -104,16 +112,18 @@ for lexeme in lexemes:
         reference = ucs_convert(wordform)
         entries1.append((wordform, reference, lexeme))
 
-#     6) Добавляем ссылочные статьи, которые будут присутствовать в выводимых
-#        томах и ссылаться на какие-то статьи из других томов.
-other_volumes = [e for e in Entry.objects.all() if not e.volume(OUTPUT_VOLUMES)]
-for lexeme in other_volumes:
-    for participle in lexeme.participles:
-        if participle.tp not in ('1', '2', '3', '4'):
-            wordform = participle.idem
-            if in_output_volumes(wordform):
-                reference = participle.idem_ucs
-                entries1.append((wordform, reference, lexeme))
+
+if not test_entries:
+    # 6) Добавляем ссылочные статьи, которые будут присутствовать в выводимых
+    # томах и ссылаться на какие-то статьи из других томов.
+    other_volumes = [e for e in Entry.objects.all() if not e.volume(READY_VOLUMES)]
+    for lexeme in other_volumes:
+        for participle in lexeme.participles:
+            if participle.tp not in ('1', '2', '3', '4'):
+                wordform = participle.idem
+                if in_ready_volumes(wordform):
+                    reference = participle.idem_ucs
+                    entries1.append((wordform, reference, lexeme))
 
 def sort_key(x):
     wordform, reference, lexeme = x
@@ -128,11 +138,11 @@ def sort_key(x):
 entries1 = sorted(set(entries1), key=sort_key)
 
 entries2 = []
-# Список статей, где ссылочные статьи сгруппированы по номеру омонима
+# Список статей, где ссылочные статьи сгруппированы
 
 for key, group in itertools.groupby(entries1, lambda x: x[:2]):
     wordform, reference = key
-    if not in_output_volumes(wordform):
+    if not in_ready_volumes(wordform):
         continue
     # Удаляем из выгрузки отсылочную статью Ассирии, т.к. она неправильно выгружается
     if wordform == u"ассѵрі'и":
@@ -192,10 +202,8 @@ class Reference(unicode):
 
 if len(entries1) < 7:
     for wordform, ref, entry in entries1:
-        print >> sys.stderr, (
-                u'Antconc wf: "{}", UCS ref: "{}", Lexeme: "{}"'
-                .format(wordform, ref, entry))
-    print >> sys.stderr
+        print 'Antconc wf: "%s", UCS ref: "%s", Lexeme: "%s"' % (wordform, ref, entry)
+    print
 
 letter_parts = []
 part_entries = []
@@ -218,6 +226,13 @@ for wordform, group in itertools.groupby(entries3, lambda x: x[0]):
             part_entries.append((reference, lexeme))
 letter_parts.append((letter, part_entries))
 
-xml = render_to_string('indesign/slavdict.xml', {'letter_parts': letter_parts})
-sys.stdout.write(xml.encode('utf-8'))
+for letter, entries in letter_parts:
+    for reference, entry in entries:
+        if not reference:
+            html = render_to_string('csl/entry.html', {'entry': entry,
+                'csl_url': csl_url })
+            filename = os.path.join(OUTPUT_DIR, str(entry.id))
+            with open(filename, 'wb') as f:
+                f.write(html.encode('utf-8'))
+
 sys.exit(0)

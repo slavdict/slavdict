@@ -1,0 +1,27 @@
+{% macro etymology(etym, isLanguageChanged, loop) %}
+
+{% if isLanguageChanged %}
+    {% if not loop.first %}
+        {{ backspace }};{{ space }}
+    {% endif %}
+{% else %}
+    {% if not loop.first %}
+        {{ backspace }},{{ space }}
+    {% endif %}
+{% endif %}
+
+{{ backspace }}{{ space }}
+
+{% if etym.unitext and etym.has_etymology_language() %}
+    <span class="{{ etym.get_etymology_language_cstyle() }}">
+        {{ etym.unitext }}
+    </span>{{ space }}
+    {% if etym.meaning %}
+        <span class="Text hyphenate" lang="ru">
+            ‘{{ etym.meaning }}’
+        </span>{{ space }}
+    {% endif %}
+{% endif %}
+
+{% endmacro %}
+{# vim: set ft=django.html: #}

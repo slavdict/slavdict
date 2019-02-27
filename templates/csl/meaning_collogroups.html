@@ -1,0 +1,53 @@
+{% from 'web/collogroup.html' import collogroup with context %}
+
+{% if m.collogroups_non_phraseological %}
+    {% if entry.is_part_of_speech('conjunction', 'letter') %}
+        {% if not m.examples and not m.child_meanings %}
+            {% if m.meaning or m.gloss %}
+                {{ backspace }};{{ space }}
+            {% else %}
+                {{ backspace }}{{ space }}
+            {% endif %}
+        {% else %}
+            {% include 'web/separator.html' %}
+        {% endif %}
+    {% else %}
+        {% if m.examples or m.child_meanings %}
+            {{ backspace }}</div>{{ newline }}
+            <div class="CollogroupParagraph" class="Text">
+        {% else %}
+            {{ backspace }}{{ space }}
+        {% endif %}
+        <span class="Diamond">♢{# U+2662 #}</span>{{ nbsp }}
+    {% endif %}
+    {% for cg in m.collogroups_non_phraseological %}
+        {{ collogroup(cg, loop) }}
+    {% endfor %}
+{% endif %}
+
+{% if m.collogroups_phraseological %}
+    {% if entry.is_part_of_speech('conjunction', 'letter') %}
+        {% if not m.examples and not m.child_meanings %}
+            {% if m.meaning or m.gloss %}
+                {{ backspace }};{{ space }}
+            {% else %}
+                {{ backspace }}{{ space }}
+            {% endif %}
+        {% else %}
+            {% include 'web/separator.html' %}
+        {% endif %}
+    {% else %}
+        {% if m.examples or m.child_meanings or m.collogroups_non_phraseological %}
+            {{ backspace }}</div>{{ newline }}
+            <div class="CollogroupParagraph" class="Text">
+        {% else %}
+            {{ backspace }}{{ space }}
+        {% endif %}
+        <span class="Diamond">♦{# U+2666 #}</span>{{ nbsp }}
+    {% endif %}
+    {% for cg in m.collogroups_phraseological %}
+        {{ collogroup(cg, loop) }}
+    {% endfor %}
+{% endif %}
+
+{# vim: set ft=django.html: #}

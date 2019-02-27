@@ -1,0 +1,54 @@
+{% macro valency(m, peer_meanings_loop, parent_meanings_loop,
+                    collogroups_loop, child_meanings) %}
+{% from 'web/example.html' import example with context %}
+
+{% set MSC17 = 'q' %}{# безличное упортеление глагола #}
+{% if m.special_case == MSC17 %}
+    <span class="Em">безл.</span>{{ space }}
+{% endif %}
+
+{% if m.substantivus_csl %}
+    {{ m.substantivus_csl_ucs|
+         web_civil_injection("Valency", "CSLSegmentEm", "Text") }}
+    {{ space }}
+{% endif %}
+
+{% if m.meaning %}
+    {{ m.host_entry.base_vars[0].idem_ucs |
+            web_cslav_words("CSLSegmentEm", "Text") }}{{ space }}
+    {% for frame in m.meaning.split(";") %}
+        {% if loop.first %}
+            {# pass #}
+        {% else %}
+            {{ backspace }}<span class="Text">;</span>{{ space }}
+        {% endif %}
+        <span class="Text">{{ frame|trim|
+            web_cslav_injection("CSLSegmentEm")|
+            web_regex("Valency", '[а-я]+[\\-\u2011]л\\.')|
+            web_regex("Em", 'с\\sпридат\\.|с\\sинф\\.|с\\sпрям\\.\\sречью')
+            }}</span>
+
+        {{ space }}
+    {% endfor %}
+{% endif %}
+
+{% if m.gloss %}
+    {{ backspace }}{{ space }}
+    <span class="Text">(=</span>{{ nbsp }}
+    <span class="Text">{{ m.gloss | web_cslav_injection("CSLSegment") }}</span>
+    <span class="Text">)</span>
+    {{ space }}
+{% endif %}
+
+{% for e in m.examples %}
+    {{ example(e, examples_loop=loop,
+               peer_meanings_loop=peer_meanings_loop,
+               parent_meanings_loop=parent_meanings_loop,
+               collogroups_loop=collogroups_loop,
+               child_meanings=child_meanings,
+               entry=m.host_entry, meaning=m) }}
+{% endfor %}
+
+
+{% endmacro %}
+{# vim: set ft=django.html: #}
