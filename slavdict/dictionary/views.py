@@ -1227,6 +1227,14 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
+    elif uri == 'meanings_vvodn':
+        regex = re.compile(ur'вводн',
+                           flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
+        ms = (m for m in Meaning.objects.all()
+                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
+                     volume=VOLUME)
+
     elif uri == 'meanings_direct_speech':
         regex = re.compile(ur'с\s+пр(?:ям)\.\s*речью',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
@@ -1478,6 +1486,7 @@ def useful_urls(request, x=None, y=None):
                       'meanings_verbs_noun'),
                     (u'С текстом "в роли .."', 'meanings_ps_text'),
                     (u'С текстом "в знач...."', 'meanings_ps2'),
+                    (u'С текстом "вводн"', 'meanings_vvodn'),
                     (u'С текстом "с прям. речью"', 'meanings_direct_speech'),
                     (u'С текстом "[?!]"', 'meanings_quest'),
                     (u'С текстом "с именем собств."', 'meanings_sobstv'),
