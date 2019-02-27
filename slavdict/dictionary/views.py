@@ -1186,6 +1186,14 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
+    elif uri == 'meanings_ps_text':
+        regex = re.compile(ur'в\s+роли\s',
+                           flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
+        ms = (m for m in Meaning.objects.all()
+                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
+                     volume=VOLUME)
+
     elif uri == 'meanings_ps':
         regex = re.compile(ur'в\s+роли\s',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
@@ -1465,9 +1473,10 @@ def useful_urls(request, x=None, y=None):
                     (u'Все значения и употребления', 'all_meanings'),
                     (u'С пометой "букв."', 'meanings_literal'),
                     (u'С пометой "мн."', 'meanings_pl'),
-                    (u'С пометой "в роли .."', 'meanings_ps'),
-                    (u'C пометой "в роли сущ." только у глаголов',
+                    (u'С пометой или текстом "в роли .."', 'meanings_ps'),
+                    (u'C пометой или текстом "в роли сущ." только у глаголов',
                       'meanings_verbs_noun'),
+                    (u'С текстом "в роли .."', 'meanings_ps_text'),
                     (u'С текстом "в знач...."', 'meanings_ps2'),
                     (u'С текстом "с прям. речью"', 'meanings_direct_speech'),
                     (u'С текстом "[?!]"', 'meanings_quest'),
