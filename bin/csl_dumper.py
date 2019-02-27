@@ -9,9 +9,11 @@
 
     SCRIPT 1177,123 89 945, 234
 """
+import collections
 import itertools
 import os
 import re
+import shutil
 import sys
 
 import django
@@ -30,11 +32,17 @@ from slavdict.dictionary.models import sort_key2
 from slavdict.dictionary.models import ucs_convert
 from slavdict.dictionary.models import VOLUME_LETTERS
 
-OUTPUT_DIR = '../csl/.temp/entries'
+OUTPUT_DIR = '../csl/.temp/slavdict_generated'
+ENTRIES_DIR = OUTPUT_DIR + '/entries'
+FULL_IX = OUTPUT_DIR + '/full_index'
+PART_IX = OUTPUT_DIR + '/partial_index'
+dirs = (OUTPUT_DIR, ENTRIES_DIR, FULL_IX, PART_IX):
+
 URL_PATTERN = u'./словарь/статьи/%s'
 READY_VOLUMES = (1, 2)
 READY_VOLUMES_LETTERS = reduce(lambda x, y: x + y, (VOLUME_LETTERS[volume]
     for volume in READY_VOLUMES if volume in VOLUME_LETTERS), ())
+HINTS_NUMBER = 7
 
 def csl_url(entry):
     return URL_PATTERN % entry.id
@@ -42,12 +50,22 @@ def csl_url(entry):
 print
 print 'Volumes:', u', '.join(str(volume) for volume in READY_VOLUMES)
 print 'Letters:', u', '.join(letter for letter in READY_VOLUMES_LETTERS)
-print 'Output Folder:', OUTPUT_DIR
+print 'Output Folder:', ENTRIES_DIR
 print 'Url Pattern:', URL_PATTERN % '<EntryID>'
 print
 
 def in_ready_volumes(wordform):
     return wordform.lstrip(u' =')[:1].lower() in READY_VOLUMES_LETTERS
+
+for directory in dirs:
+    if os.path.exists(directory):
+        shutil.rmtree(directory)
+
+for directory in dirs:
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
 
 entries1 = []
 # Это список всех потенциально возможных статей для выбранных томов,
@@ -205,6 +223,7 @@ if len(entries1) < 7:
         print 'Antconc wf: "%s", UCS ref: "%s", Lexeme: "%s"' % (wordform, ref, entry)
     print
 
+# Объединение статей по начальным буквам
 letter_parts = []
 part_entries = []
 letter = entries3[0][0].lstrip(u' =')[0].upper()
@@ -226,13 +245,93 @@ for wordform, group in itertools.groupby(entries3, lambda x: x[0]):
             part_entries.append((reference, lexeme))
 letter_parts.append((letter, part_entries))
 
+# Вывод статей
 for letter, entries in letter_parts:
     for reference, entry in entries:
         if not reference:
-            html = render_to_string('csl/entry.html', {'entry': entry,
+            html = render_to_string('csl/entry.html', { 'entry': entry,
                 'csl_url': csl_url })
-            filename = os.path.join(OUTPUT_DIR, str(entry.id))
+            filename = os.path.join(ENTRIES_DIR, str(entry.id))
             with open(filename, 'wb') as f:
                 f.write(html.encode('utf-8'))
+
+
+# Вывод указателя статей
+
+KEY_ENTRY_ID = 'i'
+KEY_ENTRY = 'e'
+KEY_HOMONYM_ORDER = 'o'
+KEY_HOMONYM_GLOSS = 'g'
+KEY_PART_OF_SPEECH = 'p'
+KEY_REFEREE = 'r'
+
+KEY_INDEX = 'i'
+KEY_MATCH = 'm'
+KEY_HINTS = 'h'
+
+def get_hint(entry):
+    hint =  {
+        KEY_ENTRY_ID: entry.id,  # id лексемы в базе
+        KEY_ENTRY: entry.base_vars[0].idem_ucs,  # Заглавное слово
+    }
+    if entry.homonym_order:
+        hint[KEY_HOMONYM_ORDER] = entry.homonym_order  # Номер омонима
+        hint[KEY_PART_OF_SPEECH] = entry.get_part_of_speech_display()  # Часть речи
+    if entry.homonym_gloss.strip():
+        hint[KEY_HOMONYM_GLOSS] = entry.homonym_gloss.strip()  # Комментарий к омониму
+    return hint
+
+def get_reference_hint(reference, lexeme):
+    hint = {
+        KEY_ENTRY: reference,
+    }
+    if isinstance(lexeme, Entry):
+        hint[KEY_REFEREE] = get_hint(lexeme)
+    else:
+        referenced_lexemes = lexeme['referenced_lexemes']
+        referee_hint = get_hint(referenced_lexemes[0])
+        if (len(referenced_lexemes) > 1
+                and all(e.homonym_order for e in referenced_lexemes)):
+            referee_hint[KEY_HOMONYM_ORDER] = u',\u00a0'.join(
+                    str(e.homonym_order) for e in referenced_lexemes if e)
+        hint[KEY_REFEREE] = referee_hint
+    return hint
+
+def already_in(hints, new_hint):
+    for hint in hints:
+        SAME_ENTRY = new_hint[KEY_ENTRY] == hint[KEY_ENTRY]
+        SAME_HOMONYM = (KEY_HOMONYM_ORDER in new_hint
+                and KEY_HOMONYM_ORDER in hint
+                and new_hint[KEY_HOMONYM_ORDER] == hint[KEY_HOMONYM_ORDER])
+        NON_HOMONYM = (KEY_HOMONYM_ORDER not in new_hint
+                and KEY_HOMONYM_ORDER not in hint)
+        if SAME_ENTRY and (SAME_HOMONYM or NON_HOMONYM):
+            return True
+
+partial_index = {}
+full_index = collections.defaultdict(list)()
+for wordform, reference, lexeme in entries2:
+    slug = convert_for_index(wordform)
+    ix_layer_pointer = partial_index
+    for i, char in enumerate(slug):
+        prefix = slug[:i + 1]
+        if char not in ix_layer_pointer:
+            ix_layer_pointer[char] = {
+               KEY_INDEX: {},  # index: Следующий уровень индекса
+               KEY_HINTS: [],  # hints: Первые N результатов, для подсказок при поиске
+               KEY_MATCH: slug  # match: Совпадение в начале слова
+            }
+        if reference:
+            hint = get_reference_hint(reference, lexeme)
+        else:
+            hint = get_hint(lexeme)
+        hints = ix_layer_pointer[char][KEY_HINTS]
+        if not already_in(hints, hint) and len(hints) < HINTS_NUMBER:
+            hints.append(hint)
+        results = full_index[slug]
+        if not already_in(results, hint):
+            results.append(hint)
+        ix_layer_pointer = ix_layer_pointer[char][KEY_INDEX]
+
 
 sys.exit(0)
