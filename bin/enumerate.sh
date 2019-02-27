@@ -14,6 +14,10 @@ if ! which pdftk > /dev/null; then
         if [ "$ANSWER" = "y" ] || [ "$ANSWER" = "Y" ] || [ $ANSWER = "yes" ]; then
             sudo apt-get install pdftk
             if ! which pdftk > /dev/null; then
+                sudo snap install pdftk
+            fi
+            if ! which pdftk > /dev/null; then
+                sudo snap install pdftk
                 echo "Problem with automatic installation, please install manually and try again"
                 exit 1
             else
@@ -35,12 +39,12 @@ if ! which pdflatex > /dev/null; then
         echo "You appear to be running ubuntu or debian do you want me to attempt to install automatically? (y/n)"
         read ANSWER
         if [ "$ANSWER" = "y" ] || [ "$ANSWER" = "Y" ] || [ $ANSWER = "yes" ]; then
-            sudo apt-get install texlive
+            sudo apt-get install texlive texlive-latex-extra
             if ! which pdflatex > /dev/null; then
                 echo "Problem with automatic installation, please install manually and try again"
                 exit 1
             else
-                echo "pdftk successfully installed"
+                echo "pdflatex successfully installed"
             fi
         else
             echo "Please install pdflatex and try again"
@@ -67,6 +71,7 @@ cd $TEMPDIR
 
 # Calculating Page Numbers
 PAGES=$(pdfinfo "$INPUT_FILE" | grep "Pages" | sed s/[^0-9]//g)
+echo Number of pages: $PAGES
 
 # Creating Page Number file for "$PAGES" pages
 cat >numbers.tex <<EOF
@@ -120,5 +125,12 @@ cd ..
 rm -fr $TEMPDIR
 
 echo Done.
+echo Original pdf size: $(du -h $INPUT_FILE)
+echo Numbered pdf size: $(du -h $OUTPUT_FILE)
+echo
+echo К сожалению, сильнее сжать документ средствами pdftk или gs,
+echo вероятнее всего, не получится. Для лучших результатов
+echo используйте сервис https://smallpdf.com/compress-pdf
+
 # The pages of PDF are enumerated.
 exit 0
