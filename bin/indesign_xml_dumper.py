@@ -12,6 +12,7 @@
 import itertools
 import os
 import re
+import signal
 import sys
 
 import django
@@ -33,7 +34,19 @@ OUTPUT_VOLUMES = (2,)
 OUTPUT_VOLUMES_LETTERS = reduce(lambda x, y: x + y, (VOLUME_LETTERS[volume]
     for volume in OUTPUT_VOLUMES if volume in VOLUME_LETTERS), ())
 
-print >> sys.stderr
+CSI = '\033['
+HIDE_CURSOR = CSI + '?25l'
+SHOW_CURSOR = CSI + '?25h'
+ERASE_LINE = CSI + '2K'
+ERASE_LINEEND = CSI + '0K'
+
+def interrupt_handler(signum, frame):
+    print >> sys.stderr, SHOW_CURSOR
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, interrupt_handler)
+
+print >> sys.stderr, HIDE_CURSOR
 print >> sys.stderr, 'Volumes:', u', '.join(str(volume) for volume in OUTPUT_VOLUMES)
 print >> sys.stderr, 'Letters:', u', '.join(letter for letter in OUTPUT_VOLUMES_LETTERS)
 print >> sys.stderr
@@ -57,10 +70,11 @@ if test_entries:
 else:
     print >> sys.stderr, 'Entries to dump: ALL for the selected volumes'
 lexemes = [e for e in lexemes if e.volume(OUTPUT_VOLUMES)]
-print >> sys.stderr, 'Number of selected lexemes:', len(lexemes)
+lexemes_n = len(lexemes)
+print >> sys.stderr, 'Number of selected lexemes:', lexemes_n
 print >> sys.stderr
 
-for lexeme in lexemes:
+for i, lexeme in enumerate(lexemes):
 
     wordform = lexeme.base_vars[0].idem
     reference = None
@@ -104,16 +118,27 @@ for lexeme in lexemes:
         reference = ucs_convert(wordform)
         entries1.append((wordform, reference, lexeme))
 
+    sys.stderr.write(u'Отбор претендентов на вокабулы [ %s%% ] %s\r' % (
+        int(round(i / float(lexemes_n) * 100)),
+        lexeme.civil_equivalent + ERASE_LINEEND))
+
+
+
 #     6) Добавляем ссылочные статьи, которые будут присутствовать в выводимых
 #        томах и ссылаться на какие-то статьи из других томов.
 other_volumes = [e for e in Entry.objects.all() if not e.volume(OUTPUT_VOLUMES)]
-for lexeme in other_volumes:
+other_volumes_n = len(other_volumes)
+for i, lexeme in enumerate(other_volumes):
     for participle in lexeme.participles:
         if participle.tp not in ('1', '2', '3', '4'):
             wordform = participle.idem
             if in_output_volumes(wordform):
                 reference = participle.idem_ucs
                 entries1.append((wordform, reference, lexeme))
+
+    sys.stderr.write(u'Поиск ссылок на другие тома [ %s%% ] %s\r' % (
+        int(round(i / float(other_volumes_n) * 100)),
+        lexeme.civil_equivalent + ERASE_LINEEND))
 
 def sort_key(x):
     wordform, reference, lexeme = x
@@ -125,13 +150,18 @@ def sort_key(x):
         key = sort_key1(wordform), lexeme.homonym_order or 0, sort_key2(wordform)
     return key
 
+sys.stderr.write(u'Сортировка результатов...' + ERASE_LINEEND + '\r')
 entries1 = sorted(set(entries1), key=sort_key)
+entries1_n = len(entries1)
 
 entries2 = []
 # Список статей, где ссылочные статьи сгруппированы по номеру омонима
 
-for key, group in itertools.groupby(entries1, lambda x: x[:2]):
+for i, (key, group) in enumerate(itertools.groupby(entries1, lambda x: x[:2])):
     wordform, reference = key
+    sys.stderr.write(u'Группировка ссылочных статей [ %s%% ] %s\r' % (
+        int(round(i / float(entries1_n) * 100)),
+        wordform + ERASE_LINEEND))
     if not in_output_volumes(wordform):
         continue
     # Удаляем из выгрузки отсылочную статью Ассирии, т.к. она неправильно выгружается
@@ -163,13 +193,17 @@ for key, group in itertools.groupby(entries1, lambda x: x[:2]):
                                      'homonym_order': x.homonym_order or None}
                                     for x in lst],
             entries2.append((wordform, reference, lexeme))
+entries2_n = len(entries2)
 
 
 entries3 = []
-# Список статей, в том числе ссылочных, но с устранением ссылок расположенных
-# вплотную к целевым статьям
+# Список статей, в том числе ссылочных, но с устранением ссылок,
+# расположенных вплотную к целевым статьям
 
 for i, (wordform, reference, lexeme) in enumerate(entries2):
+    sys.stderr.write(u'Устранение ссылок, примыкающих к целевым '
+        u'статьям [ %s%% ]%s\r' % (int(round(i / float(entries2_n) * 100)),
+            ERASE_LINEEND))
     checklist = set()
     for j in (i - 1, i + 1):
         if 0 <= j < len(entries2) and \
@@ -190,17 +224,14 @@ class Reference(unicode):
         instance.homonym_order = homonym_order
         return instance
 
-if len(entries1) < 7:
-    for wordform, ref, entry in entries1:
-        print >> sys.stderr, (
-                u'Antconc wf: "{}", UCS ref: "{}", Lexeme: "{}"'
-                .format(wordform, ref, entry))
-    print >> sys.stderr
-
+# Объединение статей по начальным буквам
 letter_parts = []
 part_entries = []
 letter = entries3[0][0].lstrip(u' =')[0].upper()
-for wordform, group in itertools.groupby(entries3, lambda x: x[0]):
+entries3_n = len(entries3)
+for j, (wordform, group) in enumerate(itertools.groupby(entries3, lambda x: x[0])):
+    sys.stderr.write(u'Группировка статей по начальным буквам [ %s%% ]%s\r' %
+        (int(round(j / float(entries3_n) * 100)), ERASE_LINEEND))
     lst = list(group)
     if wordform.lstrip(u' =')[0].upper() != letter:
         letter_parts.append((letter, part_entries))
@@ -218,6 +249,18 @@ for wordform, group in itertools.groupby(entries3, lambda x: x[0]):
             part_entries.append((reference, lexeme))
 letter_parts.append((letter, part_entries))
 
+sys.stderr.write(u'Вывод статей для InDesign...' + ERASE_LINEEND + '\r')
 xml = render_to_string('indesign/slavdict.xml', {'letter_parts': letter_parts})
 sys.stdout.write(xml.encode('utf-8'))
+
+sys.stderr.write(ERASE_LINE)
+print >> sys.stderr, SHOW_CURSOR
+
+if len(entries1) < 7:
+    for wordform, ref, entry in entries1:
+        print >> sys.stderr, (
+                u'Antconc wf: "{}", UCS ref: "{}", Lexeme: "{}"'
+                .format(wordform, ref, entry))
+    print >> sys.stderr
+
 sys.exit(0)
