@@ -304,6 +304,7 @@ partial_index = {}
 
 KEY_HINTS = 'h'
 KEY_INDEX = 'i'
+KEY_POSTFIX = 'p'
 
 KEY_ENTRY = 'e'
 KEY_ENTRY_ID = 'i'
@@ -391,17 +392,24 @@ def write_ix(filename, data):
     with open(filename, 'wb') as f:
         f.write(_json(data).encode('utf-8'))
 
+def get_postfix(ix_layer):
+    postfix = u''
+    if len(ix_layer.keys()) > 0:
+        first_key, first_value = list(ix_layer.items())[0]
+        postfix = first_key + get_postfix(first_value[KEY_INDEX])
+    return postfix
+
 # Вывод частичного указателя статей
 def pix_tree_traversal(slug, ix_layer, hints):
-    ix_node = {
-        KEY_INDEX: ''
-    }
+    ix_node = {}
     if hints:
         ix_node[KEY_HINTS] = hints
-
-    for key, value in ix_layer.items():
-        pix_tree_traversal(slug + key, value[KEY_INDEX], value[KEY_HINTS])
-        ix_node[KEY_INDEX] += key
+    if len(hints) == 1:
+        ix_node[KEY_POSTFIX] = get_postfix(ix_layer)
+    else:
+        ix_node[KEY_INDEX] = u''.join(sorted(ix_layer.keys()))
+        for key, value in ix_layer.items():
+            pix_tree_traversal(slug + key, value[KEY_INDEX], value[KEY_HINTS])
 
     filename = os.path.join(PART_IX, slug if slug else IX_ROOT)
     write_ix(filename, ix_node)
