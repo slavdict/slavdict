@@ -328,7 +328,10 @@ def get_hint(entry):
     }
     if entry.homonym_order:
         hint[KEY_HOMONYM_ORDER] = entry.homonym_order  # Номер омонима
-        hint[KEY_PART_OF_SPEECH] = entry.get_part_of_speech_display()  # Часть речи
+        pos = entry.get_part_of_speech_display()  # Часть речи
+        NON_PART_OF_SPEECH = pos.starts_with(u'[')
+        if not NON_PART_OF_SPEECH:
+            hint[KEY_PART_OF_SPEECH] = pos
     if entry.homonym_gloss.strip():
         hint[KEY_HOMONYM_GLOSS] = entry.homonym_gloss.strip()  # Комментарий к омониму
     return hint
