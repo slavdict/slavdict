@@ -329,7 +329,7 @@ def get_hint(entry):
     if entry.homonym_order:
         hint[KEY_HOMONYM_ORDER] = entry.homonym_order  # Номер омонима
         pos = entry.get_part_of_speech_display()  # Часть речи
-        NON_PART_OF_SPEECH = pos.starts_with(u'[')
+        NON_PART_OF_SPEECH = pos.startswith(u'[')
         if not NON_PART_OF_SPEECH:
             hint[KEY_PART_OF_SPEECH] = pos
     if entry.homonym_gloss.strip():
