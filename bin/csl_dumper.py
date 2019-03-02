@@ -399,15 +399,31 @@ def get_postfix(ix_layer):
         postfix = first_key + get_postfix(first_value[KEY_INDEX])
     return postfix
 
+def no_change_hints(node, hints_n):
+    if len(node) == 0:
+        return True
+    elif len(node) > 1:
+        return False
+    elif len(node) == 1:
+        node_above = node[node.keys()[0]]
+        if hints_n != len(node_above[KEY_HINTS]):
+            return False
+        return no_change_hints(node_above[KEY_INDEX], hints_n)
+
 # Вывод частичного указателя статей
 def pix_tree_traversal(slug, ix_layer, hints):
     ix_node = {}
-    if hints:
+    hints_n = len(hints)
+    if hints_n > 0:
         ix_node[KEY_HINTS] = hints
-    if len(hints) == 1:
-        ix_node[KEY_POSTFIX] = get_postfix(ix_layer)
+    if hints_n == 1 or no_change_hints(ix_layer, hints_n):
+        postfix = get_postfix(ix_layer)
+        if postfix:
+            ix_node[KEY_POSTFIX] = postfix
     else:
-        ix_node[KEY_INDEX] = u''.join(sorted(ix_layer.keys()))
+        keys = u''.join(sorted(ix_layer.keys()))
+        if keys:
+            ix_node[KEY_INDEX] = keys
         for key, value in ix_layer.items():
             pix_tree_traversal(slug + key, value[KEY_INDEX], value[KEY_HINTS])
 
