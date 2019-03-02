@@ -373,8 +373,8 @@ for wordform, reference, lexeme in entries2:
         if char not in ix_layer_pointer:
             ix_layer_pointer[char] = {
                KEY_INDEX: {},  # index: Следующий уровень индекса
-               KEY_HINTS: [],  # hints: Первые N результатов, для подсказок при поиске
-            }
+               KEY_HINTS: [],  # hints: Первые N результатов,
+            }                  # для подсказок при поиске
         if reference:
             hint = get_reference_hint(reference, lexeme)
         else:

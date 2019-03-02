@@ -76,7 +76,12 @@ def civilrus_convert(word):
     return convert(word, compiled_conversion_civil)
 
 def convert_for_index(word):
-    return re.sub(ur'[ъЪ\s=]', u'', civilrus_convert(resolve_titles(word)))
+    civil_word = civilrus_convert(resolve_titles(word)).lower()
+    ix_word = re.sub(ur'ъ[иы]', u'ы', civil_word)
+    ix_word = re.sub(ur'[ъ=]', u'', ix_word)
+    ix_word = re.sub(ur'^(бе|во|в|и|ни|ра|чре|чере)з([кпстфхцчшщ])',
+                     ur'\1с\2', ix_word)
+    return re.sub(ur'[^а-щы-я]', u'', ix_word)
 
 def ucs_affix_or_word(atr):
     """
