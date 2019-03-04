@@ -289,7 +289,7 @@ for letter, entries in letter_parts:
                 entry.civil_equivalent + ERASE_LINEEND))
             html = render_to_string('csl/entry.html', { 'entry': entry,
                 'csl_url': csl_url })
-            filename = os.path.join(ENTRIES_DIR, str(entry.id))
+            filename = os.path.join(ENTRIES_DIR, u'%s.htm' % entry.id)
             with open(filename, 'wb') as f:
                 f.write(html.encode('utf-8'))
 
@@ -413,6 +413,19 @@ def no_change_hints(node, hints_n):
             return False
         return no_change_hints(node_above[KEY_INDEX], hints_n)
 
+def decimal_to_base(decimal, base):
+    digits = '0123456789abcdefghijklmnopqrstuvwxyz'
+    result = ''
+    while decimal != 0:
+        result = digits[decimal % base] + result
+        decimal /= base
+    if result == '':
+        result = '0'
+    return result
+
+def ixfn_convert(nodename):  # convert for index filenames
+    return u''.join(decimal_to_base(ord(c), 36) for c in nodename)
+
 # Вывод частичного указателя статей
 def pix_tree_traversal(slug, ix_layer, hints):
     ix_node = {}
@@ -430,7 +443,11 @@ def pix_tree_traversal(slug, ix_layer, hints):
         for key, value in ix_layer.items():
             pix_tree_traversal(slug + key, value[KEY_INDEX], value[KEY_HINTS])
 
-    filename = os.path.join(PART_IX, slug if slug else IX_ROOT)
+    filename = os.path.join(
+            PART_IX, '%s.json' % ixfn_convert(slug if slug else IX_ROOT))
+    if os.path.exists(filename):
+        sys.stderr.write(u'Файл "%s" уже существует. Конфликт имен.%s\n' % (
+            filename, ERASE_LINEEND))
     write_ix(filename, ix_node)
     sys.stderr.write(u'Запись частичного индекса [ %s ]%s\r' % (slug, ERASE_LINEEND))
 
@@ -450,7 +467,10 @@ for key, value in full_index.items():
     }
     if len(value) > PAGE_RESULTS_NUMBER:
         data[KEY_NEXTPAGE] = 1
-    filename = os.path.join(FULL_IX, key)
+    filename = os.path.join(FULL_IX, '%s.json' % ixfn_convert(key))
+    if os.path.exists(filename):
+        sys.stderr.write(u'Файл "%s" уже существует. Конфликт имен.%s\n' % (
+            filename, ERASE_LINEEND))
     write_ix(filename, data)
     pages_n = int(math.ceil(float(len(value)) / PAGE_RESULTS_NUMBER))
     for i in range(1, pages_n):
