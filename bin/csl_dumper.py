@@ -65,10 +65,9 @@ def interrupt_handler(signum, frame):
 signal.signal(signal.SIGINT, interrupt_handler)
 
 print >> sys.stderr, HIDE_CURSOR
-print >> sys.stderr, 'Volumes:', u', '.join(str(volume) for volume in OUTPUT_VOLUMES)
-print >> sys.stderr, 'Letters:', u', '.join(letter for letter in OUTPUT_VOLUMES_LETTERS)
-print >> sys.stderr, 'Output Folder:', ENTRIES_DIR
-print >> sys.stderr, 'Url Pattern:', URL_PATTERN % '<EntryID>'
+note =  'Volumes: ' + u', '.join(str(volume) for volume in OUTPUT_VOLUMES) + '\n'
+note += 'Letters: ' + u', '.join(letter for letter in OUTPUT_VOLUMES_LETTERS)
+print >> sys.stderr, note.encode('utf-8')
 print >> sys.stderr
 
 def in_output_volumes(wordform):
@@ -148,9 +147,11 @@ for i, lexeme in enumerate(lexemes):
         reference = ucs_convert(wordform)
         entries1.append((wordform, reference, lexeme))
 
-    sys.stderr.write(u'Отбор претендентов на вокабулы [ %s%% ] %s\r' % (
+    note = u'Отбор претендентов на вокабулы [ %s%% ] %s\r' % (
         int(round(i / float(lexemes_n) * 100)),
-        lexeme.civil_equivalent + ERASE_LINEEND))
+        lexeme.civil_equivalent + ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
+
 
 
 if not test_entries:
@@ -166,9 +167,10 @@ if not test_entries:
                     reference = participle.idem_ucs
                     entries1.append((wordform, reference, lexeme))
 
-        sys.stderr.write(u'Поиск ссылок на другие тома [ %s%% ] %s\r' % (
+        note = u'Поиск ссылок на другие тома [ %s%% ] %s\r' % (
             int(round(i / float(other_volumes_n) * 100)),
-            lexeme.civil_equivalent + ERASE_LINEEND))
+            lexeme.civil_equivalent + ERASE_LINEEND)
+        sys.stderr.write(note.encode('utf-8'))
 
 def sort_key(x):
     wordform, reference, lexeme = x
@@ -180,7 +182,8 @@ def sort_key(x):
         key = sort_key1(wordform), lexeme.homonym_order or 0, sort_key2(wordform)
     return key
 
-sys.stderr.write(u'Сортировка результатов...' + ERASE_LINEEND + '\r')
+note = u'Сортировка результатов...' + ERASE_LINEEND + '\r'
+sys.stderr.write(note.encode('utf-8'))
 entries1 = sorted(set(entries1), key=sort_key)
 entries1_n = len(entries1)
 
@@ -189,9 +192,10 @@ entries2 = []
 
 for i, (key, group) in enumerate(itertools.groupby(entries1, lambda x: x[:2])):
     wordform, reference = key
-    sys.stderr.write(u'Группировка ссылочных статей [ %s%% ] %s\r' % (
+    note = u'Группировка ссылочных статей [ %s%% ] %s\r' % (
         int(round(i / float(entries1_n) * 100)),
-        wordform + ERASE_LINEEND))
+        wordform + ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
     if not in_output_volumes(wordform):
         continue
     # Удаляем из выгрузки отсылочную статью Ассирии, т.к. она неправильно выгружается
@@ -231,9 +235,9 @@ entries3 = []
 # расположенных вплотную к целевым статьям
 
 for i, (wordform, reference, lexeme) in enumerate(entries2):
-    sys.stderr.write(u'Устранение ссылок, примыкающих к целевым '
-        u'статьям [ %s%% ]%s\r' % (int(round(i / float(entries2_n) * 100)),
-            ERASE_LINEEND))
+    note = u'Устранение ссылок, примыкающих к целевым статьям [ %s%% ]%s\r' % (
+            int(round(i / float(entries2_n) * 100)), ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
     checklist = set()
     for j in (i - 1, i + 1):
         if 0 <= j < len(entries2) and \
@@ -260,8 +264,9 @@ part_entries = []
 letter = entries3[0][0].lstrip(u' =')[0].upper()
 entries3_n = len(entries3)
 for j, (wordform, group) in enumerate(itertools.groupby(entries3, lambda x: x[0])):
-    sys.stderr.write(u'Группировка статей по начальным буквам [ %s%% ]%s\r' %
-        (int(round(j / float(entries3_n) * 100)), ERASE_LINEEND))
+    note = u'Группировка статей по начальным буквам [ %s%% ]%s\r' % (
+            int(round(j / float(entries3_n) * 100)), ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
     lst = list(group)
     if wordform.lstrip(u' =')[0].upper() != letter:
         letter_parts.append((letter, part_entries))
@@ -284,9 +289,10 @@ for letter, entries in letter_parts:
     N = len(entries)
     for i, (reference, entry) in enumerate(entries):
         if not reference:
-            sys.stderr.write(u'Вывод статей на «%s» [ %s%% ] %s\r' % (letter,
-                int(round(i / float(N) * 100)),
-                entry.civil_equivalent + ERASE_LINEEND))
+            note = u'Вывод статей на «%s» [ %s%% ] %s\r' % (letter,
+                    int(round(i / float(N) * 100)),
+                    entry.civil_equivalent + ERASE_LINEEND)
+            sys.stderr.write(note.encode('utf-8'))
             html = render_to_string('csl/entry.html', { 'entry': entry,
                 'csl_url': csl_url })
             filename = os.path.join(ENTRIES_DIR, u'%s.htm' % entry.id)
@@ -368,8 +374,9 @@ j = 0
 for wordform, reference, lexeme in entries2:
     slug = convert_for_index(wordform)
     ix_layer_pointer = partial_index
-    sys.stderr.write(u'Создание индекса статей [ %s%% ] %s\r' % (
-        int(round(j / float(N) * 100)), slug + ERASE_LINEEND))
+    note = u'Создание индекса статей [ %s%% ] %s\r' % (
+            int(round(j / float(N) * 100)), slug + ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
     j += 1
     for i, char in enumerate(slug):
         prefix = slug[:i + 1]
@@ -446,10 +453,12 @@ def pix_tree_traversal(slug, ix_layer, hints):
     filename = os.path.join(
             PART_IX, '%s.json' % ixfn_convert(slug if slug else IX_ROOT))
     if os.path.exists(filename):
-        sys.stderr.write(u'Файл "%s" уже существует. Конфликт имен.%s\n' % (
-            filename, ERASE_LINEEND))
+        note = u'Файл "%s" уже существует. Конфликт имен.%s\n' % (
+                filename, ERASE_LINEEND)
+        sys.stderr.write(note.encode('utf-8'))
     write_ix(filename, ix_node)
-    sys.stderr.write(u'Запись частичного индекса [ %s ]%s\r' % (slug, ERASE_LINEEND))
+    note = u'Запись частичного индекса [ %s ]%s\r' % (slug, ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
 
 pix_tree_traversal('', partial_index, [])
 
@@ -469,8 +478,9 @@ for key, value in full_index.items():
         data[KEY_NEXTPAGE] = 1
     filename = os.path.join(FULL_IX, '%s.json' % ixfn_convert(key))
     if os.path.exists(filename):
-        sys.stderr.write(u'Файл "%s" уже существует. Конфликт имен.%s\n' % (
-            filename, ERASE_LINEEND))
+        note = u'Файл "%s" уже существует. Конфликт имен.%s\n' % (
+                filename, ERASE_LINEEND)
+        sys.stderr.write(note.encode('utf-8'))
     write_ix(filename, data)
     pages_n = int(math.ceil(float(len(value)) / PAGE_RESULTS_NUMBER))
     for i in range(1, pages_n):
@@ -480,7 +490,8 @@ for key, value in full_index.items():
         if i < pages_n - 1:
             data[KEY_NEXTPAGE] = i + 1
         write_ix(filename + str(i), data)
-    sys.stderr.write(u'Запись полного индекса [ %s ]%s\r' % (key, ERASE_LINEEND))
+    note = u'Запись полного индекса [ %s ]%s\r' % (key, ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
 
 sys.stderr.write(ERASE_LINE)
 print >> sys.stderr, SHOW_CURSOR
