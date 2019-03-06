@@ -27,6 +27,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
+from slavdict.dictionary.models import civilrus_convert
 from slavdict.dictionary.models import convert_for_index
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import resolve_titles
@@ -322,6 +323,7 @@ KEY_HOMONYM_GLOSS = 'g'
 KEY_HOMONYM_ORDER = 'o'
 KEY_PART_OF_SPEECH = 'p'
 KEY_REFEREE = 'r'
+KEY_CIVIL = 'c'
 
 full_index = collections.defaultdict(list)
 # Полный указатель статей, который будет использоваться
@@ -350,11 +352,13 @@ KEY_GREEK_GREEK = 'g'
 KEY_GREEK_TRANSLIT = 't'
 
 
-def get_hint(entry):
+def get_hint(entry, without_translit=True):
     hint =  {
         KEY_ENTRY_ID: entry.id,  # id лексемы в базе
         KEY_ENTRY: entry.base_vars[0].idem_ucs,  # Заглавное слово
     }
+    if not without_translit:
+        hint[KEY_CIVIL] = entry.civil_equivalent
     if entry.homonym_order:
         hint[KEY_HOMONYM_ORDER] = entry.homonym_order  # Номер омонима
         pos = entry.get_part_of_speech_display()  # Часть речи
@@ -365,20 +369,24 @@ def get_hint(entry):
         hint[KEY_HOMONYM_GLOSS] = entry.homonym_gloss.strip()  # Комментарий к омониму
     return hint
 
-def get_reference_hint(reference, lexeme):
+def get_reference_hint(wordform, lexeme, without_translit=True, with_ref=True):
+    wordform = resolve_titles(wordform)
     hint = {
-        KEY_ENTRY: reference,
+        KEY_ENTRY: ucs_convert(wordform),
     }
-    if isinstance(lexeme, Entry):
-        hint[KEY_REFEREE] = get_hint(lexeme)
-    else:
-        referenced_lexemes = lexeme['referenced_lexemes']
-        referee_hint = get_hint(referenced_lexemes[0])
-        if (len(referenced_lexemes) > 1
-                and all(e.homonym_order for e in referenced_lexemes)):
-            referee_hint[KEY_HOMONYM_ORDER] = u',\u00a0'.join(
-                    str(e.homonym_order) for e in referenced_lexemes if e)
-        hint[KEY_REFEREE] = referee_hint
+    if not without_translit:
+        hint[KEY_CIVIL] = civilrus_convert(wordform)
+    if with_ref:
+        if isinstance(lexeme, Entry):
+            hint[KEY_REFEREE] = get_hint(lexeme)
+        else:
+            referenced_lexemes = lexeme['referenced_lexemes']
+            referee_hint = get_hint(referenced_lexemes[0])
+            if (len(referenced_lexemes) > 1
+                    and all(e.homonym_order for e in referenced_lexemes)):
+                referee_hint[KEY_HOMONYM_ORDER] = u',\u00a0'.join(
+                        str(e.homonym_order) for e in referenced_lexemes if e)
+            hint[KEY_REFEREE] = referee_hint
     return hint
 
 def already_in(hints, new_hint):
@@ -407,7 +415,7 @@ for j, (wordform, reference, lexeme) in enumerate(entries2):
     sys.stderr.write(note.encode('utf-8'))
 
     if reference:
-        hint = get_reference_hint(reference, lexeme)
+        hint = get_reference_hint(wordform, lexeme)
     else:
         hint = get_hint(lexeme)
     for i, char in enumerate(slug):
@@ -596,9 +604,10 @@ for j, (wordform, reference, lexeme) in enumerate(entries2):
     sys.stderr.write(note.encode('utf-8'))
 
     if reference:
-        hint = get_reference_hint(reference, lexeme)
+        hint = get_reference_hint(wordform, lexeme,
+                                  without_translit=False, with_ref=False)
     else:
-        hint = get_hint(lexeme)
+        hint = get_hint(lexeme, without_translit=False)
     greek = get_greek(lexeme, hint)
 
     if greek:
@@ -672,7 +681,8 @@ def get_greek_to_csl(greek, entries):
     result = {
       KEY_GREEK_GREEK: greek,
       KEY_GREEK_TRANSLIT: romanize(greek),
-      KEY_GREEK_RESULTS: [get_hint(e) for e in entries],
+      KEY_GREEK_RESULTS: [get_hint(e, without_translit=False)
+                          for e in entries],
     }
     return result
 
