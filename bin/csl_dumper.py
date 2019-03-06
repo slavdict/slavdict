@@ -17,6 +17,7 @@ import re
 import shutil
 import signal
 import sys
+import unicodedata
 
 import django
 from django.template.loader import render_to_string
@@ -335,7 +336,9 @@ KEY_NEXTPAGE = 'n'
 # KEY_PART_OF_SPEECH, KEY_REFEREE
 KEY_GREEK_MATCHES = 'h'
 
+
 greek_index = {}
+greek_index_reverse = {}
 # Прямой и обратный греческие указатели. Оба -- полные многоуровневые
 # указатели от цсл слов к греческим и в обратную сторону. Будут использоваться
 # и для поиска и для многостраничного отображения информации.
@@ -343,8 +346,8 @@ greek_index = {}
 # KEY_INDEX, KEY_POSTFIX
 KEY_GREEK_RESULTS = 'r'
 
-KEY_GREEK_CSL = 'c'
 KEY_GREEK_GREEK = 'g'
+KEY_GREEK_TRANSLIT = 't'
 
 
 def get_hint(entry):
@@ -378,20 +381,6 @@ def get_reference_hint(reference, lexeme):
         hint[KEY_REFEREE] = referee_hint
     return hint
 
-def get_greek(lexeme, hint):
-    greeks = []
-    if isinstance(lexeme, Entry):
-        entries = [lexeme]
-    else:
-        entries = lexeme['referenced_lexemes']
-    greeks = set()
-    for e in entries:
-        greeks.update(e.get_all_greeks())
-    if len(greeks) == 0:
-        return None
-    hint[KEY_GREEK_MATCHES] = tuple(sorted(greeks))
-    return hint
-
 def already_in(hints, new_hint):
     for hint in hints:
         SAME_ENTRY = new_hint[KEY_ENTRY] == hint[KEY_ENTRY]
@@ -401,6 +390,11 @@ def already_in(hints, new_hint):
         NON_HOMONYM = (KEY_HOMONYM_ORDER not in new_hint
                 and KEY_HOMONYM_ORDER not in hint)
         if SAME_ENTRY and (SAME_HOMONYM or NON_HOMONYM):
+            return True
+
+def greek_already_in(results, new_result):
+    for result in results:
+        if new_result[KEY_GREEK_GREEK] == result[KEY_GREEK_GREEK]:
             return True
 
 # Создание индекса статей
@@ -530,6 +524,69 @@ for key, value in full_index.items():
 
 
 # Создание прямого греческого указателя
+
+transliterations = [
+    (u'[\u0300-\u0313\u0315-\u036f]', u''),  # удаляем диакритику кроме густого придыхания
+    (u'^\u03c1\u0314?', u'rh'),  # ро в начале слова или с густым придыханием
+    (u'\u03c1\u03c1\u0314?', u'rrh'),  # двойное ро в середине слова
+    (u'(.+)\u0314', ur'h\1'),  # густое придыхание переводим в h
+    (u'\u03b1', u'a'),
+    (u'\u03b2', u'b'),
+    (u'\u03b3', u'g'),
+    (u'\u03b4', u'd'),
+    (u'\u03b5', u'e'),
+    (u'\u03b6', u'z'),
+    (u'\u03b7', u'e'),
+    (u'\u03b8', u'th'),
+    (u'\u03b9', u'i'),
+    (u'\u03ba', u'k'),
+    (u'\u03bb', u'l'),
+    (u'\u03bc', u'm'),
+    (u'\u03bd', u'n'),
+    (u'\u03be', u'x'),
+    (u'\u03bf', u'o'),
+    (u'\u03c0', u'p'),
+    (u'\u03c1', u'r'),
+    (u'[\u03c2\u03c3]', u's'),
+    (u'\u03c4', u't'),
+    (u'\u03c5', u'y'),
+    (u'\u03c6', u'ph'),
+    (u'\u03c7', u'ch'),
+    (u'\u03c8', u'ps'),
+    (u'\u03c9', u'o'),
+
+    (u'[^a-zA-Z]', u''),
+
+    (u'g([gkxc])', ur'n\1'),
+    (u'([aeo])y', ur'\1u'),
+    (u'yi', ur'ui'),
+]
+def romanize(greek):
+    text = unicodedata.normalize('NFD', greek.lower().strip())
+    for src, dst in transliterations:
+        text = re.sub(src, dst, text)
+    return text
+
+def ix_romanize(greek):
+    return romanize(greek).replace(u'rh', u'r').replace(u'ph', u'f')
+
+def get_greek(lexeme, hint):
+    greeks = []
+    if isinstance(lexeme, Entry):
+        entries = [lexeme]
+    else:
+        entries = lexeme['referenced_lexemes']
+    greeks = set()
+    for e in entries:
+        greeks.update(e.get_all_greeks())
+    if len(greeks) == 0:
+        return None
+    hint[KEY_GREEK_MATCHES] = tuple(
+            { KEY_GREEK_GREEK: g,
+              KEY_GREEK_TRANSLIT: romanize(g) }
+            for g  in sorted(greeks))
+    return hint
+
 for j, (wordform, reference, lexeme) in enumerate(entries2):
     slug = convert_for_index(wordform)
     ix_layer_pointer = greek_index
@@ -587,6 +644,89 @@ def grix_tree_traversal(slug, ix_layer, results):
     write_ix(filename, grix_node)
 
 grix_tree_traversal('', greek_index, [])
+
+# Создание обратного греч. указателя
+greeks1 = []
+N = len(lexemes)
+for i, e in enumerate(lexemes):
+    note = u'Отбор параллелей для обратного греч. индекса [ %s%% ] %s\r' % (
+            int(round(i / float(N) * 100)), e.civil_equivalent + ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
+    for g in e.get_all_greeks():
+        greeks1.append((g, e))
+
+note = u'Сортировка отобранных параллелей %s\r' % ERASE_LINEEND
+sys.stderr.write(note.encode('utf-8'))
+greeks1.sort(key=lambda x: (x[0], x[1].civil_equivalent))
+
+greeks2 = []
+for i, (key, group) in enumerate(itertools.groupby(greeks1, lambda x: x[0])):
+    note = u'Группировка одинаковых параллелей [ %s%% ] %s\r' % (
+            int(round(i / float(N) * 100)), key + ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
+    g = tuple(sorted(set(item for groupname, item in group),
+        key=lambda x: x.civil_equivalent))
+    greeks2.append((key, g))
+
+def get_greek_to_csl(greek, entries):
+    result = {
+      KEY_GREEK_GREEK: greek,
+      KEY_GREEK_TRANSLIT: romanize(greek),
+      KEY_GREEK_RESULTS: [get_hint(e) for e in entries],
+    }
+    return result
+
+for j, (greek, entries) in enumerate(greeks2):
+    slug = ix_romanize(greek)
+    ix_layer_pointer = greek_index_reverse
+
+    note = u'Создание обратного греч. индекса [ %s%% ] %s\r' % (
+            int(round(j / float(N) * 100)), slug + ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
+
+    result = get_greek_to_csl(greek, entries)
+    for i, char in enumerate(slug):
+        prefix = slug[:i + 1]
+        if char not in ix_layer_pointer:
+            ix_layer_pointer[char] = {
+               KEY_INDEX: {},
+               KEY_GREEK_RESULTS: [],
+            }
+        results = ix_layer_pointer[char][KEY_GREEK_RESULTS]
+        if not greek_already_in(results, result):
+            results.append(result)
+        ix_layer_pointer = ix_layer_pointer[char][KEY_INDEX]
+
+# Вывод обратного греческого указателя
+def grix_rev_tree_traversal(slug, ix_layer, results):
+    grix_node = {}
+    N = len(results)
+    if N > 0:
+        grix_node[KEY_GREEK_RESULTS] = results[:PAGE_RESULTS_NUMBER]
+    if N == 1 or no_change(ix_layer, KEY_GREEK_RESULTS, N):
+        postfix = get_postfix(ix_layer)
+        if postfix:
+            grix_node[KEY_POSTFIX] = postfix
+    else:
+        keys = u''.join(sorted(ix_layer.keys()))
+        if keys:
+            grix_node[KEY_INDEX] = keys
+        for key, value in ix_layer.items():
+            grix_rev_tree_traversal(slug + key,
+                    value[KEY_INDEX], value[KEY_GREEK_RESULTS])
+
+    note = u'Запись обратного греч. индекса: %s%s\r' % (slug, ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
+
+    filename = os.path.join(
+            GRIX_REV, '%s.json' % ixfn_convert(slug if slug else IX_ROOT))
+    if os.path.exists(filename):
+        note = u'Файл "%s" уже существует. Конфликт имен.%s\n' % (
+                filename, ERASE_LINEEND)
+        sys.stderr.write(note.encode('utf-8'))
+    write_ix(filename, grix_node)
+
+grix_rev_tree_traversal('', greek_index_reverse, [])
 
 sys.stderr.write(ERASE_LINE)
 print >> sys.stderr, SHOW_CURSOR
