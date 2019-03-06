@@ -39,7 +39,9 @@ OUTPUT_DIR = '../csl/.temp/slavdict_generated'
 ENTRIES_DIR = OUTPUT_DIR + '/entries'
 FULL_IX = OUTPUT_DIR + '/full_index'
 PART_IX = OUTPUT_DIR + '/partial_index'
-dirs = (OUTPUT_DIR, ENTRIES_DIR, FULL_IX, PART_IX)
+GRIX = OUTPUT_DIR + '/greek_index'
+GRIX_REV = OUTPUT_DIR + '/greek_index_reverse'
+dirs = (OUTPUT_DIR, ENTRIES_DIR, FULL_IX, PART_IX, GRIX, GRIX_REV)
 IX_ROOT = '_ix'  # Имя файла с корнем индекса
 
 URL_PATTERN = u'./словарь/статьи/%s'
@@ -300,13 +302,14 @@ for letter, entries in letter_parts:
                 f.write(html.encode('utf-8'))
 
 
-# Подготовка указателей статей
+# Подготовка указателей статей и греческих указателей
 
 partial_index = {}
 # Частичный указатель статей, который будет использоваться
 # непосредственно для поиска и отображения мгновенных результатов.
 # На каждую последовательность букв поискового запроса
-# дает не более чем HINTS_NUMBER число статей.
+# дает не более чем HINTS_NUMBER число статей. Представляет собой
+# многоуровневый указатель.
 
 KEY_HINTS = 'h'
 KEY_INDEX = 'i'
@@ -320,12 +323,29 @@ KEY_PART_OF_SPEECH = 'p'
 KEY_REFEREE = 'r'
 
 full_index = collections.defaultdict(list)
-# Полный указателя статей, который будет использоваться
+# Полный указатель статей, который будет использоваться
 # для многостраничного отображения всех возможных статей на текущий поисковый
 # запрос, но непосредственно в портальном поиске задействован не будет.
+# Является плоским указателем.
 
 KEY_RESULTS = 'r'
 KEY_NEXTPAGE = 'n'
+
+# KEY_ENTRY, KEY_ENTRY_ID, KEY_HOMONYM_GLOSS, KEY_HOMONYM_ORDER,
+# KEY_PART_OF_SPEECH, KEY_REFEREE
+KEY_GREEK_MATCHES = 'h'
+
+greek_index = {}
+# Прямой и обратный греческие указатели. Оба -- полные многоуровневые
+# указатели от цсл слов к греческим и в обратную сторону. Будут использоваться
+# и для поиска и для многостраничного отображения информации.
+
+# KEY_INDEX, KEY_POSTFIX
+KEY_GREEK_RESULTS = 'r'
+
+KEY_GREEK_CSL = 'c'
+KEY_GREEK_GREEK = 'g'
+
 
 def get_hint(entry):
     hint =  {
@@ -358,6 +378,20 @@ def get_reference_hint(reference, lexeme):
         hint[KEY_REFEREE] = referee_hint
     return hint
 
+def get_greek(lexeme, hint):
+    greeks = []
+    if isinstance(lexeme, Entry):
+        entries = [lexeme]
+    else:
+        entries = lexeme['referenced_lexemes']
+    greeks = set()
+    for e in entries:
+        greeks.update(e.get_all_greeks())
+    if len(greeks) == 0:
+        return None
+    hint[KEY_GREEK_MATCHES] = tuple(sorted(greeks))
+    return hint
+
 def already_in(hints, new_hint):
     for hint in hints:
         SAME_ENTRY = new_hint[KEY_ENTRY] == hint[KEY_ENTRY]
@@ -369,15 +403,19 @@ def already_in(hints, new_hint):
         if SAME_ENTRY and (SAME_HOMONYM or NON_HOMONYM):
             return True
 
-N = len(entries2)
-j = 0
-for wordform, reference, lexeme in entries2:
+# Создание индекса статей
+for j, (wordform, reference, lexeme) in enumerate(entries2):
     slug = convert_for_index(wordform)
     ix_layer_pointer = partial_index
+
     note = u'Создание индекса статей [ %s%% ] %s\r' % (
             int(round(j / float(N) * 100)), slug + ERASE_LINEEND)
     sys.stderr.write(note.encode('utf-8'))
-    j += 1
+
+    if reference:
+        hint = get_reference_hint(reference, lexeme)
+    else:
+        hint = get_hint(lexeme)
     for i, char in enumerate(slug):
         prefix = slug[:i + 1]
         if char not in ix_layer_pointer:
@@ -385,10 +423,6 @@ for wordform, reference, lexeme in entries2:
                KEY_INDEX: {},  # index: Следующий уровень индекса
                KEY_HINTS: [],  # hints: Первые N результатов,
             }                  # для подсказок при поиске
-        if reference:
-            hint = get_reference_hint(reference, lexeme)
-        else:
-            hint = get_hint(lexeme)
         hints = ix_layer_pointer[char][KEY_HINTS]
         if not already_in(hints, hint) and len(hints) < HINTS_NUMBER:
             hints.append(hint)
@@ -409,16 +443,16 @@ def get_postfix(ix_layer):
         postfix = first_key + get_postfix(first_value[KEY_INDEX])
     return postfix
 
-def no_change_hints(node, hints_n):
+def no_change(node, attrname, N):
     if len(node) == 0:
         return True
     elif len(node) > 1:
         return False
     elif len(node) == 1:
         node_above = node[node.keys()[0]]
-        if hints_n != len(node_above[KEY_HINTS]):
+        if N != len(node_above[attrname]):
             return False
-        return no_change_hints(node_above[KEY_INDEX], hints_n)
+        return no_change(node_above[KEY_INDEX], attrname, N)
 
 def decimal_to_base(decimal, base):
     digits = '0123456789abcdefghijklmnopqrstuvwxyz'
@@ -439,7 +473,7 @@ def pix_tree_traversal(slug, ix_layer, hints):
     hints_n = len(hints)
     if hints_n > 0:
         ix_node[KEY_HINTS] = hints
-    if hints_n == 1 or no_change_hints(ix_layer, hints_n):
+    if hints_n == 1 or no_change(ix_layer, KEY_HINTS, hints_n):
         postfix = get_postfix(ix_layer)
         if postfix:
             ix_node[KEY_POSTFIX] = postfix
@@ -450,6 +484,9 @@ def pix_tree_traversal(slug, ix_layer, hints):
         for key, value in ix_layer.items():
             pix_tree_traversal(slug + key, value[KEY_INDEX], value[KEY_HINTS])
 
+    note = u'Запись частичного индекса: %s%s\r' % (slug, ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
+
     filename = os.path.join(
             PART_IX, '%s.json' % ixfn_convert(slug if slug else IX_ROOT))
     if os.path.exists(filename):
@@ -457,8 +494,6 @@ def pix_tree_traversal(slug, ix_layer, hints):
                 filename, ERASE_LINEEND)
         sys.stderr.write(note.encode('utf-8'))
     write_ix(filename, ix_node)
-    note = u'Запись частичного индекса [ %s ]%s\r' % (slug, ERASE_LINEEND)
-    sys.stderr.write(note.encode('utf-8'))
 
 pix_tree_traversal('', partial_index, [])
 
@@ -490,8 +525,68 @@ for key, value in full_index.items():
         if i < pages_n - 1:
             data[KEY_NEXTPAGE] = i + 1
         write_ix(filename + str(i), data)
-    note = u'Запись полного индекса [ %s ]%s\r' % (key, ERASE_LINEEND)
+    note = u'Запись полного индекса: %s%s\r' % (key, ERASE_LINEEND)
     sys.stderr.write(note.encode('utf-8'))
+
+
+# Создание прямого греческого указателя
+for j, (wordform, reference, lexeme) in enumerate(entries2):
+    slug = convert_for_index(wordform)
+    ix_layer_pointer = greek_index
+
+    note = u'Создание прямого греч. индекса [ %s%% ] %s\r' % (
+            int(round(j / float(N) * 100)), slug + ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
+
+    if reference:
+        hint = get_reference_hint(reference, lexeme)
+    else:
+        hint = get_hint(lexeme)
+    greek = get_greek(lexeme, hint)
+
+    if greek:
+        for i, char in enumerate(slug):
+            prefix = slug[:i + 1]
+            if char not in ix_layer_pointer:
+                ix_layer_pointer[char] = {
+                   KEY_INDEX: {},
+                   KEY_GREEK_RESULTS: [],
+                }
+            greek_results = ix_layer_pointer[char][KEY_GREEK_RESULTS]
+            if not already_in(greek_results, greek):
+                greek_results.append(greek)
+            ix_layer_pointer = ix_layer_pointer[char][KEY_INDEX]
+
+# Вывод прямого греческого указателя
+def grix_tree_traversal(slug, ix_layer, results):
+    grix_node = {}
+    N = len(results)
+    if N > 0:
+        grix_node[KEY_GREEK_RESULTS] = results[:PAGE_RESULTS_NUMBER]
+    if N == 1 or no_change(ix_layer, KEY_GREEK_RESULTS, N):
+        postfix = get_postfix(ix_layer)
+        if postfix:
+            grix_node[KEY_POSTFIX] = postfix
+    else:
+        keys = u''.join(sorted(ix_layer.keys()))
+        if keys:
+            grix_node[KEY_INDEX] = keys
+        for key, value in ix_layer.items():
+            grix_tree_traversal(slug + key,
+                    value[KEY_INDEX], value[KEY_GREEK_RESULTS])
+
+    note = u'Запись прямого греч. индекса: %s%s\r' % (slug, ERASE_LINEEND)
+    sys.stderr.write(note.encode('utf-8'))
+
+    filename = os.path.join(
+            GRIX, '%s.json' % ixfn_convert(slug if slug else IX_ROOT))
+    if os.path.exists(filename):
+        note = u'Файл "%s" уже существует. Конфликт имен.%s\n' % (
+                filename, ERASE_LINEEND)
+        sys.stderr.write(note.encode('utf-8'))
+    write_ix(filename, grix_node)
+
+grix_tree_traversal('', greek_index, [])
 
 sys.stderr.write(ERASE_LINE)
 print >> sys.stderr, SHOW_CURSOR

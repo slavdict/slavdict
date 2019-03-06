@@ -3,6 +3,7 @@ import datetime
 import itertools
 import json
 import re
+import unicodedata
 
 from collections import Counter, defaultdict
 
@@ -953,6 +954,7 @@ class Entry(models.Model, JSONSerializable):
                 return iter(self.examples)
 
         exgroups = []
+        self._examples = []
         for mgroup in self.meaning_groups:
             for meaning in mgroup.meanings:
                 examples = []
@@ -961,6 +963,7 @@ class Entry(models.Model, JSONSerializable):
                 for submeaning in meaning.child_meanings:
                     examples.extend(submeaning.examples)
                 exgroups.append(ExamplesGroup(examples, mgroup, meaning))
+                self._examples.extend(examples)
                 collogroups = \
                         meaning.collogroups_non_phraseological + \
                         meaning.collogroups_phraseological
@@ -969,11 +972,31 @@ class Entry(models.Model, JSONSerializable):
                     cg_metaph_meanings = tuple(cg.metaph_meanings)
                     meanings = cg_meanings + cg_metaph_meanings
                     for meaning in meanings:
-                        exgroup = ExamplesGroup(meaning.examples,
+                        meaning_examples = tuple(meaning.examples)
+                        exgroup = ExamplesGroup(meaning_examples,
                                                 mgroup, meaning, cg)
+                        self._examples.extend(meaning_examples)
                         exgroups.append(exgroup)
         self._exgroups = exgroups
         return exgroups
+
+    def all_examples(self):
+        if not hasattr(self, '_examples'):
+            self.examples_groups_for_hellinists()
+        return self._examples
+
+    def get_all_greeks(self):
+        greeks = set()
+        greeks.update(unicodedata.normalize('NFC', et.unitext.strip().lower())
+            for et in self.etymology_set.filter(language=LANGUAGE_MAP['greek'])
+            if u' ' not in et.unitext.strip())
+        for ex in self.all_examples():
+            for ge in ex.greek_equivs:
+                text = ge.initial_form.strip().lower()
+                if not ge.aliud and not re.findall(u'[\sa-zA-Z]', text):
+                    text = unicodedata.normalize('NFC', text)
+                    greeks.add(text)
+        return tuple(sorted(greeks))
 
     # Залочена статья для редактирования,
     # во время подготовки тома к печати или нет.
