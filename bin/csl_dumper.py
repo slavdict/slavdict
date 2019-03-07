@@ -406,6 +406,7 @@ def greek_already_in(results, new_result):
             return True
 
 # Создание индекса статей
+N = len(entries2)
 for j, (wordform, reference, lexeme) in enumerate(entries2):
     slug = convert_for_index(wordform)
     ix_layer_pointer = partial_index
@@ -595,6 +596,7 @@ def get_greek(lexeme, hint):
             for g  in sorted(greeks))
     return hint
 
+N = len(entries2)
 for j, (wordform, reference, lexeme) in enumerate(entries2):
     slug = convert_for_index(wordform)
     ix_layer_pointer = greek_index
@@ -668,6 +670,7 @@ note = u'Сортировка отобранных параллелей %s\r' % 
 sys.stderr.write(note.encode('utf-8'))
 greeks1.sort(key=lambda x: (x[0], x[1].civil_equivalent))
 
+N = len(greeks1)
 greeks2 = []
 for i, (key, group) in enumerate(itertools.groupby(greeks1, lambda x: x[0])):
     note = u'Группировка одинаковых параллелей [ %s%% ] %s\r' % (
@@ -686,6 +689,7 @@ def get_greek_to_csl(greek, entries):
     }
     return result
 
+N = len(greeks2)
 for j, (greek, entries) in enumerate(greeks2):
     slug = ix_romanize(greek)
     ix_layer_pointer = greek_index_reverse
