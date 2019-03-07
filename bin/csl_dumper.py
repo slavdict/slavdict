@@ -567,7 +567,7 @@ transliterations = [
 
     (u'g([gkxc])', ur'n\1'),
     (u'([aeo])y', ur'\1u'),
-    (u'yi', ur'ui'),
+    (u'yi', u'ui'),
 ]
 def romanize(greek):
     text = unicodedata.normalize('NFD', greek.lower().strip())
