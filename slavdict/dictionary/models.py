@@ -1005,11 +1005,11 @@ class Entry(models.Model, JSONSerializable):
         greeks = set()
         greeks.update(unicodedata.normalize('NFC', et.unitext.strip().lower())
             for et in self.etymology_set.filter(language=LANGUAGE_MAP['greek'])
-            if u' ' not in et.unitext.strip())
+            if et.unitext.strip() and u' ' not in et.unitext.strip())
         for ex in self.all_examples():
             for ge in ex.greek_equivs:
                 text = ge.initial_form.strip().lower()
-                if not ge.aliud and not re.findall(u'[\sa-zA-Z]', text):
+                if text and not ge.aliud and not re.findall(u'[\sa-zA-Z]', text):
                     text = unicodedata.normalize('NFC', text)
                     greeks.add(text)
         return tuple(sorted(greeks))
