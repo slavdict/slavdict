@@ -985,6 +985,7 @@ def useful_urls_redirect(uri, request):
     cgURI = base_url + 'collocationgroup/'
     eURI = base_url + 'entry/'
     mURI = base_url + 'meaning/'
+    exURI = base_url + 'example/'
     VOLUME = 2
 
     def uri_qs(uri, **kwargs):
@@ -1173,6 +1174,11 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'all_meanings':
         uri = uri_qs(mURI, volume=VOLUME)
+
+    elif uri == 'meanings_without_examples':
+        ms = (m for m in Meaning.objects.all() if not m.example_set.count())
+        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
+                     volume=VOLUME)
 
     elif uri == 'meanings_literal':
         mark = u'букв.'
@@ -1450,6 +1456,14 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
                      volume=VOLUME)
 
+    elif uri == 'ex_aliud_parallel':
+        exs = []
+        for ex in Example.objects.all():
+            if any(ge.aliud and ge.unitext.strip() for ge in ex.greek_equivs):
+                exs.append(ex)
+        uri = uri_qs(exURI, id__in=','.join(str(ex.id) for ex in exs),
+                     volume=VOLUME)
+
     return HttpResponseRedirect(uri)
 
 
@@ -1506,6 +1520,10 @@ def useful_urls(request, x=None, y=None):
                     (u'С текстом "с прям. речью"', 'meanings_direct_speech'),
                     (u'С текстом "[?!]"', 'meanings_quest'),
                     (u'С текстом "с именем собств."', 'meanings_sobstv'),
+                    (u'без примеров', 'meanings_without_examples'),
+                )),
+            (u'Примеры', (
+                    (u'в греч. иначе и параллель', 'ex_aliud_parallel'),
                 )),
     )
     if x:
