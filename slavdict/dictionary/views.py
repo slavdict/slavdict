@@ -1119,12 +1119,24 @@ def useful_urls_redirect(uri, request):
         }
         return render(request, 'useful_urls2.html', context)
 
+    elif uri == 'collocs_varforms':
+        cgs = []
+        for cg in CollocationGroup.objects.all():
+            cs = [c.collocation.lower() for c in cg.collocations]
+            words = [civilrus_convert(x) for c in cs
+                       for x in re.split(ur'[\s/\\,;\(\)\[\]]+', c)]
+            if any(value > 1
+                   for key, value in collections.Counter(words).items()):
+                cgs.append(cg)
+        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
+                     volume=VOLUME)
+
     elif uri == 'collocs_2b':
         cgs = (cg
                for cg in CollocationGroup.objects.all()
                  for c in cg.collocations
                if [x.startswith(u'б')
-                   for x in re.split(ur'[\s/,\(\)]+', c.collocation.lower())
+                   for x in re.split(ur'[\s/\\,;\(\)\[\]]+', c.collocation.lower())
                    ].count(True) > 1)
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
                      volume=VOLUME)
@@ -1476,6 +1488,9 @@ def useful_urls(request, x=None, y=None):
                     (u'Такие сс, что кроме них в статье ничего нет', 'collocs_uniq'),
                     (u'Такие сс, что кроме них в статье ничего нет '
                      u'и сс содержит несколько слов на А или Б', 'collocs_uniqab'),
+                    (u'Такие сс, где есть варьирующие формы (отслеживается '
+                     u'наличие нескольких слов с совпадающими первыми двумя '
+                     u'буквами)', 'collocs_varforms'),
                 )),
             (u'Значения и употребления', (
                     (u'Все значения и употребления', 'all_meanings'),
