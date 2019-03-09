@@ -170,7 +170,7 @@ def entry_for_example(obj):
     e = m and m.entry_container
     if e:
         html = u'<a href="%s" target="_blank">%s</a>' % (
-                    e.get_absolute_url(),
+                    u'%s#%s' % (e.get_absolute_url(), m.get_url_fragment()),
                     e.civil_equivalent)
         return mark_safe(html)
     else:
@@ -178,7 +178,7 @@ def entry_for_example(obj):
         if cg:
             e = cg.host_entry
             html = u'<a href="%s" target="_blank">%s</a>' % (
-                    u'%s#%s' % (e.get_absolute_url(), cg.get_url_fragment()),
+                    u'%s#%s' % (e.get_absolute_url(), m.get_url_fragment()),
                     u'%s | %s' % (e.civil_equivalent,
                         u';'.join(c.collocation for c in cg.collocations))
                     )
