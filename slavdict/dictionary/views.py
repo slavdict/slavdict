@@ -40,6 +40,7 @@ from slavdict.dictionary.models import MSC5
 from slavdict.dictionary.models import MSC11
 from slavdict.dictionary.models import MSC12
 from slavdict.dictionary.models import OrthographicVariant
+from slavdict.dictionary.models import resolve_titles
 from slavdict.middleware import InvalidCookieError
 
 
@@ -1123,7 +1124,7 @@ def useful_urls_redirect(uri, request):
         cgs = []
         for cg in CollocationGroup.objects.all():
             cs = [c.collocation.lower() for c in cg.collocations]
-            words = [civilrus_convert(x) for c in cs
+            words = [civilrus_convert(resolve_titles(x)) for c in cs
                        for x in re.split(ur'[\s/\\,;\(\)\[\]]+', c)]
             if any(value > 1
                    for key, value in collections.Counter(words).items()):
