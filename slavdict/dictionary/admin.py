@@ -169,16 +169,36 @@ def entry_for_example(obj):
     m = obj.meaning
     e = m and m.entry_container
     if e:
-        r = entry_with_orth_variants(e)
-        i = u' [%s]' % e.id
+        html = u'<a href="%s" target="_blank">%s</a>' % (
+                    e.get_absolute_url(),
+                    e.civil_equivalent)
+        return mark_safe(html)
     else:
         cg = m and m.collogroup_container
         if cg:
-            r = _collocations(cg)
+            e = cg.host_entry
+            html = u'<a href="%s" target="_blank">%s</a>' % (
+                    u'%s#%s' % (e.get_absolute_url(), cg.get_url_fragment()),
+                    u'%s | %s' % (e.civil_equivalent,
+                        u';'.join(c.collocation for c in cg.collocations))
+                    )
+            return mark_safe(html)
         else:
-            r = u'(БЕСХОЗНОЕ ЗНАЧЕНИЕ)'
-        i = u''
-    return u'%s%s' % (r, i)
+            return u'не относится ни к какой статье'
+
+def host_entry(self):
+    try:
+        entry = self.host_entry
+    except:
+        return u'не относится ни к какой статье'
+    else:
+        if entry:
+            html = u'<a href="%s" target="_blank">%s</a>' % (
+                        entry.get_absolute_url(),
+                        entry.civil_equivalent)
+            return mark_safe(html)
+        else:
+            return u'не относится ни к какой статье'
 
 
 class VolumeFilter(admin.SimpleListFilter):
