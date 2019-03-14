@@ -40,6 +40,7 @@ from slavdict.dictionary.models import MSC5
 from slavdict.dictionary.models import MSC11
 from slavdict.dictionary.models import MSC12
 from slavdict.dictionary.models import OrthographicVariant
+from slavdict.dictionary.models import PART_OF_SPEECH_MAP
 from slavdict.dictionary.models import resolve_titles
 from slavdict.middleware import InvalidCookieError
 
@@ -49,6 +50,33 @@ from slavdict.middleware import InvalidCookieError
 # для сортировки списка словарных статей.
 def entry_key(entry):
     return u'%s %s' % ( entry.civil_equivalent.lower(), entry.homonym_order )
+
+POS_ORDER = (
+    PART_OF_SPEECH_MAP['letter'],
+    PART_OF_SPEECH_MAP['number'],
+    PART_OF_SPEECH_MAP['noun'],
+    PART_OF_SPEECH_MAP['pronoun'],
+    PART_OF_SPEECH_MAP['adjective'],
+    PART_OF_SPEECH_MAP['participle-adjective'],
+    PART_OF_SPEECH_MAP['participle'],
+    PART_OF_SPEECH_MAP['predicative adverb'],
+    PART_OF_SPEECH_MAP['adverb'],
+    PART_OF_SPEECH_MAP['adposition'],
+    PART_OF_SPEECH_MAP['preposition'],
+    PART_OF_SPEECH_MAP['postposition'],
+    PART_OF_SPEECH_MAP['conjunction'],
+    PART_OF_SPEECH_MAP['interjection'],
+    PART_OF_SPEECH_MAP['particle'],
+    PART_OF_SPEECH_MAP['verb'],
+)
+
+def pos_group_entry_key(entry):
+    numbered_entry = entry_key(entry)
+    if entry.part_of_speech in POS_ORDER:
+        pos = POS_ORDER.index(entry.part_of_speech)
+    else:
+        pos = None
+    return pos, numbered_entry
 
 paginator_re = re.compile(r'(\d+)[,;:](\d+)')
 
@@ -78,40 +106,43 @@ def all_entries(request, is_paged=False):
 Допустимые параметры
 ====================
 
+?aliud-greek                    Статьи, где есть примеры с пометой
+                                "в греч. иначе".
+
 ?authors=Петрова,Корнилаева     Статьи соответствующих авторов. Для статей без
                                 авторства используйте сочетание "без автора",
                                 для авторских статей — фамилию автора.
 
-?startswith=Ав                  Отображать только статьи, начинающиеся
-                                на «Ав» без учета регистра символов.
-
 ?duplicates                     Отображать только статьи-дубликаты.
-
-?aliud-greek                    Статьи, где есть примеры с пометой
-                                "в греч. иначе".
 
 ?goodness                       Отображать только "хорошие" статьи.
 
 ?hide-ai                        При отображении статей не показывать рабочие
                                 примечания-комментарии.
 
-?show-ai                        При отображении статей обязательно показывать
-                                рабочие примечания-комментарии.
-
 ?hide-numbers                   Не нумеровать статьи.
+
+?hide-refentries                Не отображать отсылочные статьи.
 
 ?list=1324,3345,22              Отображать только статьи с указанными
                                 числовыми идентификаторами.
+
+?per-page=100                   Отображать по столько-то статей на странице,
+                                по умолчанию, все.
+
+?pos-group                      Не только сортировать по алфавиту, но и
+                                группировать по частям речи.
+
+?show-ai                        При отображении статей обязательно показывать
+                                рабочие примечания-комментарии.
+
+?startswith=Ав                  Отображать только статьи, начинающиеся
+                                на «Ав» без учета регистра символов.
 
 ?status=в работе,поиск греч.    Отображать только статьи с перечиленными
 ?status=-создана                значениями поля "статус статьи". При постановке
                                 перед наименованием статуса знака минус статьи
                                 с данным статусом будут исключены из выборки.
-
-?hide-refentries                Не отображать отсылочные статьи.
-
-?per-page=100                   Отображать по столько-то статей на странице,
-                                по умолчанию, все.
 
 
         ''' % request.path
@@ -124,12 +155,13 @@ def all_entries(request, is_paged=False):
     httpGET_GOODNESS = request.GET.get('goodness')
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
+    httpGET_HIDEREFENTRIES = 'hide-refentries' in request.GET
     httpGET_LIST = request.GET.get('list')
     httpGET_PERPAGE = request.GET.get('per-page')
+    httpGET_POS_GROUP = 'pos-group' in request.GET
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STARTSWITH = request.GET.get('startswith')
     httpGET_STATUS = urllib.unquote(request.GET.get('status', ''))
-    httpGET_HIDEREFENTRIES = 'hide-refentries' in request.GET
 
     COMMA = re.compile(ur'\s*\,\s*')
     SPACE = re.compile(ur'\s+')
@@ -206,7 +238,11 @@ def all_entries(request, is_paged=False):
     if httpGET_STARTSWITH:
         title += u', начинающиеся на „{0}-“'.format(httpGET_STARTSWITH)
 
-    entries = sorted(entries, key=entry_key)
+    if httpGET_POS_GROUP:
+        key = pos_group_entry_key
+    else:
+        key = entry_key
+    entries = sorted(entries, key=key)
     if httpGET_PERPAGE and httpGET_PERPAGE.isdigit():
         per_page=int(httpGET_PERPAGE)
         is_paged = True
