@@ -1,6 +1,9 @@
 {% from 'web/etymology.html'   import etymology    with context %}
 {% from 'web/meaning_without_children.html' import meaning with context %}
 
+{% set hide_meanings = hide_meanings is defined and hide_meanings %}
+{% set hide_examples = hide_examples is defined and hide_examples %}
+
 {% trim %}
 <div class="Entry">
     <div class="FirstParagraph Text">
@@ -192,6 +195,7 @@
             {{ space }}
         {% endif %}
 
+        {% if not hide_meanings and not hide_examples %}
         {% if entry.is_part_of_speech("verb") %}
             {{ backspace }}{{ space }}
             <span class="Em">
@@ -199,6 +203,7 @@
             </span>
             {{ space }}
         {% endif %}
+        {% endif %}{# not hide_meanings and not hide_examples #}
     {% endif %}
 
 
@@ -263,6 +268,7 @@
     {% endif %}
 
 
+    {% if not hide_meanings and not hide_examples %}
     {% for etym in entry.etymologies %}
 
         {% set prevLang = Lang %}
@@ -272,8 +278,10 @@
         {{ etymology(etym, isLanguageChanged, loop) }}
 
     {% endfor %}
+    {% endif %}
 
 
+    {% if not hide_meanings and not hide_examples %}
     {% if entry.is_onym('anthroponym') %}
         {% if entry.canonical_name %}
             {{ backspace }}{{ space }}
@@ -286,14 +294,18 @@
             имя собств.
         </span>{{ space }}
     {% endif %}
+    {% endif %}
 
+    {% if not hide_meanings and not hide_examples %}
     {% if entry.is_onym('toponym') %}
         {{ backspace }}{{ space }}
         <span class="Em">
             топоним
         </span>{{ space }}
     {% endif %}
+    {% endif %}
 
+    {% if not hide_meanings and not hide_examples %}
     {% if entry.civil_equivalent == "аггей" %}
         {{ backspace }},{{ space }}
         <span class="Em">произн.</span>{{ space }}
@@ -303,16 +315,20 @@
         <span class="Em">произн.</span>{{ space }}
         <span class="Text">[агге́ев]</span>{{ space }}
     {% endif %}
+    {% endif %}
 
 
+  {% if not hide_meanings %}
     {% for mgroup in entry.meaning_groups %}
         {% set mgloop = loop %}
         {% if loop.length > 1 %}
             {% if not loop.first %}
-                {{ backspace }}</div>{{ newline }}<div class="MeaningParagraph" class="Text">
+                {{ backspace }}</div>{{ newline }}<div
+                    class="MeaningParagraph" class="Text">
             {% endif %}
 
-            {% set mgnumber = {1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V'}[loop.index] %}
+            {% set mgnumber = { 1: 'I', 2: 'II', 3: 'III',
+                                4: 'IV', 5: 'V' }[loop.index] %}
             <span class="MeaningNumber">
                 {{ mgnumber }}.
             </span>{{ nbsp }}
@@ -338,8 +354,9 @@
         {% for m in mgroup.meanings %}
             {% set mnumber = loop.index %}
 
-            {% if not loop.first %}
-                {{ backspace }}</div>{{ newline }}<div class="MeaningParagraph" class="Text">
+            {% if not loop.first or hide_examples %}
+                {{ backspace }}</div>{{ newline }}<div
+                    class="MeaningParagraph" class="Text">
             {% endif %}
 
             {% if loop.length > 1 %}
@@ -354,8 +371,10 @@
             {% include 'web/meaning_collogroups.html' with context %}
         {% endfor %}
     {% endfor %}
+  {% endif %}{# not hide_meanings #}
 
 
+  {% if not hide_meanings and not hide_examples %}
     {% if entry.cfentries or entry.cfcollogroups %}
         {{ backspace }}</div>{{ newline }}
         <div class="CfParagraph Text"><span class="Em">
@@ -389,6 +408,7 @@
         {% endfor %}
         {{ backspace }}<span class="Text">.</span>
     {% endif %}
+  {% endif %}{# not hide_meanings and not hide_examples #}
 
     {{ backspace }}</div>
 </div>{# Entry #}

@@ -120,6 +120,11 @@ def all_entries(request, is_paged=False):
 ?hide-ai                        При отображении статей не показывать рабочие
                                 примечания-комментарии.
 
+?hide-examples                  Скрывать значения при статьях, отображая
+                                только заголовки.
+
+?hide-meanings                  Скрывать примеры в статьях.
+
 ?hide-numbers                   Не нумеровать статьи.
 
 ?hide-refentries                Не отображать отсылочные статьи.
@@ -157,6 +162,8 @@ def all_entries(request, is_paged=False):
     httpGET_DUPLICATES = 'duplicates' in request.GET
     httpGET_GOODNESS = request.GET.get('goodness')
     httpGET_HIDEAI = 'hide-ai' in request.GET
+    httpGET_HIDEEXAMPLES = 'hide-examples' in request.GET
+    httpGET_HIDEMEANINGS = 'hide-meanings' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_HIDEREFENTRIES = 'hide-refentries' in request.GET
     httpGET_LIST = request.GET.get('list')
@@ -279,6 +286,8 @@ def all_entries(request, is_paged=False):
     context = {
         'is_paged': is_paged,
         'entries': entries,
+        'hide_examples': httpGET_HIDEEXAMPLES,
+        'hide_meanings': httpGET_HIDEMEANINGS,
         'not_editable': httpGET_NOT_EDITABLE,
         'params_without_page': urllib.urlencode(
             dict(

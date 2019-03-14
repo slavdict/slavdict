@@ -155,10 +155,12 @@
         lang="ru">{{ m.additional_info }}</span>{{ space }}
 {% endif %}
 
-{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss) and m.examples %}
+{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss)
+        and m.examples and not hide_examples %}
     {{ backspace }}:{{ space }}
 {% endif %}
 
+{% if not hide_examples %}
 {% for e in m.examples %}
     {{ example(e, examples_loop=loop,
                peer_meanings_loop=peer_meanings_loop,
@@ -167,6 +169,7 @@
                child_meanings=child_meanings,
                entry=m.host_entry, meaning=m) }}
 {% endfor %}
+{% endif %}
 
 
 {% endmacro %}
