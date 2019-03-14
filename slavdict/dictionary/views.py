@@ -127,6 +127,9 @@ def all_entries(request, is_paged=False):
 ?list=1324,3345,22              Отображать только статьи с указанными
                                 числовыми идентификаторами.
 
+?not-editable                   При отображении статей не влючать возможность
+                                их изменения прямо на странице.
+
 ?per-page=100                   Отображать по столько-то статей на странице,
                                 по умолчанию, все.
 
@@ -157,6 +160,7 @@ def all_entries(request, is_paged=False):
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_HIDEREFENTRIES = 'hide-refentries' in request.GET
     httpGET_LIST = request.GET.get('list')
+    httpGET_NOT_EDITABLE = 'not-editable' in request.GET
     httpGET_PERPAGE = request.GET.get('per-page')
     httpGET_POS_GROUP = 'pos-group' in request.GET
     httpGET_SHOWAI = 'show-ai' in request.GET
@@ -273,15 +277,9 @@ def all_entries(request, is_paged=False):
         show_additional_info = False
 
     context = {
-        'entries': entries,
-        'show_numbers': not httpGET_HIDENUMBERS,
-        'show_refentries': not httpGET_HIDEREFENTRIES,
-        'title': title,
-        'show_additional_info': show_additional_info,
-        'show_duplicates_warning': False if httpGET_DUPLICATES else True,
-        'user': request.user,
         'is_paged': is_paged,
-        'page': page,
+        'entries': entries,
+        'not_editable': httpGET_NOT_EDITABLE,
         'params_without_page': urllib.urlencode(
             dict(
                 (k, unicode(v).encode('utf-8'))
@@ -289,6 +287,13 @@ def all_entries(request, is_paged=False):
                 if k not in  ('page', 'AB')
             )
         ),
+        'page': page,
+        'show_additional_info': show_additional_info,
+        'show_duplicates_warning': False if httpGET_DUPLICATES else True,
+        'show_numbers': not httpGET_HIDENUMBERS,
+        'show_refentries': not httpGET_HIDEREFENTRIES,
+        'title': title,
+        'user': request.user,
         }
     return render(request, 'all_entries.html', context)
 
