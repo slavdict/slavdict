@@ -695,6 +695,25 @@ def web_collocation_special_cases(words):
     return ind_collocation_special_cases(words, for_web=True)
 
 @register_filter
+def ind_csl_special_cases(words, for_web=False):
+    """ Особая обработка цсл текста при значении
+    """
+    # 1) Все ";" давать гражданкой
+    for segments in words.in_betweens:
+        n = len(segments)
+        if n < 2:
+            continue
+        for i in range(n):
+            if segments[i].type == Segment.TYPE_SEMICOLON:
+                segments[i].output_script = SCRIPT_CIVIL
+
+    return words
+
+@register_filter
+def web_csl_special_cases(words):
+    return ind_csl_special_cases(words, for_web=True)
+
+@register_filter
 def has_no_accent(value):
     r = re.compile(ur"['`\^~А-Щ]")
     if re.findall(r, value):
