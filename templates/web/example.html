@@ -58,24 +58,27 @@
         {% endif %}
 
         {% if ge.aliud %}
-            {% set aliud_lang = 'лат.' if ge.is_aliud_latin else 'греч.' %}
-            {{ backspace }}{{ space }}
-            <span class="Em hyphenate">в{{ nbsp }}{{ aliud_lang }} иначе</span>
-            {{ space }}
-        {% endif %}
 
-        {% if ge.mark %}
             {{ backspace }}{{ space }}
-            <span class="Em">{{ ge.mark }}</span>
+            <span class="Em hyphenate">в{{ nbsp }}греч. иначе</span>
             {{ space }}
-        {% endif %}
 
-        <span class="Greek">
-            {{ ge.processed_text|
-                    web_regex("Text", '[\\(\\)]') |
-                    web_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}') |
-                    replace(" ", "{{ space }}") }}
-        </span>
+        {% else %}
+
+            {% if ge.mark %}
+                {{ backspace }}{{ space }}
+                <span class="Em">{{ ge.mark }}</span>
+                {{ space }}
+            {% endif %}
+
+            <span class="Greek">
+                {{ ge.processed_text|
+                        web_regex("Text", '[\\(\\)]') |
+                        web_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}') |
+                        replace(" ", "{{ space }}") }}
+            </span>
+
+        {% endif %}
 
         {% if genum == 2 %}
             {{ backspace }}{{ nbsp }}

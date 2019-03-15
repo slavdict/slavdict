@@ -1777,12 +1777,13 @@ class Example(models.Model, JSONSerializable):
 
     def greek_equivs_with_numbers(self, show_info=False):
         # Если не надо отображать авторские комментарии, то выводим
-        # только реальные греч. параллели с заполненным полем unitext,
-        # остальные пропускаем.
+        # только реальные греч. параллели с заполненным полем unitext
+        # либо с пометой "в греч. иначе", остальные пропускаем.
         if show_info:
             lst = list(self.greek_equivs)
         else:
-            lst = [ge for ge in self.greek_equivs if ge.unitext.strip()]
+            lst = [ge for ge in self.greek_equivs
+                      if ge.unitext.strip() or ge.aliud]
         L = len(lst)
         if L == 0:
             groups = []
@@ -1793,7 +1794,7 @@ class Example(models.Model, JSONSerializable):
             ge_prev = lst[0]
             n = 1
             for ge in lst[1:]:
-                if ge.unitext == ge_prev.unitext:
+                if ge.unitext == ge_prev.unitext or ge.aliud and ge_prev.aliud:
                     n += 1
                 else:
                     groups.append((ge_prev, n))

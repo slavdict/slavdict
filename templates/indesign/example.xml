@@ -26,24 +26,27 @@
         {% endif %}
 
         {% if ge.aliud %}
-            {% set aliud_lang = 'лат.' if ge.is_aliud_latin else 'греч.' %}
-            {{ backspace }}{{ space }}
-            <x aid:cstyle="Em">в{{ nbsp }}{{ aliud_lang }} иначе</x>
-            {{ space }}
-        {% endif %}
 
-        {% if ge.mark %}
             {{ backspace }}{{ space }}
-            <x aid:cstyle="Em">{{ ge.mark }}</x>
+            <x aid:cstyle="Em">в{{ nbsp }}греч. иначе</x>
             {{ space }}
-        {% endif %}
 
-        <x aid:cstyle="Greek">
-            {{ ge.processed_text|
-                    ind_regex("Text", '[\\(\\)]')|
-                    ind_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}')|
-                    replace(" ", "{{ space }}") }}
-        </x>
+        {% else %}
+
+            {% if ge.mark %}
+                {{ backspace }}{{ space }}
+                <x aid:cstyle="Em">{{ ge.mark }}</x>
+                {{ space }}
+            {% endif %}
+
+            <x aid:cstyle="Greek">
+                {{ ge.processed_text|
+                        ind_regex("Text", '[\\(\\)]')|
+                        ind_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}')|
+                        replace(" ", "{{ space }}") }}
+            </x>
+
+        {% endif %}
 
         {% if genum == 2 %}
             {{ backspace }}{{ nbsp }}
