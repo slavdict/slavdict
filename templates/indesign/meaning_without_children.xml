@@ -85,7 +85,8 @@
     <x aid:cstyle="Em">безл.</x>{{ space }}
     {% if m.substantivus_csl %}
         {{ m.substantivus_csl_ucs |
-           ind_civil_injection("Valency", "CSLSegmentEm", "Text") }}{{ space }}
+           ind_civil_injection("Valency", "CSLSegmentEm", "Text")
+           }}{% if m.figurative %}{{ emspace }}{% else %}{{ space }}{% endif %}
     {% endif %}
 
 {% elif m.special_case == MSC18 %}{# вводн. #}

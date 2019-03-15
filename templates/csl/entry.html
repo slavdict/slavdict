@@ -196,7 +196,15 @@
             <span class="Em">
                 {{ entry.transitivity_from_meanings }}
             </span>
-            {{ space }}
+            {% if entry.meaning_groups|count == 1
+                    and entry.meaning_groups[0].meanings|count == 1
+                    and (entry.meaning_groups[0].meanings[0].figurative
+                        or entry.meaning_groups[0].meanings[0].special_case
+                            in [MSC10, MSC16, MSC17, MSC18]) %}
+                {{ emspace }}
+            {% else %}
+                {{ space }}
+            {% endif %}
         {% endif %}
     {% endif %}
 

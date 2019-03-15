@@ -77,6 +77,10 @@ x/html-тегами, а также x/html-тэгами и текстом.
 {{ onlyDot }} -- Непарный вспомогательный тэг, позволяющий поставить точку,
 только если перед ним нет точки или многоточия.
 
+{{ emspace }} -- пробел длины em, U+2003.
+
+{{ enspace }} -- пробел длины en, U+2002.
+
 {{ nbsp }} -- неразрывный пробел, no-break space, U+00A0.
 
 {{ nbhyphen }} -- non-breaking hyphen, U+2011.
@@ -126,13 +130,15 @@ ZWS = u'\u200B'
 # Специальные двойники нормальных символов, используемые для
 # контроля за пробельным пространством
 BACKSPACE = u'\u0008'
+EMSPACE = u'\uE003'
+ENSPACE = u'\uE002'
 EXCLAM = u'\u1991'
 NBSP = u'\uEEA0'
 NEWLINE = u'\uEEEE'
 ONLYDOT = u'\u1902'
 PUNCT = u'\u1900'
 SPACE = u'\u0007'
-SPACES = SPACE + NBSP + NEWLINE
+SPACES = SPACE + EMSPACE + ENSPACE + NBSP + NEWLINE
 
 def strip_spaces_between_tags_and_text(value):
     value = re.sub(ur'>\s+', u'>', force_unicode(value.strip()))
@@ -154,10 +160,15 @@ def strip_spaces_between_tags_and_text(value):
     value = re.sub(NEWLINE, u'\n', value)
     # {{ nbsp }}
     value = re.sub(NBSP, u'\u00A0', value)
+    # {{ emspace }}
+    value = re.sub(EMSPACE, u'\u2003', value)
+    # {{ enspace }}
+    value = re.sub(ENSPACE, u'\u2003', value)
     # {{ space }}
     value = re.sub(SPACE, u' ', value)
     return value
-strip_spaces_between_tags_and_text = allow_lazy(strip_spaces_between_tags_and_text, unicode)
+strip_spaces_between_tags_and_text = allow_lazy(
+        strip_spaces_between_tags_and_text, unicode)
 
 class TrimExtension(Extension):
 
@@ -183,6 +194,10 @@ class TrimExtension(Extension):
         source = re.sub(ur'{{\s*nbsp\s*}}', NBSP, source)
         source = re.sub(ur'{{\s*newline\s*}}', NEWLINE, source)
 
+        # {{ emspace }}, {{ enspace }}
+        source = re.sub(ur'{{\s*emspace\s*}}', EMSPACE, source)
+        source = re.sub(ur'{{\s*enspace\s*}}', ENSPACE, source)
+
         # {{ nbhyphen }}
         source = re.sub(ur'{{\s*nbhyphen\s*}}', ur'\u2011', source)
         # {{ softhyphen }}
@@ -190,9 +205,6 @@ class TrimExtension(Extension):
         # {{ wj }}, {{ zwnbsp }}
         source = re.sub(ur'{{\s*wj\s*}}', ur'\u2060', source)
         source = re.sub(ur'{{\s*zwnbsp\s*}}', ur'\u2060', source)
-        # {{ emspace }}, {{ enspace }}
-        source = re.sub(ur'{{\s*emspace\*}}', u'\u2003', source)
-        source = re.sub(ur'{{\s*enspace\*}}', u'\u2002', source)
         return source
 
 trim = TrimExtension
@@ -328,6 +340,10 @@ class Segment(Tag):
             self.output_script = SCRIPT_CIVIL
             if u'\u00a0' in self.segment:
                 self.segment = NBSP
+            elif u'\u2003' in self.segment:
+                self.segment = EMSPACE
+            elif u'\u2002' in self.segment:
+                self.segment = ENSPACE
             else:
                 self.segment = SPACE
 
