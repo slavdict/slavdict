@@ -39,7 +39,7 @@
         {% endif %}
 
         <x aid:cstyle="Greek">
-            {{ ge.unitext|
+            {{ ge.processed_text|
                     ind_regex("Text", '[\\(\\)]')|
                     ind_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}')|
                     replace(" ", "{{ space }}") }}

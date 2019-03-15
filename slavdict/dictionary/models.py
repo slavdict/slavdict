@@ -2377,6 +2377,9 @@ class GreekEquivalentForExample(models.Model, JSONSerializable):
     for_example = ForeignKey(Example, related_name='greq_set')
     unitext = CharField(u'греч. параллель (Unicode)', max_length=100,
                         blank=True)
+    @property
+    def processed_text(self):
+        return re.sub(ur'\(([^а-яА-Я]+?)\)', ur'\1', self.unitext)
 
     mark = CharField(u'грамматическая помета', max_length=20, blank=True)
 
