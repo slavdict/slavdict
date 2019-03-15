@@ -57,7 +57,7 @@
             {{ backspace }}<span class="Text">,</span>{{ space }}
         {% endif %}
 
-        {% if ge.aliud %}
+        {% if ge.aliud and not ge.is_aliud_latin %}
 
             {{ backspace }}{{ space }}
             <span class="Em hyphenate">в{{ nbsp }}греч. иначе</span>
