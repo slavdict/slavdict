@@ -1,6 +1,21 @@
 {% from 'indesign/etymology.xml'   import etymology    with context %}
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
+{# см. slavdict.dictionary.models.MEANING_SPECIAL_CASES_CHOICES #}
+{% set MSC1 = 'a' %}{# канонич. #}
+{% set MSC4 = 'd' %}{# дат. #}
+{% set MSC5 = 'e' %}{# твор. ед. в роли нареч. #}
+{% set MSC8 = 'h' %}{# имя собств. #}
+{% set MSC9 = 'i' %}{# топоним #}
+{% set MSC10 = 'j' %}{# преимущ. #}
+{% set MSC11 = 'k' %}{# мн. #}
+{% set MSC12 = 'l' %}{# в роли нареч. #}
+{% set MSC14 = 'n' %}{# в роли прил. #}
+{% set MSC15 = 'o' %}{# в роли част. #}
+{% set MSC16 = 'p' %}{# полувспом. #}
+{% set MSC17 = 'q' %}{# безличное упортеление глагола #}
+{% set MSC18 = 'r' %}{# вводн. #}
+
 <e>
     <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
 
