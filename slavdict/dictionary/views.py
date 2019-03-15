@@ -1314,7 +1314,7 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'meanings_sobstv':
         regex = re.compile(
-                ur'им[^\s\.]*\.?\s*собст|собст[^\s\.]*\.?\s*им)',
+                ur'им[^\s\.]*\.?\s*собст|собст[^\s\.]*\.?\s*им',
                 flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden() and regex.search(m.meaning + m.gloss))
