@@ -141,6 +141,7 @@
         ind_cslav_injection("CSLSegment")|
         ind_regex("Em", '(?<![А-Яа-я])(?:перен|букв|зд|см|ср)\\.')|
         ind_regex("Em", 'в[\\s\u00a0]Син\\. пер\\.') |
+        ind_regex("Em", '(?<=\()(?:арам)\\.(?=\))') |
         ind_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') }}</m>
 {% endif %}
 

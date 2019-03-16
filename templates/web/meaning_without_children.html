@@ -146,6 +146,7 @@
         web_cslav_injection("CSLSegment") |
         web_regex("Em", '(?<![А-Яа-я])(?:перен|букв|зд|см|ср)\\.') |
         web_regex("Em", 'в[\\s\u00a0]Син\\. пер\\.') |
+        web_regex("Em", '(?<=\()(?:арам)\\.(?=\))') |
         web_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') }}</span>
 {% endif %}
 
