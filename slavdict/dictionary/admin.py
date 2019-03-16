@@ -12,20 +12,22 @@ from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
 
 from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary.models import ANY_LETTER
 from slavdict.dictionary.models import Collocation
 from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
+from slavdict.dictionary.models import LETTERS
 from slavdict.dictionary.models import Meaning
 from slavdict.dictionary.models import MeaningContext
 from slavdict.dictionary.models import OrthographicVariant
+from slavdict.dictionary.models import Paradigm
 from slavdict.dictionary.models import Participle
 from slavdict.dictionary.models import Translation
 from slavdict.dictionary.models import VOLUME_LETTERS
+from slavdict.dictionary.models import WordForm
 from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
-from slavdict.dictionary.models import LETTERS
-from slavdict.dictionary.models import ANY_LETTER
 
 ui = admin.sites.AdminSite(name='UI')
 ui.login_template = 'registration/login.html'
@@ -325,11 +327,36 @@ class OrthVar_Inline(admin.StackedInline):
     readonly_fields = ('id',)
     fieldsets = (
         (None, {
-            'fields': (('idem', 'no_ref_entry', 'reconstructed',
-                        'questionable', 'untitled_exists', 'without_accent'),
-                       ('order', 'id', 'parent'),),
-            }),
-        )
+            'fields': (
+                ('idem', 'no_ref_entry', 'reconstructed', 'questionable',
+                 'untitled_exists', 'without_accent'),
+                ('order', 'id', 'parent'),
+            ),
+        }),
+    )
+
+
+
+class WordForm_Inline(admin.StackedInline):
+    model = WordForm
+    extra = 0
+    raw_id_fields = ('parent',)
+    readonly_fields = ('id',)
+    fieldsets = (
+        (None, {
+            'fields': (
+                ('idem', 'no_ref_entry', 'reconstructed', 'questionable',
+                 'untitled_exists', 'without_accent'),
+                ('order', 'id', 'parent'),
+            ),
+        }),
+        (u'Грамматическая информация', {
+            'fields': (
+                ('case', 'number', 'gender', 'shortness', 'comparison'),
+                ('mood_tense', 'person'),
+            ),
+        }),
+    )
 
 
 
@@ -813,6 +840,56 @@ class AdminEntryUI(AdminEntry):
 
 admin.site.register(Entry, AdminEntryADMIN)
 ui.register(Entry, AdminEntryUI)
+
+
+
+class AdminParadigm(admin.ModelAdmin):
+    raw_id_fields = (
+        'entry_id',
+    )
+    inlines = (
+        WordForm_Inline,
+        )
+    list_display = (
+        'entry',
+        'part_of_speech',
+        'uninflected',
+        'gender',
+        )
+    list_display_links = (
+        'entry',
+        )
+    list_filter = (
+        'part_of_speech',
+        'uninflected',
+        'gender',
+        'tantum',
+        )
+    list_editable = (
+        'part_of_speech',
+        'uninflected',
+        'gender',
+        )
+    search_fields = ('entry__civil_equivalent',)# 'wordform_set__idem')
+    # При переходе к моделям, соотносящимся с основной как "много к одному"
+    # в результатах поиска возможны дубликаты.
+    # См. http://code.djangoproject.com/ticket/15839
+
+    ordering = ('entry__civil_equivalent', 'order')
+    save_on_top = True
+    formfield_overrides = {
+        models.TextField: { 'widget': forms.Textarea(attrs={'rows':'2'}) },
+    }
+    class Media:
+        css = {"all": ("fix_admin.css",)}
+        js = ("js/libs/ac2ucs8.js",
+              "fix_admin.js")
+
+AdminParadigm.has_add_permission = staff_has_permission
+AdminParadigm.has_change_permission = staff_has_permission
+AdminParadigm.has_delete_permission = staff_has_permission
+
+admin.site.register(Paradigm, AdminParadigm)
 
 
 

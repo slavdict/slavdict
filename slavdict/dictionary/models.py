@@ -365,6 +365,73 @@ TRANSITIVITY_MAP = {
     'labile': 'b',
 }
 
+CASE_CHOICES = (
+    ('n', u'И.'),
+    ('g', u'Р.'),
+    ('d', u'Д.'),
+    ('a', u'В.'),
+    ('i', u'Т.'),
+    ('p', u'П.'),
+    ('v', u'З.'),
+)
+CASE_MAP = {
+    'nominative': 'n',
+    'genitive': 'g',
+    'dative': 'd',
+    'accusative': 'a',
+    'instrumental': 'i',
+    'instrumentalis': 'i',
+    'prepositional': 'p',
+    'locative': 'p',
+    'vocative': 'v',
+}
+
+NUMBER_CHOICES = (
+    ('s', u'ед.'),
+    ('d', u'дв.'),
+    ('p', u'мн.'),
+)
+NUMBER_MAP = {
+    'singular': 's',
+    'dual': 'd',
+    'plural': 'p',
+}
+
+PERSON_CHOICES = (
+    ('1', u'1'),
+    ('2', u'2'),
+    ('3', u'3'),
+)
+
+COMPARISON_CHOICES = (
+    ('p', u'положительная'),
+    ('c', u'сравнительная'),
+    ('s', u'превосходная'),
+)
+COMPARISON_MAP = {
+    'positive': 'p',
+    'comparative': 'c',
+    'superlative': 's',
+}
+
+MOOD_TENSE_CHOICES = (
+    ('a', u'инфинитив'),
+    ('b', u'презенс'),
+    ('c', u'имперфект'),
+    ('d', u'аорист'),
+    ('e', u'императив'),
+    ('f', u'причастие'),
+)
+MOOD_TENSE_MAP = {
+    'infinitiv': 'a',
+    'presens': 'b',
+    'praesens': 'b',
+    'imperfect': 'c',
+    'aorist': 'd',
+    'imperativ': 'e',
+    'participle': 'f',
+}
+
 # TODO: Должен остаться только один
 # из этих двух списков для причастий.
 PARTICIPLE_TYPE_CHOICES = (
@@ -1073,7 +1140,7 @@ class Entry(models.Model, JSONSerializable):
           e2.save()
           e1 = Entry.objects.get(pk=id1)
           m2m = ('participle_set', 'orthographic_variants', 'etymology_set',
-                 'collocationgroup_set', 'meaning_set')
+                 'collocationgroup_set', 'meaning_set', 'paradigm_set')
                  # NOTE: example_set намеренно не добавляем, примеры имеет
                  # смысл обрабатывать только после того, как они будут
                  # добавлены к значениям.
@@ -2604,6 +2671,189 @@ class OrthographicVariant(models.Model, JSONSerializable):
         ordering = ('order', 'id')
 
 
+class Paradigm(models.Model):
+    entry = ForeignKey(Entry, blank=True, null=True)
+    part_of_speech = CharField(u'часть речи', max_length=1,
+            choices=BLANK_CHOICE + PART_OF_SPEECH_CHOICES, default='',
+            blank=True)
+
+    def is_part_of_speech(self, *slugs):
+        for slug in slugs:
+            if PART_OF_SPEECH_MAP[slug] == self.part_of_speech:
+                return True
+
+    # Для сущ. и прил.
+    uninflected = BooleanField(u'неизменяемое', default=False)
+
+    word_forms_list = TextField(u'список словоформ', help_text=u'''Список
+            словоформ через запятую''', blank=True)
+
+    # только для существительных
+    tantum = CharField(u'число', choices=TANTUM_CHOICES,
+                       max_length=1, blank=True, default='')
+
+    def is_tantum(self, slug):
+        return TANTUM_MAP[slug] == self.tantum
+
+    gender = CharField(u'род', choices=GENDER_CHOICES,
+                       max_length=1, blank=True, default='')
+
+    def is_gender(self, slug):
+        return GENDER_MAP[slug] == self.gender
+
+    rare = BooleanField(u'редко', default=False)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
+    mtime = DateTimeField(editable=False, auto_now=True)
+
+    @property
+    def host_entry(self):
+        return self.entry
+
+    host = host_entry
+
+    def save(self, without_mtime=False, *args, **kwargs):
+        super(Paradigm, self).save(*args, **kwargs)
+        if without_mtime:
+            return
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
+
+    def delete(self, without_mtime=False, *args, **kwargs):
+        super(Paradigm, self).delete(*args, **kwargs)
+        if without_mtime:
+            return
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
+
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+          id1 = self.pk
+          p2 = self
+          p2.pk = None
+          if 'entry' in kwargs:
+              p2.entry = kwargs['entry']
+          p2.save()
+          p1 = Paradigm.objects.get(pk=id1)
+          return p1, p2
+        return None, None
+
+    class Meta:
+        verbose_name = u'парадигма'
+        verbose_name_plural = u'парадигмы'
+        ordering = ('order', 'id')
+
+
+class WordForm(models.Model):
+    paradigm = ForeignKey(Paradigm, related_name='wordforms',
+                          blank=True, null=True)
+    parent = ForeignKey('self', related_name='children', blank=True, null=True)
+
+    __attrs = { 'max_length': 1, 'blank': True, 'default': '' }
+    case = CharField(u'падеж', choices=CASE_CHOICES, **__attrs)
+    number = CharField(u'число', choices=NUMBER_CHOICES, **__attrs)
+    gender = CharField(u'род', choices=GENDER_CHOICES, **__attrs)
+    shortness = BooleanField(u'краткость', default=False)
+    comparison = CharField(u'степень сравнения', choices=COMPARISON_CHOICES, **__attrs)
+    person = CharField(u'лицо', choices=PERSON_CHOICES, **__attrs)
+    mood_tense_voice = CharField(u'форма/наклонение/время',
+            choices=MOOD_TENSE_CHOICES, **__attrs)
+    participle_type = CharField(u'тип причастия', max_length=1, blank=True,
+                                choices=PARTICIPLE_CHOICES, default='')
+
+    def is_participle_type(self, slug):
+        return PARTICIPLE_TYPE_MAP[slug] == self.participle_type
+
+    without_accent = BooleanField(u'без ударения', default=False)
+    reconstructed = BooleanField(u'реконструирован', default=False)
+    questionable = BooleanField(u'реконструкция вызывает сомнения', default=False)
+    untitled_exists = BooleanField(u'Вариант без титла представлен в текстах',
+                                   default=False)
+    @property
+    def child_wordforms(self):
+        child_wordforms = self.children.all()
+
+        # Проверяем есть ли титла в текущей словоформе.
+        # Для этого обрезаем начальные пробелы и знаки снятия придыхания.
+        var = self.idem.lstrip(u' =')
+        # Удаляем первый символ, т.к. он может иметь верхний регистр.
+        var = var[1:]
+        # Смотрим, есть ли титла, при этом намеренно исключаем из поиска
+        # паерки (ЪЬ).
+        r = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
+        has_no_title = not r.search(var)
+
+        if self.untitled_exists and has_no_title:
+            child_wordforms = tuple(child_wordforms) + (self,)
+        return child_wordforms
+
+    # сам орфографический вариант
+    idem = CharField(u'написание', max_length=50)
+    use = CharField(u'использование', max_length=50, help_text=u'''
+                    Информация о том, с какими значениями данный вариант
+                    связан. Разные варианты написания могут коррелировать
+                    с разными значениями, как в случае слов богъ/бг~ъ,
+                    агг~лъ/аггелъ.''', default=u'')
+    @property
+    def idem_ucs(self):
+        return ucs_convert(self.idem)
+
+    @property
+    def idem_letter_ucs(self):
+        return ucs_convert_affix(self.idem.lower())
+
+    hidden = BooleanField(u'Скрыть словоформу', help_text=u'''Не отображать
+            словоформу.''', default=False, editable=False)
+    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
+    no_ref_entry = BooleanField(u'Не делать отсылочной статьи', default=False)
+    mtime = DateTimeField(editable=False, auto_now=True)
+
+    @property
+    def host_entry(self):
+        return self.entry
+
+    host = host_entry
+
+    def save(self, without_mtime=False, *args, **kwargs):
+        if self.questionable and not self.reconstructed:
+            self.reconstructed = True
+        super(WordForm, self).save(*args, **kwargs)
+        if without_mtime:
+            return
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
+
+    def delete(self, without_mtime=False, *args, **kwargs):
+        super(WordForm, self).delete(*args, **kwargs)
+        if without_mtime:
+            return
+        host_entry = self.host_entry
+        if host_entry is not None:
+            host_entry.save(without_mtime=without_mtime)
+
+    def make_double(self, **kwargs):
+        with transaction.atomic():
+          id1 = self.pk
+          wf2 = self
+          wf2.pk = None
+          if 'paradigm' in kwargs:
+              wf2.paradigm = kwargs['paradigm']
+          wf2.save()
+          wf1 = WordForm.objects.get(pk=id1)
+          return wf1, wf2
+        return None, None
+
+    def __unicode__(self):
+        return self.idem
+
+    class Meta:
+        verbose_name = u'словоформа'
+        verbose_name_plural = u'словоформы'
+        ordering = ('order', 'id')
+
+
 class Participle(models.Model, JSONSerializable):
 
     # словарная статья, к которой относится данная словоформа
@@ -2691,8 +2941,10 @@ Models = (
     Meaning,
     MeaningContext,
     OrthographicVariant,
+    Paradigm,
     Participle,
     Translation,
+    WordForm,
 )
 for Model in Models:
     x = get_max_lengths(Model)
