@@ -3,6 +3,8 @@
 
 {% set partial_translations = e.get_translations(fragmented=True, hidden=False) %}
 {% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
+{% set labels_in_translation= "(?<![А-Яа-я])букв\\." %}
+
 
 {{ e.example_ucs | web_cslav_words("CSLSegment", "Text")
         | insert_translations(partial_translations) }}
@@ -13,7 +15,8 @@
         {% if not loop.first %}
             {{ backspace }},{{ space }}
         {% endif %}
-        <span class="Text hyphenate">‘{{ t.translation|e }}’</span>
+        <span class="Text hyphenate">‘{{ t.translation |
+            web_regex("Em", labels_in_translation) | e }}’</span>
     {% endfor %}
     {{ space }}
 {% endif %}

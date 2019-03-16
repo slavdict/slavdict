@@ -560,7 +560,8 @@ def _insert_translation_data(words, data, show_additional_info=False,
             continue
         translations = [
                 u'‘%s’%s' % (
-                    html_escape(t.translation),
+                    ind_regex(html_escape(t.translation),
+                        'Em', ur'(?<![А-Яа-я])букв\.', for_web=for_web),
                     (u' <span class="ai ai-grfex Text hyphenate">%s</span>' %
                             html_escape(t.additional_info))
                         if show_additional_info and t.additional_info.strip()

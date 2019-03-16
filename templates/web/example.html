@@ -3,6 +3,7 @@
 
 {% set partial_translations = e.get_translations(fragmented=True, hidden=False) %}
 {% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
+{% set labels_in_translation= "(?<![А-Яа-я])букв\\." %}
 
 {% if show_additional_info %}
     {% set hidden_partial_translations = e.get_translations(fragmented=True, hidden=True) %}
@@ -11,6 +12,8 @@
     {% set hidden_partial_translations = {} %}
     {% set hidden_full_translations = [] %}
 {% endif %}
+
+
 
 {{ e.example_ucs | web_cslav_words("CSLSegment", "Text") |
         insert_translations(partial_translations, show_additional_info, hidden_partial_translations) }}
@@ -21,7 +24,8 @@
         {% if not loop.first %}
             {{ backspace }},{{ space }}
         {% endif %}
-        <span class="Text hyphenate">‘{{ t.translation|e }}’</span>
+        <span class="Text hyphenate">‘{{ t.translation |
+            web_regex("Em", labels_in_translation) | e }}’</span>
         {% if show_additional_info and t.additional_info|trim %}
             {{ space }}
             <span class="ai ai-grfex Text hyphenate">
@@ -38,7 +42,8 @@
         {% if not loop.first %}
             {{ backspace }}<span class="Text">,</span>{{ space }}
         {% endif %}
-        <span class="Text hyphenate">‘{{ t.translation|e }}’</span>
+        <span class="Text hyphenate">‘{{ t.translation |
+            web_regex("Em", labels_in_translation) | e }}’</span>
         {% if show_additional_info and t.additional_info|trim %}
             {{ space }}
             <span class="Text hyphenate">
