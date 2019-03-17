@@ -107,7 +107,7 @@ from django.utils.encoding import force_unicode
 from jinja2 import nodes
 from jinja2.ext import Extension
 
-from slavdict.dictionary.models import ucs_convert, html_escape, html_unescape
+from slavdict.dictionary.utils import ucs_convert, html_escape, html_unescape
 from .hyphenation import hyphenate_ucs8
 
 additional_jinja_filters = {}

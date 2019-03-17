@@ -21,114 +21,15 @@ from django.db.utils import OperationalError
 from django.db.utils import ProgrammingError
 from django.utils.safestring import mark_safe
 
-from hip2unicode.functions import convert
-from hip2unicode.functions import compile_conversion
-from hip2unicode.conversions import antconc_ucs8
-from hip2unicode.conversions import antconc_ucs8_without_aspiration
-from hip2unicode.conversions import antconc_civilrus
-from hip2unicode.conversions import antconc_antconc_wo_titles
-
 from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary.utils import civilrus_convert
+from slavdict.dictionary.utils import collogroup_sort_key
+from slavdict.dictionary.utils import ucs_affix_or_word
+from slavdict.dictionary.utils import ucs_convert
+from slavdict.dictionary.utils import ucs_convert_affix
+from slavdict.jinja_extensions.hyphenation import hyphenate_ucs8
+from slavdict.jinja_extensions import trim_spaces as ts
 
-compiled_conversion_wo_titles = compile_conversion(
-        antconc_antconc_wo_titles.conversion)
-compiled_conversion_with_aspiration = compile_conversion(
-        antconc_ucs8.conversion)
-compiled_conversion_without_aspiration = compile_conversion(
-        antconc_ucs8_without_aspiration.conversion)
-compiled_conversion_civil = compile_conversion(antconc_civilrus.conversion)
-
-def html_escape(text):
-    text = text.replace(u'&', u'&amp;')
-    text = text.replace(u'<', u'&lt;')
-    text = text.replace(u'>', u'&gt;')
-    text = text.replace(u'"', u'&#34;')
-    return text.replace(u"'", u'&#39;')
-
-def html_unescape(text):
-    text = text.replace(u'&#39;', u"'")
-    text = text.replace(u'&#34;', u'"')
-    text = text.replace(u'&gt;',  u'>')
-    text = text.replace(u'&lt;',  u'<')
-    return text.replace(u'&amp;', u'&')
-
-def resolve_titles(text):
-    return convert(text, compiled_conversion_wo_titles)
-
-def ucs_convert(text):
-    return html_escape(convert(text, compiled_conversion_with_aspiration))
-
-
-def ucs_convert_affix(text):
-    """
-    Функции передаётся строка, которая должна содержать строковую запись
-    аффикса в свободной форме -- не важно с дефисом или без. Если начальный
-    дефис есть, он отбрасывается. Всё оставшееся конвертируется из
-    представления AntConc в UCS8 без расстановки придыханий перед начальными
-    гласными.
-    """
-    if text:
-        if text[0] == u'-':
-            text = text[1:]
-        return html_escape(convert(text, compiled_conversion_without_aspiration))
-
-
-def civilrus_convert(word):
-    return convert(word, compiled_conversion_civil)
-
-def convert_for_index(word):
-    civil_word = civilrus_convert(resolve_titles(word)).lower()
-    ix_word = re.sub(ur'ъ[иы]', u'ы', civil_word)
-    ix_word = re.sub(ur'[ъ=]', u'', ix_word)
-    ix_word = re.sub(ur'^(бе|во|в|и|ни|ра|чре|чере)з([кпстфхцчшщ])',
-                     ur'\1с\2', ix_word)
-    return re.sub(ur'[^а-щы-я]', u'', ix_word)
-
-def ucs_affix_or_word(atr):
-    """
-    Функция предназначенная для конвертации значения атрибута модели из
-    представления AntConc в UCS8. Атрибут должен быть строкой. Если первым
-    символом строки является дефис, то сам дефис отбрасывается, а конвертация
-    производится без создания придыханий над начальными гласными из
-    предположения, что это аффикс. Если первый символ -- не дефис, конвертация
-    производится с созданием придыханий, подразумевается, что на вход подано
-    слово, а не аффикс.
-
-    Если входная строка пустая, то возвращается также пустая строка. Если
-    непустая, то возвращается кортеж, где второй элемент -- это
-    сконверированная строка, а первый -- булевская константа, указывающая,
-    является ли строка аффиксом (True) или словом (False).
-
-    Если данная функция используется в другой функции, то последней можно
-    давать название с использованием аббревиатуры wax (Word or AffiX).
-
-    Возможно, впоследствии лучше сделать, чтобы функция возвращала не кортеж,
-    а объект. В качестве __unicode__ будет возвращаться сконвертированная
-    строка, а информация о том, аффикс или нет, отдельным свойством.
-    """
-    if atr:
-        if atr[0] == u'-':
-            return (True, ucs_convert_affix(atr[1:]))
-        else:
-            return (False, ucs_convert(atr))
-    else:
-        return atr
-
-def levenshtein_distance(a, b):
-    n, m = len(a), len(b)
-    if n > m:
-        # Make sure n <= m, to use O(min(n, m)) space
-        a, b = b, a
-        n, m = m, n
-    cur_row = range(n+1)  # Keep current and previous row, not entire matrix
-    for i in range(1, m+1):
-        pre_row, cur_row = cur_row, [i]+[0]*n
-        for j in range(1,n+1):
-            add, delete, change = pre_row[j]+1, cur_row[j-1]+1, pre_row[j-1]
-            if a[j-1] != b[i-1]:
-                change += 1
-            cur_row[j] = min(add, delete, change)
-    return cur_row[n]
 
 def meanings(self):
     objs = self.meaning_set
@@ -136,121 +37,22 @@ def meanings(self):
     objs = objs.order_by('order', 'id')
     return objs
 
+
 def metaph_meanings(self):
     objs = self.meaning_set
     objs = objs.filter(metaphorical=True, parent_meaning__isnull=True)
     objs = objs.order_by('order', 'id')
     return objs
 
+
 def all_meanings(self):
     objs = self.meaning_set
     return objs.filter(parent_meaning__isnull=True).order_by('order', 'id')
 
+
 def has_meanings(self):
     return self.meaning_set.exists()
 
-def sort_key1(word):
-    level1 = (
-        (ur"[='`\^\~А-ЯЄЅІЇѠѢѤѦѨѪѬѮѰѲѴѶѸѺѼѾ]", u''),
-        (u'ъ',      u''),
-        (u'аѵ',     u'ав'),
-        (u'[еє]ѵ',  u'ев'),
-        (u'ѯ',      u'кс'),
-        (u'ѿ',      u'от'),
-        (u'ѱ',      u'пс'),
-
-        (u'а',      u'00'),
-        (u'б',      u'01'),
-        (u'в',      u'02'),
-        (u'г',      u'03'),
-        (u'д',      u'04'),
-        (u'[еєѣ]',  u'05'),
-        (u'ж',      u'06'),
-        (u'[зѕ]',   u'07'),
-        (u'[иіїѵ]', u'08'),
-        (u'й',      u'09'),
-        (u'к',      u'10'),
-        (u'л',      u'11'),
-        (u'м',      u'12'),
-        (u'н',      u'13'),
-        (u'[оѻѡѽ]', u'14'),
-        (u'п',      u'15'),
-        (u'р',      u'16'),
-        (u'с',      u'17'),
-        (u'т',      u'18'),
-        (u'[уѹꙋ]',  u'19'),
-        (u'[фѳ]',   u'20'),
-        (u'х',      u'21'),
-        (u'ц',      u'22'),
-        (u'ч',      u'23'),
-        (u'ш',      u'24'),
-        (u'щ',      u'25'),
-        (u'ы',      u'26'),
-        (u'ь',      u'27'),
-        (u'ю',      u'28'),
-        (u'[ѧꙗ]',   u'29'),
-    )
-    for pattern, substitution in level1:
-        word = re.sub(pattern, substitution, word)
-    return word
-
-def sort_key2(word):
-    level2 = (
-        (ur'=',     u''),
-        (ur"([аеє])(['`\^]?)ѵ", ur'\g<1>\g<2>01'),
-
-        (ur"'",     u'31'),
-        (ur"`",     u'32'),
-        (ur"\^",    u'33'),
-        (ur"\~",    u'40'),
-        (ur"[А-ЩЫ-ЯЄЅІЇѠѢѤѦѨѪѬѮѰѲѴѶѸѺѼѾ]", u'50'),
-
-        (u'Ъ',      u'01'),
-        (u'ъ',      u'02'),
-
-        (u'ѯ',      u'0100'),
-        (u'ѱ',      u'0100'),
-
-        (u'е',  u'00'),
-        (u'є',  u'01'),
-        (u'ѣ',  u'02'),
-
-        (u'ѕ',  u'01'),
-        (u'з',  u'02'),
-
-        (u'и',    u'00'),
-        (u'[ії]', u'01'),
-        (u'ѵ',    u'02'),
-
-        (u'о', u'00'),
-        (u'ѻ', u'01'),
-        (u'ѡ', u'02'),
-        (u'ѿ', u'0200'),
-        (u'ѽ', u'03'),
-
-        (u'ѹ', u'00'),
-        (u'ꙋ', u'01'),
-        (u'у', u'02'),
-
-        (u'ф', u'00'),
-        (u'ѳ', u'01'),
-
-        (u'ѧ', u'00'),
-        (u'ꙗ', u'01'),
-
-        (u'[а-я]', u'00'),
-    )
-    for pattern, substitution in level2:
-        word = re.sub(pattern, substitution, word)
-    return word
-
-def collogroup_sort_key(cg):
-    text = u' '.join(c.collocation for c in cg.collocations)
-    text = text.replace(u'-', u'')
-    text = re.sub(ur'[\s/,\.;#\(\)]+', u' ', text)
-    text = text.strip()
-    text = resolve_titles(text)
-    return [sort_key1(word) for word in text.split()]
 
 def _double_check(item1, item2, m2m=(), kwargs=None, model=None):
     if 'object_map' not in kwargs:
@@ -278,9 +80,10 @@ def _double_check(item1, item2, m2m=(), kwargs=None, model=None):
                 x2.add(y)
     return item1, item2
 
+
 NBSP = u'\u00A0'  # неразрывный пробел
 
-BLANK_CHOICE = (('',''),)
+BLANK_CHOICE = (('', ''),)
 
 PART_OF_SPEECH_CHOICES = (
     ('a', u'сущ.'),
@@ -526,7 +329,8 @@ POS_SPECIAL_CASES_MAP = {
     MSC6: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['adverb']],
     MSC7: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['interjection']],
     MSC13: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['conjunction']],
-    MSC19: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['predicative adverb']],
+    MSC19: dict(PART_OF_SPEECH_CHOICES)[
+        PART_OF_SPEECH_MAP['predicative adverb']],
 }
 
 YET_NOT_IN_VOLUMES = None
@@ -536,10 +340,12 @@ VOLUME_LETTERS = {
 }
 ANY_LETTER = None
 
+
 class WithoutHiddenManager(models.Manager):
     def get_queryset(self):
         return super(WithoutHiddenManager,
                      self).get_queryset().filter(hidden=False)
+
 
 class JSONSerializable(object):
 
@@ -548,7 +354,7 @@ class JSONSerializable(object):
 
     def toJSON(self):
         return json.dumps(self.forJSON(),
-                          ensure_ascii=False, separators=(',',':'))
+                          ensure_ascii=False, separators=(',', ':'))
 
 
 class Entry(models.Model, JSONSerializable):
@@ -588,8 +394,8 @@ class Entry(models.Model, JSONSerializable):
             импорте заготовок статей.''', default=False)
 
     part_of_speech = CharField(u'часть речи', max_length=1,
-            choices=BLANK_CHOICE + PART_OF_SPEECH_CHOICES, default='',
-            blank=True)
+                               choices=BLANK_CHOICE + PART_OF_SPEECH_CHOICES,
+                               default='', blank=True)
 
     def is_part_of_speech(self, *slugs):
         for slug in slugs:
@@ -638,6 +444,7 @@ class Entry(models.Model, JSONSerializable):
     nom_sg = CharField(u'И.мн.', help_text=u'''Только для этнонимов
                        (например, в словарной статье АГАРЯНИН, здесь --
                        АГАРЯНЕ).''', max_length=50, blank=True, default='')
+
     @property
     def nom_sg_ucs_wax(self):
         return ucs_affix_or_word(self.nom_sg)
@@ -778,7 +585,7 @@ class Entry(models.Model, JSONSerializable):
     def etymologies(self):
         etyms = self.etymology_set.filter(language__in=ETYMOLOGY_LANGUAGES)
         etyms = list(etyms)
-        etyms.sort(key=lambda x:(bool(x.etymon_to), x.order, x.id))
+        etyms.sort(key=lambda x: (bool(x.etymon_to), x.order, x.id))
         return etyms
 
     @property
@@ -800,7 +607,7 @@ class Entry(models.Model, JSONSerializable):
                         u'статус готовности статьи в процентах', default=0)
 
     authors = ManyToManyField(CustomUser, verbose_name=u'автор статьи',
-                    blank=True, null=True)
+                              blank=True, null=True)
 
     antconc_query = TextField(u'Запрос для программы AntConc', blank=True)
     mtime = DateTimeField(editable=False)
@@ -957,6 +764,26 @@ class Entry(models.Model, JSONSerializable):
         elif case == 'bigger' and self.civil_equivalent == u'больший':
             return ucs_convert(u"вели'кій")
 
+        elif case == 'volume2':
+            if u'вриена' == self.civil_equivalent:
+                base_vars = tuple(self.base_vars)
+                tags = (
+                    {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
+                    {'text': u',', 'class': 'Text'},
+                    {'text': ts.SPACE},
+                    {'text': self.genitive_ucs_wax[1], 'class': 'CSLSegment'},
+                    {'text': ts.SPACE},
+                    {'text': u'и', 'class': 'Em'},
+                    {'text': ts.SPACE},
+                    {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
+                    {'text': ts.SPACE},
+                    {'text': u'неизм.', 'class': 'Em'},
+                    {'text': ts.EMSPACE},
+                    {'text': u'ж.', 'class': 'Em'},
+                    {'text': ts.SPACE},
+                )
+                return tags
+
     def examples_groups_for_hellinists(self):
         if hasattr(self, '_exgroups'):
             return self._exgroups
@@ -1012,7 +839,7 @@ class Entry(models.Model, JSONSerializable):
         for ex in self.all_examples():
             for ge in ex.greek_equivs:
                 text = ge.initial_form.strip().lower()
-                if text and not ge.aliud and not re.findall(u'[\sa-zA-Z]', text):
+                if text and not ge.aliud and not re.findall(ur'[\sa-zA-Z]', text):
                     text = unicodedata.normalize('NFC', text)
                     greeks.add(text)
         return tuple(sorted(greeks))
@@ -2304,7 +2131,7 @@ class Collocation(models.Model, JSONSerializable):
     def etymologies(self):
         etyms = self.etymology_set.filter(language__in=ETYMOLOGY_LANGUAGES)
         etyms = list(etyms)
-        etyms.sort(key=lambda x:(bool(x.etymon_to), x.order, x.id))
+        etyms.sort(key=lambda x: (bool(x.etymon_to), x.order, x.id))
         return etyms
 
     mtime = DateTimeField(editable=False, auto_now=True)
@@ -2674,11 +2501,11 @@ class Participle(models.Model, JSONSerializable):
         ordering = ('order', 'id')
 
 
-
 def get_max_lengths(Model):
-    return {f.name:f.max_length
+    return {f.name: f.max_length
             for f in Model._meta.fields
             if isinstance(f, CharField) and not f.choices}
+
 
 MAX_LENGTHS = {}
 Models = (

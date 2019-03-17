@@ -30,7 +30,6 @@ from slavdict.dictionary import viewmodels
 from slavdict.dictionary.forms import BilletImportForm
 from slavdict.dictionary.forms import FilterEntriesForm
 from slavdict.dictionary.forms import FilterExamplesForm
-from slavdict.dictionary.models import civilrus_convert
 from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Example
@@ -41,7 +40,8 @@ from slavdict.dictionary.models import MSC11
 from slavdict.dictionary.models import MSC12
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import PART_OF_SPEECH_MAP
-from slavdict.dictionary.models import resolve_titles
+from slavdict.dictionary.utils import civilrus_convert
+from slavdict.dictionary.utils import resolve_titles
 from slavdict.middleware import InvalidCookieError
 
 
