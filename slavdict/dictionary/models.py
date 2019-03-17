@@ -762,6 +762,8 @@ class Entry(models.Model, JSONSerializable):
             return ucs8(u"вели'кій")
 
         elif case == 'volume2':
+            STAR = u'\u27e1'
+            STAR_CLS = 'MeaningfulNoAccent'
             if u'вриена' == self.civil_equivalent:
                 base_vars = tuple(self.base_vars)
                 tags = (
@@ -817,7 +819,7 @@ class Entry(models.Model, JSONSerializable):
                 )
                 if ts.has_no_accent(self.several_sg1[0][0]):
                     tags += (
-                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                        {'text': STAR, 'class': STAR_CLS},
                     )
                 tags += (
                     {'text': u',', 'class': 'Text'},
@@ -827,7 +829,7 @@ class Entry(models.Model, JSONSerializable):
                 )
                 if ts.has_no_accent(self.several_sg2[0][0]):
                     tags += (
-                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                        {'text': STAR, 'class': STAR_CLS},
                     )
                 tags += (
                     {'text': ts.SPACE},
@@ -842,7 +844,7 @@ class Entry(models.Model, JSONSerializable):
                 )
                 if ts.has_no_accent(self.several_sg1[1][0]):
                     tags += (
-                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                        {'text': STAR, 'class': STAR_CLS},
                     )
                 tags += (
                     {'text': u',', 'class': 'Text'},
@@ -852,7 +854,7 @@ class Entry(models.Model, JSONSerializable):
                 )
                 if ts.has_no_accent(self.several_sg2[1][0]):
                     tags += (
-                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                        {'text': STAR, 'class': STAR_CLS},
                     )
                 tags += (
                     {'text': ts.SPACE},
@@ -881,7 +883,7 @@ class Entry(models.Model, JSONSerializable):
                 )
                 if ts.has_no_accent(self.several_sg1[0][0]):
                     tags += (
-                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                        {'text': STAR, 'class': STAR_CLS},
                     )
                 tags += (
                     {'text': ts.SPACE},
@@ -891,7 +893,7 @@ class Entry(models.Model, JSONSerializable):
                 )
                 if ts.has_no_accent(self.several_sg1[1][0]):
                     tags += (
-                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                        {'text': STAR, 'class': STAR_CLS},
                     )
 
                 tags += (
@@ -902,7 +904,7 @@ class Entry(models.Model, JSONSerializable):
                 )
                 if ts.has_no_accent(self.several_sg2[0][0]):
                     tags += (
-                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                        {'text': STAR, 'class': STAR_CLS},
                     )
                 tags += (
                     {'text': ts.SPACE},
@@ -912,7 +914,7 @@ class Entry(models.Model, JSONSerializable):
                 )
                 if ts.has_no_accent(self.several_sg2[1][0]):
                     tags += (
-                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                        {'text': STAR, 'class': STAR_CLS},
                     )
                 tags += (
                     {'text': ')', 'class': 'Text'},
@@ -938,7 +940,7 @@ class Entry(models.Model, JSONSerializable):
                 segs = (ucs8(u"вѣ'дѣти"), u',', ts.SPACE)
                 clss = ('Headword', 'Text', None)
                 segs += (ucs8(u"вѣ'мъ"), ts.SPACE, u'и', ts.SPACE)
-                clss += ('CSLSegment', None, 'Em', None)
+                clss += ('CSLSegment', None, 'Conj', None)
                 segs += (ucs8(u"вѣ'дѣ"), ts.SPACE, u'Прол. (1)', u',', ts.SPACE)
                 clss += ('CSLSegment', None, 'Address', 'Text', None)
                 segs += (h(ucs8(u"вѣ'си")), u';', ts.SPACE)
@@ -971,6 +973,62 @@ class Entry(models.Model, JSONSerializable):
                 clss += ('CSLSegment', None, 'Address')
                 segs += (ts.SPACE, u'перех. и неперех.', ts.SPACE)
                 clss += (None, 'Em', None)
+                tags = []
+                for seg, cls in zip(segs, clss):
+                    tag = {'text': seg}
+                    if cls:
+                        tag['class'] = cls
+                    tags.append(tag)
+                return tags
+
+            elif self.civil_equivalent == u'воздвигнути':
+                forms = tuple(self.base_vars)
+                sg1_segs = [
+                    (h(ucs_word), STAR) if ts.has_no_accent(word)
+                    else (h(ucs_word),)
+                    for word, ucs_word in self.several_sg1]
+                sg1_clss = [
+                    ('CSLSegment', STAR_CLS) if ts.has_no_accent(word)
+                    else ('CSLSegment',)
+                    for word, ucs_word in self.several_sg1]
+                sg2_segs = [
+                    (h(ucs_word), STAR) if ts.has_no_accent(word)
+                    else (h(ucs_word),)
+                    for word, ucs_word in self.several_sg2]
+                sg2_clss = [
+                    ('CSLSegment', STAR_CLS) if ts.has_no_accent(word)
+                    else ('CSLSegment',)
+                    for word, ucs_word in self.several_sg2]
+                segs = (forms[0].idem_ucs, u',', ts.SPACE)
+                clss = ('Headword', 'Text', None)
+                segs += sg1_segs[0]
+                clss += sg1_clss[0]
+                segs += (ts.SPACE, u'и', ts.SPACE)
+                clss += (None, 'Conj', None)
+                segs += sg1_segs[1]
+                clss += sg1_clss[1]
+                segs += (u',', ts.SPACE)
+                clss += ('Text', None)
+                segs += sg2_segs[0]
+                clss += sg2_clss[0]
+                segs += (ts.SPACE, u'и', ts.SPACE)
+                clss += (None, 'Conj', None)
+                segs += sg2_segs[1]
+                clss += sg2_clss[1]
+
+                segs += (ts.SPACE, u'и', ts.SPACE)
+                clss += (None, 'Conj', None)
+                segs += (h(forms[1].idem_ucs), u',', ts.SPACE)
+                clss += ('SubHeadword', 'Text', None)
+                segs += sg1_segs[2]
+                clss += sg1_clss[2]
+                segs += (u',', ts.SPACE)
+                clss += ('Text', None)
+                segs += sg2_segs[2]
+                clss += sg2_clss[2]
+                segs += (ts.SPACE, u'перех.', ts.SPACE)
+                clss += (None, 'Em', None)
+
                 tags = []
                 for seg, cls in zip(segs, clss):
                     tag = {'text': seg}
