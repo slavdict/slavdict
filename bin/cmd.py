@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import cmd
+import math
 import os
 import re
 import subprocess
@@ -28,6 +29,9 @@ SHOW_CURSOR = CSI + '?25h'
 ERASE_LINE = CSI + '2K'
 ERASE_LINEEND = CSI + '0K'
 MOVE_CURSOR_UP = CSI + '%iA'  # шаблон для подстановки числа шагов
+SAVE_CURSOR_POSITION = CSI + 's'
+RESTORE_CURSOR_POSITION = CSI + 'u'
+
 RESET_FORMAT = CSI + '0m'
 BOLD_BLACK = CSI + '1;30m'
 BOLD_CYAN = CSI + '1;36m'
@@ -97,12 +101,13 @@ class DataChangeShell(cmd.Cmd):
                 self._do_find2(arg)
             else:
                 self._do_find(arg)
-            print u'\n   /%s/  %s %s\n' % (
+            print u'\n   /%s/  %s %s%s\n' % (
                     BOLD_CYAN + self.pattern.pattern + RESET_FORMAT,
                     BOLD_YELLOW + str(
                         sum(sum(v.values()) for v in self.tcount.values())
                     ) + RESET_FORMAT,
                     repr(self.tcount) if self.verbose else '',
+                    ERASE_LINEEND,
                 )
         except (KeyboardInterrupt, Exception):
             sys.stdout.write(SHOW_CURSOR)
@@ -124,13 +129,16 @@ class DataChangeShell(cmd.Cmd):
                 items = model.objects.all()
                 items_n = model.objects.count()
                 count = 0
-                print u'\n%s.%s' % (
-                        BOLD_YELLOW + model.__name__,
-                        attrname + RESET_FORMAT)
+                note = u'\n%s.%s: ' % (model.__name__, attrname)
+                sys.stdout.write(note.encode('utf-8') +
+                        SAVE_CURSOR_POSITION + ERASE_LINEEND)
                 for i, item in enumerate(items):
-                    note = u'Поиск %s%%, найдено результатов: %s\r' % (
-                        int(float(i) / items_n * 100),
-                        count
+                    note = u'%s, found: %s%s' % (
+                        BOLD_YELLOW + str(
+                            math.ceil(float(i + 1) / items_n * 100)
+                        ) + '%' + RESET_FORMAT,
+                        BOLD_GREEN + str(count) + RESET_FORMAT,
+                        ERASE_LINEEND + RESTORE_CURSOR_POSITION,
                     )
                     sys.stdout.write(note.encode('utf-8'))
                     if self.pattern.search(getattr(item, attrname)):
@@ -151,18 +159,17 @@ class DataChangeShell(cmd.Cmd):
                 self.found_items[storage_key] = list(
                         sorted(self.found_items[storage_key], key=sort_key))
                 self.tcount[model.__name__][attrname] = count
-                sys.stdout.write(ERASE_LINE)
-                sys.stdout.write(MOVE_CURSOR_UP % 1)
-                sys.stdout.write(ERASE_LINE)
-                sys.stdout.write(MOVE_CURSOR_UP % 1)
+                sys.stdout.write(MOVE_CURSOR_UP % 1 + '\r')
+        sys.stdout.write(ERASE_LINE)
         sys.stdout.write(SHOW_CURSOR)
         self._do_find2(arg)
 
     def _do_find2(self, arg):
         for (model, attrname), items in self.found_items.items():
-            print u'\n%s.%s' % (
-                    BOLD_YELLOW + model.__name__,
-                    attrname + RESET_FORMAT)
+            if items:
+                print u'\n%s.%s' % (
+                        BOLD_YELLOW + model.__name__,
+                        attrname + RESET_FORMAT + ERASE_LINEEND)
             for item, host_info, _ in items:
                 txt = getattr(item, attrname)
                 host_info = BOLD_BLACK + host_info + RESET_FORMAT
@@ -178,9 +185,10 @@ class DataChangeShell(cmd.Cmd):
             print u'Установите шаблон замены'
             return
         for (model, attrname), items in self.found_items.items():
-            print u'\n%s.%s' % (
-                    BOLD_YELLOW + model.__name__,
-                    attrname + RESET_FORMAT)
+            if items:
+                print u'\n%s.%s' % (
+                        BOLD_YELLOW + model.__name__,
+                        attrname + RESET_FORMAT + ERASE_LINEEND)
             for item, host_info, _ in items:
                 initial = getattr(item, attrname)
                 if self.pattern.search(initial):
@@ -218,13 +226,14 @@ class DataChangeShell(cmd.Cmd):
                                 RED + self.replacement + RESET_FORMAT,
                                 initial),
                         )
-        print (u'  ? %s --> %s ?   %s %s\n' % (
+        print (u'  ? %s --> %s ?   %s %s%s\n' % (
             BOLD_CYAN + self.pattern.pattern + RESET_FORMAT,
             BOLD_RED + self.replacement + RESET_FORMAT,
             BOLD_YELLOW + str(
                 sum(sum(v.values()) for v in self.tcount.values())
             ) + RESET_FORMAT,
             repr(self.tcount) if self.verbose else '',
+            ERASE_LINEEND,
         ))
 
     def do_replace(self, arg):
@@ -242,9 +251,10 @@ class DataChangeShell(cmd.Cmd):
             print u'Установите шаблон замены'
             return
         for (model, attrname), items in self.found_items.items():
-            print u'\n%s.%s' % (
-                    BOLD_YELLOW + model.__name__,
-                    attrname + RESET_FORMAT)
+            if items:
+                print u'\n%s.%s' % (
+                        BOLD_YELLOW + model.__name__,
+                        attrname + RESET_FORMAT + ERASE_LINEEND)
             for item, host_info, _ in items:
                 initial = getattr(item, attrname)
                 if self.pattern.search(initial):
