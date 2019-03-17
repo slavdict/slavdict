@@ -526,6 +526,12 @@ class Entry(models.Model, JSONSerializable):
     def sg2_ucs_wax(self):
         return ucs_affix_or_word(self.sg2)
 
+    @property
+    def several_sg2(self):
+        RE_COMMA = ur'[,\s]+'
+        words = re.split(RE_COMMA, self.sg2)
+        return [(word, ucs_convert(word)) for word in words]
+
     participle_type = CharField(u'тип причастия', max_length=1, blank=True,
                                 choices=PARTICIPLE_TYPE_CHOICES, default='')
 
@@ -805,6 +811,74 @@ class Entry(models.Model, JSONSerializable):
                     {'text': ts.SPACE},
                 )
                 return tags
+
+            elif self.civil_equivalent in (
+                    u'воскласти', u'вскласти',
+                    u'восприимати', u'воспринимати',
+                    u'воспящати', u'вспящати'):
+                base_vars = tuple(self.base_vars)
+                tags = (
+                    {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
+                    {'text': u',', 'class': 'Text'},
+                    {'text': ts.SPACE},
+                    {'text': hyphenate_ucs8(ucs_convert(
+                        self.several_sg1[0][0])), 'class': 'CSLSegment'},
+                )
+                if ts.has_no_accent(self.several_sg1[0][0]):
+                    tags += (
+                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                    )
+                tags += (
+                    {'text': u',', 'class': 'Text'},
+                    {'text': ts.SPACE},
+                    {'text': hyphenate_ucs8(ucs_convert(
+                        self.several_sg2[0][0])), 'class': 'CSLSegment'},
+                )
+                if ts.has_no_accent(self.several_sg2[0][0]):
+                    tags += (
+                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                    )
+                tags += (
+                    {'text': ts.SPACE},
+                    {'text': u'и', 'class': 'Em'},
+                    {'text': ts.SPACE},
+                    {'text': hyphenate_ucs8(base_vars[1].idem_ucs),
+                        'class': 'SubHeadword'},
+                    {'text': u',', 'class': 'Text'},
+                    {'text': ts.SPACE},
+                    {'text': hyphenate_ucs8(ucs_convert(
+                        self.several_sg1[1][0])), 'class': 'CSLSegment'},
+                )
+                if ts.has_no_accent(self.several_sg1[1][0]):
+                    tags += (
+                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                    )
+                tags += (
+                    {'text': u',', 'class': 'Text'},
+                    {'text': ts.SPACE},
+                    {'text': hyphenate_ucs8(ucs_convert(
+                        self.several_sg2[1][0])), 'class': 'CSLSegment'},
+                )
+                if ts.has_no_accent(self.several_sg2[1][0]):
+                    tags += (
+                        {'text': u'\u27e1', 'class': 'MeaningfulNoAccent'},
+                    )
+                tags += (
+                    {'text': ts.SPACE},
+                    {'text': u'перех.', 'class': 'Em'},
+                    {'text': ts.SPACE},
+                )
+                if self.civil_equivalent in (
+                        u'восприимати', u'воспринимати',
+                        u'воспящати', u'вспящати'):
+                    tags += (
+                        {'text': u'и', 'class': 'Em'},
+                        {'text': ts.SPACE},
+                        {'text': u'неперех.', 'class': 'Em'},
+                        {'text': ts.SPACE},
+                    )
+                return tags
+
 
     def examples_groups_for_hellinists(self):
         if hasattr(self, '_exgroups'):
