@@ -123,17 +123,40 @@
         {% endif %}
 
         {% if entry.genitive %}
-            {% for genitive, genitive_ucs in entry.genitives %}
-                {% if not loop.first %}
-                    {{ backspace }}{{ space }}
-                    <x aid:cstyle="Conj">и</x>{{ space }}
-                {% endif %}
-                <x>{{ genitive_ucs|ind_cslav_words("CSLSegment") }}</x>
-                {% if genitive|has_no_accent %}
-                    {% include 'indesign/noaccent.xml' %}
-                {% endif %}
-                {{ space }}
-            {% endfor %}
+            {% if '(' not in entry.genitive %}
+                {% for genitive, genitive_ucs in entry.genitives %}
+                    {% if not loop.first %}
+                        {{ backspace }}{{ space }}
+                        <x aid:cstyle="Conj">и</x>{{ space }}
+                    {% endif %}
+                    <x>{{ genitive_ucs|ind_cslav_words("CSLSegment") }}</x>
+                    {% if genitive|has_no_accent %}
+                        {% include 'indesign/noaccent.xml' %}
+                    {% endif %}
+                    {{ space }}
+                {% endfor %}
+            {% else %}
+                {% for genitive, genitive_ucs in entry.genitives %}
+                    {% if loop.index == 2 %}
+                        {{ backspace }}{{ space }}
+                        <x aid:cstyle="Text">(</x>
+                    {% endif %}
+                    {% if loop.index > 2 %}
+                        {{ backspace }}
+                        <x aid:cstyle="Text">,</x>{{ space }}
+                    {% endif %}
+                    <x>{{ genitive_ucs |
+                             ind_cslav_words("CSLSegment") }}</x>
+                    {% if genitive|has_no_accent %}
+                        {% include 'indesign/noaccent.html' %}
+                    {% endif %}
+                    {% if loop.last %}
+                        {{ backspace }}
+                        <x aid:cstyle="Text">)</x>
+                    {% endif %}
+                    {{ space }}
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         {% if entry.sg1 %}

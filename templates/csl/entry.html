@@ -129,18 +129,41 @@
         {% endif %}
 
         {% if entry.genitive %}
-            {% for genitive, genitive_ucs in entry.genitives %}
-                {% if not loop.first %}
-                    {{ backspace }}{{ space }}
-                    <span class="Conj">и</span>{{ space }}
-                {% endif %}
-                <span>{{ genitive_ucs |
-                         web_cslav_words("CSLSegment") }}</span>
-                {% if genitive|has_no_accent %}
-                    {% include 'csl/noaccent.html' %}
-                {% endif %}
-                {{ space }}
-            {% endfor %}
+            {% if '(' not in entry.genitive %}
+                {% for genitive, genitive_ucs in entry.genitives %}
+                    {% if not loop.first %}
+                        {{ backspace }}{{ space }}
+                        <span class="Conj">и</span>{{ space }}
+                    {% endif %}
+                    <span>{{ genitive_ucs |
+                             web_cslav_words("CSLSegment") }}</span>
+                    {% if genitive|has_no_accent %}
+                        {% include 'csl/noaccent.html' %}
+                    {% endif %}
+                    {{ space }}
+                {% endfor %}
+            {% else %}
+                {% for genitive, genitive_ucs in entry.genitives %}
+                    {% if loop.index == 2 %}
+                        {{ backspace }}{{ space }}
+                        <span class="Text">(</span>
+                    {% endif %}
+                    {% if loop.index > 2 %}
+                        {{ backspace }}
+                        <span class="Text">,</span>{{ space }}
+                    {% endif %}
+                    <span>{{ genitive_ucs |
+                             web_cslav_words("CSLSegment") }}</span>
+                    {% if genitive|has_no_accent %}
+                        {% include 'csl/noaccent.html' %}
+                    {% endif %}
+                    {% if loop.last %}
+                        {{ backspace }}
+                        <span class="Text">)</span>
+                    {% endif %}
+                    {{ space }}
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         {% if entry.sg1 %}

@@ -92,6 +92,11 @@ def ucs_affix_or_word(atr):
     else:
         return atr
 
+def several_wordforms(text):
+    RE_COMMA = ur'[,\s\(\)]+'
+    words = re.split(RE_COMMA, text)
+    return [(word, ucs_convert(word)) for word in words if word]
+
 def levenshtein_distance(a, b):
     n, m = len(a), len(b)
     if n > m:

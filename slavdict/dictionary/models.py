@@ -24,6 +24,7 @@ from django.utils.safestring import mark_safe
 from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import collogroup_sort_key
+from slavdict.dictionary.utils import several_wordforms
 from slavdict.dictionary.utils import ucs_affix_or_word
 from slavdict.dictionary.utils import ucs_convert
 from slavdict.dictionary.utils import ucs_convert_affix
@@ -429,9 +430,7 @@ class Entry(models.Model, JSONSerializable):
 
     @property
     def genitives(self):
-        RE_COMMA = ur'[,\s]+'
-        words = re.split(RE_COMMA, self.genitive)
-        return [(word, ucs_convert(word)) for word in words]
+        return several_wordforms(self.genitive)
 
     onym = CharField(u'тип имени собственного', max_length=1, blank=True,
                      choices=ONYM_CHOICES, default='')
@@ -451,9 +450,7 @@ class Entry(models.Model, JSONSerializable):
 
     @property
     def ethnonyms(self):
-        RE_COMMA = ur'[,\s]+'
-        words = re.split(RE_COMMA, self.nom_sg)
-        return [(word, ucs_convert(word)) for word in words]
+        return several_wordforms(self.nom_sg)
 
     # только для прилагательных
     short_form = CharField(u'краткая форма', help_text=u'''Если Вы указываете
@@ -466,9 +463,7 @@ class Entry(models.Model, JSONSerializable):
 
     @property
     def short_forms(self):
-        RE_COMMA = ur'[,\s]+'
-        words = re.split(RE_COMMA, self.short_form)
-        return [(word, ucs_convert(word)) for word in words]
+        return several_wordforms(self.short_form)
 
     possessive = BooleanField(u'притяжательное', default=False,
                               help_text=u'Притяжательное прилагательное.')
@@ -514,9 +509,7 @@ class Entry(models.Model, JSONSerializable):
 
     @property
     def several_sg1(self):
-        RE_COMMA = ur'[,\s]+'
-        words = re.split(RE_COMMA, self.sg1)
-        return [(word, ucs_convert(word)) for word in words]
+        return several_wordforms(self.sg1)
 
     sg2 = CharField(u'форма 2 ед.', max_length=50, blank=True,
                     help_text=u'''Целая словоформа или окончание. В случае
@@ -528,9 +521,7 @@ class Entry(models.Model, JSONSerializable):
 
     @property
     def several_sg2(self):
-        RE_COMMA = ur'[,\s]+'
-        words = re.split(RE_COMMA, self.sg2)
-        return [(word, ucs_convert(word)) for word in words]
+        return several_wordforms(self.sg2)
 
     participle_type = CharField(u'тип причастия', max_length=1, blank=True,
                                 choices=PARTICIPLE_TYPE_CHOICES, default='')
@@ -779,7 +770,7 @@ class Entry(models.Model, JSONSerializable):
                     {'text': ts.SPACE},
                     {'text': self.genitive_ucs_wax[1], 'class': 'CSLSegment'},
                     {'text': ts.SPACE},
-                    {'text': u'и', 'class': 'Em'},
+                    {'text': u'и', 'class': 'Conj'},
                     {'text': ts.SPACE},
                     {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
                     {'text': ts.SPACE},
@@ -803,7 +794,7 @@ class Entry(models.Model, JSONSerializable):
                     {'text': self.short_form_ucs_wax[1],
                         'class': 'CSLSegment'},
                     {'text': ts.SPACE},
-                    {'text': u'и', 'class': 'Em'},
+                    {'text': u'и', 'class': 'Conj'},
                     {'text': ts.SPACE},
                     {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
                     {'text': ts.SPACE},
@@ -840,7 +831,7 @@ class Entry(models.Model, JSONSerializable):
                     )
                 tags += (
                     {'text': ts.SPACE},
-                    {'text': u'и', 'class': 'Em'},
+                    {'text': u'и', 'class': 'Conj'},
                     {'text': ts.SPACE},
                     {'text': hyphenate_ucs8(base_vars[1].idem_ucs),
                         'class': 'SubHeadword'},
