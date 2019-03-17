@@ -26,9 +26,9 @@ from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import collogroup_sort_key
 from slavdict.dictionary.utils import several_wordforms
 from slavdict.dictionary.utils import ucs_affix_or_word
-from slavdict.dictionary.utils import ucs_convert
+from slavdict.dictionary.utils import ucs_convert as ucs8
 from slavdict.dictionary.utils import ucs_convert_affix
-from slavdict.jinja_extensions.hyphenation import hyphenate_ucs8
+from slavdict.jinja_extensions.hyphenation import hyphenate_ucs8 as h
 from slavdict.jinja_extensions import trim_spaces as ts
 
 
@@ -753,13 +753,13 @@ class Entry(models.Model, JSONSerializable):
                 elif SC10 == sc:
                     grammatical_marks = [M_GENDER, N_GENDER]
 
-                value = [(wordform, ucs_convert(wordform), grammatical_marks[i])
+                value = [(wordform, ucs8(wordform), grammatical_marks[i])
                          for i, wordform in enumerate(wordforms)]
                 return value
         elif case == 'be' and self.civil_equivalent == u'быти':
-            return [ucs_convert(x) for x in (u"нѣ'смь", u"нѣ'си")]
+            return [ucs8(x) for x in (u"нѣ'смь", u"нѣ'си")]
         elif case == 'bigger' and self.civil_equivalent == u'больший':
-            return ucs_convert(u"вели'кій")
+            return ucs8(u"вели'кій")
 
         elif case == 'volume2':
             if u'вриена' == self.civil_equivalent:
@@ -812,7 +812,7 @@ class Entry(models.Model, JSONSerializable):
                     {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
                     {'text': u',', 'class': 'Text'},
                     {'text': ts.SPACE},
-                    {'text': hyphenate_ucs8(ucs_convert(
+                    {'text': h(ucs8(
                         self.several_sg1[0][0])), 'class': 'CSLSegment'},
                 )
                 if ts.has_no_accent(self.several_sg1[0][0]):
@@ -822,7 +822,7 @@ class Entry(models.Model, JSONSerializable):
                 tags += (
                     {'text': u',', 'class': 'Text'},
                     {'text': ts.SPACE},
-                    {'text': hyphenate_ucs8(ucs_convert(
+                    {'text': h(ucs8(
                         self.several_sg2[0][0])), 'class': 'CSLSegment'},
                 )
                 if ts.has_no_accent(self.several_sg2[0][0]):
@@ -833,11 +833,11 @@ class Entry(models.Model, JSONSerializable):
                     {'text': ts.SPACE},
                     {'text': u'и', 'class': 'Conj'},
                     {'text': ts.SPACE},
-                    {'text': hyphenate_ucs8(base_vars[1].idem_ucs),
+                    {'text': h(base_vars[1].idem_ucs),
                         'class': 'SubHeadword'},
                     {'text': u',', 'class': 'Text'},
                     {'text': ts.SPACE},
-                    {'text': hyphenate_ucs8(ucs_convert(
+                    {'text': h(ucs8(
                         self.several_sg1[1][0])), 'class': 'CSLSegment'},
                 )
                 if ts.has_no_accent(self.several_sg1[1][0]):
@@ -847,7 +847,7 @@ class Entry(models.Model, JSONSerializable):
                 tags += (
                     {'text': u',', 'class': 'Text'},
                     {'text': ts.SPACE},
-                    {'text': hyphenate_ucs8(ucs_convert(
+                    {'text': h(ucs8(
                         self.several_sg2[1][0])), 'class': 'CSLSegment'},
                 )
                 if ts.has_no_accent(self.several_sg2[1][0]):
@@ -876,7 +876,7 @@ class Entry(models.Model, JSONSerializable):
                     {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
                     {'text': u',', 'class': 'Text'},
                     {'text': ts.SPACE},
-                    {'text': hyphenate_ucs8(ucs_convert(
+                    {'text': h(ucs8(
                         self.several_sg1[0][0])), 'class': 'CSLSegment'},
                 )
                 if ts.has_no_accent(self.several_sg1[0][0]):
@@ -886,7 +886,7 @@ class Entry(models.Model, JSONSerializable):
                 tags += (
                     {'text': ts.SPACE},
                     {'text': u'(', 'class': 'Text'},
-                    {'text': hyphenate_ucs8(ucs_convert(
+                    {'text': h(ucs8(
                         self.several_sg1[1][0])), 'class': 'CSLSegment'},
                 )
                 if ts.has_no_accent(self.several_sg1[1][0]):
@@ -897,7 +897,7 @@ class Entry(models.Model, JSONSerializable):
                 tags += (
                     {'text': u'),', 'class': 'Text'},
                     {'text': ts.SPACE},
-                    {'text': hyphenate_ucs8(ucs_convert(
+                    {'text': h(ucs8(
                         self.several_sg2[0][0])), 'class': 'CSLSegment'},
                 )
                 if ts.has_no_accent(self.several_sg2[0][0]):
@@ -907,7 +907,7 @@ class Entry(models.Model, JSONSerializable):
                 tags += (
                     {'text': ts.SPACE},
                     {'text': u'(', 'class': 'Text'},
-                    {'text': hyphenate_ucs8(ucs_convert(
+                    {'text': h(ucs8(
                         self.several_sg2[1][0])), 'class': 'CSLSegment'},
                 )
                 if ts.has_no_accent(self.several_sg2[1][0]):
@@ -932,6 +932,51 @@ class Entry(models.Model, JSONSerializable):
                         {'text': u'неперех.', 'class': 'Em'},
                         {'text': ts.SPACE},
                     )
+                return tags
+
+            elif self.civil_equivalent == u'ведети':
+                segs = (ucs8(u"вѣ'дѣти"), u',', ts.SPACE)
+                clss = ('Headword', 'Text', None)
+                segs += (ucs8(u"вѣ'мъ"), ts.SPACE, u'и', ts.SPACE)
+                clss += ('CSLSegment', None, 'Em', None)
+                segs += (ucs8(u"вѣ'дѣ"), ts.SPACE, u'Прол. (1)', u',', ts.SPACE)
+                clss += ('CSLSegment', None, 'Address', 'Text', None)
+                segs += (h(ucs8(u"вѣ'си")), u';', ts.SPACE)
+                clss += ('CSLSegment', 'Text', None)
+                segs += (u'аор.', ts.SPACE, u'1' + ts.NBSP + u'ед.', ts.SPACE)
+                clss += ('Em', None, 'Em', None)
+                segs += (h(ucs8(u"вѣ'дѣхъ")), ts.SPACE, u'и', ts.SPACE)
+                clss += ('CSLSegment', None, 'Conj', None)
+                segs += (h(ucs8(u"вѣ'дѧхъ")), u',', ts.SPACE)
+                clss += ('CSLSegment', 'Text', None)
+                segs += (u'1' + ts.NBSP + u'мн.', ts.SPACE)
+                clss += ('Em', None)
+                segs += (h(ucs8(u"вѣ'дѣхомъ")), ts.SPACE, u'и', ts.SPACE)
+                clss += ('CSLSegment', None, 'Conj', None)
+                segs += (h(ucs8(u"вѣ'дѧхомъ")), u';', ts.SPACE)
+                clss += ('CSLSegment', 'Text', None)
+                segs += (u'прич.', ts.SPACE, h(ucs8(u"вѣ'дый")), ts.SPACE)
+                clss += ('Em', None, 'CSLSegment', None)
+                segs += (u'и', ts.SPACE, h(ucs8(u"вѣ'дѧй")), u',', ts.SPACE)
+                clss += ('Conj', None, 'CSLSegment', 'Text', None)
+                segs += (h(ucs8(u"вѣ'дꙋщiй")), ts.SPACE, u'и', ts.SPACE)
+                clss += ('CSLSegment', None, 'Conj', None)
+                segs += (h(ucs8(u"вѣ'дѧщiй")), u';', ts.SPACE)
+                clss += ('CSLSegment', 'Text', None)
+                segs += (u'повел.', ts.SPACE, u'2' + ts.NBSP + u'мн.', ts.SPACE)
+                clss += ('Em', None, 'Em', None)
+                segs += (h(ucs8(u"вѣ'дите")), ts.SPACE, u'и', ts.SPACE)
+                clss += ('CSLSegment', None, 'Conj', None)
+                segs += (h(ucs8(u"вѣ'ждьте")), ts.SPACE, u'Библ. (1)')
+                clss += ('CSLSegment', None, 'Address')
+                segs += (ts.SPACE, u'перех. и неперех.', ts.SPACE)
+                clss += (None, 'Em', None)
+                tags = []
+                for seg, cls in zip(segs, clss):
+                    tag = {'text': seg}
+                    if cls:
+                        tag['class'] = cls
+                    tags.append(tag)
                 return tags
 
 
@@ -1294,7 +1339,7 @@ class MeaningContext(models.Model, JSONSerializable):
 
     @property
     def context_ucs(self):
-        return ucs_convert(self.context)
+        return ucs8(self.context)
 
     right_text = CharField(u'дополнительный текст справа', max_length=50,
             help_text=u'''Здесь указывается текст на <span class="green"
@@ -1466,14 +1511,14 @@ class Meaning(models.Model, JSONSerializable):
             if not elem:
                 continue
             if not (i % 2):
-                elem = ucs_convert(elem)
+                elem = ucs8(elem)
                 lst[i] = elem
         return u'##'.join(lst)
 
     @property
     def substantivus_forms(self):
         RE_COMMA = ur',\s*'
-        return [ucs_convert(x)
+        return [ucs8(x)
                 for x in re.split(RE_COMMA, self.substantivus_csl) if x]
 
     # только для глаголов
@@ -1725,7 +1770,7 @@ class Example(models.Model, JSONSerializable):
 
     @property
     def example_ucs(self):
-        return ucs_convert(self.example)
+        return ucs8(self.example)
 
     context = TextField(u'широкий контекст',
                   help_text=u'Более широкий контекст для примера', blank=True)
@@ -1733,9 +1778,9 @@ class Example(models.Model, JSONSerializable):
     @property
     def context_ucs(self):
         c = self.context
-        e = ucs_convert(self.example)
+        e = ucs8(self.example)
         if c:
-            c = ucs_convert(c)
+            c = ucs8(c)
             x, y, z = c.partition(e)
             if y:
                 # Разбиение дало положительный результат,
@@ -2268,7 +2313,7 @@ class Collocation(models.Model, JSONSerializable):
             if not elem:
                 continue
             if not (i % 2):
-                elem = ucs_convert(elem)
+                elem = ucs8(elem)
                 lst[i] = elem
         return u'##'.join(lst)
 
@@ -2515,7 +2560,7 @@ class OrthographicVariant(models.Model, JSONSerializable):
                     агг~лъ/аггелъ.''', default=u'')
     @property
     def idem_ucs(self):
-        return ucs_convert(self.idem)
+        return ucs8(self.idem)
 
     @property
     def idem_letter_ucs(self):
@@ -2594,7 +2639,7 @@ class Participle(models.Model, JSONSerializable):
 
     @property
     def idem_ucs(self):
-        return ucs_convert(self.idem)
+        return ucs8(self.idem)
 
     order = SmallIntegerField(u'порядок следования', blank=True, default=345)
     mtime = DateTimeField(editable=False, auto_now=True)
