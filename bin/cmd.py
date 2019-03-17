@@ -50,7 +50,7 @@ def sort_by_value(x):
 
 
 class DataChangeShell(cmd.Cmd):
-    intro = 'Slavdict shell for data change :)\n'
+    intro = 'Slavdict shell for data change :)'
     prompt = '> '
 
     def __init__(self, model_attrs=[(Example, ['address_text'])],
@@ -59,8 +59,10 @@ class DataChangeShell(cmd.Cmd):
         self.volumes = volumes
         self.state = 'find'
         self.model_attrs = model_attrs
-        self.intro += '\n'.join('%s %s' % (model.__name__, attrs)
-                                for model, attrs in self.model_attrs)
+        self.intro = ('\n' + BOLD_YELLOW + self.intro + '\n\n' + GREEN +
+            '\n'.join('%s %s' % (model.__name__, attrs)
+                      for model, attrs in self.model_attrs) +
+            RESET_FORMAT + '\n')
         self.pattern = re.compile('', re.UNICODE)
         self.replacement = None
         self.verbose = False
