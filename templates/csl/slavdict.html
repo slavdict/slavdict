@@ -22,10 +22,10 @@
                 {% elif reference[:5] == "ґгкЂр" and ankira %}
                     {# pass #}
                 {% else %}
-                    {% include 'web/reference.html' with context %}
+                    {% include 'csl/reference.html' with context %}
                 {% endif %}
             {% else %}
-                {% include 'web/entry.html' with context %}
+                {% include 'csl/entry.html' with context %}
             {% endif %}
             {{ backspace }}{{ newline }}
         {% endfor %}

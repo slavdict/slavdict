@@ -1,6 +1,6 @@
 {% macro meaning(m, peer_meanings_loop, parent_meanings_loop,
                     collogroups_loop, child_meanings) %}
-{% from 'web/example.html' import example with context %}
+{% from 'csl/example.html' import example with context %}
 
 {% for orthvar_ucs in m.orthvars %}
     {% if not loop.first %}

@@ -1,4 +1,4 @@
-{% from 'web/collogroup.html' import collogroup with context %}
+{% from 'csl/collogroup.html' import collogroup with context %}
 
 {% if m.collogroups_non_phraseological %}
     {% if entry.is_part_of_speech('conjunction', 'letter') %}
@@ -9,7 +9,7 @@
                 {{ backspace }}{{ space }}
             {% endif %}
         {% else %}
-            {% include 'web/separator.html' %}
+            {% include 'csl/separator.html' %}
         {% endif %}
     {% else %}
         {% if m.examples or m.child_meanings %}
@@ -34,7 +34,7 @@
                 {{ backspace }}{{ space }}
             {% endif %}
         {% else %}
-            {% include 'web/separator.html' %}
+            {% include 'csl/separator.html' %}
         {% endif %}
     {% else %}
         {% if m.examples or m.child_meanings or m.collogroups_non_phraseological %}

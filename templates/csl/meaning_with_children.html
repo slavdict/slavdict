@@ -1,5 +1,5 @@
-{% from 'web/meaning_without_children.html' import meaning with context %}
-{% from 'web/valency.html' import valency with context %}
+{% from 'csl/meaning_without_children.html' import meaning with context %}
+{% from 'csl/valency.html' import valency with context %}
 {% set child_meanings = m.child_meanings %}
 {% set parent_meanings_loop = loop %}
 
@@ -15,13 +15,13 @@
 {% for m in child_meanings %}
 
     {% if m.metaphorical %}
-        {% include 'web/allusion.html' %}
+        {% include 'csl/allusion.html' %}
     {% elif loop.first and m.is_valency and not m.parent_meaning.examples %}
         {{ backspace }}<span class="Text">:</span>{{ space }}
     {% elif loop.first and not m.metaphorical and not m.parent_meaning.examples %}
         {{ backspace }}<span class="Text">;</span>{{ space }}
     {% elif not m.metaphorical %}
-        {% include 'web/separator.html' %}
+        {% include 'csl/separator.html' %}
     {% endif %}
 
     {% if m.is_valency %}

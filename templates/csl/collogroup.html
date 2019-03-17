@@ -1,9 +1,9 @@
 {% macro collogroup(cg, collogroups_loop) %}
-{% from 'web/meaning_without_children.html' import meaning with context %}
+{% from 'csl/meaning_without_children.html' import meaning with context %}
 
 
 {% if not collogroups_loop.first %}
-    {% include 'web/separator.html' %}
+    {% include 'csl/separator.html' %}
 {% endif %}
 
 {% for c in cg.collocations %}
@@ -28,13 +28,13 @@
             ({{ cgmnumber }})
         </span>{{ nbsp }}
     {% endif %}
-    {% include 'web/meaning_with_children.html' with context %}
+    {% include 'csl/meaning_with_children.html' with context %}
 {% endfor %}
 
 
 {% for m in cg.metaph_meanings %}
 
-    {% include 'web/allusion.html' %}
+    {% include 'csl/allusion.html' %}
     {{ meaning(m, peer_meanings_loop=loop,
                   parent_meanings_loop=none,
                   collogroups_loop=collogroups_loop,

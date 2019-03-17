@@ -1,7 +1,7 @@
 {% trim %}
 
-{% from 'web/etymology.html' import etymology with context %}
-{% from 'web/meaning_without_children.html' import meaning with context %}
+{% from 'csl/etymology.html' import etymology with context %}
+{% from 'csl/meaning_without_children.html' import meaning with context %}
 
 {# см. slavdict.dictionary.models.MEANING_SPECIAL_CASES_CHOICES #}
 {% set MSC1 = 'a' %}{# канонич. #}
@@ -92,7 +92,7 @@
                 <span>{{ wordform_ucs |
                             web_cslav_words("CSLSegment") }}</span>
                 {% if wordform|has_no_accent %}
-                    {% include 'web/noaccent.html' %}
+                    {% include 'csl/noaccent.html' %}
                 {% endif %}
                 {{ space }}
             {% endif %}
@@ -122,7 +122,7 @@
                 <span>{{ short_form_ucs |
                          web_cslav_words("CSLSegment") }}</span>
                 {% if short_form|has_no_accent %}
-                    {% include 'web/noaccent.html' %}
+                    {% include 'csl/noaccent.html' %}
                 {% endif %}
                 {{ space }}
             {% endfor %}
@@ -137,7 +137,7 @@
                 <span>{{ genitive_ucs |
                          web_cslav_words("CSLSegment") }}</span>
                 {% if genitive|has_no_accent %}
-                    {% include 'web/noaccent.html' %}
+                    {% include 'csl/noaccent.html' %}
                 {% endif %}
                 {{ space }}
             {% endfor %}
@@ -152,7 +152,7 @@
                 <span>{{ sg1_ucs |
                          web_cslav_words("CSLSegment") }}</span>
                 {% if sg1|has_no_accent %}
-                    {% include 'web/noaccent.html' %}
+                    {% include 'csl/noaccent.html' %}
                 {% endif %}
                 {{ space }}
             {% endfor %}
@@ -169,7 +169,7 @@
             <span>{{ entry.sg2_ucs_wax.1 |
                          web_cslav_words("CSLSegment") }}</span>
             {% if entry.sg2|has_no_accent %}
-                {% include 'web/noaccent.html' %}
+                {% include 'csl/noaccent.html' %}
             {% endif %}
             {{ space }}
         {% endif %}
@@ -298,7 +298,7 @@
             <span>{{ ethnonym_ucs |
                         web_cslav_words("CSLSegment") }}</span>
             {% if ethnonym|has_no_accent %}
-                {% include 'web/noaccent.html' %}
+                {% include 'csl/noaccent.html' %}
             {% endif %}
         {% endfor %}
         {{ space }}<span class="Em">мн.</span>{{ space }}
@@ -393,9 +393,9 @@
             {% endif %}
 
             {% set is_collogroups = false %}
-            {% include 'web/meaning_with_children.html' with context %}
+            {% include 'csl/meaning_with_children.html' with context %}
             {% set is_collogroups = true %}
-            {% include 'web/meaning_collogroups.html' with context %}
+            {% include 'csl/meaning_collogroups.html' with context %}
         {% endfor %}
     {% endfor %}
 
