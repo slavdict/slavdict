@@ -167,15 +167,18 @@
         {% endif %}
 
         {% if entry.sg2 %}
-            {% if entry.sg2_ucs_wax.0 %}
-                <span class="Text">{{ nbhyphen }}</span>
-            {% endif %}
-            <span>{{ entry.sg2_ucs_wax.1 |
+            {% for sg2, sg2_ucs in entry.several_sg2 %}
+                {% if not loop.first %}
+                    {{ backspace }}{{ space }}
+                    <span class="Conj">и</span>{{ space }}
+                {% endif %}
+                <span>{{ sg2_ucs |
                          web_cslav_words("CSLSegment") }}</span>
-            {% if entry.sg2|has_no_accent %}
-                {% include 'web/noaccent.html' %}
-            {% endif %}
-            {{ space }}
+                {% if sg2|has_no_accent %}
+                    {% include 'web/noaccent.html' %}
+                {% endif %}
+                {{ space }}
+            {% endfor %}
         {% endif %}
 
         {% set be_negative_forms = entry.special_cases('be') %}
