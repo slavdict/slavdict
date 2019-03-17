@@ -192,11 +192,24 @@
         {% if entry.part_of_speech and not entry.meaning_groups.serveral_pos %}
             {% if not entry.is_part_of_speech("letter", "number", "verb") and
                   (not entry.is_part_of_speech("noun") or not entry.gender) %}
+
                 {{ backspace }}{{ space }}
                 <x aid:cstyle="Em">
                     {{ entry.get_part_of_speech_display() }}
                 </x>
                 {{ space }}
+
+                {% if entry.civil_equivalent == 'вы' %}
+                    <x aid:cstyle="Em">
+                    {% if entry.homonym_order == 1 %}
+                        дв.
+                    {% elif entry.homonym_order == 2 %}
+                        мн.
+                    {% endif %}
+                    </x>
+                    {{ space }}
+                {% endif %}
+
             {% endif %}
         {% endif %}
 
