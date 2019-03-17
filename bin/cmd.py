@@ -21,6 +21,7 @@ INDEXES = {1: u'¹', 2: u'²', 3: u'³'}
 TRY_OR_REPLACE_COMMAND = ('.', '/')
 CANCEL_COMMANDS = ('..', '//')
 EDIT_COMMANDS = (u'.edit', u'эээ')
+SORT_COMMANDS = (u'.sort',)
 VERBOSE_COMMANDS = (u'.verbose',)
 
 CSI = '\033['
@@ -40,6 +41,12 @@ BOLD_RED = CSI + '1;31m'
 BOLD_YELLOW = CSI + '1;33m'
 RED = CSI + '0;31m'
 GREEN = CSI + '0;32m'
+
+def sort_by_entry(x):
+    return x[1]
+
+def sort_by_value(x):
+    return x[2]
 
 
 class DataChangeShell(cmd.Cmd):
@@ -119,9 +126,9 @@ class DataChangeShell(cmd.Cmd):
     def _do_find(self, arg):
         sys.stdout.write(HIDE_CURSOR)
         if self.sort_entries:
-            sort_key = lambda x: x[1]  # sort by host_info
+            sort_key = sort_by_entry
         else:
-            sort_key = lambda x: x[2]  # sort by txt value
+            sort_key = sort_by_value
         for model, attrs in self.model_attrs:
             self.tcount[model.__name__] = {}
             for attrname in attrs:
@@ -135,7 +142,7 @@ class DataChangeShell(cmd.Cmd):
                 for i, item in enumerate(items):
                     note = u'%s, found: %s%s' % (
                         BOLD_YELLOW + str(
-                            math.ceil(float(i + 1) / items_n * 100)
+                            int(math.ceil(float(i + 1) / items_n * 100))
                         ) + '%' + RESET_FORMAT,
                         BOLD_GREEN + str(count) + RESET_FORMAT,
                         ERASE_LINEEND + RESTORE_CURSOR_POSITION,
@@ -370,6 +377,17 @@ class DataChangeShell(cmd.Cmd):
             self.onecmd('edit_replace')
         elif arg in VERBOSE_COMMANDS:
             self.verbose = not self.verbose
+            self.onecmd('')
+        elif arg in SORT_COMMANDS:
+            self.sort_entries = not self.sort_entries
+            if self.sort_entries:
+                print u'Сортировка по статьям'
+                sort_key = sort_by_entry
+            else:
+                print u'Сортировка по значению'
+                sort_key = sort_by_value
+            for key, value in self.found_items.items():
+                self.found_items[key] = list(sorted(value, key=sort_key))
             self.onecmd('')
         else:
             if self.state == 'find':
