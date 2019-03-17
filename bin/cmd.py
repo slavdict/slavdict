@@ -341,6 +341,7 @@ TEXT = u'''
     'sg2',
     #'additional_info',
     #'antconc_query',
+    #'word_forms_list',
 ]),
 (Etymology, [
     'text',
@@ -360,12 +361,20 @@ TEXT = u'''
 (Meaning, [
     'meaning',
     'gloss',
+    #'substantivus_csl',
     #'additional_info',
 ]),
 (Example, [
     'example',
     'address_text',
     'note',
+    #'additional_info',
+]),
+(Translation, [
+    'translation',
+    'additional_info',
+]),
+(CollocationGroup, [
     #'additional_info',
 ]),
 (Collocation, [
