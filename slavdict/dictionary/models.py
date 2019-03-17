@@ -784,6 +784,28 @@ class Entry(models.Model, JSONSerializable):
                 )
                 return tags
 
+            elif self.civil_equivalent in (u'ветреный', u'ветренный'):
+                base_vars = tuple(self.base_vars)
+                tags = (
+                    {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
+                    {'text': ts.SPACE},
+                    {'text': u'(', 'class': 'Text'},
+                    {'text': base_vars[0].childvars[0].idem_ucs,
+                        'class': 'CSLSegment'},
+                    {'text': u'),', 'class': 'Text'},
+                    {'text': ts.SPACE},
+                    {'text': self.short_form_ucs_wax[1],
+                        'class': 'CSLSegment'},
+                    {'text': ts.SPACE},
+                    {'text': u'и', 'class': 'Em'},
+                    {'text': ts.SPACE},
+                    {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
+                    {'text': ts.SPACE},
+                    {'text': u'прил.', 'class': 'Em'},
+                    {'text': ts.SPACE},
+                )
+                return tags
+
     def examples_groups_for_hellinists(self):
         if hasattr(self, '_exgroups'):
             return self._exgroups
