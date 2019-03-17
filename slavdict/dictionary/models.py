@@ -1037,6 +1037,47 @@ class Entry(models.Model, JSONSerializable):
                     tags.append(tag)
                 return tags
 
+            elif self.civil_equivalent in (u'владычний', u'владычный'):
+                forms = tuple(self.base_vars)
+                short_form_segs = [
+                    (h(ucs_word), STAR) if ts.has_no_accent(word)
+                    else (h(ucs_word),)
+                    for word, ucs_word in self.short_forms]
+                short_form_clss = [
+                    ('CSLSegment', STAR_CLS) if ts.has_no_accent(word)
+                    else ('CSLSegment',)
+                    for word, ucs_word in self.short_forms]
+                segs = (forms[0].idem_ucs, ts.SPACE, u'(')
+                clss = ('Headword', None, 'Text')
+                segs += (h(forms[0].childvars[0].idem_ucs), u',', ts.SPACE)
+                clss += ('CSLSegment', 'Text', None)
+                segs += (h(forms[0].idem_ucs), u'),', ts.SPACE)
+                clss += ('CSLSegment', 'Text', None)
+                segs += short_form_segs[0]
+                clss += short_form_clss[0]
+
+                segs += (ts.SPACE, u'и', ts.SPACE)
+                clss += (None, 'Conj', None)
+                segs += (forms[1].idem_ucs, ts.SPACE, u'(')
+                clss += ('SubHeadword', None, 'Text')
+                segs += (h(forms[1].childvars[0].idem_ucs), u',', ts.SPACE)
+                clss += ('CSLSegment', 'Text', None)
+                segs += (h(forms[1].idem_ucs), u'),', ts.SPACE)
+                clss += ('CSLSegment', 'Text', None)
+                segs += short_form_segs[1]
+                clss += short_form_clss[1]
+
+                segs += (ts.SPACE, u'прил. притяж.', ts.SPACE)
+                clss += (None, 'Em', None)
+
+                tags = []
+                for seg, cls in zip(segs, clss):
+                    tag = {'text': seg}
+                    if cls:
+                        tag['class'] = cls
+                    tags.append(tag)
+                return tags
+
 
     def examples_groups_for_hellinists(self):
         if hasattr(self, '_exgroups'):
