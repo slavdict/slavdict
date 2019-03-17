@@ -26,9 +26,9 @@ class DataChangeShell(cmd.Cmd):
     prompt = '> '
 
     def __init__(self, model_attrs=[(Example, ['address_text'])],
-                 first_volume=True):
+                 volumes=WHOLE_DICTIONARY):
         cmd.Cmd.__init__(self)
-        self.first_volume = first_volume
+        self.volumes = volumes
         self.state = 'find'
         self.model_attrs = model_attrs
         self.intro += '\n'.join('%s %s' % (model.__name__, attrs)
@@ -95,11 +95,8 @@ class DataChangeShell(cmd.Cmd):
             self.tcount[model.__name__] = {}
             for attrname in attrs:
                 count = 0
-                if self.first_volume:
-                    items = (i for i in model.objects.all()
-                               if i.host_entry.volume(1))
-                else:
-                    items = model.objects.all()
+                items = (i for i in model.objects.all()
+                           if i.host_entry.volume(self.volumes))
                 print u'\n\033[1;33m%s.%s\033[0m' % (model.__name__, attrname)
                 for item in items:
                     if self.pattern.search(getattr(item, attrname)):
@@ -393,7 +390,7 @@ TEXT = u'''
 ]),
     '''
 
-def shell(model_attrs=None, first_volume=True):
+def shell(model_attrs=None, volumes=WHOLE_DICTIONARY):
     if model_attrs is None:
         with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:
             tf.write(TEXT.encode('utf-8'))
@@ -402,7 +399,7 @@ def shell(model_attrs=None, first_volume=True):
             tf.seek(0)
             edited_text = tf.read()
         model_attrs = eval(u'[%s]' % edited_text, globals(), locals())
-    DataChangeShell(model_attrs=model_attrs, first_volume=first_volume).cmdloop()
+    DataChangeShell(model_attrs=model_attrs, volumes=volumes).cmdloop()
 
 # Собрать все текстовые поля не самая хорошая идея, т.к.  выпадающие списки
 # тоже сохраняются в текстовых полях. Тем не менее, вот как это можно сделать:

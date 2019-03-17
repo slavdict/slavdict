@@ -335,6 +335,7 @@ POS_SPECIAL_CASES_MAP = {
 }
 
 YET_NOT_IN_VOLUMES = None
+WHOLE_DICTIONARY = False
 VOLUME_LETTERS = {
     1: (u'а', u'б'),
     2: (u'в',),
@@ -1148,6 +1149,8 @@ class Entry(models.Model, JSONSerializable):
         return True
 
     def volume(self, volume=YET_NOT_IN_VOLUMES):
+        if volume is WHOLE_DICTIONARY:
+            return True
         first_letter = self.civil_equivalent.lstrip(u' =')[:1].lower()
 
         # Если аргумент volume не передан, то выбираем только те статьи,
