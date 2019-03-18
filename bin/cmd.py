@@ -42,6 +42,7 @@ BOLD_YELLOW = CSI + '1;33m'
 RED = CSI + '0;31m'
 GREEN = CSI + '0;32m'
 
+
 def sort_by_entry(x):
     return x[1]
 
@@ -60,9 +61,9 @@ class DataChangeShell(cmd.Cmd):
         self.state = 'find'
         self.model_attrs = model_attrs
         self.intro = ('\n' + BOLD_YELLOW + self.intro + '\n\n' + GREEN +
-            '\n'.join('%s %s' % (model.__name__, attrs)
-                      for model, attrs in self.model_attrs) +
-            RESET_FORMAT + '\n')
+                      '\n'.join('%s %s' % (model.__name__, attrs)
+                                for model, attrs in self.model_attrs) +
+                      RESET_FORMAT + '\n')
         self.pattern = re.compile('', re.UNICODE)
         self.replacement = None
         self.verbose = False
@@ -123,7 +124,7 @@ class DataChangeShell(cmd.Cmd):
             print
             print u'\n'.join(sys.exc_info()[:])
             print u'Поиск прерван...'
-            #self.reset_found_items()
+            # self.reset_found_items()
 
     def _do_find(self, arg):
         sys.stdout.write(HIDE_CURSOR)
@@ -140,7 +141,7 @@ class DataChangeShell(cmd.Cmd):
                 count = 0
                 note = u'\n%s.%s: ' % (model.__name__, attrname)
                 sys.stdout.write(note.encode('utf-8') +
-                        SAVE_CURSOR_POSITION + ERASE_LINEEND)
+                                 SAVE_CURSOR_POSITION + ERASE_LINEEND)
                 for i, item in enumerate(items):
                     note = u'%s, found: %s%s' % (
                         BOLD_YELLOW + str(
@@ -336,7 +337,7 @@ class DataChangeShell(cmd.Cmd):
                 if self.verbose:
                     text += u'#\t%s\n' % host_info
                 text += u'%s\t%s\n' % (
-                        i, re.sub(ur'[\r\n\v\t]', ' ', getattr(item, attrname))
+                    i, re.sub(ur'[\r\n\v\t]', ' ', getattr(item, attrname)))
                 i += 1
 
         with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:
@@ -505,4 +506,4 @@ for identifier in models.__dict__:
                 fieldnames.append(i.name)
         if fieldnames:
             crazy_all.append((x, fieldnames))
-#shell(crazy_all)
+# shell(crazy_all)
