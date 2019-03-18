@@ -349,7 +349,8 @@ class DataChangeShell(cmd.Cmd):
 
         lines = filter(lambda x: x.strip() and x[:1] != '#', edited_text)
         for line in lines:
-            oid, value = line.decode('utf-8').strip().split(u'\t', 1)
+            oid, value = line.decode('utf-8').split(u'\t', 1)
+            value = value.strip()
             oid = int(oid)
             o, attrname = register.get(oid, (None, None))
             if o is not None:
