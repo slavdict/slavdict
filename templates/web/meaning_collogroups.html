@@ -1,7 +1,8 @@
 {% from 'web/collogroup.html' import collogroup with context %}
 
 {% if m.collogroups_non_phraseological %}
-    {% if entry.is_part_of_speech('conjunction', 'letter') %}
+    {% if entry.is_part_of_speech('conjunction', 'letter') or
+            meaning_with_collogroup_only %}
         {% if not m.examples and not m.child_meanings %}
             {% if m.meaning or m.gloss %}
                 {{ backspace }};{{ space }}
@@ -26,7 +27,8 @@
 {% endif %}
 
 {% if m.collogroups_phraseological %}
-    {% if entry.is_part_of_speech('conjunction', 'letter') %}
+    {% if entry.is_part_of_speech('conjunction', 'letter') or
+            meaning_with_collogroup_only and m.collogroups_non_phraseological %}
         {% if not m.examples and not m.child_meanings %}
             {% if m.meaning or m.gloss %}
                 {{ backspace }};{{ space }}

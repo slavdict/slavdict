@@ -427,6 +427,7 @@
             {% endfor %}
         {% endif %}
 
+        {% set mgroup_loop = loop %}
         {% for m in mgroup.meanings %}
             {% set mnumber = loop.index %}
 
@@ -441,8 +442,15 @@
             </span>{{ nbsp }}
             {% endif %}
 
-            {% set is_collogroups = false %}
-            {% include 'web/meaning_with_children.html' with context %}
+            {% set meaning_with_collogroup_only = not m.meaning and not m.gloss
+                    and (loop.length > 1 or mgroup_loop.length > 1)
+                    and not m.figurative and not m.special_case
+                    and not m.substantivus and not m.is_valency
+                    and not m.substantivus_csl %}
+            {% if not meaning_with_collogroup_only %}
+                {% set is_collogroups = false %}
+                {% include 'web/meaning_with_children.html' with context %}
+            {% endif %}
             {% set is_collogroups = true %}
             {% include 'web/meaning_collogroups.html' with context %}
         {% endfor %}

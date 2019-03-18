@@ -393,6 +393,7 @@
             {% endfor %}
         {% endif %}
 
+        {% set mgroup_loop = loop %}
         {% for m in mgroup.meanings %}
             {% set mnumber = loop.index %}
 
@@ -406,8 +407,15 @@
             </x>{{ nbsp }}
             {% endif %}
 
-            {% set is_collogroups = false %}
-            {% include 'indesign/meaning_with_children.xml' with context %}
+            {% set meaning_with_collogroup_only = not m.meaning and not m.gloss
+                    and (loop.length > 1 or mgroup_loop.length > 1)
+                    and not m.figurative and not m.special_case
+                    and not m.substantivus and not m.is_valency
+                    and not m.substantivus_csl %}
+            {% if not meaning_with_collogroup_only %}
+                {% set is_collogroups = false %}
+                {% include 'indesign/meaning_with_children.xml' with context %}
+            {% endif %}
             {% set is_collogroups = true %}
             {% include 'indesign/meaning_collogroups.xml' with context %}
         {% endfor %}
