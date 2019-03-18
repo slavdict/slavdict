@@ -335,7 +335,8 @@ class DataChangeShell(cmd.Cmd):
                 register[i] = (item, attrname)
                 if self.verbose:
                     text += u'#\t%s\n' % host_info
-                text += u'%s\t%s\n' % (i, getattr(item, attrname))
+                text += u'%s\t%s\n' % (
+                        i, re.sub(ur'[\r\n\v\t]', ' ', getattr(item, attrname))
                 i += 1
 
         with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:
