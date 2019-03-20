@@ -101,6 +101,7 @@ from itertools import chain
 from itertools import izip_longest
 from itertools import starmap
 
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils.functional import allow_lazy
 from django.utils.encoding import force_unicode
 
@@ -677,6 +678,143 @@ def ind_regex(value, cstyle, regex, for_web=False):
 @register_filter
 def web_regex(value, cstyle, regex):
     return ind_regex(value, cstyle, regex, for_web=True)
+
+
+RE_REF1 = (
+    ur'\s*'
+    ur'(?:idem|cf|qv)'  # Тип ссылки
+    ur'\['
+        ur'[а-яА-Я]+'  # Гражданское написание заглавного слова
+        ur'\s*[1-9]?'  # Номер омонима
+        ur'(?:\s*-\s*'  # Список значений
+            ur'\d+(?:\s*,\s*\d+)*'
+        ur')?'
+    ur'\]'
+    ur'\s*'
+)
+RE_REF2 = (
+    ur'(\s*)'
+    ur'(idem|cf|qv)'  # Тип ссылки
+    ur'\['
+        ur'([а-яА-Я]+)'  # Гражданское написание заглавного слова
+        ur'\s*([1-9])?'  # Номер омонима
+        ur'(?:\s*-\s*'   # Список значений
+            ur'(\d+(?:\s*,\s*\d+)*)'
+        ur')?'
+    ur'\]'
+    ur'(\s*)'
+)
+
+def insert_ref(x, for_web):
+    em_tag = Tag(cslav_style=None, civil_style='Em', for_web=for_web)
+    text_tag = Tag(cslav_style=None, civil_style='Text', for_web=for_web)
+    number_tag = Tag(cslav_style=None, civil_style='HeadwordNumber',
+                     for_web=for_web)
+    csl_tag = Tag(cslav_style='CSLSegment', civil_style=None, for_web=for_web)
+
+    text = u''
+    s1, ref, word, num, meanings, s2 = re.findall(RE_REF2, x, re.IGNORECASE)[0]
+
+    ref = ref.lower()
+    if ref == 'idem':
+        s = Segment(u'то же, что', text_tag, base_script=SCRIPT_CIVIL)
+        text += u'%s%s' % (s, SPACE)
+    elif ref == 'cf':
+        s = Segment(u'ср.', em_tag, base_script=SCRIPT_CIVIL)
+        text += u'%s%s' % (s, NBSP)
+    elif ref == 'qv':
+        s = Segment(u'см.', em_tag, base_script=SCRIPT_CIVIL)
+        text += u'%s%s' % (s, NBSP)
+
+    params = {
+        'civil_equivalent': word,
+    }
+    if num:
+        params['homonym_order'] = int(num)
+
+    from slavdict.dictionary.models import Entry
+    entry = Entry.objects.get(**params)
+
+    headword = hyphenate_ucs8(entry.base_vars[0].idem_ucs)
+    s = Segment(headword, csl_tag, base_script=SCRIPT_CSLAV)
+    text += unicode(s)
+
+    if num:
+        s = Segment(num, number_tag, base_script=SCRIPT_CIVIL)
+        text += unicode(s)
+
+    if meanings:
+        s = Segment(u'знач.', text_tag, base_script=SCRIPT_CIVIL)
+        text += SPACE + unicode(s) + NBSP
+        meanings = [Segment(i, text_tag, base_script=SCRIPT_CIVIL)
+                    for i in re.split(ur'[\s,]+', meanings)]
+        for i, s in enumerate(meanings):
+            if i == 0:
+                text += unicode(s)
+            elif i == len(meanings) - 1:
+                conj = Segment(u'и', text_tag, base_script=SCRIPT_CIVIL)
+                text += SPACE + unicode(conj) + NBSP + unicode(s)
+            else:
+                comma = Segment(u',', text_tag, base_script=SCRIPT_CIVIL)
+                text += unicode(comma) + SPACE + unicode(s)
+
+    if ref == 'idem':
+        segs = (
+            NBSP,
+            Segment(u'(', text_tag, base_script=SCRIPT_CIVIL),
+            Segment(u'см.', em_tag, base_script=SCRIPT_CIVIL),
+            Segment(u')', text_tag, base_script=SCRIPT_CIVIL),
+        )
+        text += u''.join(unicode(s) for s in segs)
+
+    if u'\u00a0' in s1:
+        text = NBSP + text
+    elif u' ' in s1:
+        text = SPACE + text
+    if u'\u00a0' in s2:
+        text += NBSP
+    elif u' ' in s2:
+        text += SPACE
+
+    return text
+
+@register_filter
+def ind_refs(value, for_web=False):
+    """ Подставновка шаблонов ссылок:
+
+      idem[врачь]   --> то же, что врачь (см.)
+      cf[восприяти] --> ср. восприяти
+      qv[ныне]      --> см. ныне
+
+      idem[брак1-2]   --> то же, что брак¹, знач. 2 (см.)
+      cf[бежати-2,3]  --> ср. бежати, знач. 2, 3
+
+      <шаблон ссылки> ::= < idem|cf|qv > "[" <гражданское написание лексемы>
+            [<номер омонима>] ["-" <список номеров значений>] "]"
+
+    """
+    text = u''
+    for i, x in enumerate(re.split(u'(%s)' % RE_REF1, value)):
+        if i % 2 == 1:
+            text += insert_ref(x, for_web=for_web)
+            try:
+                pass#text += insert_ref(x, for_web=for_web)
+            except MultipleObjectsReturned:
+                text += x + (u'[ ###### Ошибка! Ссылка задана недостаточно '
+                    u'специфично -- по гражданскому написанию найдено '
+                    u'несколько статей вместо одной ] ')
+            except ObjectDoesNotExist:
+                text += x + u'[ ###### Ошибка! Статья по ссылке не найдена ] '
+            except Exception as e:
+                text += x + u'[ ###### При обработке ссылки возникла ' + \
+                            u'ошибка: %s ] ' % e
+        elif x:
+            text += x
+    return text
+
+@register_filter
+def web_refs(value):
+    return ind_refs(value, for_web=True)
 
 @register_filter
 def ind_collocation_special_cases(words, for_web=False):
