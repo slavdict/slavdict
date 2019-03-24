@@ -737,7 +737,10 @@ def insert_ref(x, for_web):
 
     headword = hyphenate_ucs8(entry.base_vars[0].idem_ucs)
     s = Segment(headword, csl_tag, base_script=SCRIPT_CSLAV)
-    text += unicode(s)
+    if for_web:
+        text += u'<a href="%s">%s</a>' % (entry.get_absolute_url(), s)
+    else:
+        text += unicode(s)
 
     if num:
         s = Segment(num, number_tag, base_script=SCRIPT_CIVIL)
