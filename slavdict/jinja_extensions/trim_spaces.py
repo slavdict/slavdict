@@ -744,7 +744,7 @@ def insert_ref(x, for_web):
         text += unicode(s)
 
     if meanings:
-        s = Segment(u'знач.', text_tag, base_script=SCRIPT_CIVIL)
+        s = Segment(u'в знач.', text_tag, base_script=SCRIPT_CIVIL)
         text += SPACE + unicode(s) + NBSP
         meanings = [Segment(i, text_tag, base_script=SCRIPT_CIVIL)
                     for i in re.split(ur'[\s,]+', meanings)]
@@ -786,8 +786,8 @@ def ind_refs(value, for_web=False):
       cf[восприяти] --> ср. восприяти
       qv[ныне]      --> см. ныне
 
-      idem[брак1-2]   --> то же, что брак¹, знач. 2 (см.)
-      cf[бежати-2,3]  --> ср. бежати, знач. 2, 3
+      idem[брак1-2]   --> то же, что брак¹, в знач. 2 (см.)
+      cf[бежати-2,3]  --> ср. бежати, в знач. 2, 3
 
       <шаблон ссылки> ::= < idem|cf|qv > "[" <гражданское написание лексемы>
             [<номер омонима>] ["-" <список номеров значений>] "]"
