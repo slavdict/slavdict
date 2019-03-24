@@ -799,9 +799,8 @@ def ind_refs(value, for_web=False):
     text = u''
     for i, x in enumerate(re.split(u'(%s)' % RE_REF1, value)):
         if i % 2 == 1:
-            text += insert_ref(x, for_web=for_web)
             try:
-                pass#text += insert_ref(x, for_web=for_web)
+                text += insert_ref(x, for_web=for_web)
             except MultipleObjectsReturned:
                 text += x + (u'[ ###### Ошибка! Ссылка задана недостаточно '
                     u'специфично -- по гражданскому написанию найдено '
