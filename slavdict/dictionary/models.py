@@ -469,6 +469,9 @@ class Entry(models.Model, JSONSerializable):
     possessive = BooleanField(u'притяжательное', default=False,
                               help_text=u'Притяжательное прилагательное.')
 
+    comparative = BooleanField(u'сравн. степ.', default=False,
+            help_text=u'Сравнительная степень прилагательного или наречия')
+
     # только для глаголов
     transitivity = CharField(u'переходность', max_length=1, blank=True,
                              choices=TRANSITIVITY_CHOICES, default='')

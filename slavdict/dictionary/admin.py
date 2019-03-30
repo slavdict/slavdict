@@ -676,6 +676,7 @@ class AdminEntry(admin.ModelAdmin):
         'onym',
         'canonical_name',
         'possessive',
+        'comparative',
         'transitivity',
         'participle_type',
         )
@@ -739,6 +740,9 @@ class AdminEntryADMIN(AdminEntry):
         (None, { # Для прил.
             'fields': ('short_form', 'possessive'),
             'classes': ('hidden adjective',) } ),
+        (None, { # Для прил. и нареч.
+            'fields': ('comparative',),
+            'classes': ('hidden adjective adverb',) } ),
         (None, { # Для глаг.
             'fields': ('sg1', 'sg2'),
             'classes': ('hidden verb',) } ),
@@ -789,6 +793,9 @@ class AdminEntryUI(AdminEntry):
         (None, { # Для прил.
             'fields': ('short_form', 'possessive'),
             'classes': ('hidden adjective',) } ),
+        (None, { # Для прил. и нареч.
+            'fields': ('comparative',),
+            'classes': ('hidden adjective adverb',) } ),
         (None, { # Для глаг.
             'fields': ('sg1', 'sg2'),
             'classes': ('hidden verb',) } ),

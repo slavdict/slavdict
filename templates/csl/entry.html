@@ -295,6 +295,15 @@
     {% endif %}
 
 
+    {% if entry.comparative %}
+        {{ backspace }}{{ space }}
+        <span class="Em">
+            сравн. степ.
+        </span>
+        {{ space }}
+    {% endif %}
+
+
     {% if entry.uninflected and not sc_several_nouns %}
         {{ backspace }}{{ space }}
         <span class="Em">
