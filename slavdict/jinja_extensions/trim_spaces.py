@@ -377,6 +377,18 @@ class Segment(Tag):
             else:
                 HYPHEN_TAG = u'<h aid:cstyle="Text">\u00AD</h>'
                 segment = segment.replace(u'\u00AD', HYPHEN_TAG)
+
+            RE_NON_UCS8_LETTER_TITLES = u'(?<!^)([МТ])'
+            if self.base_script == SCRIPT_CSLAV and \
+                    re.findall(RE_NON_UCS8_LETTER_TITLES, segment):
+                if self.tag.for_web:
+                    tag_template = u'<span class="CSLSuper">%s</span>'
+                else:
+                    tag_template = u'<x aid:cstyle="CSLSuper">%s</x>'
+                parts = re.split(RE_NON_UCS8_LETTER_TITLES, segment)
+                parts = [tag_template % p.lower() if i % 2 else p
+                         for i, p in enumerate(parts)]
+                segment = u''.join(parts)
         else:
             segment = html_escape(self.segment)
         return tag % segment
@@ -471,6 +483,11 @@ class Words(object):
 
 
 CSLCSTYLE = u'CSLSegment'
+
+# NOTE: скобки, окаймляющие регулярное выражение, нельзя опустить, т.к. нужно,
+# чтобы при разбивке с помощью split в списке сохранялись не только слова, но
+# и все символы между словами. В полученном списке должно быть нечетное число
+# элементов.
 RE_CSLAV_SPLIT = (
     ur'((?:'
     ur'\u27e8=?|\u27e9|'
@@ -489,11 +506,6 @@ def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
         value = u''
     value = html_unescape(value)
     tag = Tag(cslav_style=cstyle, civil_style=civil_cstyle, for_web=for_web)
-
-    # NOTE: скобки, окаймляющие регулярное выражение, нельзя опустить,
-    # т.к. нужно, чтобы в списке сохранялись не только слова, но и все
-    # символы между словами. В полученном списке должно быть нечетное
-    # число элементов.
     segments = re.split(RE_CSLAV_SPLIT, value)
 
     words = Words()
