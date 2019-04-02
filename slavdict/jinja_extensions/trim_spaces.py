@@ -585,21 +585,23 @@ def _insert_translation_data(words, data, show_additional_info=False,
         cstyle2 = 'ai ai-grfex ' + cstyle
         tag2 = Tag(cslav_style=None, civil_style=cstyle2, for_web=for_web)
 
+    ai = u' <span class="ai ai-grfex Text hyphenate">%s</span>'
+    process_translation = lambda translation, for_web: ind_regex(
+            html_escape(translation),
+            'Em', ur'(?<![А-Яа-я])букв\.', for_web=for_web)
+    c = lambda t: (show_additional_info and t.additional_info.strip()
+            and for_web)
+
     # Расстановка частичных переводов, отображаемых в статье
     for index, lst in data.items():
         if not lst:
             continue
         translations = [
-                u'‘%s’%s' % (
-                    ind_regex(html_escape(t.translation),
-                        'Em', ur'(?<![А-Яа-я])букв\.', for_web=for_web),
-                    (u' <span class="ai ai-grfex Text hyphenate">%s</span>' %
-                            html_escape(t.additional_info))
-                        if show_additional_info and t.additional_info.strip()
-                            and for_web
-                        else u''
-                )
-                for t in lst]
+            u'‘%s’%s' % (
+                process_translation(t.translation, for_web),
+                (ai % html_escape(t.additional_info)) if c(t) else u''
+            )
+            for t in lst]
         translations = u', '.join(translations)
         translations = u'(%s)' % translations
         seg = ExternalSegment(translations, tag1, SCRIPT_CIVIL)
@@ -611,14 +613,11 @@ def _insert_translation_data(words, data, show_additional_info=False,
         if not lst:
             continue
         translations = [
-                u'‘%s’%s' % (
-                    html_escape(t.translation),
-                    (u' [%s]' % html_escape(t.additional_info))
-                        if show_additional_info and t.additional_info.strip()
-                            and for_web
-                        else u''
-                )
-                for t in lst]
+            u'‘%s’%s' % (
+                html_escape(t.translation),
+                (u' [%s]' % html_escape(t.additional_info)) if c(t) else u''
+            )
+            for t in lst]
         translations = u', '.join(translations)
         seg = ExternalSegment(translations, tag2, SCRIPT_CIVIL)
         space = Segment(u' ', tag0, SCRIPT_CIVIL)

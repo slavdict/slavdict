@@ -16,7 +16,7 @@
             {{ backspace }},{{ space }}
         {% endif %}
         <span class="Text hyphenate">‘{{ t.translation |
-            web_regex("Em", labels_in_translation) | e }}’</span>
+            web_regex("Em", labels_in_translation) }}’</span>
     {% endfor %}
     {{ space }}
 {% endif %}

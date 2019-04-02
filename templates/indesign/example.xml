@@ -16,7 +16,7 @@
             {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
         <x aid:cstyle="Text">‘{{ t.translation |
-            ind_regex("Em", labels_in_translation) | e }}’</x>
+            ind_regex("Em", labels_in_translation) }}’</x>
     {% endfor %}
     {{ space }}
 {% endif %}

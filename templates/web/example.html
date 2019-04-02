@@ -25,7 +25,7 @@
             {{ backspace }},{{ space }}
         {% endif %}
         <span class="Text hyphenate">‘{{ t.translation |
-            web_regex("Em", labels_in_translation) | e }}’</span>
+            web_regex("Em", labels_in_translation) }}’</span>
         {% if show_additional_info and t.additional_info|trim %}
             {{ space }}
             <span class="ai ai-grfex Text hyphenate">
@@ -43,7 +43,7 @@
             {{ backspace }}<span class="Text">,</span>{{ space }}
         {% endif %}
         <span class="Text hyphenate">‘{{ t.translation |
-            web_regex("Em", labels_in_translation) | e }}’</span>
+            web_regex("Em", labels_in_translation) }}’</span>
         {% if show_additional_info and t.additional_info|trim %}
             {{ space }}
             <span class="Text hyphenate">
