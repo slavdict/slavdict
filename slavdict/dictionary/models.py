@@ -940,51 +940,6 @@ class Entry(models.Model, JSONSerializable):
                     )
                 return tags
 
-            elif self.civil_equivalent == u'ведети':
-                segs = (ucs8(u"вѣ'дѣти"), u',', ts.SPACE)
-                clss = ('Headword', 'Text', None)
-                segs += (ucs8(u"вѣ'мъ"), ts.SPACE, u'и', ts.SPACE)
-                clss += ('CSLSegment', None, 'Conj', None)
-                segs += (ucs8(u"вѣ'дѣ"), ts.SPACE, u'Прол. (1)', u',', ts.SPACE)
-                clss += ('CSLSegment', None, 'Address', 'Text', None)
-                segs += (h(ucs8(u"вѣ'си")), u';', ts.SPACE)
-                clss += ('CSLSegment', 'Text', None)
-                segs += (u'аор.', ts.SPACE, u'1' + ts.NBSP + u'ед.', ts.SPACE)
-                clss += ('Em', None, 'Em', None)
-                segs += (h(ucs8(u"вѣ'дѣхъ")), ts.SPACE, u'и', ts.SPACE)
-                clss += ('CSLSegment', None, 'Conj', None)
-                segs += (h(ucs8(u"вѣ'дѧхъ")), u',', ts.SPACE)
-                clss += ('CSLSegment', 'Text', None)
-                segs += (u'1' + ts.NBSP + u'мн.', ts.SPACE)
-                clss += ('Em', None)
-                segs += (h(ucs8(u"вѣ'дѣхомъ")), ts.SPACE, u'и', ts.SPACE)
-                clss += ('CSLSegment', None, 'Conj', None)
-                segs += (h(ucs8(u"вѣ'дѧхомъ")), u';', ts.SPACE)
-                clss += ('CSLSegment', 'Text', None)
-                segs += (u'прич.', ts.SPACE, h(ucs8(u"вѣ'дый")), ts.SPACE)
-                clss += ('Em', None, 'CSLSegment', None)
-                segs += (u'и', ts.SPACE, h(ucs8(u"вѣ'дѧй")), u',', ts.SPACE)
-                clss += ('Conj', None, 'CSLSegment', 'Text', None)
-                segs += (h(ucs8(u"вѣ'дꙋщiй")), ts.SPACE, u'и', ts.SPACE)
-                clss += ('CSLSegment', None, 'Conj', None)
-                segs += (h(ucs8(u"вѣ'дѧщiй")), u';', ts.SPACE)
-                clss += ('CSLSegment', 'Text', None)
-                segs += (u'повел.', ts.SPACE, u'2' + ts.NBSP + u'мн.', ts.SPACE)
-                clss += ('Em', None, 'Em', None)
-                segs += (h(ucs8(u"вѣ'дите")), ts.SPACE, u'и', ts.SPACE)
-                clss += ('CSLSegment', None, 'Conj', None)
-                segs += (h(ucs8(u"вѣ'ждьте")), ts.SPACE, u'Библ. (1)')
-                clss += ('CSLSegment', None, 'Address')
-                segs += (ts.SPACE, u'перех. и неперех.', ts.SPACE)
-                clss += (None, 'Em', None)
-                tags = []
-                for seg, cls in zip(segs, clss):
-                    tag = {'text': seg}
-                    if cls:
-                        tag['class'] = cls
-                    tags.append(tag)
-                return tags
-
             elif self.civil_equivalent == u'воздвигнути':
                 forms = tuple(self.base_vars)
                 sg1_segs = [
