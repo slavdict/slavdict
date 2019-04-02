@@ -814,7 +814,8 @@ class Entry(models.Model, JSONSerializable):
             elif self.civil_equivalent in (
                     u'воскласти', u'вскласти',
                     u'восприимати', u'воспринимати',
-                    u'воспящати', u'вспящати'):
+                    u'воспящати', u'вспящати',
+                    u'востаяти', u'встаяти'):
                 base_vars = tuple(self.base_vars)
                 tags = (
                     {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
