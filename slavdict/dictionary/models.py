@@ -776,13 +776,15 @@ class Entry(models.Model, JSONSerializable):
                     {'text': ts.SPACE},
                     {'text': self.genitive_ucs_wax[1], 'class': 'CSLSegment'},
                     {'text': ts.SPACE},
+                    {'text': u'ж.', 'class': 'Em'},
+                    {'text': ts.SPACE},
                     {'text': u'и', 'class': 'Conj'},
                     {'text': ts.SPACE},
                     {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
                     {'text': ts.SPACE},
-                    {'text': u'неизм.', 'class': 'Em'},
-                    {'text': ts.EMSPACE},
                     {'text': u'ж.', 'class': 'Em'},
+                    {'text': ts.EMSPACE},
+                    {'text': u'неизм.', 'class': 'Em'},
                     {'text': ts.SPACE},
                 )
                 return tags
