@@ -2031,7 +2031,15 @@ class Example(models.Model, JSONSerializable):
             ts_text += ts_word
         self.ts_example = civilrus_convert(ts_text)
 
+    def angle_brackets(self):
+        """ Унификация разных вариантов угловых скобок """
+        self.example = re.sub(u'[<\u3008\u2329\u29fc\u276c\u2770\u276e\uff1c]',
+                u'\u27e8', self.example)
+        self.example = re.sub(u'[>\u3009\u232a\u29fd\u276d\u2771\u276f\uff1e]',
+                u'\u27e9', self.example)
+
     def save(self, without_mtime=False, *args, **kwargs):
+        self.angle_brackets()
         self.ts_convert()
         host_entry = self.host_entry
         if host_entry is not None:

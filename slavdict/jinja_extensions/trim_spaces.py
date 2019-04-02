@@ -323,11 +323,17 @@ class Segment(Tag):
         elif self.segment == u'*':
             self.type = self.TYPE_ASTERISK
 
-        elif self.segment in list(u'(['):
+        elif self.segment in list(u'([\u27e8'):
             self.type = self.TYPE_LEFT_BRACKET
             self.output_script = SCRIPT_CIVIL
 
-        elif self.segment in list(u')]'):
+        elif re.findall(u'\u27e8=\s*', self.segment):
+            # Угловая скобка со знаком равно в примерах
+            self.type = self.TYPE_LEFT_BRACKET
+            self.output_script = SCRIPT_CIVIL
+            self.segment = u'\u27e8=\u00a0'
+
+        elif self.segment in list(u')]\u27e9'):
             self.type = self.TYPE_RIGHT_BRACKET
             self.output_script = SCRIPT_CIVIL
 
@@ -387,6 +393,7 @@ class ExternalSegment(Segment):
 RE_CSLAV_SEGMENT = re.compile(u'(%s)' % u'|'.join([
         ur'\.\.\.',
         ur'[\(\)\[\]\.,;:!«»“”„"‘’‛\'—–\-\u2011\u2010\*°]',
+        ur'\u27e8=[\s\u00a0]*',  # Открывающая угловая скобка со знаком равно
         ur'\/{0}?'.format(ZWS),
         ur'[\s\u00a0]+']))
 RE_CIVIL_SEGMENT = re.compile(u'(%s)' % u'|'.join([
@@ -464,8 +471,17 @@ class Words(object):
 
 
 CSLCSTYLE = u'CSLSegment'
-RE_CSLAV_SPLIT = ur'([\s\u00a0.,;:!/«»“”„"‘’‛\'—–\-\u2011\u2010*°\(\)\[\]]+)'
-RE_CIVIL_SPLIT = ur'([\s\u00a0.…,;:!?\\/«»“”„"‘’‛\'—–\-\u2011\u2010*\(\)\[\]]+)'
+RE_CSLAV_SPLIT = (
+    ur'((?:'
+    ur'\u27e8=?|\u27e9|'
+    ur'[\s\u00a0.,;:!/«»“”„"‘’‛\'—–\-\u2011\u2010*°\(\)\[\]]'
+    ur')+)'
+)
+RE_CIVIL_SPLIT = (
+    ur'('
+    ur'[\s\u00a0.…,;:!?\\/«»“”„"‘’‛\'—–\-\u2011\u2010*\(\)\[\]]+'
+    ur')'
+)
 
 def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
@@ -496,6 +512,8 @@ def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
         else:
             words.add(word)
             words.add(in_between)
+    #for w in words:  # Отладочная печать
+    #    print u'%s: "%s"' % (w.type, w.segment)
     return words
 
 def civil_words(value, civil_cstyle=None, for_web=False):
