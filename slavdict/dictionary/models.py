@@ -863,20 +863,27 @@ class Entry(models.Model, JSONSerializable):
                     tags += (
                         {'text': STAR, 'class': STAR_CLS},
                     )
-                tags += (
-                    {'text': ts.SPACE},
-                    {'text': u'перех.', 'class': 'Em'},
-                    {'text': ts.SPACE},
-                )
-                if self.civil_equivalent in (
-                        u'восприимати', u'воспринимати',
-                        u'воспящати', u'вспящати'):
+                if self.civil_equivalent in (u'востаяти', u'встаяти'):
                     tags += (
-                        {'text': u'и', 'class': 'Em'},
                         {'text': ts.SPACE},
                         {'text': u'неперех.', 'class': 'Em'},
                         {'text': ts.SPACE},
                     )
+                else:
+                    tags += (
+                        {'text': ts.SPACE},
+                        {'text': u'перех.', 'class': 'Em'},
+                        {'text': ts.SPACE},
+                    )
+                    if self.civil_equivalent in (
+                            u'восприимати', u'воспринимати',
+                            u'воспящати', u'вспящати'):
+                        tags += (
+                            {'text': u'и', 'class': 'Em'},
+                            {'text': ts.SPACE},
+                            {'text': u'неперех.', 'class': 'Em'},
+                            {'text': ts.SPACE},
+                        )
                 return tags
 
             elif self.civil_equivalent in (u'взяти', u'взятися'):
