@@ -168,6 +168,8 @@
 {% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss)
         and m.examples %}
     {{ backspace }}:{{ space }}
+{% elif m.collogroups %}
+    {# pass #}
 {% else %}
     {{ backspace }}.
 {% endif %}
