@@ -173,7 +173,7 @@
 {% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss)
         and m.examples and not hide_examples %}
     {{ backspace }}:{{ space }}
-{% elif m.collogroups %}
+{% elif m.collogroups or m.child_meanings %}
     {# pass #}
 {% elif not hide_examples %}
     {{ backspace }}.
