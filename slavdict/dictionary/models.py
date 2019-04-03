@@ -570,7 +570,7 @@ class Entry(models.Model, JSONSerializable):
 
     @property
     def cfentries(self):
-        return self.cf_entries.all()
+        return self.cf_entries.order_by('civil_equivalent')
 
     @property
     def cfcollogroups(self):
