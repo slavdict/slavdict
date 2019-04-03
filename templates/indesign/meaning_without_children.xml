@@ -160,8 +160,11 @@
     {{ space }}
 {% endif %}
 
-{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss) and m.examples %}
+{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss)
+        and m.examples %}
     {{ backspace }}:{{ space }}
+{% else %}
+    {{ backspace }}.
 {% endif %}
 
 {% for e in m.examples %}
