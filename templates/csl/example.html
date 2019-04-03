@@ -15,8 +15,13 @@
         {% if not loop.first %}
             {{ backspace }},{{ space }}
         {% endif %}
-        <span class="Text hyphenate">‘{{ t.translation |
-            web_regex("Em", labels_in_translation) }}’</span>
+        {% if t.is_synodal %}
+            <span class="Em">в{{ nbsp }}Син. пер.</span>{{ space }}
+            <span class="Text hyphenate">{{ t.translation }}</span>
+        {% else %}
+            <span class="Text hyphenate">‘{{ t.translation |
+                web_regex("Em", labels_in_translation) }}’</span>
+        {% endif %}
     {% endfor %}
     {{ space }}
 {% endif %}

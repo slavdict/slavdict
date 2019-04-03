@@ -2115,6 +2115,7 @@ class Translation(models.Model, JSONSerializable):
             blank=True, default=1)
     fragment_end = SmallIntegerField(u'номер слова конца фрагмента',
             blank=True, default=1000)
+    is_synodal = BooleanField(u'синодальный перевод', default=False)
     order = SmallIntegerField(u'порядок следования', blank=True, default=345)
     hidden = BooleanField(u'скрывать перевод', default=True,
             help_text=u'отображать перевод только в комментариях для авторов')
@@ -2148,12 +2149,23 @@ class Translation(models.Model, JSONSerializable):
             'fragment_end',
             'hidden',
             'id',
+            'is_synodal',
             'order',
             'translation',
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
     def save(self, without_mtime=False, *args, **kwargs):
+        ai = self.additional_info.strip()
+        match_segments = (u'в', u'синодальн', u'перевод')
+        if ai:
+            for word in re.split(ur'[\s\.]+', ai):
+                word = word.lower()
+                if not any(word[:len(segment)] == segment[:len(word)]
+                           for segment in match_segments):
+                    break
+            else:
+                self.is_synodal = True
         super(Translation, self).save(*args, **kwargs)
         if without_mtime:
             return

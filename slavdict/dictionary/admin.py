@@ -388,7 +388,7 @@ class Translation_Inline(admin.StackedInline):
         (None, {
             'fields': (
                 ('translation', 'additional_info'),
-                ('hidden', 'order'),
+                ('is_synodal', 'hidden', 'order'),
                 ('fragmented', 'fragment_start', 'fragment_end'),
                 ),
             }),

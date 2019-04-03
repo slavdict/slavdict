@@ -15,8 +15,13 @@
         {% if not loop.first %}
             {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
-        <x aid:cstyle="Text">‘{{ t.translation |
-            ind_regex("Em", labels_in_translation) }}’</x>
+        {% if t.is_synodal %}
+            <x aid:cstyle="Em">в{{ nbsp }}Син. пер.</x>{{ space }}
+            <x aid:cstyle="Text">{{ t.translation }}</x>
+        {% else %}
+            <x aid:cstyle="Text">‘{{ t.translation |
+                ind_regex("Em", labels_in_translation) }}’</x>
+        {% endif %}
     {% endfor %}
     {{ space }}
 {% endif %}

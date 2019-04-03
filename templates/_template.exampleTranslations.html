@@ -10,12 +10,17 @@
                 $parent.translations.itemDestroyer($data).do"></a>
 
             <label>
+                <span>Син. пер.</span>
+                <input type="checkbox" data-bind="checked: is_synodal" />
+            </label>
+
+            <label style="margin-left: 3em">
                 <span>Не отображать в статье</span>
                 <input type="checkbox" data-bind="checked: hidden" />
             </label>
 
             <label style="margin-left: 3em">
-                <span>Перевод не всего примера, а только части</span>
+                <span>Перевод только части примера</span>
                 <input type="checkbox" data-bind="checked: fragmented" />
             </label>
 

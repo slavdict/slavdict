@@ -354,6 +354,7 @@ function Translation() {
     upsert(this, 'for_example_id', data, example_id);
     upsert(this, 'id', data, 'greq' + getId());
     upsert(this, 'hidden', data, true);
+    upsert(this, 'is_synodal', data, false);
     upsert(this, 'translation', data, '');
     upsert(this, 'fragmented', data, false);
     upsert(this, 'fragment_start', data, 1);
