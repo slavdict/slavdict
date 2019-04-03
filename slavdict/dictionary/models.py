@@ -812,10 +812,11 @@ class Entry(models.Model, JSONSerializable):
                 return tags
 
             elif self.civil_equivalent in (
-                    u'воскласти', u'вскласти',
-                    u'восприимати', u'воспринимати',
-                    u'воспящати', u'вспящати',
-                    u'востаяти', u'встаяти'):
+                    u'воскласти', u'вскласти',  # перех.
+                    u'восприимати', u'воспринимати',  # перех. и неперех.
+                    u'воспящати', u'вспящати',  # перех. и неперех.
+                    u'востаяти', u'встаяти'  # неперех.
+                    ):
                 base_vars = tuple(self.base_vars)
                 tags = (
                     {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
