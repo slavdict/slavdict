@@ -148,7 +148,7 @@
                     <x>{{ genitive_ucs |
                              ind_cslav_words("CSLSegment") }}</x>
                     {% if genitive|has_no_accent %}
-                        {% include 'indesign/noaccent.html' %}
+                        {% include 'indesign/noaccent.xml' %}
                     {% endif %}
                     {% if loop.last %}
                         {{ backspace }}
@@ -186,7 +186,7 @@
                 <x>{{ sg2_ucs |
                          ind_cslav_words("CSLSegment") }}</x>
                 {% if sg2|has_no_accent %}
-                    {% include 'indesign/noaccent.html' %}
+                    {% include 'indesign/noaccent.xml' %}
                 {% endif %}
                 {{ space }}
             {% endfor %}

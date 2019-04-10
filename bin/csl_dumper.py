@@ -147,9 +147,13 @@ for i, lexeme in enumerate(lexemes):
 
     # 5) Особые случаи
     if lexeme.civil_equivalent == u'быти':
-        wordform = u"бꙋ'дꙋчи"
-        reference = ucs_convert(wordform)
-        entries1.append((wordform, reference, lexeme))
+        for wordform in (u"бꙋ'дꙋчи", u"сы'й", u"сꙋ'щiй"):
+            reference = ucs_convert(wordform)
+            entries1.append((wordform, reference, lexeme))
+    elif lexeme.civil_equivalent == u'утрие':
+        for wordform in (u"воꙋ'тріе", u"воꙋ'тріи", u"воꙋ'тріѧ"):
+            reference = ucs_convert(wordform)
+            entries1.append((wordform, reference, lexeme))
 
     note = u'Отбор претендентов на вокабулы [ %s%% ] %s\r' % (
         int(round(i / float(lexemes_n) * 100)),
