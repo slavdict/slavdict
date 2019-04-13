@@ -170,11 +170,10 @@
         lang="ru">{{ m.additional_info }}</span>{{ space }}
 {% endif %}
 
-{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss)
-        and m.examples and not hide_examples %}
+{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss
+        or m.special_case in [MSC12, MSC14, MSC15, MSC18]) and m.examples %}
     {{ backspace }}:{{ space }}
-{% elif m.collogroups or m.child_meanings
-        or m.special_case in [MSC12, MSC14, MSC15, MSC18] %}
+{% elif m.collogroups or m.child_meanings %}
     {# pass #}
 {% elif not hide_examples %}
     {{ backspace }}.
