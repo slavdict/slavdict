@@ -163,7 +163,8 @@
 {% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss
         or m.special_case in [MSC12, MSC14, MSC15, MSC18]) and m.examples %}
     {{ backspace }}:{{ space }}
-{% elif m.collogroups or m.child_meanings %}
+{% elif m.collogroups or m.child_meanings
+        or m.collogroup_container and m.examples %}
     {# pass #}
 {% else %}
     {{ backspace }}.
