@@ -570,7 +570,26 @@ class Entry(models.Model, JSONSerializable):
 
     @property
     def cfentries(self):
-        return self.cf_entries.order_by('civil_equivalent')
+        IDEM = (
+            ur'idem\['
+                ur'\s*([а-яА-Я]+)'  # Гражданское написание заглавного слова
+                ur'\s*([1-9])?'  # Номер омонима
+                ur'(?:\s*-\s*'  # Список значений
+                    ur'\d+(?:\s*,\s*\d+)*'
+                ur')?'
+            ur'\]'
+        )
+        idems = []
+        for m in self.meanings:
+            for match in re.findall(IDEM, u'%s %s' % (m.meaning, m.gloss)):
+                idems.append((match[0], int(match[1]) if match[1] else None))
+        cf_entries = self.cf_entries
+        for civil_equivalent, homonym_order in idems:
+            kwargs = { 'civil_equivalent': civil_equivalent }
+            if homonym_order:
+                kwargs['homonym_order'] = homonym_order
+            cf_entries = cf_entries.exclude(**kwargs)
+        return cf_entries.order_by('civil_equivalent')
 
     @property
     def cfcollogroups(self):
