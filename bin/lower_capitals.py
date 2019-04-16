@@ -31,4 +31,4 @@ for ex in Example.objects.exclude(id__in=exclude_ids):
         ex.example = u''.join(s if i % 2 == 0 else s.lower()
                               for i, s in enumerate(segments))
         print ex.example
-        ex.save()
+        ex.save(without_mtime=True)
