@@ -164,7 +164,8 @@
         or m.special_case in [MSC12, MSC14, MSC15, MSC18]) and m.examples %}
     {{ backspace }}:{{ space }}
 {% elif m.collogroups or m.child_meanings
-        or m.collogroup_container and m.examples %}
+        or m.collogroup_container and (m.examples or
+                                       not collogroups_loop.last) %}
     {# pass #}
 {% else %}
     {{ backspace }}.
