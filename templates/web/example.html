@@ -121,7 +121,8 @@
 {% if e.address_text %}
     {{ backspace }}{{ space }}
     <span class="Address hyphenate" lang="ru">
-        {{ e.address_text | web_cslav_injection("CSLSegment") }}
+        {{ e.address_text | web_cslav_injection("CSLSegment")
+                | web_regex("Em", 'греч\\.') }}
     </span>
     <span class="Address">
         {% set before_example = not examples_loop.last %}

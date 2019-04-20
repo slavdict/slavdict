@@ -78,7 +78,8 @@
 {% if e.address_text %}
     {{ backspace }}{{ space }}
     <x aid:cstyle="Address">
-        {{ e.address_text|ind_cslav_injection("CSLSegment") }}
+        {{ e.address_text | ind_cslav_injection("CSLSegment")
+                | ind_regex("Em", 'греч\\.') }}
     </x>
     <x aid:cstyle="Address">
         {% set before_example = not examples_loop.last %}
