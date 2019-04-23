@@ -141,12 +141,16 @@ ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
 	rsync -av bin dilijnt0:/var/www/slavdict/
 	rsync -av slavdict/jinja_extensions dilijnt0:/var/www/slavdict/slavdict/
 	rsync -av  templates/indesign dilijnt0:/var/www/slavdict/templates/
-	[ ! -e .list ] && touch .list || echo "file '.list' exists"
-	rsync .list dilijnt0:/root/
+	[ ! -e .args ] && ( \
+		echo '--split-by-letters' >.args ; \
+		echo '--split-nchars=50000' >>.args ; \
+		echo '--output-pattern=/root/slavdict-indesign-#.xml' >>.args ) \
+		|| echo "file '.args' exists"
+	rsync .args dilijnt0:/root/
 	ssh dilijnt0 chown -R www-data:www-data /var/www/slavdict/
+	ssh dilijnt0 rm -f /root/slavdict-indesign-*.xml
 	ssh dilijnt0 nohup /var/www/slavdict/bin/remote_indesign_xml_dumper.sh
-	scp dilijnt0:/root/slavdict-dump.xml .temp/slavdict-indesign.xml
-	#scp dilijnt0:/root/slavdict-dump.xml ~/VirtualBox\ SharedFolder/slavdict-indesign.xml
+	scp dilijnt0:/root/slavdict-indesign-*.xml .temp/
 endif
 
 listen-indesign:

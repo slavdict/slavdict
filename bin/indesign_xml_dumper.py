@@ -9,6 +9,7 @@
 
     SCRIPT 1177,123 89 945, 234
 """
+import datetime
 import itertools
 import os
 import re
@@ -34,11 +35,20 @@ OUTPUT_VOLUMES = (2,)
 OUTPUT_VOLUMES_LETTERS = reduce(lambda x, y: x + y, (VOLUME_LETTERS[volume]
     for volume in OUTPUT_VOLUMES if volume in VOLUME_LETTERS), ())
 
+sbl_arg = '--split-by-letters'
+snc_arg = '--split-nchars='
+opp_arg = '--output-pattern='
+SPLIT_BY_LETTERS = False
+SPLIT_NCHARS = 0
+OUTPUT_PATTERN = '/root/slavdict-indesign-#.xml'
+
 CSI = '\033['
 HIDE_CURSOR = CSI + '?25l'
 SHOW_CURSOR = CSI + '?25h'
 ERASE_LINE = CSI + '2K'
 ERASE_LINEEND = CSI + '0K'
+
+DATETIME = datetime.datetime.now()
 
 def interrupt_handler(signum, frame):
     print >> sys.stderr, SHOW_CURSOR
@@ -62,9 +72,25 @@ entries1 = []
 lexemes = Entry.objects.all()
 test_entries = None
 if len(sys.argv) > 1:
+    args = []
+    for i, arg in enumerate(sys.argv[1:]):
+        if arg.startswith(sbl_arg):
+            SPLIT_BY_LETTERS = True
+        elif arg.startswith(snc_arg):
+            SPLIT_NCHARS = int(re.sub(r'[^\d]', '', arg) or 0)
+        elif arg.startswith(opp_arg):
+            OUTPUT_PATTERN = arg[len(opp_arg):]
+        else:
+            args.append(arg)
     r = re.compile(r'\s*,\s*|\s+')
-    s = u' '.join(sys.argv[1:]).strip(' ,')
+    s = u' '.join(args).strip(' ,')
     test_entries = [int(i) for i in r.split(s)]
+
+print >> sys.stderr, 'Make multiple files according ' \
+                     'to the first letter:', SPLIT_BY_LETTERS
+print >> sys.stderr, 'Make multiple files when number of non tag' \
+                     'characters is greater than:', SPLIT_NCHARS
+print >> sys.stderr, 'Output pattern:', OUTPUT_PATTERN
 if test_entries:
     print >> sys.stderr, 'Entries to dump:', u', '.join(str(i) for i in test_entries)
     lexemes = lexemes.filter(pk__in=test_entries)
@@ -259,10 +285,78 @@ for j, (wordform, group) in enumerate(itertools.groupby(entries3, lambda x: x[0]
             part_entries.append((reference, lexeme))
 letter_parts.append((letter, part_entries))
 
-note = u'Вывод статей для InDesign...' + ERASE_LINEEND + '\r'
+note = u'Вывод статей для InDesign...'
 sys.stderr.write(note.encode('utf-8'))
-xml = render_to_string('indesign/slavdict.xml', {'letter_parts': letter_parts})
-sys.stdout.write(xml.encode('utf-8'))
+
+def render_chunks(c):
+    return render_to_string('indesign/slavdict.xml', c)
+
+def write_file(i, xml):
+    subst = '{:%Y%m%d-%H%M%S}-{:03d}'.format(DATETIME, i)
+    filepath = OUTPUT_PATTERN.replace('#', subst)
+    open(filepath, 'wb').write(xml.encode('utf-8'))
+
+
+special_cases = [
+    # аггкир... см. анкир...  [анкира, анкирский]
+    { 'startswith': u'ґгкЂр', 'qv': u'ґнкЂр', 'dots': True },
+
+    # воутр... см. утрие.  [воутрие, воутрии, воутрия]
+    { 'startswith': u'воyтр', 'qv': u'', 'dots': False },
+]
+chunks = []
+n_chars = 0
+file_count = 1
+letters_and_chunks = []
+for letter, entries in letter_parts:
+    n_entries = len(entries)
+    for i, (reference, entry) in enumerate(entries):
+        if reference:
+            xml = render_to_string('indesign/slavdict_reference.xml', {
+                'reference': reference, 'entry': entry,
+                'specials': special_cases })
+        else:
+            xml = render_to_string('indesign/entry.xml', { 'entry': entry })
+
+        xml = xml.strip()
+        if xml:
+            m = len(re.sub(ur'<[^>]+>|\s', u'', xml))
+            if 0 < SPLIT_NCHARS < n_chars + m and 0 < n_chars:
+                letters_and_chunks.append((letter, chunks))
+                context = { 'letters_and_chunks': letters_and_chunks }
+                output_xml = render_chunks(context)
+                write_file(file_count, output_xml)
+                n_chars = m
+                chunks = [xml]
+                file_count += 1
+                letters_and_chunks = []
+                letter = ''  # Обнуляем текущую букву, чтобы она не выводилась
+                             # для следующей порции статей на ту же букву.
+            else:
+                n_chars += m
+                chunks.append(xml)
+
+        note = u'%s [ %s%% ] %s\r' % (
+                letter if letter else ' ',
+                int(round(i / float(n_entries) * 100)),
+                entry.civil_equivalent + ERASE_LINEEND)
+        sys.stderr.write(note.encode('utf-8'))
+
+    if chunks:
+        letters_and_chunks.append((letter, chunks))
+    chunks = []
+    if SPLIT_BY_LETTERS and letters_and_chunks:
+        context = { 'letters_and_chunks': letters_and_chunks }
+        output_xml = render_chunks(context)
+        write_file(file_count, output_xml)
+        file_count += 1
+        n_chars = 0
+        letters_and_chunks = []
+
+if not SPLIT_BY_LETTERS:
+    context = { 'letters_and_chunks': letters_and_chunks }
+    output_xml = render_chunks(context)
+    write_file(file_count, output_xml)
 
 sys.stderr.write(ERASE_LINE)
 print >> sys.stderr, SHOW_CURSOR

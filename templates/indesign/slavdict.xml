@@ -1,55 +1,22 @@
 {% trim %}
 <?xml version="1.0" encoding="UTF-8"?>
 <slavdict xmlns:aid="http://ns.adobe.com/AdobeInDesign/4.0/" xmlns:aid5="http://ns.adobe.com/AdobeInDesign/5.0/">
-    {% set ankira = false %}
-    {% set voutr = false %}
-    {% for letter, entries in letter_parts %}
-        <l>
-            <p aid:pstyle="Letter">{{ letter }}</p>{{ newline }}
+    {% for letter, chunks in letters_and_chunks %}
 
-            {% for reference, entry in entries %}
-                {% if reference %}
-                    {# Специальный случай -- создание ссылки
-                       с многоточием для слов на анкир... #}
-                    {% if reference[:5] == "ґгкЂр" and not ankira %}
-                        {% set ankira = true %}
-                        <e>
-                            <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
-                                <x aid:cstyle="Headword">ґгкЂр</x>
-                                <x aid:cstyle="Text">…</x>{{ space }}
-                                <x aid:cstyle="Em">см.</x>{{ nbsp }}
-                                <x aid:cstyle="CSLSegment">ґнкЂр</x>
-                                <x aid:cstyle="Text">…</x>
-                            </p>
-                        </e>
-                    {% elif reference[:5] == "ґгкЂр" and ankira %}
-                        {# pass #}
+        {% if letter %}
+            <l>
+                <p aid:pstyle="Letter">{{ letter }}</p>{{ newline }}
+        {% endif %}
 
-                    {# Специальный случай -- создание ссылки
-                       с многоточием для слов "воутрие", "воутрии",
-                       "воутрия". #}
-                    {% elif reference[:5] == "воyтр" and not voutr %}
-                        {% set voutr = true %}
-                        <e>
-                            <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
-                                <x aid:cstyle="Headword">воyтр</x>
-                                <x aid:cstyle="Text">…</x>{{ space }}
-                                <x aid:cstyle="Em">см.</x>{{ nbsp }}
-                                <x aid:cstyle="CSLSegment">ќтріе</x>
-                                <x aid:cstyle="Text">.</x>
-                            </p>
-                        </e>
-                    {% elif reference[:5] == "воyтр" and voutr %}
-                        {# pass #}
-                    {% else %}
-                        {% include 'indesign/reference.xml' with context %}
-                    {% endif %}
-                {% else %}
-                    {% include 'indesign/entry.xml' with context %}
-                {% endif %}
-                {{ backspace }}{{ newline }}
-            {% endfor %}
-        </l>
+                {% for chunk in chunks %}
+                    {{ chunk }}
+                    {{ backspace }}{{ newline }}
+                {% endfor %}
+
+        {% if letter %}
+            </l>
+        {% endif %}
+
     {% endfor %}
 </slavdict>
 {# vim: set ft=django.xml: #}
