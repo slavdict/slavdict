@@ -88,7 +88,7 @@
 
             <span class="Greek">
                 {{ ge.processed_text|
-                        web_regex("Text", '[\\(\\)]') |
+                        web_regex("Text", '[\\(\\)…,;:]') |
                         web_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}') |
                         replace(" ", "{{ space }}") }}
             </span>
