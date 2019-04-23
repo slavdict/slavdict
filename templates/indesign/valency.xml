@@ -23,7 +23,7 @@
         {% endif %}
         <x aid:cstyle="Text">{{ frame|trim|
             ind_cslav_injection("CSLSegmentEm")|
-            ind_regex("Valency", '[а-я]+[\\-\u2011]л\\.')|
+            ind_regex("Valency", '[а-яё]+[\\-\u2011]л\\.')|
             ind_regex("Em", 'с\\sпридат\\.|с\\sинф\\.|с\\sпрям\\.\\sречью'
                             '|с\\sдвойн\\.\\sвин\\.')
             }}</x>

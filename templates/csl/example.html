@@ -3,7 +3,7 @@
 
 {% set partial_translations = e.get_translations(fragmented=True, hidden=False) %}
 {% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
-{% set labels_in_translation= "(?<![А-Яа-я])букв\\." %}
+{% set labels_in_translation= "(?<![А-ЯЁа-яё])букв\\." %}
 
 
 {{ e.example_ucs | web_cslav_words("CSLSegment", "Text")
@@ -50,7 +50,7 @@
             <span class="Greek">
                 {{ ge.processed_text|
                         web_regex("Text", '[\\(\\)…,;:]') |
-                        web_regex("Em", '[а-яА-Я\\.\\s\\ \u00a0]{2,}') |
+                        web_regex("Em", '[а-яёА-ЯЁ\\.\\s\\ \u00a0]{2,}') |
                         replace(" ", "{{ space }}") }}
             </span>
 
