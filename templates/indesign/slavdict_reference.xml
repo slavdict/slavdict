@@ -4,7 +4,7 @@
     {% if reference.startswith(special.startswith) %}
         {% set special_match = true %}
         {% if not special.used %}
-            {% do special['used'] = True %}
+            {% do special.update({ 'used': True }) %}
             <e>
                 <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
                     <x aid:cstyle="Headword">{{ special.startswith }}</x>

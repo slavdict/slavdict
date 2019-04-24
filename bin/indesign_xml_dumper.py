@@ -84,7 +84,7 @@ if len(sys.argv) > 1:
             args.append(arg)
     r = re.compile(r'\s*,\s*|\s+')
     s = u' '.join(args).strip(' ,')
-    test_entries = [int(i) for i in r.split(s)]
+    test_entries = [int(i) for i in r.split(s) if i]
 
 print >> sys.stderr, 'Make multiple files according ' \
                      'to the first letter:', SPLIT_BY_LETTERS

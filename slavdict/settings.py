@@ -121,6 +121,7 @@ TEMPLATES = [
             'autoescape': False,
             'environment': 'slavdict.jinja2.environment',
             'extensions': [
+                'jinja2.ext.do',
                 'slavdict.jinja_extensions.trim_spaces.trim',
             ],
         },
