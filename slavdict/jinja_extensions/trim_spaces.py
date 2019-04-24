@@ -391,6 +391,15 @@ class Segment(Tag):
                 segment = u''.join(parts)
         else:
             segment = html_escape(self.segment)
+            angle_brackets = re.split(u'([\u27e8\u27e9])', segment)
+            if self.tag.for_web:
+                tag_template = u'<span class="angleBracket">%s</span>'
+            else:
+                tag_template = u'<x aid:cstyle="angleBracket">%s</x>'
+            segment = u''.join(
+                tag_template % item if i % 2 == 1 else item
+                for i, item in enumerate(angle_brackets)
+            )
         return tag % segment
 
 class ExternalSegment(Segment):
