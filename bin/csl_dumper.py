@@ -301,8 +301,14 @@ for letter, entries in letter_parts:
                     int(round(i / float(N) * 100)),
                     entry.civil_equivalent + ERASE_LINEEND)
             sys.stderr.write(note.encode('utf-8'))
-            html = render_to_string('csl/entry.html', { 'entry': entry,
-                'csl_url': csl_url })
+            try:
+                html = render_to_string('csl/entry.html',
+                        { 'entry': entry, 'csl_url': csl_url })
+            except:
+                sys.stderr.write('\n')
+                sys.stderr.write(u'{e.id} {e.civil_equivalent}\n'.format(e=entry))
+                sys.stderr.write(u'\n'.join(unicode(x) for x in sys.exc_info()))
+                sys.exit(1)
             filename = os.path.join(ENTRIES_DIR, u'%s.htm' % entry.id)
             with open(filename, 'wb') as f:
                 f.write(html.encode('utf-8'))
