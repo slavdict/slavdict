@@ -21,8 +21,6 @@
         {% else %}
             {# pass #}
         {% endif %}
-    {% else %}
-        {% include 'indesign/reference.xml' with context %}
     {% endif %}
 {% endfor %}
 
