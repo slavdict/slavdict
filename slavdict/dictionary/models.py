@@ -1067,7 +1067,7 @@ class Entry(models.Model, JSONSerializable):
                     tags.append(tag)
                 return tags
 
-            elif self.civil_equivalent in (u'гефсимани', u'гефсиманиа')
+            elif self.civil_equivalent in (u'гефсимани', u'гефсиманиа'):
                 base_vars = tuple(self.base_vars)
                 tags = (
                     {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
