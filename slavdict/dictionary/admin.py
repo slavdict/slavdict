@@ -624,17 +624,22 @@ civil_inv.short_description = u''  # Делаем заголовок столб�
 civil_inv.admin_order_field = 'civil_inverse'
 Entry.civil_inv = civil_inv
 
-entry_actions = []
 def assign_author(author):
     def func(modeladmin, request, queryset):
         for entry in queryset:
             entry.authors.add(author)
-    func.short_description = u'Назначить выбранные статьи автору %s' % author
+    func.short_description = u'Назначить автору %s' % author
     func.func_name = 'assign_author_%s' % author.pk
     return func
 
+def clear_authors(modeladmin, request, queryset):
+    for entry in queryset:
+        entry.authors.clear()
+clear_authors.short_description = u'Обнулить авторство'
+
+entry_actions = [clear_authors]
 try:
-    for author in CustomUser.objects.all():#.filter(groups__name=u'authors'):
+    for author in CustomUser.objects.exclude(last_name=u''):
         entry_actions.append(assign_author(author))
 except (OperationalError, ProgrammingError):
     pass
