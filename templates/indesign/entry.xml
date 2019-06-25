@@ -20,11 +20,11 @@
     <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
 
     {% set sc_several_nouns = entry.special_cases("several nouns") %}
-    {% set sc_volume2 = entry.special_cases("volume2") %}
+    {% set sc_other_volumes = entry.special_cases("other_volumes") %}
 
-{% if sc_volume2 %}
+{% if sc_other_volumes %}
 
-    {% for tag in sc_volume2 %}
+    {% for tag in sc_other_volumes %}
         {% if tag.class is defined %}<x aid:cstyle="{{ tag.class }}">{% endif %}
         {{ tag.text }}
         {% if tag.class is defined %}</x>{% endif %}
@@ -328,7 +328,7 @@
         {{ space }}<x aid:cstyle="Em">мн.</x>{{ space }}
     {% endif %}
 
-{% endif %}{# sc_volume2 #}
+{% endif %}{# sc_other_volumes #}
 
 
     {% for etym in entry.etymologies %}

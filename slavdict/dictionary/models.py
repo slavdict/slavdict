@@ -783,7 +783,7 @@ class Entry(models.Model, JSONSerializable):
         elif case == 'bigger' and self.civil_equivalent == u'больший':
             return ucs8(u"вели'кій")
 
-        elif case == 'volume2':
+        elif case == 'other_volumes':
             STAR = u'\u27e1'
             STAR_CLS = 'MeaningfulNoAccent'
             if u'вриена' == self.civil_equivalent:
@@ -1082,6 +1082,35 @@ class Entry(models.Model, JSONSerializable):
                     {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
                     {'text': ts.SPACE},
                     {'text': u'неизм.', 'class': 'Em'},
+                    {'text': ts.SPACE},
+                )
+                return tags
+
+            elif self.civil_equivalent in (u'епитрахиль', u'епитрахилий'):
+                base_vars = tuple(self.base_vars)
+                genitives = self.genitives
+                tags = (
+                    {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
+                    {'text': u',', 'class': 'Text'},
+                    {'text': ts.SPACE},
+                    {'text': genitives[0][1], 'class': 'CSLSegment'},
+                    {'text': ts.SPACE},
+                    {'text': u'м.', 'class': 'Em'},
+                    {'text': ts.SPACE},
+                    {'text': u'и', 'class': 'Conj'},
+                    {'text': ts.SPACE},
+                    {'text': genitives[1][1], 'class': 'CSLSegment'},
+                    {'text': ts.SPACE},
+                    {'text': u'ж.', 'class': 'Em'},
+                    {'text': ts.SPACE},
+                    {'text': u'и', 'class': 'Conj'},
+                    {'text': ts.SPACE},
+                    {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
+                    {'text': u',', 'class': 'Text'},
+                    {'text': ts.SPACE},
+                    {'text': genitives[2][1], 'class': 'CSLSegment'},
+                    {'text': ts.SPACE},
+                    {'text': u'м.', 'class': 'Em'},
                     {'text': ts.SPACE},
                 )
                 return tags
