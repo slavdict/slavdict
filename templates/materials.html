@@ -36,6 +36,9 @@
     #materials li a em {
         color: gray;
     }
+    #materials li.new-group {
+        margin-top: 1.5em;
+    }
 </style>
 
 <div id='materials'>
@@ -44,7 +47,7 @@
 
     <ul>
 
-        <li>
+        <li class="new-group">
             <a href="https://docs.google.com/document/d/1F2vnJpp_J48X49tdwrqefmtNd7wJIiAbuExp5TgZuwE">
                 Инструкция
             </a>
@@ -59,6 +62,13 @@
         <li>
             <a href="https://docs.google.com/document/d/1AmrZZgBa4BdTlhvyyBEN8n5KYD0-f_AC04Jd-v_pdjU">
                 Список сокращений
+            </a>
+        </li>
+
+        <li class="new-group">
+            <a href="{{ url('converter') }}">
+                Онлайн-конвертер текста<br />
+                <em>из АнтКонка в MS Word</em>
             </a>
         </li>
 
@@ -83,26 +93,15 @@
             </a>
         </li>
 
-        <li>
-            <a href="{{ url('converter') }}">
-                Онлайн-конвертер текста<br />
-                <em>из АнтКонка в MS Word</em>
-            </a>
-        </li>
-
-        <li>
+        <li class="new-group">
             <a href="https://drive.google.com/open?id=1zMfsL9-sBVUO3rVaRccFH-yr3qGaoPju">
-                Cловарь церковнославянского языка нового времени.
-                Том I. A—Б<br />
-                <em>PDF-версия печатного издания</em>
+                Cловарь церковнославянского языка нового времени. Том I. A—Б
             </a>
         </li>
 
         <li>
-            <a href="https://web.kamihq.com/web/viewer.html?source=sharedfile&document_identifier=0B3QNBYKqGkKVaDJLVnV3M3NjMWc">
-                Cловарь церковнославянского языка нового времени.
-                Том I. A—Б<br />
-                <em>PDF-версия для совместного комментирования</em>
+            <a href="https://drive.google.com/open?id=196aGdiiIhgyWdCkhVCjr-RtkPWv2TVDI">
+                Cловарь церковнославянского языка нового времени. Том II. В
             </a>
         </li>
 
