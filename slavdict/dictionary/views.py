@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import InvalidPage
+from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -574,7 +575,8 @@ def import_csv_billet(request):
             # материала.
             bar = re.compile(r"\s*[/\|\\]\s*", re.MULTILINE | re.UNICODE)
 
-            for row in csv_reader:
+            with transaction.atomic():
+              for row in csv_reader:
                 # Столбцы в CSV-файле
                 (orthvars_info, civil_equivalent, word_forms_list,
                         antconc_query, author_in_csv, additional_info,
