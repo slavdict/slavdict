@@ -33,6 +33,29 @@
     </style>
 {% endif %}
 
+    <style>
+        @media print {
+            div#main {
+                column-count: 1;
+                column-width: 11cm;
+            }
+            .FirstParagraph,
+            .MeaningParagraph,
+            .CollogroupParagraph,
+            .CfParagraph {
+                line-height: 0.9cm;
+            }
+        }
+
+{% if hide_authors %}
+        .author {
+            display: none;
+        }
+{% endif %}
+
+    </style>
+
+
 <script src="{{ STATIC_URL }}js/getCookie.js?{{ STATIC_RESOURCES_VERSION }}"
     type="application/javascript" charset="utf-8"></script>
 
