@@ -744,7 +744,7 @@ RE_REF2 = (
     ur'(\s*)'
 )
 
-def insert_ref(x, for_web):
+def insert_ref(x, for_web, ref_func=None):
     em_tag = Tag(cslav_style=None, civil_style='Em', for_web=for_web)
     text_tag = Tag(cslav_style=None, civil_style='Text', for_web=for_web)
     number_tag = Tag(cslav_style=None, civil_style='HeadwordNumber',
@@ -777,7 +777,11 @@ def insert_ref(x, for_web):
     headword = hyphenate_ucs8(entry.base_vars[0].idem_ucs)
     s = Segment(headword, csl_tag, base_script=SCRIPT_CSLAV)
     if for_web:
-        text += u'<a href="%s">%s</a>' % (entry.get_absolute_url(), s)
+        if ref_func:
+            url = ref_func(entry)
+        else:
+            url = entry.get_absolute_url()
+        text += u'<a href="%s">%s</a>' % (url, s)
     else:
         text += unicode(s)
 
@@ -821,7 +825,7 @@ def insert_ref(x, for_web):
     return text
 
 @register_filter
-def ind_refs(value, for_web=False):
+def ind_refs(value, for_web=False, ref_func=None):
     """ Подставновка шаблонов ссылок:
 
       idem[врачь]   --> то же, что врачь (см.)
@@ -839,7 +843,7 @@ def ind_refs(value, for_web=False):
     for i, x in enumerate(re.split(u'(%s)' % RE_REF1, value)):
         if i % 2 == 1:
             try:
-                text += insert_ref(x, for_web=for_web)
+                text += insert_ref(x, for_web=for_web, ref_func=ref_func)
             except MultipleObjectsReturned:
                 text += x + (u'[ ###### Ошибка! Ссылка задана недостаточно '
                     u'специфично -- по гражданскому написанию найдено '
@@ -854,8 +858,8 @@ def ind_refs(value, for_web=False):
     return text
 
 @register_filter
-def web_refs(value):
-    return ind_refs(value, for_web=True)
+def web_refs(value, ref_func=None):
+    return ind_refs(value, for_web=True, ref_func=ref_func)
 
 @register_filter
 def ind_collocation_special_cases(words, for_web=False):

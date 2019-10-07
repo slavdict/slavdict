@@ -148,7 +148,7 @@
         web_regex("Em", 'в[\\s\u00a0]Син\\. пер\\.') |
         web_regex("Em", '(?<=\()(?:арам)\\.(?=\))') |
         web_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
-        web_refs() }}</span>
+        web_refs(csl_url) }}</span>
 {% endif %}
 
 {% if m.gloss %}
@@ -161,7 +161,7 @@
         web_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
         web_regex("Text", '(?<=Син\.\sпер\.\s)Керенгаппух|бдолах|сирияне|сирийский|сириец|земля Уц') |
         web_regex("Text", '(?<=Септ\.\s)Авситидийская') |
-        web_refs() }}</span>
+        web_refs(csl_url) }}</span>
     {{ space }}
 {% endif %}
 
