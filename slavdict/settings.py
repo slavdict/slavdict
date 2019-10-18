@@ -142,6 +142,7 @@ INSTALLED_APPS = (
 
     'slavdict.custom_user',
     'slavdict.dictionary',
+    'slavdict.csl_annotations',
 )
 
 ######################################
