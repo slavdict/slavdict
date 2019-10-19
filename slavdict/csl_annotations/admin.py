@@ -11,6 +11,7 @@ from slavdict.csl_annotations.models import Annotation
 from slavdict.csl_annotations.models import Author
 from slavdict.csl_annotations.models import FixedWidthTextField
 from slavdict.csl_annotations.models import Tag
+from slavdict.csl_annotations.models import TagGroup
 
 admin.site.login_template = 'registration/login.html'
 
@@ -29,15 +30,25 @@ def get_annotation_tags(self):
 
 
 def get_annotation_authors(self):
-    return u', '.join(a for a in self.authors.all())
+    return u', '.join(unicode(a) for a in self.authors.all())
 
 
 get_annotation_name.short_description = u'Аннотации'
-get_annotation_tags.short_description = u'Ярлыки'
+get_annotation_tags.short_description = u'Бирки'
 get_annotation_authors.short_description = u'Авторы'
 Annotation._name = get_annotation_name
 Annotation._tags = get_annotation_tags
 Annotation._authors = get_annotation_authors
+
+
+def get_tag_groups(self):
+    groups = self.groups.all()
+    text = u'; '.join(group.name for group in groups) if groups else u''
+    return mark_safe(text)
+
+
+get_tag_groups.short_description = u'Коллекция бирок'
+Tag._groups = get_tag_groups
 
 
 class AdminAnnotation(admin.ModelAdmin):
@@ -60,9 +71,29 @@ class AdminAnnotation(admin.ModelAdmin):
     list_filter = ('tags', 'authors')
     search_fields = ('title', 'bib')
 
+    def save_related(self, request, form, formsets, change):
+        super(AdminAnnotation, self).save_related(request, form, formsets, change)
+        additional_tags = []
+        tags = form.instance.tags.all()
+        for tag in tags:
+            while tag.parent:
+                tag = tag.parent
+                if tag not in tags:
+                    additional_tags.append(tag)
+        if additional_tags:
+            form.instance.tags.add(*additional_tags)
+
+
+class AdminTagGroup(admin.ModelAdmin):
+    pass
+
 
 class AdminTag(admin.ModelAdmin):
-    pass
+    list_display = ('__unicode__', 'order', '_groups')
+    list_editable = ('order',)
+    formfield_overrides = {
+        models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},
+    }
 
 
 class AdminAuthor(admin.ModelAdmin):
@@ -73,4 +104,5 @@ class AdminAuthor(admin.ModelAdmin):
 
 admin.site.register(Annotation, AdminAnnotation)
 admin.site.register(Tag, AdminTag)
+admin.site.register(TagGroup, AdminTagGroup)
 admin.site.register(Author, AdminAuthor)

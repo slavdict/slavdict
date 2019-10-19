@@ -39,14 +39,36 @@ class Author(models.Model):
         ordering = ('last_name', 'first_name', 'second_name')
 
 
+class TagGroup(models.Model):
+    name = CharField(u'название', max_length=50)
+    parent_tag = ForeignKey('Tag', verbose_name=u'родительская бирка',
+                            help_text=u'Бирка, к которой относится группа.')
+    def __unicode__(self):
+        return u'[%s] %s' % (self.parent_tag.name, self.name)
+
+    class Meta:
+        verbose_name = u'коллекция бирок'
+        verbose_name_plural = u'коллекции бирок'
+
+
 class Tag(models.Model):
-    name = CharField(u'ярлык', max_length=50)
+    name = CharField(u'бирка', max_length=50)
     category = CharField(u'категрия', choices=TAG_CATEGORIES, max_length=1)
+    groups = ManyToManyField(TagGroup, verbose_name=u'группа', blank=True)
+    parent = ForeignKey('self', verbose_name=u'бирка-родитель', blank=True,
+                        null=True)
     order = models.PositiveSmallIntegerField(
             u'порядок', default=10, help_text=u'Порядок в рамках категории')
 
     def __unicode__(self):
-        return u'[%s] %s' % (self.get_category_display(), self.name)
+        tag = self
+        hierarchy = [tag]
+        while tag.parent:
+            tag = tag.parent
+            hierarchy.append(tag)
+        hierarchy.reverse()
+        hierarchy_text = u' > '.join(tag.name for tag in hierarchy)
+        return u'[%s] %s' % (self.get_category_display(), hierarchy_text)
 
     class Meta:
         verbose_name = u'бирка'
@@ -99,6 +121,7 @@ class Annotation(models.Model):
                           help_text=URL_HELP, null=True, unique=True)
     youtube_id = CharField(YOUTUBE_ID_NAME, max_length=20, blank=True,
                            help_text=YOUTUBE_ID_HELP, null=True, unique=True)
+    create_date = models.DateTimeField(auto_now_add=True, blank=True)
 
     def get_title_html(self):
         html = markdown.markdown(self.title) if self.title else u''
