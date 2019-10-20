@@ -13,6 +13,7 @@ Django = "~=1.11.23"
 "Jinja2" = ">=2.10"
 "psycopg2-binary" = "*"
 pipfile = {version = "*",editable = true}
+django-url-or-relative-url-field = "*"
 
 [requires]
 python_version = "2.7"

@@ -2,12 +2,13 @@
 from __future__ import unicode_literals
 
 import markdown
-from django.utils.safestring import mark_safe
+from url_or_relative_url_field.fields import URLOrRelativeURLField
 
 from django.db import models
 from django.db.models import CharField
 from django.db.models import ForeignKey
 from django.db.models import ManyToManyField
+from django.utils.safestring import mark_safe
 
 
 class FixedWidthTextField(CharField):
@@ -117,8 +118,9 @@ class Annotation(models.Model):
     tags = ManyToManyField(Tag, verbose_name=u'тэги')
     anchor = models.SlugField(u'якорь', max_length=30, blank=True, null=True,
                               help_text=ANCHOR_HELP, unique=True)
-    url = models.URLField(u'ссылка на ресурс', max_length=1000, blank=True,
-                          help_text=URL_HELP, null=True, unique=True)
+    url = URLOrRelativeURLField(u'ссылка на ресурс', max_length=1000,
+                                blank=True, help_text=URL_HELP,
+                                null=True, unique=True)
     youtube_id = CharField(YOUTUBE_ID_NAME, max_length=20, blank=True,
                            help_text=YOUTUBE_ID_HELP, null=True, unique=True)
     create_date = models.DateTimeField(auto_now_add=True, blank=True)
