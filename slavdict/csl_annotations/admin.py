@@ -70,7 +70,8 @@ class AdminAnnotation(admin.ModelAdmin):
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},
     }
     ordering = ('-id',)
-    list_display = ('_name', 'anchor', '_tags', '_authors')
+    list_display = ('anchor', '_name', '_tags', '_authors')
+    list_display_links = ('_name',)
     list_filter = ('tags', 'authors')
     search_fields = ('title', 'bib')
 
