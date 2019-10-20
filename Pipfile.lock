@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "64f33c5b85718677f9d1f0a0a64ef17a561cd50a517068616283db65a7a4ed3f"
+            "sha256": "a4626b2c828a407ad8944e0fa2e792a6adb50c3234651ae1946bcef9d7decbf1"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -23,13 +23,6 @@
             ],
             "index": "pypi",
             "version": "==1.11.25"
-        },
-        "django-url-or-relative-url-field": {
-            "hashes": [
-                "sha256:b2ccad04150623e765ce9c56a1fb23a9b7fe432f49a8b4f65ca152da7911d75c"
-            ],
-            "index": "pypi",
-            "version": "==0.1.2"
         },
         "hip2unicode": {
             "git": "https://github.com/slavdict/hip2unicode.git",
@@ -189,7 +182,7 @@
                 "sha256:0ec8205a157c80d7acc301c0b18fbd5d44fe655968f5d947b6ecef5290fc35db",
                 "sha256:6cd9a47b597b37cc57de1c05e56fb1a1c9cc9fab04fe78c29acd090418529868"
             ],
-            "markers": "python_version == '2.7' or python_version == '3.3'",
+            "markers": "python_version in '2.6 2.7 3.2 3.3'",
             "version": "==2.3.5"
         },
         "pexpect": {
