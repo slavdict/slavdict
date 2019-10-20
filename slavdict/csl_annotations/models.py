@@ -22,6 +22,13 @@ TAG_CATEGORIES = (
     ('q', u'Материал'),
     ('u', u'Инструменты'),
 )
+TAG_COLORS = {}
+TAG_COLORS[TAG_CATEGORIES[0][0]] = '#f60000'
+TAG_COLORS[TAG_CATEGORIES[1][0]] = '#ff8c00'
+TAG_COLORS[TAG_CATEGORIES[2][0]] = '#eb0'
+TAG_COLORS[TAG_CATEGORIES[3][0]] = '#4de94c'
+TAG_COLORS[TAG_CATEGORIES[4][0]] = '#3783ff'
+TAG_COLORS[TAG_CATEGORIES[5][0]] = '#4815aa'
 
 
 class Author(models.Model):
@@ -62,13 +69,19 @@ class Tag(models.Model):
 
     def __unicode__(self):
         tag = self
-        hierarchy = [tag]
+        hierarchy = [u'<strong>%s</strong>' % tag.name]
         while tag.parent:
             tag = tag.parent
-            hierarchy.append(tag)
+            hierarchy.append(tag.name)
         hierarchy.reverse()
-        hierarchy_text = u' > '.join(tag.name for tag in hierarchy)
-        return u'[%s] %s' % (self.get_category_display(), hierarchy_text)
+        hierarchy_text = u' &gt; '.join(tag_name for tag_name in hierarchy)
+        text = u'[%s] %s' % (self.get_category_display(), hierarchy_text)
+        # NOTE: Двойные и одинарные кавычки далее принципиально важны, иначе
+        # поломаются надписи в админковских фильтрах, так как этот текст
+        # добавляется в частности внутрь атрибута title="".
+        html = u"<span style='font-weight: normal; color: %s'>%s</span>" % (
+                TAG_COLORS[self.category], text)
+        return mark_safe(html)
 
     class Meta:
         verbose_name = u'бирка'

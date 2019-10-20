@@ -12,6 +12,7 @@ from slavdict.csl_annotations.models import Author
 from slavdict.csl_annotations.models import FixedWidthTextField
 from slavdict.csl_annotations.models import Tag
 from slavdict.csl_annotations.models import TagGroup
+from slavdict.csl_annotations.models import TAG_COLORS
 
 admin.site.login_template = 'registration/login.html'
 
@@ -22,10 +23,12 @@ def get_annotation_name(self):
 
 def get_annotation_tags(self):
     tag_groups = []
-    get_key = lambda x: x.get_category_display()
-    for key, iterator in groupby(self.tags.all(), get_key):
-        tags = u', '.join(u'<strong>%s</strong>' % tag.name for tag in iterator)
-        tag_groups.append(u'%s: %s' % (key, tags))
+    get_category = lambda x: (x.category, x.get_category_display())
+    for (catval, catname), iterator in groupby(self.tags.all(), get_category):
+        tags = u'; '.join(u'<strong>%s</strong>' % tag.name for tag in iterator)
+        text = u'%s: %s' % (catname, tags)
+        html = u'<span style="color: %s">%s</span>' % (TAG_COLORS[catval], text)
+        tag_groups.append(html)
     return mark_safe(u'; '.join(tag_groups))
 
 
@@ -33,7 +36,7 @@ def get_annotation_authors(self):
     return u', '.join(unicode(a) for a in self.authors.all())
 
 
-get_annotation_name.short_description = u'Аннотации'
+get_annotation_name.short_description = u'Аннотация'
 get_annotation_tags.short_description = u'Бирки'
 get_annotation_authors.short_description = u'Авторы'
 Annotation._name = get_annotation_name
