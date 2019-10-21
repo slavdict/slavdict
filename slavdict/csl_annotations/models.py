@@ -38,7 +38,10 @@ class Author(models.Model):
     title = FixedWidthTextField(u'титулы/регалии', max_length=500, blank=True)
 
     def __unicode__(self):
-        return u'%s %s.' % (self.last_name, self.first_name[:1])
+        text = u'%s %s.' % (self.last_name, self.first_name[:1])
+        if self.second_name:
+            text += u' %s.' % self.second_name[:1]
+        return text
 
     class Meta:
         verbose_name = u'автор'
@@ -152,11 +155,24 @@ class Annotation(models.Model):
     create_date = models.DateTimeField(auto_now_add=True, blank=True)
 
     def get_title_html(self):
-        html = markdown.markdown(self.title) if self.title else u''
+        title = self.title.strip()
+        html = markdown.markdown(title) if title else u''
         return mark_safe(html)
 
+    def get_title_with_author_html(self):
+        title = self.title.strip()
+        text = title if title else u''
+        if text:
+            authors = list(self.authors.all())
+            if authors:
+                text2 = u', '.join(u'<i>%s</i>' % unicode(a) for a in authors)
+                text = u'%s %s' % (text2, text)
+            text = markdown.markdown(text)
+        return mark_safe(text)
+
     def get_bib_html(self):
-        html = markdown.markdown(self.bib) if self.bib else u''
+        bib = self.bib.strip()
+        html = markdown.markdown(bib) if bib else u''
         return mark_safe(html)
 
     def get_annotation_html(self):
