@@ -155,12 +155,12 @@ class Annotation(models.Model):
     create_date = models.DateTimeField(auto_now_add=True, blank=True)
 
     def get_title_html(self):
-        title = self.title.strip()
+        title = self.title and self.title.strip()
         html = markdown.markdown(title) if title else u''
         return mark_safe(html)
 
     def get_title_with_author_html(self):
-        title = self.title.strip()
+        title = self.title and self.title.strip()
         text = title if title else u''
         if text:
             authors = list(self.authors.all())
@@ -171,7 +171,7 @@ class Annotation(models.Model):
         return mark_safe(text)
 
     def get_bib_html(self):
-        bib = self.bib.strip()
+        bib = self.bib and self.bib.strip()
         html = markdown.markdown(bib) if bib else u''
         return mark_safe(html)
 
