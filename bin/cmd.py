@@ -15,6 +15,7 @@ from django.db.models.fields import TextField, CharField
 
 import slavdict.dictionary.models as models
 from slavdict.dictionary.models import *
+from slavdict.csl_annotations.models import *
 
 EDITOR = os.environ.get('EDITOR', 'vi')
 INDEXES = {1: u'¹', 2: u'²', 3: u'³'}
@@ -327,6 +328,8 @@ class DataChangeShell(cmd.Cmd):
         if not self.found_items:
             print u'Нет элементов для правки'
             return
+        TAB = u'\u21b9'
+        ENTER = u'\u23ce'
         register = {}
         text = u''
         i = 1
@@ -336,8 +339,10 @@ class DataChangeShell(cmd.Cmd):
                 register[i] = (item, attrname)
                 if self.verbose:
                     text += u'#\t%s\n' % host_info
-                text += u'%s\t%s\n' % (
-                    i, re.sub(ur'[\r\n\v\t]', ' ', getattr(item, attrname)))
+                t = getattr(item, attrname)
+                t = re.sub(ur'[\r\n\v]', ENTER, t)
+                t = t.replace(u'\t', TAB)
+                text += u'%s\t%s\n' % (i, t)
                 i += 1
 
         with tempfile.NamedTemporaryFile(suffix=".tmp") as tf:
@@ -351,6 +356,8 @@ class DataChangeShell(cmd.Cmd):
         for line in lines:
             oid, value = line.decode('utf-8').split(u'\t', 1)
             value = value.strip()
+            value = value.replace(ENTER, u'\n')
+            value = value.replace(TAB, u'\t')
             oid = int(oid)
             o, attrname = register.get(oid, (None, None))
             if o is not None:
@@ -479,6 +486,32 @@ TEXT = u'''
 ]),
 (Participle, [
     'idem',
+]),
+
+
+#
+# Модели для аннотаций на портале «ЦСЛ сегодня»
+#
+(Author, [
+    'first_name',
+    'second_name',
+    'last_name',
+    'title',
+]),
+(TagGroup, [
+    'name',
+]),
+(Tag, [
+    'name',
+]),
+(Annotation, [
+    'title',
+    'bib',
+    'annotation',
+    'teaser',
+    'anchor',
+    'url',
+    'youtube_id',
 ]),
     '''
 
