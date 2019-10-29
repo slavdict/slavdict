@@ -18,7 +18,9 @@ admin.site.login_template = 'registration/login.html'
 
 
 def get_annotation_name(self):
-    return self.get_title_with_author_html() or self.get_bib_html()
+    if self.title:
+        return self.get_title_with_author_html()
+    return self.get_bib_html()
 
 
 def get_annotation_tags(self):

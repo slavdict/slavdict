@@ -198,7 +198,8 @@ class Annotation(models.Model):
     def save(self, *args, **kwargs):
         for fieldname in ('title', 'bib', 'annotation', 'teaser',
                           'anchor', 'url', 'youtube_id'):
-            if not getattr(self, fieldname):
+            value = getattr(self, fieldname)
+            if not value or not value.strip():
                 setattr(self, fieldname, None)
         super(Annotation, self).save(*args, **kwargs)
 

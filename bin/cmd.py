@@ -123,7 +123,7 @@ class DataChangeShell(cmd.Cmd):
         except (KeyboardInterrupt, Exception):
             sys.stdout.write(SHOW_CURSOR)
             print
-            print u'\n'.join(sys.exc_info()[:])
+            print u'\n'.join(unicode(x) for x in sys.exc_info()[:])
             print u'Поиск прерван...'
             # self.reset_found_items()
 
@@ -135,6 +135,7 @@ class DataChangeShell(cmd.Cmd):
             sort_key = sort_by_value
         for model, attrs in self.model_attrs:
             self.tcount[model.__name__] = {}
+            from_dict = model.__module__ == 'slavdict.dictionary.models'
             for attrname in attrs:
                 storage_key = (model, attrname)
                 items = model.objects.all()
@@ -152,18 +153,21 @@ class DataChangeShell(cmd.Cmd):
                         ERASE_LINEEND + RESTORE_CURSOR_POSITION,
                     )
                     sys.stdout.write(note.encode('utf-8'))
-                    if self.pattern.search(getattr(item, attrname)):
-                        host_entry = item.host_entry
-                        if not host_entry.volume(self.volumes):
-                            continue
+                    if self.pattern.search(getattr(item, attrname) or u''):
+                        if from_dict:
+                            host_entry = item.host_entry
+                            if not host_entry.volume(self.volumes):
+                                continue
                         count += 1
-                        txt = getattr(item, attrname)
-                        host_info = u'%s%s' % (
-                                host_entry.civil_equivalent,
-                                INDEXES.get(host_entry.homonym_order, u''))
-                        host = item.host
-                        if host != host_entry:
-                            host_info = u'%s | %s' % (
+                        txt = getattr(item, attrname) or u''
+                        host_info = u''
+                        if from_dict:
+                            host_info = u'%s%s' % (
+                                    host_entry.civil_equivalent,
+                                    INDEXES.get(host_entry.homonym_order, u''))
+                            host = item.host
+                            if host != host_entry:
+                                host_info = u'%s | %s' % (
                                               host_info, host.civil_equivalent)
                         value = (item, host_info, txt)
                         self.found_items[storage_key].append(value)
@@ -182,7 +186,7 @@ class DataChangeShell(cmd.Cmd):
                         BOLD_YELLOW + model.__name__,
                         attrname + RESET_FORMAT + ERASE_LINEEND)
             for item, host_info, _ in items:
-                txt = getattr(item, attrname)
+                txt = getattr(item, attrname) or u''
                 host_info = BOLD_BLACK + host_info + RESET_FORMAT
                 subst = self.pattern.sub(
                         BOLD_CYAN + r'\g<0>' + RESET_FORMAT, txt)
@@ -201,7 +205,7 @@ class DataChangeShell(cmd.Cmd):
                         BOLD_YELLOW + model.__name__,
                         attrname + RESET_FORMAT + ERASE_LINEEND)
             for item, host_info, _ in items:
-                initial = getattr(item, attrname)
+                initial = getattr(item, attrname) or u''
                 if self.pattern.search(initial):
                     try:
                         # NOTE:qSeF4: В шаблоне замены могут быть
@@ -254,7 +258,7 @@ class DataChangeShell(cmd.Cmd):
         except (KeyboardInterrupt, Exception):
             sys.stdout.write(SHOW_CURSOR)
             print
-            print u'\n'.join(sys.exc_info()[:])
+            print u'\n'.join(unicode(x) for x in sys.exc_info()[:])
             print u'Замена прервана. Все произведённые изменения отменены.'
 
     def _do_replace(self, arg):
@@ -262,12 +266,13 @@ class DataChangeShell(cmd.Cmd):
             print u'Установите шаблон замены'
             return
         for (model, attrname), items in self.found_items.items():
+            from_dict = model.__module__ == 'slavdict.dictionary.models'
             if items:
                 print u'\n%s.%s' % (
                         BOLD_YELLOW + model.__name__,
                         attrname + RESET_FORMAT + ERASE_LINEEND)
             for item, host_info, _ in items:
-                initial = getattr(item, attrname)
+                initial = getattr(item, attrname) or u''
                 if self.pattern.search(initial):
                     try:  # SEE:qSeF4:
                         final = self.pattern.sub(self.replacement, initial)
@@ -279,7 +284,8 @@ class DataChangeShell(cmd.Cmd):
                                u'с шаблоном поиска: %s' % err)
                         return
                     setattr(item, attrname, final)
-                    item.save(without_mtime=True)
+                    kwargs = { 'without_mtime': True } if from_dict else {}
+                    item.save(**kwargs)
                     host_info = BOLD_BLACK + host_info + RESET_FORMAT
                     if self.verbose:
                         print u'*  %s\n*  %s\n%s\n' % (
@@ -315,7 +321,7 @@ class DataChangeShell(cmd.Cmd):
         except (KeyboardInterrupt, Exception):
             sys.stdout.write(SHOW_CURSOR)
             print
-            print u'\n'.join(sys.exc_info()[:])
+            print u'\n'.join(unicode(x) for x in sys.exc_info()[:])
             print u'Замена прервана. Все произведённые изменения отменены.'
         else:
             print u'''
@@ -334,12 +340,13 @@ class DataChangeShell(cmd.Cmd):
         text = u''
         i = 1
         for (model, attrname), items in self.found_items.items():
+            from_dict = model.__module__ == 'slavdict.dictionary.models'
             text += u'\n# %s.%s\n\n' % (model.__name__, attrname)
             for item, host_info, _ in items:
                 register[i] = (item, attrname)
                 if self.verbose:
                     text += u'#\t%s\n' % host_info
-                t = getattr(item, attrname)
+                t = getattr(item, attrname) or u''
                 t = re.sub(ur'[\r\n\v]', ENTER, t)
                 t = t.replace(u'\t', TAB)
                 text += u'%s\t%s\n' % (i, t)
@@ -361,10 +368,11 @@ class DataChangeShell(cmd.Cmd):
             oid = int(oid)
             o, attrname = register.get(oid, (None, None))
             if o is not None:
-                prev_value = getattr(o, attrname)
+                prev_value = getattr(o, attrname) or u''
                 if value != prev_value:
                     setattr(o, attrname, value)
-                    o.save(without_mtime=True)
+                    kwargs = { 'without_mtime': True } if from_dict else {}
+                    o.save(**kwargs)
                     del register[oid]
 
     def default(self, arg):
@@ -509,6 +517,7 @@ TEXT = u'''
     'bib',
     'annotation',
     'teaser',
+
     'anchor',
     'url',
     'youtube_id',
