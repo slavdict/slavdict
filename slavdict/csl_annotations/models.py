@@ -92,6 +92,14 @@ class Tag(models.Model):
         ordering = ('category', 'order', 'id')
 
 
+
+MARKDOWN_HELP = u'''
+
+    <p style="font-size: xx-small; margin-bottom: 1em">
+    Для курсива, ссылок и абзацев используйте
+    <a target="_blank" href="https://docs.google.com/document/d/1onDgE9wkZSGbXZg5V3GdoPx8gQ4fhXe73E7Sn0qvDY4">разметку Markdown</a>.</p>
+
+'''
 MOSTLY_FOR_VIDEOS = u'''
 
     Обязательно для видео, факультативно для книг и статей.<br>
@@ -99,10 +107,14 @@ MOSTLY_FOR_VIDEOS = u'''
     автор автоматически будет добавлен (если он выделен галочкой в поле<br>
     «Автор») при выводе заголовка аннотации на портале.
 
-'''
-MOSTLY_FOR_TEXTS = u'Обязательно для книг и статей, факультативно для видео'
-FOR_TEXTS = u'Для книг и статей'
-FOR_VIDEOS = u'Для видео'
+''' + MARKDOWN_HELP
+MOSTLY_FOR_TEXTS = u'''
+
+    Обязательно для книг и статей, факультативно для видео.
+
+''' + MARKDOWN_HELP
+FOR_TEXTS = u'Для книг и статей.' + MARKDOWN_HELP
+FOR_VIDEOS = u'Для видео.' + MARKDOWN_HELP
 ANCHOR_HELP = u'''
 
     Якорь, чтобы сослаться на текущую аннотацию из другой аннотации.<br>
@@ -112,7 +124,7 @@ ANCHOR_HELP = u'''
     Если якорь аннотации на «ресурс N» задан так <span
     style="color: #070">ludogovsk8</span>, то сослаться<br>
     из текста другой аннотации на него можно так:
-    <span style="color: #070">см. (ресурс N)[#ludogovsk8]</span>.<br>
+    <span style="color: #070">см. [ресурс N](#ludogovsk8)</span>.<br>
 
 '''
 YOUTUBE_ID_NAME = u'ID видео'
