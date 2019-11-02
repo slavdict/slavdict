@@ -140,6 +140,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'rangefilter',
+
     'slavdict.custom_user',
     'slavdict.dictionary',
     'slavdict.csl_annotations',

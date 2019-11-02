@@ -253,16 +253,41 @@
             else { return '0px'; }
         }
         $('#changelist-filter > h3').each(function () {
-            var x = $(this);
-            if (x.next().find(':first-child').hasClass('selected')) {
-                x.next().css('padding-bottom', changeCssProp);
-                x.next().find('li').toggle();
-            }
+            var x = $(this),
+                isDateTimeFilter = (function () {
+                    var siblings = x.nextAll();
+                    for (var i=0; i<siblings.length; i++) {
+                        var s = siblings[i];
+                        if (s.localName === 'h3') return false;
+                        if (s.className === 'admindatefilter') return $(s);
+                    }
+                })();
             x.css("cursor", "pointer");
-            x.click(function () {
-                x.next().css('padding-bottom', changeCssProp);
-                x.next().find('li').slideToggle();
-            });
+            if (isDateTimeFilter) {
+                var selected = (function () {
+                    var list = isDateTimeFilter.find('input.vDateField');
+                    for (var i=0; i<list.length; i++) {
+                        if (list[i].value.length > 0) return true;
+                    }
+                })();
+                x.click(function () {
+                    isDateTimeFilter.css('padding-bottom', changeCssProp);
+                    isDateTimeFilter.find('form').slideToggle();
+                });
+                if (!selected) {
+                    isDateTimeFilter.css('padding-bottom', changeCssProp);
+                    isDateTimeFilter.find('form').toggle();
+                }
+            } else {
+                x.click(function () {
+                    x.next().css('padding-bottom', changeCssProp);
+                    x.next().find('li').slideToggle();
+                });
+                if (x.next().find(':first-child').hasClass('selected')) {
+                    x.next().css('padding-bottom', changeCssProp);
+                    x.next().find('li').toggle();
+                }
+            }
         });
 
         /* Действия, которые необходимо отложить хотя бы на секунду, чтобы они

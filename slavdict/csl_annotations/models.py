@@ -171,7 +171,8 @@ class Annotation(models.Model):
                     blank=True, null=True, unique=True, help_text=URL_HELP)
     youtube_id = CharField(YOUTUBE_ID_NAME, max_length=20, blank=True,
                            help_text=YOUTUBE_ID_HELP, null=True, unique=True)
-    create_date = models.DateTimeField(auto_now_add=True, blank=True)
+    create_date = models.DateTimeField(u'время добавления', auto_now_add=True,
+                                       blank=True)
 
     def get_title_html(self):
         title = self.title and self.title.strip()

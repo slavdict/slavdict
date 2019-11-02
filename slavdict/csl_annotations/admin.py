@@ -7,6 +7,8 @@ from django.contrib import admin
 from django.db import models
 from django.utils.safestring import mark_safe
 
+from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
+
 from slavdict.csl_annotations.models import Annotation
 from slavdict.csl_annotations.models import Author
 from slavdict.csl_annotations.models import FixedWidthTextField
@@ -74,7 +76,10 @@ class AdminAnnotation(admin.ModelAdmin):
     ordering = ('-id',)
     list_display = ('anchor', '_name', '_tags', '_authors')
     list_display_links = ('_name',)
-    list_filter = ('tags', 'authors')
+    list_filter = (
+        'tags', 'authors',
+        ('create_date', DateTimeRangeFilter),
+    )
     search_fields = ('title', 'bib')
 
     def save_related(self, request, form, formsets, change):
