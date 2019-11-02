@@ -89,6 +89,9 @@ class AdminAnnotation(admin.ModelAdmin):
         if additional_tags:
             form.instance.tags.add(*additional_tags)
 
+    class Media:
+        js = ("fix_admin.js",)
+
 
 class AdminTagGroup(admin.ModelAdmin):
     pass
