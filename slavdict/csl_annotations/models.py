@@ -100,6 +100,13 @@ MARKDOWN_HELP = u'''
     <a target="_blank" href="https://docs.google.com/document/d/1onDgE9wkZSGbXZg5V3GdoPx8gQ4fhXe73E7Sn0qvDY4">разметку Markdown</a>.</p>
 
 '''
+MARKDOWN2_HELP = u'''
+
+    <p style="font-size: xx-small; margin-bottom: 1em">
+    Для курсива используйте
+    <a target="_blank" href="https://docs.google.com/document/d/1onDgE9wkZSGbXZg5V3GdoPx8gQ4fhXe73E7Sn0qvDY4">разметку Markdown</a>.</p>
+
+'''
 MOSTLY_FOR_VIDEOS = u'''
 
     Обязательно для видео, факультативно для книг и статей.<br>
@@ -107,7 +114,7 @@ MOSTLY_FOR_VIDEOS = u'''
     автор автоматически будет добавлен (если он выделен галочкой в поле<br>
     «Автор») при выводе заголовка аннотации на портале.
 
-''' + MARKDOWN_HELP
+''' + MARKDOWN2_HELP
 MOSTLY_FOR_TEXTS = u'''
 
     Обязательно для книг и статей, факультативно для видео.
@@ -118,7 +125,7 @@ FOR_VIDEOS = u'Для видео.' + MARKDOWN_HELP
 ANCHOR_HELP = u'''
 
     Якорь, чтобы сослаться на текущую аннотацию из другой аннотации.<br>
-    Если ссылкаться на данную аннотацию из другой нет необходимости,<br>
+    Если ссылаться на данную аннотацию из другой нет необходимости,<br>
     то поле можно оставлять пустым.<br>
     <br>
     Если якорь аннотации на «ресурс N» задан так <span
@@ -154,7 +161,7 @@ class Annotation(models.Model):
     teaser = models.TextField(u'тизер', blank=True, help_text=FOR_VIDEOS,
                               null=True, unique=True)
     authors = ManyToManyField(Author, verbose_name=u'авторы', blank=True)
-    tags = ManyToManyField(Tag, verbose_name=u'тэги')
+    tags = ManyToManyField(Tag, verbose_name=u'бирки')
     anchor = models.SlugField(u'якорь', max_length=30, blank=True, null=True,
                               help_text=ANCHOR_HELP, unique=True)
     # NOTE: Использовать для url стандартное джанговское поле URLField
