@@ -153,13 +153,15 @@ URL_HELP = u'''
 
 class Annotation(models.Model):
     title = FixedWidthTextField(u'название', max_length=200, blank=True,
-                                null=True, help_text=MOSTLY_FOR_VIDEOS)
+                                null=True, unique=True,
+                                help_text=MOSTLY_FOR_VIDEOS)
     bib = FixedWidthTextField(u'библиографическая ссылка', max_length=2000,
-                              blank=True, null=True, help_text=FOR_TEXTS)
+                              blank=True, null=True, unique=True,
+                              help_text=FOR_TEXTS)
     annotation = models.TextField(u'аннотация', blank=True, null=True,
-                                  unique=True, help_text=MOSTLY_FOR_TEXTS)
-    teaser = models.TextField(u'тизер', blank=True, help_text=FOR_VIDEOS,
-                              null=True, unique=True)
+                                  help_text=MOSTLY_FOR_TEXTS)
+    teaser = models.TextField(u'тизер', blank=True, null=True,
+                              help_text=FOR_VIDEOS)
     authors = ManyToManyField(Author, verbose_name=u'авторы', blank=True)
     tags = ManyToManyField(Tag, verbose_name=u'бирки')
     anchor = models.SlugField(u'якорь', max_length=30, blank=True, null=True,
