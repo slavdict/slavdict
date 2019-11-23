@@ -48,13 +48,18 @@ IX_ROOT = '_ix'  # Имя файла с корнем индекса
 
 URL_PATTERN = u'./словарь/статьи/%s'
 OUTPUT_VOLUMES = (1, 2)
-OUTPUT_VOLUMES_LETTERS = reduce(lambda x, y: x + y, (VOLUME_LETTERS[volume]
-    for volume in OUTPUT_VOLUMES if volume in VOLUME_LETTERS), ())
+OUTPUT_VOLUMES_LETTERS = reduce(
+    lambda x, y: x + y,
+    (VOLUME_LETTERS[volume] for volume in OUTPUT_VOLUMES
+     if volume in VOLUME_LETTERS), ()
+)
 HINTS_NUMBER = 7
 PAGE_RESULTS_NUMBER = 30
 
+
 def csl_url(entry):
     return URL_PATTERN % entry.id
+
 
 CSI = '\033['
 HIDE_CURSOR = CSI + '?25l'
@@ -62,20 +67,24 @@ SHOW_CURSOR = CSI + '?25h'
 ERASE_LINE = CSI + '2K'
 ERASE_LINEEND = CSI + '0K'
 
+
 def interrupt_handler(signum, frame):
     print >> sys.stderr, SHOW_CURSOR
     sys.exit(0)
 
+
 signal.signal(signal.SIGINT, interrupt_handler)
 
 print >> sys.stderr, HIDE_CURSOR
-note =  'Volumes: ' + u', '.join(str(volume) for volume in OUTPUT_VOLUMES) + '\n'
+note = 'Volumes: %s\n' % u', '.join(str(volume) for volume in OUTPUT_VOLUMES)
 note += 'Letters: ' + u', '.join(letter for letter in OUTPUT_VOLUMES_LETTERS)
 print >> sys.stderr, note.encode('utf-8')
 print >> sys.stderr
 
+
 def in_output_volumes(wordform):
     return wordform.lstrip(u' =')[:1].lower() in OUTPUT_VOLUMES_LETTERS
+
 
 for directory in dirs:
     if os.path.exists(directory):
@@ -84,7 +93,6 @@ for directory in dirs:
 for directory in dirs:
     if not os.path.exists(directory):
         os.makedirs(directory)
-
 
 
 entries1 = []
@@ -98,7 +106,8 @@ if len(sys.argv) > 1:
     s = u' '.join(sys.argv[1:]).strip(' ,')
     test_entries = [int(i) for i in r.split(s)]
 if test_entries:
-    print >> sys.stderr, 'Entries to dump:', u', '.join(str(i) for i in test_entries)
+    entries_to_dump = u', '.join(str(i) for i in test_entries)
+    print >> sys.stderr, 'Entries to dump:', entries_to_dump
     lexemes = lexemes.filter(pk__in=test_entries)
 else:
     print >> sys.stderr, 'Entries to dump: ALL for the selected volumes'
@@ -161,11 +170,11 @@ for i, lexeme in enumerate(lexemes):
     sys.stderr.write(note.encode('utf-8'))
 
 
-
 if not test_entries:
     # 6) Добавляем ссылочные статьи, которые будут присутствовать в выводимых
     # томах и ссылаться на какие-то статьи из других томов.
-    other_volumes = [e for e in Entry.objects.all() if not e.volume(OUTPUT_VOLUMES)]
+    other_volumes = [e for e in Entry.objects.all()
+                     if not e.volume(OUTPUT_VOLUMES)]
     other_volumes_n = len(other_volumes)
     for i, lexeme in enumerate(other_volumes):
         for participle in lexeme.participles:
@@ -180,15 +189,19 @@ if not test_entries:
             lexeme.civil_equivalent + ERASE_LINEEND)
         sys.stderr.write(note.encode('utf-8'))
 
+
 def sort_key(x):
     wordform, reference, lexeme = x
     if reference:
         ref_wordform = lexeme.base_vars[0].idem
         key = (sort_key1(wordform), -1, sort_key2(wordform),
-               sort_key1(ref_wordform), lexeme.homonym_order or 0, sort_key2(ref_wordform))
+               sort_key1(ref_wordform), lexeme.homonym_order or 0,
+               sort_key2(ref_wordform))
     else:
-        key = sort_key1(wordform), lexeme.homonym_order or 0, sort_key2(wordform)
+        key = (sort_key1(wordform), lexeme.homonym_order or 0,
+               sort_key2(wordform))
     return key
+
 
 note = u'Сортировка результатов...' + ERASE_LINEEND + '\r'
 sys.stderr.write(note.encode('utf-8'))
@@ -206,7 +219,8 @@ for i, (key, group) in enumerate(itertools.groupby(entries1, lambda x: x[:2])):
     sys.stderr.write(note.encode('utf-8'))
     if not in_output_volumes(wordform):
         continue
-    # Удаляем из выгрузки отсылочную статью Ассирии, т.к. она неправильно выгружается
+    # Удаляем из выгрузки отсылочную статью Ассирии,
+    # т.к. она неправильно выгружается
     if wordform == u"ассѵрі'и":
         continue
     lst = list(group)
@@ -224,16 +238,17 @@ for i, (key, group) in enumerate(itertools.groupby(entries1, lambda x: x[:2])):
                 'referenced_lexemes': lst,
             }
             if all(x.homonym_order for x in lst):
-                lexeme['references'] = [
-                            {'reference_ucs': lst[0].base_vars[0].idem_ucs,
-                             'homonym_order': u',\u00a0'.join(
-                                        str(i.homonym_order) for i in lst if i)
-                            }]
+                homonym_order = u',\u00a0'.join(
+                        str(i.homonym_order) for i in lst if i)
+                lexeme['references'] = [{
+                    'reference_ucs': lst[0].base_vars[0].idem_ucs,
+                    'homonym_order': homonym_order,
+                }]
             else:
-                lexeme['references'] = [
-                                    {'reference_ucs': x.base_vars[0].idem_ucs,
-                                     'homonym_order': x.homonym_order or None}
-                                    for x in lst],
+                lexeme['references'] = [{
+                    'reference_ucs': x.base_vars[0].idem_ucs,
+                    'homonym_order': x.homonym_order or None,
+                } for x in lst],
             entries2.append((wordform, reference, lexeme))
 entries2_n = len(entries2)
 
@@ -260,18 +275,21 @@ for i, (wordform, reference, lexeme) in enumerate(entries2):
     if not reference or not in_checklist:
         entries3.append((wordform, reference, lexeme))
 
+
 class Reference(unicode):
     def __new__(cls, string, homonym_order=None):
         instance = unicode.__new__(cls, string)
         instance.homonym_order = homonym_order
         return instance
 
+
 # Объединение статей по начальным буквам
 letter_parts = []
 part_entries = []
 letter = entries3[0][0].lstrip(u' =')[0].upper()
 entries3_n = len(entries3)
-for j, (wordform, group) in enumerate(itertools.groupby(entries3, lambda x: x[0])):
+it = enumerate(itertools.groupby(entries3, lambda x: x[0]))
+for j, (wordform, group) in it:
     note = u'Группировка статей по начальным буквам [ %s%% ]%s\r' % (
             int(round(j / float(entries3_n) * 100)), ERASE_LINEEND)
     sys.stderr.write(note.encode('utf-8'))
@@ -297,14 +315,15 @@ for letter, entries in letter_parts:
     N = len(entries)
     for i, (reference, entry) in enumerate(entries):
         if not reference:
-            note = u'Вывод статей на «%s» [ %s%% ] %s\r' % (letter,
-                    int(round(i / float(N) * 100)),
-                    entry.civil_equivalent + ERASE_LINEEND)
+            note = u'Вывод статей на «%s» [ %s%% ] %s\r' % (
+                letter,
+                int(round(i / float(N) * 100)),
+                entry.civil_equivalent + ERASE_LINEEND)
             sys.stderr.write(note.encode('utf-8'))
             try:
-                html = render_to_string('csl/entry.html',
-                        { 'entry': entry, 'csl_url': csl_url })
-            except:
+                html = render_to_string(
+                    'csl/entry.html', {'entry': entry, 'csl_url': csl_url})
+            except:  # noqa
                 sys.stderr.write('\n')
                 sys.stderr.write(u'{e.id} {e.civil_equivalent}\n'.format(e=entry))
                 sys.stderr.write(u'\n'.join(unicode(x) for x in sys.exc_info()))
@@ -376,8 +395,10 @@ def get_hint(entry, without_translit=True):
         if not NON_PART_OF_SPEECH:
             hint[KEY_PART_OF_SPEECH] = pos
     if entry.homonym_gloss.strip():
-        hint[KEY_HOMONYM_GLOSS] = entry.homonym_gloss.strip()  # Комментарий к омониму
+        # Комментарий к омониму
+        hint[KEY_HOMONYM_GLOSS] = entry.homonym_gloss.strip()
     return hint
+
 
 def get_reference_hint(wordform, lexeme, without_translit=True, with_ref=True):
     wordform = resolve_titles(wordform)
@@ -399,21 +420,26 @@ def get_reference_hint(wordform, lexeme, without_translit=True, with_ref=True):
             hint[KEY_REFEREE] = referee_hint
     return hint
 
+
 def already_in(hints, new_hint):
     for hint in hints:
         SAME_ENTRY = new_hint[KEY_ENTRY] == hint[KEY_ENTRY]
-        SAME_HOMONYM = (KEY_HOMONYM_ORDER in new_hint
-                and KEY_HOMONYM_ORDER in hint
-                and new_hint[KEY_HOMONYM_ORDER] == hint[KEY_HOMONYM_ORDER])
-        NON_HOMONYM = (KEY_HOMONYM_ORDER not in new_hint
-                and KEY_HOMONYM_ORDER not in hint)
+        SAME_HOMONYM = (
+            KEY_HOMONYM_ORDER in new_hint
+            and KEY_HOMONYM_ORDER in hint
+            and new_hint[KEY_HOMONYM_ORDER] == hint[KEY_HOMONYM_ORDER])
+        NON_HOMONYM = (
+            KEY_HOMONYM_ORDER not in new_hint
+            and KEY_HOMONYM_ORDER not in hint)
         if SAME_ENTRY and (SAME_HOMONYM or NON_HOMONYM):
             return True
+
 
 def greek_already_in(results, new_result):
     for result in results:
         if new_result[KEY_GREEK_GREEK] == result[KEY_GREEK_GREEK]:
             return True
+
 
 # Создание индекса статей
 N = len(entries2)
@@ -449,12 +475,14 @@ def write_ix(filename, data):
     with open(filename, 'wb') as f:
         f.write(_json(data).encode('utf-8'))
 
+
 def get_postfix(ix_layer):
     postfix = u''
     if len(ix_layer.keys()) > 0:
         first_key, first_value = list(ix_layer.items())[0]
         postfix = first_key + get_postfix(first_value[KEY_INDEX])
     return postfix
+
 
 def no_change(node, attrname, N):
     if len(node) == 0:
@@ -467,6 +495,7 @@ def no_change(node, attrname, N):
             return False
         return no_change(node_above[KEY_INDEX], attrname, N)
 
+
 def decimal_to_base(decimal, base):
     digits = '0123456789abcdefghijklmnopqrstuvwxyz'
     result = ''
@@ -477,8 +506,10 @@ def decimal_to_base(decimal, base):
         result = '0'
     return result
 
+
 def ixfn_convert(nodename):  # convert for index filenames
     return u''.join(decimal_to_base(ord(c), 36) for c in nodename)
+
 
 # Вывод частичного указателя статей
 def pix_tree_traversal(slug, ix_layer, hints):
@@ -508,6 +539,7 @@ def pix_tree_traversal(slug, ix_layer, hints):
         sys.stderr.write(note.encode('utf-8'))
     write_ix(filename, ix_node)
 
+
 pix_tree_traversal('', partial_index, [])
 
 
@@ -532,9 +564,8 @@ for key, value in full_index.items():
     write_ix(filename, data)
     pages_n = int(math.ceil(float(len(value)) / PAGE_RESULTS_NUMBER))
     for i in range(1, pages_n):
-        data = {
-            KEY_RESULTS: value[i*PAGE_RESULTS_NUMBER:(i+1)*PAGE_RESULTS_NUMBER],
-        }
+        _results = value[i * PAGE_RESULTS_NUMBER: (i+1) * PAGE_RESULTS_NUMBER]
+        data = {KEY_RESULTS: _results}
         if i < pages_n - 1:
             data[KEY_NEXTPAGE] = i + 1
         write_ix(filename + str(i), data)
@@ -545,8 +576,10 @@ for key, value in full_index.items():
 # Создание прямого греческого указателя
 
 transliterations = [
-    (u'[\u0300-\u0313\u0315-\u036f]', u''),  # удаляем диакритику кроме густого придыхания
-    (u'^\u03c1\u0314?', u'rh'),  # ро в начале слова или с густым придыханием
+    # удаляем диакритику кроме густого придыхания
+    (u'[\u0300-\u0313\u0315-\u036f]', u''),
+
+    (u'^\u03c1\u0314?', u'rh'),  # Ро в начале слова или с густым придыханием
     (u'\u03c1\u03c1\u0314?', u'rrh'),  # двойное ро в середине слова
     (u'(.+)\u0314', ur'h\1'),  # густое придыхание переводим в h
     (u'\u03b1', u'a'),
@@ -580,14 +613,18 @@ transliterations = [
     (u'([aeo])y', ur'\1u'),
     (u'yi', u'ui'),
 ]
+
+
 def romanize(greek):
     text = unicodedata.normalize('NFD', greek.lower().strip())
     for src, dst in transliterations:
         text = re.sub(src, dst, text)
     return text
 
+
 def ix_romanize(greek):
     return romanize(greek).replace(u'rh', u'r').replace(u'ph', u'f')
+
 
 def get_greek(lexeme, hint):
     greeks = []
@@ -600,11 +637,12 @@ def get_greek(lexeme, hint):
         greeks.update(e.get_all_greeks())
     if len(greeks) == 0:
         return None
-    hint[KEY_GREEK_MATCHES] = tuple(
-            { KEY_GREEK_GREEK: g,
-              KEY_GREEK_TRANSLIT: romanize(g) }
-            for g  in sorted(greeks))
+    hint[KEY_GREEK_MATCHES] = tuple({
+        KEY_GREEK_GREEK: g,
+        KEY_GREEK_TRANSLIT: romanize(g)
+    } for g in sorted(greeks))
     return hint
+
 
 N = len(entries2)
 for j, (wordform, reference, lexeme) in enumerate(entries2):
@@ -635,6 +673,7 @@ for j, (wordform, reference, lexeme) in enumerate(entries2):
                 greek_results.append(greek)
             ix_layer_pointer = ix_layer_pointer[char][KEY_INDEX]
 
+
 # Вывод прямого греческого указателя
 def grix_tree_traversal(slug, ix_layer, results):
     grix_node = {}
@@ -650,8 +689,8 @@ def grix_tree_traversal(slug, ix_layer, results):
         if keys:
             grix_node[KEY_INDEX] = keys
         for key, value in ix_layer.items():
-            grix_tree_traversal(slug + key,
-                    value[KEY_INDEX], value[KEY_GREEK_RESULTS])
+            grix_tree_traversal(
+                slug + key, value[KEY_INDEX], value[KEY_GREEK_RESULTS])
 
     note = u'Запись прямого греч. индекса: %s%s\r' % (slug, ERASE_LINEEND)
     sys.stderr.write(note.encode('utf-8'))
@@ -663,6 +702,7 @@ def grix_tree_traversal(slug, ix_layer, results):
                 filename, ERASE_LINEEND)
         sys.stderr.write(note.encode('utf-8'))
     write_ix(filename, grix_node)
+
 
 grix_tree_traversal('', greek_index, [])
 
@@ -686,9 +726,12 @@ for i, (key, group) in enumerate(itertools.groupby(greeks1, lambda x: x[0])):
     note = u'Группировка одинаковых параллелей [ %s%% ] %s\r' % (
             int(round(i / float(N) * 100)), key + ERASE_LINEEND)
     sys.stderr.write(note.encode('utf-8'))
-    g = tuple(sorted(set(item for groupname, item in group),
-        key=lambda x: x.civil_equivalent))
+    g = tuple(sorted(
+        set(item for groupname, item in group),
+        key=lambda x: x.civil_equivalent
+    ))
     greeks2.append((key, g))
+
 
 def get_greek_to_csl(greek, entries):
     result = {
@@ -698,6 +741,7 @@ def get_greek_to_csl(greek, entries):
                           for e in entries],
     }
     return result
+
 
 N = len(greeks2)
 for j, (greek, entries) in enumerate(greeks2):
@@ -721,6 +765,7 @@ for j, (greek, entries) in enumerate(greeks2):
             results.append(result)
         ix_layer_pointer = ix_layer_pointer[char][KEY_INDEX]
 
+
 # Вывод обратного греческого указателя
 def grix_rev_tree_traversal(slug, ix_layer, results):
     grix_node = {}
@@ -736,8 +781,8 @@ def grix_rev_tree_traversal(slug, ix_layer, results):
         if keys:
             grix_node[KEY_INDEX] = keys
         for key, value in ix_layer.items():
-            grix_rev_tree_traversal(slug + key,
-                    value[KEY_INDEX], value[KEY_GREEK_RESULTS])
+            grix_rev_tree_traversal(
+                slug + key, value[KEY_INDEX], value[KEY_GREEK_RESULTS])
 
     note = u'Запись обратного греч. индекса: %s%s\r' % (slug, ERASE_LINEEND)
     sys.stderr.write(note.encode('utf-8'))
@@ -749,6 +794,7 @@ def grix_rev_tree_traversal(slug, ix_layer, results):
                 filename, ERASE_LINEEND)
         sys.stderr.write(note.encode('utf-8'))
     write_ix(filename, grix_node)
+
 
 grix_rev_tree_traversal('', greek_index_reverse, [])
 
