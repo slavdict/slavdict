@@ -5,6 +5,7 @@ name = "pypi"
 
 [dev-packages]
 ipython = "*"
+flake8 = "*"
 
 [packages]
 hip2unicode = {git = "https://github.com/slavdict/hip2unicode.git"}
