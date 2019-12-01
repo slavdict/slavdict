@@ -128,11 +128,44 @@ for category, category_name in TAG_CATEGORIES:
         items.append(item_text)
         i = log_tag(i, N, tag.name)
     categories.append(get_items_group_text(category_name, items))
-text = root_template.format(data=indent(u'\n'.join(categories)))
 
+text = root_template.format(data=indent(u'\n'.join(categories)))
 with open(TAGTREE_FILE, 'wb') as f:
     f.write(text.encode('utf-8'))
 
+note = u'Экспорт фильтров завершен.' + ERASE_LINEEND + u'\n'
+sys.stderr.write(note.encode('utf-8'))
+
+
+# Выгрузка аннотаций
+N = Annotation.objects.count()
+for i, annotation in enumerate(Annotation.objects.all()):
+    note = u'Экспорт аннотаций [ %s%% ]\r' % int(round(i / float(N) * 100))
+    sys.stderr.write(note.encode('utf-8'))
+    data = {}
+    if annotation.title:
+        data['title'] = annotation.get_title_html()
+    if annotation.bib:
+        data['bib'] = annotation.get_bib_html()
+    if annotation.youtube_id:
+        data['youtubeId'] = annotation.youtube_id
+        data['titleWithAuthor'] = annotation.get_title_with_author_html()
+        data['createDate'] = annotation.create_date.isoformat()
+    else:
+        data['url'] = annotation.url
+    if annotation.anchor:
+        data['anchor'] = annotation.anchor
+    if annotation.teaser:
+        data['teaser'] = annotation.get_teaser_html()
+    if annotation.annotation:
+        data['annotation'] = annotation.get_annotation_html()
+    filename = str(annotation.id) + '.json'
+    path = os.path.join(ANNOTATIONS_DIR, filename)
+    with open(path, 'wb') as f:
+        f.write(_json(data).encode('utf-8'))
+
+note = u'Экспорт аннотаций завершен.' + ERASE_LINEEND + u'\n'
+sys.stderr.write(note.encode('utf-8'))
 sys.stderr.write(ERASE_LINE)
 print >> sys.stderr, SHOW_CURSOR
 sys.exit(0)

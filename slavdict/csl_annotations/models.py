@@ -151,6 +151,14 @@ URL_HELP = u'''
 ''' % YOUTUBE_ID_NAME
 
 
+def unwrap_html_p(text):
+    if text.startswith(u'<p>'):
+        text = text[3:]
+    if text.endswith(u'</p>'):
+        text = text[:-4]
+    return text
+
+
 class Annotation(models.Model):
     title = FixedWidthTextField(u'название', max_length=200, blank=True,
                                 null=True, unique=True,
@@ -179,7 +187,7 @@ class Annotation(models.Model):
     def get_title_html(self):
         title = self.title and self.title.strip()
         html = markdown.markdown(title) if title else u''
-        return mark_safe(html)
+        return mark_safe(unwrap_html_p(html))
 
     def get_title_with_author_html(self):
         title = self.title and self.title.strip()
@@ -190,7 +198,7 @@ class Annotation(models.Model):
                 text2 = u', '.join(u'<i>%s</i>' % unicode(a) for a in authors)
                 text = u'%s %s' % (text2, text)
             text = markdown.markdown(text)
-        return mark_safe(text)
+        return mark_safe(unwrap_html_p(text))
 
     def get_bib_html(self):
         bib = self.bib and self.bib.strip()
