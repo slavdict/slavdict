@@ -8,6 +8,12 @@
 пробелами, запятыми или запятыми с пробелами, например:
 
     SCRIPT 1177,123 89 945, 234
+
+Можно также менять папку, куда будут выгружаться все данные. Все данные
+в папке перед выгрузкой будут удалены:
+
+    SCRIPT --output-dir=/path/to/my/dir 890,3
+    SCRIPT 455 879 --output-dir=/path/to/my/dir 890,3
 """
 import collections
 import itertools
@@ -38,11 +44,26 @@ from slavdict.dictionary.utils import ucs_convert
 from slavdict.dictionary.viewmodels import _json
 
 OUTPUT_DIR = '../csl/.temp/slavdict_generated'
-ENTRIES_DIR = OUTPUT_DIR + '/entries'
-FULL_IX = OUTPUT_DIR + '/full_index'
-PART_IX = OUTPUT_DIR + '/partial_index'
-GRIX = OUTPUT_DIR + '/greek_index'
-GRIX_REV = OUTPUT_DIR + '/greek_index_reverse'
+
+test_entries = None
+if len(sys.argv) > 1:
+    for i, arg in enumerate(sys.argv):
+        if arg.startswith(u'--output-dir='):
+            OUTPUT_DIR = arg.split(u'=')[1]
+            args = sys.argv[1:i] + sys.argv[i+1:]
+            break
+    else:
+        args = sys.argv[1:]
+    if args:
+        r = re.compile(r'\s*,\s*|\s+')
+        s = u' '.join(args).strip(' ,')
+        test_entries = [int(i) for i in r.split(s)]
+
+ENTRIES_DIR = os.path.join(OUTPUT_DIR, 'entries')
+FULL_IX = os.path.join(OUTPUT_DIR, 'full_index')
+PART_IX = os.path.join(OUTPUT_DIR, 'partial_index')
+GRIX = os.path.join(OUTPUT_DIR, 'greek_index')
+GRIX_REV = os.path.join(OUTPUT_DIR, 'greek_index_reverse')
 dirs = (OUTPUT_DIR, ENTRIES_DIR, FULL_IX, PART_IX, GRIX, GRIX_REV)
 IX_ROOT = '_ix'  # Имя файла с корнем индекса
 
@@ -100,11 +121,6 @@ entries1 = []
 # ограниченных списком test_entries, если он задан.
 
 lexemes = Entry.objects.all()
-test_entries = None
-if len(sys.argv) > 1:
-    r = re.compile(r'\s*,\s*|\s+')
-    s = u' '.join(sys.argv[1:]).strip(' ,')
-    test_entries = [int(i) for i in r.split(s)]
 if test_entries:
     entries_to_dump = u', '.join(str(i) for i in test_entries)
     print >> sys.stderr, 'Entries to dump:', entries_to_dump
@@ -281,6 +297,14 @@ class Reference(unicode):
         instance = unicode.__new__(cls, string)
         instance.homonym_order = homonym_order
         return instance
+
+
+if not entries3:
+    note = u'В словарной базе нету статей, удовлетворящих условиям выгрузки\n'
+    note += u'Ни одной статьи и ни одного типа индекса выгружено не будет.\n'
+    sys.stderr.write(note.encode('utf-8'))
+    print >> sys.stderr, SHOW_CURSOR
+    sys.exit(0)
 
 
 # Объединение статей по начальным буквам

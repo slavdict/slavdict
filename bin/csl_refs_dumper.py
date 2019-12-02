@@ -3,6 +3,11 @@
 """
 Выгрузка базы ссылок и аннотаций для портала "Цсл язык сегодня"
 
+Можно менять папку, куда будут выгружаться все данные. Все данные
+в папке перед выгрузкой будут удалены:
+
+    SCRIPT --output-dir=/path/to/my/dir
+
 """
 import os
 import shutil
@@ -22,6 +27,10 @@ from slavdict.csl_annotations.models import TAG_CATEGORIES
 from slavdict.dictionary.viewmodels import _json
 
 OUTPUT_DIR = '../csl/.temp/refs'
+
+if len(sys.argv) == 2 and sys.argv[1].startswith(u'--output-dir='):
+    OUTPUT_DIR = sys.argv[1].split(u'=')[1]
+
 ANNOTATIONS_DIR = OUTPUT_DIR + '/annotations'
 TAGTREE_FILE = OUTPUT_DIR + '/filterData.js'
 dirs = (OUTPUT_DIR, ANNOTATIONS_DIR)
@@ -144,12 +153,12 @@ for i, annotation in enumerate(Annotation.objects.all()):
     sys.stderr.write(note.encode('utf-8'))
     data = {}
     if annotation.title:
-        data['title'] = annotation.get_title_html()
+        data['title'] = annotation.get_title_with_author_html()
     if annotation.bib:
         data['bib'] = annotation.get_bib_html()
     if annotation.youtube_id:
         data['youtubeId'] = annotation.youtube_id
-        data['titleWithAuthor'] = annotation.get_title_with_author_html()
+        data['videoTitle'] = annotation.get_title_html()
         data['createDate'] = annotation.create_date.isoformat()
     else:
         data['url'] = annotation.url
