@@ -9,7 +9,10 @@ LASTFILE=$(ls -tA "$DUMPDIR"/.dictionary*.xml | head -1)
 FILE="$DUMPDIR/.dictionary--$NOW---$DBS_VERSION.xml"
 VERBOSITY=${2:-0}
 
-python $PRJDIR/manage.py dumpdata --verbosity=$VERBOSITY \
+EXEC=python
+python -m django >/dev/null 2>&1 || EXEC='pipenv run python'
+
+$EXEC $PRJDIR/manage.py dumpdata --verbosity=$VERBOSITY \
     dictionary --all --format=xml --indent=4 > $FILE
 
 if [ "$LASTFILE" ]

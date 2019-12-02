@@ -6,7 +6,10 @@ DUMPDIR="${1:-$PRJDIR/.dumps}"
 LASTFILE=$(ls -tA $DUMPDIR/.users*.xml | head -1)
 FILE="$DUMPDIR/.users--$NOW.xml"
 
-python $PRJDIR/manage.py dumpdata \
+EXEC=python
+python -m django >/dev/null 2>&1 || EXEC='pipenv run python'
+
+$EXEC $PRJDIR/manage.py dumpdata \
     auth.User auth.Group custom_user.CustomUser \
     --format=xml --indent=4 > $FILE
 
