@@ -34,6 +34,8 @@ shell:
 
 restart: stop copydiff destroy_loc_changes checkout collectstatic fixown migrate start
 
+update: copydiff destroy_loc_changes checkout collectstatic fixown migrate
+
 killbg:
 	test ! -e .bgpids || ( xargs -a .bgpids kill ; rm .bgpids ; true )
 
@@ -183,5 +185,6 @@ install:
     start \
     stop \
     scp \
+    update \
 
 
