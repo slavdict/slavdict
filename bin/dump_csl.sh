@@ -5,8 +5,8 @@ DBS_VERSION=1.$MIGRATION_VERSION
 GREP_SIGNATURE=::::
 NOW=$(date +"%Y.%m.%d--%H.%M")
 DUMPDIR="${1:-$PRJDIR/.dumps}"
-LASTFILE=$(ls -tA "$DUMPDIR"/.csl*.xml | head -1)
-FILE="$DUMPDIR/.csl--$NOW---$DBS_VERSION.xml"
+LASTFILE=$(ls -tA "$DUMPDIR"/csl*.xml | head -1)
+FILE="$DUMPDIR/csl--$NOW---$DBS_VERSION.xml"
 VERBOSITY=${2:-0}
 
 EXEC=python
@@ -21,9 +21,20 @@ then
     then
         x=$(diff $FILE $LASTFILE)
 
-        if [ -n "$x" ]
+        if [ -z "$x" ]
         then
-            rm $LASTFILE
+            rm $FILE
+        else
+            gzip -c $FILE > $FILE.gz
+            echo "$GREP_SIGNATURE $FILE.gz"
+
+            if [ -a $LASTFILE.gz ]
+            then
+                rm $LASTFILE
+            fi
         fi
     fi
+else
+    gzip -c $FILE > $FILE.gz
+    echo "$GREP_SIGNATURE $FILE.gz"
 fi

@@ -3,8 +3,8 @@ GREP_SIGNATURE=::::
 NOW=$(date +"%Y.%m.%d--%H.%M")
 PRJDIR=$(dirname "$(dirname "$(readlink -e "$0")")")
 DUMPDIR="${1:-$PRJDIR/.dumps}"
-LASTFILE=$(ls -tA $DUMPDIR/.users*.xml | head -1)
-FILE="$DUMPDIR/.users--$NOW.xml"
+LASTFILE=$(ls -tA $DUMPDIR/users*.xml | head -1)
+FILE="$DUMPDIR/users--$NOW.xml"
 
 EXEC=python
 python -m django >/dev/null 2>&1 || EXEC='pipenv run python'

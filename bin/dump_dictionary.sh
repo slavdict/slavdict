@@ -5,8 +5,8 @@ DBS_VERSION=4.$MIGRATION_VERSION
 GREP_SIGNATURE=::::
 NOW=$(date +"%Y.%m.%d--%H.%M")
 DUMPDIR="${1:-$PRJDIR/.dumps}"
-LASTFILE=$(ls -tA "$DUMPDIR"/.dictionary*.xml | head -1)
-FILE="$DUMPDIR/.dictionary--$NOW---$DBS_VERSION.xml"
+LASTFILE=$(ls -tA "$DUMPDIR"/dictionary*.xml | head -1)
+FILE="$DUMPDIR/dictionary--$NOW---$DBS_VERSION.xml"
 VERBOSITY=${2:-0}
 
 EXEC=python
