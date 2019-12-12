@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# coding: utf-8
+import csv
 import os
 import sys
 
@@ -11,34 +11,33 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
 from slavdict.dictionary.models import Entry, ONYM_MAP
-from slavdict.unicode_csv import UnicodeWriter
 
 def write_csv(filename, entries):
-    uw = UnicodeWriter(open(filename, 'w'))
+    uw = csv.writer(open(filename, 'w'))
     for e in (e for e in entries if e.volume(1)):
-        ecolumn = e.civil_equivalent + {1: u'¹', 2: u'²'}.get(e.homonym_order, u'')
+        ecolumn = e.civil_equivalent + {1: '¹', 2: '²'}.get(e.homonym_order, '')
         for m in list(e.meanings) + list(e.metaph_meanings):
             meaning = m.meaning.strip()
             gloss = m.gloss.strip()
             if meaning or gloss:
-                uw.writerow((str(m.id), ecolumn, u'%s ⏹ %s' % (meaning, gloss)))
+                uw.writerow((str(m.id), ecolumn, '%s ⏹ %s' % (meaning, gloss)))
                 if ecolumn:
-                   ecolumn = u''
+                   ecolumn = ''
             for cm in m.child_meanings:
                 meaning = cm.meaning.strip()
                 gloss = cm.gloss.strip()
                 if meaning or gloss:
-                    row = (str(cm.id), ecolumn, u'• %s ⏹ %s' % (meaning, gloss))
+                    row = (str(cm.id), ecolumn, '• %s ⏹ %s' % (meaning, gloss))
                     uw.writerow(row)
                     if ecolumn:
-                       ecolumn = u''
+                       ecolumn = ''
     uw.stream.close()
 
-NOUN = u'a'
-for GENDER in (u'm', u'f', u'n', u''):
+NOUN = 'a'
+for GENDER in ('m', 'f', 'n', ''):
     filename = 'nouns_%s_meanings.csv' % GENDER
     common_nouns = Entry.objects.filter(
-            part_of_speech=NOUN, onym=u'',
+            part_of_speech=NOUN, onym='',
             gender=GENDER).order_by('civil_equivalent')
     write_csv(filename, common_nouns)
 

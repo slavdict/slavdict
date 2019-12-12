@@ -1,4 +1,3 @@
-# encoding: UTF-8
 from django import forms
 from django.conf import settings
 from django.contrib import admin
@@ -77,69 +76,69 @@ def host_entry(self):
     try:
         entry = self.host_entry
     except:
-        return u'не относится ни к какой статье'
+        return 'не относится ни к какой статье'
     else:
         if entry:
-            html = u'<a href="%s" target="_blank">%s</a>' % (
+            html = '<a href="%s" target="_blank">%s</a>' % (
                         entry.get_absolute_url(),
                         entry.civil_equivalent)
             return mark_safe(html)
         else:
-            return u'не относится ни к какой статье'
+            return 'не относится ни к какой статье'
 
-host_entry.short_description = u'словарная статья'
+host_entry.short_description = 'словарная статья'
 
 def host_collogroup(self):
-    html = u''
+    html = ''
     try:
         host = self.host
     except:
         return html
     else:
         if isinstance(host, CollocationGroup):
-            html = u'<a href="%s">%s</a>' % (
+            html = '<a href="%s">%s</a>' % (
                         '/admin/dictionary/collocationgroup/?id=%s' % host.id,
                         host)
             html = mark_safe(html)
         return html
 
-host_collogroup.short_description = u'Словосочетание'
+host_collogroup.short_description = 'Словосочетание'
 
 def parent_meaning(self):
-    text = u''
+    text = ''
     if self.parent_meaning:
         mid = self.parent_meaning.id
-        text = u'<a href="%s" target="_blank">%s</a>' % (
+        text = '<a href="%s" target="_blank">%s</a>' % (
                     '/admin/dictionary/meaning/?id=%s' % mid, mid)
     return mark_safe(text)
 
 parent_meaning.admin_order_field = 'parent_meaning_id'
 
 def _orth_vars(obj):
-    orth_vars = [unicode(i) for i in obj.orthographic_variants.all().order_by('id')]
-    delimiter = u', '
+    orth_vars = [str(i) for i in obj.orthographic_variants.all().order_by('id')]
+    delimiter = ', '
     return delimiter.join(orth_vars)
 
 def _collocations(obj):
-    collocations = [unicode(i) for i in obj.collocation_set.all().order_by('id')]
-    delimiter = u', '
+    collocations = [str(i) for i in obj.collocation_set.all().order_by('id')]
+    delimiter = ', '
     return delimiter.join(collocations)
 
 def entry_with_orth_variants(obj):
     if obj.homonym_order:
-        h = u' %s' % unicode(obj.homonym_order)
+        h = ' %s' % str(obj.homonym_order)
     else:
-        h = u''
+        h = ''
     x = _orth_vars(obj)
     e = obj.civil_equivalent
     if e:
-        result = u'%s%s (%s%s)' % (x, h, e, h)
+        result = '%s%s (%s%s)' % (x, h, e, h)
     else:
-        result = u'%s%s' % (x, h)
+        result = '%s%s' % (x, h)
     return result
 
 entry_with_orth_variants.admin_order_field = 'civil_equivalent'
-entry_with_orth_variants.short_description = u'словарная статья'
+entry_with_orth_variants.short_description = 'словарная статья'
 
 def meaning_with_entry(obj):
     econtainer = obj.entry_container
@@ -150,66 +149,66 @@ def meaning_with_entry(obj):
         if cgcontainer:
             ent = _collocations(cgcontainer)
         else:
-            ent = u'(БЕСХОЗНОЕ ЗНАЧЕНИЕ)'
-    return u'%s [%s] %s' % (ent, obj.id, obj.meaning)
+            ent = '(БЕСХОЗНОЕ ЗНАЧЕНИЕ)'
+    return '%s [%s] %s' % (ent, obj.id, obj.meaning)
 
 meaning_with_entry.admin_order_field = 'entry_container'
-meaning_with_entry.short_description = u'значение'
+meaning_with_entry.short_description = 'значение'
 
 def example_with_entry(obj):
-    return u'%s [%s] %s' % (meaning_with_entry(obj.meaning), obj.id, obj.example)
+    return '%s [%s] %s' % (meaning_with_entry(obj.meaning), obj.id, obj.example)
 
 def meaning_for_example(obj):
     m = obj.meaning
     if m is None:
-        return u'<None>'
-    return u'%s [%s]%s' % (m.meaning, m.id, u'*' if m.metaphorical else u'')
+        return '<None>'
+    return '%s [%s]%s' % (m.meaning, m.id, '*' if m.metaphorical else '')
 
 def entry_for_example(obj):
     m = obj.meaning
     e = m and m.entry_container
     if e:
-        html = u'<a href="%s" target="_blank">%s</a>' % (
-                    u'%s#%s' % (e.get_absolute_url(), m.get_url_fragment()),
+        html = '<a href="%s" target="_blank">%s</a>' % (
+                    '%s#%s' % (e.get_absolute_url(), m.get_url_fragment()),
                     e.civil_equivalent)
         return mark_safe(html)
     else:
         cg = m and m.collogroup_container
         if cg:
             e = cg.host_entry
-            html = u'<a href="%s" target="_blank">%s</a>' % (
-                    u'%s#%s' % (e.get_absolute_url(), m.get_url_fragment()),
-                    u'%s | %s' % (e.civil_equivalent,
-                        u';'.join(c.collocation for c in cg.collocations))
+            html = '<a href="%s" target="_blank">%s</a>' % (
+                    '%s#%s' % (e.get_absolute_url(), m.get_url_fragment()),
+                    '%s | %s' % (e.civil_equivalent,
+                        ';'.join(c.collocation for c in cg.collocations))
                     )
             return mark_safe(html)
         else:
-            return u'не относится ни к какой статье'
+            return 'не относится ни к какой статье'
 
 def host_entry(self):
     try:
         entry = self.host_entry
     except:
-        return u'не относится ни к какой статье'
+        return 'не относится ни к какой статье'
     else:
         if entry:
-            html = u'<a href="%s" target="_blank">%s</a>' % (
+            html = '<a href="%s" target="_blank">%s</a>' % (
                         entry.get_absolute_url(),
                         entry.civil_equivalent)
             return mark_safe(html)
         else:
-            return u'не относится ни к какой статье'
+            return 'не относится ни к какой статье'
 
 
 class VolumeFilter(admin.SimpleListFilter):
-    title = u'Тома'
+    title = 'Тома'
     parameter_name = 'volume'
     def lookups(self, request, model_admin):
         choices = tuple(
             (str(volume),
-             u'из %s-го тома (%s)' % (volume, u', '.join(letters).upper()))
+             'из %s-го тома (%s)' % (volume, ', '.join(letters).upper()))
             for volume, letters in sorted(VOLUME_LETTERS.items()))
-        choices = choices + (('0', u'остальные'),)
+        choices = choices + (('0', 'остальные'),)
         return choices
 
     def queryset(self, request, queryset):
@@ -243,7 +242,7 @@ class VolumeExampleFilter(VolumeFilter):
 
 
 class LetterFilter(admin.SimpleListFilter):
-    title = u'Буквы (или начальные сочетания букв)'
+    title = 'Буквы (или начальные сочетания букв)'
     parameter_name = 'starts_with'
     def lookups(self, request, model_admin):
         choices = tuple(
@@ -279,15 +278,15 @@ class LetterExampleFilter(LetterFilter):
                      if x.starts_with(starts_with))
 
 class SubstantivusMeaningFilter(admin.SimpleListFilter):
-    title = u'в роли сущ.'
+    title = 'в роли сущ.'
     parameter_name = 'substantivus'
     def lookups(self, request, model_admin):
         return (
-            ('1', u'в роли сущ.'),
-            ('0', u'остальные'),
+            ('1', 'в роли сущ.'),
+            ('0', 'остальные'),
         )
     def xs(self):
-        pattern = u'в роли сущ.'
+        pattern = 'в роли сущ.'
         return (x.id for x in Meaning.objects.filter(
                     Q(gloss__icontains=pattern)|
                     Q(meaning__icontains=pattern)))
@@ -298,15 +297,15 @@ class SubstantivusMeaningFilter(admin.SimpleListFilter):
             return queryset.exclude(Q(substantivus=True)|Q(id__in=self.xs()))
 
 class FigurativeMeaningFilter(admin.SimpleListFilter):
-    title = u'перен.'
+    title = 'перен.'
     parameter_name = 'figurative'
     def lookups(self, request, model_admin):
         return (
-            ('1', u'перен.'),
-            ('0', u'не перен.'),
+            ('1', 'перен.'),
+            ('0', 'не перен.'),
         )
     def xs(self):
-        pattern = u'перен.'
+        pattern = 'перен.'
         return (x.id for x in Meaning.objects.filter(
                     Q(gloss__icontains=pattern)|
                     Q(meaning__icontains=pattern)))
@@ -335,7 +334,7 @@ class OrthVar_Inline(admin.StackedInline):
 
 
 ETYMOLOGY_FIELDSETS = (
-    (u'Является этимоном для др. этимона',
+    ('Является этимоном для др. этимона',
         {'fields': ('etymon_to', 'questionable'),
         'classes': ('collapse',)}
         ),
@@ -350,7 +349,7 @@ ETYMOLOGY_FIELDSETS = (
             'mark',
             'source')}
         ),
-    (u'Примечание к этимологии',
+    ('Примечание к этимологии',
         {'fields': ('additional_info',),
         'classes': ('collapse',)}
         ),
@@ -372,7 +371,7 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
                 'order',
                 ),
             }),
-        (u'Примечание к параллели',
+        ('Примечание к параллели',
             {'fields': ('additional_info', 'note'),
             'classes': ('collapse',)}
             ),
@@ -400,18 +399,18 @@ class Translation_Inline(admin.StackedInline):
 
 funcTemp = lambda self: meaning_for_example(self)
 funcTemp.admin_order_field = 'meaning'
-funcTemp.short_description = u'Значение'
+funcTemp.short_description = 'Значение'
 Example.meaning_for_example = funcTemp
 
 funcTemp = lambda self: entry_for_example(self)
 funcTemp.admin_order_field = 'meaning'
-funcTemp.short_description = u'Лексема / Словосоч.'
+funcTemp.short_description = 'Лексема / Словосоч.'
 Example.entry_for_example = funcTemp
 
 EXAMPLE_FIELDSETS = (
         (None, {'fields': (('example', 'context'), 'address_text',
                            'greek_eq_status')}),
-        (u'Примечание к примеру', {'fields': ('additional_info', 'note'),
+        ('Примечание к примеру', {'fields': ('additional_info', 'note'),
                                    'classes': ('collapse',)}),
     )
 
@@ -489,16 +488,16 @@ class AdminMeaning(admin.ModelAdmin):
         'cf_meanings'
     )
     fieldsets = (
-            (u'То, к чему значение относится',
+            ('То, к чему значение относится',
                 {'fields': (('entry_container', 'collogroup_container'), 'parent_meaning'),
                  'classes': ('hidden',)}),
-            (u'См.',
+            ('См.',
                 {'fields': (('link_to_entry', 'link_to_collogroup'), 'link_to_meaning'),
                 'classes': ('collapse',)}),
-            (u'Ср.',
+            ('Ср.',
                 {'fields': (('cf_entries', 'cf_collogroups'), 'cf_meanings'),
                 'classes': ('collapse',)}),
-            (u'В роли сущ.',
+            ('В роли сущ.',
                 {'fields': ('substantivus', 'substantivus_type'),
                 'classes': ('collapse',)}),
             (None,
@@ -507,7 +506,7 @@ class AdminMeaning(admin.ModelAdmin):
             (None,
                 {'fields': ('meaning', 'gloss')}),
             (None, { 'fields': tuple(), 'classes': ('blank',) }),
-            (u'Примечание к значению',
+            ('Примечание к значению',
                 {'fields': ('additional_info',),
                 'classes': ('collapse',)}),
         )
@@ -594,33 +593,33 @@ class Participle_Inline(admin.StackedInline):
 
 
 
-Entry.__unicode__ = lambda self: entry_with_orth_variants(self)
-Entry.entry_authors = lambda self: u', '.join([a.__unicode__() for a in
-                                               self.authors.all()])
+Entry.__str__ = lambda self: entry_with_orth_variants(self)
+Entry.entry_authors = lambda self: ', '.join([str(a)
+                                              for a in self.authors.all()])
 hmap = {
-    1: u'\u00b9',
-    2: u'\u00b2',
-    3: u'\u00b3',
-    4: u'\u2074',
-    None: u'',
+    1: '\u00b9',
+    2: '\u00b2',
+    3: '\u00b3',
+    4: '\u2074',
+    None: '',
 }
 def headword(self):
-    return u'''<i>%s</i> <span class="cslav">%s</span><span
+    return '''<i>%s</i> <span class="cslav">%s</span><span
                 style="font-size: larger">%s</span><span
                 style="font-size: smaller">%s</span>''' % (
         self.get_part_of_speech_display(),
         self.orth_vars[0].idem_ucs,
-        hmap.get(self.homonym_order, u''),
-        u'<br>%s' % self.homonym_gloss if self.homonym_gloss else u'',
+        hmap.get(self.homonym_order, ''),
+        '<br>%s' % self.homonym_gloss if self.homonym_gloss else '',
         )
-headword.short_description = u''  # Делаем заголовок столбца пустым
+headword.short_description = ''  # Делаем заголовок столбца пустым
 headword.admin_order_field = 'civil_equivalent'
 headword.allow_tags = True
 Entry.headword = headword
 
 def civil_inv(self):
     return self.civil_inverse
-civil_inv.short_description = u''  # Делаем заголовок столбца пустым
+civil_inv.short_description = ''  # Делаем заголовок столбца пустым
 civil_inv.admin_order_field = 'civil_inverse'
 Entry.civil_inv = civil_inv
 
@@ -628,18 +627,18 @@ def assign_author(author):
     def func(modeladmin, request, queryset):
         for entry in queryset:
             entry.authors.add(author)
-    func.short_description = u'Назначить автору %s' % author
-    func.func_name = 'assign_author_%s' % author.pk
+    func.short_description = 'Назначить автору %s' % author
+    func.__name__ = 'assign_author_%s' % author.pk
     return func
 
 def clear_authors(modeladmin, request, queryset):
     for entry in queryset:
         entry.authors.clear()
-clear_authors.short_description = u'Обнулить авторство'
+clear_authors.short_description = 'Обнулить авторство'
 
 entry_actions = [clear_authors]
 try:
-    for author in CustomUser.objects.exclude(last_name=u''):
+    for author in CustomUser.objects.exclude(last_name=''):
         entry_actions.append(assign_author(author))
 except (OperationalError, ProgrammingError):
     pass
@@ -726,7 +725,7 @@ class AdminEntryADMIN(AdminEntry):
         (None, {
             'fields': ('civil_equivalent',),
             }),
-        (u'Омонимия', {
+        ('Омонимия', {
             'fields': ('homonym_order', 'homonym_gloss'),
             'classes': ('collapse',) } ),
         (None, {
@@ -756,14 +755,14 @@ class AdminEntryADMIN(AdminEntry):
             'classes': ('hidden participle',) } ),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (u'См.',
+        ('См.',
             {'fields': ('link_to_entry', 'link_to_collogroup', 'link_to_meaning'),
             'classes': ('collapse',)}),
-        (u'Ср.',
+        ('Ср.',
             {'fields': ('cf_entries', 'cf_collogroups', 'cf_meanings'),
             'classes': ('collapse',)}),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (u'Примечание к статье', {
+        ('Примечание к статье', {
             'fields':  ('additional_info',),
             'classes': ('collapse',) }),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
@@ -779,7 +778,7 @@ class AdminEntryUI(AdminEntry):
         (None, {
             'fields': ('civil_equivalent',),
             }),
-        (u'Омонимия', {
+        ('Омонимия', {
             'fields': ('homonym_order', 'homonym_gloss'),
             'classes': ('collapse',) } ),
         (None, {
@@ -809,14 +808,14 @@ class AdminEntryUI(AdminEntry):
             'classes': ('hidden participle',) } ),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (u'См.',
+        ('См.',
             {'fields': ('link_to_entry', 'link_to_collogroup', 'link_to_meaning'),
             'classes': ('collapse',)}),
-        (u'Ср.',
+        ('Ср.',
             {'fields': ('cf_entries', 'cf_collogroups', 'cf_meanings'),
             'classes': ('collapse',)}),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (u'Примечание к статье', {
+        ('Примечание к статье', {
             'fields':  ('additional_info',),
             'classes': ('collapse',) }),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
@@ -838,7 +837,7 @@ class Collocation_Inline(admin.StackedInline):
 
 
 
-CollocationGroup.__unicode__=lambda self: _collocations(self)
+CollocationGroup.__str__ =lambda self: _collocations(self)
 CollocationGroup._entry = host_entry
 class AdminCollocationGroup(admin.ModelAdmin):
     inlines = (Collocation_Inline,)
@@ -854,7 +853,7 @@ class AdminCollocationGroup(admin.ModelAdmin):
         (None,
             {'fields': (('base_meaning', 'base_entry'),),
             'classes': ('hidden',)}),
-        (u'Ср.',
+        ('Ср.',
             {'fields': ('cf_entries', 'cf_meanings'),
             'classes': ('collapse',)}),
         (None, {'fields': (('phraseological',),) }),
@@ -865,11 +864,11 @@ class AdminCollocationGroup(admin.ModelAdmin):
         'id',
         '_entry',
         'phraseological',
-        '__unicode__',
+        '__str__',
         'meanings_for_admin',
         'examples_for_admin',
     )
-    list_display_links = ('id', '__unicode__')
+    list_display_links = ('id', '__str__')
     list_editable = ('phraseological',)
     list_filter = (VolumeCollogroupFilter, LetterCollogroupFilter, 'phraseological')
     search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')

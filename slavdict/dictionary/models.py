@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import datetime
 import itertools
 import json
@@ -82,24 +81,24 @@ def _double_check(item1, item2, m2m=(), kwargs=None, model=None):
     return item1, item2
 
 
-NBSP = u'\u00A0'  # неразрывный пробел
+NBSP = '\u00A0'  # неразрывный пробел
 
 BLANK_CHOICE = (('', ''),)
 
 PART_OF_SPEECH_CHOICES = (
-    ('a', u'сущ.'),
-    ('b', u'прил.'),
-    ('c', u'мест.'),
-    ('d', u'гл.'),
-    ('f', u'нареч.'),
-    ('g', u'союз'),
-    ('h', u'предл.'),
-    ('i', u'част.'),
-    ('j', u'межд.'),
-    ('k', u'[число]'),
-    ('l', u'[буква]'),
-    ('m', u'прич.-прил.'),
-    ('n', u'предик. нареч.'),
+    ('a', 'сущ.'),
+    ('b', 'прил.'),
+    ('c', 'мест.'),
+    ('d', 'гл.'),
+    ('f', 'нареч.'),
+    ('g', 'союз'),
+    ('h', 'предл.'),
+    ('i', 'част.'),
+    ('j', 'межд.'),
+    ('k', '[число]'),
+    ('l', '[буква]'),
+    ('m', 'прич.-прил.'),
+    ('n', 'предик. нареч.'),
 )
 PART_OF_SPEECH_MAP = {
     'adjective': 'b',
@@ -121,8 +120,8 @@ PART_OF_SPEECH_MAP = {
 }
 
 TANTUM_CHOICES = (
-    ('d', u'только дв.'),
-    ('p', u'только мн.'),
+    ('d', 'только дв.'),
+    ('p', 'только мн.'),
 )
 TANTUM_MAP = {
     'dualeTantum': 'd',
@@ -130,10 +129,10 @@ TANTUM_MAP = {
 }
 
 GENDER_CHOICES = (
-    ('m', u'м.'),
-    ('f', u'ж.'),
-    ('n', u'с.'),
-    ('d', u'м. и' + NBSP + u'ж.'),
+    ('m', 'м.'),
+    ('f', 'ж.'),
+    ('n', 'с.'),
+    ('d', 'м. и' + NBSP + 'ж.'),
 )
 GENDER_MAP = {
     'masculine': 'm',
@@ -143,11 +142,11 @@ GENDER_MAP = {
 }
 
 ONYM_CHOICES = (
-    ('', u'не имя собст.'),
-    ('a', u'имя'),
-    ('b', u'топоним'),
-    ('c', u'народ/общность людей'),
-    ('d', u'[другое]'),
+    ('', 'не имя собст.'),
+    ('a', 'имя'),
+    ('b', 'топоним'),
+    ('c', 'народ/общность людей'),
+    ('d', '[другое]'),
 )
 ONYM_MAP = {
     'anthroponym': 'a',
@@ -157,10 +156,10 @@ ONYM_MAP = {
 }
 
 TRANSITIVITY_CHOICES = (
-    ('', u''),
-    ('t', u'перех.'),
-    ('i', u'неперех.'),
-    ('b', u'перех. и неперех.'),
+    ('', ''),
+    ('t', 'перех.'),
+    ('i', 'неперех.'),
+    ('b', 'перех. и неперех.'),
 )
 TRANSITIVITY_MAP = {
     'transitive': 't',
@@ -171,16 +170,16 @@ TRANSITIVITY_MAP = {
 # TODO: Должен остаться только один
 # из этих двух списков для причастий.
 PARTICIPLE_TYPE_CHOICES = (
-    ('a', u'действ. прич. наст. вр.'),
-    ('b', u'действ. прич. прош. вр.'),
-    ('c', u'страд. прич. наст. вр.'),
-    ('d', u'страд. прич. прош. вр.'),
+    ('a', 'действ. прич. наст. вр.'),
+    ('b', 'действ. прич. прош. вр.'),
+    ('c', 'страд. прич. наст. вр.'),
+    ('d', 'страд. прич. прош. вр.'),
 )
 PARTICIPLE_CHOICES = (
-    ('1', u'действ. наст.'),
-    ('2', u'действ. прош.'),
-    ('3', u'страд. наст.'),
-    ('4', u'страд. прош.'),
+    ('1', 'действ. наст.'),
+    ('2', 'действ. прош.'),
+    ('3', 'страд. наст.'),
+    ('4', 'страд. прош.'),
 )
 PARTICIPLE_TYPE_MAP = {
     'pres_act': 'a',
@@ -190,12 +189,12 @@ PARTICIPLE_TYPE_MAP = {
 }
 
 STATUS_CHOICES = (
-    ('c', u'создана'),
-    ('w', u'в работе'),
-    ('g', u'поиск греч.'),
-    ('f', u'завершена'),
-    ('e', u'редактируется'),
-    ('a', u'утверждена'),
+    ('c', 'создана'),
+    ('w', 'в работе'),
+    ('g', 'поиск греч.'),
+    ('f', 'завершена'),
+    ('e', 'редактируется'),
+    ('a', 'утверждена'),
 )
 STATUS_MAP = {
     'approved': 'a',
@@ -207,15 +206,15 @@ STATUS_MAP = {
 }
 
 LANGUAGE_CHOICES = (
-    ('a', u'греч.'),
-    ('b', u'ивр.'),
-    ('c', u'аккад.'),
-    ('d', u'арам.'),
-    ('e', u'арм.'),
-    ('f', u'груз.'),
-    ('g', u'копт.'),
-    ('h', u'лат.'),
-    ('i', u'сир.'),
+    ('a', 'греч.'),
+    ('b', 'ивр.'),
+    ('c', 'аккад.'),
+    ('d', 'арам.'),
+    ('e', 'арм.'),
+    ('f', 'груз.'),
+    ('g', 'копт.'),
+    ('h', 'лат.'),
+    ('i', 'сир.'),
 )
 LANGUAGE_MAP = {
     'akkadian': 'c',
@@ -232,7 +231,7 @@ ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE = {
     LANGUAGE_MAP['greek']: 'Greek',
     LANGUAGE_MAP['latin']: 'Latin',
 }
-ETYMOLOGY_LANGUAGES = ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.keys()
+ETYMOLOGY_LANGUAGES = list(ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.keys())
 LANGUAGE_CSS = {
         LANGUAGE_MAP['akkadian']: 'akkadian',
         LANGUAGE_MAP['aramaic']: 'aramaic',
@@ -258,12 +257,12 @@ LANGUAGE_TRANSLIT_CSS = {
 
 SUBSTANTIVUS_TYPE_CHOICES = (
     ('', ''),
-    ('a', u'с.' + NBSP + u'ед.'),
-    ('b', u'с.' + NBSP + u'мн.'),
-    ('c', u'м.' + NBSP + u'ед.'),
-    ('d', u'м.' + NBSP + u'мн.'),
-    ('e', u'ж.' + NBSP + u'ед.'),
-    ('f', u'ж.' + NBSP + u'мн.'),
+    ('a', 'с.' + NBSP + 'ед.'),
+    ('b', 'с.' + NBSP + 'мн.'),
+    ('c', 'м.' + NBSP + 'ед.'),
+    ('d', 'м.' + NBSP + 'мн.'),
+    ('e', 'ж.' + NBSP + 'ед.'),
+    ('f', 'ж.' + NBSP + 'мн.'),
 )
 SUBSTANTIVUS_TYPE_MAP = {
     'n.sg.': 'a',
@@ -278,48 +277,48 @@ SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10 = 'abcdefghij'
 ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10
 ENTRY_SPECIAL_CASES_CHOICES = (
     ('', ''),
-    (SC1, u'Несколько лексем одного рода'),
-    (SC2, u'2 лексемы, муж. и жен. рода'),
-    (SC10, u'2 лексемы, муж. и ср. рода'),
-    (SC3, u'2 лексемы, ср. и жен. рода'),
-    (SC7, u'2 лексемы, жен. и ср. рода'),
-    (SC4, u'2 лексемы, жен. и только мн.'),
-    (SC5, u'2 лексемы, только мн. и жен.'),
-    (SC6, u'3 лексемы, 3 муж. и последний неизм.'),
-    (SC8, u'4 лексемы [вихрь]'),
-    (SC9, u'Вынудить отображение пометы «неперех. и перех.» '
-          u'при равном кол-ве перех. и неперех. значений'),
+    (SC1, 'Несколько лексем одного рода'),
+    (SC2, '2 лексемы, муж. и жен. рода'),
+    (SC10, '2 лексемы, муж. и ср. рода'),
+    (SC3, '2 лексемы, ср. и жен. рода'),
+    (SC7, '2 лексемы, жен. и ср. рода'),
+    (SC4, '2 лексемы, жен. и только мн.'),
+    (SC5, '2 лексемы, только мн. и жен.'),
+    (SC6, '3 лексемы, 3 муж. и последний неизм.'),
+    (SC8, '4 лексемы [вихрь]'),
+    (SC9, 'Вынудить отображение пометы «неперех. и перех.» '
+          'при равном кол-ве перех. и неперех. значений'),
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
 MSC11, MSC12, MSC13, MSC14, MSC15, MSC16, MSC17, MSC18, MSC19 = 'klmnopqrs'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
-    (u'Имена', (
-        (MSC1,  u'канонич.'),
-        (MSC8,  u'имя собств.'),
-        (MSC9,  u'топоним'),
+    ('Имена', (
+        (MSC1,  'канонич.'),
+        (MSC8,  'имя собств.'),
+        (MSC9,  'топоним'),
     )),
-    (u'Части речи', (
-        (MSC6,  u'нареч.'),
-        (MSC19, u'предик. нареч.'),
-        (MSC13, u'союз'),
-        (MSC2,  u'предл.'),
-        (MSC3,  u'част.'),
-        (MSC7,  u'межд.'),
+    ('Части речи', (
+        (MSC6,  'нареч.'),
+        (MSC19, 'предик. нареч.'),
+        (MSC13, 'союз'),
+        (MSC2,  'предл.'),
+        (MSC3,  'част.'),
+        (MSC7,  'межд.'),
     )),
-    (u'Формы слова', (
-        (MSC4,  u'дат.'),
-        (MSC11, u'мн.'),
-        (MSC5,  u'твор. ед. в роли нареч.'),
-        (MSC12, u'в роли нареч.'),
-        (MSC14, u'в роли прил.'),
-        (MSC15, u'в роли част.'),
+    ('Формы слова', (
+        (MSC4,  'дат.'),
+        (MSC11, 'мн.'),
+        (MSC5,  'твор. ед. в роли нареч.'),
+        (MSC12, 'в роли нареч.'),
+        (MSC14, 'в роли прил.'),
+        (MSC15, 'в роли част.'),
     )),
-    (u'Другое', (
-        (MSC17, u'безл.'),  # Безличное употребление глагола
-        (MSC18, u'вводн.'),
-        (MSC16, u'полувспом.'),  # Полувспомогательный глагол
-        (MSC10, u'преимущ.'),
+    ('Другое', (
+        (MSC17, 'безл.'),  # Безличное употребление глагола
+        (MSC18, 'вводн.'),
+        (MSC16, 'полувспом.'),  # Полувспомогательный глагол
+        (MSC10, 'преимущ.'),
     )),
 )
 POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7, MSC13, MSC19)
@@ -336,8 +335,8 @@ POS_SPECIAL_CASES_MAP = {
 YET_NOT_IN_VOLUMES = None
 WHOLE_DICTIONARY = False
 VOLUME_LETTERS = {
-    1: (u'а', u'б'),
-    2: (u'в',),
+    1: ('а', 'б'),
+    2: ('в',),
 }
 ANY_LETTER = None
 
@@ -360,8 +359,8 @@ class JSONSerializable(object):
 
 class Entry(models.Model, JSONSerializable):
 
-    civil_equivalent = CharField(u'гражд. написание', max_length=50)
-    civil_inverse = CharField(u'гражд. инв.', max_length=50)
+    civil_equivalent = CharField('гражд. написание', max_length=50)
+    civil_inverse = CharField('гражд. инв.', max_length=50)
 
     @property
     def orth_vars(self):
@@ -375,26 +374,26 @@ class Entry(models.Model, JSONSerializable):
     def base_vars(self):
         return self.orthographic_variants.filter(parent__isnull=True)
 
-    hidden = BooleanField(u'Скрыть лексему', help_text=u'''Не отображать лексему
+    hidden = BooleanField('Скрыть лексему', help_text='''Не отображать лексему
             в списке словарных статей.''', default=False, editable=False)
 
-    homonym_order = SmallIntegerField(u'номер омонима', help_text=u'''Арабская
+    homonym_order = SmallIntegerField('номер омонима', help_text='''Арабская
             цифра, например, 1, 2, 3... Поле заполняется только при наличии
             нескольких омонимов.''', blank=True, null=True)
 
-    homonym_gloss = CharField(u'подсказка', max_length=40, help_text=u'''
+    homonym_gloss = CharField('подсказка', max_length=40, help_text='''
             Пояснение для различения омонимов, например: «предварять» для
             ВАРИТИ I или «варить» для ВАРИТИ II. Предполагается использовать
             только для служебных целей, а не для отображения при словарных
             статьях.''', blank=True)
 
-    duplicate = BooleanField(u'дубликат', help_text=u'''В нормальном случае
+    duplicate = BooleanField('дубликат', help_text='''В нормальном случае
             дубликатов словарных статей быть не должно. Они возникают только
             в результате недосмотра при создании новый статей вручную или в
             результате недостаточно хороших проверок при автоматизированном
             импорте заготовок статей.''', default=False)
 
-    part_of_speech = CharField(u'часть речи', max_length=1,
+    part_of_speech = CharField('часть речи', max_length=1,
                                choices=BLANK_CHOICE + PART_OF_SPEECH_CHOICES,
                                default='', blank=True)
 
@@ -404,25 +403,25 @@ class Entry(models.Model, JSONSerializable):
                 return True
 
     # Для сущ. и прил.
-    uninflected = BooleanField(u'неизменяемое', default=False)
+    uninflected = BooleanField('неизменяемое', default=False)
 
-    word_forms_list = TextField(u'список словоформ', help_text=u'''Список
+    word_forms_list = TextField('список словоформ', help_text='''Список
             словоформ через запятую''', blank=True)
 
     # только для существительных
-    tantum = CharField(u'число', choices=TANTUM_CHOICES,
+    tantum = CharField('число', choices=TANTUM_CHOICES,
                        max_length=1, blank=True, default='')
 
     def is_tantum(self, slug):
         return TANTUM_MAP[slug] == self.tantum
 
-    gender = CharField(u'род', choices=GENDER_CHOICES,
+    gender = CharField('род', choices=GENDER_CHOICES,
                        max_length=1, blank=True, default='')
 
     def is_gender(self, slug):
         return GENDER_MAP[slug] == self.gender
 
-    genitive = CharField(u'форма Р. падежа', max_length=50, blank=True)
+    genitive = CharField('форма Р. падежа', max_length=50, blank=True)
 
     @property
     def genitive_ucs_wax(self):
@@ -432,15 +431,15 @@ class Entry(models.Model, JSONSerializable):
     def genitives(self):
         return several_wordforms(self.genitive)
 
-    onym = CharField(u'тип имени собственного', max_length=1, blank=True,
+    onym = CharField('тип имени собственного', max_length=1, blank=True,
                      choices=ONYM_CHOICES, default='')
 
     def is_onym(self, slug):
         return ONYM_MAP[slug] == self.onym
 
-    canonical_name = BooleanField(u'каноническое', default=False)
+    canonical_name = BooleanField('каноническое', default=False)
 
-    nom_sg = CharField(u'И.мн.', help_text=u'''Только для этнонимов
+    nom_sg = CharField('И.мн.', help_text='''Только для этнонимов
                        (например, в словарной статье АГАРЯНИН, здесь --
                        АГАРЯНЕ).''', max_length=50, blank=True, default='')
 
@@ -453,7 +452,7 @@ class Entry(models.Model, JSONSerializable):
         return several_wordforms(self.nom_sg)
 
     # только для прилагательных
-    short_form = CharField(u'краткая форма', help_text=u'''Если Вы указываете
+    short_form = CharField('краткая форма', help_text='''Если Вы указываете
                            не всё слово, а только его часть, предваряйте её
                            дефисом.''', max_length=50, blank=True)
 
@@ -465,14 +464,14 @@ class Entry(models.Model, JSONSerializable):
     def short_forms(self):
         return several_wordforms(self.short_form)
 
-    possessive = BooleanField(u'притяжательное', default=False,
-                              help_text=u'Притяжательное прилагательное.')
+    possessive = BooleanField('притяжательное', default=False,
+                              help_text='Притяжательное прилагательное.')
 
-    comparative = BooleanField(u'сравн. степ.', default=False,
-            help_text=u'Сравнительная степень прилагательного или наречия')
+    comparative = BooleanField('сравн. степ.', default=False,
+            help_text='Сравнительная степень прилагательного или наречия')
 
     # только для глаголов
-    transitivity = CharField(u'переходность', max_length=1, blank=True,
+    transitivity = CharField('переходность', max_length=1, blank=True,
                              choices=TRANSITIVITY_CHOICES, default='')
 
     def is_transitivity(self, slug):
@@ -484,13 +483,13 @@ class Entry(models.Model, JSONSerializable):
         trans = TRANSITIVITY_MAP['transitive']
         intrans = TRANSITIVITY_MAP['intransitive']
         tmap = dict(TRANSITIVITY_CHOICES)
-        lst = filter(None, (m.transitivity for m in self.meanings))
-        template = u'%s и\u00a0%s'
+        lst = [_f for _f in (m.transitivity for m in self.meanings) if _f]
+        template = '%s и\u00a0%s'
         if len(lst) == 0:
-            return u''
+            return ''
         elif len(set(lst)) == 1 and \
                 not (lst[0] == labile and self.special_case == SC9):
-            return tmap.get(lst[0], u'')
+            return tmap.get(lst[0], '')
         else:
             c = Counter(lst)
             if labile in c:
@@ -502,8 +501,8 @@ class Entry(models.Model, JSONSerializable):
             else:
                 return template % (tmap[trans], tmap[intrans])
 
-    sg1 = CharField(u'форма 1 ед.', max_length=50, blank=True,
-                    help_text=u'''Целая словоформа или окончание. В случае
+    sg1 = CharField('форма 1 ед.', max_length=50, blank=True,
+                    help_text='''Целая словоформа или окончание. В случае
                     окончания первым символом должен идти дефис.''')
 
     @property
@@ -514,8 +513,8 @@ class Entry(models.Model, JSONSerializable):
     def several_sg1(self):
         return several_wordforms(self.sg1)
 
-    sg2 = CharField(u'форма 2 ед.', max_length=50, blank=True,
-                    help_text=u'''Целая словоформа или окончание. В случае
+    sg2 = CharField('форма 2 ед.', max_length=50, blank=True,
+                    help_text='''Целая словоформа или окончание. В случае
                     окончания первым символом должен идти дефис.''')
 
     @property
@@ -526,41 +525,41 @@ class Entry(models.Model, JSONSerializable):
     def several_sg2(self):
         return several_wordforms(self.sg2)
 
-    participle_type = CharField(u'тип причастия', max_length=1, blank=True,
+    participle_type = CharField('тип причастия', max_length=1, blank=True,
                                 choices=PARTICIPLE_TYPE_CHOICES, default='')
 
     def is_participle_type(self, slug):
         return PARTICIPLE_TYPE_MAP[slug] == self.participle_type
 
-    derivation_entry = ForeignKey('self', verbose_name=u'образовано от',
+    derivation_entry = ForeignKey('self', verbose_name='образовано от',
             related_name='derived_entry_set', blank=True, null=True)
 
-    link_to_entry = ForeignKey('self', verbose_name=u'ссылка на другую лексему',
-            help_text=u'''Если вместо значений словарная статья должна содержать
+    link_to_entry = ForeignKey('self', verbose_name='ссылка на другую лексему',
+            help_text='''Если вместо значений словарная статья должна содержать
             только ссылку на другую словарную статью, укажите её в данном
             поле.''', related_name='ref_entry_set', blank=True, null=True)
 
     link_to_collogroup = ForeignKey('CollocationGroup',
-            verbose_name=u'ссылка на словосочетание', help_text=u'''Если вместо
+            verbose_name='ссылка на словосочетание', help_text='''Если вместо
             значений словарная статья должна содержать только ссылку на
             словосочетание, укажите его в данном поле.''',
             related_name='ref_entry_set', blank=True, null=True)
 
-    link_to_meaning = ForeignKey('Meaning', verbose_name=u'ссылка на значение',
-            help_text=u'''Если вместо значений словарная статья должна
+    link_to_meaning = ForeignKey('Meaning', verbose_name='ссылка на значение',
+            help_text='''Если вместо значений словарная статья должна
             содержать только ссылку на опредленное значение лексемы или
             словосочетания, укажите его в данном поле.''',
             related_name='ref_entry_set', blank=True, null=True)
 
-    cf_entries = ManyToManyField('self', verbose_name=u'ср. (лексемы)',
+    cf_entries = ManyToManyField('self', verbose_name='ср. (лексемы)',
             related_name='cf_entry_set', symmetrical=False, blank=True,
             null=True)
 
     cf_collogroups = ManyToManyField('CollocationGroup',
-            verbose_name=u'ср. (группы слововосочетаний)',
+            verbose_name='ср. (группы слововосочетаний)',
             related_name='cf_entry_set', blank=True, null=True)
 
-    cf_meanings = ManyToManyField('Meaning', verbose_name=u'ср. (значения)',
+    cf_meanings = ManyToManyField('Meaning', verbose_name='ср. (значения)',
             related_name='cf_entry_set', blank=True, null=True)
 
     @property
@@ -570,17 +569,17 @@ class Entry(models.Model, JSONSerializable):
     @property
     def cfentries(self):
         IDEM = (
-            ur'idem\['
-                ur'\s*([а-яА-Я]+)'  # Гражданское написание заглавного слова
-                ur'\s*([1-9])?'  # Номер омонима
-                ur'(?:\s*-\s*'  # Список значений
-                    ur'\d+(?:\s*,\s*\d+)*'
-                ur')?'
-            ur'\]'
+            r'idem\['
+                r'\s*([а-яА-Я]+)'  # Гражданское написание заглавного слова
+                r'\s*([1-9])?'  # Номер омонима
+                r'(?:\s*-\s*'  # Список значений
+                    r'\d+(?:\s*,\s*\d+)*'
+                r')?'
+            r'\]'
         )
         idems = []
         for m in self.meanings:
-            for match in re.findall(IDEM, u'%s %s' % (m.meaning, m.gloss)):
+            for match in re.findall(IDEM, '%s %s' % (m.meaning, m.gloss)):
                 idems.append((match[0], int(match[1]) if match[1] else None))
         cf_entries = self.cf_entries
         for civil_equivalent, homonym_order in idems:
@@ -594,8 +593,8 @@ class Entry(models.Model, JSONSerializable):
     def cfcollogroups(self):
         return self.cf_collogroups.all()
 
-    additional_info = TextField(u'примечание к статье',
-            help_text=u'''Любая дополнительная информация по данной ЛЕКСЕМЕ.
+    additional_info = TextField('примечание к статье',
+            help_text='''Любая дополнительная информация по данной ЛЕКСЕМЕ.
             Дополнительная информация по значению лексемы или примеру на
             значение указывается не здесь, а в аналогичных полях при значении
             и примере, соответственно.''', blank=True)
@@ -616,27 +615,27 @@ class Entry(models.Model, JSONSerializable):
         return self.participle_set.all().order_by('order', 'id')
 
     # административная информация
-    status = CharField(u'статус статьи', max_length=1, choices=STATUS_CHOICES,
+    status = CharField('статус статьи', max_length=1, choices=STATUS_CHOICES,
                        default='c')
 
     def is_status(self, slug):
         return STATUS_MAP[slug] == self.status
 
     percent_status = PositiveSmallIntegerField(
-                        u'статус готовности статьи в процентах', default=0)
+                        'статус готовности статьи в процентах', default=0)
 
-    authors = ManyToManyField(CustomUser, verbose_name=u'автор статьи',
+    authors = ManyToManyField(CustomUser, verbose_name='автор статьи',
                               blank=True, null=True)
 
-    antconc_query = TextField(u'Запрос для программы AntConc', blank=True)
+    antconc_query = TextField('Запрос для программы AntConc', blank=True)
     mtime = DateTimeField(editable=False)
     ctime = DateTimeField(editable=False, auto_now_add=True)
 
-    good = TextField(u'Годность статьи для показа', max_length=1, default=u'b',
+    good = TextField('Годность статьи для показа', max_length=1, default='b',
                      choices=(
-                         (u'b', u'не подходит'),  # bad
-                         (u's', u'возможно, подходит'),  # so so
-                         (u'g', u'подходит'),  # good
+                         ('b', 'не подходит'),  # bad
+                         ('s', 'возможно, подходит'),  # so so
+                         ('g', 'подходит'),  # good
                      ))
 
     meanings = property(meanings)
@@ -658,7 +657,7 @@ class Entry(models.Model, JSONSerializable):
                 self.index_mark = None
                 if len(meanings) > 1:
                     for i, meaning in enumerate(meanings):
-                        meaning.index_mark = unicode(i + 1)
+                        meaning.index_mark = str(i + 1)
             def __len__(self):
                 return len(self.meanings)
             def __iter__(self):
@@ -672,8 +671,8 @@ class Entry(models.Model, JSONSerializable):
                 self.several_pos = several_pos
                 if len(meaning_groups) > 1:
                     for i, mgroup in enumerate(meaning_groups):
-                        mgroup.index_mark = {1: u'I', 2: u'II', 3: u'III',
-                                             4: u'IV', 5: u'V'}[i + 1]
+                        mgroup.index_mark = {1: 'I', 2: 'II', 3: 'III',
+                                             4: 'IV', 5: 'V'}[i + 1]
             def __len__(self):
                 return len(self.meaning_groups)
             def __iter__(self):
@@ -691,7 +690,7 @@ class Entry(models.Model, JSONSerializable):
                         d[i].append(o.idem_ucs)
             for i in d:
                 dd[tuple(sorted(d[i]))].append(i)
-            groups = [(key, sorted(value)) for key, value in dd.items()]
+            groups = [(key, sorted(value)) for key, value in list(dd.items())]
             if all(len(value) == 1 for key, value in groups):
                 for orthvars_list, meaning_numbers in groups:
                     m = meanings[meaning_numbers[0] - 1]
@@ -728,12 +727,12 @@ class Entry(models.Model, JSONSerializable):
             meaning_groups = [MeaningGroup(meanings)]
         return MeaningGroups(meaning_groups, several_pos)
 
-    special_case = CharField(u'Статья нуждается в специальной обработке',
+    special_case = CharField('Статья нуждается в специальной обработке',
                              max_length=1, choices=ENTRY_SPECIAL_CASES_CHOICES,
-                             default=u'', blank=True)
+                             default='', blank=True)
 
     def special_cases(self, case):
-        RE_COMMA = ur'[,\s]+'
+        RE_COMMA = r'[,\s]+'
         if case == 'several nouns':
             if (self.genitive and ',' in self.genitive and
                     len(self.base_vars) > 1 and
@@ -743,9 +742,9 @@ class Entry(models.Model, JSONSerializable):
                 F_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['feminine']]
                 N_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['neutral']]
                 PL_TANTUM = dict(TANTUM_CHOICES)[TANTUM_MAP['pluraleTantum']]
-                UNINFL = u'неизм.'
-                HIDDEN_GRAM = u''
-                HIDDEN_FORM = u''
+                UNINFL = 'неизм.'
+                HIDDEN_GRAM = ''
+                HIDDEN_FORM = ''
 
                 wordforms = re.split(RE_COMMA, self.genitive)
                 sc = self.special_case
@@ -764,7 +763,7 @@ class Entry(models.Model, JSONSerializable):
                     grammatical_marks = [
                         HIDDEN_GRAM,
                         M_GENDER,
-                        u'%s %s' % (M_GENDER, UNINFL)]
+                        '%s %s' % (M_GENDER, UNINFL)]
                     wordforms += [HIDDEN_FORM]
                 elif SC7 == sc:
                     grammatical_marks = [F_GENDER, N_GENDER]
@@ -778,68 +777,68 @@ class Entry(models.Model, JSONSerializable):
                 value = [(wordform, ucs8(wordform), grammatical_marks[i])
                          for i, wordform in enumerate(wordforms)]
                 return value
-        elif case == 'be' and self.civil_equivalent == u'быти':
-            return [ucs8(x) for x in (u"нѣ'смь", u"нѣ'си")]
-        elif case == 'bigger' and self.civil_equivalent == u'больший':
-            return ucs8(u"вели'кій")
+        elif case == 'be' and self.civil_equivalent == 'быти':
+            return [ucs8(x) for x in ("нѣ'смь", "нѣ'си")]
+        elif case == 'bigger' and self.civil_equivalent == 'больший':
+            return ucs8("вели'кій")
 
         elif case == 'other_volumes':
-            STAR = u'\u27e1'
+            STAR = '\u27e1'
             STAR_CLS = 'MeaningfulNoAccent'
-            if u'вриена' == self.civil_equivalent:
+            if 'вриена' == self.civil_equivalent:
                 base_vars = tuple(self.base_vars)
                 tags = (
                     {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                    {'text': u',', 'class': 'Text'},
+                    {'text': ',', 'class': 'Text'},
                     {'text': ts.SPACE},
                     {'text': self.genitive_ucs_wax[1], 'class': 'CSLSegment'},
                     {'text': ts.SPACE},
-                    {'text': u'ж.', 'class': 'Em'},
+                    {'text': 'ж.', 'class': 'Em'},
                     {'text': ts.SPACE},
-                    {'text': u'и', 'class': 'Conj'},
+                    {'text': 'и', 'class': 'Conj'},
                     {'text': ts.SPACE},
                     {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
                     {'text': ts.SPACE},
-                    {'text': u'ж.', 'class': 'Em'},
+                    {'text': 'ж.', 'class': 'Em'},
                     {'text': ts.EMSPACE},
-                    {'text': u'неизм.', 'class': 'Em'},
+                    {'text': 'неизм.', 'class': 'Em'},
                     {'text': ts.SPACE},
                 )
                 return tags
 
-            elif self.civil_equivalent in (u'ветреный', u'ветренный'):
+            elif self.civil_equivalent in ('ветреный', 'ветренный'):
                 base_vars = tuple(self.base_vars)
                 tags = (
                     {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
                     {'text': ts.SPACE},
-                    {'text': u'(', 'class': 'Text'},
+                    {'text': '(', 'class': 'Text'},
                     {'text': base_vars[0].childvars[0].idem_ucs,
                         'class': 'CSLSegment'},
-                    {'text': u'),', 'class': 'Text'},
+                    {'text': '),', 'class': 'Text'},
                     {'text': ts.SPACE},
                     {'text': self.short_form_ucs_wax[1],
                         'class': 'CSLSegment'},
                     {'text': ts.SPACE},
-                    {'text': u'и', 'class': 'Conj'},
+                    {'text': 'и', 'class': 'Conj'},
                     {'text': ts.SPACE},
                     {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
                     {'text': ts.SPACE},
-                    {'text': u'прил.', 'class': 'Em'},
+                    {'text': 'прил.', 'class': 'Em'},
                     {'text': ts.SPACE},
                 )
                 return tags
 
             elif self.civil_equivalent in (
-                    u'воскласти', u'вскласти',  # перех.
-                    u'воскормити', u'вскормити',  # перех.
-                    u'восприимати', u'воспринимати',  # перех. и неперех.
-                    u'воспящати', u'вспящати',  # перех. и неперех.
-                    u'востаяти', u'встаяти'  # неперех.
+                    'воскласти', 'вскласти',  # перех.
+                    'воскормити', 'вскормити',  # перех.
+                    'восприимати', 'воспринимати',  # перех. и неперех.
+                    'воспящати', 'вспящати',  # перех. и неперех.
+                    'востаяти', 'встаяти'  # неперех.
                     ):
                 base_vars = tuple(self.base_vars)
                 tags = (
                     {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                    {'text': u',', 'class': 'Text'},
+                    {'text': ',', 'class': 'Text'},
                     {'text': ts.SPACE},
                     {'text': h(ucs8(
                         self.several_sg1[0][0])), 'class': 'CSLSegment'},
@@ -849,7 +848,7 @@ class Entry(models.Model, JSONSerializable):
                         {'text': STAR, 'class': STAR_CLS},
                     )
                 tags += (
-                    {'text': u',', 'class': 'Text'},
+                    {'text': ',', 'class': 'Text'},
                     {'text': ts.SPACE},
                     {'text': h(ucs8(
                         self.several_sg2[0][0])), 'class': 'CSLSegment'},
@@ -860,11 +859,11 @@ class Entry(models.Model, JSONSerializable):
                     )
                 tags += (
                     {'text': ts.SPACE},
-                    {'text': u'и', 'class': 'Conj'},
+                    {'text': 'и', 'class': 'Conj'},
                     {'text': ts.SPACE},
                     {'text': h(base_vars[1].idem_ucs),
                         'class': 'SubHeadword'},
-                    {'text': u',', 'class': 'Text'},
+                    {'text': ',', 'class': 'Text'},
                     {'text': ts.SPACE},
                     {'text': h(ucs8(
                         self.several_sg1[1][0])), 'class': 'CSLSegment'},
@@ -874,7 +873,7 @@ class Entry(models.Model, JSONSerializable):
                         {'text': STAR, 'class': STAR_CLS},
                     )
                 tags += (
-                    {'text': u',', 'class': 'Text'},
+                    {'text': ',', 'class': 'Text'},
                     {'text': ts.SPACE},
                     {'text': h(ucs8(
                         self.several_sg2[1][0])), 'class': 'CSLSegment'},
@@ -883,34 +882,34 @@ class Entry(models.Model, JSONSerializable):
                     tags += (
                         {'text': STAR, 'class': STAR_CLS},
                     )
-                if self.civil_equivalent in (u'востаяти', u'встаяти'):
+                if self.civil_equivalent in ('востаяти', 'встаяти'):
                     tags += (
                         {'text': ts.SPACE},
-                        {'text': u'неперех.', 'class': 'Em'},
+                        {'text': 'неперех.', 'class': 'Em'},
                         {'text': ts.SPACE},
                     )
                 else:
                     tags += (
                         {'text': ts.SPACE},
-                        {'text': u'перех.', 'class': 'Em'},
+                        {'text': 'перех.', 'class': 'Em'},
                         {'text': ts.SPACE},
                     )
                     if self.civil_equivalent in (
-                            u'восприимати', u'воспринимати',
-                            u'воспящати', u'вспящати'):
+                            'восприимати', 'воспринимати',
+                            'воспящати', 'вспящати'):
                         tags += (
-                            {'text': u'и', 'class': 'Em'},
+                            {'text': 'и', 'class': 'Em'},
                             {'text': ts.SPACE},
-                            {'text': u'неперех.', 'class': 'Em'},
+                            {'text': 'неперех.', 'class': 'Em'},
                             {'text': ts.SPACE},
                         )
                 return tags
 
-            elif self.civil_equivalent in (u'взяти', u'взятися'):
+            elif self.civil_equivalent in ('взяти', 'взятися'):
                 base_vars = tuple(self.base_vars)
                 tags = (
                     {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                    {'text': u',', 'class': 'Text'},
+                    {'text': ',', 'class': 'Text'},
                     {'text': ts.SPACE},
                     {'text': h(ucs8(
                         self.several_sg1[0][0])), 'class': 'CSLSegment'},
@@ -921,7 +920,7 @@ class Entry(models.Model, JSONSerializable):
                     )
                 tags += (
                     {'text': ts.SPACE},
-                    {'text': u'(', 'class': 'Text'},
+                    {'text': '(', 'class': 'Text'},
                     {'text': h(ucs8(
                         self.several_sg1[1][0])), 'class': 'CSLSegment'},
                 )
@@ -931,7 +930,7 @@ class Entry(models.Model, JSONSerializable):
                     )
 
                 tags += (
-                    {'text': u'),', 'class': 'Text'},
+                    {'text': '),', 'class': 'Text'},
                     {'text': ts.SPACE},
                     {'text': h(ucs8(
                         self.several_sg2[0][0])), 'class': 'CSLSegment'},
@@ -942,7 +941,7 @@ class Entry(models.Model, JSONSerializable):
                     )
                 tags += (
                     {'text': ts.SPACE},
-                    {'text': u'(', 'class': 'Text'},
+                    {'text': '(', 'class': 'Text'},
                     {'text': h(ucs8(
                         self.several_sg2[1][0])), 'class': 'CSLSegment'},
                 )
@@ -954,23 +953,23 @@ class Entry(models.Model, JSONSerializable):
                     {'text': ')', 'class': 'Text'},
                     {'text': ts.SPACE},
                 )
-                if self.civil_equivalent == u'взяти':
+                if self.civil_equivalent == 'взяти':
                     tags += (
-                        {'text': u'перех.', 'class': 'Em'},
+                        {'text': 'перех.', 'class': 'Em'},
                         {'text': ts.SPACE},
-                        {'text': u'и', 'class': 'Em'},
+                        {'text': 'и', 'class': 'Em'},
                         {'text': ts.SPACE},
-                        {'text': u'неперех.', 'class': 'Em'},
+                        {'text': 'неперех.', 'class': 'Em'},
                         {'text': ts.SPACE},
                     )
-                elif self.civil_equivalent == u'взятися':
+                elif self.civil_equivalent == 'взятися':
                     tags += (
-                        {'text': u'неперех.', 'class': 'Em'},
+                        {'text': 'неперех.', 'class': 'Em'},
                         {'text': ts.SPACE},
                     )
                 return tags
 
-            elif self.civil_equivalent == u'воздвигнути':
+            elif self.civil_equivalent == 'воздвигнути':
                 forms = tuple(self.base_vars)
                 sg1_segs = [
                     (h(ucs_word), STAR) if ts.has_no_accent(word)
@@ -988,34 +987,34 @@ class Entry(models.Model, JSONSerializable):
                     ('CSLSegment', STAR_CLS) if ts.has_no_accent(word)
                     else ('CSLSegment',)
                     for word, ucs_word in self.several_sg2]
-                segs = (forms[0].idem_ucs, u',', ts.SPACE)
+                segs = (forms[0].idem_ucs, ',', ts.SPACE)
                 clss = ('Headword', 'Text', None)
                 segs += sg1_segs[0]
                 clss += sg1_clss[0]
-                segs += (ts.SPACE, u'и', ts.SPACE)
+                segs += (ts.SPACE, 'и', ts.SPACE)
                 clss += (None, 'Conj', None)
                 segs += sg1_segs[1]
                 clss += sg1_clss[1]
-                segs += (u',', ts.SPACE)
+                segs += (',', ts.SPACE)
                 clss += ('Text', None)
                 segs += sg2_segs[0]
                 clss += sg2_clss[0]
-                segs += (ts.SPACE, u'и', ts.SPACE)
+                segs += (ts.SPACE, 'и', ts.SPACE)
                 clss += (None, 'Conj', None)
                 segs += sg2_segs[1]
                 clss += sg2_clss[1]
 
-                segs += (ts.SPACE, u'и', ts.SPACE)
+                segs += (ts.SPACE, 'и', ts.SPACE)
                 clss += (None, 'Conj', None)
-                segs += (h(forms[1].idem_ucs), u',', ts.SPACE)
+                segs += (h(forms[1].idem_ucs), ',', ts.SPACE)
                 clss += ('SubHeadword', 'Text', None)
                 segs += sg1_segs[2]
                 clss += sg1_clss[2]
-                segs += (u',', ts.SPACE)
+                segs += (',', ts.SPACE)
                 clss += ('Text', None)
                 segs += sg2_segs[2]
                 clss += sg2_clss[2]
-                segs += (ts.SPACE, u'перех.', ts.SPACE)
+                segs += (ts.SPACE, 'перех.', ts.SPACE)
                 clss += (None, 'Em', None)
 
                 tags = []
@@ -1026,7 +1025,7 @@ class Entry(models.Model, JSONSerializable):
                     tags.append(tag)
                 return tags
 
-            elif self.civil_equivalent in (u'владычний', u'владычный'):
+            elif self.civil_equivalent in ('владычний', 'владычный'):
                 forms = tuple(self.base_vars)
                 short_form_segs = [
                     (h(ucs_word), STAR) if ts.has_no_accent(word)
@@ -1036,27 +1035,27 @@ class Entry(models.Model, JSONSerializable):
                     ('CSLSegment', STAR_CLS) if ts.has_no_accent(word)
                     else ('CSLSegment',)
                     for word, ucs_word in self.short_forms]
-                segs = (forms[0].idem_ucs, ts.SPACE, u'(')
+                segs = (forms[0].idem_ucs, ts.SPACE, '(')
                 clss = ('Headword', None, 'Text')
-                segs += (h(forms[0].childvars[0].idem_ucs), u',', ts.SPACE)
+                segs += (h(forms[0].childvars[0].idem_ucs), ',', ts.SPACE)
                 clss += ('CSLSegment', 'Text', None)
-                segs += (h(forms[0].idem_ucs), u'),', ts.SPACE)
+                segs += (h(forms[0].idem_ucs), '),', ts.SPACE)
                 clss += ('CSLSegment', 'Text', None)
                 segs += short_form_segs[0]
                 clss += short_form_clss[0]
 
-                segs += (ts.SPACE, u'и', ts.SPACE)
+                segs += (ts.SPACE, 'и', ts.SPACE)
                 clss += (None, 'Conj', None)
-                segs += (forms[1].idem_ucs, ts.SPACE, u'(')
+                segs += (forms[1].idem_ucs, ts.SPACE, '(')
                 clss += ('SubHeadword', None, 'Text')
-                segs += (h(forms[1].childvars[0].idem_ucs), u',', ts.SPACE)
+                segs += (h(forms[1].childvars[0].idem_ucs), ',', ts.SPACE)
                 clss += ('CSLSegment', 'Text', None)
-                segs += (h(forms[1].idem_ucs), u'),', ts.SPACE)
+                segs += (h(forms[1].idem_ucs), '),', ts.SPACE)
                 clss += ('CSLSegment', 'Text', None)
                 segs += short_form_segs[1]
                 clss += short_form_clss[1]
 
-                segs += (ts.SPACE, u'прил. притяж.', ts.SPACE)
+                segs += (ts.SPACE, 'прил. притяж.', ts.SPACE)
                 clss += (None, 'Em', None)
 
                 tags = []
@@ -1067,50 +1066,50 @@ class Entry(models.Model, JSONSerializable):
                     tags.append(tag)
                 return tags
 
-            elif self.civil_equivalent in (u'гефсимани', u'гефсиманиа'):
+            elif self.civil_equivalent in ('гефсимани', 'гефсиманиа'):
                 base_vars = tuple(self.base_vars)
                 tags = (
                     {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                    {'text': u',', 'class': 'Text'},
+                    {'text': ',', 'class': 'Text'},
                     {'text': ts.SPACE},
                     {'text': self.genitive_ucs_wax[1], 'class': 'CSLSegment'},
                     {'text': ts.SPACE},
-                    {'text': u'ж.', 'class': 'Em'},
+                    {'text': 'ж.', 'class': 'Em'},
                     {'text': ts.SPACE},
-                    {'text': u'и', 'class': 'Conj'},
+                    {'text': 'и', 'class': 'Conj'},
                     {'text': ts.SPACE},
                     {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
                     {'text': ts.SPACE},
-                    {'text': u'неизм.', 'class': 'Em'},
+                    {'text': 'неизм.', 'class': 'Em'},
                     {'text': ts.SPACE},
                 )
                 return tags
 
-            elif self.civil_equivalent in (u'епитрахиль', u'епитрахилий'):
+            elif self.civil_equivalent in ('епитрахиль', 'епитрахилий'):
                 base_vars = tuple(self.base_vars)
                 genitives = self.genitives
                 tags = (
                     {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                    {'text': u',', 'class': 'Text'},
+                    {'text': ',', 'class': 'Text'},
                     {'text': ts.SPACE},
                     {'text': genitives[0][1], 'class': 'CSLSegment'},
                     {'text': ts.SPACE},
-                    {'text': u'м.', 'class': 'Em'},
+                    {'text': 'м.', 'class': 'Em'},
                     {'text': ts.SPACE},
-                    {'text': u'и', 'class': 'Conj'},
+                    {'text': 'и', 'class': 'Conj'},
                     {'text': ts.SPACE},
                     {'text': genitives[1][1], 'class': 'CSLSegment'},
                     {'text': ts.SPACE},
-                    {'text': u'ж.', 'class': 'Em'},
+                    {'text': 'ж.', 'class': 'Em'},
                     {'text': ts.SPACE},
-                    {'text': u'и', 'class': 'Conj'},
+                    {'text': 'и', 'class': 'Conj'},
                     {'text': ts.SPACE},
                     {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
-                    {'text': u',', 'class': 'Text'},
+                    {'text': ',', 'class': 'Text'},
                     {'text': ts.SPACE},
                     {'text': genitives[2][1], 'class': 'CSLSegment'},
                     {'text': ts.SPACE},
-                    {'text': u'м.', 'class': 'Em'},
+                    {'text': 'м.', 'class': 'Em'},
                     {'text': ts.SPACE},
                 )
                 return tags
@@ -1167,11 +1166,11 @@ class Entry(models.Model, JSONSerializable):
         greeks = set()
         greeks.update(unicodedata.normalize('NFC', et.unitext.strip().lower())
             for et in self.etymology_set.filter(language=LANGUAGE_MAP['greek'])
-            if et.unitext.strip() and u' ' not in et.unitext.strip())
+            if et.unitext.strip() and ' ' not in et.unitext.strip())
         for ex in self.all_examples():
             for ge in ex.greek_equivs:
                 text = ge.initial_form.strip().lower()
-                if text and not ge.aliud and not re.findall(ur'[\sa-zA-Z]', text):
+                if text and not ge.aliud and not re.findall(r'[\sa-zA-Z]', text):
                     text = unicodedata.normalize('NFC', text)
                     greeks.add(text)
         return tuple(sorted(greeks))
@@ -1187,12 +1186,12 @@ class Entry(models.Model, JSONSerializable):
     def volume(self, volume=YET_NOT_IN_VOLUMES):
         if volume is WHOLE_DICTIONARY:
             return True
-        first_letter = self.civil_equivalent.lstrip(u' =')[:1].lower()
+        first_letter = self.civil_equivalent.lstrip(' =')[:1].lower()
 
         # Если аргумент volume не передан, то выбираем только те статьи,
         # для которых том ещё не определен.
         if volume is YET_NOT_IN_VOLUMES:
-            used_letters = itertools.chain(*VOLUME_LETTERS.values())
+            used_letters = itertools.chain(*list(VOLUME_LETTERS.values()))
             match = first_letter not in used_letters
         else:
             if isinstance(volume, (list, tuple)):
@@ -1209,7 +1208,7 @@ class Entry(models.Model, JSONSerializable):
         # Если аргумент starts_with не передан, то выбираем все статьи
         if starts_with is ANY_LETTER:
             return True
-        leading = self.civil_equivalent.lstrip(u' =')[:len(starts_with)]
+        leading = self.civil_equivalent.lstrip(' =')[:len(starts_with)]
         return leading.lower() == starts_with.lower()
 
     @models.permalink
@@ -1230,7 +1229,7 @@ class Entry(models.Model, JSONSerializable):
           id1 = self.pk
           e2 = self
           e2.pk = None
-          e2.homonym_gloss = u''
+          e2.homonym_gloss = ''
           e2.save()
           e1 = Entry.objects.get(pk=id1)
           m2m = ('participle_set', 'orthographic_variants', 'etymology_set',
@@ -1257,7 +1256,7 @@ class Entry(models.Model, JSONSerializable):
           return e1, e2
         return None, None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.orth_vars[0].idem
 
     def forJSON(self):
@@ -1308,24 +1307,24 @@ class Entry(models.Model, JSONSerializable):
     objects_all = models.Manager()
 
     class Meta:
-        verbose_name = u'словарная статья'
-        verbose_name_plural = u'СЛОВАРНЫЕ СТАТЬИ'
+        verbose_name = 'словарная статья'
+        verbose_name_plural = 'СЛОВАРНЫЕ СТАТЬИ'
         ordering = ('-id',)
 
 class Etymology(models.Model, JSONSerializable):
 
-    entry = ForeignKey(Entry, verbose_name=u'словарная статья',
-                help_text=u'''Словарная статья, к которой относится данная
+    entry = ForeignKey(Entry, verbose_name='словарная статья',
+                help_text='''Словарная статья, к которой относится данная
                 этимология.''', blank=True, null=True)
 
-    collocation = ForeignKey('Collocation', verbose_name=u'словосочетание',
-                help_text=u'''Словосочетание, к которому относится данная
+    collocation = ForeignKey('Collocation', verbose_name='словосочетание',
+                help_text='''Словосочетание, к которому относится данная
                 этимология.''', blank=True, null=True)
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
+    order = SmallIntegerField('порядок следования', blank=True, default=345)
 
-    etymon_to = ForeignKey('self', verbose_name=u'этимон для',
-                help_text=u'''Возможный/несомненный этимон для другого этимона,
+    etymon_to = ForeignKey('self', verbose_name='этимон для',
+                help_text='''Возможный/несомненный этимон для другого этимона,
                 который и необходимо указать.''', related_name='etymon_set',
                 blank=True, null=True)
 
@@ -1333,7 +1332,7 @@ class Etymology(models.Model, JSONSerializable):
     def etymons(self):
         return self.etymon_set.filter(etymon_to=self.id).order_by('order', 'id')
 
-    language = CharField(u'язык', max_length=1, choices=LANGUAGE_CHOICES,
+    language = CharField('язык', max_length=1, choices=LANGUAGE_CHOICES,
                          default='')
 
     def is_language(self, x):
@@ -1346,7 +1345,7 @@ class Etymology(models.Model, JSONSerializable):
         return self.language in ETYMOLOGY_LANGUAGES
 
     def get_etymology_language_cstyle(self):
-        return ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.get(self.language, u'')
+        return ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.get(self.language, '')
 
     def get_language_css(self):
         return LANGUAGE_CSS[self.language]
@@ -1354,22 +1353,22 @@ class Etymology(models.Model, JSONSerializable):
     def get_language_translit_css(self):
         return LANGUAGE_TRANSLIT_CSS[self.language]
 
-    text = CharField(u'языковой эквивалент', max_length=40, blank=True)
+    text = CharField('языковой эквивалент', max_length=40, blank=True)
 
-    unitext = CharField(u'языковой эквивалент (Unicode)', max_length=40,
+    unitext = CharField('языковой эквивалент (Unicode)', max_length=40,
                         blank=True)
 
-    translit = CharField(u'транслитерация', max_length=40, blank=True)
-    meaning = CharField(u'перевод', max_length=70, blank=True)
-    gloss = CharField(u'пояснение', max_length=70, blank=True)
+    translit = CharField('транслитерация', max_length=40, blank=True)
+    meaning = CharField('перевод', max_length=70, blank=True)
+    gloss = CharField('пояснение', max_length=70, blank=True)
 
-    source = CharField(u'документальный источник',
-                help_text=u'например, Септуагинта', max_length=40, blank=True)
+    source = CharField('документальный источник',
+                help_text='например, Септуагинта', max_length=40, blank=True)
 
-    unclear = BooleanField(u'этимология неясна', default=False)
-    questionable = BooleanField(u'этимология спорна', default=False)
-    mark = CharField(u'грамматическая помета', max_length=20, blank=True)
-    additional_info = TextField(u'примечание', blank=True)
+    unclear = BooleanField('этимология неясна', default=False)
+    questionable = BooleanField('этимология спорна', default=False)
+    mark = CharField('грамматическая помета', max_length=20, blank=True)
+    additional_info = TextField('примечание', blank=True)
     mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
@@ -1421,9 +1420,9 @@ class Etymology(models.Model, JSONSerializable):
             return et1, et2
         return None, None
 
-    def __unicode__(self):
-        return u'%s %s %s' % (self.get_language_display(), self.entry,
-                              self.translit)
+    def __str__(self):
+        return '%s %s %s' % (self.get_language_display(), self.entry,
+                             self.translit)
     def forJSON(self):
         _fields = (
             'additional_info',
@@ -1449,26 +1448,26 @@ class Etymology(models.Model, JSONSerializable):
         return dct
 
     class Meta:
-        verbose_name = u'этимон'
-        verbose_name_plural = u'этимология'
+        verbose_name = 'этимон'
+        verbose_name_plural = 'этимология'
         ordering = ('id',)
 
 
 class MeaningContext(models.Model, JSONSerializable):
 
-    meaning = ForeignKey('Meaning', verbose_name=u'значение')
-    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
+    meaning = ForeignKey('Meaning', verbose_name='значение')
+    order = SmallIntegerField('порядок следования', blank=True, default=345)
 
-    left_text = CharField(u'дополнительный текст слева', max_length=50,
-            help_text=u'''Здесь указывается текст на <span class="green"
+    left_text = CharField('дополнительный текст слева', max_length=50,
+            help_text='''Здесь указывается текст на <span class="green"
             >русском</span> языке. Например, если необходим контекст «<span
             class="civil">+</span>&nbsp;<span class="cslav">къ</span
             >&nbsp;<span>class="civil">кому/чему</span>», в данное поле
             добавляется текст&nbsp;«<span class="typing">+</span>».''',
             blank=True)
 
-    context = CharField(u'текст контекста', max_length=40,
-            help_text=u'''Здесь указывается <span class="green"
+    context = CharField('текст контекста', max_length=40,
+            help_text='''Здесь указывается <span class="green"
             >церковнославянский</span> текст. Например, если необходим контекст
             «<span class="civil">+</span>&nbsp;<span class="cslav">къ</span
             >&nbsp;<span>class="civil">кому/чему</span>», в данное поле
@@ -1479,8 +1478,8 @@ class MeaningContext(models.Model, JSONSerializable):
     def context_ucs(self):
         return ucs8(self.context)
 
-    right_text = CharField(u'дополнительный текст справа', max_length=50,
-            help_text=u'''Здесь указывается текст на <span class="green"
+    right_text = CharField('дополнительный текст справа', max_length=50,
+            help_text='''Здесь указывается текст на <span class="green"
             >русском</span> языке. Например, если необходим контекст «<span
             class="civil">+</span>&nbsp;<span class="cslav">къ</span
             >&nbsp;<span>class="civil">кому/чему</span>», в данное поле
@@ -1491,7 +1490,7 @@ class MeaningContext(models.Model, JSONSerializable):
 
     @property
     def show_in_dictionary(self):
-        PL = u'мн.'
+        PL = 'мн.'
         L, C, R = self.left_text, self.context, self.right_text
         c1 = C and not L and not R
         c2 = not C and (L == PL or R == PL)
@@ -1545,8 +1544,8 @@ class MeaningContext(models.Model, JSONSerializable):
           return mc1, mc2
         return None, None
 
-    def __unicode__(self):
-        SPACE = u' '
+    def __str__(self):
+        SPACE = ' '
         _list = (self.left_text, self.context, self.right_text)
         return SPACE.join(_list)
 
@@ -1562,54 +1561,54 @@ class MeaningContext(models.Model, JSONSerializable):
         return dict((key, self.__dict__[key]) for key in _fields)
 
     class Meta:
-        verbose_name = u'контекст значения'
-        verbose_name_plural = u'контексты значения'
+        verbose_name = 'контекст значения'
+        verbose_name_plural = 'контексты значения'
 
 
 class Meaning(models.Model, JSONSerializable):
 
     entry_container = ForeignKey(Entry, blank=True, null=True,
-            verbose_name=u'лексема', help_text=u'''Лексема, к которой
+            verbose_name='лексема', help_text='''Лексема, к которой
             относится значение. Выберите, только если значение не относится
             к словосочетанию.''', related_name='meaning_set')
 
     collogroup_container = ForeignKey('CollocationGroup', blank=True, null=True,
-            verbose_name=u'словосочетание', help_text=u'''Словосочетание,
+            verbose_name='словосочетание', help_text='''Словосочетание,
             к которому относится значение.  Выберите, только если значение не
             относится к конкретной лексеме.''', related_name='meaning_set')
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
-    parent_meaning = ForeignKey('self', verbose_name=u'родительское значение',
+    order = SmallIntegerField('порядок следования', blank=True, default=345)
+    parent_meaning = ForeignKey('self', verbose_name='родительское значение',
                     related_name='child_meaning_set', blank=True, null=True)
 
-    hidden = BooleanField(u'Скрыть значение', help_text=u'''Не отображать
+    hidden = BooleanField('Скрыть значение', help_text='''Не отображать
                           данное значение при выводе словарной статьи.''',
                           default=False, editable=False)
 
-    link_to_meaning = ForeignKey('self', verbose_name=u'ссылка на значение',
-                    help_text=u'''Если значение должно вместо текста содержать
+    link_to_meaning = ForeignKey('self', verbose_name='ссылка на значение',
+                    help_text='''Если значение должно вместо текста содержать
                     только ссылку на другое значение некоторой лексемы или
                     словосочетания, укажите её в данном поле.''',
                     related_name='ref_meaning_set', blank=True, null=True)
 
-    link_to_entry = ForeignKey(Entry, verbose_name=u'ссылка на лексему',
-                    help_text=u'''Если вместо значения должна быть только ссылка
+    link_to_entry = ForeignKey(Entry, verbose_name='ссылка на лексему',
+                    help_text='''Если вместо значения должна быть только ссылка
                     на другую словарную статью, укажите её в данном поле.''',
                     related_name='ref_meaning_set', blank=True, null=True)
 
     link_to_collogroup = ForeignKey('CollocationGroup',
-            verbose_name=u'ссылка на словосочетание', help_text=u'''Если вместо
+            verbose_name='ссылка на словосочетание', help_text='''Если вместо
             значения должна быть только ссылка на целое словосочетание.''',
             related_name='ref_meaning_set', blank=True, null=True)
 
-    cf_entries = ManyToManyField(Entry, verbose_name=u'ср. (лексемы)',
+    cf_entries = ManyToManyField(Entry, verbose_name='ср. (лексемы)',
                         related_name='cf_meaning_set', blank=True, null=True)
 
     cf_collogroups = ManyToManyField('CollocationGroup',
-                        verbose_name=u'ср. (группы слововосочетаний)',
+                        verbose_name='ср. (группы слововосочетаний)',
                         related_name='cf_meaning_set', blank=True, null=True)
 
-    cf_meanings = ManyToManyField('self', verbose_name=u'ср. (значения)',
+    cf_meanings = ManyToManyField('self', verbose_name='ср. (значения)',
                         related_name='cf_meaning_set', symmetrical=False,
                         blank=True, null=True)
 
@@ -1625,91 +1624,91 @@ class Meaning(models.Model, JSONSerializable):
     def cfcollogroups(self):
         return self.cf_collogroups.all()
 
-    is_valency = BooleanField(u'содержит управление', default=False)
-    metaphorical = BooleanField(u'гимногр.метафора', default=False)
-    figurative = BooleanField(u'переносное', default=False)
-    meaning = TextField(u'значение', blank=True)
+    is_valency = BooleanField('содержит управление', default=False)
+    metaphorical = BooleanField('гимногр.метафора', default=False)
+    figurative = BooleanField('переносное', default=False)
+    meaning = TextField('значение', blank=True)
 
-    gloss = TextField(u'пояснение', help_text=u'''Для неметафорических
+    gloss = TextField('пояснение', help_text='''Для неметафорических
             употреблений/прямых значений здесь указывается энциклопедическая
             информация. Для метафорических/переносных -- (?) разнообразная
             дополнительная информация, комментарии к употреблению.''',
             blank=True)
 
-    substantivus = BooleanField(u'в роли сущ.', default=False)
-    substantivus_type = CharField(u'форма субстантива', max_length=1,
+    substantivus = BooleanField('в роли сущ.', default=False)
+    substantivus_type = CharField('форма субстантива', max_length=1,
                                   choices=SUBSTANTIVUS_TYPE_CHOICES,
                                   blank=True, default='')
-    substantivus_csl = CharField(u'цсл форма', max_length=100,
+    substantivus_csl = CharField('цсл форма', max_length=100,
                                  blank=True, default='')
     @property
     def substantivus_csl_ucs(self):
-        lst = self.substantivus_csl.split(u'##')
+        lst = self.substantivus_csl.split('##')
         for i, elem in enumerate(lst):
             if not elem:
                 continue
             if not (i % 2):
                 elem = ucs8(elem)
                 lst[i] = elem
-        return u'##'.join(lst)
+        return '##'.join(lst)
 
     @property
     def substantivus_forms(self):
-        RE_COMMA = ur',\s*'
+        RE_COMMA = r',\s*'
         return [ucs8(x)
                 for x in re.split(RE_COMMA, self.substantivus_csl) if x]
 
     # только для глаголов
-    transitivity = CharField(u'переходность', max_length=1, blank=True,
+    transitivity = CharField('переходность', max_length=1, blank=True,
                              choices=TRANSITIVITY_CHOICES, default='')
 
     def is_substantivus_type(self, *slugs):
         return any(SUBSTANTIVUS_TYPE_MAP[slug] == self.substantivus_type
                    for slug in slugs)
 
-    additional_info = TextField(u'примечание', help_text=u'''Любая
+    additional_info = TextField('примечание', help_text='''Любая
             дополнительная информация по данному ЗНАЧЕНИЮ. Дополнительная
             информация по примеру на значение или лексеме указывается не здесь,
             а в аналогичных полях при примере и лексеме, соответственно.''',
             blank=True)
 
-    special_case = CharField(u'особые случаи', max_length=1,
+    special_case = CharField('особые случаи', max_length=1,
             choices=MEANING_SPECIAL_CASES_CHOICES, blank=True, default='')
 
     def meaning_for_admin(self):
-        text = u''
-        template = u'[<em>%s</em>] '
+        text = ''
+        template = '[<em>%s</em>] '
         if self.figurative:
-            text += template % u'перен.'
+            text += template % 'перен.'
         if self.metaphorical:
-            text += template % u'гимногр.метаф.'
+            text += template % 'гимногр.метаф.'
         if self.substantivus:
-            text += template % u'в роли сущ.'
+            text += template % 'в роли сущ.'
         meaning = self.meaning.strip()
         if meaning:
-            text += u'%s ' % meaning
+            text += '%s ' % meaning
         gloss = self.gloss.strip()
         if gloss:
-            text += u'<em>%s</em> ' % gloss
+            text += '<em>%s</em> ' % gloss
         if self.child_meanings:
-            child_meanings = u''
+            child_meanings = ''
             for m in self.child_meanings:
-                child_meanings += u'<li>%s</li>' % m.meaning_for_admin()
-            text += u'<ul>%s</ul>' % child_meanings
+                child_meanings += '<li>%s</li>' % m.meaning_for_admin()
+            text += '<ul>%s</ul>' % child_meanings
         return mark_safe(text)
 
     def examples_for_admin(self):
-        text = u''
+        text = ''
         for ex in self.examples:
-            text += u'<li>%s</li>' % ex.example
-        text = u'<ol>%s</ol>' % text
+            text += '<li>%s</li>' % ex.example
+        text = '<ol>%s</ol>' % text
         child_meanings = self.child_meanings
         if child_meanings:
-            text2 = u''
+            text2 = ''
             for cm in child_meanings:
-                text2 += u'<li>%s</li>' % cm.examples_for_admin()
+                text2 += '<li>%s</li>' % cm.examples_for_admin()
             if text2:
-                text += u'<ul>%s</ul>' % text2
+                text += '<ul>%s</ul>' % text2
         return mark_safe(text)
 
     def not_hidden(self):
@@ -1785,13 +1784,13 @@ class Meaning(models.Model, JSONSerializable):
             return host_entry.starts_with(starts_with)
         return False
 
-    _RE1 = re.compile(ur'[\s,;\\/\(\)]*##[^#]*?##[\s,;\\/\(\)]*|[\s,;\\/\(\)]+',
+    _RE1 = re.compile(r'[\s,;\\/\(\)]*##[^#]*?##[\s,;\\/\(\)]*|[\s,;\\/\(\)]+',
                       re.UNICODE)
-    _RE2 = re.compile(ur'[\-'
-                      u'\u2010\u2011]'
-                      ur'л\.$|^с$|^инф\.$|^придат\.$'
-                      ur'|^прям\.$|^речью$'
-                      ur'|^двойн\.$|^вин\.$',
+    _RE2 = re.compile(r'[\-'
+                      '\u2010\u2011]'
+                      r'л\.$|^с$|^инф\.$|^придат\.$'
+                      r'|^прям\.$|^речью$'
+                      r'|^двойн\.$|^вин\.$',
                       re.UNICODE)  # NOTE: В py3 нельзя использовать юникодные
             # экранирующие последовательнсти в сырых строках. \u2010 --
             # неразрывный дефис.
@@ -1824,7 +1823,7 @@ class Meaning(models.Model, JSONSerializable):
         if self.looks_like_valency(host_entry):
             if self.gloss.strip() and not self.meaning.strip():  #::AUHACK::
                 self.meaning = self.gloss
-                self.gloss = u''
+                self.gloss = ''
             self.is_valency = True
         super(Meaning, self).save(*args, **kwargs)
         if without_mtime:
@@ -1859,7 +1858,7 @@ class Meaning(models.Model, JSONSerializable):
     def get_url_fragment(self):
         return 'm{0}'.format(self.id)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.meaning
 
     def forJSON(self):
@@ -1886,34 +1885,34 @@ class Meaning(models.Model, JSONSerializable):
         return dct
 
     class Meta:
-        verbose_name = u'значение'
-        verbose_name_plural = u'ЗНАЧЕНИЯ'
+        verbose_name = 'значение'
+        verbose_name_plural = 'ЗНАЧЕНИЯ'
         ordering = ('id',)
 
 
 class Example(models.Model, JSONSerializable):
 
-    meaning = ForeignKey(Meaning, verbose_name=u'значение',
-              help_text=u'Значение, к которому относится данный пример.',
+    meaning = ForeignKey(Meaning, verbose_name='значение',
+              help_text='Значение, к которому относится данный пример.',
               blank=True, null=True)
 
     entry = ForeignKey(Entry, blank=True, null=True)
     collogroup = ForeignKey('CollocationGroup', blank=True, null=True)
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
-    hidden = BooleanField(u'Скрыть пример', help_text=u'''Не отображать данный
+    order = SmallIntegerField('порядок следования', blank=True, default=345)
+    hidden = BooleanField('Скрыть пример', help_text='''Не отображать данный
                           пример при выводе словарной статьи.''',
                           default=False, editable=False)
 
-    example = TextField(u'пример')
-    ts_example = TextField(default=u'')
+    example = TextField('пример')
+    ts_example = TextField(default='')
 
     @property
     def example_ucs(self):
         return ucs8(self.example)
 
-    context = TextField(u'широкий контекст',
-                  help_text=u'Более широкий контекст для примера', blank=True)
+    context = TextField('широкий контекст',
+                  help_text='Более широкий контекст для примера', blank=True)
 
     @property
     def context_ucs(self):
@@ -1926,9 +1925,9 @@ class Example(models.Model, JSONSerializable):
                 # Разбиение дало положительный результат,
                 # в "y" помещён сам пример.
                 return (x, y, z)
-        return (u'', e, u'')
+        return ('', e, '')
 
-    address_text = CharField(u'адрес', max_length=300, blank=True)
+    address_text = CharField('адрес', max_length=300, blank=True)
 
     @property
     def greek_equivs(self):
@@ -1964,49 +1963,49 @@ class Example(models.Model, JSONSerializable):
                     ge_prev = ge
                     n = 1
             groups.append((ge_prev, n))
-        assert sum(x[1] for x in groups) == L, u'Число параллелей д.б постоянным'
+        assert sum(x[1] for x in groups) == L, 'Число параллелей д.б постоянным'
         return groups
 
-    audited = BooleanField(u'Пример прошел проверку или взят на проверку',
+    audited = BooleanField('Пример прошел проверку или взят на проверку',
                            default=False)
-    audited_time = DateTimeField(u'Когда пример был проверен', blank=True,
+    audited_time = DateTimeField('Когда пример был проверен', blank=True,
             editable=False, null=True)
 
-    note = TextField(u'комментарий', help_text=u'''Дополнительная
+    note = TextField('комментарий', help_text='''Дополнительная
             информация по данному примеру, которая будет видна рядовому
             пользователю словаря''', blank=True)
 
-    additional_info = TextField(u'примечание', help_text=u'''Любая
+    additional_info = TextField('примечание', help_text='''Любая
             дополнительная информация по данному ПРИМЕРУ. Дополнительная
             информация по значению или лексеме указывается не здесь,
             а в аналогичных полях при значении и лексеме, соответственно.''',
             blank=True)
 
-    GREEK_EQ_LOOK_FOR = u'L'  # Следует найти греческие параллели для примера
-    GREEK_EQ_STOP = u'S'  # Греческие параллели не нужны
-    GREEK_EQ_CHECK_ADDRESS = u'C'
+    GREEK_EQ_LOOK_FOR = 'L'  # Следует найти греческие параллели для примера
+    GREEK_EQ_STOP = 'S'  # Греческие параллели не нужны
+    GREEK_EQ_CHECK_ADDRESS = 'C'
         # Необходимо уточнить адрес примера, чтобы грецист смог найти пример
-    GREEK_EQ_NOT_FOUND = u'N'  # Греч.параллель для примера найти не удалось
-    GREEK_EQ_FOUND = u'F'  # Греч.параллель для примера найдена
-    GREEK_EQ_POSTPONED = u'P'  # Нахождение греч. параллели отложено, например,
+    GREEK_EQ_NOT_FOUND = 'N'  # Греч.параллель для примера найти не удалось
+    GREEK_EQ_FOUND = 'F'  # Греч.параллель для примера найдена
+    GREEK_EQ_POSTPONED = 'P'  # Нахождение греч. параллели отложено, например,
         # потому что у грециста в данный момент нет греч. текста, но впоследствии
         # может появиться.
-    GREEK_EQ_MEANING = u'M'
+    GREEK_EQ_MEANING = 'M'
         # Греч.параллели для примера нужны, чтобы определить значение слова
-    GREEK_EQ_URGENT = u'U'  # Греч.параллели для примера нужны в срочном порядке
+    GREEK_EQ_URGENT = 'U'  # Греч.параллели для примера нужны в срочном порядке
 
     GREEK_EQ_STATUS = (
-        (GREEK_EQ_LOOK_FOR, u'следует найти'),
-        (GREEK_EQ_STOP, u'не нужны'),
-        (GREEK_EQ_CHECK_ADDRESS, u'уточнить адрес'),
-        (GREEK_EQ_NOT_FOUND, u'найти не удалось'),
-        (GREEK_EQ_POSTPONED, u'когда-нибудь позже, отложенные на потом'),
-        (GREEK_EQ_FOUND, u'найдены'),
-        (GREEK_EQ_MEANING, u'необходимы для опр-я значения'),
-        (GREEK_EQ_URGENT, u'срочное'),
+        (GREEK_EQ_LOOK_FOR, 'следует найти'),
+        (GREEK_EQ_STOP, 'не нужны'),
+        (GREEK_EQ_CHECK_ADDRESS, 'уточнить адрес'),
+        (GREEK_EQ_NOT_FOUND, 'найти не удалось'),
+        (GREEK_EQ_POSTPONED, 'когда-нибудь позже, отложенные на потом'),
+        (GREEK_EQ_FOUND, 'найдены'),
+        (GREEK_EQ_MEANING, 'необходимы для опр-я значения'),
+        (GREEK_EQ_URGENT, 'срочное'),
     )
 
-    greek_eq_status = CharField(u'параллели', max_length=1,
+    greek_eq_status = CharField('параллели', max_length=1,
             choices=GREEK_EQ_STATUS, default=GREEK_EQ_LOOK_FOR)
 
     mtime = DateTimeField(editable=False, auto_now=True)
@@ -2046,32 +2045,32 @@ class Example(models.Model, JSONSerializable):
         return False
 
     def example_for_admin(self):
-        text = u''
+        text = ''
         return mark_safe(text)
 
     def ts_convert(self):
         RE = re.compile(
-                u'[^'
-                u'абвгдеєжѕзийіклмноѻпрстѹꙋуфхѿцчшщъыьѣюꙗѡѽѧѯѱѳѵ'
-                u'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸꙊУФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴ'
-                ur'\~\'\`\^ı'
-                u']+')
-        ts_text = u''
+                '[^'
+                'абвгдеєжѕзийіклмноѻпрстѹꙋуфхѿцчшщъыьѣюꙗѡѽѧѯѱѳѵ'
+                'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸꙊУФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴ'
+                r'\~\'\`\^ı'
+                ']+')
+        ts_text = ''
         for word in re.split(RE, self.example):
             ts_word = word[:1].lower()
             if len(word) > 2:
                 ts_word += word[1:-1]
-            if len(word) > 1 and word[-1].lower() != u'ъ':
+            if len(word) > 1 and word[-1].lower() != 'ъ':
                 ts_word += word[-1]
             ts_text += ts_word
         self.ts_example = civilrus_convert(ts_text)
 
     def angle_brackets(self):
         """ Унификация разных вариантов угловых скобок """
-        self.example = re.sub(u'[<\u3008\u2329\u29fc\u276c\u2770\u276e\uff1c]',
-                u'\u27e8', self.example)
-        self.example = re.sub(u'[>\u3009\u232a\u29fd\u276d\u2771\u276f\uff1e]',
-                u'\u27e9', self.example)
+        self.example = re.sub('[<\u3008\u2329\u29fc\u276c\u2770\u276e\uff1c]',
+                '\u27e8', self.example)
+        self.example = re.sub('[>\u3009\u232a\u29fd\u276d\u2771\u276f\uff1e]',
+                '\u27e9', self.example)
 
     def save(self, without_mtime=False, *args, **kwargs):
         self.angle_brackets()
@@ -2167,29 +2166,29 @@ class Example(models.Model, JSONSerializable):
                            if t.translation.strip())
         return data
 
-    def __unicode__(self):
-        return u'(%s) %s' % (self.address_text, self.example)
+    def __str__(self):
+        return '(%s) %s' % (self.address_text, self.example)
 
     class Meta:
-        verbose_name = u'пример'
-        verbose_name_plural = u'ПРИМЕРЫ'
+        verbose_name = 'пример'
+        verbose_name_plural = 'ПРИМЕРЫ'
         ordering = ('id',)
 
 
 class Translation(models.Model, JSONSerializable):
 
     for_example = ForeignKey(Example, related_name='translation_set')
-    fragmented = BooleanField(u'перевод только части примера', default=False)
-    fragment_start = SmallIntegerField(u'номер слова начала фрагмента',
+    fragmented = BooleanField('перевод только части примера', default=False)
+    fragment_start = SmallIntegerField('номер слова начала фрагмента',
             blank=True, default=1)
-    fragment_end = SmallIntegerField(u'номер слова конца фрагмента',
+    fragment_end = SmallIntegerField('номер слова конца фрагмента',
             blank=True, default=1000)
-    is_synodal = BooleanField(u'синодальный перевод', default=False)
-    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
-    hidden = BooleanField(u'скрывать перевод', default=True,
-            help_text=u'отображать перевод только в комментариях для авторов')
-    translation = TextField(u'перевод')
-    additional_info = TextField(u'примечание', blank=True)
+    is_synodal = BooleanField('синодальный перевод', default=False)
+    order = SmallIntegerField('порядок следования', blank=True, default=345)
+    hidden = BooleanField('скрывать перевод', default=True,
+            help_text='отображать перевод только в комментариях для авторов')
+    translation = TextField('перевод')
+    additional_info = TextField('примечание', blank=True)
 
     @property
     def host_entry(self):
@@ -2226,9 +2225,9 @@ class Translation(models.Model, JSONSerializable):
 
     def save(self, without_mtime=False, *args, **kwargs):
         ai = self.additional_info.strip()
-        match_segments = (u'в', u'синодальн', u'перевод')
+        match_segments = ('в', 'синодальн', 'перевод')
         if ai:
-            for word in re.split(ur'[\s\.]+', ai):
+            for word in re.split(r'[\s\.]+', ai):
                 word = word.lower()
                 if not any(word[:len(segment)] == segment[:len(word)]
                            for segment in match_segments):
@@ -2262,55 +2261,55 @@ class Translation(models.Model, JSONSerializable):
           return t1, t2
         return None, None
 
-    def __unicode__(self):
+    def __str__(self):
         if self.fragmented:
-            return u'(%s, %s) %s' % (self.fragment_start, self.fragment_end,
+            return '(%s, %s) %s' % (self.fragment_start, self.fragment_end,
                                      self.translation)
         else:
             return self.translation
 
     class Meta:
-        verbose_name = u'перевод'
-        verbose_name_plural = u'ПЕРЕВОДЫ'
+        verbose_name = 'перевод'
+        verbose_name_plural = 'ПЕРЕВОДЫ'
         ordering = ('id',)
 
 
 class CollocationGroup(models.Model, JSONSerializable):
 
-    base_entry = ForeignKey(Entry, verbose_name=u'лексема',
-            help_text=u'''Лексема, при которой будет стоять словосочетание.
+    base_entry = ForeignKey(Entry, verbose_name='лексема',
+            help_text='''Лексема, при которой будет стоять словосочетание.
             Если есть возможность указать конкретное значение, лучше указать
             вместо лексемы её конкретное значение.''',
             related_name='collocationgroup_set', blank=True, null=True)
 
-    base_meaning = ForeignKey(Meaning, verbose_name=u'значение',
-            help_text=u'''Значение, при котором будет стоять словосочетание.''',
+    base_meaning = ForeignKey(Meaning, verbose_name='значение',
+            help_text='''Значение, при котором будет стоять словосочетание.''',
             related_name='collocationgroup_set', blank=True, null=True)
 
-    phraseological = BooleanField(u'фразеологизм', default=False)
+    phraseological = BooleanField('фразеологизм', default=False)
 
-    link_to_entry = ForeignKey(Entry, verbose_name=u'ссылка на лексему',
-            help_text=u'''Если вместо значений словосочетания должна быть
+    link_to_entry = ForeignKey(Entry, verbose_name='ссылка на лексему',
+            help_text='''Если вместо значений словосочетания должна быть
             только ссылка на словарную статью, укажите её в данном поле.''',
             related_name='ref_collogroup_set', blank=True, null=True)
 
-    link_to_meaning = ForeignKey('Meaning', verbose_name=u'ссылка на значение',
-            help_text=u'''Если вместо значений словосочетания должна быть
+    link_to_meaning = ForeignKey('Meaning', verbose_name='ссылка на значение',
+            help_text='''Если вместо значений словосочетания должна быть
             только ссылка на опредленное значение лексемы или словосочетания,
             укажите его в данном поле.''', related_name='ref_collogroup_set',
             blank=True, null=True)
 
-    cf_entries = ManyToManyField(Entry, verbose_name=u'ср. (лексемы)',
+    cf_entries = ManyToManyField(Entry, verbose_name='ср. (лексемы)',
             related_name='cf_collogroup_set', blank=True, null=True)
 
-    cf_meanings = ManyToManyField(Meaning, verbose_name=u'ср. (значения)',
+    cf_meanings = ManyToManyField(Meaning, verbose_name='ср. (значения)',
             related_name='cf_collogroup_set', blank=True, null=True)
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
+    order = SmallIntegerField('порядок следования', blank=True, default=345)
     ctime = DateTimeField(editable=False, auto_now_add=True)
     mtime = DateTimeField(editable=False, auto_now=True)
-    additional_info = TextField(u'примечание', blank=True)
-    hidden = BooleanField(u'Скрыть словосочетание', help_text=u'''Не отображать
+    additional_info = TextField('примечание', blank=True)
+    hidden = BooleanField('Скрыть словосочетание', help_text='''Не отображать
             словосочетание в статье.''', default=False, editable=False)
 
     objects = WithoutHiddenManager()
@@ -2349,36 +2348,36 @@ class CollocationGroup(models.Model, JSONSerializable):
     def meanings_for_admin(self):
         meanings = self.meanings
         if len(meanings) == 0:
-            text = u''
+            text = ''
         elif len(meanings) == 1:
             text = meanings[0].meaning_for_admin()
         else:
-            text = text2 = u''
+            text = text2 = ''
             for m in meanings:
-                text2 += u'<li>%s</li>' % m.meaning_for_admin()
-            text += u'<ol>%s</ol>' % text2
+                text2 += '<li>%s</li>' % m.meaning_for_admin()
+            text += '<ol>%s</ol>' % text2
         if self.metaph_meanings:
-            text2 = u''
+            text2 = ''
             for m in self.metaph_meanings:
-                text2 += u'<li>%s</li>' % m.meaning_for_admin()
-            text += u'<ul>%s</ul>' % text2
+                text2 += '<li>%s</li>' % m.meaning_for_admin()
+            text += '<ul>%s</ul>' % text2
         return mark_safe(text)
 
     def examples_for_admin(self):
-        text = u''
+        text = ''
         for m in self.meanings:
             text += m.examples_for_admin()
             if m.child_meanings:
-                text2 = u''
+                text2 = ''
                 for cm in m.child_meanings:
-                    text2 += u'<li>%s</li>' % cm.examples_for_admin()
+                    text2 += '<li>%s</li>' % cm.examples_for_admin()
                 if text2:
-                    text += u'<ul>%s</ul>' % text2
+                    text += '<ul>%s</ul>' % text2
         if self.metaph_meanings:
-            text2 = u''
+            text2 = ''
             for m in self.metaph_meanings:
-                text2 += u'<li>%s</li>' % m.examples_for_admin()
-            text += u'<ul>%s</ul>' % text2
+                text2 += '<li>%s</li>' % m.examples_for_admin()
+            text += '<ul>%s</ul>' % text2
         return mark_safe(text)
 
     meanings = property(meanings)
@@ -2450,38 +2449,38 @@ class CollocationGroup(models.Model, JSONSerializable):
 
     @property
     def civil_equivalent(self):
-        return u'; '.join(c.civil_equivalent for c in self.collocations)
+        return '; '.join(c.civil_equivalent for c in self.collocations)
 
     class Meta:
-        verbose_name = u'группа словосочетаний'
-        verbose_name_plural = u'ГРУППЫ СЛОВОСОЧЕТАНИЙ'
+        verbose_name = 'группа словосочетаний'
+        verbose_name_plural = 'ГРУППЫ СЛОВОСОЧЕТАНИЙ'
         ordering = ('-id',)
 
 
 class Collocation(models.Model, JSONSerializable):
 
     collogroup = ForeignKey(CollocationGroup,
-                            verbose_name=u'группа словосочетаний',
+                            verbose_name='группа словосочетаний',
                             related_name='collocation_set')
 
-    collocation = CharField(u'словосочетание', max_length=200)
+    collocation = CharField('словосочетание', max_length=200)
 
     @property
     def collocation_ucs(self):
-        lst = self.collocation.split(u'##')
+        lst = self.collocation.split('##')
         for i, elem in enumerate(lst):
             if not elem:
                 continue
             if not (i % 2):
                 elem = ucs8(elem)
                 lst[i] = elem
-        return u'##'.join(lst)
+        return '##'.join(lst)
 
-    civil_equivalent = CharField(u'гражданское написание', max_length=350,
+    civil_equivalent = CharField('гражданское написание', max_length=350,
                                  blank=True)
-    civil_inverse = CharField(u'гражд. инв.', max_length=350)
+    civil_inverse = CharField('гражд. инв.', max_length=350)
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
+    order = SmallIntegerField('порядок следования', blank=True, default=345)
 
     @property
     def etymologies(self):
@@ -2537,7 +2536,7 @@ class Collocation(models.Model, JSONSerializable):
           return _double_check(c1, c2, m2m=m2m, kwargs=kwargs, model=Collocation)
         return None, None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.collocation
 
     def forJSON(self):
@@ -2551,48 +2550,48 @@ class Collocation(models.Model, JSONSerializable):
         return dict((key, self.__dict__[key]) for key in _fields)
 
     class Meta:
-        verbose_name = u'словосочетание'
-        verbose_name_plural = u'ОТДЕЛЬНЫЕ СЛОВОСОЧЕТАНИЯ'
+        verbose_name = 'словосочетание'
+        verbose_name_plural = 'ОТДЕЛЬНЫЕ СЛОВОСОЧЕТАНИЯ'
         ordering = ('id',)
 
 
 class GreekEquivalentForExample(models.Model, JSONSerializable):
 
     for_example = ForeignKey(Example, related_name='greq_set')
-    unitext = CharField(u'греч. параллель (Unicode)', max_length=100,
+    unitext = CharField('греч. параллель (Unicode)', max_length=100,
                         blank=True)
     @property
     def processed_text(self):
-        return re.sub(ur'\(([^а-яА-Я]+?)\)', ur'\1', self.unitext)
+        return re.sub(r'\(([^а-яА-Я]+?)\)', r'\1', self.unitext)
 
-    mark = CharField(u'грамматическая помета', max_length=20, blank=True)
+    mark = CharField('грамматическая помета', max_length=20, blank=True)
 
-    source = CharField(u'документальный источник', help_text=u'''Например,
+    source = CharField('документальный источник', help_text='''Например,
                        Септуагинта или, более узко, разные редакции одного
                        текста.''', max_length=40, blank=True)
 
-    position = SmallIntegerField(u'позиция в примере', blank=True, default=1000,
-            help_text=u'Номер слова, после которого следует поставить перевод.',
+    position = SmallIntegerField('позиция в примере', blank=True, default=1000,
+            help_text='Номер слова, после которого следует поставить перевод.',
             null=True)
 
-    initial_form = CharField(u'начальная форма лексемы',
+    initial_form = CharField('начальная форма лексемы',
                              max_length=100, blank=True)
-    initial_form_phraseology = CharField(u'начальная форма фразеологизма',
+    initial_form_phraseology = CharField('начальная форма фразеологизма',
                              max_length=100, blank=True)
 
-    note = TextField(u'комментарий', help_text=u'''Любая дополнительная
+    note = TextField('комментарий', help_text='''Любая дополнительная
                      информация по данному греческому эквиваленту, которая
                      будет включена в текст статьи.''',
                      blank=True)
 
-    additional_info = TextField(u'примечание', help_text=u'''Любая
+    additional_info = TextField('примечание', help_text='''Любая
                                 дополнительная информация по данному
                                 греческому эквиваленту, которая в текст
                                 статьи не войдет''', blank=True)
 
-    aliud = BooleanField(u'в греч. иначе', default=False)
+    aliud = BooleanField('в греч. иначе', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
-    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
+    order = SmallIntegerField('порядок следования', blank=True, default=345)
 
     @property
     def is_aliud_latin(self):
@@ -2677,8 +2676,8 @@ class GreekEquivalentForExample(models.Model, JSONSerializable):
         return dict((key, self.__dict__[key]) for key in _fields)
 
     class Meta:
-        verbose_name = u'греческая параллель для примера'
-        verbose_name_plural = u'греческие параллели'
+        verbose_name = 'греческая параллель для примера'
+        verbose_name_plural = 'греческие параллели'
         ordering = ('order', 'id')
 
 
@@ -2688,10 +2687,10 @@ class OrthographicVariant(models.Model, JSONSerializable):
     entry = ForeignKey(Entry, related_name='orthographic_variants', blank=True,
                        null=True)
     parent = ForeignKey('self', related_name='children', blank=True, null=True)
-    without_accent = BooleanField(u'без ударения', default=False)
-    reconstructed = BooleanField(u'реконструирован', default=False)
-    questionable = BooleanField(u'реконструкция вызывает сомнения', default=False)
-    untitled_exists = BooleanField(u'Вариант без титла представлен в текстах',
+    without_accent = BooleanField('без ударения', default=False)
+    reconstructed = BooleanField('реконструирован', default=False)
+    questionable = BooleanField('реконструкция вызывает сомнения', default=False)
+    untitled_exists = BooleanField('Вариант без титла представлен в текстах',
                                    default=False)
     @property
     def childvars(self):
@@ -2699,12 +2698,12 @@ class OrthographicVariant(models.Model, JSONSerializable):
 
         # Проверяем есть ли титла в текущей словоформе.
         # Для этого обрезаем начальные пробелы и знаки снятия придыхания.
-        var = self.idem.lstrip(u' =')
+        var = self.idem.lstrip(' =')
         # Удаляем первый символ, т.к. он может иметь верхний регистр.
         var = var[1:]
         # Смотрим, есть ли титла, при этом намеренно исключаем из поиска
         # паерки (ЪЬ).
-        r = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
+        r = re.compile(r'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
         has_no_title = not r.search(var)
 
         if self.untitled_exists and has_no_title:
@@ -2712,12 +2711,12 @@ class OrthographicVariant(models.Model, JSONSerializable):
         return childvars
 
     # сам орфографический вариант
-    idem = CharField(u'написание', max_length=50)
-    use = CharField(u'использование', max_length=50, help_text=u'''
+    idem = CharField('написание', max_length=50)
+    use = CharField('использование', max_length=50, help_text='''
                     Информация о том, с какими значениями данный вариант
                     связан. Разные варианты написания могут коррелировать
                     с разными значениями, как в случае слов богъ/бг~ъ,
-                    агг~лъ/аггелъ.''', default=u'')
+                    агг~лъ/аггелъ.''', default='')
     @property
     def idem_ucs(self):
         return ucs8(self.idem)
@@ -2726,8 +2725,8 @@ class OrthographicVariant(models.Model, JSONSerializable):
     def idem_letter_ucs(self):
         return ucs_convert_affix(self.idem.lower())
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
-    no_ref_entry = BooleanField(u'Не делать отсылочной статьи', default=False)
+    order = SmallIntegerField('порядок следования', blank=True, default=345)
+    no_ref_entry = BooleanField('Не делать отсылочной статьи', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
@@ -2766,7 +2765,7 @@ class OrthographicVariant(models.Model, JSONSerializable):
           return ov1, ov2
         return None, None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.idem
 
     def forJSON(self):
@@ -2782,8 +2781,8 @@ class OrthographicVariant(models.Model, JSONSerializable):
         return dict((key, self.__dict__[key]) for key in _fields)
 
     class Meta:
-        verbose_name = u'вариант'
-        verbose_name_plural = u'варианты'
+        verbose_name = 'вариант'
+        verbose_name_plural = 'варианты'
         ordering = ('order', 'id')
 
 
@@ -2794,14 +2793,14 @@ class Participle(models.Model, JSONSerializable):
 
     PARTICIPLE_CHOICES = PARTICIPLE_CHOICES
 
-    tp = CharField(u'тип причастия', max_length=2, choices=PARTICIPLE_CHOICES)
-    idem = CharField(u'словоформа', max_length=50)
+    tp = CharField('тип причастия', max_length=2, choices=PARTICIPLE_CHOICES)
+    idem = CharField('словоформа', max_length=50)
 
     @property
     def idem_ucs(self):
         return ucs8(self.idem)
 
-    order = SmallIntegerField(u'порядок следования', blank=True, default=345)
+    order = SmallIntegerField('порядок следования', blank=True, default=345)
     mtime = DateTimeField(editable=False, auto_now=True)
 
     @property
@@ -2838,7 +2837,7 @@ class Participle(models.Model, JSONSerializable):
           return p1, p2
         return None, None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.idem
 
     def forJSON(self):
@@ -2852,8 +2851,8 @@ class Participle(models.Model, JSONSerializable):
         return dict((key, self.__dict__[key]) for key in _fields)
 
     class Meta:
-        verbose_name = u'причастие'
-        verbose_name_plural = u'причастия'
+        verbose_name = 'причастие'
+        verbose_name_plural = 'причастия'
         ordering = ('order', 'id')
 
 
@@ -2883,7 +2882,7 @@ for Model in Models:
         MAX_LENGTHS[Model.__name__] = x
 
 try:
-    LETTERS = set(e.civil_equivalent.lstrip(u' =')[0].lower()
+    LETTERS = set(e.civil_equivalent.lstrip(' =')[0].lower()
                   for e in Entry.objects.all())
 except (OperationalError, ProgrammingError):
     LETTERS = []

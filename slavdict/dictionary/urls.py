@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.conf.urls import url
 from django.views.generic.base import RedirectView
 
@@ -9,7 +7,7 @@ from . import jsonviews
 urlpatterns = [
     url( r'^$', views.entry_list, name='all_entries_url' ),
 
-    url( r'^print/$', RedirectView.as_view(url='print/entries/')),
+    url( r'^print/$', RedirectView.as_view(url='/print/entries/')),
     url( r'^print/entries/$', views.all_entries ),
     url( r'^print/examples/$', views.all_examples ),
     url( r'^print/examples/audit/$', views.all_examples,
@@ -29,7 +27,7 @@ urlpatterns = [
     url( r'^entries/save/$', jsonviews.json_entry_save ),
     url( r'^entries/jserror/$', jsonviews.js_error_notify ),
 
-    url(r'^materials/$', views.materials),
+    url( r'^materials/$', views.materials ),
     url( r'^switch/additional-info/$', views.switch_additional_info, name='switch_info_url' ),
     url( r'^converter/$', views.antconc2ucs8_converter, name='converter' ),
 
@@ -46,7 +44,7 @@ urlpatterns = [
     url( r'^json/etym/delete/$', jsonviews.json_etym_delete, name="jsonEtymDeleteURL"),
     url( r'^json/goodness/save/$', jsonviews.json_goodness_save, name="jsonGoodnessSaveURL"),
 
-    # TODO: В последствии всё это должно быть удалено.
+    # TODO: Впоследствии всё это должно быть удалено.
     url( r'^adhoc/csv-import/$', views.import_csv_billet ),
     url( r'^adhoc/dump/$', views.dump ),
     url( r'^urls/$', views.useful_urls, name='usefulURLs' ),

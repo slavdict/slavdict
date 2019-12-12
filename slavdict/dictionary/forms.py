@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 from django import forms
 
 from slavdict.dictionary import viewmodels
@@ -10,7 +9,7 @@ class BilletImportForm(forms.Form):
         cleaned_data = self.cleaned_data
         uploaded_file = cleaned_data.get('csvfile')
         if not uploaded_file.name.upper().endswith('.CSV'):
-            raise forms.ValidationError(u'''Выбранный вами файл «%s»,
+            raise forms.ValidationError('''Выбранный вами файл «%s»,
                                             похоже, не является
                                             CSV-файлом.''' % uploaded_file.name)
         return cleaned_data
@@ -30,50 +29,50 @@ STATUS_CHOICES = viewmodels.tupleStatuses
 TANTUM_CHOICES = viewmodels.tupleTantum
 
 class FilterEntriesForm(forms.Form):
-    per_se = forms.BooleanField(label=u'Отображать помимо заголовочных '
-            u'слов сами статьи', required=False)
+    per_se = forms.BooleanField(label='Отображать помимо заголовочных '
+            'слов сами статьи', required=False)
     sortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
     sortbase = forms.ChoiceField(choices=SORTBASE_CHOICES, required=False)
-    find = forms.CharField(required=False, label=u'Начинается с')
-    author = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор',
+    find = forms.CharField(required=False, label='Начинается с')
+    author = forms.ChoiceField(choices=AUTHOR_CHOICES, label='Автор',
             required=False)
     status = forms.ChoiceField(choices=STATUS_CHOICES,
-            label=u'Статус статьи', required=False)
-    pos = forms.ChoiceField(choices=POS_CHOICES, label=u'Часть речи',
+            label='Статус статьи', required=False)
+    pos = forms.ChoiceField(choices=POS_CHOICES, label='Часть речи',
             required=False)
-    uninflected = forms.BooleanField(label=u'Неизменяемые сущ. / прил.',
+    uninflected = forms.BooleanField(label='Неизменяемые сущ. / прил.',
             required=False)
-    gender = forms.ChoiceField(choices=GENDER_CHOICES, label=u'Род',
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, label='Род',
             required=False)
-    tantum = forms.ChoiceField(choices=TANTUM_CHOICES, label=u'Число',
+    tantum = forms.ChoiceField(choices=TANTUM_CHOICES, label='Число',
             required=False)
     onym = forms.ChoiceField(choices=ONYM_CHOICES,
-            label=u'Тип имени собст.', required=False)
+            label='Тип имени собст.', required=False)
     canonical_name = forms.ChoiceField(choices=CANONNAME_CHOICES,
-            label=u'Канонические имена', required=False)
+            label='Канонические имена', required=False)
     possessive = forms.ChoiceField(choices=POSSESSIVE_CHOICES,
-            label=u'Притяжательность', required=False)
-    etymology = forms.BooleanField(label=u'Статьи с этимологией',
+            label='Притяжательность', required=False)
+    etymology = forms.BooleanField(label='Статьи с этимологией',
             required=False)
-    etymology_sans = forms.BooleanField(label=u'Статьи без этимологии',
+    etymology_sans = forms.BooleanField(label='Статьи без этимологии',
             required=False)
-    additional_info = forms.BooleanField(label=u'Статьи с примечаниями',
+    additional_info = forms.BooleanField(label='Статьи с примечаниями',
             required=False)
-    homonym = forms.BooleanField(label=u'Статьи-омонимы',
+    homonym = forms.BooleanField(label='Статьи-омонимы',
             required=False)
-    duplicate = forms.BooleanField(label=u'Статьи-дубликаты',
+    duplicate = forms.BooleanField(label='Статьи-дубликаты',
             required=False)
-    variants = forms.BooleanField(label=u'С вар-ми написания',  # C вариантами написания
+    variants = forms.BooleanField(label='С вар-ми написания',  # C вариантами написания
             required=False)
-    collocations = forms.BooleanField(label=u'Со словосочетаниями',
+    collocations = forms.BooleanField(label='Со словосочетаниями',
             required=False)
-    meaningcontexts = forms.BooleanField(label=u'С контекстами значения',
+    meaningcontexts = forms.BooleanField(label='С контекстами значения',
             required=False)
     default_data = {
         'per_se': False,
         'sortdir':  '-',
         'sortbase': 't',
-        'find': u'',
+        'find': '',
         'author': 'all',
         'status': 'all',
         'pos': 'all',
@@ -99,23 +98,23 @@ class FilterEntriesForm(forms.Form):
     })
 
 class FilterExamplesForm(forms.Form):
-    hwAddress = forms.CharField(required=False, label=u'Адрес начинается на')
-    hwAuthor = forms.ChoiceField(choices=AUTHOR_CHOICES, label=u'Автор статьи')
-    hwPrfx = forms.CharField(required=False, label=u'Статья начинается на')
-    hwExample = forms.CharField(required=False, label=u'Текст иллюстрации')
-    hwExamplesIds = forms.CharField(required=False, label=u'Идентификаторы иллюстраций')
+    hwAddress = forms.CharField(required=False, label='Адрес начинается на')
+    hwAuthor = forms.ChoiceField(choices=AUTHOR_CHOICES, label='Автор статьи')
+    hwPrfx = forms.CharField(required=False, label='Статья начинается на')
+    hwExample = forms.CharField(required=False, label='Текст иллюстрации')
+    hwExamplesIds = forms.CharField(required=False, label='Идентификаторы иллюстраций')
     hwSortbase = forms.ChoiceField(choices=GREQSORTBASE_CHOICES)
     hwSortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
     hwStatus = forms.ChoiceField(choices=GREQSTATUS_CHOICES,
-            label=u'Статус греч. парал.')
+            label='Статус греч. парал.')
     hwAllExamples = forms.BooleanField(
-            label=u'Отображать примеры из незаконченных статей',
+            label='Отображать примеры из незаконченных статей',
             required=False)
     default_data = {
-        'hwAddress': u'',
+        'hwAddress': '',
         'hwAuthor': 'all',
-        'hwPrfx': u'',
-        'hwExample': u'',
+        'hwPrfx': '',
+        'hwExample': '',
         'hwExamplesIds': '',
         'hwSortbase': 'addr',
         'hwSortdir': '+',

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Библиотека шаблонных тегов.
 
@@ -98,12 +97,12 @@ BOM. Начиная с версии 3.2 использование позици�
 import collections
 import re
 from itertools import chain
-from itertools import izip_longest
+from itertools import zip_longest
 from itertools import starmap
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils.functional import allow_lazy
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 
 from jinja2 import nodes
 from jinja2.ext import Extension
@@ -115,7 +114,7 @@ additional_jinja_filters = {}
 def register_filter(arg):
     if callable(arg):
         # arg -- функция с реализацией нового фильтра для jinja2
-        additional_jinja_filters[arg.func_name] = arg
+        additional_jinja_filters[arg.__name__] = arg
         return arg
     else:
         # arg -- имя, под которым нужно зарегистрировать функцию
@@ -125,58 +124,58 @@ def register_filter(arg):
             return func
         return wrapper
 
-SLASH = u'/'
-ZWS = u'\u200B'
+SLASH = '/'
+ZWS = '\u200B'
 
 # Специальные двойники нормальных символов, используемые для
 # контроля за пробельным пространством
-BACKSPACE = u'\u0008'
-EMSPACE = u'\uE003'
-ENSPACE = u'\uE002'
-EXCLAM = u'\u1991'
-NBSP = u'\uEEA0'
-NEWLINE = u'\uEEEE'
-ONLYDOT = u'\u1902'
-PUNCT = u'\u1900'
-SPACE = u'\u0007'
+BACKSPACE = '\u0008'
+EMSPACE = '\uE003'
+ENSPACE = '\uE002'
+EXCLAM = '\u1991'
+NBSP = '\uEEA0'
+NEWLINE = '\uEEEE'
+ONLYDOT = '\u1902'
+PUNCT = '\u1900'
+SPACE = '\u0007'
 SPACES = SPACE + EMSPACE + ENSPACE + NBSP + NEWLINE
 
 def strip_spaces_between_tags_and_text(value):
-    value = re.sub(ur'>\s+', u'>', force_unicode(value.strip()))
-    value = re.sub(ur'\s+<', u'<', value)
+    value = re.sub(r'>\s+', '>', force_text(value.strip()))
+    value = re.sub(r'\s+<', '<', value)
     # {{ backspace }}
     # Звёздочка вместо плюса нужна, чтобы backspace'ы были удалены
     # в любом случае независимо от того, предшествует им пробел или нет.
-    value = re.sub(ur'([\s{spaces}]|&nbsp;)*{backspace}'.format(
-                           spaces=SPACES, backspace=BACKSPACE), u'', value)
+    value = re.sub(r'([\s{spaces}]|&nbsp;)*{backspace}'.format(
+                           spaces=SPACES, backspace=BACKSPACE), '', value)
     # {{ punct }}
-    value = re.sub(PUNCT + ur'(<[^>]+>)([\.,:;\!\?])', ur'\1\2', value)
-    value = re.sub(PUNCT, u' ', value)
+    value = re.sub(PUNCT + r'(<[^>]+>)([\.,:;\!\?])', r'\1\2', value)
+    value = re.sub(PUNCT, ' ', value)
     # {{ ! }}
-    value = re.sub(EXCLAM, u'', value)
+    value = re.sub(EXCLAM, '', value)
     # {{ onlyDot }}
-    value = re.sub(ur'([\.…])((\s)|(&nbsp;))*' + ONLYDOT, ur'\1', value)
-    value = re.sub(ur'((\s)|(&nbsp;))*' + ONLYDOT, ur'.', value)
+    value = re.sub(r'([\.…])((\s)|(&nbsp;))*' + ONLYDOT, r'\1', value)
+    value = re.sub(r'((\s)|(&nbsp;))*' + ONLYDOT, r'.', value)
     # {{ newline }}
-    value = re.sub(NEWLINE, u'\n', value)
+    value = re.sub(NEWLINE, '\n', value)
     # {{ nbsp }}
-    value = re.sub(NBSP, u'\u00A0', value)
+    value = re.sub(NBSP, '\u00A0', value)
     # {{ emspace }}
-    value = re.sub(EMSPACE, u'\u2003', value)
+    value = re.sub(EMSPACE, '\u2003', value)
     # {{ enspace }}
-    value = re.sub(ENSPACE, u'\u2003', value)
+    value = re.sub(ENSPACE, '\u2003', value)
     # {{ space }}
-    value = re.sub(SPACE, u' ', value)
+    value = re.sub(SPACE, ' ', value)
     return value
 strip_spaces_between_tags_and_text = allow_lazy(
-        strip_spaces_between_tags_and_text, unicode)
+        strip_spaces_between_tags_and_text, str)
 
 class TrimExtension(Extension):
 
     tags = set(['trim'])
 
     def parse(self, parser):
-        lineno = parser.stream.next().lineno
+        lineno = next(parser.stream).lineno
         body = parser.parse_statements(['name:endtrim'], drop_needle=True)
         return nodes.CallBlock(
             self.call_method('_strip_spaces', [], [], None, None),
@@ -187,25 +186,25 @@ class TrimExtension(Extension):
         return strip_spaces_between_tags_and_text(caller().strip())
 
     def preprocess(self, source, name, filename=None):
-        source = re.sub(ur'{{\s*space\s*}}', SPACE, source)
-        source = re.sub(ur'{{\s*backspace\s*}}', BACKSPACE, source)
-        source = re.sub(ur'{{\s*punct\s*}}', PUNCT, source)
-        source = re.sub(ur'{{\s*!\s*}}', EXCLAM, source)
-        source = re.sub(ur'{{\s*onlyDot\s*}}', ONLYDOT, source)
-        source = re.sub(ur'{{\s*nbsp\s*}}', NBSP, source)
-        source = re.sub(ur'{{\s*newline\s*}}', NEWLINE, source)
+        source = re.sub(r'{{\s*space\s*}}', SPACE, source)
+        source = re.sub(r'{{\s*backspace\s*}}', BACKSPACE, source)
+        source = re.sub(r'{{\s*punct\s*}}', PUNCT, source)
+        source = re.sub(r'{{\s*!\s*}}', EXCLAM, source)
+        source = re.sub(r'{{\s*onlyDot\s*}}', ONLYDOT, source)
+        source = re.sub(r'{{\s*nbsp\s*}}', NBSP, source)
+        source = re.sub(r'{{\s*newline\s*}}', NEWLINE, source)
 
         # {{ emspace }}, {{ enspace }}
-        source = re.sub(ur'{{\s*emspace\s*}}', EMSPACE, source)
-        source = re.sub(ur'{{\s*enspace\s*}}', ENSPACE, source)
+        source = re.sub(r'{{\s*emspace\s*}}', EMSPACE, source)
+        source = re.sub(r'{{\s*enspace\s*}}', ENSPACE, source)
 
         # {{ nbhyphen }}
-        source = re.sub(ur'{{\s*nbhyphen\s*}}', ur'\u2011', source)
+        source = re.sub(r'{{\s*nbhyphen\s*}}', '\u2011', source)
         # {{ softhyphen }}
-        source = re.sub(ur'{{\s*softhyphen\s*}}', ur'\u00AD', source)
+        source = re.sub(r'{{\s*softhyphen\s*}}', '\u00AD', source)
         # {{ wj }}, {{ zwnbsp }}
-        source = re.sub(ur'{{\s*wj\s*}}', ur'\u2060', source)
-        source = re.sub(ur'{{\s*zwnbsp\s*}}', ur'\u2060', source)
+        source = re.sub(r'{{\s*wj\s*}}', '\u2060', source)
+        source = re.sub(r'{{\s*zwnbsp\s*}}', '\u2060', source)
         return source
 
 trim = TrimExtension
@@ -218,19 +217,19 @@ def cslav_nobr_words(value):
 
     """
     # многоточие, круглые, квадратные скобки и косая черта
-    value = re.sub(ur'(\.\.\.|[\(\)\[\]/])', ur'<span>\1</span>', value)
-    pattern = u'<span class="cslav nobr">%s</span>'
+    value = re.sub(r'(\.\.\.|[\(\)\[\]/])', r'<span>\1</span>', value)
+    pattern = '<span class="cslav nobr">%s</span>'
     words = (pattern % word for word in value.split())
-    return u'&#32;'.join(words)
+    return '&#32;'.join(words)
 
 
 SCRIPT_CSLAV = 'cslav'
 SCRIPT_CIVIL = 'civil'
 
 class Tag(object):
-    TAG_IND = u'<x aid:cstyle="{}">%s</x>'
-    TAG_WEB = u'<span class="{}">%s</span>'
-    NO_TAG = u'%s'
+    TAG_IND = '<x aid:cstyle="{}">%s</x>'
+    TAG_WEB = '<span class="{}">%s</span>'
+    NO_TAG = '%s'
 
     def __init__(self, cslav_style=None, civil_style=None, for_web=False):
         self.cslav_style = cslav_style
@@ -285,87 +284,87 @@ class Segment(Tag):
         self.base_script = base_script
         self.output_script = base_script
 
-        if self.segment == u'...' or \
-                self.segment == u'…' and self.base_script == SCRIPT_CIVIL:
+        if self.segment == '...' or \
+                self.segment == '…' and self.base_script == SCRIPT_CIVIL:
             self.type = self.TYPE_ELLIPSIS
             self.output_script = SCRIPT_CIVIL
-            self.segment = u'…'
+            self.segment = '…'
 
-        elif self.segment == u'.':
+        elif self.segment == '.':
             self.type = self.TYPE_PERIOD
 
-        elif self.segment == u',':
+        elif self.segment == ',':
             self.type = self.TYPE_COMMA
 
-        elif self.segment == u':':
+        elif self.segment == ':':
             self.type = self.TYPE_COLON
 
-        elif self.segment == u';':
+        elif self.segment == ';':
             self.type = self.TYPE_SEMICOLON
 
-        elif self.segment == u'!':
+        elif self.segment == '!':
             self.type = self.TYPE_EXCL
 
-        elif self.segment == u'«':
+        elif self.segment == '«':
             self.type = self.TYPE_LEFT_QUOTE
 
-        elif self.segment == u'»':
+        elif self.segment == '»':
             self.type = self.TYPE_RIGHT_QUOTE
 
-        elif self.segment in list(u'“”„"‘’‛\''):
+        elif self.segment in list('“”„"‘’‛\''):
             self.type = self.TYPE_QUOTE
             self.output_script = SCRIPT_CIVIL
 
-        elif self.segment == u'°' and self.base_script == SCRIPT_CSLAV:
+        elif self.segment == '°' and self.base_script == SCRIPT_CSLAV:
             self.type = self.TYPE_KAVYKA
             self.output_script = SCRIPT_CSLAV
 
-        elif self.segment == u'*':
+        elif self.segment == '*':
             self.type = self.TYPE_ASTERISK
 
-        elif self.segment in list(u'([\u27e8'):
+        elif self.segment in list('([\u27e8'):
             self.type = self.TYPE_LEFT_BRACKET
             self.output_script = SCRIPT_CIVIL
 
-        elif re.findall(u'\u27e8=\s*', self.segment):
+        elif re.findall('\u27e8=\s*', self.segment):
             # Угловая скобка со знаком равно в примерах
             self.type = self.TYPE_LEFT_BRACKET
             self.output_script = SCRIPT_CIVIL
-            self.segment = u'\u27e8=\u00a0'
+            self.segment = '\u27e8=\u00a0'
 
-        elif self.segment in list(u')]\u27e9'):
+        elif self.segment in list(')]\u27e9'):
             self.type = self.TYPE_RIGHT_BRACKET
             self.output_script = SCRIPT_CIVIL
 
-        elif self.segment in (u'/', u'/' + ZWS):
-            self.segment = u'/' + ZWS
+        elif self.segment in ('/', '/' + ZWS):
+            self.segment = '/' + ZWS
             self.type = self.TYPE_SLASH
             self.output_script = SCRIPT_CIVIL
 
         elif self.segment.isspace():
             self.type = self.TYPE_SPACE
             self.output_script = SCRIPT_CIVIL
-            if u'\u00a0' in self.segment:
+            if '\u00a0' in self.segment:
                 self.segment = NBSP
-            elif u'\u2003' in self.segment:
+            elif '\u2003' in self.segment:
                 self.segment = EMSPACE
-            elif u'\u2002' in self.segment:
+            elif '\u2002' in self.segment:
                 self.segment = ENSPACE
             else:
                 self.segment = SPACE
 
-        elif self.segment in (u'\u2013', u'\u2014'):
+        elif self.segment in ('\u2013', '\u2014'):
             self.type = self.TYPE_DASH
             self.output_script = SCRIPT_CIVIL
 
-        elif self.segment in list(u'-\u2011\u2010'):
+        elif self.segment in list('-\u2011\u2010'):
             self.type = self.TYPE_HYPHEN
             self.output_script = SCRIPT_CIVIL
 
         else:
             self.type = self.TYPE_WORD
 
-    def __unicode__(self):
+    def __str__(self):
         tag = self.tag.get_tag(self.output_script)
         if self.type == self.TYPE_EXTERNAL:
             segment = self.segment
@@ -375,28 +374,28 @@ class Segment(Tag):
                 #HYPHEN_TAG = u'<span class="Text">\u00AD</span>'
                 pass
             else:
-                HYPHEN_TAG = u'<h aid:cstyle="Text">\u00AD</h>'
-                segment = segment.replace(u'\u00AD', HYPHEN_TAG)
+                HYPHEN_TAG = '<h aid:cstyle="Text">\u00AD</h>'
+                segment = segment.replace('\u00AD', HYPHEN_TAG)
 
-            RE_NON_UCS8_LETTER_TITLES = u'(?<!^)([МТ])'
+            RE_NON_UCS8_LETTER_TITLES = '(?<!^)([МТ])'
             if self.base_script == SCRIPT_CSLAV and \
                     re.findall(RE_NON_UCS8_LETTER_TITLES, segment):
                 if self.tag.for_web:
-                    tag_template = u'<span class="CSLSuper">%s</span>'
+                    tag_template = '<span class="CSLSuper">%s</span>'
                 else:
-                    tag_template = u'<x aid:cstyle="CSLSuper">%s</x>'
+                    tag_template = '<x aid:cstyle="CSLSuper">%s</x>'
                 parts = re.split(RE_NON_UCS8_LETTER_TITLES, segment)
                 parts = [tag_template % p.lower() if i % 2 else p
                          for i, p in enumerate(parts)]
-                segment = u''.join(parts)
+                segment = ''.join(parts)
         else:
             segment = html_escape(self.segment)
-            angle_brackets = re.split(u'([\u27e8\u27e9])', segment)
+            angle_brackets = re.split('([\u27e8\u27e9])', segment)
             if self.tag.for_web:
-                tag_template = u'<span class="angleBracket">%s</span>'
+                tag_template = '<span class="angleBracket">%s</span>'
             else:
-                tag_template = u'<x aid:cstyle="angleBracket">%s</x>'
-            segment = u''.join(
+                tag_template = '<x aid:cstyle="angleBracket">%s</x>'
+            segment = ''.join(
                 tag_template % item if i % 2 == 1 else item
                 for i, item in enumerate(angle_brackets)
             )
@@ -411,17 +410,23 @@ class ExternalSegment(Segment):
         self.type = Segment.TYPE_EXTERNAL
 
 
-RE_CSLAV_SEGMENT = re.compile(u'(%s)' % u'|'.join([
-        ur'\.\.\.',
-        ur'[\(\)\[\]\.,;:!«»“”„"‘’‛\'—–\-\u2011\u2010\*°]',
-        ur'\u27e8=[\s\u00a0]*',  # Открывающая угловая скобка со знаком равно
-        ur'\/{0}?'.format(ZWS),
-        ur'[\s\u00a0]+']))
-RE_CIVIL_SEGMENT = re.compile(u'(%s)' % u'|'.join([
-        ur'\.\.\.',
-        ur'[\(\)\[\]\.,;:!?…\\/«»“”„"‘’‛\'—–\-\u2011\u2010\*]',
-        ur'\/{0}?'.format(ZWS),
-        ur'[\s\u00a0]+']))
+RE_CSLAV_SEGMENT = re.compile('(%s)' % '|'.join([
+        r'\.\.\.',
+        r'[\(\)\[\]\.,;:!«»“”„"‘’‛\'—–\-\*°'
+            '\u2011\u2010]',
+        '\u27e8=['
+            r'\s'
+            '\u00a0]*',  # Открывающая угловая скобка со знаком равно
+        r'\/{0}?'.format(ZWS),
+        r'[\s'
+            '\u00a0]+']))
+RE_CIVIL_SEGMENT = re.compile('(%s)' % '|'.join([
+        r'\.\.\.',
+        r'[\(\)\[\]\.,;:!?…\\/«»“”„"‘’‛\'—–\-\*'
+            '\u2011\u2010]',
+        r'\/{0}?'.format(ZWS),
+        r'[\s'
+            '\u00a0]+']))
 
 def get_nonword_segments(string, tag, base_script):
     if base_script == SCRIPT_CSLAV:
@@ -462,7 +467,7 @@ class Words(object):
             else:
                 self.in_betweens[-1].append(item)
         elif isinstance(item, collections.Sequence) and \
-                not isinstance(item, (str, unicode)):
+                not isinstance(item, str):
             assert all(isinstance(x, Segment) for x in item)
             for s in item:
                 if s.type == Segment.TYPE_WORD:
@@ -485,40 +490,48 @@ class Words(object):
             if word is None:
                 return in_between
             return list(in_between) + [word]
-        return chain(*starmap(f, izip_longest(self.in_betweens, self.words)))
+        return chain(*starmap(f, zip_longest(self.in_betweens, self.words)))
 
-    def __unicode__(self):
-        return u''.join(unicode(s) for s in self)
+    def __str__(self):
+        return ''.join(str(s) for s in self)
 
 
-CSLCSTYLE = u'CSLSegment'
+CSLCSTYLE = 'CSLSegment'
 
 # NOTE: скобки, окаймляющие регулярное выражение, нельзя опустить, т.к. нужно,
 # чтобы при разбивке с помощью split в списке сохранялись не только слова, но
 # и все символы между словами. В полученном списке должно быть нечетное число
 # элементов.
 RE_CSLAV_SPLIT = (
-    ur'((?:'
-    ur'\u27e8=?|\u27e9|'
-    ur'[\s\u00a0.,;:!/«»“”„"‘’‛\'—–\-\u2011\u2010*°\(\)\[\]]'
-    ur')+)'
+    r'((?:'
+    '\u27e8=?|\u27e9|'
+    r'[\s'
+    '\u00a0'
+    r'.,;:!/«»“”„"‘’‛\'—–\-'
+    '\u2011\u2010'
+    r'*°\(\)\[\]]'
+    r')+)'
 )
 RE_CIVIL_SPLIT = (
-    ur'('
-    ur'[\s\u00a0.…,;:!?\\/«»“”„"‘’‛\'—–\-\u2011\u2010*\(\)\[\]]+'
-    ur')'
+    r'('
+    r'[\s'
+    '\u00a0'
+    r'.…,;:!?\\/«»“”„"‘’‛\'—–\-'
+    '\u2011\u2010'
+    r'*\(\)\[\]]+'
+    r')'
 )
 
 def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
     if value is None:
-        value = u''
+        value = ''
     value = html_unescape(value)
     tag = Tag(cslav_style=cstyle, civil_style=civil_cstyle, for_web=for_web)
     segments = re.split(RE_CSLAV_SPLIT, value)
 
     words = Words()
-    for i in range(len(segments) / 2 + 1):
+    for i in range(len(segments) // 2 + 1):
         s1 = i * 2
         s2 = s1 + 1
         word = Segment(segments[s1], tag)
@@ -526,9 +539,9 @@ def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
             in_between = get_nonword_segments(segments[s2], tag, SCRIPT_CSLAV)
         else:
             in_between = []
-        if word == u'' and s1 == 0:  # Если первое слово является пустым
+        if word == '' and s1 == 0:  # Если первое слово является пустым
             words.add(in_between)
-        elif word == u'' and s2 == len(segments):  # Если последнее слово пустое
+        elif word == '' and s2 == len(segments):  # Если последнее слово пустое
             break
         else:
             words.add(word)
@@ -539,13 +552,13 @@ def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
 
 def civil_words(value, civil_cstyle=None, for_web=False):
     if value is None:
-        value = u''
+        value = ''
     value = html_unescape(value)
     tag = Tag(cslav_style=None, civil_style=civil_cstyle, for_web=for_web)
 
     segments = re.split(RE_CIVIL_SPLIT, value)
     words = Words()
-    for i in range(len(segments) / 2 + 1):
+    for i in range(len(segments) // 2 + 1):
         s1 = i * 2
         s2 = s1 + 1
         word = Segment(segments[s1], tag, base_script=SCRIPT_CIVIL)
@@ -553,9 +566,9 @@ def civil_words(value, civil_cstyle=None, for_web=False):
             in_between = get_nonword_segments(segments[s2], tag, SCRIPT_CIVIL)
         else:
             in_between = []
-        if word == u'' and s1 == 0:  # Если первое слово является пустым
+        if word == '' and s1 == 0:  # Если первое слово является пустым
             words.add(in_between)
-        elif word == u'' and s2 == len(segments):  # Если последнее слово пустое
+        elif word == '' and s2 == len(segments):  # Если последнее слово пустое
             break
         else:
             words.add(word)
@@ -567,7 +580,7 @@ def _prepare_translation_data(data, n):
         return {}
 
     sortfunc = lambda t: (t.fragment_end, t.order, t.id)
-    for index in data.keys():
+    for index in list(data.keys()):
         translations = data[index]
         if index > n:
             data[n].extend(translations)
@@ -590,47 +603,47 @@ def _insert_translation_data(words, data, show_additional_info=False,
         cstyle = 'Text'
     tag0 = Tag(cslav_style=None, civil_style='Text', for_web=for_web)
     tag1 = Tag(cslav_style=None, civil_style=cstyle, for_web=for_web)
-    synodal_mark = ExternalSegment(u'в' + NBSP + u'Син. пер.' + SPACE,
+    synodal_mark = ExternalSegment('в' + NBSP + 'Син. пер.' + SPACE,
             Tag(cslav_style=None, civil_style='Em', for_web=for_web))
     if show_additional_info:
         cstyle2 = 'ai ai-grfex ' + cstyle
         tag2 = Tag(cslav_style=None, civil_style=cstyle2, for_web=for_web)
 
-    ai = u' <span class="ai ai-grfex Text hyphenate">%s</span>'
+    ai = ' <span class="ai ai-grfex Text hyphenate">%s</span>'
     process_translation = lambda translation, for_web: ind_regex(
             html_escape(translation),
-            'Em', ur'(?<![А-Яа-я])букв\.', for_web=for_web)
+            'Em', r'(?<![А-Яа-я])букв\.', for_web=for_web)
     c = lambda t: (show_additional_info and t.additional_info.strip()
             and for_web)
-    tt = lambda t: u'‘%s’%s' if not t.is_synodal else u'{0}%s%s'.format(synodal_mark)
+    tt = lambda t: '‘%s’%s' if not t.is_synodal else '{0}%s%s'.format(synodal_mark)
 
     # Расстановка частичных переводов, отображаемых в статье
-    for index, lst in data.items():
+    for index, lst in list(data.items()):
         if not lst:
             continue
         translations = []
         for t in lst:
-            ai_text = (ai % html_escape(t.additional_info)) if c(t) else u''
+            ai_text = (ai % html_escape(t.additional_info)) if c(t) else ''
             t_text = process_translation(t.translation, for_web)
             translations.append(tt(t) % (t_text, ai_text))
-        translations = u', '.join(translations)
-        translations = u'(%s)' % translations
+        translations = ', '.join(translations)
+        translations = '(%s)' % translations
         seg = ExternalSegment(translations, tag1, SCRIPT_CIVIL)
-        space = Segment(u' ', tag0, SCRIPT_CIVIL)
+        space = Segment(' ', tag0, SCRIPT_CIVIL)
         words[index - 1].right_in_between[:0] = [space, seg]
 
     # Расстановка частичных переводов, отображаемых в авторских комментах
-    for index, lst in hidden_data.items():
+    for index, lst in list(hidden_data.items()):
         if not lst:
             continue
         translations = []
         for t in lst:
             t_text = html_escape(t.translation)
-            ai_text = (u' [%s]' % html_escape(t.additional_info)) if c(t) else u''
+            ai_text = (' [%s]' % html_escape(t.additional_info)) if c(t) else ''
             translations.append(tt(t) % (t_text, ai_text))
-        translations = u', '.join(translations)
+        translations = ', '.join(translations)
         seg = ExternalSegment(translations, tag2, SCRIPT_CIVIL)
-        space = Segment(u' ', tag0, SCRIPT_CIVIL)
+        space = Segment(' ', tag0, SCRIPT_CIVIL)
         right_in_between = words[index - 1].right_in_between
         x = [s.type == Segment.TYPE_EXTERNAL for s in right_in_between]
         if True in x:
@@ -657,21 +670,21 @@ def cslav_subst(x):
 def cslav_injection(value):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
-    value = re.sub(ur'##(.*?)##', cslav_subst, value)
+    value = re.sub(r'##(.*?)##', cslav_subst, value)
     return value
 
 def subst_func(func):
     def f(match):
         x, y, z = match.group(1), match.group(2), match.group(3)
-        if u'\u00a0' in x:
+        if '\u00a0' in x:
             x = NBSP
-        elif u' ' in x:
+        elif ' ' in x:
             x = SPACE
-        if u'\u00a0' in z:
+        if '\u00a0' in z:
             z = NBSP
-        elif u' ' in z:
+        elif ' ' in z:
             z = SPACE
-        return u'%s%s%s' % (x, func(y), z)
+        return '%s%s%s' % (x, func(y), z)
     return f
 
 @register_filter
@@ -680,7 +693,7 @@ def ind_cslav_injection(value, cstyle=CSLCSTYLE, for_web=False):
     """
     ind_cslav = subst_func(lambda x: cslav_words(
         ucs_convert(x), cstyle, for_web=for_web))
-    return re.sub(ur'(\s*)##(.*?)##(\s*)', ind_cslav, value)
+    return re.sub(r'(\s*)##(.*?)##(\s*)', ind_cslav, value)
 
 @register_filter
 def web_cslav_injection(value, cstyle=CSLCSTYLE):
@@ -690,7 +703,7 @@ def web_cslav_injection(value, cstyle=CSLCSTYLE):
 def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE,
         civil2_cstyle=None, for_web=False):
     words = Words()
-    for i, elem in enumerate(value.split(u'##')):
+    for i, elem in enumerate(value.split('##')):
         if not elem:
             continue
         if i % 2:
@@ -712,7 +725,7 @@ def ind_regex(value, cstyle, regex, for_web=False):
     """
     tag = Tag(cslav_style=None, civil_style=cstyle, for_web=for_web)
     _ind_regex = subst_func(lambda x: Segment(x, tag, base_script=SCRIPT_CIVIL))
-    return re.sub(ur'(\s*)(%s)(\s*)' % regex, _ind_regex, value)
+    return re.sub(r'(\s*)(%s)(\s*)' % regex, _ind_regex, value)
 
 @register_filter
 def web_regex(value, cstyle, regex):
@@ -720,28 +733,28 @@ def web_regex(value, cstyle, regex):
 
 
 RE_REF1 = (
-    ur'\s*'
-    ur'(?:idem|cf|qv)'  # Тип ссылки
-    ur'\['
-        ur'\s*[а-яА-Я]+'  # Гражданское написание заглавного слова
-        ur'\s*[1-9]?'  # Номер омонима
-        ur'(?:\s*-\s*'  # Список значений
-            ur'\d+(?:\s*,\s*\d+)*'
-        ur')?\s*'
-    ur'\]'
-    ur'\s*'
+    r'\s*'
+    r'(?:idem|cf|qv)'  # Тип ссылки
+    r'\['
+        r'\s*[а-яА-Я]+'  # Гражданское написание заглавного слова
+        r'\s*[1-9]?'  # Номер омонима
+        r'(?:\s*-\s*'  # Список значений
+            r'\d+(?:\s*,\s*\d+)*'
+        r')?\s*'
+    r'\]'
+    r'\s*'
 )
 RE_REF2 = (
-    ur'(\s*)'
-    ur'(idem|cf|qv)'  # Тип ссылки
-    ur'\['
-        ur'\s*([а-яА-Я]+)'  # Гражданское написание заглавного слова
-        ur'\s*([1-9])?'  # Номер омонима
-        ur'(?:\s*-\s*'   # Список значений
-            ur'(\d+(?:\s*,\s*\d+)*)'
-        ur')?\s*'
-    ur'\]'
-    ur'(\s*)'
+    r'(\s*)'
+    r'(idem|cf|qv)'  # Тип ссылки
+    r'\['
+        r'\s*([а-яА-Я]+)'  # Гражданское написание заглавного слова
+        r'\s*([1-9])?'  # Номер омонима
+        r'(?:\s*-\s*'   # Список значений
+            r'(\d+(?:\s*,\s*\d+)*)'
+        r')?\s*'
+    r'\]'
+    r'(\s*)'
 )
 
 def insert_ref(x, for_web, ref_func=None):
@@ -751,19 +764,19 @@ def insert_ref(x, for_web, ref_func=None):
                      for_web=for_web)
     csl_tag = Tag(cslav_style='CSLSegment', civil_style=None, for_web=for_web)
 
-    text = u''
+    text = ''
     s1, ref, word, num, meanings, s2 = re.findall(RE_REF2, x, re.IGNORECASE)[0]
 
     ref = ref.lower()
     if ref == 'idem':
-        s = Segment(u'то же, что', text_tag, base_script=SCRIPT_CIVIL)
-        text += u'%s%s' % (s, SPACE)
+        s = Segment('то же, что', text_tag, base_script=SCRIPT_CIVIL)
+        text += '%s%s' % (s, SPACE)
     elif ref == 'cf':
-        s = Segment(u'ср.', em_tag, base_script=SCRIPT_CIVIL)
-        text += u'%s%s' % (s, NBSP)
+        s = Segment('ср.', em_tag, base_script=SCRIPT_CIVIL)
+        text += '%s%s' % (s, NBSP)
     elif ref == 'qv':
-        s = Segment(u'см.', em_tag, base_script=SCRIPT_CIVIL)
-        text += u'%s%s' % (s, NBSP)
+        s = Segment('см.', em_tag, base_script=SCRIPT_CIVIL)
+        text += '%s%s' % (s, NBSP)
 
     params = {
         'civil_equivalent': word,
@@ -781,45 +794,45 @@ def insert_ref(x, for_web, ref_func=None):
             url = ref_func(entry)
         else:
             url = entry.get_absolute_url()
-        text += u'<a href="%s">%s</a>' % (url, s)
+        text += '<a href="%s">%s</a>' % (url, s)
     else:
-        text += unicode(s)
+        text += str(s)
 
     if num:
         s = Segment(num, number_tag, base_script=SCRIPT_CIVIL)
-        text += unicode(s)
+        text += str(s)
 
     if meanings:
-        s = Segment(u'в знач.', text_tag, base_script=SCRIPT_CIVIL)
-        text += SPACE + unicode(s) + NBSP
+        s = Segment('в знач.', text_tag, base_script=SCRIPT_CIVIL)
+        text += SPACE + str(s) + NBSP
         meanings = [Segment(i, text_tag, base_script=SCRIPT_CIVIL)
-                    for i in re.split(ur'[\s,]+', meanings)]
+                    for i in re.split(r'[\s,]+', meanings)]
         for i, s in enumerate(meanings):
             if i == 0:
-                text += unicode(s)
+                text += str(s)
             elif i == len(meanings) - 1:
-                conj = Segment(u'и', text_tag, base_script=SCRIPT_CIVIL)
-                text += SPACE + unicode(conj) + NBSP + unicode(s)
+                conj = Segment('и', text_tag, base_script=SCRIPT_CIVIL)
+                text += SPACE + str(conj) + NBSP + str(s)
             else:
-                comma = Segment(u',', text_tag, base_script=SCRIPT_CIVIL)
-                text += unicode(comma) + SPACE + unicode(s)
+                comma = Segment(',', text_tag, base_script=SCRIPT_CIVIL)
+                text += str(comma) + SPACE + str(s)
 
     if ref == 'idem':
         segs = (
             NBSP,
-            Segment(u'(', text_tag, base_script=SCRIPT_CIVIL),
-            Segment(u'см.', em_tag, base_script=SCRIPT_CIVIL),
-            Segment(u')', text_tag, base_script=SCRIPT_CIVIL),
+            Segment('(', text_tag, base_script=SCRIPT_CIVIL),
+            Segment('см.', em_tag, base_script=SCRIPT_CIVIL),
+            Segment(')', text_tag, base_script=SCRIPT_CIVIL),
         )
-        text += u''.join(unicode(s) for s in segs)
+        text += ''.join(str(s) for s in segs)
 
-    if u'\u00a0' in s1:
+    if '\u00a0' in s1:
         text = NBSP + text
-    elif u' ' in s1:
+    elif ' ' in s1:
         text = SPACE + text
-    if u'\u00a0' in s2:
+    if '\u00a0' in s2:
         text += NBSP
-    elif u' ' in s2:
+    elif ' ' in s2:
         text += SPACE
 
     return text
@@ -839,20 +852,20 @@ def ind_refs(value, for_web=False, ref_func=None):
             [<номер омонима>] ["-" <список номеров значений>] "]"
 
     """
-    text = u''
-    for i, x in enumerate(re.split(u'(%s)' % RE_REF1, value)):
+    text = ''
+    for i, x in enumerate(re.split('(%s)' % RE_REF1, value)):
         if i % 2 == 1:
             try:
                 text += insert_ref(x, for_web=for_web, ref_func=ref_func)
             except MultipleObjectsReturned:
-                text += x + (u'[ ###### Ошибка! Ссылка задана недостаточно '
-                    u'специфично -- по гражданскому написанию найдено '
-                    u'несколько статей вместо одной ] ')
+                text += x + ('[ ###### Ошибка! Ссылка задана недостаточно '
+                    'специфично -- по гражданскому написанию найдено '
+                    'несколько статей вместо одной ] ')
             except ObjectDoesNotExist:
-                text += x + u'[ ###### Ошибка! Статья по ссылке не найдена ] '
+                text += x + '[ ###### Ошибка! Статья по ссылке не найдена ] '
             except Exception as e:
-                text += x + u'[ ###### При обработке ссылки возникла ' + \
-                            u'ошибка: %s ] ' % e
+                text += x + '[ ###### При обработке ссылки возникла ' + \
+                            'ошибка: %s ] ' % e
         elif x:
             text += x
     return text
@@ -880,9 +893,9 @@ def ind_collocation_special_cases(words, for_web=False):
 
     # 2) Запятую в последовательности "ѻтє'цъ, ѻц~є'въ" дать гражданкой
     for i, word in enumerate(words.words):
-        first_match = word.segment == u'nтє1цъ'
+        first_match = word.segment == 'nтє1цъ'
         one_more_word = i + 1 < len(words.words)
-        second_match = one_more_word and words.words[i + 1].segment == u'nц7є1въ'
+        second_match = one_more_word and words.words[i + 1].segment == 'nц7є1въ'
         in_between = words.in_betweens[i + 1]
         comma = in_between and in_between[0].type == Segment.TYPE_COMMA
         if first_match and second_match and comma:
@@ -915,7 +928,7 @@ def web_csl_special_cases(words):
 
 @register_filter
 def has_no_accent(value):
-    r = re.compile(ur"['`\^~А-Щ]")
+    r = re.compile(r"['`\^~А-Щ]")
     if re.findall(r, value):
         return False
     return True

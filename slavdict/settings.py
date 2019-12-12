@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 from os.path import abspath
 from os.path import dirname
 from os.path import normpath
@@ -15,7 +14,7 @@ ROOT = normpath(abspath(dirname(dirname(__file__)))).replace('\\', '/') + '/'
 # Локальное переопределение базовых настроек,
 # если оно имеется.
 try:
-    from local_base_settings import *
+    from .local_base_settings import *
 except ImportError:
     pass
 
@@ -74,7 +73,7 @@ if exists(_hash_file):
     try:
         STATIC_RESOURCES_VERSION = open(_hash_file).read().strip()
     except:
-        print _hash_file, 'could not be read'
+        print(_hash_file, 'could not be read')
         sys.exit(1)
 
 # Make this unique, and don't share it with anybody.
@@ -221,11 +220,11 @@ JSLIBS = {
          'Xmin': 'http://use.fontawesome.com/releases/v5.0.7/js/all.js',
     },
 }
-JSLIBS_VERSION = hashlib.md5(json.dumps(JSLIBS)).hexdigest()[:8]
+JSLIBS_VERSION = hashlib.md5(json.dumps(JSLIBS).encode('utf-8')).hexdigest()[:8]
 
 _postfix = 'Local'
 for lib in JSLIBS:
-    for version in JSLIBS[lib].keys():
+    for version in list(JSLIBS[lib].keys()):
         filename = JSLIBS[lib][version].split('/')[-1].split('?')[0]
         if version == 'Xmin':
             JSLIBS[lib]['min'] = JSLIBS_URL + filename
@@ -244,8 +243,8 @@ except ImportError:
 # this you can monkeypatch Django to produce Jinja 2 compatible Safestrings:
 from django.utils import safestring
 if not hasattr(safestring, '__html__'):
-    safestring.SafeString.__html__ = lambda self: str(self)
-    safestring.SafeUnicode.__html__ = lambda self: unicode(self)
+    safestring.SafeBytes.__html__ = lambda self: bytes(self)
+    safestring.SafeText.__html__ = lambda self: str(self)
 
 
 if __name__ == '__main__':

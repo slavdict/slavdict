@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
@@ -8,7 +7,7 @@ from .forms import CustomUserChangeForm, CustomUserCreationForm
 
 class CustomUserAdmin(UserAdmin):
 
-    list_display = ('username', '__unicode__',
+    list_display = ('username', '__str__',
                     'is_staff', 'is_active')
 
     # Поле fildsets делаем как у UserAdmin.

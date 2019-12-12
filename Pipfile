@@ -15,6 +15,3 @@ Django = "~=1.11.23"
 "psycopg2-binary" = "*"
 pipfile = {version = "*",editable = true}
 django-admin-rangefilter = "*"
-
-[requires]
-python_version = "2.7"

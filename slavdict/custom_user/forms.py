@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Создаём производные от форм UserChangeForm и UserCreationForm
 из django.contrib.auth.forms. Переопределяем в них все методы

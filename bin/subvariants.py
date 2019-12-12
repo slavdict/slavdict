@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import re
 import subprocess
@@ -16,27 +15,27 @@ def subvariants(arg):
     elif isinstance(arg, Entry):
         e = arg
     else:
-        print 'wrong argument:', arg
+        print('wrong argument:', arg)
     ids = [o.id for o in e.orth_vars]
 
-    text = u''
+    text = ''
     for basevar in e.base_vars:
-        text += u'%s\t%s\n' % (basevar.pk, basevar.idem)
+        text += '%s\t%s\n' % (basevar.pk, basevar.idem)
         for subvar in basevar.children.all():
-            text += u'\t%s\t%s\n' % (subvar.pk, subvar.idem)
-    print
-    print text
+            text += '\t%s\t%s\n' % (subvar.pk, subvar.idem)
+    print()
+    print(text)
 
-    x = raw_input(u'\nРедактировать? (Y/n/1): '.encode('utf-8'))
+    x = input('\nРедактировать? (Y/n/1): ')
     x = x.strip()
-    if not x or x.lower() in ('y', 'ye', 'yes', u'да', u'д'):
+    if not x or x.lower() in ('y', 'ye', 'yes', 'да', 'д'):
         do_special = False
-    elif x == u'1':
+    elif x == '1':
         do_special = True
     else:
         return
 
-    text += u'''
+    text += '''
 # Для изменения порядка следования вариантов расположите строки в нужном
 # порядке. Иерархические отношения задавайте отступами в начале строки. Если
 # отступ в начале строки есть, значит данный вариант является подвариантом
@@ -61,19 +60,19 @@ def subvariants(arg):
                 tf.flush()
                 subprocess.call([EDITOR, tf.name])
                 tf.seek(0)
-                edited_text = tf.readlines()
+                edited_lines = tf.read().decode('utf-8').split('\n')
 
             n = 0
             parent = None
-            r = re.compile(u'\s+')
-            lines = filter(lambda x:x.strip() and x[:1] != u'#', edited_text)
+            r = re.compile('\s+')
+            lines = [x for x in edited_lines if x.strip() and x[:1] != '#']
             for line in lines:
                 n += 1
-                oid, wordform = r.split(line.decode('utf-8').strip())
+                oid, wordform = r.split(line.strip())
                 if oid == '+':
                     o = OrthographicVariant(idem=wordform, entry=e)
                 elif oid.strip('-').isdigit():
-                    if u'-' in oid:
+                    if '-' in oid:
                         do_delete = True
                     else:
                         do_delete = False
@@ -99,17 +98,17 @@ def subvariants(arg):
                     o.parent = parent
                 o.save()
 
-    text = u''
+    text = ''
     for basevar in e.base_vars:
-        text += u'%s\t%s\n' % (basevar.pk, basevar.idem)
+        text += '%s\t%s\n' % (basevar.pk, basevar.idem)
         for subvar in basevar.children.all():
-            text += u'\t%s\t%s\n' % (subvar.pk, subvar.idem)
-    print '-' * 10
-    print text
+            text += '\t%s\t%s\n' % (subvar.pk, subvar.idem)
+    print('-' * 10)
+    print(text)
 
-    x = raw_input(u'\nЗакончить редактирование? (Y/n): '.encode('utf-8'))
+    x = input('\nЗакончить редактирование? (Y/n): ')
     x = x.strip()
-    if not x or x.lower() in ('y', 'ye', 'yes', u'да', u'д'):
+    if not x or x.lower() in ('y', 'ye', 'yes', 'да', 'д'):
         pass
     else:
         subvariants(arg)

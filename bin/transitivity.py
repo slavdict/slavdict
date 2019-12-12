@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from itertools import chain
 
 from slavdict.dictionary.models import *
@@ -10,10 +9,10 @@ def distance(a, b):
         # Make sure n <= m, to use O(min(n, m)) space
         a, b = b, a
         n, m = m, n
-    cur_row = range(n+1)  # Keep current and previous row, not entire matrix
+    cur_row = list(range(n+1))  # Keep current and previous row, not entire matrix
     for i in range(1, m+1):
         pre_row, cur_row = cur_row, [i]+[0]*n
-        for j in range(1,n+1):
+        for j in range(1, n+1):
             add, delete, change = pre_row[j]+1, cur_row[j-1]+1, pre_row[j-1]
             if a[j-1] != b[i-1]:
                 change += 1
@@ -38,21 +37,21 @@ def transitivity(arg):
     elif isinstance(arg, Entry):
         e = arg
     else:
-        print 'wrong argument:', arg
+        print('wrong argument:', arg)
         return
 
     if not e.is_part_of_speech('verb'):
-        print u'Лексема не является глаголом.'
+        print('Лексема не является глаголом.')
         return
 
     for meaning in e.meanings:
-        print
-        print u'\033[1;36m%s\033[0m' % e.civil_equivalent
+        print()
+        print('\033[1;36m%s\033[0m' % e.civil_equivalent)
         if meaning.transitivity:
-            print u'\t' + meaning.get_transitivity_display()
+            print('\t' + meaning.get_transitivity_display())
         else:
-            print u'\t[переходность не задана]'
-        print u'\t%s' % meaning.meaning, u'|', meaning.gloss
+            print('\t[переходность не задана]')
+        print('\t%s' % meaning.meaning, '|', meaning.gloss)
 
         for ex in chain(meaning.examples,
                 *(m.examples for m in meaning.child_meanings)):
@@ -63,18 +62,15 @@ def transitivity(arg):
                              leading_similariry(lexeme, w.lower()))
                          for w in words]
             ld_min = min(ld for w, ld in words_lds)
-            words = [u'\033[1;33m%s\033[0m' % w if ld == ld_min else w
+            words = ['\033[1;33m%s\033[0m' % w if ld == ld_min else w
                      for w, ld in words_lds]
-            print u'\t\t*  %s' % u' '.join(words)
+            print('\t\t*  %s' % ' '.join(words))
 
         while True:
-            x = raw_input((u'''
+            x = input('''
     Что с переходностью? Перех./неперех./смешанный [%s/%s/%s]
-    (Enter = ничего не менять): ''' % (
-            TRANSITIVITY_MAP['transitive'],
-            TRANSITIVITY_MAP['intransitive'],
-            TRANSITIVITY_MAP['labile'],
-            )).encode('utf-8'))
+    (Enter = ничего не менять): ''' % (TRANSITIVITY_MAP['transitive'],
+            TRANSITIVITY_MAP['intransitive'], TRANSITIVITY_MAP['labile']))
             x = x.lower().strip()
             if x == TRANSITIVITY_MAP['transitive']:
                 meaning.transitivity = TRANSITIVITY_MAP['transitive']
@@ -91,8 +87,8 @@ def transitivity(arg):
             elif not x:
                 break
             else:
-                print u'''
-    Символ %r недопустим для выбора. Введите заново.''' % x
+                print('''
+    Символ %r недопустим для выбора. Введите заново.''' % x)
 
 
 # vi: set ai et sw=4 ts=4 :

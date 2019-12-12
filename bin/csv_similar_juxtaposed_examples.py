@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# coding: utf-8
+import csv
 import os
 import sys
 
@@ -15,13 +15,12 @@ if len(sys.argv) > 1:
     try:
         MAX_DISTANCE = int(sys.argv[1])
     except ValueError:
-        print 'The argument must be an integer'
-        print 'for Maximum Levenshtein distance value.'
-print 'Maximum Levenstein distance used:', MAX_DISTANCE
-print
+        print('The argument must be an integer')
+        print('for Maximum Levenshtein distance value.')
+print('Maximum Levenstein distance used:', MAX_DISTANCE)
+print()
 
 from slavdict.dictionary.models import Entry, levenshtein_distance
-from slavdict.unicode_csv import UnicodeWriter
 
 CSI = '\033['
 HIDE_CURSOR = CSI + '?25l'
@@ -30,16 +29,16 @@ ERASE_LINE = CSI + '2K'
 ERASE_LINEEND = CSI + '0K'
 
 def write_csv(filename, entries):
-    uw = UnicodeWriter(open(filename, 'w'))
+    uw = csv.writer(open(filename, 'w'))
     N = len(entries)
     sys.stderr.write(HIDE_CURSOR)
     for j, e in enumerate(e for e in entries
-            if e.volume([1, 2]) or e.civil_equivalent.startswith(u'!')):
-        note = u'Поиск похожих примеров [ %s%% ] %s\r' % (
-                int(j / float(N) * 100), e.civil_equivalent + ERASE_LINEEND)
-        sys.stderr.write(note.encode('utf-8'))
+            if e.volume([1, 2]) or e.civil_equivalent.startswith('!')):
+        note = 'Поиск похожих примеров [ %s%% ] %s\r' % (
+                int(j / N * 100), e.civil_equivalent + ERASE_LINEEND)
+        sys.stderr.write(note)
 
-        ecolumn = e.civil_equivalent + {1: u'¹', 2: u'²'}.get(e.homonym_order, u'')
+        ecolumn = e.civil_equivalent + {1: '¹', 2: '²'}.get(e.homonym_order, '')
         all_examples = e.all_examples()
         example_matches = []
         for i in range(len(all_examples) - 1):

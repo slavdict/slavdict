@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import collections
 import datetime
 import json
@@ -59,7 +58,7 @@ def json_singleselect_entries_urls(request):
                 'url': e.get_absolute_url(),
                 }
                 for e in entries]
-        data = _json(entries)
+        data = _json(entries).encode('utf-8')
         response = HttpResponse(data, content_type=IMT_JSON)
     else:
         response = HttpResponse(content_type=IMT_JSON, status=400)
@@ -81,7 +80,7 @@ def json_ex_save(request):
         del exDict['id']
         ex.__dict__.update(exDict)
         ex.save()
-        data = _json({ 'action': 'saved' })
+        data = _json({ 'action': 'saved' }).encode('utf-8')
         response = HttpResponse(data, content_type=IMT_JSON, status=200)
     else:
         response = HttpResponse(status=400)
@@ -104,7 +103,8 @@ def json_greq_save(request):
             gr.save()
             data = { 'action': 'saved' }
         data['greek_eq_status'] = gr.for_example.greek_eq_status
-        response = HttpResponse(_json(data), content_type=IMT_JSON, status=200)
+        data = _json(data).encode('utf-8')
+        response = HttpResponse(data, content_type=IMT_JSON, status=200)
     else:
         response = HttpResponse(status=400)
     return response
@@ -121,6 +121,7 @@ def json_greq_delete(request):
             gr.delete()
             data = _json({ 'action': 'deleted',
                            'greek_eq_status': example.greek_eq_status })
+            data = data.encode('utf-8')
             response = HttpResponse(data, content_type=IMT_JSON, status=200)
         else:
             response = HttpResponse(status=400)
@@ -129,9 +130,9 @@ def json_greq_delete(request):
     return response
 
 
-GREEK_RANGE = re.compile(ur'[\u0370-\u0373\u0376-\u037D\u0386\u0388-\u03E1'
-                         ur'\u1f00-\u1fbc\u1fc2-\u1fcc\u1fd0-\u1fdb'
-                         ur'\u1fe0-\u1fec\u1ff2-\u1ffc]')
+GREEK_RANGE = re.compile('[\u0370-\u0373\u0376-\u037D\u0386\u0388-\u03E1'
+                         '\u1f00-\u1fbc\u1fc2-\u1fcc\u1fd0-\u1fdb'
+                         '\u1fe0-\u1fec\u1ff2-\u1ffc]')
 @login_required
 def json_etym_save(request):
     jsonEtym = request.POST.get('etym')
@@ -150,7 +151,7 @@ def json_etym_save(request):
             et = Etymology.objects.get(pk=int(etym['id']))
             et.__dict__.update(etym)
             et.save()
-            data = _json({ 'action': 'saved' })
+            data = _json({ 'action': 'saved' }).encode('utf-8')
         response = HttpResponse(data, content_type=IMT_JSON, status=200)
     else:
         response = HttpResponse(status=400)
@@ -165,7 +166,7 @@ def json_etym_delete(request):
         if id:
             et = Etymology.objects.get(pk=id)
             et.delete()
-            data = _json({ 'action': 'deleted' })
+            data = _json({ 'action': 'deleted' }).encode('utf-8')
             response = HttpResponse(data, content_type=IMT_JSON, status=200)
         else:
             response = HttpResponse(status=400)
@@ -186,7 +187,7 @@ def json_goodness_save(request):
 
 
 def json_entry_get(request, id):
-    data = viewmodels.entry_json(id)
+    data = viewmodels.entry_json(id).encode('utf-8')
     return HttpResponse(data, content_type=IMT_JSON, status=200)
 
 
@@ -220,7 +221,7 @@ def js_error_notify(request):
     emails = [email for name, email in settings.ADMINS]
     message = mail.EmailMessage(
         '[slavdict JS Error] %s, %s' % (time, url),
-        unicode(request.POST),
+        str(request.POST),
         'jsException@slavdict.ruslang.ru',
         emails,
         connection=connection,
@@ -261,7 +262,7 @@ def process_json_model(json_model, post):
         for item in part['data']:
             items_and_models.append((item, part['model']))
             if 'terminals' in part:
-                for prop, model in part['terminals'].items():
+                for prop, model in list(part['terminals'].items()):
                     for subitem in item[prop]:
                         items_and_models.append((subitem, model))
                     del item[prop]
@@ -289,7 +290,7 @@ def process_json_model(json_model, post):
             to_be_destroyed = '_destroy' in item and item['_destroy']
             bad = False
 
-            for key, value in [(k, v) for k, v in item.items()
+            for key, value in [(k, v) for k, v in list(item.items())
                                if k.endswith('_id')]:
                 if value is not None and not isinstance(value, int):
                     if value in new_elements:
@@ -311,7 +312,7 @@ def process_json_model(json_model, post):
 
             del item['#status#']
             del item['id']
-            for key in item.keys():
+            for key in list(item.keys()):
                 if key not in valid_field_names:
                     del item[key]
                     invalid_keys_notifications.add(
@@ -334,7 +335,7 @@ def process_json_model(json_model, post):
             item['#status#'] = 'good'
             items_to_process -= 1
 
-        assert items_to_process!=PREVIOUS_VALUE, u'''Алгоритм сохранения лексемы
+        assert items_to_process!=PREVIOUS_VALUE, '''Алгоритм сохранения лексемы
                работает неверно. Значение переменной items_to_process не
                меняется, поэтому оно не сможет достигнуть нуля и выход из
                вечного цикла никогда не произойдет.'''
@@ -354,10 +355,10 @@ def process_json_model(json_model, post):
 
     if invalid_keys_notifications:
         from django.core.mail import mail_admins
-        subject = u'[slavdict] JSON содержит отсутствующие в моделях поля'
-        message = u'''
+        subject = '[slavdict] JSON содержит отсутствующие в моделях поля'
+        message = '''
 При сохранении статей в JSON-данных содержались
 следующие лишние поля, которых нет в соответствующих
 моделях: '''
-        message += u', '.join(invalid_keys_notifications)
+        message += ', '.join(invalid_keys_notifications)
         mail_admins(subject, message, fail_silently=True)

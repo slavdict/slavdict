@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 
@@ -16,11 +16,11 @@ def make_inverse(apps, schema_editor):
 def remove_inverse(apps, schema_editor):
     Entry = apps.get_model('dictionary', 'Entry')
     for entry in Entry.objects.all():
-        entry.civil_inverse = u''
+        entry.civil_inverse = ''
         entry.save()
     Collocation = apps.get_model('dictionary', 'Collocation')
     for collocation in Collocation.objects.all():
-        collocation.civil_inverse = u''
+        collocation.civil_inverse = ''
         collocation.save()
 
 class Migration(migrations.Migration):

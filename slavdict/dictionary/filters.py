@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import re
 
 from django.db.models import Count
@@ -76,7 +75,7 @@ def get_entries(form, for_hellinists):
         и, если да, то соответствует ли ему в базе пустая строка или NULL.
         """
         assert (none_value == "NULL" or none_value == "EMPTY_STRING"
-                or none_value == "DOESNT_HAVE"), u'Неверное значение параметра'
+                or none_value == "DOESNT_HAVE"), 'Неверное значение параметра'
 
         model_property = model_property or param
         value = form.get(param) or 'all'
@@ -167,7 +166,7 @@ def get_entries(form, for_hellinists):
     if form.get('uninflected'):
         FILTER_PARAMS['uninflected'] = True
 
-    assert not PARSING_ERRORS, u'Недопустимые значения параметров: %s' % PARSING_ERRORS
+    assert not PARSING_ERRORS, 'Недопустимые значения параметров: %s' % PARSING_ERRORS
 
     entries = entries.filter(**FILTER_PARAMS)
     entries = entries.exclude(**FILTER_EXCLUDE_PARAMS)
@@ -229,8 +228,8 @@ def get_examples(form):
     # Текст иллюстраций
     example = form.get('hwExample')
     if example:
-        RE = re.compile(u'[^абвгдеёжзийклмнопрстуфхцчшщъыьэюя]+')
-        example = u''.join(re.split(RE, example.lower()))
+        RE = re.compile('[^абвгдеёжзийклмнопрстуфхцчшщъыьэюя]+')
+        example = ''.join(re.split(RE, example.lower()))
         FILTER_PARAMS['ts_example__contains'] = example
 
     # Статус греческих параллелей
@@ -242,7 +241,7 @@ def get_examples(form):
     else:
         PARSING_ERRORS.append('hwStatus')
 
-    assert not PARSING_ERRORS, u'Недопустимые значения параметров: %s' % PARSING_ERRORS
+    assert not PARSING_ERRORS, 'Недопустимые значения параметров: %s' % PARSING_ERRORS
 
     # slavdict.dictionary.models.Entry.status
     #good_statuses = [
@@ -259,7 +258,7 @@ def get_examples(form):
     # когда статья имеет статус "создана" или "в работе", за исключением тех
     # случаев когда у примера выставлен статус греческих параллелей "необходимы
     # для определения значения" (M) или "срочное" (U).
-    if not form.get('hwAllExamples') and greq_status not in (u'M', u'U'):
+    if not form.get('hwAllExamples') and greq_status not in ('M', 'U'):
         entries = Entry.objects if entries is None else entries
         entries = entries.exclude(status__in=bad_statuses)
 

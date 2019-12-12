@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# coding: utf-8
+import csv
 import os
 import sys
 
@@ -12,27 +12,26 @@ django.setup()
 
 from slavdict.dictionary.models import Entry, PART_OF_SPEECH_MAP
 from slavdict.dictionary.models import TRANSITIVITY_MAP, TRANSITIVITY_CHOICES
-from slavdict.unicode_csv import UnicodeWriter
 
 def write_csv(filename, entries):
-    uw = UnicodeWriter(open(filename, 'w'))
+    uw = csv.writer(open(filename, 'w'))
     for e in (e for e in entries if e.volume(1)):
-        ecolumn = e.civil_equivalent + {1: u'¹', 2: u'²'}.get(e.homonym_order, u'')
+        ecolumn = e.civil_equivalent + {1: '¹', 2: '²'}.get(e.homonym_order, '')
         for m in list(e.meanings) + list(e.metaph_meanings):
             meaning = m.meaning.strip()
             gloss = m.gloss.strip()
             if meaning or gloss:
-                uw.writerow((str(m.id), ecolumn, u'%s ⏹ %s' % (meaning, gloss)))
+                uw.writerow((str(m.id), ecolumn, '%s ⏹ %s' % (meaning, gloss)))
                 if ecolumn:
-                   ecolumn = u''
+                   ecolumn = ''
             for cm in m.child_meanings:
                 meaning = cm.meaning.strip()
                 gloss = cm.gloss.strip()
                 if meaning or gloss:
-                    row = (str(cm.id), ecolumn, u'• %s ⏹ %s' % (meaning, gloss))
+                    row = (str(cm.id), ecolumn, '• %s ⏹ %s' % (meaning, gloss))
                     uw.writerow(row)
                     if ecolumn:
-                       ecolumn = u''
+                       ecolumn = ''
     uw.stream.close()
 
 poss_adj = Entry.objects.filter(part_of_speech=PART_OF_SPEECH_MAP['adjective'],

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import re
 
 from hip2unicode.functions import convert
@@ -17,18 +16,18 @@ compiled_conversion_without_aspiration = compile_conversion(
 compiled_conversion_civil = compile_conversion(antconc_civilrus.conversion)
 
 def html_escape(text):
-    text = text.replace(u'&', u'&amp;')
-    text = text.replace(u'<', u'&lt;')
-    text = text.replace(u'>', u'&gt;')
-    text = text.replace(u'"', u'&#34;')
-    return text.replace(u"'", u'&#39;')
+    text = text.replace('&', '&amp;')
+    text = text.replace('<', '&lt;')
+    text = text.replace('>', '&gt;')
+    text = text.replace('"', '&#34;')
+    return text.replace("'", '&#39;')
 
 def html_unescape(text):
-    text = text.replace(u'&#39;', u"'")
-    text = text.replace(u'&#34;', u'"')
-    text = text.replace(u'&gt;',  u'>')
-    text = text.replace(u'&lt;',  u'<')
-    return text.replace(u'&amp;', u'&')
+    text = text.replace('&#39;', "'")
+    text = text.replace('&#34;', '"')
+    text = text.replace('&gt;',  '>')
+    text = text.replace('&lt;',  '<')
+    return text.replace('&amp;', '&')
 
 def resolve_titles(text):
     return convert(text, compiled_conversion_wo_titles)
@@ -46,7 +45,7 @@ def ucs_convert_affix(text):
     гласными.
     """
     if text:
-        if text[0] == u'-':
+        if text[0] == '-':
             text = text[1:]
         return html_escape(convert(text, compiled_conversion_without_aspiration))
 
@@ -56,11 +55,11 @@ def civilrus_convert(word):
 
 def convert_for_index(word):
     civil_word = civilrus_convert(resolve_titles(word)).lower()
-    ix_word = re.sub(ur'ъ[иы]', u'ы', civil_word)
-    ix_word = re.sub(ur'[ъ=]', u'', ix_word)
-    ix_word = re.sub(ur'^(бе|во|в|и|ни|ра|чре|чере)з([кпстфхцчшщ])',
-                     ur'\1с\2', ix_word)
-    return re.sub(ur'[^а-щы-я]', u'', ix_word)
+    ix_word = re.sub(r'ъ[иы]', 'ы', civil_word)
+    ix_word = re.sub(r'[ъ=]', '', ix_word)
+    ix_word = re.sub(r'^(бе|во|в|и|ни|ра|чре|чере)з([кпстфхцчшщ])',
+                     r'\1с\2', ix_word)
+    return re.sub(r'[^а-щы-я]', '', ix_word)
 
 def ucs_affix_or_word(atr):
     """
@@ -81,11 +80,11 @@ def ucs_affix_or_word(atr):
     давать название с использованием аббревиатуры wax (Word or AffiX).
 
     Возможно, впоследствии лучше сделать, чтобы функция возвращала не кортеж,
-    а объект. В качестве __unicode__ будет возвращаться сконвертированная
+    а объект. В качестве __str__ будет возвращаться сконвертированная
     строка, а информация о том, аффикс или нет, отдельным свойством.
     """
     if atr:
-        if atr[0] == u'-':
+        if atr[0] == '-':
             return (True, ucs_convert_affix(atr[1:]))
         else:
             return (False, ucs_convert(atr))
@@ -93,7 +92,7 @@ def ucs_affix_or_word(atr):
         return atr
 
 def several_wordforms(text):
-    RE_COMMA = ur'[,\s\(\)]+'
+    RE_COMMA = r'[,\s\(\)]+'
     words = re.split(RE_COMMA, text)
     return [(word, ucs_convert(word)) for word in words if word]
 
@@ -103,10 +102,10 @@ def levenshtein_distance(a, b):
         # Make sure n <= m, to use O(min(n, m)) space
         a, b = b, a
         n, m = m, n
-    cur_row = range(n+1)  # Keep current and previous row, not entire matrix
+    cur_row = list(range(n+1))  # Keep current and previous row, not entire matrix
     for i in range(1, m+1):
         pre_row, cur_row = cur_row, [i]+[0]*n
-        for j in range(1,n+1):
+        for j in range(1, n+1):
             add, delete, change = pre_row[j]+1, cur_row[j-1]+1, pre_row[j-1]
             if a[j-1] != b[i-1]:
                 change += 1
@@ -115,44 +114,44 @@ def levenshtein_distance(a, b):
 
 def sort_key1(word):
     level1 = (
-        (ur"[='`\^\~А-ЯЄЅІЇѠѢѤѦѨѪѬѮѰѲѴѶѸѺѼѾ]", u''),
-        (u'ъ',      u''),
-        (u'аѵ',     u'ав'),
-        (u'[еє]ѵ',  u'ев'),
-        (u'ѯ',      u'кс'),
-        (u'ѿ',      u'от'),
-        (u'ѱ',      u'пс'),
+        (r"[='`\^\~А-ЯЄЅІЇѠѢѤѦѨѪѬѮѰѲѴѶѸѺѼѾ]", ''),
+        ('ъ',      ''),
+        ('аѵ',     'ав'),
+        ('[еє]ѵ',  'ев'),
+        ('ѯ',      'кс'),
+        ('ѿ',      'от'),
+        ('ѱ',      'пс'),
 
-        (u'а',      u'00'),
-        (u'б',      u'01'),
-        (u'в',      u'02'),
-        (u'г',      u'03'),
-        (u'д',      u'04'),
-        (u'[еєѣ]',  u'05'),
-        (u'ж',      u'06'),
-        (u'[зѕ]',   u'07'),
-        (u'[иіїѵ]', u'08'),
-        (u'й',      u'09'),
-        (u'к',      u'10'),
-        (u'л',      u'11'),
-        (u'м',      u'12'),
-        (u'н',      u'13'),
-        (u'[оѻѡѽ]', u'14'),
-        (u'п',      u'15'),
-        (u'р',      u'16'),
-        (u'с',      u'17'),
-        (u'т',      u'18'),
-        (u'[уѹꙋ]',  u'19'),
-        (u'[фѳ]',   u'20'),
-        (u'х',      u'21'),
-        (u'ц',      u'22'),
-        (u'ч',      u'23'),
-        (u'ш',      u'24'),
-        (u'щ',      u'25'),
-        (u'ы',      u'26'),
-        (u'ь',      u'27'),
-        (u'ю',      u'28'),
-        (u'[ѧꙗ]',   u'29'),
+        ('а',      '00'),
+        ('б',      '01'),
+        ('в',      '02'),
+        ('г',      '03'),
+        ('д',      '04'),
+        ('[еєѣ]',  '05'),
+        ('ж',      '06'),
+        ('[зѕ]',   '07'),
+        ('[иіїѵ]', '08'),
+        ('й',      '09'),
+        ('к',      '10'),
+        ('л',      '11'),
+        ('м',      '12'),
+        ('н',      '13'),
+        ('[оѻѡѽ]', '14'),
+        ('п',      '15'),
+        ('р',      '16'),
+        ('с',      '17'),
+        ('т',      '18'),
+        ('[уѹꙋ]',  '19'),
+        ('[фѳ]',   '20'),
+        ('х',      '21'),
+        ('ц',      '22'),
+        ('ч',      '23'),
+        ('ш',      '24'),
+        ('щ',      '25'),
+        ('ы',      '26'),
+        ('ь',      '27'),
+        ('ю',      '28'),
+        ('[ѧꙗ]',   '29'),
     )
     for pattern, substitution in level1:
         word = re.sub(pattern, substitution, word)
@@ -160,58 +159,58 @@ def sort_key1(word):
 
 def sort_key2(word):
     level2 = (
-        (ur'=',     u''),
-        (ur"([аеє])(['`\^]?)ѵ", ur'\g<1>\g<2>01'),
+        (r'=',     ''),
+        (r"([аеє])(['`\^]?)ѵ", r'\g<1>\g<2>01'),
 
-        (ur"'",     u'31'),
-        (ur"`",     u'32'),
-        (ur"\^",    u'33'),
-        (ur"\~",    u'40'),
-        (ur"[А-ЩЫ-ЯЄЅІЇѠѢѤѦѨѪѬѮѰѲѴѶѸѺѼѾ]", u'50'),
+        (r"'",     '31'),
+        (r"`",     '32'),
+        (r"\^",    '33'),
+        (r"\~",    '40'),
+        (r"[А-ЩЫ-ЯЄЅІЇѠѢѤѦѨѪѬѮѰѲѴѶѸѺѼѾ]", '50'),
 
-        (u'Ъ',      u'01'),
-        (u'ъ',      u'02'),
+        ('Ъ',      '01'),
+        ('ъ',      '02'),
 
-        (u'ѯ',      u'0100'),
-        (u'ѱ',      u'0100'),
+        ('ѯ',      '0100'),
+        ('ѱ',      '0100'),
 
-        (u'е',  u'00'),
-        (u'є',  u'01'),
-        (u'ѣ',  u'02'),
+        ('е',  '00'),
+        ('є',  '01'),
+        ('ѣ',  '02'),
 
-        (u'ѕ',  u'01'),
-        (u'з',  u'02'),
+        ('ѕ',  '01'),
+        ('з',  '02'),
 
-        (u'и',    u'00'),
-        (u'[ії]', u'01'),
-        (u'ѵ',    u'02'),
+        ('и',    '00'),
+        ('[ії]', '01'),
+        ('ѵ',    '02'),
 
-        (u'о', u'00'),
-        (u'ѻ', u'01'),
-        (u'ѡ', u'02'),
-        (u'ѿ', u'0200'),
-        (u'ѽ', u'03'),
+        ('о', '00'),
+        ('ѻ', '01'),
+        ('ѡ', '02'),
+        ('ѿ', '0200'),
+        ('ѽ', '03'),
 
-        (u'ѹ', u'00'),
-        (u'ꙋ', u'01'),
-        (u'у', u'02'),
+        ('ѹ', '00'),
+        ('ꙋ', '01'),
+        ('у', '02'),
 
-        (u'ф', u'00'),
-        (u'ѳ', u'01'),
+        ('ф', '00'),
+        ('ѳ', '01'),
 
-        (u'ѧ', u'00'),
-        (u'ꙗ', u'01'),
+        ('ѧ', '00'),
+        ('ꙗ', '01'),
 
-        (u'[а-я]', u'00'),
+        ('[а-я]', '00'),
     )
     for pattern, substitution in level2:
         word = re.sub(pattern, substitution, word)
     return word
 
 def collogroup_sort_key(cg):
-    text = u' '.join(c.collocation for c in cg.collocations)
-    text = text.replace(u'-', u'')
-    text = re.sub(ur'[\s/,\.;#\(\)]+', u' ', text)
+    text = ' '.join(c.collocation for c in cg.collocations)
+    text = text.replace('-', '')
+    text = re.sub(r'[\s/,\.;#\(\)]+', ' ', text)
     text = text.strip()
     text = resolve_titles(text)
     return [sort_key1(word) for word in text.split()]

@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: UTF-8 -*-
+#!/usr/bin/env python
 """
 Скрипт делает XML-выгрузку словарной базы для InDesign.
 
@@ -18,6 +17,7 @@ import sys
 
 import django
 from django.template.loader import render_to_string
+from functools import reduce
 
 sys.path.append(os.path.abspath('/var/www/slavdict'))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -51,19 +51,18 @@ ERASE_LINEEND = CSI + '0K'
 DATETIME = datetime.datetime.now()
 
 def interrupt_handler(signum, frame):
-    print >> sys.stderr, SHOW_CURSOR
+    print(SHOW_CURSOR, file=sys.stderr)
     sys.exit(0)
 
 signal.signal(signal.SIGINT, interrupt_handler)
 
-print >> sys.stderr, HIDE_CURSOR
-note =  'Volumes: ' + u', '.join(str(volume) for volume in OUTPUT_VOLUMES) + '\n'
-note += 'Letters: ' + u', '.join(letter for letter in OUTPUT_VOLUMES_LETTERS)
-print >> sys.stderr, note.encode('utf-8')
-print >> sys.stderr
+print(HIDE_CURSOR, file=sys.stderr)
+note =  'Volumes: ' + ', '.join(str(volume) for volume in OUTPUT_VOLUMES) + '\n'
+note += 'Letters: ' + ', '.join(letter for letter in OUTPUT_VOLUMES_LETTERS)
+print(note + '\n', file=sys.stderr)
 
 def in_output_volumes(wordform):
-    return wordform.lstrip(u' =')[:1].lower() in OUTPUT_VOLUMES_LETTERS
+    return wordform.lstrip(' =')[:1].lower() in OUTPUT_VOLUMES_LETTERS
 
 entries1 = []
 # Это список всех потенциально возможных статей для выбранных томов,
@@ -83,23 +82,23 @@ if len(sys.argv) > 1:
         else:
             args.append(arg)
     r = re.compile(r'\s*,\s*|\s+')
-    s = u' '.join(args).strip(' ,')
+    s = ' '.join(args).strip(' ,')
     test_entries = [int(i) for i in r.split(s) if i]
 
-print >> sys.stderr, 'Make multiple files according ' \
-                     'to the first letter:', SPLIT_BY_LETTERS
-print >> sys.stderr, 'Make multiple files when number of non tag' \
-                     'characters is greater than:', SPLIT_NCHARS
-print >> sys.stderr, 'Output pattern:', OUTPUT_PATTERN
+print('Make multiple files according ' \
+                     'to the first letter:', SPLIT_BY_LETTERS, file=sys.stderr)
+print('Make multiple files when number of non tag' \
+                     'characters is greater than:', SPLIT_NCHARS, file=sys.stderr)
+print('Output pattern:', OUTPUT_PATTERN, file=sys.stderr)
 if test_entries:
-    print >> sys.stderr, 'Entries to dump:', u', '.join(str(i) for i in test_entries)
+    print('Entries to dump:', ', '.join(str(i) for i in test_entries), file=sys.stderr)
     lexemes = lexemes.filter(pk__in=test_entries)
 else:
-    print >> sys.stderr, 'Entries to dump: ALL for the selected volumes'
+    print('Entries to dump: ALL for the selected volumes', file=sys.stderr)
 lexemes = [e for e in lexemes if e.volume(OUTPUT_VOLUMES)]
 lexemes_n = len(lexemes)
-print >> sys.stderr, 'Number of selected lexemes:', lexemes_n
-print >> sys.stderr
+print('Number of selected lexemes:', lexemes_n, file=sys.stderr)
+print(file=sys.stderr)
 
 for i, lexeme in enumerate(lexemes):
 
@@ -119,7 +118,7 @@ for i, lexeme in enumerate(lexemes):
             entries1.append((wordform, reference, lexeme))
 
     # 2) Названия народов
-    COMMA = ur',\s+'
+    COMMA = r',\s+'
     if lexeme.nom_sg:
         wordform = lexeme.nom_sg
         reference = lexeme.nom_sg_ucs_wax[1]
@@ -140,19 +139,19 @@ for i, lexeme in enumerate(lexemes):
     #    entries1.append((wordform, reference, lexeme))
 
     # 5) Особые случаи
-    if lexeme.civil_equivalent == u'быти':
-        for wordform in (u"бꙋ'дꙋчи", u"сы'й", u"сꙋ'щiй"):
+    if lexeme.civil_equivalent == 'быти':
+        for wordform in ("бꙋ'дꙋчи", "сы'й", "сꙋ'щiй"):
             reference = ucs_convert(wordform)
             entries1.append((wordform, reference, lexeme))
-    elif lexeme.civil_equivalent == u'утрие':
-        for wordform in (u"воꙋ'тріе", u"воꙋ'тріи", u"воꙋ'тріѧ"):
+    elif lexeme.civil_equivalent == 'утрие':
+        for wordform in ("воꙋ'тріе", "воꙋ'тріи", "воꙋ'тріѧ"):
             reference = ucs_convert(wordform)
             entries1.append((wordform, reference, lexeme))
 
-    note = u'Отбор претендентов на вокабулы [ %s%% ] %s\r' % (
-        int(round(i / float(lexemes_n) * 100)),
+    note = 'Отбор претендентов на вокабулы [ %s%% ] %s\r' % (
+        int(round(i / lexemes_n * 100)),
         lexeme.civil_equivalent + ERASE_LINEEND)
-    sys.stderr.write(note.encode('utf-8'))
+    sys.stderr.write(note)
 
 
 
@@ -168,10 +167,10 @@ for i, lexeme in enumerate(other_volumes):
                 reference = participle.idem_ucs
                 entries1.append((wordform, reference, lexeme))
 
-    note = u'Поиск ссылок на другие тома [ %s%% ] %s\r' % (
-        int(round(i / float(other_volumes_n) * 100)),
+    note = 'Поиск ссылок на другие тома [ %s%% ] %s\r' % (
+        int(round(i / other_volumes_n * 100)),
         lexeme.civil_equivalent + ERASE_LINEEND)
-    sys.stderr.write(note.encode('utf-8'))
+    sys.stderr.write(note)
 
 def sort_key(x):
     wordform, reference, lexeme = x
@@ -183,8 +182,8 @@ def sort_key(x):
         key = sort_key1(wordform), lexeme.homonym_order or 0, sort_key2(wordform)
     return key
 
-note = u'Сортировка результатов...' + ERASE_LINEEND + '\r'
-sys.stderr.write(note.encode('utf-8'))
+note = 'Сортировка результатов...' + ERASE_LINEEND + '\r'
+sys.stderr.write(note)
 entries1 = sorted(set(entries1), key=sort_key)
 entries1_n = len(entries1)
 
@@ -193,14 +192,14 @@ entries2 = []
 
 for i, (key, group) in enumerate(itertools.groupby(entries1, lambda x: x[:2])):
     wordform, reference = key
-    note = u'Группировка ссылочных статей [ %s%% ] %s\r' % (
-        int(round(i / float(entries1_n) * 100)),
+    note = 'Группировка ссылочных статей [ %s%% ] %s\r' % (
+        int(round(i / entries1_n * 100)),
         wordform + ERASE_LINEEND)
-    sys.stderr.write(note.encode('utf-8'))
+    sys.stderr.write(note)
     if not in_output_volumes(wordform):
         continue
     # Удаляем из выгрузки отсылочную статью Ассирии, т.к. она неправильно выгружается
-    if wordform == u"ассѵрі'и":
+    if wordform == "ассѵрі'и":
         continue
     lst = list(group)
     if len(lst) < 2:
@@ -219,7 +218,7 @@ for i, (key, group) in enumerate(itertools.groupby(entries1, lambda x: x[:2])):
             if all(x.homonym_order for x in lst):
                 lexeme['references'] = [
                             {'reference_ucs': lst[0].base_vars[0].idem_ucs,
-                             'homonym_order': u',\u00a0'.join(
+                             'homonym_order': ',\u00a0'.join(
                                         str(i.homonym_order) for i in lst if i)
                             }]
             else:
@@ -236,9 +235,9 @@ entries3 = []
 # расположенных вплотную к целевым статьям
 
 for i, (wordform, reference, lexeme) in enumerate(entries2):
-    note = u'Устранение ссылок, примыкающих к целевым статьям [ %s%% ]%s\r' % (
-            int(round(i / float(entries2_n) * 100)), ERASE_LINEEND)
-    sys.stderr.write(note.encode('utf-8'))
+    note = 'Устранение ссылок, примыкающих к целевым статьям [ %s%% ]%s\r' % (
+            int(round(i / entries2_n * 100)), ERASE_LINEEND)
+    sys.stderr.write(note)
     checklist = set()
     for j in (i - 1, i + 1):
         if 0 <= j < len(entries2) and \
@@ -253,26 +252,26 @@ for i, (wordform, reference, lexeme) in enumerate(entries2):
     if not reference or not in_checklist:
         entries3.append((wordform, reference, lexeme))
 
-class Reference(unicode):
+class Reference(str):
     def __new__(cls, string, homonym_order=None):
-        instance = unicode.__new__(cls, string)
+        instance = str.__new__(cls, string)
         instance.homonym_order = homonym_order
         return instance
 
 # Объединение статей по начальным буквам
 letter_parts = []
 part_entries = []
-letter = entries3[0][0].lstrip(u' =')[0].upper()
+letter = entries3[0][0].lstrip(' =')[0].upper()
 entries3_n = len(entries3)
 for j, (wordform, group) in enumerate(itertools.groupby(entries3, lambda x: x[0])):
-    note = u'Группировка статей по начальным буквам [ %s%% ]%s\r' % (
-            int(round(j / float(entries3_n) * 100)), ERASE_LINEEND)
-    sys.stderr.write(note.encode('utf-8'))
+    note = 'Группировка статей по начальным буквам [ %s%% ]%s\r' % (
+            int(round(j / entries3_n * 100)), ERASE_LINEEND)
+    sys.stderr.write(note)
     lst = list(group)
-    if wordform.lstrip(u' =')[0].upper() != letter:
+    if wordform.lstrip(' =')[0].upper() != letter:
         letter_parts.append((letter, part_entries))
         part_entries = []
-        letter = wordform.lstrip(u' =')[0].upper()
+        letter = wordform.lstrip(' =')[0].upper()
     if len(lst) < 2:
         wordform, reference, lexeme = lst[0]
         part_entries.append((reference, lexeme))
@@ -285,8 +284,8 @@ for j, (wordform, group) in enumerate(itertools.groupby(entries3, lambda x: x[0]
             part_entries.append((reference, lexeme))
 letter_parts.append((letter, part_entries))
 
-note = u'Вывод статей для InDesign...'
-sys.stderr.write(note.encode('utf-8'))
+note = 'Вывод статей для InDesign...'
+sys.stderr.write(note)
 
 def render_chunks(c):
     return render_to_string('indesign/slavdict.xml', c)
@@ -294,15 +293,15 @@ def render_chunks(c):
 def write_file(i, xml):
     subst = '{:%Y%m%d-%H%M%S}-{:03d}'.format(DATETIME, i)
     filepath = OUTPUT_PATTERN.replace('#', subst)
-    open(filepath, 'wb').write(xml.encode('utf-8'))
+    open(filepath, 'w').write(xml)
 
 
 special_cases = [
     # аггкир... см. анкир...  [анкира, анкирский]
-    { 'startswith': u'ґгкЂр', 'qv': u'ґнкЂр', 'dots': True },
+    { 'startswith': 'ґгкЂр', 'qv': 'ґнкЂр', 'dots': True },
 
     # воутр... см. утрие.  [воутрие, воутрии, воутрия]
-    { 'startswith': u'воyтр', 'qv': u'', 'dots': False },
+    { 'startswith': 'воyтр', 'qv': '', 'dots': False },
 ]
 chunks = []
 n_chars = 0
@@ -320,7 +319,7 @@ for letter, entries in letter_parts:
 
         xml = xml.strip()
         if xml:
-            m = len(re.sub(ur'<[^>]+>|\s', u'', xml))
+            m = len(re.sub(r'<[^>]+>|\s', '', xml))
             if 0 < SPLIT_NCHARS < n_chars + m and 0 < n_chars:
                 letters_and_chunks.append((letter, chunks))
                 context = { 'letters_and_chunks': letters_and_chunks }
@@ -336,11 +335,11 @@ for letter, entries in letter_parts:
                 n_chars += m
                 chunks.append(xml)
 
-        note = u'%s [ %s%% ] %s\r' % (
+        note = '%s [ %s%% ] %s\r' % (
                 letter if letter else ' ',
-                int(round(i / float(n_entries) * 100)),
+                int(round(i / n_entries * 100)),
                 entry.civil_equivalent + ERASE_LINEEND)
-        sys.stderr.write(note.encode('utf-8'))
+        sys.stderr.write(note)
 
     if chunks:
         letters_and_chunks.append((letter, chunks))
@@ -359,13 +358,12 @@ if not SPLIT_BY_LETTERS:
     write_file(file_count, output_xml)
 
 sys.stderr.write(ERASE_LINE)
-print >> sys.stderr, SHOW_CURSOR
+print(SHOW_CURSOR, file=sys.stderr)
 
 if len(entries1) < 7:
     for wordform, ref, entry in entries1:
-        print >> sys.stderr, (
-                u'Antconc wf: "{}", UCS ref: "{}", Lexeme: "{}"'
-                .format(wordform, ref, entry)).encode('utf-8')
-    print >> sys.stderr
+        print('Antconc wf: "{}", UCS ref: "{}", Lexeme: "{}"'
+              .format(wordform, ref, entry), file=sys.stderr)
+    print(file=sys.stderr)
 
 sys.exit(0)

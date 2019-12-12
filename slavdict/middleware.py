@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django import http
 
 class InvalidCookieError(RuntimeError):

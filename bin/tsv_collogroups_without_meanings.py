@@ -1,8 +1,7 @@
-# coding: utf-8
 from slavdict.dictionary.models import civilrus_convert
 from slavdict.dictionary.models import CollocationGroup
 
-LETTER = u'в'
+LETTER = 'в'
 OUTPUT_FILENAME = '/root/collogroups_without_meanings.tsv'
 
 register = []
@@ -18,17 +17,17 @@ for cg in CollocationGroup.objects.all():
 def sort_key(x):
     a, entry, cg = x
     e = (entry.civil_equivalent, entry.homonym_order)
-    c = u'; '.join(c.collocation for c in cg.collocations)
+    c = '; '.join(c.collocation for c in cg.collocations)
     c = civilrus_convert(c)
     return a, e, c
 
 register.sort(key=sort_key)
 
 with open(OUTPUT_FILENAME, 'w') as f:
-    f.write(u'Автор\tСтатья\tСловосочетание\n'.encode('utf-8'))
+    f.write('Автор\tСтатья\tСловосочетание\n')
     for (a, entry, collogroup) in register:
-        e = u'{0}{1} {2}'.format(entry.civil_equivalent,
-                {1: u'¹', 2: u'²', 3: u'³'}.get(entry.homonym_order, u''),
+        e = '{0}{1} {2}'.format(entry.civil_equivalent,
+                {1: '¹', 2: '²', 3: '³'}.get(entry.homonym_order, ''),
                 entry.get_part_of_speech_display())
-        cg = u'; '.join(c.collocation for c in collogroup.collocations)
-        f.write(u'{0}\t{1}\t{2}\n'.format(a, e, cg).encode('utf-8'))
+        cg = '; '.join(c.collocation for c in collogroup.collocations)
+        f.write('{0}\t{1}\t{2}\n'.format(a, e, cg))

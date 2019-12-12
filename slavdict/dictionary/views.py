@@ -1,14 +1,16 @@
-# -*- coding: utf-8 -*-
+import csv
 import base64
 import collections
 import datetime
 import hashlib
+import io
 import itertools
 import operator
 import random
 import re
-import StringIO
-import urllib
+import urllib.error
+import urllib.parse
+import urllib.request
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -23,7 +25,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 
-from slavdict import unicode_csv
+import slavdict.csv
 from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary import filters
 from slavdict.dictionary import models
@@ -44,13 +46,14 @@ from slavdict.dictionary.models import PART_OF_SPEECH_MAP
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.middleware import InvalidCookieError
+from functools import reduce
 
 
 
 # Вспомогательная функция
 # для сортировки списка словарных статей.
 def entry_key(entry):
-    return u'%s %s' % ( entry.civil_equivalent.lower(), entry.homonym_order )
+    return '%s %s' % ( entry.civil_equivalent.lower(), entry.homonym_order )
 
 POS_ORDER = (
     PART_OF_SPEECH_MAP['letter'],
@@ -86,7 +89,7 @@ paginator_re = re.compile(r'(\d+)[,;:](\d+)')
 def materials(request):
     template = 'materials.html'
     context = {
-        'title': u'Материалы',
+        'title': 'Материалы',
         'user': request.user,
     }
     return render(request, template, context)
@@ -95,7 +98,7 @@ def materials(request):
 @login_required
 def all_entries(request, is_paged=False):
     if not request.GET:
-        text = u'''
+        text = '''
 Отображение статей как бы для печати. Для фильтрации статей используйте
 параметры адреса данной страницы, например:
 
@@ -157,10 +160,11 @@ def all_entries(request, is_paged=False):
 
 
         ''' % request.path
+        text = text.encode('utf-8')
         response = HttpResponse(text, content_type="text/plain; charset=utf-8")
         return response
 
-    httpGET_AUTHORS = urllib.unquote(request.GET.get('authors', ''))
+    httpGET_AUTHORS = urllib.parse.unquote(request.GET.get('authors', ''))
     httpGET_ALIUD_GREEK = 'aliud-greek' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
     httpGET_GOODNESS = request.GET.get('goodness')
@@ -176,35 +180,35 @@ def all_entries(request, is_paged=False):
     httpGET_POS_GROUP = 'pos-group' in request.GET
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STARTSWITH = request.GET.get('startswith')
-    httpGET_STATUS = urllib.unquote(request.GET.get('status', ''))
+    httpGET_STATUS = urllib.parse.unquote(request.GET.get('status', ''))
 
-    COMMA = re.compile(ur'\s*\,\s*')
-    SPACE = re.compile(ur'\s+')
+    COMMA = re.compile(r'\s*\,\s*')
+    SPACE = re.compile(r'\s+')
     entries = Entry.objects.all()
 
     if httpGET_AUTHORS:
         httpGET_AUTHORS = [a.strip() for a in COMMA.split(httpGET_AUTHORS)]
-        httpGET_AUTHORS = [SPACE.sub(u' ', a) for a in httpGET_AUTHORS]
+        httpGET_AUTHORS = [SPACE.sub(' ', a) for a in httpGET_AUTHORS]
         httpGET_AUTHORS = [a[:1].upper() + a[1:].lower() for a in httpGET_AUTHORS]
         query = Q(authors__last_name__in=httpGET_AUTHORS)
-        if u'Без автора' in httpGET_AUTHORS:
+        if 'Без автора' in httpGET_AUTHORS:
             query = query | Q(authors__isnull=True)
         entries = entries.filter(query)
 
     if httpGET_STARTSWITH:
-        httpGET_STARTSWITH = httpGET_STARTSWITH.strip()
+        httpGET_STARTSWITH = httpGET_STARTSWITH.strip().lower()
         entries = entries.filter(
                 civil_equivalent__istartswith=httpGET_STARTSWITH)
 
     if httpGET_STATUS:
         httpGET_STATUS = COMMA.split(httpGET_STATUS)
-        httpGET_STATUS = [SPACE.sub(u' ', s.strip()) for s in httpGET_STATUS]
+        httpGET_STATUS = [SPACE.sub(' ', s.strip()) for s in httpGET_STATUS]
         httpGET_STATUS = [s.lower() for s in httpGET_STATUS]
         statuus = []
         exclude_statuus = []
         for status in httpGET_STATUS:
             for value, label in models.STATUS_CHOICES:
-                if status[0] == u'-':
+                if status[0] == '-':
                     status = status[1:]
                     lst = exclude_statuus
                 else:
@@ -243,15 +247,15 @@ def all_entries(request, is_paged=False):
     # Формирование заголовка страницы в зависимости от переданных
     # GET-параметров
     if httpGET_DUPLICATES:
-        title = u'Статьи-дубликаты'
+        title = 'Статьи-дубликаты'
     else:
         if httpGET_AUTHORS:
-            title = u'Статьи авторов %s' % u', '.join(httpGET_AUTHORS)
+            title = 'Статьи авторов %s' % ', '.join(httpGET_AUTHORS)
         else:
-            title = u'Все статьи'
+            title = 'Все статьи'
 
     if httpGET_STARTSWITH:
-        title += u', начинающиеся на „{0}-“'.format(httpGET_STARTSWITH)
+        title += ', начинающиеся на „{0}-“'.format(httpGET_STARTSWITH)
 
     if httpGET_POS_GROUP:
         key = pos_group_entry_key
@@ -294,10 +298,10 @@ def all_entries(request, is_paged=False):
         'hide_examples': httpGET_HIDEEXAMPLES,
         'hide_meanings': httpGET_HIDEMEANINGS,
         'not_editable': httpGET_NOT_EDITABLE,
-        'params_without_page': urllib.urlencode(
+        'params_without_page': urllib.parse.urlencode(
             dict(
-                (k, unicode(v).encode('utf-8'))
-                for k, v in request.GET.items()
+                (k, str(v).encode('utf-8'))
+                for k, v in list(request.GET.items())
                 if k not in  ('page', 'AB')
             )
         ),
@@ -406,11 +410,11 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
 
 
     # Формирование заголовка страницы в зависимости от переданных GET-параметров
-    title = u'Примеры'
+    title = 'Примеры'
     if httpGET_ADDRESS:
-        title += u', с адресом на „{0}...“'.format(httpGET_ADDRESS)
+        title += ', с адресом на „{0}...“'.format(httpGET_ADDRESS)
 
-    SORT_REGEX = re.compile(ur'[\s\.\,\;\:\-\(\)\!]+', re.UNICODE)
+    SORT_REGEX = re.compile(r'[\s\.\,\;\:\-\(\)\!]+', re.UNICODE)
     def key_emitter(x):
         x = x.address_text.strip().lower()
         parts = SORT_REGEX.split(x)
@@ -450,10 +454,10 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
         'show_additional_info': show_additional_info,
         'is_paged': is_paged,
         'page': page,
-        'params_without_page': urllib.urlencode(
+        'params_without_page': urllib.parse.urlencode(
             dict(
-                (k, unicode(v).encode('utf-8'))
-                for k, v in request.GET.items()
+                (k, str(v).encode('utf-8'))
+                for k, v in list(request.GET.items())
                 if k not in  ('page', 'AB')
             )
         ),
@@ -546,18 +550,16 @@ def import_csv_billet(request):
         form = BilletImportForm(request.POST, request.FILES)
         if form.is_valid():
 
-            csvfile = request.FILES['csvfile']
-            csv_reader = unicode_csv.UnicodeReader(csvfile,
-                    dialect=unicode_csv.calc, encoding='utf-8')
-
-            output = StringIO.StringIO()
-            csv_writer = unicode_csv.UnicodeWriter(output,
-                    dialect=unicode_csv.calc, encoding='utf-8')
+            csvfile = io.TextIOWrapper(request.FILES['csvfile'],
+                                       encoding='utf-8')
+            csv_reader = csv.reader(csvfile, dialect=slavdict.csv.calc)
+            output = io.StringIO()
+            csv_writer = csv.writer(output, dialect=slavdict.csv.calc)
 
             # Первую строку, -- в ней обязаны быть заголовки, --
             # упреждающе записываем в возможный файл возврата конфликтующих
             # csv-записей.
-            csv_writer.writerow(csv_reader.next())
+            csv_writer.writerow(next(csv_reader))
 
             # Список списков, каждый из которых содержит один элемент.
             idems = OrthographicVariant.objects.all().values_list('idem')
@@ -572,7 +574,7 @@ def import_csv_billet(request):
             authors = CustomUser.objects.all()
 
             orthvar_collisions = False
-            csv_authors = {u'': None}
+            csv_authors = {'': None}
 
             # Регулярное выражение для отыскания любой черты (прямой, косой,
             # обратной косой), обрамленной любым количеством пробельного
@@ -631,7 +633,7 @@ def import_csv_billet(request):
                                     csv_authors[author_in_csv] = au
                                     break
                             else:
-                                raise NameError(u"""Автор, указанный
+                                raise NameError("""Автор, указанный
                                         в CSV-файле, не найден среди участников
                                         работы над словарём.""")
                     else:
@@ -650,7 +652,7 @@ def import_csv_billet(request):
                         'additional_info': additional_info,
                         'homonym_order': (int(float(homonym_order))
                                           if homonym_order else None),
-                        'homonym_gloss': homonym_gloss or u'',
+                        'homonym_gloss': homonym_gloss or '',
                         'duplicate': bool(duplicate),
                     }
 
@@ -670,7 +672,7 @@ def import_csv_billet(request):
                             ov.save()
                             idems.add(orthvar)
                     elif intersection and (force=='update'):
-                        raise NameError(u"""Поддержка GET-параметра 'force'
+                        raise NameError("""Поддержка GET-параметра 'force'
                                 со значением 'update' ещё не реализована.""")
                         # Вытягиваем из базы все словарные статьи, у которых
                         # встречаются хотя бы один из орф.вариантов Если их
@@ -680,11 +682,12 @@ def import_csv_billet(request):
                         # он уже существует обновляем флаги реконструкции
                         # и надежности. Если нет, добавляем его полностью.
                     else:
-                        raise NameError(u"""Поддержка GET-параметра 'force'
+                        raise NameError("""Поддержка GET-параметра 'force'
                           со значением '{0}' не реализована.""".format(force))
 
             if 'force' not in request.GET and orthvar_collisions:
-                response = HttpResponse(output.getvalue(), content_type="text/csv")
+                data = output.getvalue().encode('utf-8')
+                response = HttpResponse(data, content_type="text/csv")
                 response['Content-Disposition'] = ('attachment; '
                         'filename={:%Y.%m.%d--%H.%M.%S}--not.imported.csv'
                         .format(datetime.datetime.now()))
@@ -697,7 +700,7 @@ def import_csv_billet(request):
     else:
         form = BilletImportForm()
 
-    get_parameters = '?' + urllib.urlencode(request.GET)
+    get_parameters = '?' + urllib.parse.urlencode(request.GET)
     return render(request, 'csv_import.html', {'form': form,
                   'get_parameters': get_parameters})
 
@@ -710,12 +713,13 @@ def entry_list(request, for_hellinists=False, per_page=12,
     template = 'entry_list.html'
     if for_hellinists:
         template = 'hellinist_workbench.html'
-    cookie_salt = hashlib.md5(request.path + request.user.username).hexdigest()
+    salt = request.path + request.user.username
+    cookie_salt = hashlib.md5(salt.encode('utf-8')).hexdigest()
     cookie_name = 'find{0}'.format(cookie_salt)
     if cookie_name in request.COOKIES:
         request.COOKIES[cookie_name] = base64 \
             .standard_b64decode(request.COOKIES[cookie_name]) \
-            .decode('utf8')
+            .decode('utf-8')
 
     if request.method == 'POST' and len(request.POST) > 1:
         # Сам по себе объект QueryDict, на который указывает request.POST,
@@ -730,7 +734,7 @@ def entry_list(request, for_hellinists=False, per_page=12,
         else:
             data = FilterEntriesForm.default_data.copy()
         data.update((key[:-len(cookie_salt)], value)
-                for key, value in request.COOKIES.items()
+                for key, value in list(request.COOKIES.items())
                 if key.endswith(cookie_salt) and value)
         if (request.method == 'POST' and len(request.POST) == 1
         and 'hdrSearch' in request.POST):
@@ -738,7 +742,7 @@ def entry_list(request, for_hellinists=False, per_page=12,
 
     form = FilterEntriesForm(data)
     if not form.is_valid():
-        message = u'Форма FilterEntriesForm заполнена неправильно.'
+        message = 'Форма FilterEntriesForm заполнена неправильно.'
         if request.method == 'POST':
             raise RuntimeError(message)
         else:
@@ -788,7 +792,7 @@ def entry_list(request, for_hellinists=False, per_page=12,
         'form': form,
         'page': page,
         'user': request.user,
-        'title': u'Словарь церковнославянского языка Нового времени',
+        'title': 'Словарь церковнославянского языка Нового времени',
         'MAX_LENGTHS': models.MAX_LENGTHS,
         'statusList': models.Example.GREEK_EQ_STATUS,
         'MEANING_INDICATOR': MEANING_INDICATOR,
@@ -808,21 +812,22 @@ def entry_list(request, for_hellinists=False, per_page=12,
     response = render(request, template, context)
     if request.method == 'POST':
         form.cleaned_data['find'] = base64 \
-            .standard_b64encode(form.cleaned_data['find'].encode('utf8'))
-        for param, value in form.cleaned_data.items():
+            .standard_b64encode(form.cleaned_data['find'].encode('utf-8'))
+        for param, value in list(form.cleaned_data.items()):
             cookie_name = param + cookie_salt
             response.set_cookie(cookie_name, value, path=request.path)
     return response
 
 @login_required
 def hellinist_workbench(request, per_page=4):
-    cookie_salt = hashlib.md5(request.path + request.user.username).hexdigest()
+    salt = request.path + request.user.username
+    cookie_salt = hashlib.md5(salt.encode('utf-8')).hexdigest()
     for key in ('hwPrfx', 'hwAddress', 'hwExample'):
         key = key + cookie_salt
         if key in request.COOKIES:
             request.COOKIES[key] = base64 \
                 .standard_b64decode(request.COOKIES[key]) \
-                .decode('utf8')
+                .decode('utf-8')
 
     if request.method == 'POST':
         data = request.POST
@@ -834,12 +839,12 @@ def hellinist_workbench(request, per_page=4):
             data['hwStatus'] = Example.GREEK_EQ_URGENT
         else:
             data.update((key[:-len(cookie_salt)], value)
-                         for key, value in request.COOKIES.items()
+                         for key, value in list(request.COOKIES.items())
                          if key.endswith(cookie_salt) and value)
 
     form = FilterExamplesForm(data)
     if not form.is_valid():
-        message = u'Форма FilterExamplesForm заполнена неправильно.'
+        message = 'Форма FilterExamplesForm заполнена неправильно.'
         if request.method == 'POST':
             raise RuntimeError(message)
         else:
@@ -884,7 +889,7 @@ def hellinist_workbench(request, per_page=4):
             },
         'page': page,
         'statusList': models.Example.GREEK_EQ_STATUS,
-        'title': u'Греческий кабинет',
+        'title': 'Греческий кабинет',
         'viewmodel': {
             'authors': viewmodels.jsonAuthors,
             'statuses': viewmodels.jsonGreqStatuses,
@@ -899,8 +904,8 @@ def hellinist_workbench(request, per_page=4):
     if request.method == 'POST':
         for key in ('hwPrfx', 'hwAddress', 'hwExample'):
             form.cleaned_data[key] = base64.standard_b64encode(
-                                        form.cleaned_data[key].encode('utf8'))
-        for param, value in form.cleaned_data.items():
+                                        form.cleaned_data[key].encode('utf-8'))
+        for param, value in list(form.cleaned_data.items()):
             param = param + cookie_salt
             response.set_cookie(param, value, path=request.path)
     return response
@@ -910,29 +915,29 @@ def hellinist_workbench(request, per_page=4):
 def antconc2ucs8_converter(request):
     random.seed()
     examples = (
-        u"Дрꙋ'гъ дрꙋ'га тѧготы^ носи'те, и та'кѡ испо'лните зако'нъ хрСто'въ.",
+        "Дрꙋ'гъ дрꙋ'га тѧготы^ носи'те, и та'кѡ испо'лните зако'нъ хрСто'въ.",
 
-        u"Ѿ дне'й же іѡа'нна крСти'телѧ досе'лѣ, црСтвіе нбСное нꙋ'дитсѧ, "
-        u"и нꙋ'ждницы восхища'ютъ є`",
+        "Ѿ дне'й же іѡа'нна крСти'телѧ досе'лѣ, црСтвіе нбСное нꙋ'дитсѧ, "
+        "и нꙋ'ждницы восхища'ютъ є`",
 
-        u"Пре'жде же всѣ'хъ дрꙋ'гъ ко дрꙋ'гꙋ любо'вь прилѣ'жнꙋ имѣ'йте: "
-        u"зане` любо'вь покрыва'етъ мно'жество грѣхѡ'въ. "
-        u"Страннолю'бцы дрꙋ'гъ ко дрꙋ'гꙋ, безЪ ропта'ній.",
+        "Пре'жде же всѣ'хъ дрꙋ'гъ ко дрꙋ'гꙋ любо'вь прилѣ'жнꙋ имѣ'йте: "
+        "зане` любо'вь покрыва'етъ мно'жество грѣхѡ'въ. "
+        "Страннолю'бцы дрꙋ'гъ ко дрꙋ'гꙋ, безЪ ропта'ній.",
 
-        u"Наказꙋ'ѧ наказа' мѧ гдСь, сме'рти же не предаде' мѧ",
+        "Наказꙋ'ѧ наказа' мѧ гдСь, сме'рти же не предаде' мѧ",
 
-        u"Вни'дите ѹ'зкими враты`, ꙗ'кѡ простра'ннаѧ врата`, и широ'кій "
-        u"пꙋ'ть вводѧ'й въ па'гꙋбꙋ, и мно'зи сꙋ'ть входѧ'щіи и'мъ. Что` "
-        u"ѹ'зкаѧ врата`, и тѣ'сный пꙋ'ть вводѧ'й въ живо'тъ, и ма'лѡ и'хъ "
-        u"є'сть, и`же ѡбрѣта'ютъ єго`",
+        "Вни'дите ѹ'зкими враты`, ꙗ'кѡ простра'ннаѧ врата`, и широ'кій "
+        "пꙋ'ть вводѧ'й въ па'гꙋбꙋ, и мно'зи сꙋ'ть входѧ'щіи и'мъ. Что` "
+        "ѹ'зкаѧ врата`, и тѣ'сный пꙋ'ть вводѧ'й въ живо'тъ, и ма'лѡ и'хъ "
+        "є'сть, и`же ѡбрѣта'ютъ єго`",
 
-        u"Бꙋ'дите ѹ'бѡ вы` соверше'ни, ꙗ'коже ѻц~ъ ва'шъ нбСный "
-        u"соверше'нъ є'сть.",
+        "Бꙋ'дите ѹ'бѡ вы` соверше'ни, ꙗ'коже ѻц~ъ ва'шъ нбСный "
+        "соверше'нъ є'сть.",
 
-        u"Возведо'хъ ѻ'чи мои` въ го'ры, ѿню'дꙋже пріи'детъ по'мощь моѧ`",
+        "Возведо'хъ ѻ'чи мои` въ го'ры, ѿню'дꙋже пріи'детъ по'мощь моѧ`",
     )
     context = {
-        'title': u'Конвертър',
+        'title': 'Конвертър',
         'user': request.user,
         'convertee': random.choice(examples),
     }
@@ -1026,8 +1031,8 @@ def dump(request):
         pid = os.fork()
         if not pid:
             os.execvp('python', ('python', 'url_mail_dumper.py'))
-            raise NameError(u'В параллельном процессе отсылки дампа базы '
-                            u'возникла непредвиденная ошибка.')
+            raise NameError('В параллельном процессе отсылки дампа базы '
+                            'возникла непредвиденная ошибка.')
         else:
             os._exit(0)
     else:
@@ -1045,8 +1050,8 @@ def useful_urls_redirect(uri, request):
     VOLUME = 2
 
     def uri_qs(uri, **kwargs):
-        qs = u'&'.join(u'{0}={1}'.format(k, v) for k, v in kwargs.items())
-        return u'{0}?{1}'.format(uri, qs)
+        qs = '&'.join('{0}={1}'.format(k, v) for k, v in list(kwargs.items()))
+        return '{0}?{1}'.format(uri, qs)
 
     if uri == 'all_collocations':
         uri = uri_qs(cgURI, volume=VOLUME)
@@ -1075,11 +1080,11 @@ def useful_urls_redirect(uri, request):
                                 for m in values)),
                           volume=VOLUME)
                   )
-                  for key, values in same.items()
+                  for key, values in list(same.items())
                   if len(values) > 1]
         groups.sort()
         context = {
-            'name': u'Словосочетания с одинаковыми значениями',
+            'name': 'Словосочетания с одинаковыми значениями',
             'groups': groups,
             'user': request.user,
         }
@@ -1133,7 +1138,7 @@ def useful_urls_redirect(uri, request):
                 collocation = c.civil_equivalent.lower().strip()
                 if collocation:
                     same[collocation].add(c.collogroup)
-        same = same.items()
+        same = list(same.items())
         same = ((key, value) for key, value in same if len(value) > 1)
         same = ((key, value) for key, value in same
                 if len(value) > len(set(cg.host_entry for cg in value)))
@@ -1144,7 +1149,7 @@ def useful_urls_redirect(uri, request):
                   for key, value in same]
         groups.sort()
         context = {
-            'name': u'Одинаковые словосочетания в одной статье',
+            'name': 'Одинаковые словосочетания в одной статье',
             'groups': groups,
             'user': request.user,
         }
@@ -1160,7 +1165,7 @@ def useful_urls_redirect(uri, request):
                 collocation = c.civil_equivalent.lower().strip()
                 if collocation:
                     same[collocation].add(c.collogroup)
-        same = same.items()
+        same = list(same.items())
         same = ((key, value) for key, value in same if len(value) > 1)
         same = ((key, value) for key, value in same
                 if len(set(cg.host_entry for cg in value)) > 1)
@@ -1171,7 +1176,7 @@ def useful_urls_redirect(uri, request):
                   for key, value in same]
         groups.sort()
         context = {
-            'name': u'Одинаковые словосочетания в разных статьях',
+            'name': 'Одинаковые словосочетания в разных статьях',
             'groups': groups,
             'user': request.user,
         }
@@ -1182,9 +1187,9 @@ def useful_urls_redirect(uri, request):
         for cg in CollocationGroup.objects.all():
             cs = [c.collocation.lower() for c in cg.collocations]
             words = [civilrus_convert(resolve_titles(x)) for c in cs
-                       for x in re.split(ur'[\s/\\,;\(\)\[\]]+', c)]
+                       for x in re.split(r'[\s/\\,;\(\)\[\]]+', c)]
             if any(value > 1
-                   for key, value in collections.Counter(words).items()):
+                   for key, value in list(collections.Counter(words).items())):
                 cgs.append(cg)
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
                      volume=VOLUME)
@@ -1193,8 +1198,8 @@ def useful_urls_redirect(uri, request):
         cgs = (cg
                for cg in CollocationGroup.objects.all()
                  for c in cg.collocations
-               if [x.startswith(u'б')
-                   for x in re.split(ur'[\s/\\,;\(\)\[\]]+', c.collocation.lower())
+               if [x.startswith('б')
+                   for x in re.split(r'[\s/\\,;\(\)\[\]]+', c.collocation.lower())
                    ].count(True) > 1)
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
                      volume=VOLUME)
@@ -1220,8 +1225,8 @@ def useful_urls_redirect(uri, request):
             no_meanings = not m and e and not list(e.meanings) + list(e.metaph_meanings)
             several_ABwords = any(
                 len([True
-                     for x in re.split(ur'[\s/,;\(\)]+', c.civil_equivalent)
-                     if x.startswith((u'а', u'А', u'б', u'Б'))]) > 1
+                     for x in re.split(r'[\s/,;\(\)]+', c.civil_equivalent)
+                     if x.startswith(('а', 'А', 'б', 'Б'))]) > 1
                 for c in cg.collocations)
             if (empty_meaning or no_meanings) and several_ABwords:
                 cgs.add(cg)
@@ -1237,14 +1242,14 @@ def useful_urls_redirect(uri, request):
                      volume=VOLUME)
 
     elif uri == 'meanings_literal':
-        mark = u'букв.'
+        mark = 'букв.'
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
                 (mark in m.meaning or mark in m.gloss))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
     elif uri == 'meanings_pl':
-        mark = u'мн.'
+        mark = 'мн.'
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
                 (m.special_case == MSC11
                  or m.substantivus
@@ -1262,7 +1267,7 @@ def useful_urls_redirect(uri, request):
                      volume=VOLUME)
 
     elif uri == 'meanings_ps_text':
-        regex = re.compile(ur'в\s+роли\s',
+        regex = re.compile(r'в\s+роли\s',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden() and regex.search(m.meaning + m.gloss))
@@ -1270,7 +1275,7 @@ def useful_urls_redirect(uri, request):
                      volume=VOLUME)
 
     elif uri == 'meanings_ps':
-        regex = re.compile(ur'в\s+роли\s',
+        regex = re.compile(r'в\s+роли\s',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
                 (m.substantivus
@@ -1282,7 +1287,7 @@ def useful_urls_redirect(uri, request):
                      volume=VOLUME)
 
     elif uri == 'meanings_verbs_noun':
-        regex = re.compile(ur'в\s+роли\s+сущ',
+        regex = re.compile(r'в\s+роли\s+сущ',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden()
@@ -1295,7 +1300,7 @@ def useful_urls_redirect(uri, request):
                      volume=VOLUME)
 
     elif uri == 'meanings_ps2':
-        regex = re.compile(ur'в\s+знач',
+        regex = re.compile(r'в\s+знач',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden() and regex.search(m.meaning + m.gloss))
@@ -1303,7 +1308,7 @@ def useful_urls_redirect(uri, request):
                      volume=VOLUME)
 
     elif uri == 'meanings_vvodn':
-        regex = re.compile(ur'вводн',
+        regex = re.compile(r'вводн',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden() and regex.search(m.meaning + m.gloss))
@@ -1311,7 +1316,7 @@ def useful_urls_redirect(uri, request):
                      volume=VOLUME)
 
     elif uri == 'meanings_direct_speech':
-        regex = re.compile(ur'с\s+пр(?:ям)\.\s*речью',
+        regex = re.compile(r'с\s+пр(?:ям)\.\s*речью',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden() and regex.search(m.meaning + m.gloss))
@@ -1320,7 +1325,7 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'meanings_sobstv':
         regex = re.compile(
-                ur'им[^\s\.]*\.?\s*собст|собст[^\s\.]*\.?\s*им',
+                r'им[^\s\.]*\.?\s*собст|собст[^\s\.]*\.?\s*им',
                 flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden() and regex.search(m.meaning + m.gloss))
@@ -1328,7 +1333,7 @@ def useful_urls_redirect(uri, request):
                      volume=VOLUME)
 
     elif uri == 'meanings_quest':
-        regex = re.compile(ur'[?!]',
+        regex = re.compile(r'[?!]',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden() and regex.search(m.meaning + m.gloss))
@@ -1337,7 +1342,7 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'headwords_titles':
         es = []
-        r = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
+        r = re.compile(r'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
             # NOTE: ЪЬ намеренно исключены. Нужны любые титла, но не паерки.
         for e in Entry.objects.all():
             if r.search(e.orth_vars.first().idem):
@@ -1347,9 +1352,9 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'headwords_symbols':
         es = []
-        r = re.compile(ur'[^=~\'`\^'
-                       ur'абвгдеєжзѕийіклмноѻпрстѹуꙋфхѿцчшщѣьыъюꙗѡѽѧѯѱѳѵ'
-                       ur'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУꙊФХѾЦЧШЩѢЬЫЪЮꙖѠѼѦѮѰѲѴ]')
+        r = re.compile(r'[^=~\'`\^'
+                       r'абвгдеєжзѕийіклмноѻпрстѹуꙋфхѿцчшщѣьыъюꙗѡѽѧѯѱѳѵ'
+                       r'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУꙊФХѾЦЧШЩѢЬЫЪЮꙖѠѼѦѮѰѲѴ]')
         for e in Entry.objects.all():
             if r.search(e.orth_vars.first().idem):
                 es.append(e)
@@ -1358,8 +1363,8 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'orthvars_without_accents':
         es = []
-        r1 = re.compile(ur"['`\^]")
-        r2 = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
+        r1 = re.compile(r"['`\^]")
+        r2 = re.compile(r'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
             # NOTE: ЪЬ намеренно исключены. Нужны любые титла, но не паерки.
         for e in Entry.objects.all():
             if any(not r1.search(o.idem) and not r2.search(o.idem)
@@ -1370,7 +1375,7 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'orthvars_titles':
         es = []
-        r = re.compile(ur'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
+        r = re.compile(r'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
             # NOTE: ЪЬ намеренно исключены. Нужны любые титла, но не паерки.
         for e in Entry.objects.all():
             if any(r.search(o.idem) for o in e.orth_vars.all()):
@@ -1380,7 +1385,7 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'orthvars_paerok':
         es = []
-        r = re.compile(ur'[ЪЬ]')
+        r = re.compile(r'[ЪЬ]')
         for e in Entry.objects.all():
             if any(r.search(o.idem) for o in e.orth_vars.all()):
                 es.append(e)
@@ -1397,9 +1402,9 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'orthvars_vos_voz':
         es = []
-        pattern = ur"^[Вв][оѻѡѽ]"
-        r1 = re.compile(pattern + u'з')
-        r2 = re.compile(pattern + u'с')
+        pattern = r"^[Вв][оѻѡѽ]"
+        r1 = re.compile(pattern + 'з')
+        r2 = re.compile(pattern + 'с')
         for e in Entry.objects.all():
             if (any(r1.search(o.idem) for o in e.orth_vars.all())
                     and any(r2.search(o.idem) for o in e.orth_vars.all())):
@@ -1409,11 +1414,11 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'orthvars_ln':
         es = []
-        pattern1 = ur"{0}[ъЪ]?{1}"
-        pattern2 = ur"{0}ь{1}"
-        patterns = [(u'л', i)
-                    for i in itertools.chain(u'бвгджмнстхцчшщ',
-                                       [u'[зѕ]', u'[кѯ]', u'[пѱ]', u'[фѳ]'])]
+        pattern1 = r"{0}[ъЪ]?{1}"
+        pattern2 = r"{0}ь{1}"
+        patterns = [('л', i)
+                    for i in itertools.chain('бвгджмнстхцчшщ',
+                                       ['[зѕ]', '[кѯ]', '[пѱ]', '[фѳ]'])]
         patterns = [(pattern1.format(*p), pattern2.format(*p))
                     for p in patterns]
         regexps = [(re.compile(p1), re.compile(p2))
@@ -1432,7 +1437,7 @@ def useful_urls_redirect(uri, request):
         r = re.compile(r"['`\^]")
         for e in Entry.objects.all():
             forms = (e.genitive, e.sg1, e.sg2, e.short_form)
-            if any(form.strip() and not form.strip().startswith(u'-')
+            if any(form.strip() and not form.strip().startswith('-')
                    and not r.search(form) for form in forms) \
                or any(p.idem.strip() and not r.search(p.idem)
                       for p in e.participles):
@@ -1453,7 +1458,7 @@ def useful_urls_redirect(uri, request):
     elif uri == 'entries_all_figurative':
         es = []
         for e in Entry.objects.all():
-            FIG = u'перен.'
+            FIG = 'перен.'
             all_figurative = all(
                 m.figurative or FIG in m.meaning or FIG in m.gloss
                 for m in e.meanings)
@@ -1481,7 +1486,7 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'duplicate_entries':
         es = []
-        r = re.compile(ur'\s*[,;:]\s*|\s+\=?и\s+')
+        r = re.compile(r'\s*[,;:]\s*|\s+\=?и\s+')
         entries = []
         for e in Entry.objects.all():
             forms = list(itertools.chain(*[r.split(ov.idem)
@@ -1492,8 +1497,7 @@ def useful_urls_redirect(uri, request):
                     forms.extend(r.split(form))
             forms.extend(itertools.chain(*[r.split(p.idem)
                                            for p in e.participles]))
-            forms = filter(lambda x: x.strip() and not x.startswith(u'-'),
-                           forms)
+            forms = [x for x in forms if x.strip() and not x.startswith('-')]
             record = (e, set(civilrus_convert(f) for f in forms))
             entries.append(record)
         while len(entries) > 1:
@@ -1527,59 +1531,59 @@ def useful_urls_redirect(uri, request):
 @never_cache
 def useful_urls(request, x=None, y=None):
     urls = (
-            (u'Формы слова', (
-                    (u'Все заглавные слова с титлами', 'headwords_titles'),
-                    (u'Все заглавные слова с чужеродными символами', 'headwords_symbols'),
-                    (u'Все заглавные слова, где реконструкция вызывает сомнения', 'orthvars_questionable'),
-                    (u'Орф. варианты без ударений', 'orthvars_without_accents'),
-                    (u'Орф. варианты под титлом', 'orthvars_titles'),
-                    (u'Орф. варианты с паерком', 'orthvars_paerok'),
-                    (u'Формы без ударений', 'forms_without_accents'),
-                    (u'Несколько форм в одном поле', 'multiple_forms'),
-                    (u'Варианты с воз-/вос-', 'orthvars_vos_voz'),
-                    (u'Варианты с льн/лн, льм/лм и т.п.', 'orthvars_ln'),
+            ('Формы слова', (
+                    ('Все заглавные слова с титлами', 'headwords_titles'),
+                    ('Все заглавные слова с чужеродными символами', 'headwords_symbols'),
+                    ('Все заглавные слова, где реконструкция вызывает сомнения', 'orthvars_questionable'),
+                    ('Орф. варианты без ударений', 'orthvars_without_accents'),
+                    ('Орф. варианты под титлом', 'orthvars_titles'),
+                    ('Орф. варианты с паерком', 'orthvars_paerok'),
+                    ('Формы без ударений', 'forms_without_accents'),
+                    ('Несколько форм в одном поле', 'multiple_forms'),
+                    ('Варианты с воз-/вос-', 'orthvars_vos_voz'),
+                    ('Варианты с льн/лн, льм/лм и т.п.', 'orthvars_ln'),
                 )),
-            (u'Статьи', (
-                    (u'Статьи без примеров', 'entries_without_examples'),
-                    (u'Cтатьи дубликаты', 'duplicate_entries'),
-                    (u'Cтатьи, где все значения "перен."', 'entries_all_figurative'),
-                    (u'Cтатьи с литургическими символами', 'entries_litsym'),
+            ('Статьи', (
+                    ('Статьи без примеров', 'entries_without_examples'),
+                    ('Cтатьи дубликаты', 'duplicate_entries'),
+                    ('Cтатьи, где все значения "перен."', 'entries_all_figurative'),
+                    ('Cтатьи с литургическими символами', 'entries_litsym'),
                 )),
-            (u'Словосочетания (cc)', (
-                    (u'Все сс', 'all_collocations'),
-                    (u'Фразеологизмы', 'phraseological_collocs'),
-                    (u'Cc из одного слова', 'collocs_oneword'),
-                    (u'Cc без значений', 'collocs_without_meanings'),
-                    (u'Сс с одинаковыми значениями', 'collocs_same_meaning'),
-                    (u'Сс – литургические символы', 'collocs_litsym'),
-                    (u'Сс в роли сущ.', 'collocs_noun'),
-                    (u'Одинаковые сс в одной статье', 'same_collocs_same_entry'),
-                    (u'Одинаковые сс в разных статьях', 'same_collocs_diff_entry'),
-                    (u'CC, где 2 слова на Б', 'collocs_2b'),
-                    (u'Такие сс, что кроме них в статье ничего нет', 'collocs_uniq'),
-                    (u'Такие сс, что кроме них в статье ничего нет '
-                     u'и сс содержит несколько слов на А или Б', 'collocs_uniqab'),
-                    (u'Такие сс, где есть варьирующие формы (отслеживается '
-                     u'наличие нескольких слов с совпадающими первыми двумя '
-                     u'буквами)', 'collocs_varforms'),
+            ('Словосочетания (cc)', (
+                    ('Все сс', 'all_collocations'),
+                    ('Фразеологизмы', 'phraseological_collocs'),
+                    ('Cc из одного слова', 'collocs_oneword'),
+                    ('Cc без значений', 'collocs_without_meanings'),
+                    ('Сс с одинаковыми значениями', 'collocs_same_meaning'),
+                    ('Сс – литургические символы', 'collocs_litsym'),
+                    ('Сс в роли сущ.', 'collocs_noun'),
+                    ('Одинаковые сс в одной статье', 'same_collocs_same_entry'),
+                    ('Одинаковые сс в разных статьях', 'same_collocs_diff_entry'),
+                    ('CC, где 2 слова на Б', 'collocs_2b'),
+                    ('Такие сс, что кроме них в статье ничего нет', 'collocs_uniq'),
+                    ('Такие сс, что кроме них в статье ничего нет '
+                     'и сс содержит несколько слов на А или Б', 'collocs_uniqab'),
+                    ('Такие сс, где есть варьирующие формы (отслеживается '
+                     'наличие нескольких слов с совпадающими первыми двумя '
+                     'буквами)', 'collocs_varforms'),
                 )),
-            (u'Значения и употребления', (
-                    (u'Все значения и употребления', 'all_meanings'),
-                    (u'С пометой "букв."', 'meanings_literal'),
-                    (u'С пометой "мн."', 'meanings_pl'),
-                    (u'С пометой или текстом "в роли .."', 'meanings_ps'),
-                    (u'C пометой или текстом "в роли сущ." только у глаголов',
-                      'meanings_verbs_noun'),
-                    (u'С текстом "в роли .."', 'meanings_ps_text'),
-                    (u'С текстом "в знач...."', 'meanings_ps2'),
-                    (u'С текстом "вводн"', 'meanings_vvodn'),
-                    (u'С текстом "с прям. речью"', 'meanings_direct_speech'),
-                    (u'С текстом "[?!]"', 'meanings_quest'),
-                    (u'С текстом "с именем собств."', 'meanings_sobstv'),
-                    (u'без примеров', 'meanings_without_examples'),
+            ('Значения и употребления', (
+                    ('Все значения и употребления', 'all_meanings'),
+                    ('С пометой "букв."', 'meanings_literal'),
+                    ('С пометой "мн."', 'meanings_pl'),
+                    ('С пометой или текстом "в роли .."', 'meanings_ps'),
+                    ('C пометой или текстом "в роли сущ." только у глаголов',
+                        'meanings_verbs_noun'),
+                    ('С текстом "в роли .."', 'meanings_ps_text'),
+                    ('С текстом "в знач...."', 'meanings_ps2'),
+                    ('С текстом "вводн"', 'meanings_vvodn'),
+                    ('С текстом "с прям. речью"', 'meanings_direct_speech'),
+                    ('С текстом "[?!]"', 'meanings_quest'),
+                    ('С текстом "с именем собств."', 'meanings_sobstv'),
+                    ('без примеров', 'meanings_without_examples'),
                 )),
-            (u'Примеры', (
-                    (u'в греч. иначе и параллель', 'ex_aliud_parallel'),
+            ('Примеры', (
+                    ('в греч. иначе и параллель', 'ex_aliud_parallel'),
                 )),
     )
     if x:

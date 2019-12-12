@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User, UserManager
 
@@ -7,7 +6,7 @@ class CustomUser(User):
     для Django модели User, но с дополнительными полями."""
 
     second_name = models.CharField(
-        u'отчество',
+        'отчество',
         max_length=30,
         blank = True,
         )
@@ -26,8 +25,8 @@ class CustomUser(User):
     # занимающихся подготовкой тома к печати (True), и остальных (False).
     @property
     def has_key_for_preplock(self):
-        l = (u'\u0434\u043e\u0431\u0440\u043e\u0432',
-             u'\u0445\u0438\u0442\u0440')
+        l = ('\u0434\u043e\u0431\u0440\u043e\u0432',
+             '\u0445\u0438\u0442\u0440')
         return self.last_name.lower().startswith(l)
 
     # принадлежит ли пользователь к одной из привиллегированных групп (является
@@ -47,23 +46,23 @@ class CustomUser(User):
         user_groups = [i[0] for i in self.groups.values_list('name')]
         return 'hellinists' in user_groups
 
-    def __unicode__(self):
+    def __str__(self):
         try:
-            first_name_initial = u' %s.' % self.first_name[0]
+            first_name_initial = ' %s.' % self.first_name[0]
             try:
-                second_name_initial = u'%s.' % self.second_name[0]
+                second_name_initial = '%s.' % self.second_name[0]
             except IndexError:
-                second_name_initial = u''
+                second_name_initial = ''
         except IndexError:
-            first_name_initial = u''
-            second_name_initial = u''
-        return u'%s%s%s' % (
+            first_name_initial = ''
+            second_name_initial = ''
+        return '%s%s%s' % (
             self.last_name,
             first_name_initial,
             second_name_initial,
             )
 
     class Meta:
-        verbose_name = u'пользователь'
-        verbose_name_plural = u'пользователи'
+        verbose_name = 'пользователь'
+        verbose_name_plural = 'пользователи'
         ordering = ('last_name', 'first_name')

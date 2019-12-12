@@ -1,4 +1,3 @@
-# coding: utf-8
 import re
 
 from slavdict.dictionary.models import Example
@@ -15,20 +14,20 @@ exclude_ids = (
 )
 
 r = (
-    ur'(?:^|(?<=[^'
-    ur'абвгдеєжѕзийіıклмноѻпрстѹꙋуфхѿцчшщъыьѣюꙗѡѽѧѯѱѳѵ'
-    ur'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУꙊФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴ~'
-    ur"\^'`"
-    ur']))'
-    ur'([АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴꙊ])'
+    r'(?:^|(?<=[^'
+    r'абвгдеєжѕзийіıклмноѻпрстѹꙋуфхѿцчшщъыьѣюꙗѡѽѧѯѱѳѵ'
+    r'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУꙊФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴ~'
+    r"\^'`"
+    r']))'
+    r'([АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴꙊ])'
 )
 
 for ex in Example.objects.exclude(id__in=exclude_ids):
     segments = re.split(r, ex.example)
     if len(segments) > 1:
-        print
-        print ex.example
-        ex.example = u''.join(s if i % 2 == 0 else s.lower()
+        print()
+        print(ex.example)
+        ex.example = ''.join(s if i % 2 == 0 else s.lower()
                               for i, s in enumerate(segments))
-        print ex.example
+        print(ex.example)
         ex.save(without_mtime=True)

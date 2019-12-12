@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import csv
 import os
 import sys
 from os.path import dirname
@@ -11,27 +11,25 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 import django
 django.setup()
 
-from slavdict import unicode_csv
+import slavdict.csv
 
 csvin = open(sys.argv[1])
 csvout = open(sys.argv[2], 'w')
 
-csv_reader = unicode_csv.UnicodeReader(csvin,
-        dialect=unicode_csv.calc, encoding='utf-8')
-csv_writer = unicode_csv.UnicodeWriter(csvout,
-        dialect=unicode_csv.calc, encoding='utf-8')
+csv_reader = csv.reader(csvin, dialect=slavdict.csv.calc)
+csv_writer = csv.writer(csvout, dialect=slavdict.csv.calc)
 
 def writedata(lemma, wordforms_list, antconc_query, additional_info):
     converted_row = (
         lemma,  # Заглавное слово
-        u'',  # Гражданское написание
+        '',  # Гражданское написание
         wordforms_list,  # Список словоформ
         antconc_query,  # Запрос для АнтКонка
-        u'',  # Авторы
+        '',  # Авторы
         additional_info,  # Комментарий к статье
-        u'',  # Номер омонима
-        u'',  # Смыслоразличительный ярлык омонима
-        u'',  # Является ли дубликатом
+        '',  # Номер омонима
+        '',  # Смыслоразличительный ярлык омонима
+        '',  # Является ли дубликатом
     )
     csv_writer.writerow(converted_row)
 
@@ -43,22 +41,22 @@ for row in csv_reader:
     i += 1
     if i == 0:
         converted_row = (
-            u'Заглавное слово',
-            u'Гражданское написание',
-            u'Список словоформ',
-            u'Запрос для АнтКонка',
-            u'Авторы',
-            u'Комментарий к статье',
-            u'Номер омонима',
-            u'Смыслоразличительный ярлык омонима',
-            u'Является ли дубликатом',
+            'Заглавное слово',
+            'Гражданское написание',
+            'Список словоформ',
+            'Запрос для АнтКонка',
+            'Авторы',
+            'Комментарий к статье',
+            'Номер омонима',
+            'Смыслоразличительный ярлык омонима',
+            'Является ли дубликатом',
         )
         csv_writer.writerow(converted_row)
         continue
 
     lemma, wordform, additional_info = row
 
-    assert i != 1 or lemma.strip(), u'''
+    assert i != 1 or lemma.strip(), '''
 
         Первая строка зарезервирована для заголовков,
         а вторая должна обязательно содержать данные в первом поле.
@@ -66,16 +64,16 @@ for row in csv_reader:
         '''
     if lemma.strip():
         if converted_lemma:
-            antconc_query = ur'(^|(?<=[ \t\r\n]))('
-            antconc_query += u'|'.join(
-                u'[{0}{1}]{2}'.format(
+            antconc_query = r'(^|(?<=[ \t\r\n]))('
+            antconc_query += '|'.join(
+                '[{0}{1}]{2}'.format(
                     wf[0].upper(),
                     wf[0].lower(),
-                    wf[1:].replace(u'^', ur'\^'))
+                    wf[1:].replace('^', r'\^'))
                 for wf in wordforms)
-            antconc_query += ur')(?=[ \t\r\n.,;:!])'
+            antconc_query += r')(?=[ \t\r\n.,;:!])'
 
-            wordforms_list = u', '.join(wordforms)
+            wordforms_list = ', '.join(wordforms)
 
             writedata(converted_lemma, wordforms_list, antconc_query,
                       converted_additional_info)

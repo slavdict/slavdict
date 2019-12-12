@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: UTF-8 -*-
+#!/usr/bin/env python
 """
 Выгрузка базы ссылок и аннотаций для портала "Цсл язык сегодня"
 
@@ -28,14 +27,14 @@ from slavdict.dictionary.viewmodels import _json
 
 OUTPUT_DIR = '../csl/.temp/refs'
 
-if len(sys.argv) == 2 and sys.argv[1].startswith(u'--output-dir='):
-    OUTPUT_DIR = sys.argv[1].split(u'=')[1]
+if len(sys.argv) == 2 and sys.argv[1].startswith('--output-dir='):
+    OUTPUT_DIR = sys.argv[1].split('=')[1]
 
 ANNOTATIONS_DIR = OUTPUT_DIR + '/annotations'
 TAGTREE_FILE = OUTPUT_DIR + '/filterData.js'
 dirs = (OUTPUT_DIR, ANNOTATIONS_DIR)
 
-URL_PATTERN = u'./словарь/статьи/%s'
+URL_PATTERN = './словарь/статьи/%s'
 
 
 def csl_url(entry):
@@ -50,7 +49,7 @@ ERASE_LINEEND = CSI + '0K'
 
 
 def interrupt_handler(signum, frame):
-    print >> sys.stderr, SHOW_CURSOR
+    print(SHOW_CURSOR, file=sys.stderr)
     sys.exit(0)
 
 
@@ -63,22 +62,22 @@ for directory in dirs:
         os.makedirs(directory)
 
 signal.signal(signal.SIGINT, interrupt_handler)
-print >> sys.stderr, HIDE_CURSOR
+print(HIDE_CURSOR, file=sys.stderr)
 
-root_template = u'''export const filterData = [
+root_template = '''export const filterData = [
 {data}
 ];'''
-group_template = u'''{{ name: '{name}', items: [
+group_template = '''{{ name: '{name}', items: [
 {items}
 ]}},'''
-item_template = u"{{ name: '{name}', index: {index} }},"
-parent_item_template = u'''{{ name: '{name}', index: {index}, items: [
+item_template = "{{ name: '{name}', index: {index} }},"
+parent_item_template = '''{{ name: '{name}', index: {index}, items: [
 {items}
 ]}},'''
 
 
 def indent(text, n=2):
-    return u'\n'.join(u' ' * n + line for line in text.split('\n'))
+    return '\n'.join(' ' * n + line for line in text.split('\n'))
 
 
 def get_index_text(tag):
@@ -94,21 +93,21 @@ def get_item_text(tag):
 
 def get_parent_item_text(tag, subitems):
     index_text = get_index_text(tag)
-    subitems_text = indent(u'\n'.join(subitems))
+    subitems_text = indent('\n'.join(subitems))
     return parent_item_template.format(name=tag.name, index=index_text,
                                        items=subitems_text)
 
 
 def get_items_group_text(group_name, items):
-    items_text = indent(u'\n'.join(items))
+    items_text = indent('\n'.join(items))
     return group_template.format(name=group_name, items=items_text)
 
 
 def log_tag(i, N, tag_name):
-    note = u'Экспорт фильтров [ %s%% ] %s\r' % (
-        int(round(i / float(N) * 100)),
+    note = 'Экспорт фильтров [ %s%% ] %s\r' % (
+        int(round(i / N * 100)),
         tag_name + ERASE_LINEEND)
-    sys.stderr.write(note.encode('utf-8'))
+    sys.stderr.write(note)
     return i + 1
 
 
@@ -138,19 +137,19 @@ for category, category_name in TAG_CATEGORIES:
         i = log_tag(i, N, tag.name)
     categories.append(get_items_group_text(category_name, items))
 
-text = root_template.format(data=indent(u'\n'.join(categories)))
-with open(TAGTREE_FILE, 'wb') as f:
-    f.write(text.encode('utf-8'))
+text = root_template.format(data=indent('\n'.join(categories)))
+with open(TAGTREE_FILE, 'w') as f:
+    f.write(text)
 
-note = u'Экспорт фильтров завершен.' + ERASE_LINEEND + u'\n'
-sys.stderr.write(note.encode('utf-8'))
+note = 'Экспорт фильтров завершен.' + ERASE_LINEEND + '\n'
+sys.stderr.write(note)
 
 
 # Выгрузка аннотаций
 N = Annotation.objects.count()
 for i, annotation in enumerate(Annotation.objects.all()):
-    note = u'Экспорт аннотаций [ %s%% ]\r' % int(round(i / float(N) * 100))
-    sys.stderr.write(note.encode('utf-8'))
+    note = 'Экспорт аннотаций [ %s%% ]\r' % int(round(i / N * 100))
+    sys.stderr.write(note)
     data = {}
     if annotation.title:
         data['title'] = annotation.get_title_with_author_html()
@@ -170,11 +169,11 @@ for i, annotation in enumerate(Annotation.objects.all()):
         data['annotation'] = annotation.get_annotation_html()
     filename = str(annotation.id) + '.json'
     path = os.path.join(ANNOTATIONS_DIR, filename)
-    with open(path, 'wb') as f:
-        f.write(_json(data).encode('utf-8'))
+    with open(path, 'w') as f:
+        f.write(_json(data))
 
-note = u'Экспорт аннотаций завершен.' + ERASE_LINEEND + u'\n'
-sys.stderr.write(note.encode('utf-8'))
+note = 'Экспорт аннотаций завершен.' + ERASE_LINEEND + '\n'
+sys.stderr.write(note)
 sys.stderr.write(ERASE_LINE)
-print >> sys.stderr, SHOW_CURSOR
+print(SHOW_CURSOR, file=sys.stderr)
 sys.exit(0)

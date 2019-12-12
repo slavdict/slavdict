@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import ImproperlyConfigured
 from django.apps import apps
+
 
 class CustomUserModelBackend(ModelBackend):
 

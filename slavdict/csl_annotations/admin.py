@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from itertools import groupby
 
 from django import forms
@@ -29,20 +27,20 @@ def get_annotation_tags(self):
     tag_groups = []
     get_category = lambda x: (x.category, x.get_category_display())
     for (catval, catname), iterator in groupby(self.tags.all(), get_category):
-        tags = u'; '.join(u'<strong>%s</strong>' % tag.name for tag in iterator)
-        text = u'%s: %s' % (catname, tags)
-        html = u'<span style="color: %s">%s</span>' % (TAG_COLORS[catval], text)
+        tags = '; '.join('<strong>%s</strong>' % tag.name for tag in iterator)
+        text = '%s: %s' % (catname, tags)
+        html = '<span style="color: %s">%s</span>' % (TAG_COLORS[catval], text)
         tag_groups.append(html)
-    return mark_safe(u'; '.join(tag_groups))
+    return mark_safe('; '.join(tag_groups))
 
 
 def get_annotation_authors(self):
-    return u', '.join(unicode(a) for a in self.authors.all())
+    return ', '.join(str(a) for a in self.authors.all())
 
 
-get_annotation_name.short_description = u'Аннотация'
-get_annotation_tags.short_description = u'Бирки'
-get_annotation_authors.short_description = u'Авторы'
+get_annotation_name.short_description = 'Аннотация'
+get_annotation_tags.short_description = 'Бирки'
+get_annotation_authors.short_description = 'Авторы'
 Annotation._name = get_annotation_name
 Annotation._tags = get_annotation_tags
 Annotation._authors = get_annotation_authors
@@ -50,11 +48,11 @@ Annotation._authors = get_annotation_authors
 
 def get_tag_groups(self):
     groups = self.groups.all()
-    text = u'; '.join(group.name for group in groups) if groups else u''
+    text = '; '.join(group.name for group in groups) if groups else ''
     return mark_safe(text)
 
 
-get_tag_groups.short_description = u'Коллекция бирок'
+get_tag_groups.short_description = 'Коллекция бирок'
 Tag._groups = get_tag_groups
 
 
@@ -103,7 +101,7 @@ class AdminTagGroup(admin.ModelAdmin):
 
 
 class AdminTag(admin.ModelAdmin):
-    list_display = ('__unicode__', 'order', '_groups')
+    list_display = ('__str__', 'order', '_groups')
     list_editable = ('order',)
     formfield_overrides = {
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},

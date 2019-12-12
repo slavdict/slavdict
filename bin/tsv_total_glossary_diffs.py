@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
 '''
 
 Скрипт подготовки сырых данных для словника
@@ -38,14 +37,14 @@ FILENAME = sys.argv[1]
 # Шаблон имени tsv-файла, в который будут записаны все словоформы на текущую
 # букву, которые не встретились в базе. Последовательность символов {0}
 # в шаблоне будет заменена на текущую букву.
-NOT_IN_FILENAME = unicode(sys.argv[2])
+NOT_IN_FILENAME = str(sys.argv[2])
 
 # Шаблон имени tsv-файла, в который будут записаны все словоформы на текущую
 # букву, которые присутствуют в базе. Последовательность символов {0}
 # в шаблоне будет заменена на текущую букву.
-IN_FILENAME = unicode(sys.argv[3])
+IN_FILENAME = str(sys.argv[3])
 
-glossary_freq = open(FILENAME).read().decode('utf-8').strip().split('\n')
+glossary_freq = open(FILENAME).read().strip().split('\n')
 glossary_freq = [l.split('\t') for l in glossary_freq if l.strip()]
 glossary_freq = [
         # Если слово не всё дается заглавными буквами, то понижаем регистр
@@ -73,7 +72,7 @@ glossary_freq_by_letter = [
     (key, list(iterator))
     for key, iterator in itertools.groupby(
         glossary_freq_upd,
-        lambda x: civilrus_convert(unicode(x[0]))[:1].lower()
+        lambda x: civilrus_convert(str(x[0]))[:1].lower()
     )]
 
 
@@ -94,21 +93,18 @@ def get_wordform_list(entry):
 
 def write_tsv(filename, slovnik, total_n, removed_n):
   with open(filename, 'w') as f:
-    f.write(u'Словоформ в АнтКонке:\t{0}\n'.format(total_n)
-                                           .encode('utf-8'))
-    f.write(u'Отсеяны по данным из базы:\t{0}\n'.format(removed_n)
-                                                .encode('utf-8'))
-    f.write(u'Осталось после отсева:\t{0}\n'.format(total_n - removed_n)
-                                            .encode('utf-8'))
+    f.write('Словоформ в АнтКонке:\t{0}\n'.format(total_n))
+    f.write('Отсеяны по данным из базы:\t{0}\n'.format(removed_n))
+    f.write('Осталось после отсева:\t{0}\n'.format(total_n - removed_n))
     f.write('\t\n')
-    f.write(u'Словоформа\tЧастотность\n'.encode('utf-8'))
+    f.write('Словоформа\tЧастотность\n')
     for (wordform, N) in slovnik:
-        f.write(u'{0}\t{1}\n'.format(wordform, N).encode('utf-8'))
+        f.write('{0}\t{1}\n'.format(wordform, N))
 
 
 for LETTER, glossary_freq in glossary_freq_by_letter:
 
-    if LETTER in u'ъь':
+    if LETTER in 'ъь':
         continue
 
     glossary = [s for (s, n) in glossary_freq]
@@ -128,7 +124,7 @@ for LETTER, glossary_freq in glossary_freq_by_letter:
                 find_form(civilrus_convert(ov.idem), civil_glossary)
             for wordform in get_wordform_list(e):
                 wordform = wordform.strip()
-                if wordform and not wordform.startswith(u'-'):
+                if wordform and not wordform.startswith('-'):
                     find_form(wordform, glossary)
                     find_form(civilrus_convert(wordform), civil_glossary)
             slavdict_glossary.append((e.orth_vars.first().idem, e.civil_equivalent))
@@ -153,7 +149,7 @@ for LETTER, glossary_freq in glossary_freq_by_letter:
     write_tsv(filename1, new_glossary_freq, len(glossary), len(xindices))
     if len(slavdict_glossary) > 0:
         with open(filename2, 'w') as f:
-            f.write(u'Словоформы, присутствующие в базе:\n\n'.encode('utf-8'))
+            f.write('Словоформы, присутствующие в базе:\n\n')
             for lemma, civil_representaion in slavdict_glossary:
-                f.write(lemma.encode('utf-8'))
+                f.write(lemma)
                 f.write('\n')

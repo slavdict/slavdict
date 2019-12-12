@@ -1,18 +1,16 @@
-# coding: utf-8
-
 def tmpl(e, i):
-    cslav = u'<span style="font-family: Triodion Ucs;">%s</span>'
-    cslav_affix = u'-<span style="font-family: Triodion Ucs;">%s</span>'
-    txt = u''
+    cslav = '<span style="font-family: Triodion Ucs;">%s</span>'
+    cslav_affix = '-<span style="font-family: Triodion Ucs;">%s</span>'
+    txt = ''
     ov = e.orthographic_variants.all()[0]
     if ov.idem:
-                txt = u'<span class="headword">%s</span></td><td>' % cslav % ov.idem_ucs
+                txt = '<span class="headword">%s</span></td><td>' % cslav % ov.idem_ucs
     else:
-        return u''
+        return ''
     if e.homonym_order:
-        txt += u' <span class="homonym_order">%s</span>' % e.homonym_order
+        txt += ' <span class="homonym_order">%s</span>' % e.homonym_order
         if e.homonym_gloss:
-            txt += u' <span class="homonym_gloss">[%s]</span>' % e.homonym_gloss
+            txt += ' <span class="homonym_gloss">[%s]</span>' % e.homonym_gloss
 
     if e.genitive:
         affix, form = e.genitive_ucs_wax
@@ -20,61 +18,61 @@ def tmpl(e, i):
             x = cslav_affix % form
         else:
             x = cslav % form
-        txt += u' <span class="genitive">%s</span>' % x
+        txt += ' <span class="genitive">%s</span>' % x
     if e.nom_sg:
         affix, form = e.nom_sg_ucs_wax
         if affix:
             x = cslav_affix % form
         else:
             x = cslav % form
-        txt += u' <span class="nom_sg">%s</span>' % x
+        txt += ' <span class="nom_sg">%s</span>' % x
     if e.sg1:
         affix, form = e.sg1_ucs_wax
         if affix:
             x = cslav_affix % form
         else:
             x = cslav % form
-        txt += u' <span class="sg1">%s</span>' % x
+        txt += ' <span class="sg1">%s</span>' % x
     if e.sg2:
         affix, form = e.sg2_ucs_wax
         if affix:
             x = cslav_affix % form
         else:
             x = cslav % form
-        txt += u' <span class="sg2">%s</span>' % x
+        txt += ' <span class="sg2">%s</span>' % x
     if e.short_form:
         affix, form = e.short_form_ucs_wax
         if affix:
             x = cslav_affix % form
         else:
             x = cslav % form
-        txt += u' <span class="short_form">%s</span>' % x
+        txt += ' <span class="short_form">%s</span>' % x
 
-    txt += u' %s' % e.get_part_of_speech_display()
+    txt += ' %s' % e.get_part_of_speech_display()
     if e.uninflected:
-        txt += u' <span class="uninflected">неизм.</span>'
+        txt += ' <span class="uninflected">неизм.</span>'
     if e.possessive:
-        txt += u' <span class="possessive">притяж.</span>'
+        txt += ' <span class="possessive">притяж.</span>'
     if e.gender:
-        txt += u' <span class="gender">%s</span>' % e.get_gender_display()
+        txt += ' <span class="gender">%s</span>' % e.get_gender_display()
     if e.tantum:
-        txt += u' <span class="tantum">%s</span>' % e.get_tantum_display()
+        txt += ' <span class="tantum">%s</span>' % e.get_tantum_display()
     if e.onym:
-        txt += u' <span class="onym">%s</span>' % e.get_onym_display()
+        txt += ' <span class="onym">%s</span>' % e.get_onym_display()
 
-    return u'<tr><td>%s</td><td>%s</td><td>%s</td></tr>' % (i, e.id, txt)
+    return '<tr><td>%s</td><td>%s</td><td>%s</td></tr>' % (i, e.id, txt)
 
 
 from django.db.models import Q
 from slavdict.dictionary.models import Entry
 l = Entry.objects.filter(
-        Q(civil_equivalent__istartswith=u'а') |
-        Q(civil_equivalent__istartswith=u'б')
+        Q(civil_equivalent__istartswith='а') |
+        Q(civil_equivalent__istartswith='б')
     )
 l = list(l)
-l.sort(key=lambda e: u''.join(reversed(e.civil_equivalent)))
+l.sort(key=lambda e: ''.join(reversed(e.civil_equivalent)))
 
-html_start = u'''<!DOCTYPE html>
+html_start = '''<!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -116,7 +114,7 @@ html_start = u'''<!DOCTYPE html>
     <body>
         <table>
 '''
-html_end = u'''
+html_end = '''
         </table>
     </body>
 </html>
@@ -127,7 +125,7 @@ with open('invers.html', 'w') as f:
         x = tmpl(e, i + 1)
         if x:
             f.write(html_start)
-            x += u'\n'
+            x += '\n'
             f.write(x)
             f.write(html_end)
 
@@ -137,7 +135,7 @@ with open('invers-revers.html', 'w') as f:
         x = tmpl(e, n - i)
         if x:
             f.write(html_start)
-            x += u'\n'
+            x += '\n'
             f.write(x);
             f.write(html_end)
 

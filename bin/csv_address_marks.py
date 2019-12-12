@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# coding: utf-8
+import csv
 import os
 import re
 import sys
@@ -12,11 +12,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
 from slavdict.dictionary.models import Example
-from slavdict.unicode_csv import UnicodeWriter
 
 def write_csv(filename, examples):
-    uw = UnicodeWriter(open(filename, 'w'))
-    NON_MARK_CHARS = ur'[\s\ \u00A0,0-9\.;:\-\u2011\!\(\)\[\]\?—–«»…]+'
+    uw = csv.writer(open(filename, 'w'))
+    NON_MARK_CHARS = r'[\s\ ' '\u00A0' r',0-9\.;:\-' '\u2011' r'\!\(\)\[\]\?—–«»…]+'
     register = {}
     for e in (e for e in examples if e.host_entry.volume(1)):
         for mark in re.split(NON_MARK_CHARS, e.address_text):
