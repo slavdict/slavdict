@@ -552,15 +552,14 @@ class Entry(models.Model, JSONSerializable):
             related_name='ref_entry_set', blank=True, null=True)
 
     cf_entries = ManyToManyField('self', verbose_name='ср. (лексемы)',
-            related_name='cf_entry_set', symmetrical=False, blank=True,
-            null=True)
+            related_name='cf_entry_set', symmetrical=False, blank=True)
 
     cf_collogroups = ManyToManyField('CollocationGroup',
             verbose_name='ср. (группы слововосочетаний)',
-            related_name='cf_entry_set', blank=True, null=True)
+            related_name='cf_entry_set', blank=True)
 
     cf_meanings = ManyToManyField('Meaning', verbose_name='ср. (значения)',
-            related_name='cf_entry_set', blank=True, null=True)
+            related_name='cf_entry_set', blank=True)
 
     @property
     def cfmeanings(self):
@@ -625,7 +624,7 @@ class Entry(models.Model, JSONSerializable):
                         'статус готовности статьи в процентах', default=0)
 
     authors = ManyToManyField(CustomUser, verbose_name='автор статьи',
-                              blank=True, null=True)
+                              blank=True)
 
     antconc_query = TextField('Запрос для программы AntConc', blank=True)
     mtime = DateTimeField(editable=False)
@@ -1602,15 +1601,15 @@ class Meaning(models.Model, JSONSerializable):
             related_name='ref_meaning_set', blank=True, null=True)
 
     cf_entries = ManyToManyField(Entry, verbose_name='ср. (лексемы)',
-                        related_name='cf_meaning_set', blank=True, null=True)
+                        related_name='cf_meaning_set', blank=True)
 
     cf_collogroups = ManyToManyField('CollocationGroup',
                         verbose_name='ср. (группы слововосочетаний)',
-                        related_name='cf_meaning_set', blank=True, null=True)
+                        related_name='cf_meaning_set', blank=True)
 
     cf_meanings = ManyToManyField('self', verbose_name='ср. (значения)',
                         related_name='cf_meaning_set', symmetrical=False,
-                        blank=True, null=True)
+                        blank=True)
 
     @property
     def cfmeanings(self):
@@ -2300,10 +2299,10 @@ class CollocationGroup(models.Model, JSONSerializable):
             blank=True, null=True)
 
     cf_entries = ManyToManyField(Entry, verbose_name='ср. (лексемы)',
-            related_name='cf_collogroup_set', blank=True, null=True)
+            related_name='cf_collogroup_set', blank=True)
 
     cf_meanings = ManyToManyField(Meaning, verbose_name='ср. (значения)',
-            related_name='cf_collogroup_set', blank=True, null=True)
+            related_name='cf_collogroup_set', blank=True)
 
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     ctime = DateTimeField(editable=False, auto_now_add=True)
