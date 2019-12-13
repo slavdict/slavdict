@@ -532,24 +532,28 @@ class Entry(models.Model, JSONSerializable):
         return PARTICIPLE_TYPE_MAP[slug] == self.participle_type
 
     derivation_entry = ForeignKey('self', verbose_name='образовано от',
-            related_name='derived_entry_set', blank=True, null=True)
+            related_name='derived_entry_set', blank=True, null=True,
+            on_delete=models.SET_NULL)
 
     link_to_entry = ForeignKey('self', verbose_name='ссылка на другую лексему',
             help_text='''Если вместо значений словарная статья должна содержать
             только ссылку на другую словарную статью, укажите её в данном
-            поле.''', related_name='ref_entry_set', blank=True, null=True)
+            поле.''', related_name='ref_entry_set', blank=True, null=True,
+            on_delete=models.SET_NULL)
 
     link_to_collogroup = ForeignKey('CollocationGroup',
             verbose_name='ссылка на словосочетание', help_text='''Если вместо
             значений словарная статья должна содержать только ссылку на
             словосочетание, укажите его в данном поле.''',
-            related_name='ref_entry_set', blank=True, null=True)
+            related_name='ref_entry_set', blank=True, null=True,
+            on_delete=models.SET_NULL)
 
     link_to_meaning = ForeignKey('Meaning', verbose_name='ссылка на значение',
             help_text='''Если вместо значений словарная статья должна
             содержать только ссылку на опредленное значение лексемы или
             словосочетания, укажите его в данном поле.''',
-            related_name='ref_entry_set', blank=True, null=True)
+            related_name='ref_entry_set', blank=True, null=True,
+            on_delete=models.SET_NULL)
 
     cf_entries = ManyToManyField('self', verbose_name='ср. (лексемы)',
             related_name='cf_entry_set', symmetrical=False, blank=True)
@@ -1314,18 +1318,20 @@ class Etymology(models.Model, JSONSerializable):
 
     entry = ForeignKey(Entry, verbose_name='словарная статья',
                 help_text='''Словарная статья, к которой относится данная
-                этимология.''', blank=True, null=True)
+                этимология.''', blank=True, null=True,
+                on_delete=models.CASCADE)
 
     collocation = ForeignKey('Collocation', verbose_name='словосочетание',
                 help_text='''Словосочетание, к которому относится данная
-                этимология.''', blank=True, null=True)
+                этимология.''', blank=True, null=True,
+                on_delete=models.CASCADE)
 
     order = SmallIntegerField('порядок следования', blank=True, default=345)
 
     etymon_to = ForeignKey('self', verbose_name='этимон для',
                 help_text='''Возможный/несомненный этимон для другого этимона,
                 который и необходимо указать.''', related_name='etymon_set',
-                blank=True, null=True)
+                blank=True, null=True, on_delete=models.SET_NULL)
 
     @property
     def etymons(self):
@@ -1454,7 +1460,8 @@ class Etymology(models.Model, JSONSerializable):
 
 class MeaningContext(models.Model, JSONSerializable):
 
-    meaning = ForeignKey('Meaning', verbose_name='значение')
+    meaning = ForeignKey('Meaning', verbose_name='значение',
+                         on_delete=models.CASCADE)
     order = SmallIntegerField('порядок следования', blank=True, default=345)
 
     left_text = CharField('дополнительный текст слева', max_length=50,
@@ -1569,16 +1576,19 @@ class Meaning(models.Model, JSONSerializable):
     entry_container = ForeignKey(Entry, blank=True, null=True,
             verbose_name='лексема', help_text='''Лексема, к которой
             относится значение. Выберите, только если значение не относится
-            к словосочетанию.''', related_name='meaning_set')
+            к словосочетанию.''', related_name='meaning_set',
+            on_delete=models.CASCADE)
 
     collogroup_container = ForeignKey('CollocationGroup', blank=True, null=True,
             verbose_name='словосочетание', help_text='''Словосочетание,
             к которому относится значение.  Выберите, только если значение не
-            относится к конкретной лексеме.''', related_name='meaning_set')
+            относится к конкретной лексеме.''', related_name='meaning_set',
+            on_delete=models.CASCADE)
 
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     parent_meaning = ForeignKey('self', verbose_name='родительское значение',
-                    related_name='child_meaning_set', blank=True, null=True)
+                    related_name='child_meaning_set', blank=True, null=True,
+                    on_delete=models.SET_NULL)
 
     hidden = BooleanField('Скрыть значение', help_text='''Не отображать
                           данное значение при выводе словарной статьи.''',
@@ -1588,17 +1598,20 @@ class Meaning(models.Model, JSONSerializable):
                     help_text='''Если значение должно вместо текста содержать
                     только ссылку на другое значение некоторой лексемы или
                     словосочетания, укажите её в данном поле.''',
-                    related_name='ref_meaning_set', blank=True, null=True)
+                    related_name='ref_meaning_set', blank=True, null=True,
+                    on_delete=models.SET_NULL)
 
     link_to_entry = ForeignKey(Entry, verbose_name='ссылка на лексему',
                     help_text='''Если вместо значения должна быть только ссылка
                     на другую словарную статью, укажите её в данном поле.''',
-                    related_name='ref_meaning_set', blank=True, null=True)
+                    related_name='ref_meaning_set', blank=True, null=True,
+                    on_delete=models.SET_NULL)
 
     link_to_collogroup = ForeignKey('CollocationGroup',
             verbose_name='ссылка на словосочетание', help_text='''Если вместо
             значения должна быть только ссылка на целое словосочетание.''',
-            related_name='ref_meaning_set', blank=True, null=True)
+            related_name='ref_meaning_set', blank=True, null=True,
+            on_delete=models.SET_NULL)
 
     cf_entries = ManyToManyField(Entry, verbose_name='ср. (лексемы)',
                         related_name='cf_meaning_set', blank=True)
@@ -1893,10 +1906,11 @@ class Example(models.Model, JSONSerializable):
 
     meaning = ForeignKey(Meaning, verbose_name='значение',
               help_text='Значение, к которому относится данный пример.',
-              blank=True, null=True)
+              blank=True, null=True, on_delete=models.SET_NULL)
 
-    entry = ForeignKey(Entry, blank=True, null=True)
-    collogroup = ForeignKey('CollocationGroup', blank=True, null=True)
+    entry = ForeignKey(Entry, blank=True, null=True, on_delete=models.CASCADE)
+    collogroup = ForeignKey('CollocationGroup', blank=True, null=True,
+                            on_delete=models.SET_NULL)
 
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     hidden = BooleanField('Скрыть пример', help_text='''Не отображать данный
@@ -2176,7 +2190,8 @@ class Example(models.Model, JSONSerializable):
 
 class Translation(models.Model, JSONSerializable):
 
-    for_example = ForeignKey(Example, related_name='translation_set')
+    for_example = ForeignKey(Example, related_name='translation_set',
+                             on_delete=models.CASCADE)
     fragmented = BooleanField('перевод только части примера', default=False)
     fragment_start = SmallIntegerField('номер слова начала фрагмента',
             blank=True, default=1)
@@ -2279,24 +2294,27 @@ class CollocationGroup(models.Model, JSONSerializable):
             help_text='''Лексема, при которой будет стоять словосочетание.
             Если есть возможность указать конкретное значение, лучше указать
             вместо лексемы её конкретное значение.''',
-            related_name='collocationgroup_set', blank=True, null=True)
+            related_name='collocationgroup_set', blank=True, null=True,
+            on_delete=models.CASCADE)
 
     base_meaning = ForeignKey(Meaning, verbose_name='значение',
             help_text='''Значение, при котором будет стоять словосочетание.''',
-            related_name='collocationgroup_set', blank=True, null=True)
+            related_name='collocationgroup_set', blank=True, null=True,
+            on_delete=models.CASCADE)
 
     phraseological = BooleanField('фразеологизм', default=False)
 
     link_to_entry = ForeignKey(Entry, verbose_name='ссылка на лексему',
             help_text='''Если вместо значений словосочетания должна быть
             только ссылка на словарную статью, укажите её в данном поле.''',
-            related_name='ref_collogroup_set', blank=True, null=True)
+            related_name='ref_collogroup_set', blank=True, null=True,
+            on_delete=models.SET_NULL)
 
     link_to_meaning = ForeignKey('Meaning', verbose_name='ссылка на значение',
             help_text='''Если вместо значений словосочетания должна быть
             только ссылка на опредленное значение лексемы или словосочетания,
             укажите его в данном поле.''', related_name='ref_collogroup_set',
-            blank=True, null=True)
+            blank=True, null=True, on_delete=models.SET_NULL)
 
     cf_entries = ManyToManyField(Entry, verbose_name='ср. (лексемы)',
             related_name='cf_collogroup_set', blank=True)
@@ -2460,7 +2478,8 @@ class Collocation(models.Model, JSONSerializable):
 
     collogroup = ForeignKey(CollocationGroup,
                             verbose_name='группа словосочетаний',
-                            related_name='collocation_set')
+                            related_name='collocation_set',
+                            on_delete=models.CASCADE)
 
     collocation = CharField('словосочетание', max_length=200)
 
@@ -2556,7 +2575,8 @@ class Collocation(models.Model, JSONSerializable):
 
 class GreekEquivalentForExample(models.Model, JSONSerializable):
 
-    for_example = ForeignKey(Example, related_name='greq_set')
+    for_example = ForeignKey(Example, related_name='greq_set',
+                             on_delete=models.CASCADE)
     unitext = CharField('греч. параллель (Unicode)', max_length=100,
                         blank=True)
     @property
@@ -2684,11 +2704,13 @@ class OrthographicVariant(models.Model, JSONSerializable):
 
     # словарная статья, к которой относится данный орф. вариант
     entry = ForeignKey(Entry, related_name='orthographic_variants', blank=True,
-                       null=True)
-    parent = ForeignKey('self', related_name='children', blank=True, null=True)
+                       null=True, on_delete=models.CASCADE)
+    parent = ForeignKey('self', related_name='children', blank=True, null=True,
+                        on_delete=models.SET_NULL)
     without_accent = BooleanField('без ударения', default=False)
     reconstructed = BooleanField('реконструирован', default=False)
-    questionable = BooleanField('реконструкция вызывает сомнения', default=False)
+    questionable = BooleanField('реконструкция вызывает сомнения',
+                                default=False)
     untitled_exists = BooleanField('Вариант без титла представлен в текстах',
                                    default=False)
     @property
@@ -2788,7 +2810,7 @@ class OrthographicVariant(models.Model, JSONSerializable):
 class Participle(models.Model, JSONSerializable):
 
     # словарная статья, к которой относится данная словоформа
-    entry = ForeignKey(Entry, blank=True, null=True)
+    entry = ForeignKey(Entry, blank=True, null=True, on_delete=models.CASCADE)
 
     PARTICIPLE_CHOICES = PARTICIPLE_CHOICES
 

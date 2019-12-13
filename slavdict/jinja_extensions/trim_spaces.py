@@ -101,7 +101,7 @@ from itertools import zip_longest
 from itertools import starmap
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.utils.functional import allow_lazy
+from django.utils.functional import keep_lazy
 from django.utils.encoding import force_text
 
 from jinja2 import nodes
@@ -167,7 +167,7 @@ def strip_spaces_between_tags_and_text(value):
     # {{ space }}
     value = re.sub(SPACE, ' ', value)
     return value
-strip_spaces_between_tags_and_text = allow_lazy(
+strip_spaces_between_tags_and_text = keep_lazy(
         strip_spaces_between_tags_and_text, str)
 
 class TrimExtension(Extension):

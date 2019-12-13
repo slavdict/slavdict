@@ -49,7 +49,8 @@ class Author(models.Model):
 class TagGroup(models.Model):
     name = CharField('название', max_length=50)
     parent_tag = ForeignKey('Tag', verbose_name='родительская бирка',
-                            help_text='Бирка, к которой относится группа.')
+                            help_text='Бирка, к которой относится группа.',
+                            on_delete=models.CASCADE)
     def __str__(self):
         return '[%s] %s' % (self.parent_tag.name, self.name)
 
@@ -63,7 +64,7 @@ class Tag(models.Model):
     category = CharField('категрия', choices=TAG_CATEGORIES, max_length=1)
     groups = ManyToManyField(TagGroup, verbose_name='группа', blank=True)
     parent = ForeignKey('self', verbose_name='бирка-родитель', blank=True,
-                        null=True)
+                        null=True, on_delete=models.SET_NULL)
     order = models.PositiveSmallIntegerField(
             'порядок', default=10, help_text='Порядок в рамках категории')
 

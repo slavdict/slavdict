@@ -793,10 +793,10 @@ def entry_list(request, for_hellinists=False, per_page=12,
         'page': page,
         'user': request.user,
         'title': 'Словарь церковнославянского языка Нового времени',
-        'MAX_LENGTHS': models.MAX_LENGTHS,
+        #'MAX_LENGTHS': models.MAX_LENGTHS,
         'statusList': models.Example.GREEK_EQ_STATUS,
-        'MEANING_INDICATOR': MEANING_INDICATOR,
-        'URGENT_INDICATOR': URGENT_INDICATOR,
+        #'MEANING_INDICATOR': MEANING_INDICATOR,
+        #'URGENT_INDICATOR': URGENT_INDICATOR,
     })
     if for_hellinists:
         context['hellinist_workbench'] = True
