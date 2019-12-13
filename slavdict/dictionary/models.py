@@ -18,6 +18,7 @@ from django.db.models import SmallIntegerField
 from django.db.models import TextField
 from django.db.utils import OperationalError
 from django.db.utils import ProgrammingError
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from slavdict.custom_user.models import CustomUser
@@ -1214,9 +1215,8 @@ class Entry(models.Model, JSONSerializable):
         leading = self.civil_equivalent.lstrip(' =')[:len(starts_with)]
         return leading.lower() == starts_with.lower()
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('single_entry_url', [str(self.id)])
+        return reverse('single_entry_url', args=[str(self.id)])
 
     def save(self, without_mtime=False, *args, **kwargs):
         orth_vars = self.orth_vars
