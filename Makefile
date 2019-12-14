@@ -32,7 +32,7 @@ default: indesign
 shell:
 	PYTHONSTARTUP=etc/django_shell_rc.py ${PYTHON} ./manage.py shell
 
-restart: stop copydiff destroy_loc_changes checkout collectstatic fixown migrate start
+restart: stop update start
 
 update: copydiff destroy_loc_changes checkout collectstatic fixown migrate
 
