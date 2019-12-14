@@ -604,7 +604,7 @@ hmap = {
     None: '',
 }
 def headword(self):
-    return '''<i>%s</i> <span class="cslav">%s</span><span
+    html = '''<i>%s</i> <span class="cslav">%s</span><span
                 style="font-size: larger">%s</span><span
                 style="font-size: smaller">%s</span>''' % (
         self.get_part_of_speech_display(),
@@ -612,9 +612,9 @@ def headword(self):
         hmap.get(self.homonym_order, ''),
         '<br>%s' % self.homonym_gloss if self.homonym_gloss else '',
         )
+    return mark_safe(html)
 headword.short_description = ''  # Делаем заголовок столбца пустым
 headword.admin_order_field = 'civil_equivalent'
-headword.allow_tags = True
 Entry.headword = headword
 
 def civil_inv(self):

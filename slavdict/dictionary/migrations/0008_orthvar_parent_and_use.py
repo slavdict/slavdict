@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='orthographicvariant',
             name='parent',
-            field=models.ForeignKey(related_name='children', blank=True, to='dictionary.OrthographicVariant', null=True),
+            field=models.ForeignKey(related_name='children', blank=True, to='dictionary.OrthographicVariant', null=True, on_delete=models.SET_NULL),
             preserve_default=True,
         ),
         migrations.AddField(

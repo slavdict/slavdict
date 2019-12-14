@@ -9,9 +9,9 @@ admin.autodiscover()
 
 urlpatterns = [
     url( r'^',           include('slavdict.dictionary.urls') ),
-    url( r'^admin/',     include(admin.site.urls) ),
+    url( r'^admin/',     admin.site.urls ),
     url( r'^admin/doc/', include('django.contrib.admindocs.urls') ),
-    url( r'^ui/',        include(ui.urls) ),
+    url( r'^ui/',        ui.urls ),
     url( r'^login/$',    LoginView.as_view() ),
     url( r'^logout/$',   LogoutView.as_view(next_page='/'), name='logout' ),
     url( r'^test/$',     TemplateView.as_view(template_name='test.html') ),

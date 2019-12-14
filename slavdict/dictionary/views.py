@@ -55,6 +55,31 @@ from functools import reduce
 def entry_key(entry):
     return '%s %s' % ( entry.civil_equivalent.lower(), entry.homonym_order )
 
+def params_without_page(GET):
+    excluded_GET_params = ('page', 'AB')
+    params = dict((param, str(value).encode('utf-8'))
+                  for param, value in GET.items()
+                  if param not in excluded_GET_params)
+    return urllib.parse.urlencode(params)
+
+def update_data_from_cookies(COOKIES, cookie_salt, data):
+    for key, value in COOKIES.items():
+        if key.endswith(cookie_salt) and value:
+            key = key[:-len(cookie_salt)]
+            value = value.encode('utf-8')
+            value = base64.standard_b64decode(value)
+            value = str(value, encoding='utf-8')
+            data[key] = value
+
+def set_cookie_from_data(response, request, cookie_salt, form):
+    for param, value in list(form.cleaned_data.items()):
+        cookie_name = param + cookie_salt
+        value = str(value).encode('utf-8')
+        value = base64.standard_b64encode(value)
+        value = str(value, encoding='utf-8')
+        response.set_cookie(cookie_name, value, path=request.path)
+    return response
+
 POS_ORDER = (
     PART_OF_SPEECH_MAP['letter'],
     PART_OF_SPEECH_MAP['number'],
@@ -298,13 +323,7 @@ def all_entries(request, is_paged=False):
         'hide_examples': httpGET_HIDEEXAMPLES,
         'hide_meanings': httpGET_HIDEMEANINGS,
         'not_editable': httpGET_NOT_EDITABLE,
-        'params_without_page': urllib.parse.urlencode(
-            dict(
-                (k, str(v).encode('utf-8'))
-                for k, v in list(request.GET.items())
-                if k not in  ('page', 'AB')
-            )
-        ),
+        'params_without_page': params_without_page(request.GET),
         'page': page,
         'show_additional_info': show_additional_info,
         'show_duplicates_warning': False if httpGET_DUPLICATES else True,
@@ -454,13 +473,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
         'show_additional_info': show_additional_info,
         'is_paged': is_paged,
         'page': page,
-        'params_without_page': urllib.parse.urlencode(
-            dict(
-                (k, str(v).encode('utf-8'))
-                for k, v in list(request.GET.items())
-                if k not in  ('page', 'AB')
-            )
-        ),
+        'params_without_page': params_without_page(request.GET),
         'is_subset': is_subset,
         'unionset': parts,
         }
@@ -715,11 +728,6 @@ def entry_list(request, for_hellinists=False, per_page=12,
         template = 'hellinist_workbench.html'
     salt = request.path + request.user.username
     cookie_salt = hashlib.md5(salt.encode('utf-8')).hexdigest()
-    cookie_name = 'find{0}'.format(cookie_salt)
-    if cookie_name in request.COOKIES:
-        request.COOKIES[cookie_name] = base64 \
-            .standard_b64decode(request.COOKIES[cookie_name]) \
-            .decode('utf-8')
 
     if request.method == 'POST' and len(request.POST) > 1:
         # Сам по себе объект QueryDict, на который указывает request.POST,
@@ -733,11 +741,10 @@ def entry_list(request, for_hellinists=False, per_page=12,
             data = FilterEntriesForm.default_data_for_hellinists.copy()
         else:
             data = FilterEntriesForm.default_data.copy()
-        data.update((key[:-len(cookie_salt)], value)
-                for key, value in list(request.COOKIES.items())
-                if key.endswith(cookie_salt) and value)
-        if (request.method == 'POST' and len(request.POST) == 1
-        and 'hdrSearch' in request.POST):
+        update_data_from_cookies(request.COOKIES, cookie_salt, data)
+        if (request.method == 'POST'
+                and len(request.POST) == 1
+                and 'hdrSearch' in request.POST):
             data['find'] = request.POST['hdrSearch']
 
     form = FilterEntriesForm(data)
@@ -811,23 +818,13 @@ def entry_list(request, for_hellinists=False, per_page=12,
 
     response = render(request, template, context)
     if request.method == 'POST':
-        form.cleaned_data['find'] = base64 \
-            .standard_b64encode(form.cleaned_data['find'].encode('utf-8'))
-        for param, value in list(form.cleaned_data.items()):
-            cookie_name = param + cookie_salt
-            response.set_cookie(cookie_name, value, path=request.path)
+        response = set_cookie_from_data(response, request, cookie_salt, form)
     return response
 
 @login_required
 def hellinist_workbench(request, per_page=4):
     salt = request.path + request.user.username
     cookie_salt = hashlib.md5(salt.encode('utf-8')).hexdigest()
-    for key in ('hwPrfx', 'hwAddress', 'hwExample'):
-        key = key + cookie_salt
-        if key in request.COOKIES:
-            request.COOKIES[key] = base64 \
-                .standard_b64decode(request.COOKIES[key]) \
-                .decode('utf-8')
 
     if request.method == 'POST':
         data = request.POST
@@ -838,9 +835,7 @@ def hellinist_workbench(request, per_page=4):
         elif URGENT_INDICATOR in request.GET:
             data['hwStatus'] = Example.GREEK_EQ_URGENT
         else:
-            data.update((key[:-len(cookie_salt)], value)
-                         for key, value in list(request.COOKIES.items())
-                         if key.endswith(cookie_salt) and value)
+            update_data_from_cookies(request.COOKIES, cookie_salt, data)
 
     form = FilterExamplesForm(data)
     if not form.is_valid():
@@ -902,12 +897,7 @@ def hellinist_workbench(request, per_page=4):
         }
     response = render(request, 'hellinist_workbench.html', context)
     if request.method == 'POST':
-        for key in ('hwPrfx', 'hwAddress', 'hwExample'):
-            form.cleaned_data[key] = base64.standard_b64encode(
-                                        form.cleaned_data[key].encode('utf-8'))
-        for param, value in list(form.cleaned_data.items()):
-            param = param + cookie_salt
-            response.set_cookie(param, value, path=request.path)
+        response = set_cookie_from_data(response, request, cookie_salt, form)
     return response
 
 
