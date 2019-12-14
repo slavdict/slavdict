@@ -101,8 +101,7 @@ from itertools import zip_longest
 from itertools import starmap
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.utils.functional import keep_lazy
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from jinja2 import nodes
 from jinja2.ext import Extension
@@ -141,7 +140,7 @@ SPACE = '\u0007'
 SPACES = SPACE + EMSPACE + ENSPACE + NBSP + NEWLINE
 
 def strip_spaces_between_tags_and_text(value):
-    value = re.sub(r'>\s+', '>', force_text(value.strip()))
+    value = re.sub(r'>\s+', '>', force_str(value.strip()))
     value = re.sub(r'\s+<', '<', value)
     # {{ backspace }}
     # Звёздочка вместо плюса нужна, чтобы backspace'ы были удалены
@@ -167,20 +166,16 @@ def strip_spaces_between_tags_and_text(value):
     # {{ space }}
     value = re.sub(SPACE, ' ', value)
     return value
-strip_spaces_between_tags_and_text = keep_lazy(
-        strip_spaces_between_tags_and_text, str)
 
 class TrimExtension(Extension):
 
-    tags = set(['trim'])
+    tags = {'trim'}
 
     def parse(self, parser):
         lineno = next(parser.stream).lineno
         body = parser.parse_statements(['name:endtrim'], drop_needle=True)
-        return nodes.CallBlock(
-            self.call_method('_strip_spaces', [], [], None, None),
-            [], [], body,
-        ).set_lineno(lineno)
+        return nodes.CallBlock(self.call_method('_strip_spaces'),
+                               [], [], body).set_lineno(lineno)
 
     def _strip_spaces(self, caller=None):
         return strip_spaces_between_tags_and_text(caller().strip())

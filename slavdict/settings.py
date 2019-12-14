@@ -237,12 +237,9 @@ try:
 except ImportError:
     pass
 
-# When using Auto Escape you will notice that marking something as
-# a Safestrings with Django will not affect the rendering in Jinja 2. To fix
-# this you can monkeypatch Django to produce Jinja 2 compatible Safestrings:
+# Jinja2 compatible Safestrings
 from django.utils import safestring
 if not hasattr(safestring, '__html__'):
-    safestring.SafeBytes.__html__ = lambda self: bytes(self)
     safestring.SafeText.__html__ = lambda self: str(self)
 
 
