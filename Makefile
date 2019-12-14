@@ -8,12 +8,11 @@ DATE_TIME := $(shell date +%Y-%m-%d--%H-%M)
 IS_PRODUCTION = production
 IS_DEVELOPMENT = development
 SLAVDICT_ENVIRONMENT ?= ${IS_PRODUCTION}
+PYTHON = pipenv run python
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_PRODUCTION})
   GIT = git --work-tree=${GITWORKTREE} --git-dir=${GITDIR}
-  PYTHON = python
 else
   GIT = git
-  PYTHON = pipenv run python
 endif
 
 JSLIBS_PATH := $(shell ${PYTHON} ${SETTINGS_FILE} --jslibs-path)
