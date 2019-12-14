@@ -55,6 +55,13 @@ from functools import reduce
 def entry_key(entry):
     return '%s %s' % ( entry.civil_equivalent.lower(), entry.homonym_order )
 
+def params_without_page(GET):
+    excluded_GET_params = ('page', 'AB')
+    params = dict((param, str(value).encode('utf-8'))
+                  for param, value in GET.items()
+                  if param not in excluded_GET_params)
+    return urllib.parse.urlencode(params)
+
 POS_ORDER = (
     PART_OF_SPEECH_MAP['letter'],
     PART_OF_SPEECH_MAP['number'],
@@ -298,13 +305,7 @@ def all_entries(request, is_paged=False):
         'hide_examples': httpGET_HIDEEXAMPLES,
         'hide_meanings': httpGET_HIDEMEANINGS,
         'not_editable': httpGET_NOT_EDITABLE,
-        'params_without_page': urllib.parse.urlencode(
-            dict(
-                (k, str(v).encode('utf-8'))
-                for k, v in list(request.GET.items())
-                if k not in  ('page', 'AB')
-            )
-        ),
+        'params_without_page': params_without_page(request.GET),
         'page': page,
         'show_additional_info': show_additional_info,
         'show_duplicates_warning': False if httpGET_DUPLICATES else True,
@@ -454,13 +455,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
         'show_additional_info': show_additional_info,
         'is_paged': is_paged,
         'page': page,
-        'params_without_page': urllib.parse.urlencode(
-            dict(
-                (k, str(v).encode('utf-8'))
-                for k, v in list(request.GET.items())
-                if k not in  ('page', 'AB')
-            )
-        ),
+        'params_without_page': params_without_page(request.GET),
         'is_subset': is_subset,
         'unionset': parts,
         }
