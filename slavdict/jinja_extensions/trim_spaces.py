@@ -102,6 +102,7 @@ from itertools import starmap
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils.encoding import force_str
+from django.utils.functional import keep_lazy_text
 
 from jinja2 import nodes
 from jinja2.ext import Extension
@@ -139,6 +140,7 @@ PUNCT = '\u1900'
 SPACE = '\u0007'
 SPACES = SPACE + EMSPACE + ENSPACE + NBSP + NEWLINE
 
+@keep_lazy_text
 def strip_spaces_between_tags_and_text(value):
     value = re.sub(r'>\s+', '>', force_str(value.strip()))
     value = re.sub(r'\s+<', '<', value)
