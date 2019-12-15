@@ -233,7 +233,7 @@ for lib in JSLIBS:
 
 # Локальное для компьютера переопределение настроек проекта
 try:
-    from local_settings import *
+    from .local_settings import *
 except ImportError:
     pass
 
