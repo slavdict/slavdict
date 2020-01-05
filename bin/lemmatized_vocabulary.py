@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
+from slavdict.dictionary.utils import antconc_wordform_query
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
 
@@ -135,12 +136,17 @@ class Lemmatizer:
             if word_without_titles not in self.words:
                 self.words[word_without_titles] = Word(word_without_titles)
 
+            wordform_query = antconc_wordform_query(resolve_titles(p2ac(word)))
+            if wordform_query not in self.words:
+                self.words[wordform_query] = Word(wordform_query)
+
             if (lex, pos, flextype) not in self.lexemes:
                 self.lexemes[(lex, pos, flextype)] = \
                         Lexeme(lex, pos, flextype, gram)
 
             L = self.lexemes[(lex, pos, flextype)]
-            Ws = [self.words[w] for w in (word, word_without_titles)]
+            Ws = [self.words[w] for w in (word, word_without_titles,
+                                          wordform_query)]
 
             for W in Ws:
                 W.grams.append(Gram(gram, freq, W, L))
@@ -194,6 +200,8 @@ def lemmatize_corpus(corpus):
         lexemes = lem.find_lexemes(word)
         if lexemes is None:
             lexemes = lem.find_lexemes(resolve_titles(word))
+        if lexemes is None:
+            lexemes = lem._find_lexemes(antconc_wordform_query(word))
         if lexemes is not None:
             for lex in lexemes:
                 if lex.is_graph_num or lex in lemmas:
@@ -207,16 +215,13 @@ def lemmatize_corpus(corpus):
 def get_lemmas_merged_with_bible(lemmas, bible_lemmas):
     chosen = set()
     poss = set()
-    onym = set()
     for lex in bible_lemmas:
         if lex not in lemmas and re.findall(r'\b(persn|topn|poss)\b', lex.pos):
             if re.findall(r'\bposs\b', lex.pos):
                 poss.add(lex)
-            else:
-                onym.add(lex)
             continue
         chosen.add(lex)
-    return lemmas.union(chosen), poss, onym
+    return lemmas.union(chosen), poss
 
 
 def write_collection(collection, filename):
@@ -242,13 +247,12 @@ lemmas, orphan_words = lemmatize_corpus(words_basic_corpus)
 bible_lemmas, bible_orphan_words = lemmatize_corpus(words_bible_corpus)
 
 orphan_words = orphan_words.union(bible_orphan_words)
-lemmas, poss, onym = get_lemmas_merged_with_bible(lemmas, bible_lemmas)
+lemmas, poss = get_lemmas_merged_with_bible(lemmas, bible_lemmas)
 
 other_lemmas = lem.find_other_lexemes(lemmas)
 write_collection(lemmas, 'test_lemmas.txt')
 write_collection(other_lemmas, 'test_other_lemmas.txt')
 write_collection(poss, 'test_possessive.txt')
-write_collection(onym, 'test_onyms.txt')
 write_collection(orphan_words, 'test_orphans.txt')
 lines = (
     'Лексем в лемматизаторе: %s' % len(lem.lexemes),

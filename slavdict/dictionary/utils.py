@@ -214,3 +214,98 @@ def collogroup_sort_key(cg):
     text = text.strip()
     text = resolve_titles(text)
     return [sort_key1(word) for word in text.split()]
+
+
+
+
+def _aq(char_groups, optional=False):
+    d = {}
+    for chars in char_groups:
+        for char in chars:
+            pattern = '[{}{}]'.format(chars, chars.upper())
+            if optional:
+                pattern += '?'
+            d[char] = pattern
+            d[char.upper()] = pattern
+    return d
+
+
+def _bq(chars):
+    d = {}
+    for char in chars:
+        upper_char = char.upper()
+        pattern = '[{}{}]'.format(char, upper_char)
+        d[char] = pattern
+        d[upper_char] = pattern
+    return d
+
+
+def _dq(*pairs):
+    double, single = {}, {}
+    for d, s in pairs:
+        special_case = d == 'от'
+        if special_case:
+            first_char = 'оѡѻѽ'
+            oooo = '[{}]'.format(first_char)
+            dargs = oooo + 'т',  oooo.upper() + 'т', oooo.upper() + 'Т'
+        else:
+            first_char = d[0]
+            dargs = d, d[0].upper() + d[1], d.upper()
+        dpat = '{}|{}|{}'.format(*dargs)
+        spat = '[{}{}]'.format(s, s.upper())
+        pattern = '({}|{})'.format(spat, dpat)
+
+        single[s] = pattern
+        single[s.upper()] = pattern
+        for char in first_char:
+            double[char + d[1]] = pattern
+            double[char.upper() + d[1]] = pattern
+            double[(char + d[1]).upper()] = pattern
+    return double, single
+
+
+def _vq(*pairs):
+    d = {}
+    for a, b in pairs:
+        apattern, bpattern = a, b
+        if len(a) > 1:
+            apattern = '[{}]'.format(a)
+        if len(b) > 1:
+            bpattern = '[{}]'.format(b)
+        pattern = '({}|{}|{})'.format(apattern + bpattern,
+                                      apattern.upper() + bpattern,
+                                      (apattern + bpattern).upper())
+        for first in a:
+            for second in b:
+                d[first + second] = pattern
+                d[first.upper() + second] = pattern
+                d[(first + second).upper()] = pattern
+    return d
+
+
+ACQ_SINGLE = _aq(['еє', 'зѕ', 'иіѵ', 'оѡѻѽ', 'уѹꙋ', 'фѳ', 'ѧꙗ'], optional=False)
+ACQ_SINGLE = _aq(['ъь', "'`^"], optional=True)
+ACQ_SINGLE.update(_bq('абвгджйклмнпрстхцчшщыю'))
+_d, _s = _dq(('кс', 'ѯ'), ('пс', 'ѱ'), ('от', 'ѿ'))
+ACQ_SINGLE.update(_s)
+
+ACQ_DUAL = _d
+ACQ_DUAL.update(_vq(('a', 'вѵ'), ('еє', 'вѵ')))
+
+ACQ_FINAL = _aq(['йи'], optional=False)
+
+
+def antconc_wordform_query(text):
+    length = len(text)
+    query = ''
+    for i, char in enumerate(text):
+        bichar = text[i:i+2]
+        if i == length - 1 and char in ACQ_FINAL:
+            query += ACQ_FINAL[char]
+        elif bichar in ACQ_DUAL:
+            query += ACQ_DUAL[bichar]
+        elif char in ACQ_SINGLE:
+            query += ACQ_SINGLE[char]
+        else:
+            query += char
+    return query
