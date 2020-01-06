@@ -77,9 +77,10 @@ def p2ac(word):
 
 
 class Word:
-    def __init__(self, word):
+    def __init__(self, word, is_antconc_query=False):
         self._word = word
         self.grams = []
+        self.is_antconc_query = is_antconc_query
 
     @property
     def word(self):
@@ -138,15 +139,21 @@ class Lemmatizer:
 
             wordform_query = antconc_wordform_query(resolve_titles(p2ac(word)))
             if wordform_query not in self.words:
-                self.words[wordform_query] = Word(wordform_query)
+                self.words[wordform_query] = Word(wordform_query,
+                                                  is_antconc_query=True)
+
+            wordform_query2 = antconc_wordform_query(p2ac(word))
+            if wordform_query2 not in self.words:
+                self.words[wordform_query2] = Word(wordform_query2,
+                                                   is_antconc_query=True)
 
             if (lex, pos, flextype) not in self.lexemes:
                 self.lexemes[(lex, pos, flextype)] = \
                         Lexeme(lex, pos, flextype, gram)
 
             L = self.lexemes[(lex, pos, flextype)]
-            Ws = [self.words[w] for w in (word, word_without_titles,
-                                          wordform_query)]
+            Ws = [self.words[w] for w in {word, word_without_titles,
+                                          wordform_query, wordform_query2}]
 
             for W in Ws:
                 W.grams.append(Gram(gram, freq, W, L))
@@ -202,6 +209,9 @@ def lemmatize_corpus(corpus):
             lexemes = lem.find_lexemes(resolve_titles(word))
         if lexemes is None:
             lexemes = lem._find_lexemes(antconc_wordform_query(word))
+        if lexemes is None:
+            lexemes = lem._find_lexemes(
+                    antconc_wordform_query(resolve_titles(word)))
         if lexemes is not None:
             for lex in lexemes:
                 if lex.is_graph_num or lex in lemmas:
@@ -264,6 +274,7 @@ lines = (
 )
 print()
 with open(os.path.join(path, 'test_stat.txt'), 'w') as f:
+    f.write('\n')
     for line in lines:
         print(line)
         f.write(line + '\n')
