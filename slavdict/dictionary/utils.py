@@ -222,7 +222,11 @@ def _aq(char_groups, optional=False):
     d = {}
     for chars in char_groups:
         for char in chars:
-            pattern = '[{}{}]'.format(chars, chars.upper())
+            chars_upper = chars.upper()
+            if chars != chars_upper:
+                pattern = '[{}{}]'.format(chars, chars_upper)
+            else:
+                pattern = '[{}]'.format(chars)
             if optional:
                 pattern += '?'
             d[char] = pattern
@@ -241,31 +245,51 @@ def _bq(chars):
 
 
 def _dq(*pairs):
-    double, single = {}, {}
+    multi, single = {}, {}
     for d, s in pairs:
         special_case = d == 'от'
         if special_case:
             first_char = 'оѡѻѽ'
+            accent = "['`^]"
             oooo = '[{}]'.format(first_char)
-            dargs = oooo + 'т',  oooo.upper() + 'т', oooo.upper() + 'Т'
+            dargs = (oooo + 'т',  oooo.upper() + 'т', oooo.upper() + 'Т')
+            dargs_accent = (oooo + accent + 'т',  oooo.upper() + accent + 'т',
+                            oooo.upper() + accent + 'Т')
         else:
             first_char = d[0]
             dargs = d, d[0].upper() + d[1], d.upper()
         dpat = '{}|{}|{}'.format(*dargs)
         spat = '[{}{}]'.format(s, s.upper())
+        if special_case:
+            # Для лигатуры "от" всегда добавляем необязательное ударение
+            spat = '[{}{}]'.format(s, s.upper()) + accent + '?'
+
+            dpat_accent = '{}|{}|{}'.format(*dargs_accent)
+            accent_pattern =  '({}|{})'.format(spat + accent, dpat_accent)
         pattern = '({}|{})'.format(spat, dpat)
 
         single[s] = pattern
         single[s.upper()] = pattern
+        if special_case:
+            for accent in "'`^":
+                multi[s + accent] = accent_pattern
+                multi[s.upper() + accent] = accent_pattern
         for char in first_char:
-            double[char + d[1]] = pattern
-            double[char.upper() + d[1]] = pattern
-            double[(char + d[1]).upper()] = pattern
-    return double, single
+            if special_case:
+                for accent in "'`^":
+                    multi[char + accent + d[1]] = accent_pattern
+                    multi[char.upper() + accent + d[1]] = accent_pattern
+                    multi[(char + accent + d[1]).upper()] = accent_pattern
+            else:
+                multi[char + d[1]] = pattern
+                multi[char.upper() + d[1]] = pattern
+                multi[(char + d[1]).upper()] = pattern
+    return multi, single
 
 
 def _vq(*pairs):
     d = {}
+    accent = "['`^]"
     for a, b in pairs:
         apattern, bpattern = a, b
         if len(a) > 1:
@@ -275,22 +299,31 @@ def _vq(*pairs):
         pattern = '({}|{}|{})'.format(apattern + bpattern,
                                       apattern.upper() + bpattern,
                                       (apattern + bpattern).upper())
+        accent_pattern = '({}|{}|{})'.format(
+                apattern + accent + bpattern,
+                apattern.upper() + accent + bpattern,
+                (apattern + accent + bpattern).upper())
         for first in a:
             for second in b:
                 d[first + second] = pattern
                 d[first.upper() + second] = pattern
                 d[(first + second).upper()] = pattern
+                for acc in "'`^":
+                    d[first + acc + second] = accent_pattern
+                    d[first.upper() + acc + second] = accent_pattern
+                    d[(first + acc + second).upper()] = accent_pattern
     return d
 
 
-ACQ_SINGLE = _aq(['еє', 'зѕ', 'иіѵ', 'оѡѻѽ', 'уѹꙋ', 'фѳ', 'ѧꙗ'], optional=False)
-ACQ_SINGLE = _aq(['ъь', "'`^"], optional=True)
+ACQ_SINGLE = _aq(['еєѣ', 'зѕ', 'иіѵ', 'оѡѻѽ', 'уѹꙋ', 'фѳ', 'ѧꙗ'],
+                 optional=False)
+ACQ_SINGLE.update(_aq(['ъь', "'`^"], optional=True))
 ACQ_SINGLE.update(_bq('абвгджйклмнпрстхцчшщыю'))
 _d, _s = _dq(('кс', 'ѯ'), ('пс', 'ѱ'), ('от', 'ѿ'))
 ACQ_SINGLE.update(_s)
 
-ACQ_DUAL = _d
-ACQ_DUAL.update(_vq(('a', 'вѵ'), ('еє', 'вѵ')))
+ACQ_MUL = _d
+ACQ_MUL.update(_vq(('a', 'вѵ'), ('еє', 'вѵ')))
 
 ACQ_FINAL = _aq(['йи'], optional=False)
 
@@ -299,11 +332,14 @@ def antconc_wordform_query(text):
     length = len(text)
     query = ''
     for i, char in enumerate(text):
+        trichar = text[i:i+3]
         bichar = text[i:i+2]
         if i == length - 1 and char in ACQ_FINAL:
             query += ACQ_FINAL[char]
-        elif bichar in ACQ_DUAL:
-            query += ACQ_DUAL[bichar]
+        elif trichar in ACQ_MUL:
+            query += ACQ_MUL[trichar]
+        elif bichar in ACQ_MUL:
+            query += ACQ_MUL[bichar]
         elif char in ACQ_SINGLE:
             query += ACQ_SINGLE[char]
         else:

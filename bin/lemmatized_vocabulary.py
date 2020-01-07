@@ -107,6 +107,7 @@ class Lexeme:
         self.pos = pos
         self.flextype = flextype
         self.is_graph_num = pos == 'NUM' and not flextype and not gram
+        self.grams = []
 
     @property
     def lex(self):
@@ -132,6 +133,11 @@ class Lemmatizer:
             lex, pos, flextype, gram, word, freq = item
             if word not in self.words:
                 self.words[word] = Word(word)
+            word2 = re.sub('[\+\#\!\$]', '', word)
+            if word != word2:
+                word = word2
+                if word not in self.words:
+                    self.words[word] = Word(word)
 
             word_without_titles = ac2p(resolve_titles(p2ac(word)))
             if word_without_titles not in self.words:
@@ -156,7 +162,9 @@ class Lemmatizer:
                                           wordform_query, wordform_query2}]
 
             for W in Ws:
-                W.grams.append(Gram(gram, freq, W, L))
+                g = Gram(gram, freq, W, L)
+                W.grams.append(g)
+                L.grams.append(g)
 
     def _find_lexemes(self, p_word):
         if p_word in self.words:
@@ -242,6 +250,24 @@ def write_collection(collection, filename):
             f.write('\n')
 
 
+def get_wordforms(lex):
+    words = {gram.word.word
+             for gram in lex.grams
+             if not gram.word.is_antconc_query}
+    text = ', '.join(words)
+    text = re.sub(r'[\+\#\!\$]', '', text)
+    return text
+
+
+def get_query(lex):
+    word_queries = {gram.word.word
+                    for gram in lex.grams
+                    if gram.word.is_antconc_query}
+    text = r'(^|(?<=[ \t\r\n]))(%s)(?=[ \t\r\n.,;:!])' % '|'.join(word_queries)
+    text = re.sub(r'[\+\#]', '', text)
+    return text
+
+
 lem = Lemmatizer()
 for filename in lem_files:
     filepath = os.path.join(path, filename)
@@ -278,3 +304,38 @@ with open(os.path.join(path, 'test_stat.txt'), 'w') as f:
     for line in lines:
         print(line)
         f.write(line + '\n')
+
+with open(os.path.join(path, 'vocabulary.csv'), 'w') as f:
+    f.write(','.join('"%s"' % title for title in [
+        'Заглавное слово', 'Гражданское написание', 'Список словоформ',
+        'Запрос для АнтКонка', 'Авторы', 'Комментарий к статье',
+        'Номер омонима', 'Смыслоразличительный ярлык омонима',
+        'Является ли дубликатом']))
+    f.write('\n')
+    last_homonym_number = 0
+    _lemmas = list(sorted(lemmas, key=lambda L: civilrus_convert(L.lex)))
+    N = len(_lemmas)
+    for i, lex in enumerate(_lemmas):
+        lemma = lex.lex
+        civil = civilrus_convert(lemma)
+        next_civil = '' if i + 1 == N else civilrus_convert(_lemmas[i+1].lex)
+        wordforms = get_wordforms(lex)
+        query = get_query(lex)
+        author = ''
+        comment = lex.pos
+        if civil == next_civil:
+            last_homonym_number += 1
+            homonym_number = last_homonym_number
+        else:
+            if last_homonym_number > 0:
+                last_homonym_number += 1
+                homonym_number = last_homonym_number
+            else:
+                homonym_number = ''
+            last_homonym_number = 0
+        homonym_gloss = ''
+        dup = ''
+        f.write(','.join('"%s"' % value for value in [lemma, civil, wordforms,
+                query, author, comment, homonym_number, homonym_gloss, dup]))
+        f.write('\n')
+        last_civil = civil
