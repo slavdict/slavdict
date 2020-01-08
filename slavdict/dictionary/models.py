@@ -5,6 +5,7 @@ import re
 import unicodedata
 
 from collections import Counter, defaultdict
+from collections.abc import Sequence
 
 from django.db import models
 from django.db import transaction
@@ -1212,8 +1213,13 @@ class Entry(models.Model, JSONSerializable):
         # Если аргумент starts_with не передан, то выбираем все статьи
         if starts_with is ANY_LETTER:
             return True
-        leading = self.civil_equivalent.lstrip(' =')[:len(starts_with)]
-        return leading.lower() == starts_with.lower()
+        if isinstance(starts_with, str):
+            starts_with = [starts_with]
+        if isinstance(starts_with, Sequence):
+            leading = self.civil_equivalent.lstrip(' =').lower()
+            return any(leading.startswith(s.lower())
+                       for s in starts_with)
+        return False
 
     def get_absolute_url(self):
         return reverse('single_entry_url', args=[str(self.id)])
