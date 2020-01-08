@@ -1224,6 +1224,17 @@ class Entry(models.Model, JSONSerializable):
     def get_absolute_url(self):
         return reverse('single_entry_url', args=[str(self.id)])
 
+    def get_rnc_url(self):
+        URL = 'http://processing.ruscorpora.ru/search.xml'
+        QUERY_PARAMS = {
+            'text': 'lexgramm',
+            'mode': 'orthlib',
+            'lexm1': self.civil_equivalent,
+        }
+        QUERY = '&'.join('{}={}'.format(key, value)
+                         for key, value in QUERY_PARAMS.items())
+        return '{}?{}'.format(URL, QUERY)
+
     def save(self, without_mtime=False, *args, **kwargs):
         orth_vars = self.orth_vars
         if orth_vars:
