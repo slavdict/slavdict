@@ -261,17 +261,26 @@ class Reference(str):
 # Объединение статей по начальным буквам
 letter_parts = []
 part_entries = []
-letter = entries3[0][0].lstrip(' =')[0].upper()
+first_letter = entries3[0][0].lstrip(' =*')[0]
+civil_letter = civilrus_convert(first_letter.lower())
+csl_letter = first_letter.upper()
+syn_letters = [csl_letter]
 entries3_n = len(entries3)
 for j, (wordform, group) in enumerate(itertools.groupby(entries3, lambda x: x[0])):
     note = 'Группировка статей по начальным буквам [ %s%% ]%s\r' % (
             int(round(j / entries3_n * 100)), ERASE_LINEEND)
     sys.stderr.write(note)
     lst = list(group)
-    if wordform.lstrip(' =')[0].upper() != letter:
-        letter_parts.append((letter, part_entries))
+    first_letter = wordform.lstrip(' =*')[0].lower()
+    csl_letter = first_letter.upper()
+    if civilrus_convert(first_letter) != civil_letter:
+        syn_letters.sort(key=sort_key2)
+        letter_parts.append((civil_letter, syn_letters, part_entries))
         part_entries = []
-        letter = wordform.lstrip(' =')[0].upper()
+        civil_letter = civilrus_convert(first_letter)
+        syn_letters = [csl_letter]
+    elif csl_letter not in syn_letters:
+        syn_letters.append(csl_letter)
     if len(lst) < 2:
         wordform, reference, lexeme = lst[0]
         part_entries.append((reference, lexeme))
@@ -282,7 +291,8 @@ for j, (wordform, group) in enumerate(itertools.groupby(entries3, lambda x: x[0]
             else:
                 lexeme.homonym_order = i + 1
             part_entries.append((reference, lexeme))
-letter_parts.append((letter, part_entries))
+syn_letters.sort(key=sort_key2)
+letter_parts.append((civil_letter, syn_letters, part_entries))
 
 note = 'Вывод статей для InDesign...'
 sys.stderr.write(note)
@@ -307,7 +317,8 @@ chunks = []
 n_chars = 0
 file_count = 1
 letters_and_chunks = []
-for letter, entries in letter_parts:
+for civil_letter, syn_letters, entries in letter_parts:
+    letter = _letter = ', '.join(syn_letters)
     n_entries = len(entries)
     for i, (reference, entry) in enumerate(entries):
         if reference:
@@ -329,14 +340,14 @@ for letter, entries in letter_parts:
                 chunks = [xml]
                 file_count += 1
                 letters_and_chunks = []
-                letter = ''  # Обнуляем текущую букву, чтобы она не выводилась
+                letter = '' # Обнуляем текущую букву, чтобы она не выводилась
                              # для следующей порции статей на ту же букву.
             else:
                 n_chars += m
                 chunks.append(xml)
 
         note = '%s [ %s%% ] %s\r' % (
-                letter if letter else ' ',
+                _letter,
                 int(round(i / n_entries * 100)),
                 entry.civil_equivalent + ERASE_LINEEND)
         sys.stderr.write(note)

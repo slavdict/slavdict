@@ -297,7 +297,10 @@ if not entries3:
 # Объединение статей по начальным буквам
 letter_parts = []
 part_entries = []
-letter = entries3[0][0].lstrip(' =*')[0].upper()
+first_letter = entries3[0][0].lstrip(' =*')[0]
+civil_letter = civilrus_convert(first_letter.lower())
+csl_letter = first_letter.upper()
+syn_letters = [csl_letter]
 entries3_n = len(entries3)
 it = enumerate(itertools.groupby(entries3, lambda x: x[0]))
 for j, (wordform, group) in it:
@@ -305,10 +308,16 @@ for j, (wordform, group) in it:
             int(round(j / entries3_n * 100)), ERASE_LINEEND)
     sys.stderr.write(note)
     lst = list(group)
-    if wordform.lstrip(' =*')[0].upper() != letter:
-        letter_parts.append((letter, part_entries))
+    first_letter = wordform.lstrip(' =*')[0].lower()
+    csl_letter = first_letter.upper()
+    if civilrus_convert(first_letter) != civil_letter:
+        syn_letters.sort(key=sort_key2)
+        letter_parts.append((civil_letter, syn_letters, part_entries))
         part_entries = []
-        letter = wordform.lstrip(' =*')[0].upper()
+        civil_letter = civilrus_convert(first_letter)
+        syn_letters = [csl_letter]
+    elif csl_letter not in syn_letters:
+        syn_letters.append(csl_letter)
     if len(lst) < 2:
         wordform, reference, lexeme = lst[0]
         part_entries.append((reference, lexeme))
@@ -319,15 +328,16 @@ for j, (wordform, group) in it:
             else:
                 lexeme.homonym_order = i + 1
             part_entries.append((reference, lexeme))
-letter_parts.append((letter, part_entries))
+syn_letters.sort(key=sort_key2)
+letter_parts.append((civil_letter, syn_letters, part_entries))
 
 # Вывод статей
-for letter, entries in letter_parts:
+for civil_letter, syn_letters, entries in letter_parts:
     N = len(entries)
     for i, (reference, entry) in enumerate(entries):
         if not reference:
             note = 'Вывод статей на «%s» [ %s%% ] %s\r' % (
-                letter,
+                ', '.join(syn_letters),
                 int(round(i / N * 100)),
                 entry.civil_equivalent + ERASE_LINEEND)
             sys.stderr.write(note)
