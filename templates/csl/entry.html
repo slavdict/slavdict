@@ -18,7 +18,7 @@
 {% set MSC17 = 'q' %}{# безличное упортеление глагола #}
 {% set MSC18 = 'r' %}{# вводн. #}
 
-
+<div class="Entry">
     <div class="FirstParagraph Text">
 
     {% set sc_several_nouns = entry.special_cases("several nouns") %}
@@ -479,5 +479,13 @@
 
     {{ backspace }}</div>
 
+    <div class="rnc">
+        Посмотреть примеры словоупотребления{{ space }}
+        <a target="_blank" href="{{ entry.get_rnc_url() }}">
+            в&nbsp;Национальном корпусе русского языка
+        </a>.
+    <div>
+
+</div>{# Entry #}
 {% endtrim %}
 {# vim: set ft=django.html: #}

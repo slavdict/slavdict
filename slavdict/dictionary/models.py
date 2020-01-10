@@ -1188,10 +1188,13 @@ class Entry(models.Model, JSONSerializable):
             return False
         return True
 
+    def first_letter(self):
+        return self.civil_equivalent.lstrip(' =*')[:1].lower()
+
     def volume(self, volume=YET_NOT_IN_VOLUMES):
         if volume is WHOLE_DICTIONARY:
             return True
-        first_letter = self.civil_equivalent.lstrip(' =')[:1].lower()
+        first_letter = self.first_letter()
 
         # Если аргумент volume не передан, то выбираем только те статьи,
         # для которых том ещё не определен.
@@ -1224,12 +1227,16 @@ class Entry(models.Model, JSONSerializable):
     def get_absolute_url(self):
         return reverse('single_entry_url', args=[str(self.id)])
 
-    def get_rnc_url(self):
+    def get_rnc_lexm(self):
+        return '|'.join(set(civilrus_convert(ov.idem)
+                        for ov in self.orth_vars))
+
+    def get_rnc_url(self, lexm=None):
         URL = 'http://processing.ruscorpora.ru/search.xml'
         QUERY_PARAMS = {
             'text': 'lexgramm',
             'mode': 'orthlib',
-            'lexm1': self.civil_equivalent,
+            'lexm1': self.get_rnc_lexm() if lexm is None else lexm,
         }
         QUERY = '&'.join('{}={}'.format(key, value)
                          for key, value in QUERY_PARAMS.items())

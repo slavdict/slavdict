@@ -26,7 +26,6 @@ import unicodedata
 
 import django
 from django.template.loader import render_to_string
-from functools import reduce
 
 sys.path.append(os.path.abspath('/var/www/slavdict'))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -34,7 +33,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
 from slavdict.dictionary.models import Entry
-from slavdict.dictionary.models import VOLUME_LETTERS
+from slavdict.dictionary.models import STATUS_MAP
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import convert_for_index
 from slavdict.dictionary.utils import resolve_titles
@@ -68,12 +67,6 @@ dirs = (OUTPUT_DIR, ENTRIES_DIR, FULL_IX, PART_IX, GRIX, GRIX_REV)
 IX_ROOT = '_ix'  # Имя файла с корнем индекса
 
 URL_PATTERN = './словарь/статьи/%s'
-OUTPUT_VOLUMES = (1, 2)
-OUTPUT_VOLUMES_LETTERS = reduce(
-    lambda x, y: x + y,
-    (VOLUME_LETTERS[volume] for volume in OUTPUT_VOLUMES
-     if volume in VOLUME_LETTERS), ()
-)
 HINTS_NUMBER = 7
 PAGE_RESULTS_NUMBER = 30
 
@@ -96,15 +89,31 @@ def interrupt_handler(signum, frame):
 
 signal.signal(signal.SIGINT, interrupt_handler)
 
+
+def is_approved(entry):
+    if isinstance(entry, Entry):
+        return entry.status == STATUS_MAP['approved']
+    return False
+
+
+def sort_letters_by_status():
+    approved, unapproved = set(), set()
+    for e in Entry.objects.all():
+        first_letter = e.first_letter()
+        if is_approved(e):
+            approved.add(first_letter)
+        else:
+            unapproved.add(first_letter)
+    return list(sorted(approved)), list(sorted(unapproved))
+
+
+APPROVED_LETTERS, UNAPPROVED_LETTERS = sort_letters_by_status()
+
 print(HIDE_CURSOR, file=sys.stderr)
-note = 'Volumes: %s\n' % ', '.join(str(volume) for volume in OUTPUT_VOLUMES)
-note += 'Letters: ' + ', '.join(letter for letter in OUTPUT_VOLUMES_LETTERS)
+note = 'Letters (approved articles): {}\n'.format(', '.join(APPROVED_LETTERS))
+note += 'Letters (unapproved): {}'.format(', '.join(UNAPPROVED_LETTERS))
 print(note, file=sys.stderr)
 print(file=sys.stderr)
-
-
-def in_output_volumes(wordform):
-    return wordform.lstrip(' =')[:1].lower() in OUTPUT_VOLUMES_LETTERS
 
 
 for directory in dirs:
@@ -120,14 +129,12 @@ entries1 = []
 # Это список всех потенциально возможных статей для выбранных томов,
 # ограниченных списком test_entries, если он задан.
 
-lexemes = Entry.objects.all()
+lexemes = Entry.objects.order_by('civil_equivalent').all()
 if test_entries:
     entries_to_dump = ', '.join(str(i) for i in test_entries)
     print('Entries to dump:', entries_to_dump, file=sys.stderr)
     lexemes = lexemes.filter(pk__in=test_entries)
-else:
-    print('Entries to dump: ALL for the selected volumes', file=sys.stderr)
-lexemes = [e for e in lexemes if e.volume(OUTPUT_VOLUMES)]
+lexemes = list(lexemes)
 lexemes_n = len(lexemes)
 print('Number of selected lexemes:', lexemes_n, file=sys.stderr)
 print(file=sys.stderr)
@@ -159,16 +166,18 @@ for i, lexeme in enumerate(lexemes):
             entries1.append((wordform, reference, lexeme))
 
     # 3) Краткие формы
-    #if lexeme.short_form:
-    #    wordform = lexeme.short_form
-    #    reference = lexeme.short_form_ucs
-    #    entries1.append((wordform, reference, lexeme))
+    if lexeme.short_form:
+        for wordform, reference in lexeme.short_forms:
+            if wordform.strip(' =*'):
+                entries1.append((wordform, reference, lexeme))
 
     # 4) Причастия
-    #for participle in lexeme.participles:
-    #    wordform = participle.idem
-    #    reference = participle.idem_ucs
-    #    entries1.append((wordform, reference, lexeme))
+    for participle in lexeme.participles:
+        # if participle.tp not in ('1', '2', '3', '4'):
+        wordform = participle.idem
+        reference = participle.idem_ucs
+        if wordform.strip(' =*'):
+            entries1.append((wordform, reference, lexeme))
 
     # 5) Особые случаи
     if lexeme.civil_equivalent == 'быти':
@@ -184,26 +193,6 @@ for i, lexeme in enumerate(lexemes):
         int(round(i / lexemes_n * 100)),
         lexeme.civil_equivalent + ERASE_LINEEND)
     sys.stderr.write(note)
-
-
-if not test_entries:
-    # 6) Добавляем ссылочные статьи, которые будут присутствовать в выводимых
-    # томах и ссылаться на какие-то статьи из других томов.
-    other_volumes = [e for e in Entry.objects.all()
-                     if not e.volume(OUTPUT_VOLUMES)]
-    other_volumes_n = len(other_volumes)
-    for i, lexeme in enumerate(other_volumes):
-        for participle in lexeme.participles:
-            if participle.tp not in ('1', '2', '3', '4'):
-                wordform = participle.idem
-                if in_output_volumes(wordform):
-                    reference = participle.idem_ucs
-                    entries1.append((wordform, reference, lexeme))
-
-        note = 'Поиск ссылок на другие тома [ %s%% ] %s\r' % (
-            int(round(i / other_volumes_n * 100)),
-            lexeme.civil_equivalent + ERASE_LINEEND)
-        sys.stderr.write(note)
 
 
 def sort_key(x):
@@ -233,8 +222,6 @@ for i, (key, group) in enumerate(itertools.groupby(entries1, lambda x: x[:2])):
         int(round(i / entries1_n * 100)),
         wordform + ERASE_LINEEND)
     sys.stderr.write(note)
-    if not in_output_volumes(wordform):
-        continue
     # Удаляем из выгрузки отсылочную статью Ассирии,
     # т.к. она неправильно выгружается
     if wordform == "ассѵрі'и":
@@ -310,7 +297,7 @@ if not entries3:
 # Объединение статей по начальным буквам
 letter_parts = []
 part_entries = []
-letter = entries3[0][0].lstrip(' =')[0].upper()
+letter = entries3[0][0].lstrip(' =*')[0].upper()
 entries3_n = len(entries3)
 it = enumerate(itertools.groupby(entries3, lambda x: x[0]))
 for j, (wordform, group) in it:
@@ -318,10 +305,10 @@ for j, (wordform, group) in it:
             int(round(j / entries3_n * 100)), ERASE_LINEEND)
     sys.stderr.write(note)
     lst = list(group)
-    if wordform.lstrip(' =')[0].upper() != letter:
+    if wordform.lstrip(' =*')[0].upper() != letter:
         letter_parts.append((letter, part_entries))
         part_entries = []
-        letter = wordform.lstrip(' =')[0].upper()
+        letter = wordform.lstrip(' =*')[0].upper()
     if len(lst) < 2:
         wordform, reference, lexeme = lst[0]
         part_entries.append((reference, lexeme))
@@ -344,12 +331,17 @@ for letter, entries in letter_parts:
                 int(round(i / N * 100)),
                 entry.civil_equivalent + ERASE_LINEEND)
             sys.stderr.write(note)
+            if is_approved(entry):
+                template = 'csl/entry.html'
+            else:
+                template = 'csl/entry_stub.html'
             try:
                 html = render_to_string(
-                    'csl/entry.html', {'entry': entry, 'csl_url': csl_url})
+                    template, {'entry': entry, 'csl_url': csl_url})
             except:  # noqa
                 sys.stderr.write('\n')
-                sys.stderr.write('{e.id} {e.civil_equivalent}\n'.format(e=entry))
+                sys.stderr.write(
+                        '{e.id} {e.civil_equivalent}\n'.format(e=entry))
                 sys.stderr.write('\n'.join(str(x) for x in sys.exc_info()))
                 sys.exit(1)
             filename = os.path.join(ENTRIES_DIR, '%s.htm' % entry.id)
@@ -377,6 +369,7 @@ KEY_HOMONYM_ORDER = 'o'
 KEY_PART_OF_SPEECH = 'p'
 KEY_REFEREE = 'r'
 KEY_CIVIL = 'c'
+KEY_RNC_QUERY = 'q'  # Изменяемая часть поискового запроса на лексему в НКРЯ
 
 full_index = collections.defaultdict(list)
 # Полный указатель статей, который будет использоваться
@@ -405,8 +398,8 @@ KEY_GREEK_GREEK = 'g'
 KEY_GREEK_TRANSLIT = 't'
 
 
-def get_hint(entry, without_translit=True):
-    hint =  {
+def get_hint(entry, without_translit=True, with_rnc=False):
+    hint = {
         KEY_ENTRY_ID: entry.id,  # id лексемы в базе
         KEY_ENTRY: entry.base_vars[0].idem_ucs,  # Заглавное слово
     }
@@ -421,10 +414,13 @@ def get_hint(entry, without_translit=True):
     if entry.homonym_gloss.strip():
         # Комментарий к омониму
         hint[KEY_HOMONYM_GLOSS] = entry.homonym_gloss.strip()
+    if with_rnc:
+        hint[KEY_RNC_QUERY] = entry.get_rnc_lexm()
     return hint
 
 
-def get_reference_hint(wordform, lexeme, without_translit=True, with_ref=True):
+def get_reference_hint(wordform, lexeme, without_translit=True,
+                       with_ref=True, with_rnc=False):
     wordform = resolve_titles(wordform)
     hint = {
         KEY_ENTRY: ucs_convert(wordform),
@@ -433,10 +429,10 @@ def get_reference_hint(wordform, lexeme, without_translit=True, with_ref=True):
         hint[KEY_CIVIL] = civilrus_convert(wordform)
     if with_ref:
         if isinstance(lexeme, Entry):
-            hint[KEY_REFEREE] = get_hint(lexeme)
+            hint[KEY_REFEREE] = get_hint(lexeme, with_rnc=with_rnc)
         else:
             referenced_lexemes = lexeme['referenced_lexemes']
-            referee_hint = get_hint(referenced_lexemes[0])
+            referee_hint = get_hint(referenced_lexemes[0], with_rnc=with_rnc)
             if (len(referenced_lexemes) > 1
                     and all(e.homonym_order for e in referenced_lexemes)):
                 referee_hint[KEY_HOMONYM_ORDER] = ',\u00a0'.join(
@@ -475,10 +471,11 @@ for j, (wordform, reference, lexeme) in enumerate(entries2):
             int(round(j / N * 100)), slug + ERASE_LINEEND)
     sys.stderr.write(note)
 
+    unapproved = not is_approved(lexeme)
     if reference:
-        hint = get_reference_hint(wordform, lexeme)
+        hint = get_reference_hint(wordform, lexeme, with_rnc=unapproved)
     else:
-        hint = get_hint(lexeme)
+        hint = get_hint(lexeme, with_rnc=unapproved)
     for i, char in enumerate(slug):
         prefix = slug[:i + 1]
         if char not in ix_layer_pointer:
@@ -668,8 +665,10 @@ def get_greek(lexeme, hint):
     return hint
 
 
-N = len(entries2)
-for j, (wordform, reference, lexeme) in enumerate(entries2):
+gr_entries = [e for e in entries2
+              if isinstance(e, Entry) and is_approved(e)]
+N = len(gr_entries)
+for j, (wordform, reference, lexeme) in enumerate(gr_entries):
     slug = convert_for_index(wordform)
     ix_layer_pointer = greek_index
 
@@ -732,8 +731,10 @@ grix_tree_traversal('', greek_index, [])
 
 # Создание обратного греч. указателя
 greeks1 = []
-N = len(lexemes)
-for i, e in enumerate(lexemes):
+gr_lexemes = [lex for lex in lexemes
+              if isinstance(lex, Entry) and is_approved(lex)]
+N = len(gr_lexemes)
+for i, e in enumerate(gr_lexemes):
     note = 'Отбор параллелей для обратного греч. индекса [ %s%% ] %s\r' % (
             int(round(i / N * 100)), e.civil_equivalent + ERASE_LINEEND)
     sys.stderr.write(note)
@@ -821,6 +822,17 @@ def grix_rev_tree_traversal(slug, ix_layer, results):
 
 
 grix_rev_tree_traversal('', greek_index_reverse, [])
+
+
+# Запись js-функции, возвращающей для переменной части зарпоса в НКРЯ
+# полный урл.
+SYMB = '###'
+RNC = '''export function rnc(q) {{
+  return '{URL}'.replace('{SYMB}', q);
+}}'''.format(URL=Entry.objects.first().get_rnc_url(SYMB), SYMB=SYMB)
+with open(os.path.join(OUTPUT_DIR, 'rnc.js'), 'w') as f:
+    f.write(RNC)
+
 
 sys.stderr.write(ERASE_LINE)
 print(SHOW_CURSOR, file=sys.stderr)

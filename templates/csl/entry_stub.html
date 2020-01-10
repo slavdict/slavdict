@@ -1,0 +1,17 @@
+{% trim %}
+<div class="Entry">
+    <div class="FirstParagraph Text">
+        {{ entry.base_vars[0].idem_ucs | web_cslav_words("Headword") }}
+        {% if entry.homonym_order %}
+            <span class="HeadwordHomonymNumber">
+                {{ entry.homonym_order }}
+            </span>
+        {% endif %}
+    </div>
+    <div class="rnc2">
+        Статья в разработке. Примеры словоупотребления
+        см.&nbsp;<a target="_blank" href="{{ entry.get_rnc_url() }}">в&nbsp;Национальном корпусе русского языка</a>.
+    <div>
+</div>
+{% endtrim %}
+{# vim: set ft=django.html: #}

@@ -17,6 +17,9 @@ lem_files = ('lem-1.csv', 'lem-2.csv', 'lem-3.csv', 'lem-4.csv', 'lem-5.csv')
 words_basic_corpus_filename = 'corpus_without_bible.txt'
 words_bible_corpus_filename = 'corpus_bible_only.txt'
 
+possessive_filepath = os.path.join(path, 'lem-possessive.txt')
+possessives_to_hold = (open(possessive_filepath).read())
+
 
 def load_data(f):
     f.readline()
@@ -236,6 +239,9 @@ def get_lemmas_merged_with_bible(lemmas, bible_lemmas):
     for lex in bible_lemmas:
         if lex not in lemmas and re.findall(r'\b(persn|topn|poss)\b', lex.pos):
             if re.findall(r'\bposs\b', lex.pos):
+                if lex.lex in possessives_to_hold:
+                    chosen.add(lex)
+                    continue
                 poss.add(lex)
             continue
         chosen.add(lex)
