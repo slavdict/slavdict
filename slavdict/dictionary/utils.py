@@ -345,3 +345,52 @@ def antconc_wordform_query(text):
         else:
             query += char
     return query
+
+
+QSTART = r'^\(\^\|\(\?\<\=(\\s|\[[^\]]+\])\)\)(.*)$'
+QEND = r'^(.*)\(\?\=\[[^\]]+\]\)$'
+
+def get_query_orterms(text):
+    text = text.strip()
+    if re.findall(QSTART, text):
+        text = re.sub(QSTART, r'\2', text)
+    if re.findall(QEND, text):
+        text = re.sub(QEND, r'\1', text)
+    # Снимаем внешние скобки, если они есть
+    # и если они действительно окаймляющие.
+    if text[:1] == '(' and text[-1:] == ')':
+        level = 0
+        last_ix = len(text) - 1
+        for ix, c in enumerate(text):
+            if c == '(':
+                level += 1
+            elif c == ')':
+                level -= 1
+            if level == 0:
+                if ix < last_ix:
+                    break
+                else:
+                    text = text[1:-1]
+    # Разбиваем на OR-компоненты
+    level = 0
+    last_ix = len(text) - 1
+    or_terms = []
+    or_term = ''
+    for ix, c in enumerate(text):
+        if c == '(':
+            level += 1
+        elif c == ')':
+            level -= 1
+        elif c == '|' and level == 0:
+            or_terms.append(or_term)
+            or_term = ''
+            continue
+        or_term += c
+    or_terms.append(or_term)
+    # Избавляемся от пустых строк
+    or_terms = list(filter(None, or_terms))
+    return or_terms
+
+
+def make_query_from_orterms(or_terms):
+    return r'(^|(?<=\s))(%s)(?=[\s.,;:!])' % '|'.join(or_terms)
