@@ -33,9 +33,12 @@ def load_data(filepath):
     data = []
     with open(filepath) as f:
         f.readline()
-        for line in f.readlines():
+        for i, line in enumerate(f.readlines()):
             row = Row(re.split(r'","', line.strip()[1:-1]))
             data.append(row)
+            print('Reading data from %s [ %s ]' % (filepath, i),
+                  end='\r', file=sys.stderr)
+    print(file=sys.stderr)
     return data
 
 
@@ -47,20 +50,25 @@ def write_diff(voc, entries):
             'Номер омонима', 'Смыслоразличительный ярлык омонима',
             'Является ли дубликатом']))
         f.write('\n')
-        for item in voc:
+        N = len(voc)
+        for i, item in enumerate(voc):
             if item.civil not in entries:
                 f.write(','.join('"%s"' % value for value in [
                     item.lemma, item.civil, item.wordforms, item.query,
                     item.author, item.comment,
                     item.homonym_number, item.homonym_gloss, item.dup]))
                 f.write('\n')
+            print('Writing diff data [ %i%% ]' % ((i + 1) / N * 100),
+                  end='\r', file=sys.stderr)
+    print(file=sys.stderr)
 
 
 def add_form(form, entry, data):
     civil = civilrus_convert(form).lower()
     civil_without_er = civil.replace('ъ', '')
     civil_without_erj = civil_without_er.replace('ь', '')
-    data[civil].append(entry)
+    if civil:
+        data[civil].append(entry)
     if civil_without_er != civil:
         data[civil_without_er].append(entry)
     if civil_without_erj != civil and civil_without_erj != civil_without_er:
@@ -71,14 +79,15 @@ def link_form(form, query_voc, main_civil):
     civil = civilrus_convert(form).lower()
     civil_without_er = civil.replace('ъ', '')
     civil_without_erj = civil_without_er.replace('ь', '')
-    query_voc[civil].union(query_voc[main_civil])
+    if civil:
+        query_voc[civil].union(query_voc[main_civil])
     if civil_without_er != civil:
         query_voc[civil_without_er].union(query_voc[main_civil])
     if civil_without_erj != civil and civil_without_erj != civil_without_er:
         query_voc[civil_without_erj].union(query_voc[main_civil])
 
 
-def get_forms(entry):
+def get_forms(e):
     forms = []
     for ov in e.orth_vars:
         forms.append(ov.idem)
@@ -93,7 +102,8 @@ def get_forms(entry):
 
 def get_query_voc(voc, entries):
     query_voc = defaultdict(set)
-    for item in voc:
+    N = len(voc)
+    for i, item in enumerate(voc):
         civil = re.sub('[ъь]', '', item.civil.strip())
         query_voc[civil].add(item.query)
         if civil in entries:
@@ -101,20 +111,31 @@ def get_query_voc(voc, entries):
         for e in entries[civil]:
             for form in get_forms(e):
                 link_form(form, query_voc, civil)
+        print('Building antconc query index [ %i%% ]' % ((i + 1) / N * 100),
+              end='\r', file=sys.stderr)
+    print(file=sys.stderr)
     return query_voc
 
 
-entries = defaultdict(list)
-for e in Entry.objects.all():
-    for form in get_forms(e):
-        add_form(form, e, entries)
+def get_entries_index():
+    entries = defaultdict(list)
+    N = Entry.objects.count()
+    for i, e in enumerate(Entry.objects.all()):
+        for form in get_forms(e):
+            add_form(form, e, entries)
+        print('Building form index [ %i%% ]' % ((i + 1) / N * 100),
+              end='\r', file=sys.stderr)
+    print(file=sys.stderr)
+    return entries
 
 voc = load_data(filepath)
-write_diff(voc, entries)
+entries = get_entries_index()
+#write_diff(voc, entries)
 query_voc = get_query_voc(voc, entries)
 
 orphans = []
-for entry in Entry.objects.all():
+N = Entry.objects.count()
+for i, entry in enumerate(Entry.objects.all()):
     if not entry.antconc_query.strip():
         for form in get_forms(entry):
             civil = re.sub('[ъь]', '', civilrus_convert(form).strip())
@@ -126,10 +147,14 @@ for entry in Entry.objects.all():
                 if value:
                     entry.antconc_query = value
                     entry.save()
-                    print(entry.civil_equivalent, value)
                     break
         else:
-            print(entry.civil_equivalent)
             orphans.append(entry)
+    print('Patching articles with no query [ %i%% ]' % ((i + 1) / N * 100),
+          end='\r', file=sys.stderr)
+print(file=sys.stderr)
 
-print('Осталось статей без запросов:', len(orphans))
+for e in orphans:
+    print(e.civil_equivalent, file=sys.stderr)
+print('Remained articles not having antconc query:', len(orphans),
+      file=sys.stderr)
