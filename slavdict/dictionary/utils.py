@@ -393,4 +393,6 @@ def get_query_orterms(text):
 
 
 def make_query_from_orterms(or_terms):
-    return r'(^|(?<=\s))(%s)(?=[\s.,;:!])' % '|'.join(or_terms)
+    if or_terms:
+        return r'(^|(?<=\s))(%s)(?=[\s.,;:!])' % '|'.join(set(or_terms))
+    return ''
