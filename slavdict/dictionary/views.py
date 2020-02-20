@@ -33,6 +33,7 @@ from slavdict.dictionary import viewmodels
 from slavdict.dictionary.forms import BilletImportForm
 from slavdict.dictionary.forms import FilterEntriesForm
 from slavdict.dictionary.forms import FilterExamplesForm
+from slavdict.dictionary.models import ALWAYS_LAST_POS
 from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Example
@@ -43,6 +44,7 @@ from slavdict.dictionary.models import MSC11
 from slavdict.dictionary.models import MSC12
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import PART_OF_SPEECH_MAP
+from slavdict.dictionary.models import PART_OF_SPEECH_ORDER
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.middleware import InvalidCookieError
@@ -53,7 +55,10 @@ from functools import reduce
 # Вспомогательная функция
 # для сортировки списка словарных статей.
 def entry_key(entry):
-    return '%s %s' % ( entry.civil_equivalent.lower(), entry.homonym_order )
+    return entry.civil_equivalent.lower(), entry.homonym_order
+
+def entry_key_inversed(entry):
+    return entry.civil_equivalent.lower()[::-1], entry.homonym_order
 
 def params_without_page(GET):
     excluded_GET_params = ('page', 'AB')
@@ -80,32 +85,21 @@ def set_cookie_from_data(response, request, cookie_salt, form):
         response.set_cookie(cookie_name, value, path=request.path)
     return response
 
-POS_ORDER = (
-    PART_OF_SPEECH_MAP['letter'],
-    PART_OF_SPEECH_MAP['number'],
-    PART_OF_SPEECH_MAP['noun'],
-    PART_OF_SPEECH_MAP['pronoun'],
-    PART_OF_SPEECH_MAP['adjective'],
-    PART_OF_SPEECH_MAP['participle-adjective'],
-    PART_OF_SPEECH_MAP['participle'],
-    PART_OF_SPEECH_MAP['predicative adverb'],
-    PART_OF_SPEECH_MAP['adverb'],
-    PART_OF_SPEECH_MAP['adposition'],
-    PART_OF_SPEECH_MAP['preposition'],
-    PART_OF_SPEECH_MAP['postposition'],
-    PART_OF_SPEECH_MAP['conjunction'],
-    PART_OF_SPEECH_MAP['interjection'],
-    PART_OF_SPEECH_MAP['particle'],
-    PART_OF_SPEECH_MAP['verb'],
-)
-
 def pos_group_entry_key(entry):
-    numbered_entry = entry_key(entry)
-    if entry.part_of_speech in POS_ORDER:
-        pos = POS_ORDER.index(entry.part_of_speech)
+    civil, homonym = entry_key(entry)
+    if entry.part_of_speech in PART_OF_SPEECH_ORDER:
+        pos = PART_OF_SPEECH_ORDER.index(entry.part_of_speech)
     else:
-        pos = None
-    return pos, numbered_entry
+        pos = ALWAYS_LAST_POS
+    return pos, civil, homonym
+
+def pos_group_entry_key_inversed(entry):
+    civil, homonym = entry_key_inversed(entry)
+    if entry.part_of_speech in PART_OF_SPEECH_ORDER:
+        pos = PART_OF_SPEECH_ORDER.index(entry.part_of_speech)
+    else:
+        pos = ALWAYS_LAST_POS
+    return pos, civil, homonym
 
 paginator_re = re.compile(r'(\d+)[,;:](\d+)')
 
@@ -160,6 +154,11 @@ def all_entries(request, is_paged=False):
 
 ?hide-refentries                Не отображать отсылочные статьи.
 
+?inverse                        Упорядочить статьи по обратному гражданскому
+                                написанию заглавного слова. Например, слово
+                                "вняти" будет отсортировано, как если бы это
+                                было слово "итянв".
+
 ?list=1324,3345,22              Отображать только статьи с указанными
                                 числовыми идентификаторами.
 
@@ -203,6 +202,7 @@ def all_entries(request, is_paged=False):
     httpGET_NOT_EDITABLE = 'not-editable' in request.GET
     httpGET_PERPAGE = request.GET.get('per-page')
     httpGET_POS_GROUP = 'pos-group' in request.GET
+    httpGET_INVERSE = 'inverse' in request.GET
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STARTSWITH = request.GET.get('startswith')
     httpGET_STATUS = urllib.parse.unquote(request.GET.get('status', ''))
@@ -283,9 +283,15 @@ def all_entries(request, is_paged=False):
         title += ', начинающиеся на „{0}-“'.format(httpGET_STARTSWITH)
 
     if httpGET_POS_GROUP:
-        key = pos_group_entry_key
+        if httpGET_INVERSE:
+            key = pos_group_entry_key_inversed
+        else:
+            key = pos_group_entry_key
     else:
-        key = entry_key
+        if httpGET_INVERSE:
+            key = entry_key_inversed
+        else:
+            key = entry_key
     entries = sorted(entries, key=key)
     if httpGET_PERPAGE and httpGET_PERPAGE.isdigit():
         per_page=int(httpGET_PERPAGE)

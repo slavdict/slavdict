@@ -120,6 +120,28 @@ PART_OF_SPEECH_MAP = {
     'pronoun': 'c',
     'verb': 'd',
 }
+# Порядок отображения частей речи при выводе статей с группировкой
+# по части речи
+PART_OF_SPEECH_ORDER = (
+    PART_OF_SPEECH_MAP['letter'],
+    PART_OF_SPEECH_MAP['number'],
+    PART_OF_SPEECH_MAP['noun'],
+    PART_OF_SPEECH_MAP['pronoun'],
+    PART_OF_SPEECH_MAP['adjective'],
+    PART_OF_SPEECH_MAP['participle-adjective'],
+    PART_OF_SPEECH_MAP['participle'],
+    PART_OF_SPEECH_MAP['predicative adverb'],
+    PART_OF_SPEECH_MAP['adverb'],
+    PART_OF_SPEECH_MAP['adposition'],
+    PART_OF_SPEECH_MAP['preposition'],
+    PART_OF_SPEECH_MAP['postposition'],
+    PART_OF_SPEECH_MAP['conjunction'],
+    PART_OF_SPEECH_MAP['interjection'],
+    PART_OF_SPEECH_MAP['particle'],
+    PART_OF_SPEECH_MAP['verb'],
+)
+ALWAYS_LAST_POS = 100
+
 
 TANTUM_CHOICES = (
     ('d', 'только дв.'),
