@@ -47,9 +47,38 @@
             }
         }
 
+        .single_entry {
+            position: relative;
+        }
+
 {% if hide_authors %}
         .author {
             display: none;
+        }
+{% endif %}
+
+{% if show_sort_keys %}
+        .all_entries {
+            display: table;
+        }
+        .single_entry {
+            position: relative;
+            display: table-row;
+        }
+        .Entry {
+            display: table-cell;
+        }
+        .sort_key,
+        .sort_key_inverse {
+            display: table-cell;
+            padding: 0 2em 1.5em 0;
+            letter-spacing: 0.05em;
+        }
+        .sort_key {
+            text-align: left;
+        }
+        .sort_key_inverse {
+            text-align: right;
         }
 {% endif %}
 
@@ -61,9 +90,16 @@
 
 <div{% if not is_paged and not not_editable %}
         contenteditable="true"
-    {% endif %}>
+    {% endif %} class="all_entries">
     {% for entry in entries %}
-        <div style="position: relative;">
+        <div class="single_entry">
+
+        {% if show_sort_keys %}
+            <div class="{% if inverse_sort %}sort_key_inverse
+                        {% else %}sort_key{% endif %}">
+                {{ entry.civil_equivalent }}
+            </div>
+        {% endif %}
 
         {% if show_numbers %}
             <a href="/entries/{{ entry.id }}/" target="_blank"

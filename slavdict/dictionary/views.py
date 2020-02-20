@@ -174,6 +174,12 @@ def all_entries(request, is_paged=False):
 ?show-ai                        При отображении статей обязательно показывать
                                 рабочие примечания-комментарии.
 
+?show-sort-keys                 При отображении статей обязательно показывать
+                                ключи сортировки. Может быть полезно для
+                                вывода обратного словника. Ключи будут
+                                отображаться в отдельном столбце с выключкой
+                                влево для обычных ключей и вправо для инверсных.
+
 ?startswith=Ав                  Отображать только статьи, начинающиеся
                                 на «Ав» без учета регистра символов.
 
@@ -204,6 +210,7 @@ def all_entries(request, is_paged=False):
     httpGET_POS_GROUP = 'pos-group' in request.GET
     httpGET_INVERSE = 'inverse' in request.GET
     httpGET_SHOWAI = 'show-ai' in request.GET
+    httpGET_SHOWSORTKEYS = 'show-sort-keys' in request.GET
     httpGET_STARTSWITH = request.GET.get('startswith')
     httpGET_STATUS = urllib.parse.unquote(request.GET.get('status', ''))
 
@@ -323,17 +330,19 @@ def all_entries(request, is_paged=False):
         show_additional_info = False
 
     context = {
-        'is_paged': is_paged,
         'entries': entries,
         'hide_authors': httpGET_HIDEAUTHORS,
         'hide_examples': httpGET_HIDEEXAMPLES,
         'hide_meanings': httpGET_HIDEMEANINGS,
+        'inverse_sort': httpGET_INVERSE,
+        'is_paged': is_paged,
         'not_editable': httpGET_NOT_EDITABLE,
         'params_without_page': params_without_page(request.GET),
         'page': page,
         'show_additional_info': show_additional_info,
         'show_duplicates_warning': False if httpGET_DUPLICATES else True,
         'show_numbers': not httpGET_HIDENUMBERS,
+        'show_sort_keys': httpGET_SHOWSORTKEYS,
         'show_refentries': not httpGET_HIDEREFENTRIES,
         'title': title,
         'user': request.user,
