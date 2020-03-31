@@ -361,6 +361,7 @@ WHOLE_DICTIONARY = False
 VOLUME_LETTERS = {
     1: ('а', 'б'),
     2: ('в',),
+    3: ('г', 'д', 'е'),
 }
 ANY_LETTER = None
 

@@ -1,6 +1,7 @@
 from slavdict.dictionary.models import Entry
+from slavdict.dictionary.models import VOLUME_LETTERS
 
-VOLUME = 2
+VOLUME = max(VOLUME_LETTERS.keys())
 
 onyms = []
 onyms_others = []

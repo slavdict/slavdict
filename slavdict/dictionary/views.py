@@ -45,6 +45,7 @@ from slavdict.dictionary.models import MSC12
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import PART_OF_SPEECH_MAP
 from slavdict.dictionary.models import PART_OF_SPEECH_ORDER
+from slavdict.dictionary.models import VOLUME_LETTERS
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.middleware import InvalidCookieError
@@ -1052,7 +1053,7 @@ def useful_urls_redirect(uri, request):
     eURI = base_url + 'entry/'
     mURI = base_url + 'meaning/'
     exURI = base_url + 'example/'
-    VOLUME = 2
+    VOLUME = max(VOLUME_LETTERS.keys())
 
     def uri_qs(uri, **kwargs):
         qs = '&'.join('{0}={1}'.format(k, v) for k, v in list(kwargs.items()))
@@ -1541,6 +1542,7 @@ def useful_urls_redirect(uri, request):
 @login_required
 @never_cache
 def useful_urls(request, x=None, y=None):
+    VOLUME = max(VOLUME_LETTERS.keys())
     urls = (
             ('Формы слова', (
                     ('Все заглавные слова с титлами', 'headwords_titles'),
@@ -1606,5 +1608,6 @@ def useful_urls(request, x=None, y=None):
     context = {
         'urls': urls,
         'user': request.user,
+        'volume': VOLUME,
     }
     return render(request, 'useful_urls.html', context)

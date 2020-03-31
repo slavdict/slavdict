@@ -31,7 +31,7 @@ from slavdict.dictionary.utils import sort_key1
 from slavdict.dictionary.utils import sort_key2
 from slavdict.dictionary.utils import ucs_convert
 
-OUTPUT_VOLUMES = (2,)
+OUTPUT_VOLUMES = (max(VOLUME_LETTERS.keys()),)
 OUTPUT_VOLUMES_LETTERS = reduce(lambda x, y: x + y, (VOLUME_LETTERS[volume]
     for volume in OUTPUT_VOLUMES if volume in VOLUME_LETTERS), ())
 
