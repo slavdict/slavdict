@@ -1101,6 +1101,12 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
                      volume=VOLUME)
 
+    elif uri == 'collocs_ambivalent':
+        cgs = (cg for cg in CollocationGroup.objects.all()
+                  if len(cg.all_meanings) > 1)
+        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
+                     volume=VOLUME)
+
     elif uri == 'collocs_oneword':
         cgs = (cg for cg in CollocationGroup.objects.all()
                   if all(not re.search(r'\s', c.collocation.strip())
@@ -1559,6 +1565,7 @@ def useful_urls(request, x=None, y=None):
                     ('Фразеологизмы', 'phraseological_collocs'),
                     ('Cc из одного слова', 'collocs_oneword'),
                     ('Cc без значений', 'collocs_without_meanings'),
+                    ('Многозначные сс (сс с несколькими значениями)', 'collocs_ambivalent'),
                     ('Сс с одинаковыми значениями', 'collocs_same_meaning'),
                     ('Сс – литургические символы', 'collocs_litsym'),
                     ('Сс в роли сущ.', 'collocs_noun'),
