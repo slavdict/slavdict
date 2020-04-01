@@ -364,6 +364,7 @@ VOLUME_LETTERS = {
     3: ('г', 'д', 'е'),
 }
 ANY_LETTER = None
+LOCKED_LETTERS = VOLUME_LETTERS[1] + VOLUME_LETTERS[2]
 
 
 class WithoutHiddenManager(models.Manager):
@@ -1207,7 +1208,9 @@ class Entry(models.Model, JSONSerializable):
     # во время подготовки тома к печати или нет.
     @property
     def preplock(self):
-        if self.volume(volume=YET_NOT_IN_VOLUMES):
+        yet_not_in_volumes = self.volume(volume=YET_NOT_IN_VOLUMES)
+        not_in_locked_letters = self.first_letter() not in LOCKED_LETTERS
+        if yet_not_in_volumes or not_in_locked_letters:
             return False
         return True
 
