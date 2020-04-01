@@ -25,6 +25,7 @@ from slavdict.dictionary.models import VOLUME_LETTERS
 from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
 from slavdict.dictionary.models import LETTERS
 from slavdict.dictionary.models import ANY_LETTER
+from slavdict.dictionary.utils import arabic2roman
 
 ui = admin.sites.AdminSite(name='UI')
 ui.login_template = 'registration/login.html'
@@ -206,9 +207,9 @@ class VolumeFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         choices = tuple(
             (str(volume),
-             'из %s-го тома (%s)' % (volume, ', '.join(letters).upper()))
+            '%s:\u2003%s' % (arabic2roman(volume), ', '.join(letters).upper()))
             for volume, letters in sorted(VOLUME_LETTERS.items()))
-        choices = choices + (('0', 'остальные'),)
+        choices = choices + (('0', 'не вошедшие в тома буквы'),)
         return choices
 
     def queryset(self, request, queryset):

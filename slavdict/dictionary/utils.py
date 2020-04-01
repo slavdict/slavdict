@@ -396,3 +396,30 @@ def make_query_from_orterms(or_terms):
     if or_terms:
         return r'(^|(?<=\s))(%s)(?=[\s.,;:!])' % '|'.join(set(or_terms))
     return ''
+
+
+ROMANS = (
+    (1000, 'M', ''),
+    (100,  'C', 'D'),
+    (10,   'X', 'L'),
+    (1,    'I', 'V'),
+)
+
+def arabic2roman(n):
+    roman = '*' if n >= ROMANS[0][0] * (10 if ROMANS[0][2] else 4) else ''
+    for i, (value, dig1, dig5) in enumerate(ROMANS):
+        a = n % (value * 10) // value
+        if a == 0:
+            continue
+        elif 0 < a < 4:
+            roman += dig1 * a
+        elif a == 4:
+            roman += dig1 + dig5
+        elif a == 5:
+            roman += dig5
+        elif 5 < a < 9:
+            roman += dig5 + (dig1 * (a - 5))
+        elif a == 9 and i > 0:
+            _, dig10, _ = ROMANS[i - 1]
+            roman += dig1 + dig10
+    return roman
