@@ -362,9 +362,17 @@ VOLUME_LETTERS = {
     1: ('а', 'б'),
     2: ('в',),
     3: ('г', 'д', 'е'),
+    4: ('ж', 'з', 'и'),
+    5: ('к', 'л', 'м'),
+    6: ('н',),
+    7: ('о',),
+    8: ('п',),
+    9: ('р', 'с'),
+    10: ('т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ю', 'я'),
 }
 ANY_LETTER = None
 LOCKED_LETTERS = VOLUME_LETTERS[1] + VOLUME_LETTERS[2]
+CURRENT_VOLUME = 3
 
 
 class WithoutHiddenManager(models.Manager):

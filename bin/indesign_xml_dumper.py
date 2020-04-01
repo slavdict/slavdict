@@ -24,6 +24,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
+from slavdict.dictionary.models import CURRENT_VOLUME
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import VOLUME_LETTERS
 from slavdict.dictionary.utils import resolve_titles
@@ -31,7 +32,7 @@ from slavdict.dictionary.utils import sort_key1
 from slavdict.dictionary.utils import sort_key2
 from slavdict.dictionary.utils import ucs_convert
 
-OUTPUT_VOLUMES = (max(VOLUME_LETTERS.keys()),)
+OUTPUT_VOLUMES = (CURRENT_VOLUME,)
 OUTPUT_VOLUMES_LETTERS = reduce(lambda x, y: x + y, (VOLUME_LETTERS[volume]
     for volume in OUTPUT_VOLUMES if volume in VOLUME_LETTERS), ())
 

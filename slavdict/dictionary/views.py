@@ -35,6 +35,7 @@ from slavdict.dictionary.forms import FilterEntriesForm
 from slavdict.dictionary.forms import FilterExamplesForm
 from slavdict.dictionary.models import ALWAYS_LAST_POS
 from slavdict.dictionary.models import CollocationGroup
+from slavdict.dictionary.models import CURRENT_VOLUME
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
@@ -45,7 +46,6 @@ from slavdict.dictionary.models import MSC12
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import PART_OF_SPEECH_MAP
 from slavdict.dictionary.models import PART_OF_SPEECH_ORDER
-from slavdict.dictionary.models import VOLUME_LETTERS
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.middleware import InvalidCookieError
@@ -1053,7 +1053,7 @@ def useful_urls_redirect(uri, request):
     eURI = base_url + 'entry/'
     mURI = base_url + 'meaning/'
     exURI = base_url + 'example/'
-    VOLUME = max(VOLUME_LETTERS.keys())
+    VOLUME = CURRENT_VOLUME
 
     def uri_qs(uri, **kwargs):
         qs = '&'.join('{0}={1}'.format(k, v) for k, v in list(kwargs.items()))
@@ -1542,7 +1542,7 @@ def useful_urls_redirect(uri, request):
 @login_required
 @never_cache
 def useful_urls(request, x=None, y=None):
-    VOLUME = max(VOLUME_LETTERS.keys())
+    VOLUME = CURRENT_VOLUME
     urls = (
             ('Формы слова', (
                     ('Все заглавные слова с титлами', 'headwords_titles'),
