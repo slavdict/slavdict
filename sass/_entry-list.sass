@@ -145,6 +145,16 @@ table.entry-list tr.hover .ss .caps.homonym-gloss
     color: #fff !important
     border: 1px #fff dotted !important
 
+a.icon
+    display: block
+    position: relative
+    width: 22px
+    top: 3px
+    cursor: pointer
+    color: #aaa
+
+    &:hover
+        color: #444 !important
 
 a.icon img
     width: 22px
@@ -152,7 +162,6 @@ a.icon img
     vertical-align: middle
     padding: 0
     margin: 0
-    cursor: pointer
 
 .editButtons
     position: absolute
@@ -162,9 +171,16 @@ a.icon img
     @media print
         display: none
 
+a.icon.rnc
+    font-size: 0.7rem
+    color: #999
+    height: 0.3em
+    margin-bottom: 2em
+    left: -0.3em
+    top: 0.7em
+
 a.icon.edit
     background: url(edit-gray-faded.png?#{$shash}) no-repeat 50% 50%
-    position: relative
     span
         font-size: 0.7em
         position: absolute

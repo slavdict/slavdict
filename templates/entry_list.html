@@ -54,7 +54,6 @@
                         <img src="{{ STATIC_URL }}transparent.png?{{
                                      STATIC_RESOURCES_VERSION }}" alt="" />
                     </a>
-                    <br>
                     <a class="icon edit"
                        title="Редактировать статью в старом интерфейсе"
                        href="/entries/{{ entry.pk }}/intermed/">
@@ -62,7 +61,6 @@
                                      STATIC_RESOURCES_VERSION }}" alt="" />
                         <span>ꙮ</span>
                     </a>
-                    <br>
                 {% endif %}
                 {% if editorCond or hellinistCond %}
                     <a class="icon edit" href="{{
@@ -72,7 +70,6 @@
                                      STATIC_RESOURCES_VERSION }}" alt="" />
                         <span>αβ</span>
                     </a>
-                    <br>
                 {% endif %}
                 {% if entry.antconc_query|trim %}
                     <a class="icon clippy nearText"
@@ -81,13 +78,11 @@
                         <img src="{{ STATIC_URL }}transparent.png?{{
                                      STATIC_RESOURCES_VERSION }}" alt="" />
                     </a>
-                    <br>
                 {% endif %}
-                <a class="rnc" target="_blank" href="{{ entry.get_rnc_url() }}">
-                    НКРЯ
-                </a>
+                    <a class="icon rnc" target="_blank"
+                        href="{{ entry.get_rnc_url() }}">НКРЯ</a>
                 </div>
-            {% include 'web/entry.html' %}
+                {% include 'web/entry.html' %}
             </div>
         {% endfor %}
     {% else %}
