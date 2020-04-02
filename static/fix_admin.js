@@ -113,7 +113,11 @@
             "g": 'conjunction',
             "h": 'preposition',
             "i": 'particle',
-            "j": 'interjection'
+            "j": 'interjection',
+            "k": 'number',
+            "l": 'letter',
+            "m": 'participle-adjective',
+            "n": 'predicative-adverb'
         };
 
         var v = $('select#id_part_of_speech').val();
@@ -122,8 +126,11 @@
         }
 
         $('select#id_part_of_speech').change(function(){
-            var v = $(this).val();
-            $('.noun, .verb, .adjective, .adverb, .preposition, .pronoun, .conjunction, .particle, .interjection, .participle').hide();
+            var v = $(this).val(),
+                classes = Object.values(partsOfSpeech).map(function (x) {
+                    return '.' + x;
+                }).join(',');
+            $(classes).hide();
             if (v && v !== '.') {
                 $('.' + partsOfSpeech[v]).show();
             }

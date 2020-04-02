@@ -115,7 +115,9 @@ PART_OF_SPEECH_MAP = {
     'participle': 'e',
     'particle': 'i',
     'postposition': 'h',
-    'predicative adverb': 'n',
+    'predicative-adverb': 'n',  # NOTE: В мнемониках нельзя использовать
+    # пробелы, поскольку названия используются в частности для CSS-классов.
+    # Поэтому "predicative-adverb", а не "predicative adverb".
     'preposition': 'h',
     'pronoun': 'c',
     'verb': 'd',
@@ -130,7 +132,7 @@ PART_OF_SPEECH_ORDER = (
     PART_OF_SPEECH_MAP['adjective'],
     PART_OF_SPEECH_MAP['participle-adjective'],
     PART_OF_SPEECH_MAP['participle'],
-    PART_OF_SPEECH_MAP['predicative adverb'],
+    PART_OF_SPEECH_MAP['predicative-adverb'],
     PART_OF_SPEECH_MAP['adverb'],
     PART_OF_SPEECH_MAP['adposition'],
     PART_OF_SPEECH_MAP['preposition'],
@@ -353,7 +355,7 @@ POS_SPECIAL_CASES_MAP = {
     MSC7: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['interjection']],
     MSC13: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['conjunction']],
     MSC19: dict(PART_OF_SPEECH_CHOICES)[
-        PART_OF_SPEECH_MAP['predicative adverb']],
+        PART_OF_SPEECH_MAP['predicative-adverb']],
 }
 
 YET_NOT_IN_VOLUMES = None

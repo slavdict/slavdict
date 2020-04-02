@@ -742,8 +742,11 @@ class AdminEntryADMIN(AdminEntry):
         (None, { # Для имен собств.
             'fields': ('onym', 'canonical_name', 'nom_sg'),
             'classes': ('hidden noun',) } ),
+        (None, { # Для прил. и прич.-прил.
+            'fields': ('short_form',),
+            'classes': ('hidden adjective participle-adjective',) } ),
         (None, { # Для прил.
-            'fields': ('short_form', 'possessive'),
+            'fields': ('possessive',),
             'classes': ('hidden adjective',) } ),
         (None, { # Для прил. и нареч.
             'fields': ('comparative',),
@@ -795,8 +798,11 @@ class AdminEntryUI(AdminEntry):
         (None, { # Для имен собств.
             'fields': ('onym', 'canonical_name', 'nom_sg'),
             'classes': ('hidden noun',) } ),
+        (None, { # Для прил. и прич.-прил.
+            'fields': ('short_form',),
+            'classes': ('hidden adjective participle-adjective',) } ),
         (None, { # Для прил.
-            'fields': ('short_form', 'possessive'),
+            'fields': ('possessive',),
             'classes': ('hidden adjective',) } ),
         (None, { # Для прил. и нареч.
             'fields': ('comparative',),
