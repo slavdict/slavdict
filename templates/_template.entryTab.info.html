@@ -110,16 +110,19 @@
 
     </div>
 
-    <div data-bind="visible:
-        part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
+    <div>
 
-        <label id="infoTab--possessive">
+        <label id="infoTab--possessive" data-bind="visible:
+        part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
             <span>Притяжательное</span>
             <input type="checkbox"
                    data-bind="checked: possessive"/>
         </label>
 
-        <div id="infoTab--shortForm">
+        <div id="infoTab--shortForm" data-bind="visible:
+        [$root.ui.slugs.part_of_speech['adjective'],
+         $root.ui.slugs.part_of_speech['participle-adjective']]
+        .indexOf(part_of_speech()) > -1">
             <label>
                 <span>Краткая форма</span>
                 <input type="text" data-bind="textInput: short_form"

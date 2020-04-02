@@ -1544,7 +1544,7 @@ var viewModel = vM.entryEdit,
 
     uiModel.nAdjV = ko.pureComputed(function () {
         return (dataModel.entry
-            .part_of_speech.label().match(/^(сущ|прил|гл)\.$/));
+            .part_of_speech.label().match(/^(сущ|прил|гл|прич.-прил)\.$/));
     });
 
     ko.applyBindings(viewModel, $('body').get(0));
