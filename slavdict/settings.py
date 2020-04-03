@@ -76,9 +76,6 @@ if exists(_hash_file):
         print(_hash_file, 'could not be read')
         sys.exit(1)
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'td2+2t^tz-)^j^%@4_^c8ds#6-po3sfoqbwaa2u*i3rj3y%hs1'
-
 MIDDLEWARE = (
     'slavdict.middleware.ValidCookieMiddleware',
     'django.middleware.security.SecurityMiddleware',
