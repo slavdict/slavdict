@@ -15,3 +15,4 @@ Jinja2 = "*"
 "psycopg2-binary" = "*"
 pipfile = {version = "*",editable = true}
 django-admin-rangefilter = "*"
+django-crum = "*"

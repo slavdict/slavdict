@@ -88,6 +88,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'crum.CurrentRequestUserMiddleware',
 )
 
 ROOT_URLCONF = 'slavdict.urls'
@@ -144,6 +145,33 @@ INSTALLED_APPS = (
     'slavdict.dictionary',
     'slavdict.csl_annotations',
 )
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'slavdict': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': '[{server_time}] {message}',
+            'style': '{',
+        }
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'formatter': 'slavdict',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django/slavdict.log',
+        },
+    },
+    'loggers': {
+        'slavdict': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    }
+}
 
 ######################################
 ##  Настройки отдельных приложений  ##

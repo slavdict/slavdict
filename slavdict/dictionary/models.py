@@ -1,6 +1,7 @@
 import datetime
 import itertools
 import json
+import logging
 import re
 import unicodedata
 
@@ -31,6 +32,11 @@ from slavdict.dictionary.utils import ucs_convert as ucs8
 from slavdict.dictionary.utils import ucs_convert_affix
 from slavdict.jinja_extensions.hyphenation import hyphenate_ucs8 as h
 from slavdict.jinja_extensions import trim_spaces as ts
+
+from crum import get_current_user
+
+
+logger = logging.getLogger('slavdict')
 
 
 def meanings(self):
@@ -1285,7 +1291,18 @@ class Entry(models.Model, JSONSerializable):
             self.civil_inverse = self.civil_equivalent[::-1]
         if not without_mtime:
             self.mtime = datetime.datetime.now()
+        should_log = not self.pk
         super(Entry, self).save(*args, **kwargs)
+        if should_log:
+            user = get_current_user()
+            logger.info('<User: %s> created <Entry id: %s, headword: %s>' % (
+                        user.last_name, self.id, self.civil_equivalent))
+
+    def delete(self, *args, **kwargs):
+        user = get_current_user()
+        logger.info('<User: %s> deleted <Entry id: %s, headword: %s>' % (
+                    user.last_name, self.id, self.civil_equivalent))
+        super(Entry, self).delete(*args, **kwargs)
 
     def make_double(self):
         with transaction.atomic():
@@ -2160,6 +2177,21 @@ class Example(models.Model, JSONSerializable):
         host_entry = self.host_entry
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
+
+        if not self.address_text.strip() and len(self.example) < 10:
+            # Отслеживаем странные случаи, когда в базе возникают примеры без
+            # адреса и с текстом примера из нескольких повторяющихся букв
+            # наподобие "ооо", "нннн".
+            user = get_current_user()
+            logger.error(
+                    '<Example id: %s, text: "%s">, '
+                    'is corrupted during <User: %s>´s session: '
+                    '<Host Object: %s %s>, '
+                    '<Host Entry id: %s, headword: %s>' % (
+                        self.id, self.example,
+                        user.last_name,
+                        host.__class__.__name__, host.id,
+                        host_entry.id, host_entry.civil_equivalent))
 
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Example, self).delete(*args, **kwargs)
