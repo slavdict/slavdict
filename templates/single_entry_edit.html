@@ -255,7 +255,8 @@
                     withinFragmentCSS = 'WithinFragmentForTranslation',
                     cslavCSS = allBindingsAccessor().cslavCSS || 'CSLSegment',
                     translationCSS = allBindingsAccessor().translationCSS || 'Text';
-                value.eWT = ko.computed(function () {
+
+                function getExHTMLwTranslation() {
                         var data = bindingContext.$data,
                             example = value(),
                             translations = data.translations(),
@@ -263,8 +264,9 @@
                             isAffix = false,
                             text = ac2ucs8(example, isAffix),
                             segments = text.split(Example.UCS8SegmentSplitRE),
-                            words = [], i, j, t, midword, word, x,
-                            x1css, x2css, fs, fe,
+                            words = [], doNotify = [],
+                            i, j, t, midword, word, x,
+                            x1css, x2css, fs, fe, fragmentLength,
                             compare = function (a, b) {
                                 var af = a.fragmented.peep,
                                     bf = b.fragmented.peep,
@@ -317,13 +319,23 @@
                                 }
                                 fs = t.fragment_start();
                                 fe = t.fragment_end();
-                                if (fe < words.length + 1) {
+                                fragmentLength = fe - fs + 1;
+                                var exceedingLenght = fragmentLength > words.length,
+                                    fsOut = fs > words.length,
+                                    feOut = fe > words.length;
+                                if (exceedingLenght || fsOut || feOut) {
+                                    fs = fe = words.length - 1 || 1;
+                                    doNotify.push({
+                                        translation: t,
+                                        fragment_start: fs,
+                                        fragment_end: fe,
+                                    });
                                     words[fe - 1].translations.push(t)
                                 } else {
-                                    words[words.length - 1].translations.push(t)
+                                    words[fe - 1].translations.push(t)
                                 }
                                 if (fs < words.length + 1 && fs <= fe) {
-                                    for (j = 0; j < fe - fs + 1; j++) {
+                                    for (j = 0; j < fragmentLength; j++) {
                                         x = fs + j - 1;
                                         if (x >= 0 && x <= fe) {
                                             words[x].withinFragment = true;
@@ -333,6 +345,8 @@
                             }
                         }
                         text = '';
+                        var OPEN_COLOR = '<span style="color: #a00">',
+                            CLOSE_COLOR = '</span>';
                         for (i = 0; i < words.length; i++) {
                             word = words[i];
                             if (word.withinFragment && i < words.length - 1
@@ -354,7 +368,9 @@
                                       + '</span>');
                             if (word.translations.length > 0) {
                                 word.translations.sort(compare);
-                                text += ' <span class="Text">(</span>';
+                                text += ' ';
+                                text += OPEN_COLOR;
+                                text += '<span class="Text">(</span>';
                                 for (j = 0; j < word.translations.length; j++) {
                                     t = word.translations[j];
                                     if (j > 0) {
@@ -367,6 +383,7 @@
                                              '</span><span class="Text">’</span>');
                                 }
                                 text += '<span class="Text">)</span>';
+                                text += CLOSE_COLOR;
                             }
                             if (word.midword) {
                                 text += ('<span class="' + x2css + '">' +
@@ -376,6 +393,7 @@
                         if (nonFragmentedTranslations.length > 0) {
                             nonFragmentedTranslations.sort(compare);
                             text += ' ';
+                            text += OPEN_COLOR;
                             for (i = 0; i < nonFragmentedTranslations.length; i++) {
                                 t = nonFragmentedTranslations[i];
                                 if (i > 0) {
@@ -387,14 +405,38 @@
                                          '">' + t.translation() +
                                          '</span><span class="Text">’</span>');
                             }
+                            text += CLOSE_COLOR;
                         }
-                        return text;
-                });
-                $(element).html(value.eWT());
+                        var obj = new String(text);
+                        obj.notifyTranslations = function () {
+                            for (var i = 0; i < doNotify.length; i++) {
+                                var x = doNotify[i],
+                                    t = x.translation;
+                                if (x.fragmented !== undefined) {
+                                    t.fragmented(x.fragmented);
+                                }
+                                if (x.fragment_start !== undefined) {
+                                    t.fragment_start(x.fragment_start);
+                                }
+                                if (x.fragment_end !== undefined) {
+                                    t.fragment_end(x.fragment_end);
+                                }
+                            }
+                        }
+                        return obj;
+                }
+
+                value.eWT = ko.computed(getExHTMLwTranslation)
+                    .extend({ rateLimit: 500 });
+                var html = value.eWT();
+                $(element).html(html);
+                html.notifyTranslations()
             },
             update: function (element, valueAccessor) {
-                var value = valueAccessor();
-                $(element).html(value.eWT());
+                var value = valueAccessor(),
+                    html = value.eWT();
+                $(element).html(html);
+                html.notifyTranslations()
             }
         };
 

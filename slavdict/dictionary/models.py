@@ -2330,6 +2330,7 @@ class Translation(models.Model, JSONSerializable):
         return dict((key, self.__dict__[key]) for key in _fields)
 
     def save(self, without_mtime=False, *args, **kwargs):
+        # Проверка перевода на "синодальность".
         ai = self.additional_info.strip()
         match_segments = ('в', 'синодальн', 'перевод')
         if ai:
@@ -2340,6 +2341,23 @@ class Translation(models.Model, JSONSerializable):
                     break
             else:
                 self.is_synodal = True
+
+        # Корректировка интервала фрагментированного перевода, если после
+        # правки примера позиционирование перевода протухло. FIXME: правки
+        # примеров не отслеживаются так, чтобы можно было перерасчитывать
+        # позицию перевода. Перевод механически переносится к предпоследнему
+        # слову примера, чтобы автор или редакторы заметили аномалию.
+        if self.fragmented:
+            fragment_length = self.fragment_end - self.fragment_start + 1
+            example = self.for_example.example
+            n_words = len(re.split(r'[\s\.…,:;?!\/=«»“”‘’\[\]\(\)]+', example))
+            exceeding_length = fragment_length > n_words
+            fs_out = self.fragment_start > n_words
+            fe_out = self.fragment_end > n_words
+            if exceeding_length or fs_out or fe_out:
+                self.fragment_start = n_words - 1 or 1
+                self.fragment_end = self.fragment_start
+
         super(Translation, self).save(*args, **kwargs)
         if without_mtime:
             return
