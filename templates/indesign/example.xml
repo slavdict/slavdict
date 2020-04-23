@@ -15,8 +15,8 @@
         {% if not loop.first %}
             {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
-        {% if t.is_synodal %}
-            <x aid:cstyle="Em">в{{ nbsp }}Син. пер.</x>{{ space }}
+        {% if t.source %}
+            <x aid:cstyle="Em">{{ t.source_label() }}</x>{{ space }}
             <x aid:cstyle="Text">{{ t.translation }}</x>
         {% else %}
             <x aid:cstyle="Text">‘{{ t.translation |

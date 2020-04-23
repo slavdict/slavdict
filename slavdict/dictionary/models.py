@@ -265,26 +265,26 @@ ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE = {
 }
 ETYMOLOGY_LANGUAGES = list(ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.keys())
 LANGUAGE_CSS = {
-        LANGUAGE_MAP['akkadian']: 'akkadian',
-        LANGUAGE_MAP['aramaic']: 'aramaic',
-        LANGUAGE_MAP['armenian']: 'armenian',
-        LANGUAGE_MAP['coptic']: 'coptic',
-        LANGUAGE_MAP['georgian']: 'georgian',
-        LANGUAGE_MAP['greek']: 'grec',
-        LANGUAGE_MAP['hebrew']: 'hebrew',
-        LANGUAGE_MAP['latin']: '',
-        LANGUAGE_MAP['syriac']: 'syriac',
+    LANGUAGE_MAP['akkadian']: 'akkadian',
+    LANGUAGE_MAP['aramaic']: 'aramaic',
+    LANGUAGE_MAP['armenian']: 'armenian',
+    LANGUAGE_MAP['coptic']: 'coptic',
+    LANGUAGE_MAP['georgian']: 'georgian',
+    LANGUAGE_MAP['greek']: 'grec',
+    LANGUAGE_MAP['hebrew']: 'hebrew',
+    LANGUAGE_MAP['latin']: '',
+    LANGUAGE_MAP['syriac']: 'syriac',
 }
 LANGUAGE_TRANSLIT_CSS = {
-        LANGUAGE_MAP['akkadian']: '',
-        LANGUAGE_MAP['aramaic']: 'aramaic-translit',
-        LANGUAGE_MAP['armenian']: '',
-        LANGUAGE_MAP['coptic']: '',
-        LANGUAGE_MAP['georgian']: '',
-        LANGUAGE_MAP['greek']: '',
-        LANGUAGE_MAP['hebrew']: 'hebrew-translit',
-        LANGUAGE_MAP['latin']: '',
-        LANGUAGE_MAP['syriac']: 'syriac-translit',
+    LANGUAGE_MAP['akkadian']: '',
+    LANGUAGE_MAP['aramaic']: 'aramaic-translit',
+    LANGUAGE_MAP['armenian']: '',
+    LANGUAGE_MAP['coptic']: '',
+    LANGUAGE_MAP['georgian']: '',
+    LANGUAGE_MAP['greek']: '',
+    LANGUAGE_MAP['hebrew']: 'hebrew-translit',
+    LANGUAGE_MAP['latin']: '',
+    LANGUAGE_MAP['syriac']: 'syriac-translit',
 }
 
 SUBSTANTIVUS_TYPE_CHOICES = (
@@ -304,6 +304,18 @@ SUBSTANTIVUS_TYPE_MAP = {
     'f.sg.': 'e',
     'f.pl.': 'f',
 }
+
+TRANSLATION_SOURCE_NULL = ''
+TRANSLATION_SOURCE_SYNODAL = 'S'
+TRANSLATION_SOURCE_DEFAULT = TRANSLATION_SOURCE_NULL
+TRANSLATION_SOURCE_CHOICES = (
+    (TRANSLATION_SOURCE_NULL, ''),
+    (TRANSLATION_SOURCE_SYNODAL, 'Синодальный перевод'),
+)
+TRANSLATION_SOURCE_TEXT = {
+    TRANSLATION_SOURCE_SYNODAL: 'в\u00a0Син. пер.',
+}
+
 
 SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10 = 'abcdefghij'
 ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10
@@ -2290,11 +2302,17 @@ class Translation(models.Model, JSONSerializable):
     fragment_end = SmallIntegerField('номер слова конца фрагмента',
             blank=True, default=1000)
     is_synodal = BooleanField('синодальный перевод', default=False)
+    source = CharField('Источник', max_length=1,
+            choices=TRANSLATION_SOURCE_CHOICES,
+            default=TRANSLATION_SOURCE_DEFAULT)
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     hidden = BooleanField('скрывать перевод', default=True,
             help_text='отображать перевод только в комментариях для авторов')
     translation = TextField('перевод')
     additional_info = TextField('примечание', blank=True)
+
+    def source_label(self):
+        return TRANSLATION_SOURCE_TEXT.get(self.source, '')
 
     @property
     def host_entry(self):
@@ -2323,25 +2341,13 @@ class Translation(models.Model, JSONSerializable):
             'fragment_end',
             'hidden',
             'id',
-            'is_synodal',
             'order',
+            'source',
             'translation',
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
     def save(self, without_mtime=False, *args, **kwargs):
-        # Проверка перевода на "синодальность".
-        ai = self.additional_info.strip()
-        match_segments = ('в', 'синодальн', 'перевод')
-        if ai:
-            for word in re.split(r'[\s\.]+', ai):
-                word = word.lower()
-                if not any(word[:len(segment)] == segment[:len(word)]
-                           for segment in match_segments):
-                    break
-            else:
-                self.is_synodal = True
-
         # Корректировка интервала фрагментированного перевода, если после
         # правки примера позиционирование перевода протухло. FIXME: правки
         # примеров не отслеживаются так, чтобы можно было перерасчитывать

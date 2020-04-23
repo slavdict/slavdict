@@ -9,9 +9,13 @@
             <a class="deleteItem" data-bind="click:
                 $parent.translations.itemDestroyer($data).do"></a>
 
-            <label>
-                <span>Син. пер.</span>
-                <input type="checkbox" data-bind="checked: is_synodal" />
+            <label style="margin-left: 0">
+                <span style="margin-right: 1em">Источник</span>
+                <select style="width: 4em"
+                    data-bind="options: $root.ui.choices.translation_source,
+                    value: source, optionsText: 'name',
+                    optionsValue: 'id'">
+                </select>
             </label>
 
             <label style="margin-left: 3em">

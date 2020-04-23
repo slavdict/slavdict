@@ -976,6 +976,8 @@ def edit_entry(request, id):
         'participle_type': viewmodels.editParticiples,
         'substantivus_type': viewmodels.editSubstantivusTypes,
         'tantum': viewmodels.editTantum,
+        'translation_source': viewmodels._choices(
+                            models.TRANSLATION_SOURCE_CHOICES),
     }
     labels = {
         'author': dict(viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
@@ -985,7 +987,8 @@ def edit_entry(request, id):
         'part_of_speech': dict(models.PART_OF_SPEECH_CHOICES),
         'participle_type': dict(models.PARTICIPLE_CHOICES),
         'substantivus_type': dict(models.SUBSTANTIVUS_TYPE_CHOICES),
-        'tantum': dict(models.TANTUM_CHOICES)
+        'tantum': dict(models.TANTUM_CHOICES),
+        'translation_source': models.TRANSLATION_SOURCE_TEXT,
     }
     slugs = {
         'onym': models.ONYM_MAP,

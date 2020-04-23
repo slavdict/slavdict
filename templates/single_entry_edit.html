@@ -313,6 +313,8 @@
                             t = translations[i];
                             if (!t.hidden() &&
                                         t.translation().replace(/\s+/g, '')) {
+                                t.source(); // Реагируем на изменение
+                                    // значения свойства источника перевода.
                                 if (!t.fragmented()) {
                                     nonFragmentedTranslations.push(t);
                                     continue;
@@ -374,7 +376,13 @@
                                 for (j = 0; j < word.translations.length; j++) {
                                     t = word.translations[j];
                                     if (j > 0) {
-                                        text += ', ';
+                                        text += '<span class="Text">; </span>';
+                                    }
+                                    var source = t.source.label();
+                                    if (source) {
+                                        text += ('<span class="Em" ' +
+                                           'style="background-color: #fbb4">' +
+                                            source + '</span> ');
                                     }
                                     text += ('<span class="Text">‘</span>' +
                                              '<span class="' +
@@ -397,7 +405,13 @@
                             for (i = 0; i < nonFragmentedTranslations.length; i++) {
                                 t = nonFragmentedTranslations[i];
                                 if (i > 0) {
-                                    text += ', ';
+                                    text += '<span class="Text">; </span>';
+                                }
+                                var source = t.source.label();
+                                if (source) {
+                                    text += ('<span class="Em" ' +
+                                       'style="background-color: #fbb4">' +
+                                        source + '</span> ');
                                 }
                                 text += ('<span class="Text">‘</span>' +
                                          '<span class="' +

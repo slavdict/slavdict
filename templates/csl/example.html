@@ -15,8 +15,8 @@
         {% if not loop.first %}
             {{ backspace }},{{ space }}
         {% endif %}
-        {% if t.is_synodal %}
-            <span class="Em">в{{ nbsp }}Син. пер.</span>{{ space }}
+        {% if t.source %}
+            <span class="Em">{{ t.source_label() }}</span>{{ space }}
             <span class="Text hyphenate">{{ t.translation }}</span>
         {% else %}
             <span class="Text hyphenate">‘{{ t.translation |

@@ -354,8 +354,8 @@ function Translation() {
     upsert(this, 'for_example_id', data, example_id);
     upsert(this, 'id', data, 'greq' + getId());
     upsert(this, 'hidden', data, true);
-    upsert(this, 'is_synodal', data, false);
     upsert(this, 'translation', data, '');
+    upsert(this, 'source', data, '');
     upsert(this, 'fragmented', data, false);
     upsert(this, 'fragment_start', data, 1);
     upsert(this, 'fragment_end', data, defaultPosition);
@@ -376,6 +376,8 @@ function Translation() {
             return ex.getFragment(this.fragment_start(), this.fragment_end());
         }, this, { deferEvaluation: true })
     );
+    this.source.label = ko.pureComputed(
+            Translation.prototype.source_label, this);
     Translation.all.append(this);
 }
 
@@ -822,10 +824,11 @@ function etymologiesGuarantor(object, attrname) {
     Participle.guarantor = orderGuarantor;
     Orthvar.guarantor = orderGuarantor;
 
-    function label(attrname) {
+    function label(attrname, labelname) {
+        if (!labelname) labelname = attrname;
         return function () {
             var x = this[attrname](),
-                y = viewModel.ui.labels[attrname];
+                y = viewModel.ui.labels[labelname];
             if (x in y) {
                 return y[x];
             } else {
@@ -836,6 +839,7 @@ function etymologiesGuarantor(object, attrname) {
             }
         };
     }
+    Translation.prototype.source_label = label('source', 'translation_source');
     Meaning.prototype.substantivus_type_label = label('substantivus_type');
     Entry.prototype.part_of_speech_label = label('part_of_speech');
 })()
