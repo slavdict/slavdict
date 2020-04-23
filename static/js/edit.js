@@ -1295,9 +1295,13 @@ var viewModel = vM.entryEdit,
             return array;
         }
 
+        viewModel.canEdit = ko.observable(true);
+
         function saveAndExit() {
             var data, persistingDataPromise,
                 toDestroy = {};
+
+            viewModel.canEdit(false);
 
             constructors.forEach(function (item) {
                 toDestroy[item.name] = item.shredder;
@@ -1330,6 +1334,7 @@ var viewModel = vM.entryEdit,
             persistingDataPromise
                 .done(uiModel.saveDialogue.exitWithoutSaving)
                 .fail(function (jqXHR, textStatus, errorThrown) {
+                    viewModel.canEdit(true);
                     console.log('jqXHR: ', jqXHR);
                     console.log('textStatus: ', textStatus);
                     console.log('Error thrown: ', errorThrown);
