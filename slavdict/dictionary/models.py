@@ -2301,7 +2301,6 @@ class Translation(models.Model, JSONSerializable):
             blank=True, default=1)
     fragment_end = SmallIntegerField('номер слова конца фрагмента',
             blank=True, default=1000)
-    is_synodal = BooleanField('синодальный перевод', default=False)
     source = CharField('Источник', max_length=1,
             choices=TRANSLATION_SOURCE_CHOICES,
             default=TRANSLATION_SOURCE_DEFAULT)
