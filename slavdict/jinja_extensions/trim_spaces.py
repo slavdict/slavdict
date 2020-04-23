@@ -600,8 +600,6 @@ def _insert_translation_data(words, data, show_additional_info=False,
         cstyle = 'Text'
     tag0 = Tag(cslav_style=None, civil_style='Text', for_web=for_web)
     tag1 = Tag(cslav_style=None, civil_style=cstyle, for_web=for_web)
-    synodal_mark = ExternalSegment('в' + NBSP + 'Син. пер.' + SPACE,
-            Tag(cslav_style=None, civil_style='Em', for_web=for_web))
     if show_additional_info:
         cstyle2 = 'ai ai-grfex ' + cstyle
         tag2 = Tag(cslav_style=None, civil_style=cstyle2, for_web=for_web)
@@ -612,7 +610,12 @@ def _insert_translation_data(words, data, show_additional_info=False,
             'Em', r'(?<![А-Яа-я])букв\.', for_web=for_web)
     c = lambda t: (show_additional_info and t.additional_info.strip()
             and for_web)
-    tt = lambda t: '‘%s’%s' if not t.is_synodal else '{0}%s%s'.format(synodal_mark)
+    def tt(translation):
+        if not translation.source:
+            return '‘%s’%s'
+        source_mark = ExternalSegment(translation.source_label() + SPACE,
+                Tag(cslav_style=None, civil_style='Em', for_web=for_web))
+        return '{0}%s%s'.format(source_mark)
 
     # Расстановка частичных переводов, отображаемых в статье
     for index, lst in list(data.items()):

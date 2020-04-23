@@ -1,6 +1,7 @@
 import datetime
 import itertools
 import json
+import logging
 import re
 import unicodedata
 
@@ -31,6 +32,11 @@ from slavdict.dictionary.utils import ucs_convert as ucs8
 from slavdict.dictionary.utils import ucs_convert_affix
 from slavdict.jinja_extensions.hyphenation import hyphenate_ucs8 as h
 from slavdict.jinja_extensions import trim_spaces as ts
+
+from crum import get_current_user
+
+
+logger = logging.getLogger('slavdict')
 
 
 def meanings(self):
@@ -259,26 +265,26 @@ ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE = {
 }
 ETYMOLOGY_LANGUAGES = list(ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.keys())
 LANGUAGE_CSS = {
-        LANGUAGE_MAP['akkadian']: 'akkadian',
-        LANGUAGE_MAP['aramaic']: 'aramaic',
-        LANGUAGE_MAP['armenian']: 'armenian',
-        LANGUAGE_MAP['coptic']: 'coptic',
-        LANGUAGE_MAP['georgian']: 'georgian',
-        LANGUAGE_MAP['greek']: 'grec',
-        LANGUAGE_MAP['hebrew']: 'hebrew',
-        LANGUAGE_MAP['latin']: '',
-        LANGUAGE_MAP['syriac']: 'syriac',
+    LANGUAGE_MAP['akkadian']: 'akkadian',
+    LANGUAGE_MAP['aramaic']: 'aramaic',
+    LANGUAGE_MAP['armenian']: 'armenian',
+    LANGUAGE_MAP['coptic']: 'coptic',
+    LANGUAGE_MAP['georgian']: 'georgian',
+    LANGUAGE_MAP['greek']: 'grec',
+    LANGUAGE_MAP['hebrew']: 'hebrew',
+    LANGUAGE_MAP['latin']: '',
+    LANGUAGE_MAP['syriac']: 'syriac',
 }
 LANGUAGE_TRANSLIT_CSS = {
-        LANGUAGE_MAP['akkadian']: '',
-        LANGUAGE_MAP['aramaic']: 'aramaic-translit',
-        LANGUAGE_MAP['armenian']: '',
-        LANGUAGE_MAP['coptic']: '',
-        LANGUAGE_MAP['georgian']: '',
-        LANGUAGE_MAP['greek']: '',
-        LANGUAGE_MAP['hebrew']: 'hebrew-translit',
-        LANGUAGE_MAP['latin']: '',
-        LANGUAGE_MAP['syriac']: 'syriac-translit',
+    LANGUAGE_MAP['akkadian']: '',
+    LANGUAGE_MAP['aramaic']: 'aramaic-translit',
+    LANGUAGE_MAP['armenian']: '',
+    LANGUAGE_MAP['coptic']: '',
+    LANGUAGE_MAP['georgian']: '',
+    LANGUAGE_MAP['greek']: '',
+    LANGUAGE_MAP['hebrew']: 'hebrew-translit',
+    LANGUAGE_MAP['latin']: '',
+    LANGUAGE_MAP['syriac']: 'syriac-translit',
 }
 
 SUBSTANTIVUS_TYPE_CHOICES = (
@@ -298,6 +304,18 @@ SUBSTANTIVUS_TYPE_MAP = {
     'f.sg.': 'e',
     'f.pl.': 'f',
 }
+
+TRANSLATION_SOURCE_NULL = ''
+TRANSLATION_SOURCE_SYNODAL = 'S'
+TRANSLATION_SOURCE_DEFAULT = TRANSLATION_SOURCE_NULL
+TRANSLATION_SOURCE_CHOICES = (
+    (TRANSLATION_SOURCE_NULL, ''),
+    (TRANSLATION_SOURCE_SYNODAL, 'Синодальный перевод'),
+)
+TRANSLATION_SOURCE_TEXT = {
+    TRANSLATION_SOURCE_SYNODAL: 'в\u00a0Син. пер.',
+}
+
 
 SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10 = 'abcdefghij'
 ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10
@@ -1285,7 +1303,18 @@ class Entry(models.Model, JSONSerializable):
             self.civil_inverse = self.civil_equivalent[::-1]
         if not without_mtime:
             self.mtime = datetime.datetime.now()
+        should_log = not self.pk
         super(Entry, self).save(*args, **kwargs)
+        if should_log:
+            user = get_current_user()
+            logger.info('<User: %s> created <Entry id: %s, headword: %s>' % (
+                        user.last_name, self.id, self.civil_equivalent))
+
+    def delete(self, *args, **kwargs):
+        user = get_current_user()
+        logger.info('<User: %s> deleted <Entry id: %s, headword: %s>' % (
+                    user.last_name, self.id, self.civil_equivalent))
+        super(Entry, self).delete(*args, **kwargs)
 
     def make_double(self):
         with transaction.atomic():
@@ -2161,6 +2190,21 @@ class Example(models.Model, JSONSerializable):
         if host_entry is not None:
             host_entry.save(without_mtime=without_mtime)
 
+        if not self.address_text.strip() and len(self.example) < 10:
+            # Отслеживаем странные случаи, когда в базе возникают примеры без
+            # адреса и с текстом примера из нескольких повторяющихся букв
+            # наподобие "ооо", "нннн".
+            user = get_current_user()
+            logger.error(
+                    '<Example id: %s, text: "%s">, '
+                    'is corrupted during <User: %s>´s session: '
+                    '<Host Object: %s %s>, '
+                    '<Host Entry id: %s, headword: %s>' % (
+                        self.id, self.example,
+                        user.last_name,
+                        host.__class__.__name__, host.id,
+                        host_entry.id, host_entry.civil_equivalent))
+
     def delete(self, without_mtime=False, *args, **kwargs):
         super(Example, self).delete(*args, **kwargs)
         if without_mtime:
@@ -2257,12 +2301,17 @@ class Translation(models.Model, JSONSerializable):
             blank=True, default=1)
     fragment_end = SmallIntegerField('номер слова конца фрагмента',
             blank=True, default=1000)
-    is_synodal = BooleanField('синодальный перевод', default=False)
+    source = CharField('Источник', max_length=1,
+            choices=TRANSLATION_SOURCE_CHOICES,
+            default=TRANSLATION_SOURCE_DEFAULT)
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     hidden = BooleanField('скрывать перевод', default=True,
             help_text='отображать перевод только в комментариях для авторов')
     translation = TextField('перевод')
     additional_info = TextField('примечание', blank=True)
+
+    def source_label(self):
+        return TRANSLATION_SOURCE_TEXT.get(self.source, '')
 
     @property
     def host_entry(self):
@@ -2291,23 +2340,29 @@ class Translation(models.Model, JSONSerializable):
             'fragment_end',
             'hidden',
             'id',
-            'is_synodal',
             'order',
+            'source',
             'translation',
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
     def save(self, without_mtime=False, *args, **kwargs):
-        ai = self.additional_info.strip()
-        match_segments = ('в', 'синодальн', 'перевод')
-        if ai:
-            for word in re.split(r'[\s\.]+', ai):
-                word = word.lower()
-                if not any(word[:len(segment)] == segment[:len(word)]
-                           for segment in match_segments):
-                    break
-            else:
-                self.is_synodal = True
+        # Корректировка интервала фрагментированного перевода, если после
+        # правки примера позиционирование перевода протухло. FIXME: правки
+        # примеров не отслеживаются так, чтобы можно было перерасчитывать
+        # позицию перевода. Перевод механически переносится к предпоследнему
+        # слову примера, чтобы автор или редакторы заметили аномалию.
+        if self.fragmented:
+            fragment_length = self.fragment_end - self.fragment_start + 1
+            example = self.for_example.example
+            n_words = len(re.split(r'[\s\.…,:;?!\/=«»“”‘’\[\]\(\)]+', example))
+            exceeding_length = fragment_length > n_words
+            fs_out = self.fragment_start > n_words
+            fe_out = self.fragment_end > n_words
+            if exceeding_length or fs_out or fe_out:
+                self.fragment_start = n_words - 1 or 1
+                self.fragment_end = self.fragment_start
+
         super(Translation, self).save(*args, **kwargs)
         if without_mtime:
             return

@@ -7,7 +7,28 @@
         <div id="sD--entryAdvertisement"
             data-bind="template: { name: 'entryAdvertisement' }"></div>
 
-        <div id="sD--entryStatus">
+        <div data-bind="visible: !$root.canEdit()"
+             style="position: relative; height: 27.3em">
+            <div style="color: #ccc; position: relative; text-align: center;
+                        top: 6em">
+                <div id="sD--saving">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div style="padding-top: 1em; letter-spacing: 0.05em;
+                            font-variant: all-small-caps; font-weight: bold">
+                    Сохранение выполняется
+                </div>
+            </div>
+        </div>
+
+        <div id="sD--entryStatus" data-bind="visible: $root.canEdit">
             <span>Статус статьи</span>
 
             {% for id, name in STATUSES %}
@@ -20,12 +41,12 @@
             {% endfor %}
         </div>
 
-        <div id="sD--additionalInfo">
+        <div id="sD--additionalInfo" data-bind="visible: $root.canEdit">
             <label>Примечание</label>
             <textarea data-bind="textInput: additional_info"></textarea>
         </div>
 
-        <div id="sD--buttons">
+        <div id="sD--buttons" data-bind="visible: $root.canEdit">
 
             <div id="sD--saveAndExit">
                 <input type="button" value="Сохранить"

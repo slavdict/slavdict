@@ -10,8 +10,8 @@ EXEC=python
 python -m django >/dev/null 2>&1 || EXEC='pipenv run python'
 
 $EXEC $PRJDIR/manage.py dumpdata \
-    auth.User auth.Group custom_user.CustomUser \
-    --format=xml --indent=4 > $FILE
+    auth contenttypes custom_user.CustomUser \
+    --natural-primary --natural-foreign --format=xml --indent=4 > $FILE
 
 if [ "$LASTFILE" ]
 then

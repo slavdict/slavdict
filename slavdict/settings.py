@@ -76,9 +76,6 @@ if exists(_hash_file):
         print(_hash_file, 'could not be read')
         sys.exit(1)
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'td2+2t^tz-)^j^%@4_^c8ds#6-po3sfoqbwaa2u*i3rj3y%hs1'
-
 MIDDLEWARE = (
     'slavdict.middleware.ValidCookieMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -88,6 +85,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'crum.CurrentRequestUserMiddleware',
 )
 
 ROOT_URLCONF = 'slavdict.urls'
@@ -144,6 +142,33 @@ INSTALLED_APPS = (
     'slavdict.dictionary',
     'slavdict.csl_annotations',
 )
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'slavdict': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': '[{server_time}] {message}',
+            'style': '{',
+        }
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'formatter': 'slavdict',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django/slavdict.log',
+        },
+    },
+    'loggers': {
+        'slavdict': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    }
+}
 
 ######################################
 ##  Настройки отдельных приложений  ##
