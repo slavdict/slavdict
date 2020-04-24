@@ -384,11 +384,12 @@
                                            'style="background-color: #fbb4">' +
                                             source + '</span> ');
                                     }
-                                    text += ('<span class="Text">‘</span>' +
+                                    text += ((!source ? '<span class="Text">‘</span>' : '') +
                                              '<span class="' +
                                                    translationCSS +
                                              '">' + t.translation() +
-                                             '</span><span class="Text">’</span>');
+                                             '</span>' +
+                                             (!source ? '<span class="Text">’</span>' : ''));
                                 }
                                 text += '<span class="Text">)</span>';
                                 text += CLOSE_COLOR;
@@ -413,11 +414,12 @@
                                        'style="background-color: #fbb4">' +
                                         source + '</span> ');
                                 }
-                                text += ('<span class="Text">‘</span>' +
+                                text += ((!source ? '<span class="Text">‘</span>' : '') +
                                          '<span class="' +
                                                translationCSS +
                                          '">' + t.translation() +
-                                         '</span><span class="Text">’</span>');
+                                         '</span>' +
+                                         (!source ? '<span class="Text">’</span>' : ''));
                             }
                             text += CLOSE_COLOR;
                         }
