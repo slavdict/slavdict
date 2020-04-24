@@ -306,14 +306,53 @@ SUBSTANTIVUS_TYPE_MAP = {
 }
 
 TRANSLATION_SOURCE_NULL = ''
+TRANSLATION_SOURCE_ADAMENKO = 'A'
+TRANSLATION_SOURCE_BIRUKOVY = 'B'
+TRANSLATION_SOURCE_GOVOROV = 'G'
+TRANSLATION_SOURCE_JUNGEROV = 'J'
+TRANSLATION_SOURCE_KEDROV = 'K'
+TRANSLATION_SOURCE_LOVJAG1 = 'L'
+TRANSLATION_SOURCE_LOVJAG2 = '2'
+TRANSLATION_SOURCE_NAXIMOV = 'N'
+TRANSLATION_SOURCE_POLANSK = 'P'
+TRANSLATION_SOURCE_RBS = 'R'
+TRANSLATION_SOURCE_SEDAKOVA = '3'
 TRANSLATION_SOURCE_SYNODAL = 'S'
+TRANSLATION_SOURCE_TIMROT = 'T'
 TRANSLATION_SOURCE_DEFAULT = TRANSLATION_SOURCE_NULL
 TRANSLATION_SOURCE_CHOICES = (
+
     (TRANSLATION_SOURCE_NULL, ''),
     (TRANSLATION_SOURCE_SYNODAL, 'Синодальный перевод'),
+    (TRANSLATION_SOURCE_RBS, 'Перевод РБО'),
+
+    (TRANSLATION_SOURCE_ADAMENKO, 'Адаменко В., свящ.'),
+    (TRANSLATION_SOURCE_BIRUKOVY, 'Бируковы'),
+    (TRANSLATION_SOURCE_GOVOROV, '(Говоров) Феофан, еп. — перевод Добротолюбия'),
+    (TRANSLATION_SOURCE_KEDROV, 'Кедров Н. — перевод великого канона'),
+    (TRANSLATION_SOURCE_LOVJAG1, 'Ловягин Е.И. — перевод канонов'),
+    (TRANSLATION_SOURCE_LOVJAG2, 'Ловягин И.Ф. — перевод октоиха'),
+    (TRANSLATION_SOURCE_NAXIMOV, 'Нахимов Н. (Зайончковский Н.Ч.)'),
+    (TRANSLATION_SOURCE_POLANSK, '(Полянский) Иустин, еп. — перевод Алфавита духовного'),
+    (TRANSLATION_SOURCE_SEDAKOVA, 'Седакова О.А.'),
+    (TRANSLATION_SOURCE_TIMROT, '(Тимрот) Амвросий, иером.'),
+    (TRANSLATION_SOURCE_JUNGEROV, 'Юнгеров П.А.'),
 )
 TRANSLATION_SOURCE_TEXT = {
     TRANSLATION_SOURCE_SYNODAL: 'в\u00a0Син. пер.',
+    TRANSLATION_SOURCE_RBS: 'в\u00a0пер. РБО',
+
+    TRANSLATION_SOURCE_ADAMENKO: 'в\u00a0пер. В.\u202fАдаменко',
+    TRANSLATION_SOURCE_BIRUKOVY: 'в\u00a0пер. Бируковых',
+    TRANSLATION_SOURCE_GOVOROV: 'в\u00a0пер. еп.\u00a0Феофана (Говорова)',
+    TRANSLATION_SOURCE_JUNGEROV: 'в\u00a0пер. П.\u202fЮнгерова',
+    TRANSLATION_SOURCE_KEDROV: 'в\u00a0пер. Н.\u202fКедрова',
+    TRANSLATION_SOURCE_LOVJAG1: 'в\u00a0пер. Е.\u202fЛовягина',
+    TRANSLATION_SOURCE_LOVJAG2: 'в\u00a0пер. И.\u202fЛовягина',
+    TRANSLATION_SOURCE_NAXIMOV: 'в\u00a0пер. Н.\u202fНахимова',
+    TRANSLATION_SOURCE_POLANSK: 'в\u00a0пер. еп.\u00a0Иустина (Полянского)',
+    TRANSLATION_SOURCE_SEDAKOVA: 'в\u00a0пер. О.\u202fСедаковой',
+    TRANSLATION_SOURCE_TIMROT: 'в\u00a0пер. иером.\u00a0Амвросия (Тимрота)',
 }
 
 
