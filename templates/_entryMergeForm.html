@@ -1,0 +1,82 @@
+{% trim %}
+<div id="entryMerge" style="display: none" data-bind="visible: step() === 1">
+  <div class="modalBackground"></div>
+
+  <div class="modal grid">
+
+    <div style="position: relative; height: 20em"
+      data-bind="visible: step() === 3">
+      <div style="color: #ccc; position: relative; text-align: center; top: 6em">
+        <div id="sD--saving">
+         <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div style="padding-top: 1em; letter-spacing: 0.05em;
+                    font-variant: all-small-caps; font-weight: bold">
+          Выполняется слияние статей
+        </div>
+      </div>
+    </div>
+
+    <!-- ko if: step() === 1 -->
+    <div data-bind="with: sourceEntry">
+      Выполнить слияние статьи{{ space }}
+      <span class="SC--fI--headword" data-bind="text: headword"></span>
+      <span class="SC--fI--homonym" data-bind="text: hom"></span>
+      {{ space }}
+      <span class="SC--fI--pOS" data-bind="text: pos"></span>
+      {{ space }}
+      <span class="SC--fI--hint" data-bind="text: hint"></span>
+      {{ space }}с другой статьей.
+    </div>
+    <!-- /ko -->
+
+    {#
+    <div>
+      <input type="text"
+         data-bind="textInput: searchPrefix,
+              event: { keydown: navigateFoundItems, blur: flushItems }"
+         autocomplete="off"
+         spellcheck="false"
+      />
+      <ul class="SC--foundItems hidden"
+          data-bind="foreach: foundItems,
+          css: { hidden: foundItems().length == 0 }">
+
+        <li class="SC--foundItem"
+            data-bind="css: { 'SC--foundItem-focused': isFocused },
+                       event: {
+                           mousedown: function(){ $parent.chose($data); },
+                           mouseover: function(){ $data.focusMe(); }
+                       }">
+          <span class="SC--fI--headword" data-bind="text: headword"></span>
+          <span class="SC--fI--homonym" data-bind="text: hom"></span>
+          {{ space }}
+          <span class="SC--fI--pOS" data-bind="text: pos"></span>
+          {{ space }}
+          <span class="SC--fI--hint" data-bind="text: hint"></span>
+        </li>
+
+      </ul>
+    </div>
+    #}
+
+    <div id="sD--buttons" style="text-align: right">
+
+      <input type="button" value="Выполнить"
+          data-bind="click: merge, visible: step() === 2" />
+
+      <input type="button" value="Отмена"
+          data-bind="click: cancel, visible: step() < 3" />
+
+    </div>
+
+  </div>
+</div>
+{% endtrim %}

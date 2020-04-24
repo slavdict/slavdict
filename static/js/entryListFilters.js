@@ -227,7 +227,6 @@ $('#id_sortdir').on('focus', goSensitive);
 $('#id_sortbase').on('focus', goSensitive);
 
 ko.applyBindings(vM.filters, $('.filters').get(0));
-ko.applyBindings(vM.filters, $('#main').get(0));
 if ($('#withExamples').length) {
     ko.applyBindings(vM.filters, $('#withExamples').get(0));
 }

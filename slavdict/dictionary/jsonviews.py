@@ -43,21 +43,7 @@ def json_singleselect_entries_urls(request):
                 |
                 Q(civil_equivalent__startswith=FIND_CAPZD)
             ).order_by('civil_equivalent', 'homonym_order')[:7]
-        entries = [
-                {
-                'civil': e.civil_equivalent,
-                'headword': e.orth_vars[0].idem_ucs,
-                'hom': e.homonym_order,
-                'pos': e.get_part_of_speech_display() if (e.homonym_order
-                    and e.part_of_speech
-                    and e.part_of_speech
-                        not in (PART_OF_SPEECH_MAP['letter'],
-                                PART_OF_SPEECH_MAP['number'])
-                    ) else '',
-                'hint': e.homonym_gloss,
-                'url': e.get_absolute_url(),
-                }
-                for e in entries]
+        entries = [e.get_search_item() for e in entries]
         data = _json(entries).encode('utf-8')
         response = HttpResponse(data, content_type=IMT_JSON)
     else:

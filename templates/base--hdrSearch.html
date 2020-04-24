@@ -67,9 +67,17 @@
     </span>
 {% endblock %}
 
+
+{% block content %}
+    {% include '_entryMergeForm.html' %}
+    {{ super() }}
+{% endblock %}
+
+
 {% block javascript_links %}
 
     <script src="{{ STATIC_URL }}js/hdrSearch.js?{{ STATIC_RESOURCES_VERSION }}"
         type="application/javascript" charset="utf-8"></script>
+    {% include '_script.entryMergeForm.html' %}
 
 {% endblock %}

@@ -1,0 +1,29 @@
+<script>
+  if (!vM) var vM = {};
+  vM.entryMerge = {
+    sourceEntry: ko.observable(null),
+    targetEntry: ko.observable(null),
+  }
+  vM.entryMerge.start = function (entry) { vM.entryMerge.sourceEntry(entry); };
+  vM.entryMerge.cancel = function () {
+    vM.entryMerge.sourceEntry(null);
+    vM.entryMerge.targetEntry(null);
+  };
+  vM.entryMerge.merge = function () {
+  };
+  vM.entryMerge.step = ko.computed(function () {
+    var x = vM.entryMerge;
+
+    // Шаг 0. Не выбрана начальная статья для слияния.
+    if (!x.sourceEntry()) return 0;
+
+    // Шаг 1. Начальная статья для слияния выбрана, но не выбрана та
+    // статья, в которую будет происходить слияние.
+    if (!x.targetEntry()) return 1;
+
+    // Шаг 2. Все данные указаны, готовность к слиянию статьей после
+    // подтверждения пользователя.
+    return 2;
+  });
+  ko.applyBindings(vM.entryMerge, document.getElementById('entryMerge'));
+</script>

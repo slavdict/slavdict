@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block content %}
+    {{ super() }}
 
     {% if not intermed %}
         {% set prepareCond = not entry.preplock or user.has_key_for_preplock %}
@@ -68,7 +69,11 @@
                 <i class="far fa-copy" data-fa-transform="down-4 right-6"></i>
             </a>
             <a class="icon"
-               title="Объединить статью с другой статьей">
+               title="Объединить статью с другой статьей"
+               onclick="vM.entryMerge.start({{
+                 entry.get_search_item() | tojson | replace('"', '&#34;')
+               }})"
+               >
                 <i class="fas fa-code-branch fa-flip-vertical"
                    data-fa-transform="down-4 right-6 rotate-270"></i>
             </a>
