@@ -25,7 +25,10 @@ from slavdict.dictionary.models import MeaningContext
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import Participle
 from slavdict.dictionary.models import PART_OF_SPEECH_MAP
+from slavdict.dictionary.models import STATUS_MAP
 from slavdict.dictionary.models import Translation
+from slavdict.dictionary.utils import get_query_orterms
+from slavdict.dictionary.utils import make_query_from_orterms
 
 IMT_JSON = 'application/json; charset=utf-8'
 
@@ -202,6 +205,16 @@ def json_entry_save(request):
     return HttpResponse(status=200)
 
 
+def merge_charfields(src, dst, fieldname, joiner=', '):
+    src_str = getattr(src, fieldname)
+    dst_str = getattr(dst, fieldname)
+    if src_str:
+        if dst_str:
+            setattr(dst, fieldname, joiner.join([dst_str, src_str]))
+        else:
+            setattr(dst, fieldname, src_str)
+
+
 @login_required
 def json_entry_merge(request):
     src, dst = int(request.POST['src']), int(request.POST['dst'])
@@ -210,19 +223,50 @@ def json_entry_merge(request):
     with transaction.atomic():
         for a in src.authors.all():
             dst.authors.add(a)
+        for ov in src.orth_vars:
+            ov.order += 1000
+            ov.save()
+            dst.orthographic_variants.add(ov)
+        for et in src.etymology_set.all():
+            et.entry = dst
+            et.order += 1000
+            et.save()
+        for p in src.participle_set.all():
+            p.entry = dst
+            p.order += 1000
+            p.save()
         for ex in src.example_set.all():
             ex.entry = dst
-            ex.order = ex.order + 1000
+            ex.order += 1000
             ex.save()
         for m in src.meaning_set.all():
             if m.entry_container is not None and m.entry_container == src:
                 m.entry_container = dst
-                m.order = m.order + 1000
+                m.order += 1000
                 m.save()
-        src.duplicate = False
+        for e in src.cf_entries.all():
+            if e.id != dst.id:
+                dst.cf_entries.add(e)
+
+        if not dst.part_of_speech and src.part_of_speech:
+            dst.part_of_speech = src.part_of_speech
+        merge_charfields(src, dst, 'word_forms_list', joiner=', ')
+        merge_charfields(src, dst, 'genitive', joiner=',')
+        merge_charfields(src, dst, 'nom_sg', joiner=',')
+        merge_charfields(src, dst, 'short_form', joiner=',')
+        merge_charfields(src, dst, 'sg1', joiner=',')
+        merge_charfields(src, dst, 'sg2', joiner=',')
+        merge_charfields(src, dst, 'additional_info', joiner=' /// ')
+
+        orterms = get_query_orterms(dst.antconc_query)
+        orterms.extend(get_query_orterms(src.antconc_query))
+        dst.antconc_query = make_query_from_orterms(orterms)
+
+        dst.special_case = ''
+        dst.status = STATUS_MAP['inWork']
         dst.duplicate = False
-        src.save()
         dst.save()
+        src.delete()
     return HttpResponse(status=200)
 
 
