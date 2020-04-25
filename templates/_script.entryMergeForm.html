@@ -26,10 +26,10 @@ vM.entryMerge.merge = function () {
   $.ajax({
     method: 'POST',
     url: '/entries/merge/',
-    data: { 'json': {
-      srcId: vM.entryMerge.sourceEntry().id,
-      dstId: vM.entryMerge.targetEntry().id,
-    }},
+    data: {
+      src: vM.entryMerge.sourceEntry().id,
+      dst: vM.entryMerge.targetEntry().id,
+    },
     beforeSend: function (request) {
       request.setRequestHeader('X-CSRFToken', csrftoken);
     },

@@ -7,6 +7,7 @@ from django.apps import apps
 from django.core import mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import Q
 from django.db.models.fields import Field
 from django.http import HttpResponse
@@ -172,6 +173,7 @@ def json_goodness_save(request):
 
 
 
+@login_required
 def json_entry_get(request, id):
     data = viewmodels.entry_json(id).encode('utf-8')
     return HttpResponse(data, content_type=IMT_JSON, status=200)
@@ -200,7 +202,27 @@ def json_entry_save(request):
     return HttpResponse(status=200)
 
 
+@login_required
 def json_entry_merge(request):
+    src, dst = int(request.POST['src']), int(request.POST['dst'])
+    src = Entry.objects.get(pk=src)
+    dst = Entry.objects.get(pk=dst)
+    with transaction.atomic():
+        for a in src.authors.all():
+            dst.authors.add(a)
+        for ex in src.example_set.all():
+            ex.entry = dst
+            ex.order = ex.order + 1000
+            ex.save()
+        for m in src.meaning_set.all():
+            if m.entry_container is not None and m.entry_container == src:
+                m.entry_container = dst
+                m.order = m.order + 1000
+                m.save()
+        src.duplicate = False
+        dst.duplicate = False
+        src.save()
+        dst.save()
     return HttpResponse(status=200)
 
 
