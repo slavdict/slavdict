@@ -342,17 +342,17 @@ TRANSLATION_SOURCE_TEXT = {
     TRANSLATION_SOURCE_SYNODAL: 'в\u00a0Син. пер.',
     TRANSLATION_SOURCE_RBS: 'в\u00a0пер. РБО',
 
-    TRANSLATION_SOURCE_ADAMENKO: 'в\u00a0пер. В.\u202fАдаменко',
-    TRANSLATION_SOURCE_BIRUKOVY: 'в\u00a0пер. Бируковых',
-    TRANSLATION_SOURCE_GOVOROV: 'в\u00a0пер. еп.\u00a0Феофана (Говорова)',
-    TRANSLATION_SOURCE_JUNGEROV: 'в\u00a0пер. П.\u202fЮнгерова',
-    TRANSLATION_SOURCE_KEDROV: 'в\u00a0пер. Н.\u202fКедрова',
-    TRANSLATION_SOURCE_LOVJAG1: 'в\u00a0пер. Е.\u202fЛовягина',
-    TRANSLATION_SOURCE_LOVJAG2: 'в\u00a0пер. И.\u202fЛовягина',
-    TRANSLATION_SOURCE_NAXIMOV: 'в\u00a0пер. Н.\u202fНахимова',
-    TRANSLATION_SOURCE_POLANSK: 'в\u00a0пер. еп.\u00a0Иустина (Полянского)',
-    TRANSLATION_SOURCE_SEDAKOVA: 'в\u00a0пер. О.\u202fСедаковой',
-    TRANSLATION_SOURCE_TIMROT: 'в\u00a0пер. иером.\u00a0Амвросия (Тимрота)',
+    TRANSLATION_SOURCE_ADAMENKO: 'в\u00a0пер. Адам.',
+    TRANSLATION_SOURCE_BIRUKOVY: 'в\u00a0пер. Бир.',
+    TRANSLATION_SOURCE_GOVOROV: 'в\u00a0пер. Феоф.',
+    TRANSLATION_SOURCE_JUNGEROV: 'в\u00a0пер. Юнг.',
+    TRANSLATION_SOURCE_KEDROV: 'в\u00a0пер. Кедр.',
+    TRANSLATION_SOURCE_LOVJAG1: 'в\u00a0пер. Е.\u202fЛов.',
+    TRANSLATION_SOURCE_LOVJAG2: 'в\u00a0пер. И.\u202fЛов.',
+    TRANSLATION_SOURCE_NAXIMOV: 'в\u00a0пер. Нах.',
+    TRANSLATION_SOURCE_POLANSK: 'в\u00a0пер. Иуст.',
+    TRANSLATION_SOURCE_SEDAKOVA: 'в\u00a0пер. Сед.',
+    TRANSLATION_SOURCE_TIMROT: 'в\u00a0пер. Амвр.',
 }
 
 
