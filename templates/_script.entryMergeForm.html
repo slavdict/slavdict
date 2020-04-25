@@ -1,29 +1,128 @@
 <script>
-  if (!vM) var vM = {};
-  vM.entryMerge = {
-    sourceEntry: ko.observable(null),
-    targetEntry: ko.observable(null),
+
+if (!vM) var vM = {};
+vM.entryMerge = {
+  sourceEntry: ko.observable(null),
+  targetEntry: ko.observable(null),
+  opts: ko.observable('show'),
+  mergingInProgress: ko.observable(false),
+  searchPrefix: ko.observable(),
+  foundItems: ko.observableArray(),
+  focusedItem: ko.observable(),
+}
+vM.entryMerge.targetEntry.subscribe(
+  function () { vM.entryMerge.searchPrefix(null); }
+);
+vM.entryMerge.start = function (entry) { vM.entryMerge.sourceEntry(entry); };
+vM.entryMerge.cancel = function () {
+  vM.entryMerge.sourceEntry(null);
+  vM.entryMerge.targetEntry(null);
+};
+vM.entryMerge.resetTarget = function () {
+  vM.entryMerge.targetEntry(null);
+};
+vM.entryMerge.merge = function () {
+  vM.entryMerge.mergingInProgress(true);
+};
+vM.entryMerge.step = ko.computed(function () {
+  var x = vM.entryMerge;
+
+  // Шаг 0. Не выбрана начальная статья для слияния.
+  if (!x.sourceEntry()) return 0;
+
+  // Шаг 1. Начальная статья для слияния выбрана, но не выбрана та
+  // статья, в которую будет происходить слияние.
+  if (!x.targetEntry()) return 1;
+
+  // Шаг 2. Все данные указаны, готовность к слиянию статьей после
+  // подтверждения пользователя.
+  if (!x.mergingInProgress()) return 2;
+
+  // Шаг 3. Выполняется слияние статей.
+  return 3;
+});
+
+function Item(item, focused) {
+  this.headword = item.headword;
+  this.hom = item.hom || '';
+  this.pos = item.pos || '';
+  this.hint = item.hint || '';
+  this.id = item.id;
+
+  this.focusMe = function(){ focused(this); }.bind(this);
+  this.isFocused = ko.computed(function(){ return focused() === this; }, this);
+}
+
+vM.entryMerge.moveFocusDown = function() {
+  var items = this.foundItems();
+  var arrLength = items.length;
+  var currentItem = this.focusedItem();
+  var index = 0;
+  if (currentItem) {
+      index = ko.utils.arrayIndexOf(items, currentItem);
+      index = index > (arrLength - 2) ? 0 : ++index;
   }
-  vM.entryMerge.start = function (entry) { vM.entryMerge.sourceEntry(entry); };
-  vM.entryMerge.cancel = function () {
-    vM.entryMerge.sourceEntry(null);
-    vM.entryMerge.targetEntry(null);
-  };
-  vM.entryMerge.merge = function () {
-  };
-  vM.entryMerge.step = ko.computed(function () {
-    var x = vM.entryMerge;
+  items[index].focusMe();
+}.bind(vM.entryMerge);
 
-    // Шаг 0. Не выбрана начальная статья для слияния.
-    if (!x.sourceEntry()) return 0;
+vM.entryMerge.moveFocusUp = function() {
+  var items = this.foundItems();
+  var arrLength = items.length;
+  var currentItem = this.focusedItem();
+  var index = arrLength - 1;
+  if (currentItem) {
+      index = ko.utils.arrayIndexOf(items, currentItem);
+      index = index < 1 ? arrLength - 1 : --index;
+  }
+  items[index].focusMe();
+}.bind(vM.entryMerge);
 
-    // Шаг 1. Начальная статья для слияния выбрана, но не выбрана та
-    // статья, в которую будет происходить слияние.
-    if (!x.targetEntry()) return 1;
+vM.entryMerge.flushItems = function() {
+  this.foundItems.splice(0);
+  this.focusedItem(null);
+}.bind(vM.entryMerge);
 
-    // Шаг 2. Все данные указаны, готовность к слиянию статьей после
-    // подтверждения пользователя.
-    return 2;
-  });
-  ko.applyBindings(vM.entryMerge, document.getElementById('entryMerge'));
+vM.entryMerge.navigateFoundItems = function(vM, event) {
+  switch (event.which) {
+  case 40: // down arrow key
+    vM.moveFocusDown();
+    break;
+  case 38: // up arrow key
+    vM.moveFocusUp();
+    break;
+  case 13: // enter key
+    var x = vM.focusedItem();
+    if (x) vM.targetEntry(x);
+    break;
+  case 27: // esc key
+    vM.foundItems.splice(0);
+    break;
+  default:
+    return true;
+  }
+};
+
+vM.entryMerge.searchPrefix.subscribe(function(newValue) {
+  if (/^[а-яА-Я]+$/.test(newValue)) {
+    var dataToSend = { find: newValue };
+    if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
+    this.lastItemsRequest = $.getJSON(
+      "/json/singleselect/entries/urls/", dataToSend,
+      function (data) {
+        var mappedData = ko.utils.arrayMap(data,
+          function (item) { return new Item(item, vM.entryMerge.focusedItem); }
+        );
+        vM.entryMerge.foundItems(mappedData);
+        if (vM.entryMerge.foundItems().length == 1) {
+          vM.entryMerge.foundItems()[0].focusMe();
+        }
+      }
+    );
+  } else {
+    this.flushItems();
+  }
+}, vM.entryMerge);
+
+ko.applyBindings(vM.entryMerge, document.getElementById('entryMerge'));
+
 </script>
