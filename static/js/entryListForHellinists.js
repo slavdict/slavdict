@@ -73,4 +73,5 @@ function Etymology(etym) {
             et = new Etymology(data);
         vM.filters.etymsForEntries[entry_id].push(et);
     };
+    ko.applyBindings(vM.filters, document.getElementById('main'));
 })();

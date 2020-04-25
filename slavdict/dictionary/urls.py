@@ -25,6 +25,7 @@ urlpatterns = [
     url( r'^entries/(\d+)/duplicate/$', views.duplicate_entry, name='duplicate_entry' ),
     url( r'^entries/(\d+)/get/$', jsonviews.json_entry_get ),
     url( r'^entries/save/$', jsonviews.json_entry_save ),
+    url( r'^entries/merge/$', jsonviews.json_entry_merge ),
     url( r'^entries/jserror/$', jsonviews.js_error_notify ),
 
     url( r'^materials/$', views.materials ),

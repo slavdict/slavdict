@@ -1271,6 +1271,22 @@ class Entry(models.Model, JSONSerializable):
                     greeks.add(text)
         return tuple(sorted(greeks))
 
+    def get_search_item(self):
+        NON_POS = (PART_OF_SPEECH_MAP['letter'], PART_OF_SPEECH_MAP['number'])
+        HAS_POS = self.part_of_speech and self.part_of_speech not in NON_POS
+        pos = ''
+        if self.homonym_order and HAS_POS:
+            pos = self.get_part_of_speech_display()
+        return {
+            'id': self.id,
+            'civil': self.civil_equivalent,
+            'headword': self.orth_vars[0].idem_ucs,
+            'hom': self.homonym_order,
+            'pos': pos,
+            'hint': self.homonym_gloss,
+            'url': self.get_absolute_url(),
+        }
+
     # Залочена статья для редактирования,
     # во время подготовки тома к печати или нет.
     @property

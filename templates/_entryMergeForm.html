@@ -1,0 +1,126 @@
+{% trim %}
+<div id="entryMerge" style="display: none" data-bind="visible: step() > 0">
+  <div class="modalBackground"></div>
+
+  <div class="modal grid" style="font-size: smaller; overflow: visible">
+
+    <h1>Слияние статей</h1>
+    <p style="margin-bottom: 1.5em">Содержимое статьи-источника будет перенесно
+    в статью-цель, после чего статья-источник будет удалена из базы.</p>
+
+    <p data-bind="with: sourceEntry">
+      <em>Статья-источник:</em>{{ space }}
+      <span style="font-size: larger; margin-left: 1.5em">
+        <span class="SC--fI--headword" data-bind="text: headword"></span>
+        <span class="SC--fI--homonym" data-bind="text: hom"></span>
+        {{ space }}
+        <span class="SC--fI--pOS" data-bind="text: pos"></span>
+        {{ space }}
+        <span class="SC--fI--hint" data-bind="text: hint"></span>
+      </span>
+      {{ space }}
+      <span style="font-size: x-small">
+        [id:{{ space }}<span data-bind="text: id"></span>]
+      </span>
+    </p>
+
+    <p>
+      <em>Статья-цель:</em>{{ space }}
+
+      <!-- ko if: step() > 1 -->
+      <span data-bind="with: targetEntry">
+        <span style="font-size: larger; margin-left: 3.5em">
+          <span class="SC--fI--headword" data-bind="text: headword"></span>
+          <span class="SC--fI--homonym" data-bind="text: hom"></span>
+          {{ space }}
+          <span class="SC--fI--pOS" data-bind="text: pos"></span>
+          {{ space }}
+          <span class="SC--fI--hint" data-bind="text: hint"></span>
+        </span>
+        {{ space }}
+        <span style="font-size: x-small">
+          [id:{{ space }}<span data-bind="text: id"></span>]
+        </span>
+        {{ space }}
+        <span style="letter-spacing: 0.1em; text-decoration: underline;
+        font-size: x-small; margin-left: 1em; color: #579ed2; cursor: pointer"
+        data-bind="visible: $root.step() < 3, click: $root.resetTarget">
+          Изменить
+        </span>
+      </span>
+      <!-- /ko -->
+
+      <span data-bind="visible: step() === 1" style="position: relative">
+        <input type="text" data-bind="textInput: searchPrefix,
+           event: { keydown: navigateFoundItems, blur: flushItems }"
+           autocomplete="off" spellcheck="false" placeholder="Найти"
+           style="padding: 0.2em 0.5em; user-select: auto;
+                  border-color: #ccc; margin-left: 5em">
+        <span class="SC--foundItems hidden"
+            style="position: absolute; display: inline-block;
+                   top: 1.4em; left: 4em"
+            data-bind="foreach: foundItems,
+            css: { hidden: foundItems().length == 0 }">
+          <span class="SC--foundItem"
+              data-bind="css: { 'SC--foundItem-focused': isFocused },
+                         event: {
+                           mousedown: function(){ $root.targetEntry($data); },
+                           mouseover: function(){ $data.focusMe(); }
+                         }">
+            <span class="SC--fI--headword" data-bind="text: headword"></span>
+            <span class="SC--fI--homonym" data-bind="text: hom"></span>
+            {{ space }}
+            <span class="SC--fI--pOS" data-bind="text: pos"></span>
+            {{ space }}
+            <span class="SC--fI--hint" data-bind="text: hint"></span>
+          </span>
+        </span>
+      </span>
+    </p>
+
+    <div style="margin-top: 2em; color: #444; font-size: small"
+      data-bind="visible: step() < 3">
+      <p>После слияния статьей выполнить следующее действие:</p>
+      <p>
+        <label><input type="radio" value="show" data-bind="checked: opts">
+        {{ space }} отобразить статью-цель</label>
+        <br>
+        <label><input type="radio" value="edit" data-bind="checked: opts">
+        {{ space }} открыть статью-цель в режиме правки</label>
+      </p>
+    </div>
+
+    <div style="position: relative; height: 20em"
+      data-bind="visible: step() === 3">
+      <div style="color: #ccc; position: relative; text-align: center; top: 6em">
+        <div id="sD--saving">
+         <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div style="padding-top: 1em; letter-spacing: 0.05em;
+                    font-variant: all-small-caps; font-weight: bold">
+          Выполняется слияние статей
+        </div>
+      </div>
+    </div>
+
+    <div id="sD--buttons" style="text-align: right">
+
+      <input type="button" style="margin-right: 0.5em"
+         value="Выполнить слияние"
+         data-bind="click: merge, visible: step() === 2">
+
+      <input type="button" value="Отмена"
+         data-bind="click: cancel, visible: step() < 3">
+
+    </div>
+
+  </div>
+</div>
+{% endtrim %}

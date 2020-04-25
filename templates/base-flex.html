@@ -25,6 +25,10 @@
         {% include '_script.jquery.html' %}
         {% include '_script.knockoutjs.html' %}
 
+        <script
+          src="{{ STATIC_URL }}js/getCookie.js?{{ STATIC_RESOURCES_VERSION }}"
+          type="application/javascript" charset="utf-8"></script>
+
         {% block javascript_links %}{% endblock %}
         {% block javascript %}{% endblock %}
 

@@ -16,12 +16,12 @@ function Item(item, focused) {
     );
 }
 
-var vM = { hdrSearch: {
+if (!vM) var vM = {};
+vM.hdrSearch = {
     searchPrefix: ko.observable(),
     foundItems: ko.observableArray(),
     focusedItem: ko.observable(),
     formSubmit: function(){ $('.headerForm').submit(); }
-    }
 };
 
 vM.hdrSearch.moveFocusDown = function() {
