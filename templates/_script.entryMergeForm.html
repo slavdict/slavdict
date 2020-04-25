@@ -23,6 +23,31 @@ vM.entryMerge.resetTarget = function () {
 };
 vM.entryMerge.merge = function () {
   vM.entryMerge.mergingInProgress(true);
+  $.ajax({
+    method: 'POST',
+    url: '/entries/merge/',
+    data: { 'json': {
+      srcId: vM.entryMerge.sourceEntry().id,
+      dstId: vM.entryMerge.targetEntry().id,
+    }},
+    beforeSend: function (request) {
+      request.setRequestHeader('X-CSRFToken', csrftoken);
+    },
+  }).done(function () {
+    var url;
+    switch (vM.entryMerge.opts()) {
+    case 'edit':
+        url = '/entries/' + String(vM.entryMerge.targetEntry().id) + '/edit/';
+        break;
+    case 'show':
+    default:
+        url = vM.entryMerge.targetEntry().url;
+    }
+    window.location = url;
+  }).fail(function () {
+    vM.entryMerge.mergingInProgress(false);
+    alert('При слиянии статей возникла ошибка. Слияние отменено.');
+  });
 };
 vM.entryMerge.step = ko.computed(function () {
   var x = vM.entryMerge;
@@ -48,6 +73,7 @@ function Item(item, focused) {
   this.pos = item.pos || '';
   this.hint = item.hint || '';
   this.id = item.id;
+  this.url = item.url;
 
   this.focusMe = function(){ focused(this); }.bind(this);
   this.isFocused = ko.computed(function(){ return focused() === this; }, this);

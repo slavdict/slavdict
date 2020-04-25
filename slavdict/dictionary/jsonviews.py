@@ -200,6 +200,10 @@ def json_entry_save(request):
     return HttpResponse(status=200)
 
 
+def json_entry_merge(request):
+    return HttpResponse(status=200)
+
+
 def js_error_notify(request):
     connection = mail.get_connection()
     time = datetime.datetime.now().strftime('%Y.%m.%d %H:%M')
