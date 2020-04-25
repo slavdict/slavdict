@@ -247,6 +247,10 @@ def json_entry_merge(request):
         for e in src.cf_entries.all():
             if e.id != dst.id:
                 dst.cf_entries.add(e)
+        for cg in src.cf_collogroups.all():
+            dst.cf_collogroups.add(cg)
+        for m in src.cf_meanings.all():
+            dst.cf_meanings.add(m)
 
         if not dst.part_of_speech and src.part_of_speech:
             dst.part_of_speech = src.part_of_speech
