@@ -11,12 +11,12 @@
     <p data-bind="with: sourceEntry">
       <em>Статья-источник:</em>{{ space }}
       <span style="font-size: larger; margin-left: 1.5em">
-        <span class="SC--fI--headword" data-bind="text: headword"></span>
-        <span class="SC--fI--homonym" data-bind="text: hom"></span>
+        <span class="SC--sI--headword" data-bind="text: headword"></span>
+        <span class="SC--sI--homonym" data-bind="text: hom"></span>
         {{ space }}
-        <span class="SC--fI--pOS" data-bind="text: pos"></span>
+        <span class="SC--sI--pOS" data-bind="text: pos"></span>
         {{ space }}
-        <span class="SC--fI--hint" data-bind="text: hint"></span>
+        <span class="SC--sI--hint" data-bind="text: hint"></span>
       </span>
       {{ space }}
       <span class="SC--sI--id">
@@ -30,12 +30,12 @@
       <!-- ko if: step() > 1 -->
       <span data-bind="with: targetEntry">
         <span style="font-size: larger; margin-left: 3.5em">
-          <span class="SC--fI--headword" data-bind="text: headword"></span>
-          <span class="SC--fI--homonym" data-bind="text: hom"></span>
+          <span class="SC--sI--headword" data-bind="text: headword"></span>
+          <span class="SC--sI--homonym" data-bind="text: hom"></span>
           {{ space }}
-          <span class="SC--fI--pOS" data-bind="text: pos"></span>
+          <span class="SC--sI--pOS" data-bind="text: pos"></span>
           {{ space }}
-          <span class="SC--fI--hint" data-bind="text: hint"></span>
+          <span class="SC--sI--hint" data-bind="text: hint"></span>
         </span>
         {{ space }}
         <span class="SC--sI--id">
