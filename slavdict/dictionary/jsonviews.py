@@ -218,6 +218,9 @@ def merge_charfields(src, dst, fieldname, joiner=', '):
 @login_required
 def json_entry_merge(request):
     src, dst = int(request.POST['src']), int(request.POST['dst'])
+    if src == dst:
+        # Недопустимо объединять статью с ней же самой
+        return HttpResponse(status=400)
     src = Entry.objects.get(pk=src)
     dst = Entry.objects.get(pk=dst)
     with transaction.atomic():
