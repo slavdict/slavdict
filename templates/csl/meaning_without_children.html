@@ -31,6 +31,7 @@
 {% set MSC16 = 'p' %}{# полувспом. #}
 {% set MSC17 = 'q' %}{# безличное упортеление глагола #}
 {% set MSC18 = 'r' %}{# вводн. #}
+{% set MSC20 = 't' %}{# в роли союза #}
 
 {% if m.special_case == MSC1 %}{# канонич. #}
 
@@ -54,11 +55,12 @@
             web_cslav_words("CSLSegmentEm") }}{{ space }}
     <span class="Em">в{{ nbsp }}роли нареч.</span>{{ space }}
 
-{% elif m.special_case in [MSC12, MSC14, MSC15] %}
-    {# в роли нареч./прил./част. #}
+{% elif m.special_case in [MSC12, MSC14, MSC15, MSC20] %}
+    {# в роли нареч./прил./союза/част. #}
 
     {% if m.special_case == MSC12 %}{% set pos_mark = 'нареч.' %}
     {% elif m.special_case == MSC14 %}{% set pos_mark = 'прил.' %}
+    {% elif m.special_case == MSC20 %}{% set pos_mark = 'союза' %}
     {% elif m.special_case == MSC15 %}{% set pos_mark = 'част.' %}{% endif %}
     {% if m.substantivus_csl %}
         {{ m.substantivus_csl_ucs |

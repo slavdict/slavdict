@@ -40,9 +40,8 @@ from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
 from slavdict.dictionary.models import Meaning
-from slavdict.dictionary.models import MSC5
+from slavdict.dictionary.models import MSC_ROLE
 from slavdict.dictionary.models import MSC11
-from slavdict.dictionary.models import MSC12
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import PART_OF_SPEECH_MAP
 from slavdict.dictionary.models import PART_OF_SPEECH_ORDER
@@ -1294,7 +1293,7 @@ def useful_urls_redirect(uri, request):
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
                 (m.substantivus
-                 or m.special_case in (MSC5, MSC12)
+                 or m.special_case in MSC_ROLE
                  or regex.search(m.meaning + m.gloss)
                  )
               )
@@ -1306,9 +1305,7 @@ def useful_urls_redirect(uri, request):
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden()
-                and (m.substantivus
-                    or m.special_case in (MSC5, MSC12)
-                    or regex.search(m.meaning + m.gloss))
+                and (m.substantivus or regex.search(m.meaning + m.gloss))
                 and m.host_entry.is_part_of_speech('verb')
               )
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
