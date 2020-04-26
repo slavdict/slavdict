@@ -45,6 +45,7 @@ $baseFontSize: 19px
     white-space: nowrap
     text-align: left
     line-height: 23px
+    position: relative
 
 .singlecomplete--foundItem-focused,
 .SC--foundItem-focused,
@@ -75,3 +76,16 @@ $hintFontSize: 10px / $baseFontSize + em
 .SC--fI--hint,
     font: $hintFontSize $sansFont
     text-transform: uppercase
+
+.SC--sI--id,
+.SC--fI--id
+    font-size: x-small
+
+.SC--fI--id
+    position: absolute
+    right: 1em
+    top: 0.2em
+    color: #444
+
+.SC--foundItem-focused .SC--fI--id
+    color: white
