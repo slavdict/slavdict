@@ -993,9 +993,12 @@ def edit_entry(request, id):
         'onym': models.ONYM_MAP,
         'part_of_speech': models.PART_OF_SPEECH_MAP,
     }
+    entry_json = viewmodels._json(entry.get_search_item())
+    entry_json_in_attr = entry_json.replace('"', '&#34;')
     context = {
         'title': entry.civil_equivalent,
         'user': user,
+        'entry_json_in_attr': entry_json_in_attr,
         'entry': viewmodels.entry_json(id),
         'antconc_query': entry.antconc_query,
         'choices': viewmodels._json(choices),

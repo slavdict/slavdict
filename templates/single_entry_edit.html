@@ -24,15 +24,23 @@
     <!-- ko with: $root.ui -->
     <span class="cutBufferIndicator header--item"
         data-bind="css: { hidden: cutBuffer().length < 1 }">
-        <!-- Использовать ``data-bind="visible: cutBuffer().lenght > 0"``
+        {# Использовать ``data-bind="visible: cutBuffer().lenght > 0"``
         нельзя, так как всплывающая подсказка Opentip будет выскакивать
-        не под этим индикатором, в верхнем левом углу вьюпорта браузера. -->
+        не под этим индикатором, в верхнем левом углу вьюпорта браузера. #}
         <span data-bind="text: cutBuffer().length"></span>
         <span data-bind="visible: cutBuffer.containsCollogroups">сс.</span>
         <span data-bind="visible: cutBuffer.containsMeanings">зн.</span>
         <span data-bind="visible: cutBuffer.containsExamples">ил.</span>
     </span>
     <!-- /ko -->
+    {{ space }}
+
+    <input type="button" class="header--item button"
+      data-bind="visible: $root.ui.cutBuffer().length > 0,
+        click: function () {
+          ui.contentMove.sourceEntry({{ entry_json_in_attr }});
+        }"
+      value="⇄" />
 
 </div>
 
@@ -73,6 +81,8 @@
 {% block content %}
 
     <div class="curtain"></div>
+
+    {% include '_moveMeaningForm.html' %}
 
     {% trim %}
     <aside class="edit">

@@ -845,14 +845,13 @@ function etymologiesGuarantor(object, attrname) {
 })()
 
 // Пространство имен вуду-модели интерфейса редактирования статьи.
-vM.entryEdit = {
-    data: {},
-    ui: {
-        entry: {},
-        choices: vM.dataToInitialize.choices,
-        labels: vM.dataToInitialize.labels,
-        slugs: vM.dataToInitialize.slugs,
-    }
+if (!vM.entryEdit) vM.entryEdit = {};
+vM.entryEdit.data = {};
+vM.entryEdit.ui = {
+  entry: {},
+  choices: vM.dataToInitialize.choices,
+  labels: vM.dataToInitialize.labels,
+  slugs: vM.dataToInitialize.slugs,
 };
 
 var viewModel = vM.entryEdit,
@@ -927,6 +926,7 @@ var viewModel = vM.entryEdit,
                 var br = '<br/>',
                     pasteImg = '<img class="tipIcon" src="/static/paste.png"/>',
                     cutImg = '<img class="tipIcon" src="/static/scissorsPlus.png"/>',
+                    moveBtn = '<span style="color: gray">⇄</span>',
                     variables = {
                         'Collogroup': {
                             a: 'Словосочетание вырезано и помещено',
@@ -944,7 +944,10 @@ var viewModel = vM.entryEdit,
                         'используйте одну из кнопок ' + pasteImg + '. Чтобы' + br +
                         'вклеить сразу несколько ' + variables.b + ',' + br +
                         'добавьте остальные ' + variables.c + br +
-                        'с помощью кнопок ' + cutImg + '.' + br + ' ',
+                        'с помощью кнопок ' + cutImg + '.' + br + br +
+                        'Для переноса ' + variables.b + br +
+                        'в другую статью, используйте кнопку ' + moveBtn +
+                        '.' + br + ' ',
                     tip = new Opentip($('.cutBufferIndicator'), text,
                                       { style: otStyle, hideEffectDuration: 15 });
                 buffer.once.dispose();
@@ -1358,6 +1361,170 @@ var viewModel = vM.entryEdit,
             cancel: cancel,
         };
     })();
+
+
+    // Интерфейс переноса сс, значений и иллюстраций в др. статьи
+    uiModel.contentMove = (function () {
+      var root = {
+        sourceEntry: ko.observable(null),
+        targetEntry: ko.observable(null),
+        opts: ko.observable('showDst'),
+        inProgress: ko.observable(false),
+        searchPrefix: ko.observable(),
+        foundItems: ko.observableArray(),
+        focusedItem: ko.observable(),
+      };
+      root.targetEntry.subscribe(
+        function () { root.searchPrefix(null); }
+      );
+      root.start = function (entry) { root.sourceEntry(entry); };
+      root.cancel = function () {
+        root.sourceEntry(null);
+        root.targetEntry(null);
+      };
+      root.resetTarget = function () {
+        root.targetEntry(null);
+      };
+      root.move = function () {
+        root.inProgress(true);
+        $.ajax({
+          method: 'POST',
+          url: '/entries/move/',
+          data: {
+            src: root.sourceEntry().id,
+            dst: root.targetEntry().id,
+          },
+          beforeSend: function (request) {
+            request.setRequestHeader('X-CSRFToken', csrftoken);
+          },
+        }).done(function () {
+          var url;
+          switch (root.opts()) {
+          case 'editSrc':
+              url = '/entries/' + String(root.sourceEntry().id) + '/edit/';
+              break;
+          case 'showSrc':
+              url = root.sourceEntry().url;
+              break;
+          case 'editDst':
+              url = '/entries/' + String(root.targetEntry().id) + '/edit/';
+              break;
+          case 'showDst':
+          default:
+              url = root.targetEntry().url;
+          }
+          window.location = url;
+        }).fail(function () {
+          root.inProgress(false);
+          alert('При переносе возникла ошибка. Перенос отменен.');
+        });
+      };
+      root.step = ko.computed(function () {
+        var x = root;
+
+        // Шаг 0. Не выбраны значения/иллюстрации для переноса
+        if (!x.sourceEntry()) return 0;
+
+        // Шаг 1. Не выбрана та статья, в которую будет производиться перенос.
+        if (!x.targetEntry()) return 1;
+
+        // Шаг 2. Все данные указаны, готовность к переносу после
+        // подтверждения пользователя.
+        if (!x.inProgress()) return 2;
+
+        // Шаг 3. Выполняется перенос выбранных элементов статьи.
+        return 3;
+      });
+
+      function Item(item, focused) {
+        this.headword = item.headword;
+        this.hom = item.hom || '';
+        this.pos = item.pos || '';
+        this.hint = item.hint || '';
+        this.id = item.id;
+        this.url = item.url;
+
+        this.focusMe = function(){ focused(this); }.bind(this);
+        this.isFocused = ko.computed(function(){
+          return focused() === this;
+        }, this);
+      }
+
+      root.moveFocusDown = function() {
+        var items = this.foundItems();
+        var arrLength = items.length;
+        var currentItem = this.focusedItem();
+        var index = 0;
+        if (currentItem) {
+            index = ko.utils.arrayIndexOf(items, currentItem);
+            index = index > (arrLength - 2) ? 0 : ++index;
+        }
+        items[index].focusMe();
+      }.bind(root);
+
+      root.moveFocusUp = function() {
+        var items = this.foundItems();
+        var arrLength = items.length;
+        var currentItem = this.focusedItem();
+        var index = arrLength - 1;
+        if (currentItem) {
+            index = ko.utils.arrayIndexOf(items, currentItem);
+            index = index < 1 ? arrLength - 1 : --index;
+        }
+        items[index].focusMe();
+      }.bind(root);
+
+      root.flushItems = function() {
+        this.foundItems.splice(0);
+        this.focusedItem(null);
+      }.bind(root);
+
+      root.navigateFoundItems = function(vM, event) {
+        switch (event.which) {
+        case 40: // down arrow key
+          vM.moveFocusDown();
+          break;
+        case 38: // up arrow key
+          vM.moveFocusUp();
+          break;
+        case 13: // enter key
+          var x = vM.focusedItem();
+          if (x) vM.targetEntry(x);
+          break;
+        case 27: // esc key
+          vM.foundItems.splice(0);
+          break;
+        default:
+          return true;
+        }
+      };
+
+      root.searchPrefix.subscribe(function(newValue) {
+        if (/^[а-яА-Я]+$/.test(newValue)) {
+          var dataToSend = { find: newValue };
+          if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
+          this.lastItemsRequest = $.getJSON(
+            "/json/singleselect/entries/urls/", dataToSend,
+            function (data) {
+              var mappedData = ko.utils.arrayMap(
+                data.filter(function (item) {
+                  return item.id !== root.sourceEntry().id;
+                }),
+                function (item) { return new Item(item, root.focusedItem); }
+              );
+              root.foundItems(mappedData);
+              if (root.foundItems().length == 1) {
+                root.foundItems()[0].focusMe();
+              }
+            }
+          );
+        } else {
+          this.flushItems();
+        }
+      }, root);
+      return root;
+    })();
+
 
     // Активация работы вкладок
     $('nav.breadTabs').on('click', 'li.tab', function () {
