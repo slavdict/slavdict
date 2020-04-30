@@ -307,6 +307,7 @@ SUBSTANTIVUS_TYPE_MAP = {
 
 TRANSLATION_SOURCE_NULL = ''
 TRANSLATION_SOURCE_ADAMENKO = 'A'
+TRANSLATION_SOURCE_BEZOBRAZ = 'Z'
 TRANSLATION_SOURCE_BIRUKOVY = 'B'
 TRANSLATION_SOURCE_GOVOROV = 'G'
 TRANSLATION_SOURCE_JUNGEROV = 'J'
@@ -328,6 +329,7 @@ TRANSLATION_SOURCE_CHOICES = (
     (TRANSLATION_SOURCE_RBS, 'Перевод РБО'),
 
     (TRANSLATION_SOURCE_ADAMENKO, 'Адаменко В., свящ.'),
+    (TRANSLATION_SOURCE_BEZOBRAZ, '(Безобразов) Кассиан, еп.'),
     (TRANSLATION_SOURCE_BIRUKOVY, 'Бируковы'),
     (TRANSLATION_SOURCE_GOVOROV, '(Говоров) Феофан, еп. — перевод Добротолюбия'),
     (TRANSLATION_SOURCE_KEDROV, 'Кедров Н. — перевод великого канона'),
@@ -339,11 +341,16 @@ TRANSLATION_SOURCE_CHOICES = (
     (TRANSLATION_SOURCE_TIMROT, '(Тимрот) Амвросий, иером.'),
     (TRANSLATION_SOURCE_JUNGEROV, 'Юнгеров П.А.'),
 )
+
+assert len(TRANSLATION_SOURCE_CHOICES) == \
+       len(set(value.upper() for value, label in TRANSLATION_SOURCE_CHOICES))
+
 TRANSLATION_SOURCE_TEXT = {
     TRANSLATION_SOURCE_SYNODAL: 'в\u00a0Син. пер.',
     TRANSLATION_SOURCE_RBS: 'в\u00a0пер. РБО',
 
     TRANSLATION_SOURCE_ADAMENKO: 'в\u00a0пер. Адам.',
+    TRANSLATION_SOURCE_BEZOBRAZ: 'в\u00a0пер. Бeзобр.',
     TRANSLATION_SOURCE_BIRUKOVY: 'в\u00a0пер. Бир.',
     TRANSLATION_SOURCE_GOVOROV: 'в\u00a0пер. Говор.',
     TRANSLATION_SOURCE_JUNGEROV: 'в\u00a0пер. Юнг.',
