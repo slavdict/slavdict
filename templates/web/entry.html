@@ -19,6 +19,7 @@
 {% set MSC17 = 'q' %}{# безличное упортеление глагола #}
 {% set MSC18 = 'r' %}{# вводн. #}
 {% set MSC20 = 't' %}{# в роли союза #}
+{% set MSC21 = 'u' %}{# плеоназм #}
 
 {% trim %}
 <div class="Entry">
@@ -272,7 +273,7 @@
                     and entry.meaning_groups[0].meanings|count == 1
                     and (entry.meaning_groups[0].meanings[0].figurative
                         or entry.meaning_groups[0].meanings[0].special_case
-                            in [MSC10, MSC16, MSC17, MSC18]) %}
+                            in [MSC10, MSC16, MSC17, MSC18, MSC21]) %}
                 {{ emspace }}
             {% else %}
                 {{ space }}

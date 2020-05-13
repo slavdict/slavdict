@@ -31,6 +31,7 @@
 {% set MSC17 = 'q' %}{# безличное упортеление глагола #}
 {% set MSC18 = 'r' %}{# вводн. #}
 {% set MSC20 = 't' %}{# в роли союза #}
+{% set MSC21 = 'u' %}{# плеоназм #}
 
 {% if m.special_case == MSC1 %}{# канонич. #}
 
@@ -95,6 +96,11 @@
 
     <x aid:cstyle="Em">вводн.</x>{{ space }}
 
+{% elif m.special_case == MSC21 %}{# плеоназм #}
+
+    <x aid:cstyle="Em">плеоназм</x>{{ space }}
+    {{ m.substantivus_csl_ucs | ind_civil_injection("Valency", "CSLSegmentEm", "Text") }}
+
 {% elif m.substantivus %}
 
     {% for form_ucs in m.substantivus_forms %}
@@ -134,11 +140,11 @@
 {% endif %}
 
 
-{% if m.figurative %}
+{% if m.figurative and not m.special_case == MSC21 %}
     <x aid:cstyle="Em">перен.</x>{{ space }}
 {% endif %}
 
-{% if m.meaning %}
+{% if m.meaning and not m.special_case == MSC21 %}
     <m aid:cstyle="Text">{{ m.meaning|
         ind_cslav_injection("CSLSegment")|
         ind_regex("Em", '(?<![А-ЯЁа-яё])(?:перен|букв|зд|см|ср)\\.')|
@@ -148,7 +154,7 @@
         ind_refs() }}</m>
 {% endif %}
 
-{% if m.gloss %}
+{% if m.gloss and not m.special_case == MSC21 %}
     {% if m.meaning %}
         {{ backspace }};{{ space }}
     {% endif %}
@@ -163,7 +169,7 @@
 {% endif %}
 
 {% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss
-        or m.special_case in [MSC12, MSC14, MSC15, MSC18]) and m.examples %}
+        or m.special_case in [MSC12, MSC14, MSC15, MSC18, MSC21]) and m.examples %}
     {{ backspace }}:{{ space }}
 {% elif m.collogroups or m.child_meanings
         or m.collogroup_container and (m.examples or

@@ -382,7 +382,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
 MSC11, MSC12, MSC13, MSC14, MSC15, MSC16, MSC17, MSC18, MSC19 = 'klmnopqrs'
-MSC20 = 't'
+MSC20, MSC21 = 'tu'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     ('Имена', (
@@ -410,6 +410,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
     ('Другое', (
         (MSC17, 'безл.'),  # Безличное употребление глагола
         (MSC18, 'вводн.'),
+        (MSC21, 'плеоназм'),
         (MSC16, 'полувспом.'),  # Полувспомогательный глагол
         (MSC10, 'преимущ.'),
     )),
