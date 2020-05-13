@@ -98,6 +98,10 @@
 
 {% elif m.special_case == MSC18 %}{# вводн. #}
 
+    {% if m.substantivus_csl %}
+        {{ m.substantivus_csl_ucs |
+             web_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% endif %}
     <span class="Em">вводн.</span>{{ space }}
 
 {% elif m.special_case == MSC21 %}{# плеоназм #}

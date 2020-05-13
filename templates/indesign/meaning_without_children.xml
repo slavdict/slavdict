@@ -94,6 +94,10 @@
 
 {% elif m.special_case == MSC18 %}{# вводн. #}
 
+    {% if m.substantivus_csl %}
+        {{ m.substantivus_csl_ucs |
+             ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% endif %}
     <x aid:cstyle="Em">вводн.</x>{{ space }}
 
 {% elif m.special_case == MSC21 %}{# плеоназм #}
