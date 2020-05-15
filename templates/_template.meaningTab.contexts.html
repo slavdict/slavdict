@@ -10,21 +10,24 @@
             <a class="deleteItem" data-bind="click:
                 $parent.contexts.itemDestroyer($data).do"></a>
 
-            <label>
+            <label data-help="MeaningContext.left_text">
                 <span>гражд.</span>
                 <input type="text" data-bind="textInput: left_text"
+                       data-help="MeaningContext.left_text"
                        maxlength="{{ MAX_LENGTHS.MeaningContext.left_text }}"/>
             </label>
 
-            <label>
+            <label data-help="MeaningContext.context">
                 <span>цсл.</span>
                 <input type="text" data-bind="textInput: context"
+                       data-help="MeaningContext.context"
                        maxlength="{{ MAX_LENGTHS.MeaningContext.context }}"/>
             </label>
 
-            <label>
+            <label data-help="MeaningContext.right_context">
                 <span>гражд.</span>
                 <input type="text" data-bind="textInput: right_text"
+                    data-help="MeaningContext.right_context"
                     maxlength="{{ MAX_LENGTHS.MeaningContext.right_text }}"/>
             </label>
 

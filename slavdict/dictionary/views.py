@@ -954,7 +954,6 @@ def antconc2ucs8_converter(request):
 def edit_entry(request, id):
     entry = get_object_or_404(Entry, id=id)
     user = request.user
-    user_groups = [t[0] for t in user.groups.values_list('name')]
 
     prepareCond = not entry.preplock or user.has_key_for_preplock
     authorlessCond = not entry.authors.exists()
@@ -993,6 +992,7 @@ def edit_entry(request, id):
         'onym': models.ONYM_MAP,
         'part_of_speech': models.PART_OF_SPEECH_MAP,
     }
+    tips = dict((tip.ref, tip.html()) for tip in models.Tip.objects.all())
     context = {
         'title': entry.civil_equivalent,
         'user': user,
@@ -1001,6 +1001,7 @@ def edit_entry(request, id):
         'choices': viewmodels._json(choices),
         'labels': viewmodels._json(labels),
         'slugs': viewmodels._json(slugs),
+        'tips': viewmodels._json(tips),
         'entryURL': entry.get_absolute_url(),
         'PARTS_OF_SPEECH': models.PART_OF_SPEECH_CHOICES,
         'GENDERS': models.GENDER_CHOICES,

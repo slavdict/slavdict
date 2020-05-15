@@ -9,23 +9,25 @@
             <a class="deleteItem" data-bind="click:
                 $parent.translations.itemDestroyer($data).do"></a>
 
-            <label style="margin-left: 0">
+            <label style="margin-left: 0" data-help="Translation.source">
                 <span style="margin-right: 1em">Источник</span>
-                <select style="width: 4em"
+                <select style="width: 4em" data-help="Translation.source"
                     data-bind="options: $root.ui.choices.translation_source,
                     value: source, optionsText: 'name',
                     optionsValue: 'id'">
                 </select>
             </label>
 
-            <label style="margin-left: 3em">
+            <label style="margin-left: 3em" data-help="Translation.hidden">
                 <span>Не отображать в статье</span>
-                <input type="checkbox" data-bind="checked: hidden" />
+                <input type="checkbox" data-bind="checked: hidden"
+                       data-help="Translation.hidden">
             </label>
 
-            <label style="margin-left: 3em">
+            <label style="margin-left: 3em" data-help="Translation.fragmented">
                 <span>Перевод только части примера</span>
-                <input type="checkbox" data-bind="checked: fragmented" />
+                <input type="checkbox" data-bind="checked: fragmented"
+                       data-help="Translation.fragmented">
             </label>
 
             <div style="clear: both; margin-top: 1em;"
@@ -44,13 +46,15 @@
             </div>
 
             <div style="clear: both; position: relative; height: 1em;"></div>
-            <div class="eE--translation">
+            <div class="eE--translation" data-help="Translation.translation">
                 <label>Перевод</label>
-                <textarea data-bind="textInput: translation"></textarea>
+                <textarea data-bind="textInput: translation"
+                          data-help="Translation.translation"></textarea>
             </div>
-            <div class="eE--translation">
+            <div class="eE--translation" data-help="Translation.additional_info">
                 <label>Примечание</label>
-                <textarea data-bind="textInput: additional_info"></textarea>
+                <textarea data-bind="textInput: additional_info"
+                          data-help="Translation.additional_info"></textarea>
             </div>
 
             <br style="float:none; clear:both">

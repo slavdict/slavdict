@@ -9,14 +9,17 @@
             <a class="deleteItem" data-bind="click:
                 $parent.orthvars.itemDestroyer($data).do"></a>
             <input type="text" data-bind="textInput: idem"
+                   data-help="OrthographicVariant.idem"
                    maxlength="{{ MAX_LENGTHS.OrthographicVariant.idem }}"/>
             <span data-bind="wax: idem"></span>
 
             <input type="checkbox"
+                data-help="OrthographicVariant.reconstructed"
                 data-bind="checked: reconstructed,
                            attr: { 'id': 'ovrecon' + id() }"
                 >
-            <label data-bind="attr: { 'for': 'ovrecon' + id() }">
+            <label data-bind="attr: { 'for': 'ovrecon' + id() }"
+                   data-help="OrthographicVariant.reconstructed">
                 Реконструирован
             </label>
 
@@ -24,9 +27,10 @@
                 data-bind="checked: questionable,
                            attr: { 'id': 'ovquest' + id() },
                            visible: reconstructed"
-                >
+                data-help="OrthographicVariant.questionable">
             <label data-bind="attr: { 'for': 'ovquest' + id() },
-                              visible: reconstructed">
+                              visible: reconstructed"
+                   data-help="OrthographicVariant.questionable">
                 Под сомнением
             </label>
         </li>

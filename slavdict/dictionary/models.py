@@ -8,6 +8,8 @@ import unicodedata
 from collections import Counter, defaultdict
 from collections.abc import Sequence
 
+import markdown
+
 from django.db import models
 from django.db import transaction
 from django.db.models import BooleanField
@@ -3085,8 +3087,96 @@ for Model in Models:
     if x:
         MAX_LENGTHS[Model.__name__] = x
 
+field_excludes = (
+    'Collocation.civil_inverse',
+    'Collocation.mtime',
+    'Collocation.order',
+
+    'CollocationGroup.ctime',
+    'CollocationGroup.order',
+    'CollocationGroup.mtime',
+
+    'Entry.civil_inverse',
+    'Entry.ctime',
+    'Entry.duplicate',
+    'Entry.good',
+    'Entry.mtime',
+    'Entry.percent_status',
+    'Entry.status',
+    'Entry.word_forms_list',
+
+    'Etymology.mtime',
+    'Etymology.order',
+
+    'Example.audited',
+    'Example.audited_time',
+    'Example.hidden',
+    'Example.mtime',
+    'Example.order',
+    'Example.ts_example',
+
+    'GreekEquivalentForExample.mtime',
+
+    'Meaning.ctime',
+    'Meaning.mtime',
+    'Meaning.order',
+
+    'MeaningContext.mtime',
+    'MeaningContext.order',
+
+    'OrthographicVariant.mtime',
+
+    'Participle.mtime',
+)
+
+def gather_model_fields():
+    opts = []
+    for Model in Models:
+        for field in Model._meta.fields:
+            if (field.attname != 'id'
+                    and not field.attname.endswith('_id')
+                    and not field.is_relation):
+                value = '{}.{}'.format(Model.__name__, field.attname)
+                if value not in field_excludes:
+                    opts.append((value, value))
+    opts.sort()
+    return opts
+
+
+MARKDOWN_HELP = '''
+
+    <p style="font-size: xx-small; margin-bottom: 1em">
+    Для курсива, ссылок и абзацев используйте
+    <a target="_blank" href="https://docs.google.com/document/d/1onDgE9wkZSGbXZg5V3GdoPx8gQ4fhXe73E7Sn0qvDY4">разметку Markdown</a>.
+    В качестве предпросмотра используйте
+    <a target="_blank" href="https://markdownlivepreview.com/">Markdown
+    Live Preview</a>.</p>
+
+'''
+
+
+class Tip(models.Model):
+    ref = CharField('Объект для подсказки', max_length=50, choices=gather_model_fields(),
+                    primary_key=True)
+    text = TextField('Текст подсказки', help_text=MARKDOWN_HELP)
+
+    def html(self):
+        return markdown.markdown(self.text)
+
+    def __str__(self):
+        scrap = self.text[:50]
+        if scrap != self.text:
+            scrap += '/…/'
+        return '[{}] {}'.format(self.ref, scrap)
+
+    class Meta:
+        verbose_name = 'подсказка'
+        verbose_name_plural = 'подсказки'
+        ordering = ('ref',)
+
+
 try:
-    LETTERS = set(e.civil_equivalent.lstrip(' =')[0].lower()
+    LETTERS = set(e.civil_equivalent.lstrip(' =*')[0].lower()
                   for e in Entry.objects.all())
 except (OperationalError, ProgrammingError):
     LETTERS = []

@@ -132,6 +132,30 @@ body > header
     padding: .3em .5em
     background-color: rgba(252, 243, 208, 0.1)
 
+#aside--help
+    color: sienna
+    position: relative
+    pointer-events: none // ::pevaf:: Щелчки мыши должны срабатывать только на :after
+
+    & p
+        margin-bottom: 0.75em
+
+    &:after
+        content: '×'
+        display: block
+        position: absolute
+        right: 3em
+        top: 1em
+        cursor: pointer
+        pointer-events: auto // ::pevaf:: Щелчки мыши должны срабатывать только на :after
+
+    &:before
+        content: 'Помощь'
+        display: block
+        position: relative
+        font-weight: bold
+        margin: 0 0 0.75em 0
+
 .opentip
     position: relative
     color: sienna

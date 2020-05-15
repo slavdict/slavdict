@@ -850,10 +850,16 @@ vM.entryEdit = {
     ui: {
         entry: {},
         choices: vM.dataToInitialize.choices,
+        help: ko.observable(),
         labels: vM.dataToInitialize.labels,
         slugs: vM.dataToInitialize.slugs,
+        tips: vM.dataToInitialize.tips,
     }
 };
+
+vM.entryEdit.ui.clearHelp = function () {
+  vM.entryEdit.ui.help(null);
+}
 
 var viewModel = vM.entryEdit,
     dataModel = viewModel.data,
@@ -1572,6 +1578,23 @@ var viewModel = vM.entryEdit,
             aqTip.hide();
         });
     }
+
+    // Инициализация помощи для отедльных полей форм редактирования
+    $('body > main').on('click focus', '[data-help]', function () {
+      var help = vM && vM.dataToInitialize
+                    && vM.dataToInitialize.tips
+                    && vM.dataToInitialize.tips[$(this).data('help')] || '';
+      vM && vM.entryEdit
+         && vM.entryEdit.ui
+         && vM.entryEdit.ui.help
+         && vM.entryEdit.ui.help(help);
+    });
+    $('#aside--help').on('click', function () {
+      vM && vM.entryEdit
+         && vM.entryEdit.ui
+         && vM.entryEdit.ui.help
+         && vM.entryEdit.ui.help(null);
+    });
 
     // Поднять занавес
     $('.curtain').fadeOut();

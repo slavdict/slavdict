@@ -2,41 +2,49 @@
 <section data-bind="if: constructor.name === 'Meaning'">
 <div id="eM--editMeaning" class="grid">
 
-    <label id="eM--figurative" data-bind="visible: $root.ui.hierarchy.meaning">
-        <input type="checkbox" data-bind="checked: figurative" />
+    <label id="eM--figurative" data-bind="visible: $root.ui.hierarchy.meaning"
+      data-help="Meaning.figurative">
+        <input type="checkbox" data-bind="checked: figurative"
+               data-help="Meaning.figurative">
         <span>Переносное значение</span>
     </label>
 
-    <label id="eM--metaphorical">
-        <input type="checkbox" data-bind="checked: metaphorical" />
+    <label id="eM--metaphorical" data-help="Meaning.metaphorical">
+        <input type="checkbox" data-bind="checked: metaphorical"
+               data-help="Meaning.metaphorical">
         <span>Литургический символ</span>
     </label>
 
-    <div id="eM--meaning">
+    <div id="eM--meaning" data-help="Meaning.meaning">
         <label>Значение</label>
-        <textarea data-bind="textInput: meaning"></textarea>
+        <textarea data-bind="textInput: meaning"
+                  data-help="Meaning.meaning"></textarea>
     </div>
 
-    <div id="eM--gloss">
+    <div id="eM--gloss" data-help="Meaning.gloss">
         <label>Пояснение</label>
-        <textarea data-bind="textInput: gloss"></textarea>
+        <textarea data-bind="textInput: gloss"
+                  data-help="Meaning.gloss"></textarea>
     </div>
 
     <div id="eM--substantivusGroup"
     data-bind="visible: $root.data.entry.part_of_speech() !==
     $root.ui.slugs.part_of_speech['noun']">
 
-        <label id="eM--substantivus">
-            <input type="checkbox" data-bind="checked: substantivus" />
+        <label id="eM--substantivus" data-help="Meaning.substantivus">
+            <input type="checkbox" data-bind="checked: substantivus"
+                   data-help="Meaning.substantivus">
             <span>В роли существительного</span>
         </label>
 
-        <label id="eM--substantivusType" data-bind="visible: substantivus">
+        <label id="eM--substantivusType" data-bind="visible: substantivus"
+          data-help="Meaning.substantivus_type">
             <span>Тип субстантива</span>
 
             <select data-bind="options: $root.ui.choices.substantivus_type,
                 value: substantivus_type, optionsText: 'name',
-                optionsValue: 'id', visible: substantivus_type">
+                optionsValue: 'id', visible: substantivus_type"
+                data-help="Meaning.substantivus_type">
             </select>
 
             <div data-bind="visible: !substantivus_type()">
@@ -45,7 +53,8 @@
                 { checked: substantivus_type() == '{{ id }}' }">
 
                     <input type="radio" name="substantivusType" value="{{ id }}"
-                        data-bind="checked: substantivus_type"/>
+                        data-bind="checked: substantivus_type"
+                        data-help="Meaning.substantivus_type">
                     <span>{{ name }}</span>
 
                 </label>
