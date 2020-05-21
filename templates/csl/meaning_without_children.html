@@ -32,6 +32,7 @@
 {% set MSC17 = 'q' %}{# безличное упортеление глагола #}
 {% set MSC18 = 'r' %}{# вводн. #}
 {% set MSC20 = 't' %}{# в роли союза #}
+{% set MSC21 = 'u' %}{# плеоназм #}
 
 {% if m.special_case == MSC1 %}{# канонич. #}
 
@@ -97,7 +98,16 @@
 
 {% elif m.special_case == MSC18 %}{# вводн. #}
 
+    {% if m.substantivus_csl %}
+        {{ m.substantivus_csl_ucs |
+             web_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% endif %}
     <span class="Em">вводн.</span>{{ space }}
+
+{% elif m.special_case == MSC21 %}{# плеоназм #}
+
+    <span class="Em">плеоназм</span>{{ space }}
+    {{ m.substantivus_csl_ucs | web_civil_injection("Valency", "CSLSegmentEm", "Text") }}
 
 {% elif m.substantivus %}
 
@@ -139,11 +149,11 @@
 {% endif %}
 
 
-{% if m.figurative %}
+{% if m.figurative and not m.special_case == MSC21 %}
     <span class="Em">перен.</span>{{ space }}
 {% endif %}
 
-{% if m.meaning %}
+{% if m.meaning and not m.special_case == MSC21 %}
     <span class="Meaning Text hyphenate" lang="ru">{{ m.meaning |
         web_cslav_injection("CSLSegment") |
         web_regex("Em", '(?<![А-ЯЁа-яё])(?:перен|букв|зд|см|ср)\\.') |
@@ -153,7 +163,7 @@
         web_refs(csl_url) }}</span>
 {% endif %}
 
-{% if m.gloss %}
+{% if m.gloss and not m.special_case == MSC21 %}
     {% if m.meaning %}
         {{ backspace }};{{ space }}
     {% endif %}
@@ -168,7 +178,7 @@
 {% endif %}
 
 {% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss
-        or m.special_case in [MSC12, MSC14, MSC15, MSC18]) and m.examples %}
+        or m.special_case in [MSC12, MSC14, MSC15, MSC18, MSC21]) and m.examples %}
     {{ backspace }}:{{ space }}
 {% elif m.collogroups or m.child_meanings
         or m.collogroup_container and (m.examples or

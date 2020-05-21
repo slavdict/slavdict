@@ -7,24 +7,27 @@
 
     <!-- ko ifnot: $root.ui.nAdjV -->
 
-    <div>{% for id, name in PARTS_OF_SPEECH %}
+    <div data-help="Entry.part_of_speech">
+    {% for id, name in PARTS_OF_SPEECH %}
         {% if loop.index in [1, 6, 11] %}
             <div style="width: 120px; float: left;">
         {% endif %}
         <label data-bind="css: { checked: part_of_speech() == '{{ id }}' }">
             <input type="radio" name="partofspeech"
-                value="{{ id }}" data-bind="checked: part_of_speech"/>
+                value="{{ id }}" data-bind="checked: part_of_speech"
+                data-help="Entry.part_of_speech">
             {{ space }}{{ name }}
         </label>
         {% if loop.index in [5, 10, 12] %}</div>{% else %}<br />{% endif %}
-    {% endfor %}</div>
+    {% endfor %}
+    </div>
 
     <!-- /ko -->
     <!-- ko if: $root.ui.nAdjV -->
 
     <select data-bind="options: $root.ui.choices.part_of_speech,
         value: part_of_speech, optionsText: 'name',
-        optionsValue: 'id'">
+        optionsValue: 'id'" data-help="Entry.part_of_speech">
     </select>
 
     <!-- /ko -->
@@ -35,36 +38,41 @@
 
     <label id="infoTab--uninflected" data-bind="visible:
     part_of_speech() === $root.ui.slugs.part_of_speech['noun'] ||
-    part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
+    part_of_speech() === $root.ui.slugs.part_of_speech['adjective']"
+    data-help="Entry.uninflected">
         <span>Неизменяемое</span>
-        <input type="checkbox" data-bind="checked: uninflected"/>
+        <input type="checkbox" data-bind="checked: uninflected"
+               data-help="Entry.uninflected">
     </label>
 
     <div data-bind="visible:
         part_of_speech() === $root.ui.slugs.part_of_speech['noun']">
 
-        <div id="infoTab--genitive">
+        <div id="infoTab--genitive" data-help="Entry.genitive">
             <label>
                 <span>Форма Р.п.</span>
                 <input type="text" data-bind="textInput: genitive"
-                       maxlength="{{ MAX_LENGTHS.Entry.genitive }}"/>
+                       maxlength="{{ MAX_LENGTHS.Entry.genitive }}"
+                       data-help="Entry.genitive">
             </label>
             <span data-bind="wax: genitive"></span>
         </div>
 
-        <label id="infoTab--gender">
+        <label id="infoTab--gender" data-help="Entry.gender">
             <span>Род</span>
 
             <select data-bind="options: $root.ui.choices.gender,
                 value: gender, optionsText: 'name',
-                optionsValue: 'id', visible: gender">
+                optionsValue: 'id', visible: gender"
+                data-help="Entry.gender">
             </select>
 
             <div data-bind="visible: !gender()">
                 {% for id, name in GENDERS %}
                 <label data-bind="css: { checked: gender() == '{{ id }}' }">
                     <input type="radio" name="gender"
-                        value="{{ id }}" data-bind="checked: gender"/>
+                        value="{{ id }}" data-bind="checked: gender"
+                        data-help="Entry.gender">
                     <span>{{ name }}</span>
                 </label>
                 {% endfor %}
@@ -72,35 +80,38 @@
 
         </label>
 
-        <label id="infoTab--number">
+        <label id="infoTab--number" data-help="Entry.tantum">
             <span>Число</span>
             <select data-bind="options: $root.ui.choices.tantum,
                 value: tantum, optionsText: 'name',
-                optionsValue: 'id'">
+                optionsValue: 'id'" data-help="Entry.tantum">
             </select>
         </label>
 
-        <label id="infoTab--onym">
+        <label id="infoTab--onym" data-help="Entry.onym">
             <span>Тип имени собст.</span>
             <select data-bind="options: $root.ui.choices.onym,
                 value: onym, optionsText: 'name',
-                optionsValue: 'id'">
+                optionsValue: 'id'" data-help="Entry.onym">
             </select>
         </label>
 
-        <label id="infoTab--canonical" data-bind="visible:
-            onym() == $root.ui.slugs.onym['anthroponym']">
+        <label id="infoTab--canonical"
+          data-bind="visible: onym() == $root.ui.slugs.onym['anthroponym']"
+          data-help="Entry.canonical_name">
             <span>Каноническое</span>
-            <input type="checkbox"
-                   data-bind="checked: canonical_name"/>
+            <input type="checkbox" data-bind="checked: canonical_name"
+                   data-help="Entry.canonical_name">
         </label>
 
-        <div id="infoTab--nomSg" data-bind="visible:
-            onym() == $root.ui.slugs.onym['ethnonym']">
+        <div id="infoTab--nomSg"
+          data-bind="visible: onym() == $root.ui.slugs.onym['ethnonym']"
+          data-help="Entry.nom_sg">
 
             <label>
                 <span>И. мн.</span>
                 <input type="text" data-bind="textInput: nom_sg"
+                       data-help="Entry.nom_sg"
                        maxlength="{{ MAX_LENGTHS.Entry.nom_sg }}"/>
             </label>
 
@@ -113,20 +124,22 @@
     <div>
 
         <label id="infoTab--possessive" data-bind="visible:
-        part_of_speech() === $root.ui.slugs.part_of_speech['adjective']">
+        part_of_speech() === $root.ui.slugs.part_of_speech['adjective']"
+        data-help="Entry.possessive">
             <span>Притяжательное</span>
-            <input type="checkbox"
-                   data-bind="checked: possessive"/>
+            <input type="checkbox" data-bind="checked: possessive"
+                   data-help="Entry.possessive">
         </label>
 
         <div id="infoTab--shortForm" data-bind="visible:
         [$root.ui.slugs.part_of_speech['adjective'],
          $root.ui.slugs.part_of_speech['participle-adjective']]
-        .indexOf(part_of_speech()) > -1">
+        .indexOf(part_of_speech()) > -1" data-help="Entry.short_form">
             <label>
                 <span>Краткая форма</span>
                 <input type="text" data-bind="textInput: short_form"
-                       maxlength="{{ MAX_LENGTHS.Entry.short_form }}"/>
+                       maxlength="{{ MAX_LENGTHS.Entry.short_form }}"
+                       data-help="Entry.short_form">
             </label>
 
             <span data-bind="wax: short_form"></span>
@@ -137,20 +150,22 @@
     <div data-bind="visible:
         part_of_speech() === $root.ui.slugs.part_of_speech['verb']">
 
-        <div id="infoTab--sg1">
+        <div id="infoTab--sg1" data-help="Entry.sg1">
             <label>
                 <span>Форма 1ед.</span>
                 <input type="text" data-bind="textInput: sg1"
+                       data-help="Entry.sg1"
                        maxlength="{{ MAX_LENGTHS.Entry.sg1 }}"/>
             </label>
 
             <span data-bind="wax: sg1"></span>
         </div>
 
-        <div id="infoTab--sg2">
+        <div id="infoTab--sg2" data-help="Entry.sg2">
             <label>
                 <span>Форма 2ед.</span>
                 <input type="text" data-bind="textInput: sg2"
+                       data-help="Entry.sg2"
                        maxlength="{{ MAX_LENGTHS.Entry.sg2 }}"/>
             </label>
 

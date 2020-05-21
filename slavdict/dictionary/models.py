@@ -8,6 +8,8 @@ import unicodedata
 from collections import Counter, defaultdict
 from collections.abc import Sequence
 
+import markdown
+
 from django.db import models
 from django.db import transaction
 from django.db.models import BooleanField
@@ -307,6 +309,7 @@ SUBSTANTIVUS_TYPE_MAP = {
 
 TRANSLATION_SOURCE_NULL = ''
 TRANSLATION_SOURCE_ADAMENKO = 'A'
+TRANSLATION_SOURCE_BEZOBRAZ = 'Z'
 TRANSLATION_SOURCE_BIRUKOVY = 'B'
 TRANSLATION_SOURCE_GOVOROV = 'G'
 TRANSLATION_SOURCE_JUNGEROV = 'J'
@@ -328,6 +331,7 @@ TRANSLATION_SOURCE_CHOICES = (
     (TRANSLATION_SOURCE_RBS, 'Перевод РБО'),
 
     (TRANSLATION_SOURCE_ADAMENKO, 'Адаменко В., свящ.'),
+    (TRANSLATION_SOURCE_BEZOBRAZ, '(Безобразов) Кассиан, еп.'),
     (TRANSLATION_SOURCE_BIRUKOVY, 'Бируковы'),
     (TRANSLATION_SOURCE_GOVOROV, '(Говоров) Феофан, еп. — перевод Добротолюбия'),
     (TRANSLATION_SOURCE_KEDROV, 'Кедров Н. — перевод великого канона'),
@@ -339,11 +343,16 @@ TRANSLATION_SOURCE_CHOICES = (
     (TRANSLATION_SOURCE_TIMROT, '(Тимрот) Амвросий, иером.'),
     (TRANSLATION_SOURCE_JUNGEROV, 'Юнгеров П.А.'),
 )
+
+assert len(TRANSLATION_SOURCE_CHOICES) == \
+       len(set(value.upper() for value, label in TRANSLATION_SOURCE_CHOICES))
+
 TRANSLATION_SOURCE_TEXT = {
     TRANSLATION_SOURCE_SYNODAL: 'в\u00a0Син. пер.',
     TRANSLATION_SOURCE_RBS: 'в\u00a0пер. РБО',
 
     TRANSLATION_SOURCE_ADAMENKO: 'в\u00a0пер. Адам.',
+    TRANSLATION_SOURCE_BEZOBRAZ: 'в\u00a0пер. Бeзобр.',
     TRANSLATION_SOURCE_BIRUKOVY: 'в\u00a0пер. Бир.',
     TRANSLATION_SOURCE_GOVOROV: 'в\u00a0пер. Говор.',
     TRANSLATION_SOURCE_JUNGEROV: 'в\u00a0пер. Юнг.',
@@ -375,7 +384,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
 MSC11, MSC12, MSC13, MSC14, MSC15, MSC16, MSC17, MSC18, MSC19 = 'klmnopqrs'
-MSC20 = 't'
+MSC20, MSC21 = 'tu'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     ('Имена', (
@@ -403,6 +412,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
     ('Другое', (
         (MSC17, 'безл.'),  # Безличное употребление глагола
         (MSC18, 'вводн.'),
+        (MSC21, 'плеоназм'),
         (MSC16, 'полувспом.'),  # Полувспомогательный глагол
         (MSC10, 'преимущ.'),
     )),
@@ -434,7 +444,8 @@ VOLUME_LETTERS = {
     10: ('т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ю', 'я'),
 }
 ANY_LETTER = None
-LOCKED_LETTERS = VOLUME_LETTERS[1] + VOLUME_LETTERS[2]
+LOCKED_LETTERS = VOLUME_LETTERS[1] + VOLUME_LETTERS[2] + \
+        tuple(VOLUME_LETTERS[3][:1])
 CURRENT_VOLUME = 3
 
 
@@ -3076,8 +3087,96 @@ for Model in Models:
     if x:
         MAX_LENGTHS[Model.__name__] = x
 
+field_excludes = (
+    'Collocation.civil_inverse',
+    'Collocation.mtime',
+    'Collocation.order',
+
+    'CollocationGroup.ctime',
+    'CollocationGroup.order',
+    'CollocationGroup.mtime',
+
+    'Entry.civil_inverse',
+    'Entry.ctime',
+    'Entry.duplicate',
+    'Entry.good',
+    'Entry.mtime',
+    'Entry.percent_status',
+    'Entry.status',
+    'Entry.word_forms_list',
+
+    'Etymology.mtime',
+    'Etymology.order',
+
+    'Example.audited',
+    'Example.audited_time',
+    'Example.hidden',
+    'Example.mtime',
+    'Example.order',
+    'Example.ts_example',
+
+    'GreekEquivalentForExample.mtime',
+
+    'Meaning.ctime',
+    'Meaning.mtime',
+    'Meaning.order',
+
+    'MeaningContext.mtime',
+    'MeaningContext.order',
+
+    'OrthographicVariant.mtime',
+
+    'Participle.mtime',
+)
+
+def gather_model_fields():
+    opts = []
+    for Model in Models:
+        for field in Model._meta.fields:
+            if (field.attname != 'id'
+                    and not field.attname.endswith('_id')
+                    and not field.is_relation):
+                value = '{}.{}'.format(Model.__name__, field.attname)
+                if value not in field_excludes:
+                    opts.append((value, value))
+    opts.sort()
+    return opts
+
+
+MARKDOWN_HELP = '''
+
+    <p style="font-size: xx-small; margin-bottom: 1em">
+    Для курсива, ссылок и абзацев используйте
+    <a target="_blank" href="https://docs.google.com/document/d/1onDgE9wkZSGbXZg5V3GdoPx8gQ4fhXe73E7Sn0qvDY4">разметку Markdown</a>.
+    В качестве предпросмотра используйте
+    <a target="_blank" href="https://markdownlivepreview.com/">Markdown
+    Live Preview</a>.</p>
+
+'''
+
+
+class Tip(models.Model):
+    ref = CharField('Где образец будет применяться', max_length=50,
+                    choices=gather_model_fields(), primary_key=True)
+    text = TextField('Образец заполнения', help_text=MARKDOWN_HELP)
+
+    def html(self):
+        return markdown.markdown(self.text)
+
+    def __str__(self):
+        scrap = self.text[:50]
+        if scrap != self.text:
+            scrap += '/…/'
+        return '[{}] {}'.format(self.ref, scrap)
+
+    class Meta:
+        verbose_name = 'образец заполнения'
+        verbose_name_plural = 'образцы заполнения'
+        ordering = ('ref',)
+
+
 try:
-    LETTERS = set(e.civil_equivalent.lstrip(' =')[0].lower()
+    LETTERS = set(e.civil_equivalent.lstrip(' =*')[0].lower()
                   for e in Entry.objects.all())
 except (OperationalError, ProgrammingError):
     LETTERS = []

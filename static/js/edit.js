@@ -850,8 +850,10 @@ vM.entryEdit.data = {};
 vM.entryEdit.ui = {
   entry: {},
   choices: vM.dataToInitialize.choices,
+  help: ko.observable(),
   labels: vM.dataToInitialize.labels,
   slugs: vM.dataToInitialize.slugs,
+  tips: vM.dataToInitialize.tips,
 };
 
 var viewModel = vM.entryEdit,
@@ -1739,6 +1741,35 @@ var viewModel = vM.entryEdit,
             aqTip.hide();
         });
     }
+
+    // Инициализация помощи для отедльных полей форм редактирования
+    function indicateFocus(focused) {
+      vM && vM.entryEdit && vM.entryEdit.ui
+         && (vM.entryEdit.ui.helpTgtFocused = focused);
+    }
+    function setTip(element) {
+      if (vM && vM.entryEdit && vM.entryEdit.ui
+             && !vM.entryEdit.ui.helpTgtFocused) {
+        var help = vM
+                && vM.dataToInitialize
+                && vM.dataToInitialize.tips
+                && vM.dataToInitialize.tips[$(element).data('help')] || '';
+        vM && vM.entryEdit
+           && vM.entryEdit.ui
+           && vM.entryEdit.ui.help
+           && vM.entryEdit.ui.help(help);
+      }
+    }
+    $('body > main').on('click focus',
+    'input[type="text"][data-help], textarea[data-help]', function (event) {
+      indicateFocus(false);
+      setTip(event.currentTarget);
+      indicateFocus(true);
+    }).on('blur', '[data-help]', function (event) {
+      indicateFocus(false);
+    }).on('mouseenter', '[data-help]', function (event) {
+      setTip(event.currentTarget);
+    });
 
     // Поднять занавес
     $('.curtain').fadeOut();

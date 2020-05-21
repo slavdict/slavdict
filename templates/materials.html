@@ -36,18 +36,21 @@
     #materials li a em {
         color: gray;
     }
-    #materials li.new-group {
+    #materials h2,
+    #materials h3 {
+        font-size: 80%;
         margin-top: 1.5em;
+        color: #444;
     }
 </style>
 
 <div id='materials'>
 
     <h1>Материалы</h1>
-
+    <h2>Справочные материалы</h2>
     <ul>
 
-        <li class="new-group">
+        <li>
             <a href="https://docs.google.com/document/d/1F2vnJpp_J48X49tdwrqefmtNd7wJIiAbuExp5TgZuwE">
                 Инструкция
             </a>
@@ -65,7 +68,34 @@
             </a>
         </li>
 
-        <li class="new-group">
+        <li>
+            <a href="https://docs.google.com/document/d/1x6gDvsXd8_qeCSNyKBoKm1jWVi0Azhun9UVFmPzWS1k">
+                Список источников переводов
+            </a>
+        </li>
+    </ul>
+
+    <h3>Cловарь церковнославянского языка нового времени</h3>
+    <ul>
+
+        <li>
+            <a href="https://drive.google.com/open?id=1zMfsL9-sBVUO3rVaRccFH-yr3qGaoPju">
+                Том I. A—Б
+            </a>
+        </li>
+
+        <li>
+            <a href="https://drive.google.com/open?id=196aGdiiIhgyWdCkhVCjr-RtkPWv2TVDI">
+                Том II. В
+            </a>
+        </li>
+
+    </ul>
+
+    <h2>Техническое</h2>
+    <ul>
+
+        <li>
             <a href="{{ url('converter') }}">
                 Онлайн-конвертер текста<br />
                 <em>из АнтКонка в MS Word</em>
@@ -90,18 +120,6 @@
         <li>
             <a href="/dl/AntConSol.ttf" download>
                 Шрифт AntConSol
-            </a>
-        </li>
-
-        <li class="new-group">
-            <a href="https://drive.google.com/open?id=1zMfsL9-sBVUO3rVaRccFH-yr3qGaoPju">
-                Cловарь церковнославянского языка нового времени. Том I. A—Б
-            </a>
-        </li>
-
-        <li>
-            <a href="https://drive.google.com/open?id=196aGdiiIhgyWdCkhVCjr-RtkPWv2TVDI">
-                Cловарь церковнославянского языка нового времени. Том II. В
             </a>
         </li>
 

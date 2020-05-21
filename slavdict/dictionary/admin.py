@@ -20,6 +20,7 @@ from slavdict.dictionary.models import Meaning
 from slavdict.dictionary.models import MeaningContext
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import Participle
+from slavdict.dictionary.models import Tip
 from slavdict.dictionary.models import Translation
 from slavdict.dictionary.models import VOLUME_LETTERS
 from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
@@ -896,3 +897,5 @@ AdminCollocationGroup.has_delete_permission = staff_has_permission
 
 admin.site.register(CollocationGroup, AdminCollocationGroup)
 ui.register(CollocationGroup, AdminCollocationGroup)
+
+admin.site.register(Tip)

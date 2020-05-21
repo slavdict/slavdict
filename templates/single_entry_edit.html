@@ -122,6 +122,8 @@
         </div>
         <!-- /ko -->
 
+        <div id="aside--help" data-bind="visible: ui.help, html: ui.help"></div>
+
     </aside>
 
     <article class="edit">
@@ -208,7 +210,8 @@
             entry: {{ entry }},
             choices: {{ choices }},
             labels: {{ labels }},
-            slugs: {{ slugs }}
+            slugs: {{ slugs }},
+            tips: {{ tips }}
         };
 
         vM.entryURL = '{{ entryURL }}';

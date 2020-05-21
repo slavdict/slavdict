@@ -3,12 +3,13 @@
     data-bind="if: constructor.name === 'Collogroup'">
 
     <ul data-bind="sortable: collocations">
-        <li>
+        <li data-help="Collocation.collocation">
             <a class="dragItem" data-bind="visible:
                 $parent.collocations().length > 1"></a>
             <a class="deleteItem" data-bind="click:
                 $parent.collocations.itemDestroyer($data).do"></a>
             <input type="text" data-bind="textInput: collocation"
+                   data-help="Collocation.collocation"
                    maxlength="{{ MAX_LENGTHS.Collocation.collocation }}"/>
             <span data-bind="wax: collocation"></span>
         </li>
