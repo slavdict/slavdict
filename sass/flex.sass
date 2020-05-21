@@ -135,19 +135,10 @@ body > header
 #aside--help
     color: sienna
     position: relative
-    pointer-events: none // ::pevaf:: Щелчки мыши должны срабатывать только на :after
+    user-select: text
 
     & p
         margin-bottom: 0.75em
-
-    &:after
-        content: '×'
-        display: block
-        position: absolute
-        right: 3em
-        top: 1em
-        cursor: pointer
-        pointer-events: auto // ::pevaf:: Щелчки мыши должны срабатывать только на :after
 
     &:before
         content: 'Образец заполнения'
