@@ -3156,9 +3156,9 @@ MARKDOWN_HELP = '''
 
 
 class Tip(models.Model):
-    ref = CharField('Объект для подсказки', max_length=50, choices=gather_model_fields(),
-                    primary_key=True)
-    text = TextField('Текст подсказки', help_text=MARKDOWN_HELP)
+    ref = CharField('Где образец будет применяться', max_length=50,
+                    choices=gather_model_fields(), primary_key=True)
+    text = TextField('Образец заполнения', help_text=MARKDOWN_HELP)
 
     def html(self):
         return markdown.markdown(self.text)
@@ -3170,8 +3170,8 @@ class Tip(models.Model):
         return '[{}] {}'.format(self.ref, scrap)
 
     class Meta:
-        verbose_name = 'подсказка'
-        verbose_name_plural = 'подсказки'
+        verbose_name = 'образец заполнения'
+        verbose_name_plural = 'образцы заполнения'
         ordering = ('ref',)
 
 
