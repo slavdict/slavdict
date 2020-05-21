@@ -887,6 +887,9 @@ var viewModel = vM.entryEdit,
 
     uiModel.currentForm = ko.observable('info');
 
+    var pasteImg = '<img class="tipIcon" src="/static/paste.png"/>',
+        moveBtn = '<span style="color: gray">⇄</span>';
+
     // Буфер для перемещения значений, примеров, словосочетаний
     uiModel.cutBuffer = (function () {
         var buffer = ko.observableArray(),
@@ -925,10 +928,8 @@ var viewModel = vM.entryEdit,
                 }
             },
             showTip = function (value) {
-                var br = '<br/>',
-                    pasteImg = '<img class="tipIcon" src="/static/paste.png"/>',
+                var br = '<br>',
                     cutImg = '<img class="tipIcon" src="/static/scissorsPlus.png"/>',
-                    moveBtn = '<span style="color: gray">⇄</span>',
                     variables = {
                         'Collogroup': {
                             a: 'Словосочетание вырезано и помещено',
@@ -1059,7 +1060,8 @@ var viewModel = vM.entryEdit,
                 tip,
                 tipText = 'Имеются вырезанные ' + cuts + '.<br>' +
                     'Перед завершающим сохранением их<br>' +
-                    'необходимо вклеить.';
+                    'необходимо либо вклеить (' + pasteImg + '),<br>' +
+                    'либо перенести в другую статью (' + moveBtn + ').<br> ';
             if (cutBufferContent && stack().length == 1) {
                 tip = new Opentip($('.cutBufferIndicator'), tipText,
                                   { style: otStyle });
