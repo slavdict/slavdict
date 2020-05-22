@@ -201,7 +201,18 @@ def json_entry_save(request):
                           'translations': Translation}},
 
     )
-    process_json_model(model, request.POST)
+    invalid_keys_notifications = None
+    with transaction.atomic():
+        invalid_keys_notifications = process_json_model(model, request.POST)
+    if invalid_keys_notifications:
+        from django.core.mail import mail_admins
+        subject = '[slavdict] JSON содержит отсутствующие в моделях поля'
+        message = '''
+При сохранении статей в JSON-данных содержались
+следующие лишние поля, которых нет в соответствующих
+моделях: '''
+        message += ', '.join(invalid_keys_notifications)
+        mail_admins(subject, message, fail_silently=True)
     return HttpResponse(status=200)
 
 
@@ -398,10 +409,10 @@ def process_json_model(json_model, post):
             item['#status#'] = 'good'
             items_to_process -= 1
 
-        assert items_to_process!=PREVIOUS_VALUE, '''Алгоритм сохранения лексемы
-               работает неверно. Значение переменной items_to_process не
-               меняется, поэтому оно не сможет достигнуть нуля и выход из
-               вечного цикла никогда не произойдет.'''
+        assert items_to_process != PREVIOUS_VALUE, '''Алгоритм сохранения
+            лексемы работает неверно. Значение переменной items_to_process не
+            меняется, поэтому оно не сможет достигнуть нуля и выход из вечного
+            цикла никогда не произойдет.'''
 
     to_destroy = post['toDestroy']
     for model_name in to_destroy:
@@ -415,13 +426,3 @@ def process_json_model(json_model, post):
                 pass
             else:
                 item.delete()
-
-    if invalid_keys_notifications:
-        from django.core.mail import mail_admins
-        subject = '[slavdict] JSON содержит отсутствующие в моделях поля'
-        message = '''
-При сохранении статей в JSON-данных содержались
-следующие лишние поля, которых нет в соответствующих
-моделях: '''
-        message += ', '.join(invalid_keys_notifications)
-        mail_admins(subject, message, fail_silently=True)
