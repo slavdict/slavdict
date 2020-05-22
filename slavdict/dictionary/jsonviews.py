@@ -35,9 +35,30 @@ IMT_JSON = 'application/json; charset=utf-8'
 def _json(x):
     return json.dumps(x, ensure_ascii=False, separators=(',',':'))
 
+def authorize_entry(entry, user):
+    ''' Возвращает булево значение по условию:
+
+            PREP and (ORPHAN or AUTHOR or EDITOR):
+
+    PREP -- учет залочки статьи для подготовки печатной версии словаря
+    ORPHAN -- статья без авторов
+    AUTHOR -- статья принадлежит текущему пользователю
+    EDITOR -- текущий пользователь является редактором
+    '''
+    return ((not entry.preplock or user.has_key_for_preplock)  # PREP
+        and (not entry.authors.exists()  # ORPHAN
+             or user in entry.authors.all()  # AUTHOR
+             or user.is_admeditor))  # EDITOR
+
+def always_authorize_entry(entry, user):
+    return True
+
+
 @login_required
 def json_singleselect_entries_urls(request):
+    user = request.user
     httpGET_FIND = request.GET.get('find')
+    httpGET_AUTH = request.GET.get('auth')
     if httpGET_FIND:
         FIND_LOWER = httpGET_FIND.lower()
         FIND_CAPZD = httpGET_FIND.capitalize()
@@ -47,7 +68,8 @@ def json_singleselect_entries_urls(request):
                 |
                 Q(civil_equivalent__startswith=FIND_CAPZD)
             ).order_by('civil_equivalent', 'homonym_order')[:7]
-        entries = [e.get_search_item() for e in entries]
+        authorize = authorize_entry if httpGET_AUTH else always_authorize_entry
+        entries = [e.get_search_item() for e in entries if authorize(e, user)]
         data = _json(entries).encode('utf-8')
         response = HttpResponse(data, content_type=IMT_JSON)
     else:

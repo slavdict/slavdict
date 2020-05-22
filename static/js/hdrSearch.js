@@ -74,7 +74,7 @@ vM.hdrSearch.navigateFoundItems = function(vM, event) {
 
 vM.hdrSearch.searchPrefix.subscribe(function(newValue) {
     if (/^[а-яА-Я]+$/.test(newValue)) {
-        var dataToSend = { find: newValue };
+        var dataToSend = { find: newValue, auth: 0 };
         if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
         this.lastItemsRequest = $.getJSON(
             "/json/singleselect/entries/urls/",
