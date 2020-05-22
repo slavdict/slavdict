@@ -33,6 +33,7 @@ urlpatterns = [
     url( r'^converter/$', views.antconc2ucs8_converter, name='converter' ),
 
     url( r'^json/singleselect/entries/urls/$', jsonviews.json_singleselect_entries_urls),
+    url( r'^json/entry/meanings/$', jsonviews.json_meanings_for_entry),
 
     url( r'^greek/$', RedirectView.as_view(pattern_name='hellinist_examples', permanent=True)),
     url( r'^greek/find-example/$', views.hellinist_workbench, name='hellinist_examples' ),

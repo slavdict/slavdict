@@ -21,13 +21,16 @@
         +column(4, true)
         +box-sizing(border-box)
         line-height: 2.3em
-        padding: 0.1em 0.7em
+        padding: 0.1em 0.75em
         display: block-inline
 
         &.checked
             @include border-radius(5px)
             background-color: rgb(252, 243, 208)
             color: sienna
+
+        & > input
+            margin-right: 0.75em
 
 #sD--additionalInfo
     +column(14)
