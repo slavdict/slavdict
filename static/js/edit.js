@@ -1279,28 +1279,28 @@ var viewModel = vM.entryEdit,
     uiModel.navigationStack.subscribe(breadCrumbsPadder);
 
 
+    function prepareOne(x, Constructor) {
+        var array = Constructor.hideFromServer, i, j;
+        x = ko.toJS(x);
+        if (array) {
+            for (i=0, j=array.length; i<j; i++) {
+                delete x[array[i]];
+            }
+        }
+        return x;
+    }
+
+    function prepareAll(Constructor) {
+        var i, j, x, array = [], all = Constructor.all;
+        for (i=0, j=all.length; i<j; i++) {
+            x = prepareOne(all[i], Constructor);
+            array.push(x);
+        }
+        return array;
+    }
+
     // Диалог сохранения.
     uiModel.saveDialogue = (function () {
-
-        function prepareOne(x, Constructor) {
-            var array = Constructor.hideFromServer, i, j;
-            x = ko.toJS(x);
-            if (array) {
-                for (i=0, j=array.length; i<j; i++) {
-                    delete x[array[i]];
-                }
-            }
-            return x;
-        }
-
-        function prepareAll(Constructor) {
-            var i, j, x, array = [], all = Constructor.all;
-            for (i=0, j=all.length; i<j; i++) {
-                x = prepareOne(all[i], Constructor);
-                array.push(x);
-            }
-            return array;
-        }
 
         viewModel.canEdit = ko.observable(true);
 
@@ -1315,11 +1315,11 @@ var viewModel = vM.entryEdit,
             });
 
             data = ko.toJSON({
-                // FIX: Необходимо либо избавиться от collogroups, etymologies,
-                // examples и meanings ниже, и тогда необходимо менять способ
-                // обработки сохраняемых данных на сервере. Либо в entry
-                // вырезАть все свойства, которые уже присутствуют в этих
-                // collogroups, etymologies и т.п.
+                // FIXME: ::ref1:: Необходимо либо избавиться от collogroups,
+                // etymologies, examples и meanings ниже, и тогда необходимо
+                // менять способ обработки сохраняемых данных на сервере. Либо
+                // в entry вырезАть все свойства, которые уже присутствуют
+                // в этих collogroups, etymologies и т.п.
                         entry: prepareOne(dataModel.entry, Entry),
                         collogroups: prepareAll(Collogroup),
                         etymologies: prepareAll(Etymology),
@@ -1372,15 +1372,32 @@ var viewModel = vM.entryEdit,
       var root = {
         sourceEntry: ko.observable(null),
         targetEntry: ko.observable(null),
+        targetMeaningId: ko.observable(null),
         opts: ko.observable('showDst'),
         inProgress: ko.observable(false),
         searchPrefix: ko.observable(),
         foundItems: ko.observableArray(),
         focusedItem: ko.observable(),
+        meanings: ko.observableArray(),
       };
-      root.targetEntry.subscribe(
-        function () { root.searchPrefix(null); }
-      );
+      root.targetEntry.subscribe(function (entry) {
+        root.searchPrefix(null);
+        root.meanings.splice(0);
+        root.targetMeaningId(null);
+        if (entry !== null) {
+          $.getJSON("/json/entry/meanings/", { id: root.targetEntry().id },
+            function (data) {
+              var mappedData = ko.utils.arrayMap(data, function (item) {
+                return new MeaningItem(item, root.targetMeaningId);
+              });
+              if (mappedData.length > 0) {
+                root.targetMeaningId(mappedData[0].id);
+              }
+              root.meanings(mappedData);
+            }
+          );
+        }
+      });
       root.start = function (entry) { root.sourceEntry(entry); };
       root.cancel = function () {
         root.sourceEntry(null);
@@ -1391,31 +1408,51 @@ var viewModel = vM.entryEdit,
       };
       root.move = function () {
         root.inProgress(true);
-        $.ajax({
-          method: 'POST',
-          url: '/entries/move/',
-          data: {
-            src: root.sourceEntry().id,
-            dst: root.targetEntry().id,
-          },
+        var toDestroy = {};
+        constructors.forEach(function (item) {
+          toDestroy[item.name] = item.shredder;
+        });
+        uiModel.cutBuffer().forEach(function (item) {
+          item['#move#'] = true;
+        });
+        var data = {
+          // FIXME: ::ref1::
+          entry: prepareOne(dataModel.entry, Entry),
+          collogroups: prepareAll(Collogroup),
+          etymologies: prepareAll(Etymology),
+          examples: prepareAll(Example),
+          meanings: prepareAll(Meaning),
+          toDestroy: toDestroy,
+          dstEntryId: root.targetEntry().id,
+        };
+        if (!uiModel.cutBuffer.containsMeanings()) {
+          if (root.targetMeaningId()) {
+            data.dstMeaningId = root.targetMeaningId();
+          } else {
+            data.dstMeaningCreate = true;
+          }
+        }
+
+        $.ajax({ method: 'POST', url: '/entries/save/',
+          data: {'json': ko.toJSON(data)},
           beforeSend: function (request) {
             request.setRequestHeader('X-CSRFToken', csrftoken);
-          },
+          }
         }).done(function () {
           var url;
           switch (root.opts()) {
           case 'editSrc':
-              url = '/entries/' + String(root.sourceEntry().id) + '/edit/';
-              break;
+            url = '/entries/' + String(root.sourceEntry().id) + '/edit/';
+            break;
           case 'showSrc':
-              url = root.sourceEntry().url;
-              break;
+            url = root.sourceEntry().url;
+            break;
           case 'editDst':
-              url = '/entries/' + String(root.targetEntry().id) + '/edit/';
-              break;
+            url = '/entries/' + String(root.targetEntry().id) + '/edit/';
+            break;
           case 'showDst':
           default:
-              url = root.targetEntry().url;
+            url = root.targetEntry().url;
           }
           window.location = url;
         }).fail(function () {
@@ -1426,18 +1463,24 @@ var viewModel = vM.entryEdit,
       root.step = ko.computed(function () {
         var x = root;
 
-        // Шаг 0. Не выбраны значения/иллюстрации для переноса
+        // Шаг 0. Не выбраны значения/иллюстрации/словосочетания для переноса.
         if (!x.sourceEntry()) return 0;
 
         // Шаг 1. Не выбрана та статья, в которую будет производиться перенос.
         if (!x.targetEntry()) return 1;
 
-        // Шаг 2. Все данные указаны, готовность к переносу после
-        // подтверждения пользователя.
-        if (!x.inProgress()) return 2;
+        // Шаг 2. Не выбрано значение, в которое будет переноситься
+        // иллюстрации или словосочетания.
+        if (!x.targetMeaningId()
+          && !uiModel.cutBuffer.containsMeanings()
+          && root.meanings().length > 0) return 2;
 
-        // Шаг 3. Выполняется перенос выбранных элементов статьи.
-        return 3;
+        // Шаг 3. Все данные указаны, готовность к переносу после
+        // подтверждения пользователя.
+        if (!x.inProgress()) return 3;
+
+        // Шаг 4. Выполняется перенос выбранных элементов статьи.
+        return 4;
       });
 
       function Item(item, focused) {
@@ -1452,6 +1495,12 @@ var viewModel = vM.entryEdit,
         this.isFocused = ko.computed(function(){
           return focused() === this;
         }, this);
+      }
+
+      function MeaningItem(item, focused) {
+        this.meaning = item.meaning || '';
+        this.gloss = item.gloss || '';
+        this.id = item.id;
       }
 
       root.moveFocusDown = function() {

@@ -74,15 +74,15 @@
         {{ space }}
         <span style="letter-spacing: 0.1em; text-decoration: underline;
         font-size: x-small; margin-left: 1em; color: #579ed2; cursor: pointer"
-        data-bind="visible: $parent.step() < 3,
+        data-bind="visible: $parent.step() < 4,
                    click: $parent.resetTarget">
           Изменить
         </span>
       </span>
       <!-- /ko -->
 
-      <span data-bind="visible: step() === 1"
-            style="position: relative">
+      <!-- ko if: step() === 1 -->
+      <span style="position: relative">
         <input type="text" data-bind="
             textInput: searchPrefix,
             event: { keydown: navigateFoundItems, blur: flushItems }"
@@ -112,12 +112,43 @@
           </span>
         </span>
       </span>
+      <!-- /ko -->
+
     </p>
 
-    <div style="margin-top: 2em; color: #444; font-size: small"
-      data-bind="visible: step() < 3">
-      <p>После переноса выполнить следующее действие:</p>
+    <!-- ko if: step() > 1 && step() < 4
+                && !$root.ui.cutBuffer.containsMeanings()
+                && meanings().length > 0 -->
+    <div style="margin-top: 2em; color: #444; font-size: small">
       <p>
+        Вклеить выбранные{{ space }}
+        <span data-bind="visible: $root.ui.cutBuffer.containsCollogroups">
+          словосочетания
+        </span>
+        <span data-bind="visible: $root.ui.cutBuffer.containsExamples">
+          иллюстрации
+        </span>{{ space }}
+        в значение:
+      </p>
+      <ol data-bind="foreach: meanings" style="margin-left: 2em">
+        <li>
+          <label>
+            <input type="radio" name="rmg"
+              data-bind="value: id, checked: $parent.targetMeaningId">
+            {{ space }}
+            <span data-bind="text: meaning, visible: meaning"></span>
+            <span data-bind="visible: meaning && gloss">;{{ space }}</span>
+            <em data-bind="text: gloss, visible: gloss"></em>
+          </label>
+        </li>
+      </ol>
+    </div>
+    <!-- /ko -->
+
+    <div style="margin-top: 2em; color: #444; font-size: small"
+      data-bind="visible: step() < 4">
+      <p>После переноса выполнить следующее действие:</p>
+      <p style="margin-left: 0.75em">
         <label><input type="radio" value="showDst" data-bind="checked: opts">
         {{ space }} отобразить статью-цель</label>
         <br>
@@ -135,9 +166,9 @@
       </p>
     </div>
 
-    <div style="position: relative; height: 20em"
-      data-bind="visible: step() === 3">
-      <div style="color: #ccc; position: relative; text-align: center; top: 6em">
+    <div style="position: relative; height: 7.5em"
+      data-bind="visible: step() === 4">
+      <div style="color: #ccc; position: relative; text-align: center; top: 3em">
         <div id="sD--saving">
          <div></div>
           <div></div>
@@ -159,10 +190,10 @@
 
       <input type="button" style="margin-right: 0.5em"
          value="Выполнить перенос"
-         data-bind="click: move, visible: step() === 2">
+         data-bind="click: move, visible: step() === 3">
 
       <input type="button" value="Отмена"
-         data-bind="click: cancel, visible: step() < 3">
+         data-bind="click: cancel, visible: step() < 4">
 
     </div>
 

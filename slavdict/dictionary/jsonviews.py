@@ -54,6 +54,25 @@ def json_singleselect_entries_urls(request):
         response = HttpResponse(content_type=IMT_JSON, status=400)
     return response
 
+@login_required
+def json_meanings_for_entry(request):
+    httpGET_ID = request.GET.get('id')
+    if httpGET_ID:
+        meanings = Meaning.objects.filter(
+            entry_container_id=int(httpGET_ID),
+            parent_meaning_id__isnull=True
+        ).order_by('order', 'id')
+        meanings = [
+            { 'id': m.id,
+              'meaning': m.meaning,
+              'gloss': m.gloss }
+            for m in meanings]
+        data = _json(meanings).encode('utf-8')
+        response = HttpResponse(data, content_type=IMT_JSON)
+    else:
+        response = HttpResponse(content_type=IMT_JSON, status=400)
+    return response
+
 
 
 @login_required
@@ -343,6 +362,7 @@ def process_json_model(json_model, post):
 
     model_field_names = {}
     invalid_keys_notifications = set()
+    items_to_move = []
     items_to_process = len(items_and_models)
     while items_to_process:
         PREVIOUS_VALUE = items_to_process
@@ -384,6 +404,11 @@ def process_json_model(json_model, post):
             if bad:
                 continue
 
+            move_item = False
+            if '#move#' in item:
+                move_item = True
+                del item['#move#']
+
             del item['#status#']
             del item['id']
             for key in list(item.keys()):
@@ -399,6 +424,8 @@ def process_json_model(json_model, post):
                 else:
                     existent_item.__dict__.update(item)
                     existent_item.save()
+                    if move_item:
+                        items_to_move.append(existent_item)
             else:
                 if to_be_destroyed:
                     deleted_elements.append(item_id)
@@ -406,6 +433,8 @@ def process_json_model(json_model, post):
                     new_item = ItemModel(**item)
                     new_item.save()
                     new_elements[item_id] = new_item.id
+                    if move_item:
+                        items_to_move.append(new_item)
             item['#status#'] = 'good'
             items_to_process -= 1
 
@@ -414,11 +443,42 @@ def process_json_model(json_model, post):
             меняется, поэтому оно не сможет достигнуть нуля и выход из вечного
             цикла никогда не произойдет.'''
 
+    if post.get('dstEntryId'):
+        dst_entry = Entry.objects.get(pk=int(post['dstEntryId']))
+        dst_meaning = None
+        dst_meaning_id = post.get('dstMeaningId')
+        if dst_meaning_id is not None:
+            dst_meaning = Meaning.objects.get(pk=int(dst_meaning_id))
+        dst_meaning_create = post.get('dstMeaningCreate')
+        if dst_meaning_create:
+            dst_meaning = Meaning()
+            dst_meaning.entry_container = dst_entry
+            dst_meaning.save()
+        LAST = 400  # Такой порядковый номер, чтобы элемент оказался
+        # последним в списке однородных элементов.
+
+        for item in items_to_move:
+            if isinstance(item, Example):
+                item.meaning = dst_meaning
+                item.entry = dst_entry
+            elif isinstance(item, CollocationGroup):
+                item.base_meaning = dst_meaning
+            elif isinstance(item, Meaning):
+                item.parent_meaning = None
+                item.collogroup_container = None
+                item.entry_container = dst_entry
+            item.order = LAST
+            item.save()
+
     to_destroy = post['toDestroy']
     for model_name in to_destroy:
-        model = apps.get_model('dictionary', {'Greq': 'GreekEquivalentForExample',
-            'Collogroup': 'CollocationGroup', 'Orthvar': 'OrthographicVariant',
-            'Context': 'MeaningContext'}.get(model_name, model_name))
+        normalized_model_name = {
+            'Greq': 'GreekEquivalentForExample',
+            'Collogroup': 'CollocationGroup',
+            'Orthvar': 'OrthographicVariant',
+            'Context': 'MeaningContext'
+        }.get(model_name, model_name)
+        model = apps.get_model('dictionary', normalized_model_name)
         for item_id in to_destroy[model_name]:
             try:
                 item = model.objects.get(pk=item_id)
