@@ -675,8 +675,13 @@ def get_greek(lexeme, hint):
     return hint
 
 
-gr_entries = [e for e in entries2
-              if isinstance(e, Entry) and is_approved(e)]
+gr_entries = [
+        (wordform, reference, lexeme)
+        for wordform, reference, lexeme in entries2
+        if isinstance(lexeme, Entry) and is_approved(lexeme) or
+            isinstance(lexeme, dict)
+                and 'referenced_lexemes' in lexeme
+                and any(is_approved(l) for l in lexeme['referenced_lexemes'])]
 N = len(gr_entries)
 for j, (wordform, reference, lexeme) in enumerate(gr_entries):
     slug = convert_for_index(wordform)
