@@ -2636,11 +2636,12 @@ class CollocationGroup(models.Model, JSONSerializable):
 
     def forJSON(self):
         _fields = (
+            'additional_info',
             'base_entry_id',
             'base_meaning_id',
             'id',
             'order',
-            'additional_info',
+            'phraseological',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['collocations'] = [c.forJSON() for c in self.collocations]

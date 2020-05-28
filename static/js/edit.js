@@ -493,6 +493,7 @@ function Collogroup() {
     upsertArray(this, 'collocations', Collocation, data);
     upsert(this, 'base_entry_id', data, entry_id);
     upsert(this, 'base_meaning_id', data, meaning_id);
+    upsert(this, 'phraseological', data, false);
     upsert(this, 'id', data, 'collogroup' + getId());
     upsert(this, 'order', data, defaultOrder);
     upsertArray(this, 'meanings', Meaning, data);

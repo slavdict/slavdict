@@ -2,6 +2,12 @@
 <section class="tabcontent orthvars"
     data-bind="if: constructor.name === 'Collogroup'">
 
+    <label>
+      <input type="checkbox" data-bind="checked: phraseological">
+      <span style="position: relative; left: 0.75em; top: 0.25em">
+        Фразеологизм</span>
+    </label>
+
     <ul data-bind="sortable: collocations">
         <li data-help="Collocation.collocation">
             <a class="dragItem" data-bind="visible:
