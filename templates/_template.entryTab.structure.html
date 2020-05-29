@@ -141,7 +141,7 @@
                         css: { cutItemNonFirst: $root.ui.cutBuffer.containsCollogroups },
                         visible: $root.ui.cutBuffer.emptyOrContainsCollogroups"></a>
 
-                    <span class="lozenge" data-bind="if: phraseological">♦</span>
+                    <span class="lozenge" data-bind="visible: phraseological">♦</span>
                     <span data-bind="foreach: collocations">
                       <span data-bind="if: $index">;{{ space }}</span>
                       <span data-bind="wax: collocation"></span>
@@ -324,7 +324,7 @@
                 css: { cutItemNonFirst: $root.ui.cutBuffer.containsCollogroups },
                 visible: $root.ui.cutBuffer.emptyOrContainsCollogroups"></a>
 
-            <span class="lozenge" data-bind="if: phraseological">♦</span>
+            <span class="lozenge" data-bind="visible: phraseological">♦</span>
             <span data-bind="foreach: collocations">
                 <span data-bind="if: $index">;{{ space }}</span>
                 <span data-bind="wax: collocation"></span>

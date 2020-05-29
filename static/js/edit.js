@@ -558,6 +558,7 @@ function Meaning() {
     upsertArray(this, 'meanings', Meaning, data);
     upsertArray(this, 'examples', Example, data);
 
+    this.collogroups.sort(collogroupSort);
     this.isExpanded || (this.isExpanded = ko.observable(false));
     this.substantivus_type.label = ko.pureComputed(
             Meaning.prototype.substantivus_type_label, this);
@@ -706,6 +707,29 @@ function meaningsGuarantor(object, attrname) {
         }[object.constructor.name];
 
     guarantor(object[attrname], func);
+}
+
+function collogroupSort(left, right) {
+    var a = left.phraseological(),
+        b = right.phraseological();
+    if (a > b) return -1;
+    if (a < b) return 1;
+    left = left.collocations()[0];
+    right = right.collocations()[0];
+    left = left.collocation().replace('-', '');
+    right = right.collocation().replace('-', '');
+    var r = /[\s\/,\.;#\(\)]+/g;
+    left = left.split(r).filter(function (x) { return x; });
+    right = right.split(r).filter(function (x) { return x; });
+    var L = Math.min(left.length, right.length);
+    for (var i = 0; i < L; i++) {
+      a = antconc_civilrus_word(left[i]),
+      b = antconc_civilrus_word(right[i]);
+      if (a < b) return -1;
+      if (a > b) return 1;
+      if (a === b) continue;
+    }
+    return 0;
 }
 
 function collogroupsGuarantor(object, attrname) {
@@ -1069,6 +1093,12 @@ var viewModel = vM.entryEdit,
                 tip.show();
                 tip.hide();
             } else {
+                var last = stack.slice(-1)[0];
+                if (last instanceof Collogroup) {
+                  uiModel.hierarchy
+                    .getSelfOrUpwardNearest(last, 'Meaning')
+                    .collogroups.sort(collogroupSort);
+                }
                 stack.splice(-1, 1)
             }
         }
@@ -1257,6 +1287,8 @@ var viewModel = vM.entryEdit,
         hierarchy.meaningSlug = ko.pureComputed(meaningSlug);
         hierarchy.usageSlug = ko.pureComputed(usageSlug);
         hierarchy.exampleSlug = ko.pureComputed(exampleSlug);
+
+        hierarchy.getSelfOrUpwardNearest = getSelfOrUpwardNearest;
 
         return hierarchy;
     })();
