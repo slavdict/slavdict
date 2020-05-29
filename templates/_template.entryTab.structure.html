@@ -128,11 +128,9 @@
 
             <!-- ko if: $root.ui.navigationStack.top().constructor.name === 'Entry' -->
             <ul class="collogroups"
-                data-bind="sortable: collogroups, visible: isExpanded">
+                data-bind="foreach: collogroups, visible: isExpanded">
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
-                    <a class="dragItem" data-bind="visible:
-                       !isExpanded() && $parent.collogroups().length > 1"></a>
                     <a class="deleteItem" data-bind="click:
                             $parent.collogroups.itemDestroyer($data).do"></a>
                     <a class="editItem" data-bind="click: edit"></a>
@@ -312,12 +310,10 @@
         data-bind="click: meanings.itemAdder($root.data.entry).do"></a>
 
     <!-- ko if: constructor.name === 'Entry' && collogroups().length > 0 -->
-    <ul class="collogroups" data-bind="sortable: collogroups">
+    <ul class="collogroups" data-bind="foreach: collogroups">
 
         <li data-bind="event: { dblclick: toggle }, dblclickBubble: false">
 
-            <a class="dragItem" data-bind="visible:
-                    !isExpanded() && $parent.collogroups().length > 1"></a>
             <a class="deleteItem" data-bind="click:
                     $parent.collogroups.itemDestroyer($data).do"></a>
             <a class="editItem" data-bind="click: edit"></a>

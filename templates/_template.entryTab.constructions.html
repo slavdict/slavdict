@@ -2,12 +2,10 @@
 <section class="tabcontent" data-bind="if: constructor.name === 'Entry' ||
    (constructor.name === 'Meaning' && !$root.ui.hierarchy.usage())">
 
-    <ul class="collogroups" data-bind="sortable: collogroups">
+    <ul class="collogroups" data-bind="foreach: collogroups">
 
         <li data-bind="event: { dblclick: toggle }, dblclickBubble: false">
 
-            <a class="dragItem" data-bind="visible:
-                    !isExpanded() && $parent.collogroups().length > 1"></a>
             <a class="deleteItem" data-bind="click:
                     $parent.collogroups.itemDestroyer($data).do"></a>
             <a class="editItem" data-bind="click: edit"></a>
