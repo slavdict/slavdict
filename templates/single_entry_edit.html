@@ -246,14 +246,28 @@
                 var value = valueAccessor(),
                     cssClasses = allBindingsAccessor().waxCss || 'cslav';
                 value.wax = ko.computed(function () {
-                        var word = value(),
-                            isAffix = (word[0] === '-'),
-                            dash = isAffix ? '<span>-</span>': '',
-                            text = ('<span class="' + cssClasses + '">' +
-                                    ac2ucs8(isAffix ? word.slice(1) : word, isAffix) +
-                                    '</span>');
-                            return dash + text;
-                    });
+                    var segments = value().split(/##/g),
+                        markup = [];
+                    for (var i = 0; i < segments.length; i++) {
+                      var words = segments[i].split(/\s+/g);
+                      for (var j = 0; j < words.length; j++) {
+                        var word = words[j],
+                            elem;
+                        if (word === '') continue;
+                        if (i % 2 === 0) {
+                          var isAffix = (word[0] === '-'),
+                              dash = isAffix ? '<span>-</span>': '';
+                          elem = dash + '<span class="' + cssClasses + '">' +
+                              ac2ucs8(isAffix ? word.slice(1) : word, isAffix) +
+                              '</span>';
+                        } else {
+                          elem = '<em class="paracslav">' + word + '</em>';
+                        }
+                        markup.push(elem);
+                      }
+                    }
+                    return markup.join(' ');
+                });
                 $(element).html(value.wax());
             },
             update: function (element, valueAccessor) {
