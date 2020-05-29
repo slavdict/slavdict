@@ -214,13 +214,13 @@ function showFilterButtons() {
 }
 function goInsensitive() {
     $(this)
-        .unbind('change', showFilterButtons)
-        .unbind('blur', goInsensitive);
+        .off('change', showFilterButtons)
+        .off('blur', goInsensitive);
 }
 function goSensitive() {
     $(this)
-        .bind('change', showFilterButtons)
-        .bind('blur', goInsensitive);
+        .on('change', showFilterButtons)
+        .on('blur', goInsensitive);
 }
 
 $('#id_sortdir').on('focus', goSensitive);
@@ -232,14 +232,14 @@ if ($('#withExamples').length) {
     ko.applyBindings(vM.filters, $('#withExamples').get(0));
 }
 
-$('tr').mouseover(function(){
+$('tr').on('mouseover', function(){
     $(this).addClass('hover');
-}).mouseout(function(){
+}).on('mouseout', function(){
     $(this).removeClass('hover');
 });
 
-$('.icon').mouseover(function(){
+$('.icon').on('mouseover', function(){
     $(this).next('.hint-container').show();
-}).mouseout(function(){
+}).on('mouseout', function(){
     $(this).next('.hint-container').hide();
 });

@@ -187,9 +187,9 @@ JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
 CDN = '//cdnjs.cloudflare.com/ajax/libs/'
 JSLIBS = {
     'jquery': {
-      'debug': CDN + 'jquery/3.5.1/jquery.js',
-        'min': CDN + 'jquery/3.5.1/jquery.min.js',
-        'map': CDN + 'jquery/3.5.1/jquery.min.map',
+      'debug': CDN + 'jquery/2.1.1/jquery.js',
+        'min': CDN + 'jquery/2.1.1/jquery.min.js',
+        'map': CDN + 'jquery/2.1.1/jquery.min.map',
     },
     'jqueryUi': {
       'debug': CDN + 'jqueryui/1.12.1/jquery-ui.js',
@@ -197,16 +197,16 @@ JSLIBS = {
         'css': CDN + 'jqueryui/1.12.1/jquery-ui.min.css',
     },
     'knockout': {
-      'debug': CDN + 'knockout/3.5.1/knockout-latest.debug.js',
-        'min': CDN + 'knockout/3.5.1/knockout-latest.min.js',
+      'debug': CDN + 'knockout/3.2.0/knockout-debug.js',
+        'min': CDN + 'knockout/3.2.0/knockout-min.js',
     },
     'knockoutSortable': {
-      'debug': CDN + 'knockout-sortable/1.2.0/knockout-sortable.js',
-        'min': CDN + 'knockout-sortable/1.2.0/knockout-sortable.min.js',
+      'debug': CDN + 'knockout-sortable/0.9.2/knockout-sortable.js',
+        'min': CDN + 'knockout-sortable/0.9.2/knockout-sortable.min.js',
     },
     'knockoutPostbox': {
-      'debug': CDN + 'knockout-postbox/0.6.0/knockout-postbox.js',
-        'min': CDN + 'knockout-postbox/0.6.0/knockout-postbox.min.js',
+      'debug': CDN + 'knockout-postbox/0.4.2/knockout-postbox.js',
+        'min': CDN + 'knockout-postbox/0.4.2/knockout-postbox.min.js',
     },
     'clipboardjs': {
       'debug': CDN + 'clipboard.js/1.7.1/clipboard.js',
