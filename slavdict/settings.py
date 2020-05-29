@@ -184,64 +184,42 @@ CUSTOM_USER_MODEL = 'slavdict.custom_user.CustomUser'
 # Сторонние библиотеки JavaScript
 JSLIBS_URL = STATIC_URL + 'js/outsourcing/'
 JSLIBS_PATH = ROOT + 'static/js/outsourcing/'
+CDN = '//cdnjs.cloudflare.com/ajax/libs/'
 JSLIBS = {
     'jquery': {
-      'debug': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js',
-        'map': '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.map',
+      'debug': CDN + 'jquery/3.5.1/jquery.js',
+        'min': CDN + 'jquery/3.5.1/jquery.min.js',
+        'map': CDN + 'jquery/3.5.1/jquery.min.map',
     },
     'jqueryUi': {
-      'debug': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/'
-               'jqueryui/1.12.1/jquery-ui.min.js',
-        'css': '//cdnjs.cloudflare.com/ajax/libs/'
-               'jqueryui/1.12.1/jquery-ui.min.css',
+      'debug': CDN + 'jqueryui/1.12.1/jquery-ui.js',
+        'min': CDN + 'jqueryui/1.12.1/jquery-ui.min.js',
+        'css': CDN + 'jqueryui/1.12.1/jquery-ui.min.css',
     },
     'knockout': {
-        'debug': 'http://knockoutjs.com/downloads/knockout-3.2.0.debug.js',
-        'min': '//cdnjs.cloudflare.com/ajax/libs/'
-               'knockout/3.2.0/knockout-min.js',
+      'debug': CDN + 'knockout/3.5.1/knockout-latest.debug.js',
+        'min': CDN + 'knockout/3.5.1/knockout-latest.min.js',
     },
     'knockoutSortable': {
-        'debug': 'https://rawgit.com/rniemeyer/'
-                 'knockout-sortable/v0.9.2/build/knockout-sortable.js',
-         'Xmin': 'https://raw.githubusercontent.com/rniemeyer/'
-                 'knockout-sortable/v0.9.2/build/knockout-sortable.min.js',
-        # NOTE: Файлы с raw.githubusercontent.com нельзя отдавать в продакшн.
-        # Там выставляются http-заголовки
-        #
-        #   Content-Type: text/plain; charset=utf-8
-        #   X-Content-Type-Options: nosniff
-        #
-        # что запрещает браузеру распознавать js-файл как js-файл.
-        # Домен rawgit.com специально предназначен в помощь разработчикам для
-        # обхода этой проблемы, но расчитан исключительно для тестирования,
-        # отладки, демонстрации. При нагрузке его трафиком соединения будут
-        # скидываться. См. http://rawgit.com/
-        #
-        # Ключ ``Xmin`` вместо ``min`` использован специально, чтобы этот адрес
-        # не отдавался в продакшн.
+      'debug': CDN + 'knockout-sortable/1.2.0/knockout-sortable.js',
+        'min': CDN + 'knockout-sortable/1.2.0/knockout-sortable.min.js',
     },
     'knockoutPostbox': {
-        'debug': 'https://raw.githubusercontent.com/rniemeyer/'
-                 'knockout-postbox/v0.4.2/build/knockout-postbox.js',
-         'Xmin': 'https://raw.githubusercontent.com/rniemeyer/'
-                 'knockout-postbox/v0.4.2/build/knockout-postbox.min.js',
+      'debug': CDN + 'knockout-postbox/0.6.0/knockout-postbox.js',
+        'min': CDN + 'knockout-postbox/0.6.0/knockout-postbox.min.js',
     },
     'clipboardjs': {
-        'debug': 'https://raw.githubusercontent.com/zenorocha/'
-                 'clipboard.js/v1.7.1/dist/clipboard.js',
-         'Xmin': 'https://cdnjs.cloudflare.com/ajax/libs/'
-                 'clipboard.js/1.7.1/clipboard.min.js',
+      'debug': CDN + 'clipboard.js/1.7.1/clipboard.js',
+        'min': CDN + 'clipboard.js/1.7.1/clipboard.min.js',
     },
     'opentip': {
-        'debug': 'https://rawgit.com/enyo/opentip/'
-                 'v2.4.6/downloads/opentip-jquery.js',
-         'Xmin': 'https://raw.githubusercontent.com/enyo/opentip/'
-                 'v2.4.6/downloads/opentip-jquery.min.js',
+      'debug': CDN + 'opentip/2.4.6/downloads/opentip-jquery.js',
+        'min': CDN + 'opentip/2.4.6/downloads/opentip-jquery.min.js',
     },
     'fontAwesome': {
-         'Xmin': 'http://use.fontawesome.com/releases/v5.0.7/js/all.js',
+        'Xmin': 'http://use.fontawesome.com/releases/v5.0.7/js/all.js',
+        # NOTE: Ключ ``Xmin`` вместо ``min`` использован специально,
+        # чтобы этот адрес не отдавался в продакшн.
     },
 }
 JSLIBS_VERSION = hashlib.md5(json.dumps(JSLIBS).encode('utf-8')).hexdigest()[:8]
