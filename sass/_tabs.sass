@@ -1,246 +1,262 @@
-@charset 'utf-8'
-
+@charset "utf-8"
 
 nav.breadTabs ul
-    overflow: hidden
-    margin: 0
-    padding: 0
-    height: 45px
-    display: flex
-    @include background(linear-gradient(top, rgba(252, 243, 208, 0.7) 0%, rgba(210, 146, 22, 0) 100%))
+  overflow: hidden
+  margin: 0
+  padding: 0
+  height: 45px
+  display: flex
+
+  +background(linear-gradient(top, rgba(252, 243, 208, 0.7) 0%, rgba(210, 146, 22, 0) 100%))
+
+  position: relative
+
+  li.breadCrumb
+    flex: 0 1 auto
+    height: 26px
+    cursor: pointer
+
+    +user-select(none)
+
+    padding: 15px 37px 15px 30px
     position: relative
 
-    li.breadCrumb
-        flex: 0 1 auto
-        height: 26px
-        cursor: pointer
-        @include user-select(none)
-        padding: 15px 37px 15px 30px
-        position: relative
+    img
+      position: absolute
+      top: 0
+      bottom: 0
+      right: -10px
 
-        img
-            position: absolute
-            top: 0
-            bottom: 0
-            right: -10px
+    span
+      font-size: 13px
+      color: sienna
+      opacity: 0.8
 
-        span
-            font-size: 13px
-            color: sienna
-            opacity: 0.8
+  li.tab
+    flex: 0 1 auto
+    margin-top: 20px
+    padding: 4px 20px 0px 20px
+    height: 26px
+    cursor: pointer
+    background-color: #efefef
+    border-bottom: none
+    margin-left: -2px
 
-    li.tab
-        flex: 0 1 auto
-        margin-top: 20px
-        padding: 4px 20px 0px 20px
-        height: 26px
-        cursor: pointer
-        background-color: #efefef
-        border-bottom: none
-        margin-left: -2px
-        @include user-select(none)
-        @include border-radius(9px, 23px)
-        @include box-shadow(0 10px 20px rgba(0,0,0,0.7), 0px -1px 10px rgba(120,120,120,0.4))
-        text-align: center
-        font-family: Arial
-        font-size: 12px
-        position: relative
-        color: #888
+    +user-select(none)
+    +border-radius(9px, 23px)
+    +box-shadow(0 10px 20px rgba(0, 0, 0, 0.7), 0px -1px 10px rgba(120, 120, 120, 0.4))
 
-        &:before
-            content: ''
-            background-color: inherit
-            width: 10px
-            height: 25px
-            display: block
-            position: absolute
-            bottom: 0
-            left: -2px
-            @include rotate(15deg)
+    text-align: center
+    font-family: Arial
+    font-size: 12px
+    position: relative
+    color: #888
 
-        &:after
-            content: ''
-            background-color: inherit
-            width: 10px
-            height: 25px
-            display: block
-            position: absolute
-            bottom: 0
-            right: -2px
-            @include rotate(-15deg)
+    &:before
+      content: ""
+      background-color: inherit
+      width: 10px
+      height: 25px
+      display: block
+      position: absolute
+      bottom: 0
+      left: -2px
 
-        &:first-child
-            margin-left: 35px
-        &:hover
-            background-color: #F7E9B0
-            color: #d29216
-        &.current
-            background-color: white
-            z-index: 2
-            color: #777
-            @include box-shadow(0 10px 20px rgba(0,0,0,0.7), 0px -1px 10px rgba(0,0,0,0.4))
+      +rotate(15deg)
+
+    &:after
+      content: ""
+      background-color: inherit
+      width: 10px
+      height: 25px
+      display: block
+      position: absolute
+      bottom: 0
+      right: -2px
+
+      +rotate(-15deg)
+
+    &:first-child
+      margin-left: 35px
+
+    &:hover
+      background-color: #F7E9B0
+      color: #d29216
+
+    &.current
+      background-color: white
+      z-index: 2
+      color: #777
+
+      +box-shadow(0 10px 20px rgba(0, 0, 0, 0.7), 0px -1px 10px rgba(0, 0, 0, 0.4))
 
 #tabShadow,
 #breadCrumbShadow
-    @include box-shadow(0 -1px 10px rgba(210, 146, 22, 0.2))
+  +box-shadow(0 -1px 10px rgba(210, 146, 22, 0.2))
 
 #breadCrumbShadow
-    content: ''
-    display: block
-    top: 45px
-    left: 45px
-    right: 0
-    position: absolute
+  content: ""
+  display: block
+  top: 45px
+  left: 45px
+  right: 0
+  position: absolute
 
 #tabShadow
-    flex: 1 1 auto
-    margin-top: 45px
+  flex: 1 1 auto
+  margin-top: 45px
 
 section.tabcontent
-    padding-top: 25px
+  padding-top: 25px
 
 $listWidth: 560px
 $listElementHorizontalPadding: 20px
-$listElementWidth: ($listWidth - $listElementHorizontalPadding*2) / $listWidth
-$draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
+$listElementWidth: ($listWidth - $listElementHorizontalPadding * 2) / $listWidth
+$draggedElement: ($listWidth - $listElementHorizontalPadding * 4) / $listWidth
 
 .edit,
 .edit *
-    font-size: 11px
-    line-height: 18px
+  font-size: 11px
+  line-height: 18px
 
 .edit section .cslav
-    font-size: 16px !important
+  font-size: 16px !important
 
 .edit
-    @include myFormWidgets
-    background-color: white
-    font-family: $sansFont
+  +myFormWidgets
+
+  background-color: white
+  font-family: $sansFont
+  position: relative
+  text-align: left
+
+  input
+    +box-sizing(border-box)
+
+  ul.ko_container,
+  ul.ui-sortable,
+  ul.meanings,
+  ul.examples
+    width: $listWidth
     position: relative
-    text-align: left
+    z-index: 0
 
-    input
-        @include box-sizing(border-box)
+    & ~ a.pasteItems,
+    & ~ a.addItem,
+    & + div > a.pasteItems,
+    & + div > a.addItem
+      height: 30px
+      display: block
+      border: 1px dashed black
+      width: percentage($listElementWidth)
+      background: url(addItem.png?#{$shash}) 10px 7px no-repeat no-repeat
+      opacity: 0.2
+      cursor: pointer
+      margin-bottom: 12px
 
-    ul.ko_container,
-    ul.ui-sortable,
-    ul.meanings,
-    ul.examples
-        width: $listWidth
-        position: relative
-        z-index: 0
+    & ~ a.pasteItems,
+    & + div > a.pasteItems
+      background-image: url(paste.png?#{$shash})
 
-        & ~ a.pasteItems,
-        & ~ a.addItem,
-        & + div > a.pasteItems,
-        & + div > a.addItem
-            height: 30px
-            display: block
-            border: 1px dashed black
-            width: percentage($listElementWidth)
-            background: url(addItem.png?#{$shash}) 10px 7px no-repeat no-repeat
-            opacity: 0.2
-            cursor: pointer
-            margin-bottom: 12px
+    li
+      width: percentage($listElementWidth)
+      background-color: white
+      list-style: none
+      padding: 10px $listElementHorizontalPadding
+      margin-top: 10px
+      position: relative
 
-        & ~ a.pasteItems,
-        & + div > a.pasteItems
-            background-image: url(paste.png?#{$shash})
+      +user-select(none)
+      +box-shadow(0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset)
 
-        li
-            width: percentage($listElementWidth)
-            background-color: white
-            list-style: none
-            padding: 10px $listElementHorizontalPadding
-            margin-top: 10px
-            position: relative
-            @include user-select(none)
-            @include box-shadow(0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset)
+      &.sortable-placeholder
+        +box-shadow(0 1px 4px rgba(orange, 0.7), 0 0 40px rgba(orange, 0.5) inset)
 
-            &.sortable-placeholder
-                @include box-shadow(0 1px 4px rgba(orange, 0.7), 0 0 40px rgba(orange, 0.5) inset)
-                padding-top: 0
-                padding-bottom: 0
+        padding-top: 0
+        padding-bottom: 0
 
-            &.being-dragged
-                @include box-shadow(0 1px 4px rgba(green, 0.5), 0 0 40px rgba(green, 0.3) inset)
-                height: 1.5em !important
-                width: percentage($draggedElement) !important
-                line-height: 4em
-                overflow: hidden
-                cursor: move
-                cursor: -moz-grabbing
-                cursor: -webkit-grabbing
+      &.being-dragged
+        +box-shadow(0 1px 4px rgba(green, 0.5), 0 0 40px rgba(green, 0.3) inset)
 
-                &:first-line
-                    line-height: 1em
+        height: 1.5em !important
+        width: percentage($draggedElement) !important
+        line-height: 4em
+        overflow: hidden
+        cursor: move
+        cursor: -moz-grabbing
+        cursor: -webkit-grabbing
 
-            &.being-dragged:after,
-            &.being-dragged:before
-                @include box-shadow(none !important)
+        &:first-line
+          line-height: 1em
 
-            ul,
-            ul ~ a.pasteItems,
-            ul ~ a.addItem,
-            ul + div > a.pasteItems,
-            ul + div > a.addItem
-                width: 90%
-                margin-left: 10%
+      &.being-dragged:after,
+      &.being-dragged:before
+        +box-shadow(none !important)
 
-            &:last-of-type
-                margin-bottom: 10px
+      ul,
+      ul ~ a.pasteItems,
+      ul ~ a.addItem,
+      ul + div > a.pasteItems,
+      ul + div > a.addItem
+        width: 90%
+        margin-left: 10%
 
-        li:after,
-        li:first-of-type:before
-            content: ' '
-            position: absolute
-            @include box-shadow(0 0 10px rgba(0, 0, 0, 0.3))
-            height: 8px
-            bottom: 0
-            left: 5px
-            right: 5px
-            z-index: -1
-            border-radius: 300px / 4px
+      &:last-of-type
+        margin-bottom: 10px
 
-        li:first-of-type:before
-            bottom: auto
-            top: 0
+    li:after,
+    li:first-of-type:before
+      content: " "
+      position: absolute
 
-        li li:last-of-type:after
-            @include box-shadow(none)
+      +box-shadow(0 0 10px rgba(0, 0, 0, 0.3))
 
+      height: 8px
+      bottom: 0
+      left: 5px
+      right: 5px
+      z-index: -1
+      border-radius: 300px / 4px
 
-    ul.meanings:before,
-    ul.examples:before,
-    ul.collogroups:before,
-    ul.translations:before
-        display: block
-        font-weight: bold
-        color: sienna
-        border-bottom: 1px dotted sienna
-    ul:empty::before
-        border-bottom: none
+    li:first-of-type:before
+      bottom: auto
+      top: 0
 
-    ul.meanings:before
-        content: 'Значения'
+    li li:last-of-type:after
+      +box-shadow(none)
 
-    ul.examples:before
-        content: 'Иллюстрации'
+  ul.meanings:before,
+  ul.examples:before,
+  ul.collogroups:before,
+  ul.translations:before
+    display: block
+    font-weight: bold
+    color: sienna
+    border-bottom: 1px dotted sienna
 
-    ul.collogroups:before
-        content: 'Словосочетания'
+  ul:empty::before
+    border-bottom: none
 
-    ul.translations:before
-        content: 'Переводы'
+  ul.meanings:before
+    content: "Значения"
 
-    ul.meanings ul.meanings:before
-        content: 'Употребления'
+  ul.examples:before
+    content: "Иллюстрации"
 
-    ul.collogroups ul.meanings:before
-        content: 'Значения'
+  ul.collogroups:before
+    content: "Словосочетания"
 
-    ul.collogroups ul.meanings ul.meanings:before
-        content: 'Употребления'
+  ul.translations:before
+    content: "Переводы"
+
+  ul.meanings ul.meanings:before
+    content: "Употребления"
+
+  ul.collogroups ul.meanings:before
+    content: "Значения"
+
+  ul.collogroups ul.meanings ul.meanings:before
+    content: "Употребления"
 
 .tabcontent > .addItem,
 .tabcontent > div > .addItem,
@@ -249,328 +265,356 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding*4) / $listWidth
 .orthvars > .addItem,
 .orthvars > div > .addItem,
 .meaningContexts ~ .addItem
-    width: $listWidth - 5px !important
+  width: ($listWidth - 5px) !important
 
 #infoTab--participles > .addItem,
 #infoTab--participles > div > .addItem,
 #usageExamples .pasteItems,
 #usageExamples .addItem
-    width: $listWidth - 15px
+  width: $listWidth - 15px
 
 .orthvars ul li,
 ul.meaningContexts li,
 #infoTab--participles ul li
-    padding-left: 12px
+  padding-left: 12px
 
-    .deleteItem
-        opacity: 0.3
-        position: absolute
-        display: block
-        top: 30%
-        right: 17px
+  .deleteItem
+    opacity: 0.3
+    position: absolute
+    display: block
+    top: 30%
+    right: 17px
 
-    &.being-dragged
-        width: percentage($listElementWidth) !important
+  &.being-dragged
+    width: percentage($listElementWidth) !important
 
 .orthvars ul li
+  position: relative
+
+  input[type="text"]
+    margin-left: 20px
+
+  input[type="checkbox"]
     position: relative
+    margin-left: 1em
+    top: -0.4em
 
-    input[type="text"]
-        margin-left: 20px
-
-    input[type="checkbox"]
-        position: relative
-        margin-left: 1em
-        top: -0.4em
-
-    label
-        margin-left: 0.5em
-
+  label
+    margin-left: 0.5em
 
 .meaningContexts *
-    overflow: visible
+  overflow: visible
 
 .meaningContexts li
-    label
-        +column(2)
-        position: relative
-        margin-top: 2px
+  label
+    +column(2)
 
-        input[type="text"]
-            +column(2, true)
+    position: relative
+    margin-top: 2px
 
-        span
-            top: -14px
-            font-size: 9px
-            position: absolute
-            z-index: 300
+    input[type="text"]
+      +column(2, true)
+
+    span
+      top: -14px
+      font-size: 9px
+      position: absolute
+      z-index: 300
 
 #infoTab
+  display: flex
+  flex-direction: column
+
+  & > section:first-of-type
     display: flex
-    flex-direction: column
 
     & > section:first-of-type
-        display: flex
+      flex: 3 0 auto
 
-        & > section:first-of-type
-            flex: 3 0 auto
+      & label
+        padding: 0.5em 0.7em
+        line-height: 2.3em
+        display: block-inline
 
-            & label
-                padding: 0.5em 0.7em
-                line-height: 2.3em
-                display: block-inline
+        &.checked
+          +border-radius(5px)
 
-                &.checked
-                    @include border-radius(5px)
-                    background-color: rgb(252, 243, 208)
-                    color: sienna
+          background-color: rgb(252, 243, 208)
+          color: sienna
 
-        & > section.n-adj-v:first-of-type
-            flex: 0 0 90px
+    & > section.n-adj-v:first-of-type
+      flex: 0 0 90px
 
-        & > section:last-of-type
-            flex: 1 1 auto
+    & > section:last-of-type
+      flex: 1 1 auto
 
 #infoTab--uninflected,
 #infoTab--possessive
-    @include column(4)
-    @include append(15)
-    margin-bottom: 1.2em
+  +column(4)
+  +append(15)
 
-    & input
-        @include column(1, true)
-        margin-top: 2px
-        margin-left: -3px
+  margin-bottom: 1.2em
 
-    & span
-        @include column(3)
-        text-align: right
+  & input
+    +column(1, true)
+
+    margin-top: 2px
+    margin-left: -3px
+
+  & span
+    +column(3)
+
+    text-align: right
 
 #infoTab--genitive
-    @include column(10)
-    @include prepend(1)
-    margin-bottom: 1.2em
+  +column(10)
+  +prepend(1)
 
-    & label
-        @include column(5)
-        @include pull(1)
+  margin-bottom: 1.2em
 
-        & span
-            @include column(3)
-            text-align: right
-
-        & input
-            @include column(2, true)
-
-    & > span
-        @include column(5, true)
-
-#infoTab--gender
-    @include column(4)
-    @include prepend(1)
-    margin-bottom: 2.4em
-    clear: left
-
-    & > select,
-        @include column(2, true)
-
-    & > span
-        @include column(2)
-        text-align: right
-
-    & > div
-        @include column(2, true)
-
-        & label
-            @include column(2, true)
-
-            & input
-                @include column(1)
-                margin-top: 2px
-
-            & span
-                @include column(1, true)
-
-#infoTab--number
-    @include column(5)
-
-    & > span
-        @include column(2)
-        text-align: right
-
-    & > select
-        @include column(3, true)
-
-#infoTab--onym
-    @include column(10)
-    @include prepend(1)
-    clear: left
-    margin-bottom: 1.2em
+  & label
+    +column(5)
+    +pull(1)
 
     & span
-        @include column(2)
-        text-align: right
-        line-height: 10px
+      +column(3)
 
-    & select
-        @include column(4)
-
-#infoTab--canonical
-    @include column(4)
-    clear: left
+      text-align: right
 
     & input
-        @include column(1, true)
-        margin-top: 2px
-        margin-left: -3px
+      +column(2, true)
 
-    & span
-        @include column(3)
-        text-align: right
+  & > span
+    +column(5, true)
+
+#infoTab--gender
+  +column(4)
+  +prepend(1)
+
+  margin-bottom: 2.4em
+  clear: left
+
+  & > select
+    +column(2, true)
+
+  & > span
+    +column(2)
+
+    text-align: right
+
+  & > div
+    +column(2, true)
+
+    & label
+      +column(2, true)
+
+      & input
+        +column(1)
+
+        margin-top: 2px
+
+      & span
+        +column(1, true)
+
+#infoTab--number
+  +column(5)
+
+  & > span
+    +column(2)
+
+    text-align: right
+
+  & > select
+    +column(3, true)
+
+#infoTab--onym
+  +column(10)
+  +prepend(1)
+
+  clear: left
+  margin-bottom: 1.2em
+
+  & span
+    +column(2)
+
+    text-align: right
+    line-height: 10px
+
+  & select
+    +column(4)
+
+#infoTab--canonical
+  +column(4)
+
+  clear: left
+
+  & input
+    +column(1, true)
+
+    margin-top: 2px
+    margin-left: -3px
+
+  & span
+    +column(3)
+
+    text-align: right
 
 #infoTab--nomSg,
 #infoTab--shortForm
-    @include column(12)
-    clear: left
+  +column(12)
 
-    & label input
-        @include column(4)
+  clear: left
 
-    & label span
-        @include column(3)
-        text-align: right
+  & label input
+    +column(4)
 
-    & > span
-        @include column(5, true)
+  & label span
+    +column(3)
+
+    text-align: right
+
+  & > span
+    +column(5, true)
 
 #infoTab--nomSg label span
-    word-spacing: 0.0005em
+  word-spacing: 0.0005em
 
 #infoTab--sg1,
 #infoTab--sg2
-    @include column(15)
-    clear: left
-    margin-bottom: 1.2em
+  +column(15)
 
-    & label span
-        @include column(3)
-        text-align: right
+  clear: left
+  margin-bottom: 1.2em
 
-    & label input
-        @include column(5)
+  & label span
+    +column(3)
 
-    & > span
-        @include column(7, true)
+    text-align: right
+
+  & label input
+    +column(5)
+
+  & > span
+    +column(7, true)
 
 #infoTab--participles
-    +column(12)
-    margin-top: 2.4em
-    clear: left
+  +column(12)
 
-    header
-        color: #777
-        font-weight: bold
-        border-bottom: 1px #777 solid
-        padding-left: 12px
+  margin-top: 2.4em
+  clear: left
 
-    ul:empty + input[type="button"]
-        margin-left: 12px
-        margin-top: 7px
+  header
+    color: #777
+    font-weight: bold
+    border-bottom: 1px #777 solid
+    padding-left: 12px
 
-    ul > li > div
-        padding-left: 5px
+  ul:empty + input[type="button"]
+    margin-left: 12px
+    margin-top: 7px
 
-        & > label
+  ul > li > div
+    padding-left: 5px
 
-            & > span
-                +column(1)
-                line-height: 20px
-            & > select
-                +column(3)
-                height: 20px
+    & > label
+      & > span
+        +column(1)
 
-            & > input[type="text"]
-                +column(4)
+        line-height: 20px
+
+      & > select
+        +column(3)
+
+        height: 20px
+
+      & > input[type="text"]
+        +column(4)
 
 .expandItem,
 .deleteItem,
 .cutItem,
 .editItem
-    width: 16px
-    height: 16px
-    opacity: 0.3
-    position: absolute
-    cursor: pointer
-    display: none
-    top: -8px
+  width: 16px
+  height: 16px
+  opacity: 0.3
+  position: absolute
+  cursor: pointer
+  display: none
+  top: -8px
 
 .dragItem
-    width: 7px
-    height: 33px
-    position: absolute
-    cursor: move
-    cursor: -moz-grab
-    cursor: -webkit-grab
-    display: none
-    top: 3px
-    left: 4px
-    background: url(dragItem.png?#{$shash})
+  width: 7px
+  height: 33px
+  position: absolute
+  cursor: move
+  cursor: -moz-grab
+  cursor: -webkit-grab
+  display: none
+  top: 3px
+  left: 4px
+  background: url(dragItem.png?#{$shash})
 
 li:hover:not(.being-dragged) > .expandItem,
 li:hover:not(.being-dragged) > .dragItem,
 li:hover:not(.being-dragged) > .deleteItem,
 li:hover:not(.being-dragged) > .cutItem,
 li:hover:not(.being-dragged) > .editItem
-    display: block
+  display: block
 
 $expandPosition: 28px
+
 .expandItem
-    right: $expandPosition
-    background: url(expandItem.png?#{$shash})
-    @include transform(rotate(0deg))
-    transition: all 0.4s
+  right: $expandPosition
+  background: url(expandItem.png?#{$shash})
+
+  +transform(rotate(0deg))
+
+  transition: all 0.4s
 
 .expandItem.expanded
-    @include transform(rotate(90deg))
+  +transform(rotate(90deg))
 
 .deleteItem
-    background: url(deleteItem.png?#{$shash})
-    right: -8px
+  background: url(deleteItem.png?#{$shash})
+  right: -8px
 
 .editItem
-    background: url(editItem.png?#{$shash})
-    right: $expandPosition + 18px
+  background: url(editItem.png?#{$shash})
+  right: $expandPosition + 18px
 
 .cutItem
-    right: $expandPosition
-    top: auto
-    bottom: -8px
-    background: url(scissors.png?#{$shash})
+  right: $expandPosition
+  top: auto
+  bottom: -8px
+  background: url(scissors.png?#{$shash})
+
 .cutItem.cutItemNonFirst
-    background: url(scissorsPlus.png?#{$shash})
+  background: url(scissorsPlus.png?#{$shash})
 
 .examples > li > .editItem
-    right: $expandPosition - 8px
+  right: $expandPosition - 8px
 
 #usageExamples
-    +column(20)
-    clear: all
-    margin-top: 2.4em
+  +column(20)
+
+  clear: all
+  margin-top: 2.4em
 
 .substantivus
-    +border-radius(3px)
-    background-color: #ccc
-    color: #555
-    padding: 0 0.3em
+  +border-radius(3px)
+
+  background-color: #ccc
+  color: #555
+  padding: 0 0.3em
 
 .paracslav
-    font-size: 13px
-    color: #555
+  font-size: 13px
+  color: #555
 
 .leftPad
-    margin-left: 0.75em
+  margin-left: 0.75em
 
 .lozenge
-    position: absolute
-    font-size: 1.5em
-    left: 0.35em
+  position: absolute
+  font-size: 1.5em
+  left: 0.35em

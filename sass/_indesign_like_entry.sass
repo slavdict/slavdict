@@ -1,4 +1,4 @@
-@charset 'utf-8'
+@charset "utf-8"
 
 //div.Letter
 //div.Entry
@@ -33,119 +33,119 @@
 //span.Valency
 
 div.Entry
-    margin-top: 2em
-    text-align: justify
-    line-height: 1.5em
+  margin-top: 2em
+  text-align: justify
+  line-height: 1.5em
 
 div.FirstParagraph
-    text-indent: -0.4em
+  text-indent: -0.4em
 
-    @media print
-        text-indent: 0
+  @media print
+    text-indent: 0
 
 div.CfParagraph,
 div.MeaningParagraph
-    text-indent: 0.6em
+  text-indent: 0.6em
 
 div.CollogroupParagraph
-    text-indent: 0.15em
+  text-indent: 0.15em
 
 span.Headword,
 span.SubHeadword,
 span.CSLSegmentEm
-    font-family: $csl1Font
+  font-family: $csl1Font
 
 span.Headword,
 span.SubHeadword
-    font-size: 1.4em
+  font-size: 1.4em
 
 span.CSLSegmentEm
-    font-size: 1.24em
+  font-size: 1.24em
 
 span.CSLSegment
-    font-family: $csl2Font
-    font-style: normal
+  font-family: $csl2Font
+  font-style: normal
 
 span.CSLSuper
-    font-size: 0.66em
-    vertical-align: super
+  font-size: 0.66em
+  vertical-align: super
 
 span.Text,
 span.Em,
 span.Conj,
 span.Valency,
 span.Latin,
-span.Address,
-    font-family: $serifFont
+span.Address
+  font-family: $serifFont
 
 span.Text
-    font-style: normal
+  font-style: normal
 
 span.Address
-    font-size: smaller
+  font-size: smaller
 
 span.CgMeaningNumber
-    font-weight: bold
+  font-weight: bold
 
 span.Conj,
 span.Valency,
 span.Em
-    font-style: italic
+  font-style: italic
 
 span.Greek
-    font-family: $greekFont
-    font-size: 1.1em
+  font-family: $greekFont
+  font-size: 1.1em
 
-    span.Text,
-    span.Em
-        font-size: 0.9090909090909em
+  span.Text,
+  span.Em
+    font-size: 0.9090909091em
 
 span.MeaningNumber,
-span.CgMeaningNumber,
-    font-family: $serifFont
-    font-weight: bold
+span.CgMeaningNumber
+  font-family: $serifFont
+  font-weight: bold
 
 span.Meaning.Text,
 span.Gloss.Em
-    hyphens: auto
+  hyphens: auto
 
 span.Diamond,
 span.MeaningfulNoAccent,
 span.BiblicalAllusion,
 span.Use
-    font-family: FreeSerifSymbols
+  font-family: FreeSerifSymbols
 
 span.Use
-    font-size: 1.35em
+  font-size: 1.35em
 
 span.MeaningfulNoAccent
-    font-size: 0.583em
-    position: relative
-    vertical-align: top
+  font-size: 0.583em
+  position: relative
+  vertical-align: top
 
 span.Diamond
-    font-size: 1.2em
-    position: relative
-    vertical-align: -0.05em
-    display: inline-block
-    padding: 0
-    margin: 0 -0.15em 0 0.2em
+  font-size: 1.2em
+  position: relative
+  vertical-align: -0.05em
+  display: inline-block
+  padding: 0
+  margin: 0 -0.15em 0 0.2em
 
-    .MeaningParagraph .MeaningNumber + &
-        left: -0.8em
-        margin-right: -0.9em
+  .MeaningParagraph .MeaningNumber + &
+    left: -0.8em
+    margin-right: -0.9em
 
 span.BiblicalAllusion
-    position: relative
-    vertical-align: -0.05em
-    left: 0.05rem
+  position: relative
+  vertical-align: -0.05em
+  left: 0.05rem
 
 span.HeadwordHomonymNumber,
 span.HeadwordNumber,
 span.HomonymNumber
-    font-size: 0.583em
-    position: relative
-    vertical-align: top
-    color: black
-    top: -0.2em
-    font-style: normal
+  font-size: 0.583em
+  position: relative
+  vertical-align: top
+  color: black
+  top: -0.2em
+  font-style: normal

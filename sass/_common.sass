@@ -1,4 +1,5 @@
-@charset 'utf-8'
+@charset "utf-8"
+
 @import compass
 @import compass/css3/user-interface
 
@@ -25,60 +26,61 @@ $yellowBackground: #fcf3d0
 $yellowBorder: #f4c873
 $yellowText: #d29216
 
-@mixin button
-    cursor: pointer
-    white-space: nowrap
-    @include user-select(none)
+=button
+  cursor: pointer
+  white-space: nowrap
+
+  +user-select(none)
 
 .button
-    font: 11px $sansFont
-    text-align: center
-    padding: 0.2em 0.5em
-    background-color: #777
-    color: #fff
-    @include button
-    @include border-radius(3px)
+  font: 11px $sansFont
+  text-align: center
+  padding: 0.2em 0.5em
+  background-color: #777
+  color: #fff
 
-    &:hover
-        background-color: #369
+  +button
+  +border-radius(3px)
+
+  &:hover
+    background-color: #369
 
 noscript
-    display: block
-    padding: 1em
-    color: white
-    background-color: #a00
-    text-align: center
-    font-family: Arial, sans-serif
-
+  display: block
+  padding: 1em
+  color: white
+  background-color: #a00
+  text-align: center
+  font-family: Arial, sans-serif
 
 .nobr,
 .nowrap
-    white-space: nowrap
-
+  white-space: nowrap
 
 .message
-    font-size: 12px
-    @include border-radius(0.5em)
-    padding: 0.5em 0.7em
-    margin: 0em auto 0.5em auto
-    width: 25em
-    font-family: $sansFont
-    background-color: $yellowBackground
-    border: 1px solid $yellowBorder
-    color: $yellowText
+  font-size: 12px
+
+  +border-radius(0.5em)
+
+  padding: 0.5em 0.7em
+  margin: 0em auto 0.5em auto
+  width: 25em
+  font-family: $sansFont
+  background-color: $yellowBackground
+  border: 1px solid $yellowBorder
+  color: $yellowText
 
 .message .red.caps
-    background-color: #fcd5d0
-    color: #ea361c
+  background-color: #fcd5d0
+  color: #ea361c
 
 .invisible
-    visibility: hidden
+  visibility: hidden
 
 .transparent,
 .transparent *
-    color: transparent !important
-    background-color: transparent !important
-
+  color: transparent !important
+  background-color: transparent !important
 
 a.cslav,
 a .cslav,
@@ -87,103 +89,107 @@ a .CSLSegment,
 a.CSLSegmentEm,
 a .CSLSegmentEm,
 a.Headword,
-a .Headword,
-    color: #000
+a .Headword
+  color: #000
 
 body,
 div
-    margin: 0
-    padding: 0
-    font-size: 13pt
-    font-family: $sansFont
+  margin: 0
+  padding: 0
+  font-size: 13pt
+  font-family: $sansFont
 
 div#main
-    margin: 1em auto
-    width: 40em
-    position: relative
+  margin: 1em auto
+  width: 40em
+  position: relative
 
-    @media print
-        width: auto
-        margin: 0
-        padding: 0
-        column-count: 2
-        column-width: 6.5cm
-        column-fill: balance
+  @media print
+    width: auto
+    margin: 0
+    padding: 0
+    column-count: 2
+    column-width: 6.5cm
+    column-fill: balance
 
 @media print
-    @page
-        margin: 3cm
+  @page
+    margin: 3cm
 
-        @top-right-corner
-            content: counter(page)
+    @top-right-corner
+      content: counter(page)
 
-    .FirstParagraph,
-    .MeaningParagraph,
-    .CollogroupParagraph,
-    .CfParagraph
-        line-height: 4.9mm
-        font-size: 82%
-        text-align: left
+  .FirstParagraph,
+  .MeaningParagraph,
+  .CollogroupParagraph,
+  .CfParagraph
+    line-height: 4.9mm
+    font-size: 82%
+    text-align: left
 
 #main-flex
-    display: flex
+  display: flex
 
-    & > aside
-        order: 1
-        width: 23%
-        border: 1px solid green
+  & > aside
+    order: 1
+    width: 23%
+    border: 1px solid green
 
-    & > article
-        order: 2
-        width: 77%
-        border: 1px solid red
+  & > article
+    order: 2
+    width: 77%
+    border: 1px solid red
 
 .author
-    font-style: italic
-    font-size: 12px
-    font-family: $sansFont
-    color: #777
-    margin-top: 20px
-    margin-right: 50px
-    text-align: right
+  font-style: italic
+  font-size: 12px
+  font-family: $sansFont
+  color: #777
+  margin-top: 20px
+  margin-right: 50px
+  text-align: right
 
-    @media print
-        margin-right: 1em
-        margin-top: .66em
-        font-size: 60%
+  @media print
+    margin-right: 1em
+    margin-top: 0.66em
+    font-size: 60%
 
 .cinnabar
-    color: #f00
+  color: #f00
 
 .hidden
-    display: none
-    visibility: hidden
+  display: none
+  visibility: hidden
 
 img.tipIcon
-    opacity: 0.4
-    vertical-align: sub
+  opacity: 0.4
+  vertical-align: sub
 
 span.anchor
-    position: relative
+  position: relative
+  width: 0
+  height: 0
+  margin: 0 !important
+  padding: 0 !important
+
+  a
+    position: absolute
+    border-radius: 50%
     width: 0
     height: 0
-    margin: 0 !important
-    padding: 0 !important
-    a
-        position: absolute
-        border-radius: 50%
-        width: 0
-        height: 0
-        left: 50%
-        top: 50%
-        transform: translate(-50%, -50%)
-    a:target
-        animation: anchor 2s
+    left: 50%
+    top: 50%
+    transform: translate(-50%, -50%)
+
+  a:target
+    animation: anchor 2s
 
 @keyframes anchor
-    0%
-        border: 0 solid rgba(255, 69, 0, 1)
-    70%
-        border: 10em solid rgba(255, 69, 0, 0.3)
-    100%
-        border: 0 solid rgba(255, 69, 0, 0)
+  0%
+    border: 0 solid rgba(255, 69, 0, 1)
+
+  70%
+    border: 10em solid rgba(255, 69, 0, 0.3)
+
+  100%
+    border: 0 solid rgba(255, 69, 0, 0)

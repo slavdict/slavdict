@@ -1,126 +1,127 @@
 .curtain,
 .modalBackground
-    position: fixed
-    top: 0
-    right: 0
-    bottom: 0
-    left: 0
+  position: fixed
+  top: 0
+  right: 0
+  bottom: 0
+  left: 0
 
 .curtain
-    z-index: 1000
-    background-color: white
+  z-index: 1000
+  background-color: white
 
 .modalBackground
-    z-index: 500
-    background-color: black
-    background-color: rgba(0, 0, 0, 0.8)
+  z-index: 500
+  background-color: black
+  background-color: rgba(0, 0, 0, 0.8)
 
 $modalWidth: 700px
 
 .modal
-    position: fixed
-    top: 5%
-    z-index: 501
-    width: $modalWidth
-    background-color: white
-    border: 1px solid #999
-    border: 1px solid rgba(0,0,0,.3)
-    @include border-radius(6px)
-    @include box-shadow(0 3px 7px rgba(0,0,0,0.3))
-    @include background-clip(padding-box)
-    outline: none
-    padding: 15px
+  position: fixed
+  top: 5%
+  z-index: 501
+  width: $modalWidth
+  background-color: white
+  border: 1px solid #999
+  border: 1px solid rgba(0, 0, 0, 0.3)
 
-    h1
-        font-size: large
-        margin-bottom: 10px
+  +border-radius(6px)
+  +box-shadow(0 3px 7px rgba(0, 0, 0, 0.3))
+  +background-clip(padding-box)
 
-    p
-        margin-bottom: 10px
-        color: #444
+  outline: none
+  padding: 15px
+
+  h1
+    font-size: large
+    margin-bottom: 10px
+
+  p
+    margin-bottom: 10px
+    color: #444
 
 #sD--saving
-    display: inline-block
-    width: 80px
-    height: 80px
+  display: inline-block
+  width: 80px
+  height: 80px
 
-    div
-        animation: spring-balls 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite
-        transform-origin: 40px 40px
+  div
+    animation: spring-balls 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite
+    transform-origin: 40px 40px
 
-    div:after
-        content: " "
-        display: block
-        position: absolute
-        width: 7px
-        height: 7px
-        border-radius: 50%
-        background: #ccc
-        margin: -4px 0 0 -4px
+  div:after
+    content: " "
+    display: block
+    position: absolute
+    width: 7px
+    height: 7px
+    border-radius: 50%
+    background: #ccc
+    margin: (-4px) 0 0 -4px
 
-    div:nth-child(1)
-        animation-delay: -0.036s
+  div:nth-child(1)
+    animation-delay: -0.036s
 
-    div:nth-child(1):after
-        top: 63px
-        left: 63px
+  div:nth-child(1):after
+    top: 63px
+    left: 63px
 
-    div:nth-child(2)
-        animation-delay: -0.072s
+  div:nth-child(2)
+    animation-delay: -0.072s
 
-    div:nth-child(2):after
-        top: 68px
-        left: 56px
+  div:nth-child(2):after
+    top: 68px
+    left: 56px
 
-    div:nth-child(3)
-        animation-delay: -0.108s
+  div:nth-child(3)
+    animation-delay: -0.108s
 
-    div:nth-child(3):after
-        top: 71px
-        left: 48px
+  div:nth-child(3):after
+    top: 71px
+    left: 48px
 
-    div:nth-child(4)
-        animation-delay: -0.144s
+  div:nth-child(4)
+    animation-delay: -0.144s
 
-    div:nth-child(4):after
-        top: 72px
-        left: 40px
+  div:nth-child(4):after
+    top: 72px
+    left: 40px
 
-    div:nth-child(5)
-        animation-delay: -0.18s
+  div:nth-child(5)
+    animation-delay: -0.18s
 
-    div:nth-child(5):after
-        top: 71px
-        left: 32px
+  div:nth-child(5):after
+    top: 71px
+    left: 32px
 
-    div:nth-child(6)
-        animation-delay: -0.216s
+  div:nth-child(6)
+    animation-delay: -0.216s
 
-    div:nth-child(6):after
-        top: 68px
-        left: 24px
+  div:nth-child(6):after
+    top: 68px
+    left: 24px
 
-    div:nth-child(7)
-        animation-delay: -0.252s
+  div:nth-child(7)
+    animation-delay: -0.252s
 
-    div:nth-child(7):after
-        top: 63px
-        left: 17px
+  div:nth-child(7):after
+    top: 63px
+    left: 17px
 
-    div:nth-child(8)
-        animation-delay: -0.288s
+  div:nth-child(8)
+    animation-delay: -0.288s
 
-    div:nth-child(8):after
-        top: 56px
-        left: 12px
-
+  div:nth-child(8):after
+    top: 56px
+    left: 12px
 
 @keyframes spring-balls
-    0%
-        transform: rotate(0deg)
+  0%
+    transform: rotate(0deg)
 
-    100%
-        transform: rotate(360deg)
+  100%
+    transform: rotate(360deg)
 
 #moveMeaningsOrExamples .modal.grid
-    left: calc(50% - #{$modalWidth / 2})
+  left: calc(50% - #{$modalWidth / 2})

@@ -1,282 +1,332 @@
-@charset 'utf-8'
+@charset "utf-8"
 
 $advertiserColor: #999
 
 .filters,
 .filters *
-    font-size: 11px
-    line-height: 18px
+  font-size: 11px
+  line-height: 18px
 
 .filters
-    @include myFormWidgets
-    @include user-select(none)
-    background-color: white
-    font-family: $sansFont
-    position: relative
-    text-align: left
+  +myFormWidgets
+  +user-select(none)
 
-    input
-        @include box-sizing(border-box)
+  background-color: white
+  font-family: $sansFont
+  position: relative
+  text-align: left
+
+  input
+    +box-sizing(border-box)
 
 .f5s--statusbar
-    background-color: $yellowBackground
-    color: $yellowText
-    display: none
-    padding: 5px 0
-    word-spacing: 3px
+  background-color: $yellowBackground
+  color: $yellowText
+  display: none
+  padding: 5px 0
+  word-spacing: 3px
 
-    .f5sS--total
-        color: $greenText
-        float: right
-        text-align: right
-        width: 160px
+  .f5sS--total
+    color: $greenText
+    float: right
+    text-align: right
+    width: 160px
 
-    .f5sS--item
-        @include border-radius(3px)
-        background-color: $yellowBorder
-        text-shadow: 0 0 5px white
-        font-weight: bold
-        margin-right: 4px
-        padding: 0 5px
-        position: relative
-        white-space: nowrap
-        word-spacing: 1px
+  .f5sS--item
+    +border-radius(3px)
 
-        .f5sSI--prefix
-            text-transform: uppercase
-            font-weight: bold
+    background-color: $yellowBorder
+    text-shadow: 0 0 5px white
+    font-weight: bold
+    margin-right: 4px
+    padding: 0 5px
+    position: relative
+    white-space: nowrap
+    word-spacing: 1px
 
-        .f5sSI--reset
-            @include button
-            @include border-radius(3px)
-            position: absolute
-            top: -2px
-            background-color: $yellowText
-            color: white
+    .f5sSI--prefix
+      text-transform: uppercase
+      font-weight: bold
 
-        .f5sSI--reset:before
-            content: '\00d7'
-            display: block
-            font-weight: normal
-            line-height: 1em
-            padding: 0 0.2em
+    .f5sSI--reset
+      +button
+      +border-radius(3px)
 
-        .f5sSI--reset:hover
-            background-color: #a00
+      position: absolute
+      top: -2px
+      background-color: $yellowText
+      color: white
+
+    .f5sSI--reset:before
+      content: "×"
+      display: block
+      font-weight: normal
+      line-height: 1em
+      padding: 0 0.2em
+
+    .f5sSI--reset:hover
+      background-color: #a00
 
 @-moz-document url-prefix()
-    .f5s--statusbar .f5sS--item .f5sSI--reset
-        right: -7px
+  .f5s--statusbar .f5sS--item .f5sSI--reset
+    right: -7px
 
 .f5s--dashboard
-    display: none
-    padding: 10px
-    color: #444
+  display: none
+  padding: 10px
+  color: #444
 
-    h3
-        margin-bottom: 2.4em
-    div.checkbox
-        @include column(1)
-        text-align: right
-    select
-        margin-bottom: 1em
+  h3
+    margin-bottom: 2.4em
 
-    .f5sD--sort
-        @include column(6, true)
-        @include prepend(15)
+  div.checkbox
+    +column(1)
 
-        #id_sortdir
-            @include column(4)
-            margin-bottom: 0.7em
+    text-align: right
 
-        #id_sortbase
-            @include column(6)
+  select
+    margin-bottom: 1em
 
-    .f5sD--filter
-        label
-            @include column(3)
-            text-align: right
+  .f5sD--sort
+    +column(6, true)
+    +prepend(15)
 
-        .A
-            @include column(14, true)
-            @include pull(21, true)
-            @include colborder($advertiserColor, 1px)
+    #id_sortdir
+      +column(4)
 
-            .AA
-                @include column(7)
-                .for_id_find
-                    @include column(4, true)
-                    margin-bottom: 0.7em
+      margin-bottom: 0.7em
 
-            .AB
-                @include column(7, true)
-                #id_author
-                    @include column(4, true)
-                #id_status
-                    @include column(4, true)
+    #id_sortbase
+      +column(6)
 
-        .B
-            @include column(21, true)
-            margin-top: 3em
-            margin-bottom: 0.5em
+  .f5sD--filter
+    label
+      +column(3)
 
-            .BA
-                @include column(7)
-
-                #id_pos
-                    @include column(4, true)
-                .checkbox-group.for_id_uninflected
-                    @include column(4)
-                    margin-bottom: 1em
-                .checkbox-group.for_id_uninflected label
-                    @include column(3)
-                    text-align: right
-                    line-height: 10px
-                .checkbox.for_id_uninflected
-                    @include column(1, true)
-                    text-align: left
-                #id_gender
-                    @include column(4, true)
-                #id_tantum
-                    @include column(4, true)
-
-            .BB
-                @include column(9)
-
-                label
-                    @include column(4)
-                #id_possessive,
-                #id_onym,
-                #id_canonical_name
-                    @include column(4, true)
-
-            .BC
-                @include column(5, true)
-                margin-top: -0.3em
-
-                .checkbox-group
-                    @include column(6, true)
-
-        .D
-            @include push(2)
-            @include column(21, true)
-            margin-top: 0
-            margin-bottom: 0
-
-            .checkbox-group label
-                @include column(20, true)
-
-        .checkbox-group label
-            @include column(5, true)
-            padding-top: 2px
-            text-align: left
-
-        .textinput input
-            width: 98%
-
-
-.f5s--buttons
-    background-color: #eee
+      text-align: right
 
     .A
-        @include column(21, true)
-        margin: 5px 0
-    .AA
-        @include column(4)
-    .AB
-        @include column(3, true)
+      +column(14, true)
+      +pull(21, true)
+      +colborder($advertiserColor, 1px)
 
-    .button
-        background-color: $advertiserColor
-        padding: 0
-    .button.f5sB--reset
-        @include column(3)
-    .button.f5sB--submit
-        @include column(3,true)
+      .AA
+        +column(7)
+
+        .for_id_find
+          +column(4, true)
+
+          margin-bottom: 0.7em
+
+      .AB
+        +column(7, true)
+
+        #id_author
+          +column(4, true)
+
+        #id_status
+          +column(4, true)
+
+    .B
+      +column(21, true)
+
+      margin-top: 3em
+      margin-bottom: 0.5em
+
+      .BA
+        +column(7)
+
+        #id_pos
+          +column(4, true)
+
+        .checkbox-group.for_id_uninflected
+          +column(4)
+
+          margin-bottom: 1em
+
+        .checkbox-group.for_id_uninflected label
+          +column(3)
+
+          text-align: right
+          line-height: 10px
+
+        .checkbox.for_id_uninflected
+          +column(1, true)
+
+          text-align: left
+
+        #id_gender
+          +column(4, true)
+
+        #id_tantum
+          +column(4, true)
+
+      .BB
+        +column(9)
+
+        label
+          +column(4)
+
+        #id_possessive,
+        #id_onym,
+        #id_canonical_name
+          +column(4, true)
+
+      .BC
+        +column(5, true)
+
+        margin-top: -0.3em
+
+        .checkbox-group
+          +column(6, true)
+
+    .D
+      +push(2)
+      +column(21, true)
+
+      margin-top: 0
+      margin-bottom: 0
+
+      .checkbox-group label
+        +column(20, true)
+
+    .checkbox-group label
+      +column(5, true)
+
+      padding-top: 2px
+      text-align: left
+
+    .textinput input
+      width: 98%
+
+.f5s--buttons
+  background-color: #eee
+
+  .A
+    +column(21, true)
+
+    margin: 5px 0
+
+  .AA
+    +column(4)
+
+  .AB
+    +column(3, true)
+
+  .button
+    background-color: $advertiserColor
+    padding: 0
+
+  .button.f5sB--reset
+    +column(3)
+
+  .button.f5sB--submit
+    +column(3, true)
 
 .f5s--advertiser
+  background-color: $advertiserColor
+  height: 4px
+  position: relative
+
+  .f5sA--label
+    +border-radius(3px)
+    +button
+
     background-color: $advertiserColor
-    height: 4px
-    position: relative
-
-    .f5sA--label
-        @include border-radius(3px)
-        @include button
-        background-color: $advertiserColor
-        color: white
-        display: none
-        font-size: 10px
-        font-weight: bold
-        height: 15px
-        line-height: 120%
-        position: absolute
-        text-align: center
-        width: 70px
+    color: white
+    display: none
+    font-size: 10px
+    font-weight: bold
+    height: 15px
+    line-height: 120%
+    position: absolute
+    text-align: center
+    width: 70px
 
 .hellinist-filters
-    @extend .filters
+  @extend .filters
 
 .hellinist-filters
-    .f5s--dashboard,
-    .f5s--statusbar
-        display: block !important
+  .f5s--dashboard,
+  .f5s--statusbar
+    display: block !important
 
-    .f5sD--buttons
-        background-color: #eee
-        color: $yellowText
-        padding: 5px 0
-    .button
-        background-color: $advertiserColor
-        padding: 0
-        font-size: 11px
-    .button.f5sD--reset,
-    .button.f5sD--submit
-        @include column(4)
-    h3
-        margin-bottom: 1.8em
+  .f5sD--buttons
+    background-color: #eee
+    color: $yellowText
+    padding: 5px 0
 
-    .f5sD--filter
-        @include column(14, true)
-        @include pull(21, true)
-        @include colborder($advertiserColor, 1px)
+  .button
+    background-color: $advertiserColor
+    padding: 0
+    font-size: 11px
 
-        .M
-            @include column(8)
-        .N
-            @include column(6, true)
-        .O
-            @include column(14, true)
-            .textinput
-                @include column(3)
-            .textinput:last-child
-                @include column(3, true)
-            label
-                @include column(4)
-        .R
-            margin-top: 10px
-            @include column(14, true)
-            .textinput
-                @include column(10, true)
-            label
-                @include column(4)
-        .P
-            margin-top: 10px
-            @include column(14, true)
-            .textinput
-                @include column(3, true)
-            label
-                @include column(11)
+  .button.f5sD--reset,
+  .button.f5sD--submit
+    +column(4)
 
-        .S
-            padding-bottom: 30px
-            label
-                @include column(8)
+  h3
+    margin-bottom: 1.8em
 
-        label[for="id_hwStatus"]
-            @include column(4)
-        #id_hwStatus
-            @include column(4, true)
-        label[for="id_hwAuthor"]
-            @include column(3)
-        #id_hwAuthor
-            @include column(3, true)
+  .f5sD--filter
+    +column(14, true)
+    +pull(21, true)
+    +colborder($advertiserColor, 1px)
+
+    .M
+      +column(8)
+
+    .N
+      +column(6, true)
+
+    .O
+      +column(14, true)
+
+      .textinput
+        +column(3)
+
+      .textinput:last-child
+        +column(3, true)
+
+      label
+        +column(4)
+
+    .R
+      margin-top: 10px
+
+      +column(14, true)
+
+      .textinput
+        +column(10, true)
+
+      label
+        +column(4)
+
+    .P
+      margin-top: 10px
+
+      +column(14, true)
+
+      .textinput
+        +column(3, true)
+
+      label
+        +column(11)
+
+    .S
+      padding-bottom: 30px
+
+      label
+        +column(8)
+
+    label[for="id_hwStatus"]
+      +column(4)
+
+    #id_hwStatus
+      +column(4, true)
+
+    label[for="id_hwAuthor"]
+      +column(3)
+
+    #id_hwAuthor
+      +column(3, true)

@@ -1,60 +1,68 @@
-@charset 'utf-8'
+@charset "utf-8"
 
 #eM--editMeaning
-    margin: -10px 0 0
+  margin: (-10px) 0 0
 
 #eM--meaning,
 #eM--gloss
-    +column(15)
-    margin-bottom: 1em
-    clear: all
+  +column(15)
 
-    label,
-    textarea
-        +column(15, true)
-    textarea
-        height: 5em
-        padding: 0 0.5em
+  margin-bottom: 1em
+  clear: all
+
+  label,
+  textarea
+    +column(15, true)
+
+  textarea
+    height: 5em
+    padding: 0 0.5em
 
 #eM--metaphorical,
 #eM--figurative,
 #eM--substantivus
-    +column(6)
-    margin-bottom: 2em
-    clear: all
+  +column(6)
 
-    input
-        @include column(1, true)
-        margin-top: 2px
-        margin-left: -3px
+  margin-bottom: 2em
+  clear: all
+
+  input
+    +column(1, true)
+
+    margin-top: 2px
+    margin-left: -3px
 
 #eM--substantivusGroup
-    +column(15)
-    margin-top: 2em
-    clear: all
+  +column(15)
+
+  margin-top: 2em
+  clear: all
 
 #eM--substantivusType
-    +column(7)
+  +column(7)
 
-    & > span
-        +column(3)
-    & > div
-        +column(4, true)
+  & > span
+    +column(3)
 
-        & input
-            @include column(1)
-            margin-top: 2px
-            margin-left: -3px
+  & > div
+    +column(4, true)
 
-        & label
-            @include column(3, true)
-            +box-sizing(border-box)
-            padding: 0.5em 0.7em
-            margin-top: -0.5em
-            display: block-inline
+    & input
+      +column(1)
 
-            &.checked
-                @include border-radius(5px)
-                background-color: rgb(252, 243, 208)
-                color: sienna
+      margin-top: 2px
+      margin-left: -3px
 
+    & label
+      +column(3, true)
+      +box-sizing(border-box)
+
+      padding: 0.5em 0.7em
+      margin-top: -0.5em
+      display: block-inline
+
+      &.checked
+        +border-radius(5px)
+
+        background-color: rgb(252, 243, 208)
+        color: sienna

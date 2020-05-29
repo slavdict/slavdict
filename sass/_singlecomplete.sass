@@ -1,98 +1,101 @@
-@charset 'utf-8'
+@charset "utf-8"
 
 $baseFontSize: 19px
 
 .singlecomplete
-    font-size: $baseFontSize
+  font-size: $baseFontSize
 
 .singlecomplete--search,
 .SC--search
-    width: 240px
-    border-width: 0
-    background-color: #ccc
-    font: (13px / $baseFontSize + em) $sansFont
-    color: #777
-    outline-width: 0
-    padding-left: 5px
-    min-height: 25px
-    @include border-radius(4px)
+  width: 240px
+  border-width: 0
+  background-color: #ccc
+  font: (13px / $baseFontSize + em) $sansFont
+  color: #777
+  outline-width: 0
+  padding-left: 5px
+  min-height: 25px
+
+  +border-radius(4px)
 
 .singlecomplete--foundItems,
 .SC--foundItems
-    position: absolute
-    left: 0px
-    z-index: 255
-    margin: 0
-    padding: 2px 4px
-    border-bottom: 1px solid #ccc
-    width: 240px
-    background-color: rgba(#ddd, 0.85)
-    @include border-radius(3px)
+  position: absolute
+  left: 0px
+  z-index: 255
+  margin: 0
+  padding: 2px 4px
+  border-bottom: 1px solid #ccc
+  width: 240px
+  background-color: rgba(#ddd, 0.85)
+
+  +border-radius(3px)
 
 //.singlecomplete--foundItems--item,
 .singlecomplete--foundItem,
 .SC--foundItem
-    list-style-type: none
-    width: 232px
-    display: block
-    margin: 0
-    padding: 0 4px
-    margin: 2px 0
-    border-bottom-width: 0px
-    background-color: #fff
-    color: #000
-    cursor: pointer
-    white-space: nowrap
-    text-align: left
-    line-height: 23px
-    position: relative
+  list-style-type: none
+  width: 232px
+  display: block
+  margin: 0
+  padding: 0 4px
+  margin: 2px 0
+  border-bottom-width: 0px
+  background-color: #fff
+  color: #000
+  cursor: pointer
+  white-space: nowrap
+  text-align: left
+  line-height: 23px
+  position: relative
 
 .singlecomplete--foundItem-focused,
 .SC--foundItem-focused,
 .SC--fI-focused
-    background-color: #777
-    color: #fff
+  background-color: #777
+  color: #fff
 
 .SC--sI--headword,
 .SC--fI--headword
-    font-family: $cslFont
-    line-height: 14px
+  font-family: $cslFont
+  line-height: 14px
 
 $onymFontSize: 10px / $baseFontSize + em
-$pOSFontSize:  13px / $baseFontSize + em
+$pOSFontSize: 13px / $baseFontSize + em
 $hintFontSize: 10px / $baseFontSize + em
+
 .SC--sI--homonym,
 .SC--fI--homonym
-    color: #a00
-    font-size: $onymFontSize
-    margin-left: 3px / $baseFontSize + em
-    vertical-align: super
+  color: #a00
+  font-size: $onymFontSize
+  margin-left: 3px / $baseFontSize + em
+  vertical-align: super
 
 .SC--sI--pOS,
-.SC--fI--pOS,
-    font: italic $pOSFontSize $sansFont
+.SC--fI--pOS
+  font: italic $pOSFontSize $sansFont
 
 .SC--sI--hint,
-.SC--fI--hint,
-    font: $hintFontSize $sansFont
-    text-transform: uppercase
+.SC--fI--hint
+  font: $hintFontSize $sansFont
+  text-transform: uppercase
 
 .SC--sI--id,
 .SC--fI--id
-    font-size: x-small
+  font-size: x-small
 
 .SC--fI--headword,
 .SC--fI--homonym,
 .SC--fI--pOS,
-.SC--fI--hint,
-    position: relative
-    top: -0.2em
+.SC--fI--hint
+  position: relative
+  top: -0.2em
 
 .SC--fI--id
-    position: absolute
-    right: 1em
-    top: 0.2em
-    color: #444
+  position: absolute
+  right: 1em
+  top: 0.2em
+  color: #444
 
 .SC--foundItem-focused .SC--fI--id
-    color: white
+  color: white

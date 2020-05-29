@@ -1,4 +1,4 @@
-@charset 'utf-8'
+@charset "utf-8"
 
 @import resource_version
 @import reset
@@ -11,30 +11,33 @@
 @import pagination
 
 .indicator
-    margin-left: 1em
-    padding: 0 !important
-    cursor: pointer
+  margin-left: 1em
+  padding: 0 !important
+  cursor: pointer
 
-    span
-        @include border-radius(3px)
-        background-color: #a00
-        color: white
-        font-weight: bold
-        padding: 0.2em 0.55em
+  span
+    +border-radius(3px)
 
-    &.orange span
-        background-color: $yellowText
-        color: $yellowBackground
+    background-color: #a00
+    color: white
+    font-weight: bold
+    padding: 0.2em 0.55em
+
+  &.orange span
+    background-color: $yellowText
+    color: $yellowBackground
 
 .quickJump
-    @include border-radius(3px)
-    padding: 0.2em 0.7em
-    background-color: #ddd
-    label
-        font-size: 0.5em
+  +border-radius(3px)
 
-    ul li
-        list-style-type: none
-        font-family: $serifFont
-        font-size: smaller
-        margin-top: 0.3em
+  padding: 0.2em 0.7em
+  background-color: #ddd
+
+  label
+    font-size: 0.5em
+
+  ul li
+    list-style-type: none
+    font-family: $serifFont
+    font-size: smaller
+    margin-top: 0.3em

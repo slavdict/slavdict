@@ -1,78 +1,85 @@
-@charset 'utf-8'
+@charset "utf-8"
 
 .pagination
-    width: 300px
-    margin: 2em auto
-    text-align: center
+  width: 300px
+  margin: 2em auto
+  text-align: center
 
-    @media print
-        display: none
+  @media print
+    display: none
 
 .pagination a
-    background-color: #dedede
-    padding: 0.25em 0.7em
-    color: #555
-    font-family: Arial, sans-serif
-    font-size: 12px
-    text-decoration: none
-    @include border-radius(3px)
+  background-color: #dedede
+  padding: 0.25em 0.7em
+  color: #555
+  font-family: Arial, sans-serif
+  font-size: 12px
+  text-decoration: none
+
+  +border-radius(3px)
 
 .pagination a.current-page
-    background-color: #069
-    color: #fff
+  background-color: #069
+  color: #fff
 
 .pagination a:hover
-    color: #fff
-    background-color: #555
+  color: #fff
+  background-color: #555
 
 .pagination a:hover.current-page
-    background-color: #a00
+  background-color: #a00
 
 .pagination-rewind
-    margin: 0 auto auto 2.1em
-    width: 6em
-    text-align: left
-    float: left
-    a
-        color: #aaa
-        width: 1em
-        display: inline-block
-        svg.fa-step-forward,
-        svg.fa-step-backward
-            font-size: 0.65em
+  margin: 0 auto auto 2.1em
+  width: 6em
+  text-align: left
+  float: left
 
-    @media print
-        display: none
+  a
+    color: #aaa
+    width: 1em
+    display: inline-block
+
+    svg.fa-step-forward,
+    svg.fa-step-backward
+      font-size: 0.65em
+
+  @media print
+    display: none
 
 .binary-search
-    margin: 0 2.5em auto auto
-    width: 6em
-    text-align: right
-    float: right
-    position: relative
-    label
-        color: #aaa
-        font-size: small
-        font-variant: small-caps
-        font-weight: bold
-        position: absolute
-        width: 10em
-        top: -1.2em
-        left: -1.2em
-    a
-        color: #aaa
-        width: 2em
-        display: inline-block
-        text-align: center
-        svg.fa-forward,
-        svg.fa-backward
-            font-size: 0.7em
+  margin: 0 2.5em auto auto
+  width: 6em
+  text-align: right
+  float: right
+  position: relative
 
-    @media print
-        display: none
+  label
+    color: #aaa
+    font-size: small
+    font-variant: small-caps
+    font-weight: bold
+    position: absolute
+    width: 10em
+    top: -1.2em
+    left: -1.2em
+
+  a
+    color: #aaa
+    width: 2em
+    display: inline-block
+    text-align: center
+
+    svg.fa-forward,
+    svg.fa-backward
+      font-size: 0.7em
+
+  @media print
+    display: none
 
 .binary-search.active a
-    background-color: #dedede
-    color: #777
-    margin: auto 0.05em
-    @include border-radius(3px)
+  background-color: #dedede
+  color: #777
+  margin: auto 0.05em
+
+  +border-radius(3px)

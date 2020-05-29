@@ -1,79 +1,82 @@
-@charset 'utf-8'
+@charset "utf-8"
 
 @media print
-    .headerForm
-        display: none
+  .headerForm
+    display: none
 
 .header
-    padding: 5px
-    background-color: $headerBackgroundColor
+  padding: 5px
+  background-color: $headerBackgroundColor
+  color: white
+  position: relative
+  line-height: 12px
+  height: 23px
+
+  @media print
+    display: none
+
+  .header--item,
+  .header--item-left,
+  .header--item-right
     color: white
-    position: relative
+    padding: 0.25em 0.7em
+    font-family: $sansFont
+    font-size: 12px
     line-height: 12px
-    height: 23px
+    height: 14px
 
-    @media print
-        display: none
+    +border-radius(3px)
 
-    .header--item,
-    .header--item-left,
-    .header--item-right
-        color: white
-        padding: 0.25em 0.7em
-        font-family: $sansFont
-        font-size: 12px
-        line-height: 12px
-        height: 14px
-        @include border-radius(3px)
-        display: inline-block
+    display: inline-block
 
-        &.button
-            background-color: #5f5f5f
-            border-color: #5f5f5f
+    &.button
+      background-color: #5f5f5f
+      border-color: #5f5f5f
 
-            &.active
-                border-bottom: 2px solid white
+      &.active
+        border-bottom: 2px solid white
 
-    input[type="button"].header--item.button
-        height: 20px
+  input[type="button"].header--item.button
+    height: 20px
 
-        &[disabled]
-            background-color: $headerBackgroundColor
-            color: #727272
+    &[disabled]
+      background-color: $headerBackgroundColor
+      color: #727272
 
-    .header--item-left
-        @include border-radius(3px 0 0 3px)
-        margin-right: 2px
+  .header--item-left
+    +border-radius(3px 0 0 3px)
 
-    .header--item-right
-        @include border-radius(0 3px 3px 0)
+    margin-right: 2px
 
-    .header--item-block
-        height: 14px
-        padding: 2px 5px
+  .header--item-right
+    +border-radius(0 3px 3px 0)
 
-    .search
-        background-color: #fff
-        border-color: #fff
-        color: #8f8f8f
-        display: inline-block
-        vertical-align: 0%
+  .header--item-block
+    height: 14px
+    padding: 2px 5px
 
-    .header--item.on
-        background-color: white
-        color: #484848
+  .search
+    background-color: #fff
+    border-color: #fff
+    color: #8f8f8f
+    display: inline-block
+    vertical-align: 0%
 
-    form
-        display: inline
-        vertical-align: 0%
-        position: relative
+  .header--item.on
+    background-color: white
+    color: #484848
 
-        label
-            font: 11px $sansFont!important
-            padding-left: 20px
-            cursor: default
+  form
+    display: inline
+    vertical-align: 0%
+    position: relative
 
-    .right-justification
-        position: absolute
-        right: 0px
-        padding-right: 0.5em
+    label
+      font: 11px $sansFont !important
+      padding-left: 20px
+      cursor: default
+
+  .right-justification
+    position: absolute
+    right: 0px
+    padding-right: 0.5em

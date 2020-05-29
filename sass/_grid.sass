@@ -1,24 +1,27 @@
-@charset 'utf-8'
+@charset "utf-8"
 
 $blueprint-grid-columns: 21
 $blueprint-grid-width: 21px
 $blueprint-grid-margin: 13px
+
 @import blueprint/grid
 
 .grid
-    @include container
+  +container
 
 .grid-debug
-    $x: $blueprint-grid-width
-    $y: $x + $blueprint-grid-margin
-    $color1: rgba(0,255,0,0.2)
-    $color2: rgba(255,255,255,0)
-    @include container
-    background-image: -webkit-linear-gradient(0deg, $color1 $x, $color2 0)
-    background-image: -moz-linear-gradient(0deg, $color1 $x, $color2 0)
-    background-image: -o-linear-gradient(0deg, $color1 $x, $color2 0)
-    background-image: linear-gradient(90deg, $color1 $x, $color2 0)
-    background-size: $y $y
+  $x: $blueprint-grid-width
+  $y: $x + $blueprint-grid-margin
+  $color1: rgba(0, 255, 0, 0.2)
+  $color2: rgba(255, 255, 255, 0)
+
+  +container
+
+  background-image: -webkit-linear-gradient(0deg, $color1 $x, $color2 0)
+  background-image: -moz-linear-gradient(0deg, $color1 $x, $color2 0)
+  background-image: -o-linear-gradient(0deg, $color1 $x, $color2 0)
+  background-image: linear-gradient(90deg, $color1 $x, $color2 0)
+  background-size: $y $y
 
 .grid.without-overflow
-    overflow: visible
+  overflow: visible
