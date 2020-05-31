@@ -2,6 +2,13 @@
 <section data-bind="if: constructor.name === 'Example'">
 <div id="eE--editExample" class="grid">
 
+    <label data-help="Example.wordform_example">
+        <input type="checkbox" data-bind="checked: wordform_example"
+            data-help="Example.wordform_example">
+        <span style="margin-left: 0.75em; position: relative; top: 0.25em">
+            Грамматическая/иная особенность</span>
+    </label>
+
     <div class="eE--example">
         <div data-help="Example.example">
             <label>Иллюстрация</label>
@@ -18,6 +25,7 @@
                   data-help="Example.address_text"></textarea>
     </div>
 
+    <!-- ko ifnot: wordform_example -->
     <nav data-bind="visible: !context.isVisible()">
         <a data-bind="click: context.isVisible.bind($data, true)">
             Более широкий контекст (для грециста)
@@ -51,6 +59,7 @@
 
     <div style="clear: both; margin-top: 24em"
         data-bind="template: { name: 'translations', data: $data }"></div>
+    <!-- /ko -->
 
 </div>
 </section>

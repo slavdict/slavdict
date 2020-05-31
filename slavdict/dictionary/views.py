@@ -822,12 +822,13 @@ def entry_list(request, for_hellinists=False, per_page=12,
     })
     if for_hellinists:
         context['hellinist_workbench'] = True
+        exclude_Q = (
+            Q(meaning__isnull=True) | Q(wordform_example=True)
+            | Q(hidden=True))
         context['indicators'] = {
-            URGENT_INDICATOR: Example.objects.filter(
-                meaning__isnull=False,
+            URGENT_INDICATOR: Example.objects.exclude(exclude_Q).filter(
                 greek_eq_status=Example.GREEK_EQ_URGENT).count(),
-            MEANING_INDICATOR: Example.objects.filter(
-                meaning__isnull=False,
+            MEANING_INDICATOR: Example.objects.exclude(exclude_Q).filter(
                 greek_eq_status=Example.GREEK_EQ_MEANING).count(),
         }
 
@@ -883,6 +884,8 @@ def hellinist_workbench(request, per_page=4):
         page.B = int(B)
 
     vM_examples = [e.forHellinistJSON() for e in page.object_list]
+    exclude_Q = (
+        Q(meaning__isnull=True) | Q(wordform_example=True) | Q(hidden=True))
 
     context = {
         'examples': page.object_list,
@@ -890,11 +893,9 @@ def hellinist_workbench(request, per_page=4):
         'jsonExamples': viewmodels._json(vM_examples),
         'number_of_examples': paginator.count,
         'indicators': {
-            URGENT_INDICATOR: Example.objects.filter(
-                meaning__isnull=False,
+            URGENT_INDICATOR: Example.objects.exclude(exclude_Q).filter(
                 greek_eq_status=Example.GREEK_EQ_URGENT).count(),
-            MEANING_INDICATOR: Example.objects.filter(
-                meaning__isnull=False,
+            MEANING_INDICATOR: Example.objects.exclude(exclude_Q).filter(
                 greek_eq_status=Example.GREEK_EQ_MEANING).count(),
             },
         'page': page,

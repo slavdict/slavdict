@@ -1749,6 +1749,8 @@ class Meaning(models.Model, JSONSerializable):
                     related_name='child_meaning_set', blank=True, null=True,
                     on_delete=models.SET_NULL)
 
+    numex = SmallIntegerField('отображать примеров при значении'
+                              'не более чем', blank=True, default=3)
     hidden = BooleanField('Скрыть значение', help_text='''Не отображать
                           данное значение при выводе словарной статьи.''',
                           default=False, editable=False)
@@ -2043,6 +2045,7 @@ class Meaning(models.Model, JSONSerializable):
             'id',
             'meaning',
             'metaphorical',
+            'numex',
             'order',
             'parent_meaning_id',
             'substantivus',
@@ -2075,6 +2078,8 @@ class Example(models.Model, JSONSerializable):
     hidden = BooleanField('Скрыть пример', help_text='''Не отображать данный
                           пример при выводе словарной статьи.''',
                           default=False, editable=False)
+    wordform_example = BooleanField('Грамматическая/иная особенность',
+                                    default=False)
 
     example = TextField('пример')
     ts_example = TextField(default='')
@@ -2315,6 +2320,7 @@ class Example(models.Model, JSONSerializable):
             'meaning_id',
             'note',
             'order',
+            'wordform_example',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['greqs'] = [ge.forJSON() for ge in self.greek_equivs]

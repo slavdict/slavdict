@@ -411,6 +411,7 @@ function Example() {
     upsertArray(this, 'greqs', Greq, data);
     upsertArray(this, 'translations', Translation, data);
     upsert(this, 'hidden', data, false);
+    upsert(this, 'wordform_example', data, false);
     upsert(this, 'id', data, 'example' + getId());
     upsert(this, 'meaning_id', data, meaning_id);
     upsert(this, 'note', data, '');
@@ -548,6 +549,7 @@ function Meaning() {
     upsert(this, 'substantivus', data, false);
     upsert(this, 'substantivus_type', data, '');
     upsert(this, 'hidden', data, false);
+    upsert(this, 'numex', data, 3);
     upsertArray(this, 'contexts', Context, data);
     upsert(this, 'entry_container_id', data, entry_id);
     upsert(this, 'collogroup_container_id', data, collogroup_id);
