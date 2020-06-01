@@ -17,6 +17,11 @@ try:
     from .local_base_settings import *
 except ImportError:
     pass
+except SystemError:
+    try:
+        from local_base_settings import *
+    except ImportError:
+        pass
 
 # Настройки, зависящие от базовых
 # либо от которых не зависят другие настройки.
@@ -239,6 +244,11 @@ try:
     from .local_settings import *
 except ImportError:
     pass
+except SystemError:
+    try:
+        from local_settings import *
+    except ImportError:
+        pass
 
 # Jinja2 compatible Safestrings
 from django.utils import safestring
