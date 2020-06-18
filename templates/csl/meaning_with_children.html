@@ -21,7 +21,7 @@
     {% elif loop.first and not m.metaphorical and not m.parent_meaning.examples %}
         {{ backspace }}<span class="Text">;</span>{{ space }}
     {% elif not m.metaphorical %}
-        {% include 'csl/separator.html' %}
+        {% include 'csl/separator_use.html' %}
     {% endif %}
 
     {% if m.is_valency %}

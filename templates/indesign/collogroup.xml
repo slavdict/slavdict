@@ -3,7 +3,7 @@
 
 
 {% if not collogroups_loop.first %}
-    {% include 'indesign/separator.xml' %}
+    {% include 'indesign/separator_use.xml' %}
 {% endif %}
 
 {% for c in cg.collocations %}

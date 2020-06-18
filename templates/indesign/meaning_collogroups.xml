@@ -9,7 +9,7 @@
                 {{ backspace }}{{ space }}
             {% endif %}
         {% else %}
-            {% include 'indesign/separator.xml' %}
+            {% include 'indesign/separator_use.xml' %}
         {% endif %}
     {% else %}
         {% if m.examples or m.child_meanings or m.collogroups_non_phraseological %}
@@ -36,7 +36,7 @@
                 {{ backspace }}{{ space }}
             {% endif %}
         {% else %}
-            {% include 'indesign/separator.xml' %}
+            {% include 'indesign/separator_use.xml' %}
         {% endif %}
     {% else %}
         {% if m.examples or m.child_meanings %}

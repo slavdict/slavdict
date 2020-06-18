@@ -21,7 +21,7 @@
     {% elif loop.first and not m.metaphorical and not m.parent_meaning.examples %}
         {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
     {% elif not m.metaphorical %}
-        {% include 'indesign/separator.xml' %}
+        {% include 'indesign/separator_use.xml' %}
     {% endif %}
 
     {% if m.is_valency %}
