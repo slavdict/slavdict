@@ -129,6 +129,13 @@
             {# before_example: Сразу за текущим примером следует ещё один
                    пример, т.е. пример не последний в череде непрерывно
                    идущих примеров на данное значение или употребление #}
+        {% set before_wordform_example =
+            before_example
+                and not e.wordform_example
+                and examples_loop.nextitem.wordform_example %}
+            {# before_wordform_example: Следующий пример является
+                  первым в череде примеров, демонстрирующих
+                  особенности формообразования #}
         {% set before_collogroup_meaning_number =
             collogroups_loop
                 and not peer_meanings_loop.last
@@ -189,7 +196,9 @@
             {# before_allusion_sign: После примера последует знак
                     библейской метафоры. #}
 
-        {% if before_example or before_collogroup_meaning_number %}
+        {% if before_wordform_example %}
+            {% include 'web/separator_forms.html' %}
+        {% elif before_example or before_collogroup_meaning_number %}
             {{ backspace }};
         {% elif before_submeaning_sign or before_allusion_sign %}
             {{ backspace }}
