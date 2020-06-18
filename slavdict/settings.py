@@ -227,7 +227,9 @@ JSLIBS = {
         # чтобы этот адрес не отдавался в продакшн.
     },
 }
-JSLIBS_VERSION = hashlib.md5(json.dumps(JSLIBS).encode('utf-8')).hexdigest()[:8]
+JSLIBS_VERSION = hashlib.md5(
+    json.dumps(JSLIBS, sort_keys=True).encode('utf-8')
+).hexdigest()[:8]
 
 _postfix = 'Local'
 for lib in JSLIBS:
@@ -285,7 +287,7 @@ if __name__ == '__main__':
                                 if not k.endswith(_postfix)]:
                     url = JSLIBS[lib][version]
                     if url.startswith('//'):
-                        url = 'http:' + url
+                        url = 'https:' + url
                     elif not url.startswith('http'):
                         continue
                     xargs_wget.append(url)
