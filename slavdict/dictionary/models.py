@@ -1892,7 +1892,7 @@ class Meaning(models.Model, JSONSerializable):
 
     @property
     def examples(self):
-        return self.example_set.order_by('order', 'id')
+        return self.example_set.order_by('wordform_example', 'order', 'id')
 
     @property
     def contexts(self):

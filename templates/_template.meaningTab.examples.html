@@ -1,10 +1,12 @@
 <script type="text/html" id="meaningExamples">
 <section class="tabcontent" data-bind="if: constructor.name === 'Meaning'">
 
-    <ul class="examples" data-bind="sortable: examples">
+    <ul class="examples"
+        data-bind="sortable: { data: examples, afterMove: examples.sortMe }">
 
         <li data-bind="event: { dblclick: function(){} },
-                dblclickBubble: false">
+                dblclickBubble: false,
+                css: { wordform_example: wordform_example }">
             <a class="dragItem" data-bind="visible:
              $parent.examples().length > 1"></a>
             <a class="deleteItem" data-bind="click:

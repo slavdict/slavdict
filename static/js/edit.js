@@ -560,6 +560,9 @@ function Meaning() {
     upsertArray(this, 'meanings', Meaning, data);
     upsertArray(this, 'examples', Example, data);
 
+    this.examples.sortMe = (function () {
+      this.examples.sort(exampleSort);
+    }).bind(this);
     this.collogroups.sort(collogroupSort);
     this.isExpanded || (this.isExpanded = ko.observable(false));
     this.substantivus_type.label = ko.pureComputed(
@@ -654,6 +657,14 @@ function orderGuarantor(object, attrname) {
     });
 }
 
+function exampleSort(left, right) {
+    var a = left.wordform_example(),
+        b = right.wordform_example();
+    if (a && !b) return 1;
+    if (!a && b) return -1;
+    return 0;
+}
+
 function examplesGuarantor(object, attrname) {
     var func = {
 
@@ -673,6 +684,7 @@ function examplesGuarantor(object, attrname) {
 
         }[object.constructor.name];
 
+    object[attrname].sort(exampleSort);
     guarantor(object[attrname], func);
 
     // NOTE: С практической точки зрения, добавление метода массиву элементов
@@ -1100,6 +1112,10 @@ var viewModel = vM.entryEdit,
                   uiModel.hierarchy
                     .getSelfOrUpwardNearest(last, 'Meaning')
                     .collogroups.sort(collogroupSort);
+                } else if (last instanceof Example) {
+                  uiModel.hierarchy
+                    .getSelfOrUpwardNearest(last, 'Meaning')
+                    .examples.sort(exampleSort);
                 }
                 stack.splice(-1, 1)
             }

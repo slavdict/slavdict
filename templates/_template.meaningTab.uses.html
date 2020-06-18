@@ -31,11 +31,14 @@
                     meaning() && gloss()">;{{ space }}</span>
             <i data-bind="text: gloss"></i>
 
-            <ul class="examples" data-bind="sortable: { data: examples },
-                                            visible: isExpanded">
+            <ul class="examples"
+                data-bind="sortable: { data: examples,
+                                       afterMove: examples.sortMe },
+                           visible: isExpanded">
 
                 <li data-bind="event: { dblclick: function(){} },
-                        dblclickBubble: false">
+                        dblclickBubble: false,
+                        css: { wordform_example: wordform_example }">
                     <a class="dragItem" data-bind="visible:
                      $parent.examples().length > 1"></a>
                     <a class="deleteItem" data-bind="click:
