@@ -197,6 +197,13 @@ $draggedElement: ($listWidth - $listElementHorizontalPadding * 4) / $listWidth
       &.wordform_example
         background-color: aliceblue
 
+      &.extra_example,
+      &.extra_example *
+        color: #888
+
+      &.extra_example
+        +box-shadow(0 1px 1px rgba(0, 0, 0, 0.1), 0 0 40px rgba(0, 0, 0, 0.1) inset)
+
       ul,
       ul ~ a.pasteItems,
       ul ~ a.addItem,
