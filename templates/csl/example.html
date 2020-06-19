@@ -5,12 +5,13 @@
 {% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
 {% set labels_in_translation= "(?<![А-ЯЁа-яё])букв\\." %}
 
+{% if e.wordform_example or examples_loop.index0 < meaning.numex %}
 
-{{ e.example_ucs | web_cslav_words("CSLSegment", "Text")
-        | insert_translations(partial_translations) }}
-{{ space }}
+  {{ e.example_ucs | web_cslav_words("CSLSegment", "Text")
+          | insert_translations(partial_translations) }}
+  {{ space }}
 
-{% if full_translations %}
+  {% if full_translations %}
     {% for t in full_translations %}
         {% if not loop.first %}
             {{ backspace }},{{ space }}
@@ -24,9 +25,9 @@
         {% endif %}
     {% endfor %}
     {{ space }}
-{% endif %}
+  {% endif %}
 
-{% if e.greek_equivs %}
+  {% if e.greek_equivs %}
     {% for ge, genum in e.greek_equivs_with_numbers() %}
 
         {% if not loop.first %}
@@ -65,9 +66,9 @@
         {% endif %}
 
     {% endfor %}
-{% endif %}
+  {% endif %}
 
-{% if e.address_text %}
+  {% if e.address_text %}
     {{ backspace }}{{ space }}
     <span class="Address hyphenate" lang="ru">
         {{ e.address_text | web_cslav_injection("CSLSegment")
@@ -81,7 +82,9 @@
         {% set before_wordform_example =
             before_example
                 and not e.wordform_example
-                and examples_loop.nextitem.wordform_example %}
+                and (examples_loop.nextitem.wordform_example
+                    or examples_loop.index + 1 > meaning.numex
+                       and meaning.examples.last().wordform_example) %}
             {# before_wordform_example: Следующий пример является
                   первым в череде примеров, демонстрирующих
                   особенности формообразования #}
@@ -156,6 +159,8 @@
         {% endif %}
     </span>
     {{ space }}
+  {% endif %}
+
 {% endif %}
 
 {% endmacro %}
