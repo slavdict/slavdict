@@ -2,7 +2,8 @@
 <section data-bind="if: constructor.name === 'Example'">
 <div id="eE--editExample" class="grid">
 
-    <label data-help="Example.wordform_example">
+    <label data-help="Example.wordform_example" style="display:none"
+           data-bind="visible: showWFExCheck">
         <input type="checkbox" data-bind="checked: wordform_example"
             data-help="Example.wordform_example">
         <span style="margin-left: 0.75em; position: relative; top: 0.25em">

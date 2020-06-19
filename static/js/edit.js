@@ -450,6 +450,16 @@ function Example() {
             return this.example.words().length;
         }, this)
     );
+    this.showWFExCheck = ko.pureComputed(function () {
+      var mid = this.meaning_id();
+      if (mid === null) return true;
+      var m = Meaning.all.idMap[mid];
+      if (typeof m === 'undefined') return false;
+      var pmid = m.parent_meaning_id(),
+          cgid = m.collogroup_container_id();
+      if (pmid !== null || cgid !== null) return false;
+      return true;
+    }, this, { deferEvaluation: true });
     Example.all.append(this);
 }
 Example.dependantsToDestroy = ['greqs', 'translations'];
