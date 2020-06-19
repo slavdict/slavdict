@@ -4,8 +4,12 @@
 {% set partial_translations = e.get_translations(fragmented=True, hidden=False) %}
 {% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
 {% set labels_in_translation= "(?<![А-ЯЁа-яё])букв\\." %}
+{% set extra_example = not e.wordform_example
+         and examples_loop.index > meaning.numex
+         or e.wordform_example
+            and (meaning.parent_meaning or meaning.collogroup_container) %}
 
-{% if e.wordform_example or examples_loop.index0 < meaning.numex %}
+{% if not extra_example %}
 
   {{ e.example_ucs | web_cslav_words("CSLSegment", "Text")
           | insert_translations(partial_translations) }}
@@ -75,7 +79,16 @@
                 | web_regex("Em", 'греч\\.') }}
     </span>
     <span class="Address">
-        {% set before_example = not examples_loop.last %}
+        {% set next_example = examples_loop.nextitem %}
+        {% set next_example_is_extra = next_example is defined and (
+            not next_example.wordform_example
+            and examples_loop.index + 1 > meaning.numex
+            or next_example.wordform_example
+              and (meaning.parent_meaning or meaning.collogroup_container)) %}
+            {# next_example_is_extra: За текущим примером следует
+                   неотображаемый в чистовой статье пример #}
+        {% set before_example =
+            not examples_loop.last and not next_example_is_extra %}
             {# before_example: Сразу за текущим примером следует ещё один
                    пример, т.е. пример не последний в череде непрерывно
                    идущих примеров на данное значение или употребление #}
