@@ -1096,6 +1096,7 @@ var viewModel = vM.entryEdit,
                     'Meaning': 'значения/употребления',
                     'Example': 'иллюстрации'
                 }[cutBufferContent],
+                WFMAXWORDS = 5,
                 tip,
                 tipText = 'Имеются вырезанные ' + cuts + '.<br>' +
                     'Перед завершающим сохранением их<br>' +
@@ -1113,6 +1114,18 @@ var viewModel = vM.entryEdit,
                     .getSelfOrUpwardNearest(last, 'Meaning')
                     .collogroups.sort(collogroupSort);
                 } else if (last instanceof Example) {
+                  var wfWordsNum = last.example.words().length;
+                  if (last.wordform_example() && wfWordsNum > WFMAXWORDS) {
+                    tipText = 'Примеры, иллюстрирующие грамматические<br>' +
+                      'или иные особенности, могут содержать<br>' +
+                      'не более ' + WFMAXWORDS + ' слов. ' +
+                      'Использовано ' + wfWordsNum + ' слов.<br>';
+                    tip = new Opentip($('.cutBufferIndicator'), tipText,
+                                      { style: otStyle });
+                    tip.show();
+                    tip.hide();
+                    return;
+                  }
                   uiModel.hierarchy
                     .getSelfOrUpwardNearest(last, 'Meaning')
                     .examples.sort(exampleSort);
