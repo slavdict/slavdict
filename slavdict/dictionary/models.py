@@ -223,6 +223,7 @@ PARTICIPLE_TYPE_MAP = {
 }
 
 STATUS_CHOICES = (
+    ('b', 'вне словника'),
     ('c', 'создана'),
     ('w', 'в работе'),
     ('g', 'поиск греч.'),
@@ -230,9 +231,11 @@ STATUS_CHOICES = (
     ('e', 'редактируется'),
     ('a', 'утверждена'),
 )
+DEFAULT_ENTRY_STATUS = 'b'
 STATUS_MAP = {
     'approved': 'a',
     'beingEdited': 'e',
+    'beyondDict': 'b',
     'created': 'c',
     'finished': 'f',
     'greek': 'g',
@@ -727,7 +730,7 @@ class Entry(models.Model, JSONSerializable):
 
     # административная информация
     status = CharField('статус статьи', max_length=1, choices=STATUS_CHOICES,
-                       default='c')
+                       default=DEFAULT_ENTRY_STATUS)
 
     def is_status(self, slug):
         return STATUS_MAP[slug] == self.status
@@ -735,10 +738,16 @@ class Entry(models.Model, JSONSerializable):
     authors = ManyToManyField(CustomUser, verbose_name='автор статьи',
                               blank=True)
 
-    antconc_query = TextField('Запрос для программы AntConc', blank=True)
+    antconc_query = TextField('запрос для программы AntConc', blank=True)
     mtime = DateTimeField(editable=False)
     ctime = DateTimeField(editable=False, auto_now_add=True)
 
+    LAST_TEMPLATE_VERSION = 1
+    template_version = SmallIntegerField('версия структуры статей',
+            blank=True, default=LAST_TEMPLATE_VERSION)
+    # 0 -- в этих статьях иллюстрации возможны при любых словосочетаниях;
+    # 1 -- иллюстрации можно добавлять только к фразеологическим
+    #      словосочетаниям.
 
     meanings = property(meanings)
     metaph_meanings = property(metaph_meanings)
@@ -1436,6 +1445,7 @@ class Entry(models.Model, JSONSerializable):
             'short_form',
             'status',
             'tantum',
+            'template_version',
             'uninflected',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)

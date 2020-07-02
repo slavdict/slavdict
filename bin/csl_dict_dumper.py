@@ -98,7 +98,7 @@ def is_approved(entry):
 
 def sort_letters_by_status():
     approved, unapproved = set(), set()
-    for e in Entry.objects.all():
+    for e in Entry.objects.exclude(status=STATUS_MAP['beyondDict']):
         first_letter = e.first_letter()
         if is_approved(e):
             approved.add(first_letter)
@@ -129,7 +129,9 @@ entries1 = []
 # Это список всех потенциально возможных статей для выбранных томов,
 # ограниченных списком test_entries, если он задан.
 
-lexemes = Entry.objects.order_by('civil_equivalent').all()
+lexemes = Entry.objects \
+        .exclude(status=STATUS_MAP['beyondDict']) \
+        .order_by('civil_equivalent')
 if test_entries:
     entries_to_dump = ', '.join(str(i) for i in test_entries)
     print('Entries to dump:', entries_to_dump, file=sys.stderr)

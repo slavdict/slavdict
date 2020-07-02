@@ -45,6 +45,7 @@ from slavdict.dictionary.models import MSC11
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import PART_OF_SPEECH_MAP
 from slavdict.dictionary.models import PART_OF_SPEECH_ORDER
+from slavdict.dictionary.models import STATUS_MAP
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.middleware import InvalidCookieError
@@ -213,7 +214,7 @@ def all_entries(request, is_paged=False):
 
     COMMA = re.compile(r'\s*\,\s*')
     SPACE = re.compile(r'\s+')
-    entries = Entry.objects.all()
+    entries = Entry.objects.exclude(status=STATUS_MAP['beyondDict'])
 
     if httpGET_AUTHORS:
         httpGET_AUTHORS = [a.strip() for a in COMMA.split(httpGET_AUTHORS)]

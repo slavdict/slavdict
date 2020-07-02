@@ -46,6 +46,21 @@
             <textarea data-bind="textInput: additional_info"></textarea>
         </div>
 
+        {% if user.is_superuser %}
+        <div style="margin: 24em 0 0 18.5em">
+          <input data-bind="value: template_version"
+                 style="width: 4em; text-align: center">
+          <label style="margin-left: 1em">Версия структуры статьи</label>
+          <aside style="margin-left: 6em; font-size: smaller; color: gray">
+            0{{ nbsp }}— в статьях с такой версией структуры
+            иллюстарции можно добавлять ко всем словосочетаниям;<br>
+            1{{ nbsp }}— иллюстрации можно добавлять только
+            к фразеологическим словосочетаниям.<br>
+            <em style="font-size: 1em">Поле не отображается у авторов.</em>
+          </aside>
+        </div>
+        {% endif %}
+
         <div id="sD--buttons" data-bind="visible: $root.canEdit">
 
             <div id="sD--saveAndExit">
