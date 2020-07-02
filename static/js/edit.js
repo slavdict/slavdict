@@ -592,7 +592,6 @@ function Entry(data) {
     upsert(this, 'duplicate', data, false);
     upsert(this, 'gender', data, '');
     upsert(this, 'genitive', data, '');
-    upsert(this, 'good', data, 'b' /* статья не подходит */);
     upsert(this, 'hidden', data, false);
     upsert(this, 'homonym_gloss', data, '');
     upsert(this, 'homonym_order', data, null);

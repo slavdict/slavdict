@@ -206,16 +206,6 @@ def json_etym_delete(request):
     return response
 
 
-@login_required
-def json_goodness_save(request):
-    entry_id = request.POST.get('id')
-    goodness = request.POST.get('goodness')
-    entry = Entry.objects.get(id=entry_id)
-    entry.good = goodness
-    entry.save(without_mtime=True)
-    return HttpResponse(status=200)
-
-
 
 @login_required
 def json_entry_get(request, id):

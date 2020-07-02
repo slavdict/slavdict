@@ -44,7 +44,6 @@ urlpatterns = [
     url( r'^json/ex/save/$', jsonviews.json_ex_save, name="jsonExSaveURL"),
     url( r'^json/etym/save/$', jsonviews.json_etym_save, name="jsonEtymSaveURL"),
     url( r'^json/etym/delete/$', jsonviews.json_etym_delete, name="jsonEtymDeleteURL"),
-    url( r'^json/goodness/save/$', jsonviews.json_goodness_save, name="jsonGoodnessSaveURL"),
 
     # TODO: Впоследствии всё это должно быть удалено.
     url( r'^adhoc/csv-import/$', views.import_csv_billet ),

@@ -732,9 +732,6 @@ class Entry(models.Model, JSONSerializable):
     def is_status(self, slug):
         return STATUS_MAP[slug] == self.status
 
-    percent_status = PositiveSmallIntegerField(
-                        'статус готовности статьи в процентах', default=0)
-
     authors = ManyToManyField(CustomUser, verbose_name='автор статьи',
                               blank=True)
 
@@ -742,12 +739,6 @@ class Entry(models.Model, JSONSerializable):
     mtime = DateTimeField(editable=False)
     ctime = DateTimeField(editable=False, auto_now_add=True)
 
-    good = TextField('Годность статьи для показа', max_length=1, default='b',
-                     choices=(
-                         ('b', 'не подходит'),  # bad
-                         ('s', 'возможно, подходит'),  # so so
-                         ('g', 'подходит'),  # good
-                     ))
 
     meanings = property(meanings)
     metaph_meanings = property(metaph_meanings)
@@ -1431,7 +1422,6 @@ class Entry(models.Model, JSONSerializable):
             'duplicate',
             'gender',
             'genitive',
-            'good',
             'hidden',
             'homonym_gloss',
             'homonym_order',
@@ -3106,9 +3096,7 @@ field_excludes = (
     'Entry.civil_inverse',
     'Entry.ctime',
     'Entry.duplicate',
-    'Entry.good',
     'Entry.mtime',
-    'Entry.percent_status',
     'Entry.status',
     'Entry.word_forms_list',
 
