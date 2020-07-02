@@ -745,9 +745,10 @@ class Entry(models.Model, JSONSerializable):
     LAST_TEMPLATE_VERSION = 1
     template_version = SmallIntegerField('версия структуры статей',
             blank=True, default=LAST_TEMPLATE_VERSION)
-    # 0 -- в этих статьях иллюстрации возможны при любых словосочетаниях;
+    # 0 -- в этих статьях иллюстрации возможны при любых словосочетаниях
+    #      (тома I—III, буквы А—Е);
     # 1 -- иллюстрации можно добавлять только к фразеологическим
-    #      словосочетаниям.
+    #      словосочетаниям (тома, начиная с IV, буквы после Е).
 
     meanings = property(meanings)
     metaph_meanings = property(metaph_meanings)
@@ -1998,6 +1999,17 @@ class Meaning(models.Model, JSONSerializable):
                 self.meaning = self.gloss
                 self.gloss = ''
             self.is_valency = True
+        host = self.host
+        if (self.numex > 0
+                and isinstance(host, CollocationGroup)
+                and not host.phraseological
+                and host_entry.template_version > 0):
+            self.numex = -self.numex
+        if (self.numex < 0 and (
+                not isinstance(host, CollocationGroup)
+                or host.phraseological
+                or host_entry.template_version == 0)):
+            self.numex = -self.numex
         super(Meaning, self).save(*args, **kwargs)
         if without_mtime:
             return

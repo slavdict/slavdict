@@ -36,7 +36,10 @@
             <ul class="examples"
                 data-bind="sortable: { data: examples,
                                        afterMove: examples.sortMe },
-                           visible: isExpanded">
+                           visible: isExpanded()
+                             && ($parent.constructor.name !== 'Collogroup'
+                                 || $parent.phraseological()
+                                 || $root.data.entry.template_version < 1)">
                 <li data-bind="event: { dblclick: function(){} },
                         dblclickBubble: false,
                         css: { wordform_example: wordform_example,
@@ -55,7 +58,10 @@
                     (<span data-bind="text: address_text"></span>)
                 </li>
             </ul>
-            <div data-bind="visible: isExpanded">
+            <div data-bind="visible: isExpanded()
+              && ($parent.constructor.name !== 'Collogroup'
+                  || $parent.phraseological()
+                  || $root.data.entry.template_version < 1)">
                 <a class="pasteItems" data-bind="
                     click: $root.ui.cutBuffer.pasteInto(examples),
                     visible: $root.ui.cutBuffer.containsExamples"></a>
@@ -63,8 +69,9 @@
                     click: examples.itemAdder($data, $root.data.entry).do"></a>
             </div>
 
-            <ul class="meanings" data-bind="sortable: { data: meanings },
-                                            visible: isExpanded">
+            <ul class="meanings"
+                data-bind="sortable: { data: meanings },
+                  visible: isExpanded() && $parent.constructor.name === 'Entry'">
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
                     <a class="dragItem" data-bind="visible:
@@ -128,7 +135,8 @@
                 </li>
 
             </ul>
-            <div data-bind="visible: isExpanded">
+            <div data-bind="visible: isExpanded() &&
+                              $parent.constructor.name === 'Entry'">
                 <a class="pasteItems" data-bind="
                     click: $root.ui.cutBuffer.pasteInto(meanings),
                     visible: $root.ui.cutBuffer.containsMeanings"></a>
@@ -193,7 +201,9 @@
                             <ul class="examples"
                                 data-bind="sortable: { data: examples,
                                                        afterMove: examples.sortMe },
-                                           visible: isExpanded">
+                                           visible: isExpanded() &&
+                                             ($parent.phraseological() ||
+                                     $root.data.entry.template_version() < 1)">
                                 <li data-bind="event: { dblclick: function(){} },
                                   dblclickBubble: false,
                                   css: { wordform_example: wordform_example,
@@ -212,7 +222,9 @@
                                     (<span data-bind="text: address_text"></span>)
                                 </li>
                             </ul>
-                            <div data-bind="visible: isExpanded">
+                            <div data-bind="visible: isExpanded() &&
+                                              ($parent.phraseological() ||
+                                     $root.data.entry.template_version() < 1)">
                                 <a class="pasteItems" data-bind="
                                     click: $root.ui.cutBuffer.pasteInto(examples),
                                     visible: $root.ui.cutBuffer.containsExamples"></a>
@@ -299,7 +311,7 @@
 
                         </li>
                     </ul>
-                    <div data-bind="visible: isExpanded">
+                    <div data-bind="visible: isExpanded() && phraseological()">
                         <a class="pasteItems" data-bind="
                             click: $root.ui.cutBuffer.pasteInto(meanings),
                             visible: $root.ui.cutBuffer.containsMeanings"></a>
@@ -349,7 +361,7 @@
             </span>
 
             <ul class="meanings" data-bind="sortable: meanings,
-                                            visible: isExpanded">
+                                            visible: isExpanded() && phraseological()">
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
                     <a class="dragItem" data-bind="visible:

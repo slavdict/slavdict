@@ -182,11 +182,14 @@
         lang="ru">{{ m.additional_info }}</span>{{ space }}
 {% endif %}
 
-{% if (m.contexts or m.substantivus or m.figurative or m.meaning or m.gloss
-        or m.special_case in [MSC12, MSC14, MSC15, MSC18, MSC21]) and m.examples %}
+{% set examples_cond = (m.examples and (m.numex > 0 or additional_info)) %}
+{% if (m.contexts or m.meaning or m.gloss
+        or m.substantivus or m.figurative
+        or m.special_case in [MSC12, MSC14, MSC15, MSC18, MSC21]
+      ) and examples_cond %}
     {{ backspace }}:{{ space }}
 {% elif m.collogroups or m.child_meanings
-        or m.collogroup_container and (m.examples or
+        or m.collogroup_container and (examples_cond or
                                        not collogroups_loop.last) %}
     {# pass #}
 {% elif not hide_examples %}

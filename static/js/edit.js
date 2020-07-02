@@ -579,6 +579,13 @@ function Meaning() {
             Meaning.prototype.substantivus_type_label, this);
     Meaning.all.append(this);
 }
+Meaning.prototype.hostCollogroup = function () {
+  try {
+    return uiModel.hierarchy.getSelfOrUpwardNearest(this, 'Collogroup');
+  } catch(e) {
+    return false;
+  }
+};
 Meaning.hideFromServer = ['collogroups', 'meanings', 'examples', 'isExpanded'];
 Meaning.dependantsToDestroy = [
     'collogroups', 'meanings', 'examples', 'contexts'];

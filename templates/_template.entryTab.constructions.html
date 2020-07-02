@@ -22,8 +22,9 @@
                 <span data-bind="wax: collocation"></span>
             </span>
 
-            <ul class="meanings" data-bind="sortable: meanings,
-                                            visible: isExpanded">
+            <ul class="meanings"
+                data-bind="sortable: meanings,
+                           visible: isExpanded">
 
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
@@ -55,7 +56,9 @@
                     <i data-bind="text: gloss"></i>
 
                     <ul class="examples" data-bind="sortable: { data: examples,
-                      afterMove: examples.sortMe }, visible: isExpanded">
+                      afterMove: examples.sortMe }, visible: isExpanded()
+                        && ($parent.phraseological()
+                            || $root.data.entry.template_version() < 1)">
                         <li data-bind="event: { dblclick: function(){} },
                                 dblclickBubble: false,
                                 css: { wordform_example: wordform_example,
@@ -75,7 +78,9 @@
                         </li>
                     </ul>
 
-                    <div data-bind="visible: isExpanded">
+                    <div data-bind="visible: isExpanded()
+                          && ($parent.phraseological()
+                              || $root.data.entry.template_version() < 1)">
                         <a class="pasteItems" data-bind="
                             click: $root.ui.cutBuffer.pasteInto(examples),
                             visible: $root.ui.cutBuffer.containsExamples"></a>
