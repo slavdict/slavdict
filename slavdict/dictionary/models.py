@@ -387,7 +387,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
 MSC11, MSC12, MSC13, MSC14, MSC15, MSC16, MSC17, MSC18, MSC19 = 'klmnopqrs'
-MSC20, MSC21 = 'tu'
+MSC20, MSC21, MSC22 = 'tuv'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     ('Имена', (
@@ -396,6 +396,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
         (MSC9,  'топоним'),
     )),
     ('Части речи', (
+        (MSC22, 'мест.'),
         (MSC6,  'нареч.'),
         (MSC19, 'предик. нареч.'),
         (MSC13, 'союз'),
@@ -421,7 +422,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
     )),
 )
 MSC_ROLE = (MSC5, MSC12, MSC14, MSC15, MSC20)
-POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7, MSC13, MSC19)
+POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7, MSC13, MSC19, MSC22)
 POS_SPECIAL_CASES_MAP = {
     MSC2: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['preposition']],
     MSC3: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['particle']],
@@ -430,6 +431,7 @@ POS_SPECIAL_CASES_MAP = {
     MSC13: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['conjunction']],
     MSC19: dict(PART_OF_SPEECH_CHOICES)[
         PART_OF_SPEECH_MAP['predicative-adverb']],
+    MSC22: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['pronoun']],
 }
 
 YET_NOT_IN_VOLUMES = None
