@@ -189,9 +189,10 @@ LOGGING = {
     },
     'loggers': {
         '': {
-            'handlers': ['error', 'mail_admins'],
+            #'handlers': ['error', 'mail_admins'],
+            'handlers': ['error'],
             'level': 'ERROR',
-            'propagate': True,
+            'propagate': False,
         },
         'slavdict': {
             'handlers': ['file'],
