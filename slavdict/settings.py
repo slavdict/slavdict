@@ -151,12 +151,20 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
     'formatters': {
         'slavdict': {
             '()': 'django.utils.log.ServerFormatter',
             'format': '[{server_time}] {message}',
             'style': '{',
-        }
+        },
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
     },
     'handlers': {
         'file': {
@@ -165,8 +173,26 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': '/var/log/django/slavdict.log',
         },
+        'error': {
+            'level': 'ERROR',
+            'formatter': 'verbose',
+            'filters': ['require_debug_false'],
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django/slavdict_error.log',
+        },
+        'mail_admins': {
+            'level': 'WARNING',
+            'formatter': 'verbose',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
     },
     'loggers': {
+        '': {
+            'handlers': ['error', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
         'slavdict': {
             'handlers': ['file'],
             'level': 'DEBUG',
