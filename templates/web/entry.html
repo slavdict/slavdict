@@ -414,10 +414,8 @@
                     class="MeaningParagraph" class="Text">
             {% endif %}
 
-            {% set mgnumber = { 1: 'I', 2: 'II', 3: 'III',
-                                4: 'IV', 5: 'V' }[loop.index] %}
             <span class="MeaningNumber">
-                {{ mgnumber }}.
+                {{ mgroup.index_mark }}.
             </span>{{ nbsp }}
 
             {% if mgroup.pos_mark %}

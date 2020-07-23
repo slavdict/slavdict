@@ -382,9 +382,8 @@
                 {{ backspace }}</p>{{ newline }}<p aid:pstyle="MeaningParagraph" aid:cstyle="Text">
             {% endif %}
 
-            {% set mgnumber = {1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V'}[loop.index] %}
             <x aid:cstyle="MeaningNumber">
-                {{ mgnumber }}.
+                {{ mgroup.index_mark }}.
             </x>{{ nbsp }}
 
             {% if mgroup.pos_mark %}

@@ -26,6 +26,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary.utils import arabic2roman
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import collogroup_sort_key
 from slavdict.dictionary.utils import several_wordforms
@@ -785,8 +786,7 @@ class Entry(models.Model, JSONSerializable):
                 self.several_pos = several_pos
                 if len(meaning_groups) > 1:
                     for i, mgroup in enumerate(meaning_groups):
-                        mgroup.index_mark = {1: 'I', 2: 'II', 3: 'III',
-                                             4: 'IV', 5: 'V'}[i + 1]
+                        mgroup.index_mark = arabic2roman(i + 1)
             def __len__(self):
                 return len(self.meaning_groups)
             def __iter__(self):
