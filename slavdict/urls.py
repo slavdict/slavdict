@@ -10,8 +10,10 @@ admin.autodiscover()
 
 urlpatterns = [
     url( r'^',           include('slavdict.dictionary.urls') ),
-    url( r'^admin/password_change/', PasswordChangeView.as_view(success_url='/'),
-                                     name='password_change' ),
+    url( r'^(?:admin|ui)/password_change/',
+            PasswordChangeView.as_view(success_url='/',
+                extra_context={'site_header': admin.site.site_header}),
+            name='password_change' ),
     url( r'^admin/',     admin.site.urls ),
     url( r'^admin/doc/', include('django.contrib.admindocs.urls') ),
     url( r'^ui/',        ui.urls ),

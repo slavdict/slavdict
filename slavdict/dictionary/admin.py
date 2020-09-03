@@ -30,7 +30,11 @@ from slavdict.dictionary.utils import arabic2roman
 
 ui = admin.sites.AdminSite(name='UI')
 ui.login_template = 'registration/login.html'
+ui.site_title = 'Slavdict'
+ui.site_header = 'Словарь церковнославянского языка Нового времени'
 admin.site.login_template = ui.login_template
+admin.site.site_title = ui.site_title
+admin.site.site_header = ui.site_header
 
 original_render = Media.render
 def patched_render(self):
