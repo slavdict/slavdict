@@ -741,6 +741,11 @@ class Entry(models.Model, JSONSerializable):
     authors = ManyToManyField(CustomUser, verbose_name='автор статьи',
                               blank=True)
 
+    temp_editors = ManyToManyField(CustomUser, related_name='temp_editors_set',
+            verbose_name='временные редакторы', blank=True)
+    temp_deadline = DateTimeField(blank=True, null=True,
+            verbose_name='дедлайн для временных редакторов')
+
     antconc_query = TextField('запрос для программы AntConc', blank=True)
     mtime = DateTimeField(editable=False)
     ctime = DateTimeField(editable=False, auto_now_add=True)

@@ -775,7 +775,8 @@ class AdminEntryADMIN(AdminEntry):
             'fields':  ('additional_info',),
             'classes': ('collapse',) }),
         (None, { 'fields': tuple(), 'classes': ('blank',) }),
-        (None, { 'fields': ('authors', 'status', 'antconc_query') })
+        (None, { 'fields': ('authors', 'status', 'antconc_query') }),
+        (None, { 'fields': ('temp_editors', 'temp_deadline') }),
     )
 
 
