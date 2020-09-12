@@ -3113,6 +3113,10 @@ for Model in Models:
     if x:
         MAX_LENGTHS[Model.__name__] = x
 
+field_includes = (
+    'Entry.HEADWORD',
+)
+
 field_excludes = (
     'Collocation.civil_inverse',
     'Collocation.mtime',
@@ -3163,6 +3167,7 @@ def gather_model_fields():
                 value = '{}.{}'.format(Model.__name__, field.attname)
                 if value not in field_excludes:
                     opts.append((value, value))
+    opts.extend((value, value) for value in field_includes)
     opts.sort()
     return opts
 
