@@ -1901,9 +1901,7 @@ var viewModel = vM.entryEdit,
       indicateFocus(true);
     }).on('blur', '[data-help]', function (event) {
       indicateFocus(false);
-    }).on('mouseenter',
-    ':not(textarea)[data-help], :not(input[type="text"])[data-help]',
-    function (event) {
+    }).on('mouseenter', '[data-help]', function (event) {
       setTip(event.currentTarget);
     });
 
