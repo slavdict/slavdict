@@ -1895,15 +1895,16 @@ var viewModel = vM.entryEdit,
       }
     }
     $('body > main').on('click focus',
-    //'input[type="text"][data-help], textarea[data-help]', function (event) {
-    '[data-help]', function (event) {
+    'input[type="text"][data-help], textarea[data-help]', function (event) {
       indicateFocus(false);
       setTip(event.currentTarget);
       indicateFocus(true);
     }).on('blur', '[data-help]', function (event) {
       indicateFocus(false);
-    //}).on('mouseenter', '[data-help]', function (event) {
-    //  setTip(event.currentTarget);
+    }).on('mouseenter',
+    ':not(textarea)[data-help], :not(input[type="text"])[data-help]',
+    function (event) {
+      setTip(event.currentTarget);
     });
 
     // Поднять занавес
