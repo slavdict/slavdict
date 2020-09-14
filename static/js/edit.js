@@ -1895,7 +1895,8 @@ var viewModel = vM.entryEdit,
       }
     }
     $('body > main').on('click focus',
-    'input[type="text"][data-help], textarea[data-help]', function (event) {
+    'input[type="text"][data-help], textarea[data-help],' +
+    'input[type="checkbox"][data-help]', function (event) {
       indicateFocus(false);
       setTip(event.currentTarget);
       indicateFocus(true);
