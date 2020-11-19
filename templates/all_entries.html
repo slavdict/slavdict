@@ -5,6 +5,8 @@
 {% block content %}
 
     <style>
+
+{% if print_layout == 'proofreading' %}
         @media print {
             div#main {
                 column-count: 1;
@@ -17,6 +19,7 @@
                 line-height: 0.9cm;
             }
         }
+{% endif %}
 
         .single_entry {
             position: relative;

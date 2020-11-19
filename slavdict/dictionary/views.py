@@ -171,6 +171,15 @@ def all_entries(request, is_paged=False):
 ?pos-group                      Не только сортировать по алфавиту, но и
                                 группировать по частям речи.
 
+?print-layout=columns           Способ отображения статей при отправке страницы
+                                на печать. Возможные значения: proofreading и
+                                columns. Значение proofreading используется
+                                по умолчанию, распечатываемый текст на печати
+                                отображается в одну колонку с увеличенным
+                                интерлиньяжем. При значении columns текст будет
+                                отображаться с обычным интерлиньяжем и в две
+                                колонки.
+
 ?show-ai                        При отображении статей обязательно показывать
                                 рабочие примечания-комментарии.
 
@@ -195,6 +204,10 @@ def all_entries(request, is_paged=False):
         response = HttpResponse(text, content_type="text/plain; charset=utf-8")
         return response
 
+    PRINTLAYOUT_PROOFREADING = 'proofreading'
+    PRINTLAYOUT_COLUMNS = 'columns'
+    DEFAULT_PRINTLAYOUT = PRINTLAYOUT_PROOFREADING
+
     httpGET_AUTHORS = urllib.parse.unquote(request.GET.get('authors', ''))
     httpGET_ALIUD_GREEK = 'aliud-greek' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
@@ -208,6 +221,7 @@ def all_entries(request, is_paged=False):
     httpGET_NOT_EDITABLE = 'not-editable' in request.GET
     httpGET_PERPAGE = request.GET.get('per-page')
     httpGET_POS_GROUP = 'pos-group' in request.GET
+    httpGET_PRINTLAYOUT = request.GET.get('print-layout', DEFAULT_PRINTLAYOUT)
     httpGET_INVERSE = 'inverse' in request.GET
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_SHOWSORTKEYS = 'show-sort-keys' in request.GET
@@ -346,6 +360,7 @@ def all_entries(request, is_paged=False):
         'not_editable': httpGET_NOT_EDITABLE,
         'params_without_page': params_without_page(request.GET),
         'page': page,
+        'print_layout': httpGET_PRINTLAYOUT,
         'show_additional_info': show_additional_info,
         'show_duplicates_warning': False if httpGET_DUPLICATES else True,
         'show_numbers': not httpGET_HIDENUMBERS,
