@@ -43,7 +43,6 @@ from slavdict.dictionary.models import Meaning
 from slavdict.dictionary.models import MSC_ROLE
 from slavdict.dictionary.models import MSC11
 from slavdict.dictionary.models import OrthographicVariant
-from slavdict.dictionary.models import PART_OF_SPEECH_MAP
 from slavdict.dictionary.models import PART_OF_SPEECH_ORDER
 from slavdict.dictionary.models import STATUS_MAP
 from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
@@ -51,7 +50,6 @@ from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.middleware import InvalidCookieError
 from functools import reduce
-
 
 
 # Вспомогательная функция
@@ -145,10 +143,10 @@ def all_entries(request, is_paged=False):
 
 ?hide-authors                   Скрывать авторство.
 
-?hide-examples                  Скрывать значения при статьях, отображая
-                                только заголовки.
+?hide-examples                  Скрывать примеры в статьях.
 
-?hide-meanings                  Скрывать примеры в статьях.
+?hide-meanings                  Скрывать значения при статьях, отображая
+                                только заголовки.
 
 ?hide-numbers                   Не нумеровать статьи.
 
