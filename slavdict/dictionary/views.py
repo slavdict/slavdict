@@ -46,6 +46,7 @@ from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import PART_OF_SPEECH_MAP
 from slavdict.dictionary.models import PART_OF_SPEECH_ORDER
 from slavdict.dictionary.models import STATUS_MAP
+from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.middleware import InvalidCookieError
@@ -187,6 +188,7 @@ def all_entries(request, is_paged=False):
                                 перед наименованием статуса знака минус статьи
                                 с данным статусом будут исключены из выборки.
 
+?volume=3                       Отображать только статьи из такого-то тома.
 
         ''' % request.path
         text = text.encode('utf-8')
@@ -211,6 +213,7 @@ def all_entries(request, is_paged=False):
     httpGET_SHOWSORTKEYS = 'show-sort-keys' in request.GET
     httpGET_STARTSWITH = request.GET.get('startswith')
     httpGET_STATUS = urllib.parse.unquote(request.GET.get('status', ''))
+    httpGET_VOLUME = request.GET.get('volume')
 
     COMMA = re.compile(r'\s*\,\s*')
     SPACE = re.compile(r'\s+')
@@ -260,6 +263,20 @@ def all_entries(request, is_paged=False):
             pass
         else:
             entries = entries.filter(pk__in=httpGET_LIST)
+
+    if httpGET_VOLUME is not None:
+        httpGET_VOLUME = httpGET_VOLUME.lstrip('0')
+        if httpGET_VOLUME == '' or httpGET_VOLUME.isdigit():
+            if httpGET_VOLUME == '':
+                httpGET_VOLUME = YET_NOT_IN_VOLUMES
+            else:
+                httpGET_VOLUME = int(httpGET_VOLUME)
+            volume_entries = (e.id
+                              for e in Entry.objects.all()
+                              if e.volume(httpGET_VOLUME))
+            entries = entries.filter(id__in=volume_entries)
+        else:
+            entries = entries.none()
 
     if httpGET_ALIUD_GREEK:
         greqex = GreekEquivalentForExample.objects.filter(aliud=True)
