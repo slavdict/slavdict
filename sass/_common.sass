@@ -108,9 +108,14 @@ div#main
     width: auto
     margin: 0
     padding: 0
-    column-count: 2
-    column-width: 6.5cm
-    column-fill: balance
+    // --------------- 'proofreading' view mode by default is on
+    column-count: 1
+    column-width: 11cm
+    // --------------- 'columns' view mode is off
+    //column-count: 2
+    //column-width: 6.5cm
+    //column-fill: balance
+    //
 
 @media print
   @page
@@ -123,9 +128,12 @@ div#main
   .MeaningParagraph,
   .CollogroupParagraph,
   .CfParagraph
-    line-height: 4.9mm
     font-size: 82%
     text-align: left
+    // --------------- 'proofreading' view mode by default is on
+    line-height: 0.9cm
+    // --------------- 'columns' view mode is off
+    //line-height: 4.9mm
 
 #main-flex
   display: flex

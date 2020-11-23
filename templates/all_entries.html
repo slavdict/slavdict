@@ -19,6 +19,21 @@
                 line-height: 0.9cm;
             }
         }
+{% elif print_layout == 'columns' %}
+        @media print {
+            div#main {
+                column-count: 2;
+                column-width: 6.5cm;
+                column-fill: balance;
+            }
+
+            .FirstParagraph,
+            .MeaningParagraph,
+            .CollogroupParagraph,
+            .CfParagraph {
+                line-height: 4.9mm;
+            }
+        }
 {% endif %}
 
         .single_entry {
