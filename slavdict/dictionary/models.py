@@ -742,9 +742,13 @@ class Entry(models.Model, JSONSerializable):
                               blank=True)
 
     temp_editors = ManyToManyField(CustomUser, related_name='temp_editors_set',
-            verbose_name='временные редакторы', blank=True)
-    temp_deadline = DateTimeField(blank=True, null=True,
-            verbose_name='дедлайн для временных редакторов')
+            verbose_name='временные редакторы', blank=True,
+            through='TempEdit')
+    # When a temporary editor for an entry should be assigned, use the
+    # following code:
+    #
+    #   entry.temp_editors.add(user, through_defaults={
+    #       'deadline': date(2020, 03, 15) })
 
     antconc_query = TextField('запрос для программы AntConc', blank=True)
     mtime = DateTimeField(editable=False)
@@ -3088,6 +3092,12 @@ class Participle(models.Model, JSONSerializable):
         ordering = ('order', 'id')
 
 
+class TempEdit(models.Model):
+    entry = ForeignKey(Entry, on_delete=models.CASCADE)
+    user = ForeignKey(CustomUser, on_delete=models.CASCADE)
+    deadline = DateTimeField()
+
+
 def get_max_lengths(Model):
     return {f.name: f.max_length
             for f in Model._meta.fields
@@ -3202,7 +3212,6 @@ class Tip(models.Model):
         verbose_name = 'подсказка для поля ввода'
         verbose_name_plural = 'подсказки для полей ввода'
         ordering = ('ref',)
-
 
 try:
     LETTERS = set(e.civil_equivalent.lstrip(' =*')[0].lower()
