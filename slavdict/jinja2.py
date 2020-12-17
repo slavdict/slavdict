@@ -1,3 +1,5 @@
+import datetime
+
 from django.conf import settings
 from django.urls import reverse
 
@@ -10,6 +12,7 @@ def environment(**options):
     env = Environment(**options)
     env.filters.update(additional_jinja_filters)
     env.globals.update({
+        'datetime': datetime,
         'url': reverse,
         'STATIC_URL': settings.STATIC_URL,
         'STATIC_RESOURCES_VERSION': settings.STATIC_RESOURCES_VERSION,

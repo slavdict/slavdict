@@ -15,6 +15,9 @@
     {{ super() }}
 
     {% if not intermed %}
+        {% set tempEditor = entry.temp_editors.through.objects.filter(
+                user=user, entry=entry, deadline__gt=datetime.datetime.now()
+                ).exists() %}
         {% set prepareCond = not entry.preplock or user.has_key_for_preplock %}
         {% set authorlessCond = not entry.authors.exists() %}
         {% set authorCond = user in entry.authors.all() %}
@@ -22,7 +25,8 @@
         {% set hellinistCond = user.is_hellinist %}
         <div class="editButtons">
 
-            {% if prepareCond and (authorlessCond or authorCond or editorCond) %}
+            {% if tempEditor or
+                  prepareCond and (authorlessCond or authorCond or editorCond) %}
                 <a class="icon edit"
                         href="{{ url('edit_form_url', args=[entry.pk]) }}"
                         title="Редактировать статью">

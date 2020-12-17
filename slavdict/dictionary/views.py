@@ -45,6 +45,7 @@ from slavdict.dictionary.models import MSC11
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import PART_OF_SPEECH_ORDER
 from slavdict.dictionary.models import STATUS_MAP
+from slavdict.dictionary.models import TempEdit
 from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
@@ -980,7 +981,18 @@ def edit_entry(request, id):
     authorlessCond = not entry.authors.exists()
     authorCond = user in entry.authors.all()
     editorCond = user.is_admeditor
-    if prepareCond and (authorlessCond or authorCond or editorCond):
+
+    # TODO: schedule stale temp_edit removal
+    for temp_edit in TempEdit.objects.filter(
+            deadline__lte=datetime.datetime.now()):
+        temp_edit.delete()
+
+    tempEditor = TempEdit.objects.filter(
+            user=user, entry=entry, deadline__gt=datetime.datetime.now()
+            ).exists()
+
+    if (tempEditor or
+            prepareCond and (authorlessCond or authorCond or editorCond)):
         pass
     else:
         return redirect(entry.get_absolute_url())
