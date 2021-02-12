@@ -134,6 +134,14 @@
             {% endif %}
 
         {% for entry in entries %}
+            {% set tempEditor = entry.temp_editors.through.objects.filter(
+                    user=user, entry=entry, deadline__gt=datetime.datetime.now()
+                    ).exists() %}
+            {% set prepareCond = not entry.preplock or user.has_key_for_preplock %}
+            {% set authorlessCond = not entry.authors.exists() %}
+            {% set authorCond = user in entry.authors.all() %}
+            {% set editorCond = user.is_admeditor %}
+            {% set hellinistCond = user.is_hellinist %}
             <tr class="entry-list-item">
 
                 <td class="eli-control first">
@@ -144,10 +152,10 @@
                         <div class="right"></div>
                     </div>
 
-                    {% if (not entry.preplock or user.has_key_for_preplock)
-                          and (not entry.authors.exists() or user.is_admeditor
-                               or user in entry.authors.all()) %}
-                        {% if not entry.duplicate or user.is_admeditor %}
+                    {% if tempEditor or
+                          prepareCond and
+                              (authorlessCond or authorCond or editorCond) %}
+                        {% if not entry.duplicate or editorCond %}
                         <a class="icon edit" href="{{ url('edit_form_url',
                                                           args=[entry.pk]) }}">
                             <img src="{{ STATIC_URL }}transparent.png?{{
