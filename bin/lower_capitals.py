@@ -27,7 +27,8 @@ for ex in Example.objects.exclude(id__in=exclude_ids):
     if len(segments) > 1:
         print()
         print(ex.example)
-        ex.example = ''.join(s if i % 2 == 0 else s.lower()
-                              for i, s in enumerate(segments))
+        ex.example = ''.join(s if i % 2 == 0
+                             else ('Є' if s == 'Е' else s.lower())
+                             for i, s in enumerate(segments))
         print(ex.example)
         ex.save(without_mtime=True)
