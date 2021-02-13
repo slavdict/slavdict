@@ -403,6 +403,7 @@ function Example() {
     upsert(this, 'additional_info', data, '');
     upsert(this, 'address_text', data, '');
     upsert(this, 'collogroup_id', data, collogroup_id);
+    upsert(this, 'dont_lowercase', data, false);
     upsert(this, 'entry_id', data, entry_id);
     upsert(this, 'example', data, '');
     upsert(this, 'context', data, '');

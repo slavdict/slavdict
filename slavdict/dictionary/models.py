@@ -2343,6 +2343,7 @@ class Example(models.Model, JSONSerializable):
             'address_text',
             'collogroup_id',
             'context',
+            'dont_lowercase',
             'entry_id',
             'example',
             'greek_eq_status',
