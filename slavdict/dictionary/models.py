@@ -2093,19 +2093,24 @@ class Meaning(models.Model, JSONSerializable):
 class Example(models.Model, JSONSerializable):
 
     meaning = ForeignKey(Meaning, verbose_name='значение',
-              help_text='Значение, к которому относится данный пример.',
-              blank=True, null=True, on_delete=models.SET_NULL)
+        help_text='Значение, к которому относится данный пример.',
+        blank=True, null=True, on_delete=models.SET_NULL)
 
     entry = ForeignKey(Entry, blank=True, null=True, on_delete=models.CASCADE)
-    collogroup = ForeignKey('CollocationGroup', blank=True, null=True,
-                            on_delete=models.SET_NULL)
+    collogroup = ForeignKey('CollocationGroup',
+        blank=True, null=True, on_delete=models.SET_NULL)
 
     order = SmallIntegerField('порядок следования', blank=True, default=345)
-    hidden = BooleanField('Скрыть пример', help_text='''Не отображать данный
-                          пример при выводе словарной статьи.''',
-                          default=False, editable=False)
-    wordform_example = BooleanField('Грамматическая/иная особенность',
-                                    default=False)
+    hidden = BooleanField('Скрыть пример', default=False, editable=False,
+        help_text='Не отображать данный пример при выводе словарной статьи.')
+    dont_lowercase = BooleanField('Не менять регистр символов',
+        help_text='''Не понижать регистр символов. При сохранении у всех
+        примеров кроме использующих данный флаг автоматически заглавные
+        прописные буквы заменяются на строчные. Данный флаг разрешено
+        использовать только в статьях, описывающих единичные буквы.''',
+        default=False, editable=False)
+    wordform_example = BooleanField(
+        'Грамматическая/иная особенность', default=False)
 
     example = TextField('пример')
     ts_example = TextField(default='')
@@ -2115,7 +2120,7 @@ class Example(models.Model, JSONSerializable):
         return ucs8(self.example)
 
     context = TextField('широкий контекст',
-                  help_text='Более широкий контекст для примера', blank=True)
+        help_text='Более широкий контекст для примера', blank=True)
 
     @property
     def context_ucs(self):
