@@ -2282,7 +2282,31 @@ class Example(models.Model, JSONSerializable):
         self.example = re.sub('[>\u3009\u232a\u29fd\u276d\u2771\u276f\uff1e]',
                 '\u27e9', self.example)
 
+    def lowercase_if_necessary(self):
+        if self.dont_lowercase:
+            return
+        r = (
+            r'(?:^|(?<=[^'
+            r'абвгдеєжѕзийіıклмноѻпрстѹꙋуфхѿцчшщъыьѣюꙗѡѽѧѯѱѳѵ'
+            r'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУꙊФХѾЦЧШЩЪЫЬѢЮꙖѠѼѦѮѰѲѴ~'
+            r"\^'`"
+            r']))'
+            r'([АБВГДЕЄѢЖЗЅИІѴЙКѮЛМНОѺѠѼѾПѰРСТУꙊѸФѲХЦЧШЩЪЫЬЮꙖѦ])'
+        )
+        segments = re.split(r, self.example)
+        if len(segments) > 1:
+            example = ''
+            for i, s in enumerate(segments):
+                if i % 2 == 0:
+                    example += s
+                elif s == 'Е':
+                    example += 'є'
+                else:
+                    example += s.lower()
+            self.example = example
+
     def save(self, without_mtime=False, *args, **kwargs):
+        self.lowercase_if_necessary()
         self.angle_brackets()
         self.ts_convert()
         host_entry = self.host_entry
