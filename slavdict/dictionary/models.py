@@ -1393,12 +1393,14 @@ class Entry(models.Model, JSONSerializable):
         if should_log:
             user = get_current_user()
             logger.info('<User: %s> created <Entry id: %s, headword: %s>' % (
-                        user.last_name, self.id, self.civil_equivalent))
+                        user and user.last_name or 'No current user',
+                        self.id, self.civil_equivalent))
 
     def delete(self, *args, **kwargs):
         user = get_current_user()
         logger.info('<User: %s> deleted <Entry id: %s, headword: %s>' % (
-                    user.last_name, self.id, self.civil_equivalent))
+                    user and user.last_name or 'No current user',
+                    self.id, self.civil_equivalent))
         super(Entry, self).delete(*args, **kwargs)
 
     def make_double(self):
@@ -2307,7 +2309,7 @@ class Example(models.Model, JSONSerializable):
                     '<Host Object: %s %s>, '
                     '<Host Entry id: %s, headword: %s>' % (
                         self.id, self.example,
-                        user.last_name,
+                        user and user.last_name or 'No current user',
                         host.__class__.__name__, host.id,
                         host_entry.id, host_entry.civil_equivalent))
 
