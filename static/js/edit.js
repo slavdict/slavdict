@@ -436,8 +436,9 @@ function Example() {
         return words;
     }, this));
     this.example.segments || (this.example.segments = ko.computed(function () {
-        var text = this.example.ucs(),
-            segments = text.split(Example.UCS8SegmentSplitRE);
+        var text = this.example().replace(Example.AC_SEGM_RE, Example.AC_SEGM_SUBST),
+            isAffix = false,
+            segments = ac2ucs8(text, isAffix).split(Example.UCS8SegmentSplitRE);
         if (segments[0] === '') {
             segments.splice(0, 2);
         }
@@ -464,9 +465,13 @@ function Example() {
     Example.all.append(this);
 }
 Example.dependantsToDestroy = ['greqs', 'translations'];
-Example.UCS8WordSplitRE = /[\s\.,:;!\/"'«»“”‘’\[\]\(\)]+/gum;
-Example.UCS8SegmentSplitRE =
-    RegExp('(' + Example.UCS8WordSplitRE.source + ')', 'gum');
+Example.UCS8_OPEN_EXT = '\uaaa0';
+Example.UCS8_CLOSE_EXT = '\uaaa1';
+Example.UCS8_EXT = RegExp(
+  Example.UCS8_OPEN_EXT +
+  '([^' + Example.UCS8_OPEN_EXT + Example.UCS8_CLOSE_EXT + ']*)' +
+  Example.UCS8_CLOSE_EXT, 'gum');
+Example.UCS8WordSplit = '[\\s\\.,:;!\\/"\'«»“”‘’\\[\\]\\(\\)]';
 /* NOTE: 1. В регулярном выражении разбивки примера на слова нельзя
    использовать обратный слэш (\\\\), потому что в UCS8 ему соответствует
    титло. 2. Регулярное выражение без обрамляющих скобок при разбивке даст
@@ -474,6 +479,22 @@ Example.UCS8SegmentSplitRE =
    символов, которые их разделяют, причем во втором случае общее число
    элементов массива всегда будет нечетным и массив будет и начинаться,
    и кончаться словом или пустым словом. */
+Example.UCS8WordSplitRE = RegExp(Example.UCS8WordSplit + '+', 'gum');
+Example.UCS8SegmentSplitRE = RegExp(
+  '(' +
+    '(?:' +
+      Example.UCS8WordSplit + '*' +
+      Example.UCS8_OPEN_EXT +
+        '[^' + Example.UCS8_OPEN_EXT + Example.UCS8_CLOSE_EXT +
+        ']*' +
+      Example.UCS8_CLOSE_EXT +
+      Example.UCS8WordSplit + '*' +
+    ')+' +
+    '|' +
+    Example.UCS8WordSplit + '+' +
+  ')', 'gum');
+Example.AC_SEGM_RE = /([…\/\(\)\[\]]+)/gum;
+Example.AC_SEGM_SUBST = Example.UCS8_OPEN_EXT + '$1' + Example.UCS8_CLOSE_EXT;
 Example.prototype.getFragment = function (start, end) {
     var s = 2 * (start - 1),
         e = 2 * (end - 1),
