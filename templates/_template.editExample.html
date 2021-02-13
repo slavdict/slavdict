@@ -10,8 +10,10 @@
             Грамматическая/иная особенность</span>
     </label>
 
-    <label data-help="Example.dont_lowercase" style="display:none"
-           data-bind="visible: true">
+    <label data-help="Example.dont_lowercase"
+           style="display:none; margin-left: 2em;"
+           data-bind="visible: $root.data.entry.part_of_speech() ===
+                               $root.ui.slugs.part_of_speech['letter']">
         <input type="checkbox" data-bind="checked: dont_lowercase"
             data-help="Example.dont_lowercase">
         <span style="margin-left: 0.75em; position: relative; top: 0.25em">
