@@ -247,8 +247,11 @@ class Tag(object):
         else:
             return self.TAG_IND.format(style)
 
+NON_SOFT_HYPHENS = ('-', '\u2010', '\u2011')
+
 class Segment(Tag):
     TYPE_WORD = 'word'
+    TYPE_WORD_WITH_HYPHEN = 'word_with_hyphen'
     TYPE_PERIOD = 'period'
     TYPE_ELLIPSIS = 'ellipsis'
     TYPE_COMMA = 'comma'
@@ -354,37 +357,49 @@ class Segment(Tag):
             self.type = self.TYPE_DASH
             self.output_script = SCRIPT_CIVIL
 
-        elif self.segment in list('-\u2011\u2010'):
+        elif self.segment in NON_SOFT_HYPHENS:
             self.type = self.TYPE_HYPHEN
             self.output_script = SCRIPT_CIVIL
 
         else:
+            if any(hyphen in self.segment for hyphen in NON_SOFT_HYPHENS):
+                self.type = self.TYPE_WORD_WITH_HYPHEN
             self.type = self.TYPE_WORD
 
     def __str__(self):
         tag = self.tag.get_tag(self.output_script)
         if self.type == self.TYPE_EXTERNAL:
             segment = self.segment
-        elif self.type == self.TYPE_WORD:
-            segment = html_escape(hyphenate_ucs8(self.segment))
-            if self.tag.for_web:
-                #HYPHEN_TAG = u'<span class="Text">\u00AD</span>'
-                pass
-            else:
-                HYPHEN_TAG = '<h aid:cstyle="Text">\u00AD</h>'
-                segment = segment.replace('\u00AD', HYPHEN_TAG)
+        elif self.type in (self.TYPE_WORD, self.TYPE_WORD_WITH_HYPHEN):
+            segs = re.split('([%s]+)' % ''.join(NON_SOFT_HYPHENS), self.segment)
+            txt = ''
+            for i, seg in enumerate(segs):
+                if i % 2 == 0:
+                    segment = html_escape(hyphenate_ucs8(seg))
+                    if self.tag.for_web:
+                        #HYPHEN_TAG = u'<span class="Text">\u00AD</span>'
+                        pass
+                    else:
+                        HYPHEN_TAG = '<h aid:cstyle="Text">\u00AD</h>'
+                        segment = segment.replace('\u00AD', HYPHEN_TAG)
 
-            RE_NON_UCS8_LETTER_TITLES = '(?<!^)([МТ])'
-            if self.base_script == SCRIPT_CSLAV and \
-                    re.findall(RE_NON_UCS8_LETTER_TITLES, segment):
-                if self.tag.for_web:
-                    tag_template = '<span class="CSLSuper">%s</span>'
+                    RE_NON_UCS8_LETTER_TITLES = '(?<!^)([МТ])'
+                    if self.base_script == SCRIPT_CSLAV and \
+                            re.findall(RE_NON_UCS8_LETTER_TITLES, segment):
+                        if self.tag.for_web:
+                            tag_template = '<span class="CSLSuper">%s</span>'
+                        else:
+                            tag_template = '<x aid:cstyle="CSLSuper">%s</x>'
+                        parts = re.split(RE_NON_UCS8_LETTER_TITLES, segment)
+                        parts = [tag_template % p.lower() if i % 2 else p
+                                 for i, p in enumerate(parts)]
+                        segment = ''.join(parts)
+                    tag = self.tag.get_tag(SCRIPT_CSLAV)
                 else:
-                    tag_template = '<x aid:cstyle="CSLSuper">%s</x>'
-                parts = re.split(RE_NON_UCS8_LETTER_TITLES, segment)
-                parts = [tag_template % p.lower() if i % 2 else p
-                         for i, p in enumerate(parts)]
-                segment = ''.join(parts)
+                    segment = html_escape(seg)
+                    tag = self.tag.get_tag(SCRIPT_CIVIL)
+                txt += tag % segment
+            return txt
         else:
             segment = html_escape(self.segment)
             angle_brackets = re.split('([\u27e8\u27e9])', segment)
@@ -458,7 +473,7 @@ class Words(object):
             self.in_betweens[-1] += item.in_betweens[0]
             self.in_betweens.extend(item.in_betweens[1:])
         elif isinstance(item, Segment):
-            if item.type == Segment.TYPE_WORD:
+            if item.type in (Segment.TYPE_WORD, Segment.TYPE_WORD_WITH_HYPHEN):
                 self.words.append(item)
                 self.in_betweens.append([])
             else:
@@ -467,7 +482,7 @@ class Words(object):
                 not isinstance(item, str):
             assert all(isinstance(x, Segment) for x in item)
             for s in item:
-                if s.type == Segment.TYPE_WORD:
+                if s.type in (Segment.TYPE_WORD, Segment.TYPE_WORD_WITH_HYPHEN):
                     self.words.append(s)
                     self.in_betweens.append([])
                 else:
@@ -518,6 +533,18 @@ RE_CIVIL_SPLIT = (
     r'*\(\)\[\]]+'
     r')'
 )
+HYPHEN = '-'
+
+def get_word_even_with_hyphen(index, segments, n_segments):
+    word = segments[index]
+    while index + 1 < n_segments and any(hyphen == segments[index + 1]
+                                     for hyphen in NON_SOFT_HYPHENS):
+        word += segments[index + 1]
+        index += 2
+        if index < n_segments:
+            word += segments[index]
+    index += 1
+    return (word, index)
 
 def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
@@ -528,10 +555,15 @@ def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
     segments = re.split(RE_CSLAV_SPLIT, value)
 
     words = Words()
-    for i in range(len(segments) // 2 + 1):
+    n_segments = len(segments)
+    for i in range(n_segments // 2 + 1):
         s1 = i * 2
-        s2 = s1 + 1
-        word = Segment(segments[s1], tag)
+        # Пропускаем сегменты, являющиеся частями слов, содержащих дефисы
+        if (s1 - 1 >= 0 and any(hyphen == segments[s1 - 1]
+                                for hyphen in NON_SOFT_HYPHENS)):
+            continue
+        word_segment, s2 = get_word_even_with_hyphen(s1, segments, n_segments)
+        word = Segment(word_segment, tag)
         if s2 < len(segments):
             in_between = get_nonword_segments(segments[s2], tag, SCRIPT_CSLAV)
         else:
@@ -543,8 +575,9 @@ def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
         else:
             words.add(word)
             words.add(in_between)
-    #for w in words:  # Отладочная печать
-    #    print u'%s: "%s"' % (w.type, w.segment)
+    #if list(words)[0].segment.startswith('мин'):
+    #    for w in words:  # Отладочная печать
+    #        print('%s: "%s"' % (w.type, w.segment))
     return words
 
 def civil_words(value, civil_cstyle=None, for_web=False):
