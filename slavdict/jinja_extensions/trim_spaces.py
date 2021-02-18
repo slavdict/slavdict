@@ -366,35 +366,40 @@ class Segment(Tag):
                 self.type = self.TYPE_WORD_WITH_HYPHEN
             self.type = self.TYPE_WORD
 
+    def _get_word_markup_string(self, seg):
+        segment = html_escape(hyphenate_ucs8(seg))
+        if self.tag.for_web:
+            #HYPHEN_TAG = u'<span class="Text">\u00AD</span>'
+            pass
+        else:
+            HYPHEN_TAG = '<h aid:cstyle="Text">\u00AD</h>'
+            segment = segment.replace('\u00AD', HYPHEN_TAG)
+
+        RE_NON_UCS8_LETTER_TITLES = '(?<!^)([МТ])'
+        if self.base_script == SCRIPT_CSLAV and \
+                re.findall(RE_NON_UCS8_LETTER_TITLES, segment):
+            if self.tag.for_web:
+                tag_template = '<span class="CSLSuper">%s</span>'
+            else:
+                tag_template = '<x aid:cstyle="CSLSuper">%s</x>'
+            parts = re.split(RE_NON_UCS8_LETTER_TITLES, segment)
+            parts = [tag_template % p.lower() if i % 2 else p
+                     for i, p in enumerate(parts)]
+            segment = ''.join(parts)
+        return segment
+
     def __str__(self):
         tag = self.tag.get_tag(self.output_script)
         if self.type == self.TYPE_EXTERNAL:
             segment = self.segment
         elif self.type in (self.TYPE_WORD, self.TYPE_WORD_WITH_HYPHEN):
             if self.output_script == SCRIPT_CSLAV:
-                segs = re.split('([%s]+)' % ''.join(NON_SOFT_HYPHENS), self.segment)
+                segs = re.split('([%s]+)' % ''.join(NON_SOFT_HYPHENS),
+                                self.segment)
                 txt = ''
                 for i, seg in enumerate(segs):
                     if i % 2 == 0:
-                        segment = html_escape(hyphenate_ucs8(seg))
-                        if self.tag.for_web:
-                            #HYPHEN_TAG = u'<span class="Text">\u00AD</span>'
-                            pass
-                        else:
-                            HYPHEN_TAG = '<h aid:cstyle="Text">\u00AD</h>'
-                            segment = segment.replace('\u00AD', HYPHEN_TAG)
-
-                        RE_NON_UCS8_LETTER_TITLES = '(?<!^)([МТ])'
-                        if self.base_script == SCRIPT_CSLAV and \
-                                re.findall(RE_NON_UCS8_LETTER_TITLES, segment):
-                            if self.tag.for_web:
-                                tag_template = '<span class="CSLSuper">%s</span>'
-                            else:
-                                tag_template = '<x aid:cstyle="CSLSuper">%s</x>'
-                            parts = re.split(RE_NON_UCS8_LETTER_TITLES, segment)
-                            parts = [tag_template % p.lower() if i % 2 else p
-                                     for i, p in enumerate(parts)]
-                            segment = ''.join(parts)
+                        segment = self._get_word_markup_string(seg)
                         tag = self.tag.get_tag(self.output_script)
                     else:
                         segment = html_escape(seg)
@@ -402,7 +407,7 @@ class Segment(Tag):
                     txt += tag % segment
                 return txt
             else:
-                segment = html_escape(self.segment)
+                segment = self._get_word_markup_string(self.segment)
         else:
             segment = html_escape(self.segment)
             angle_brackets = re.split('([\u27e8\u27e9])', segment)
