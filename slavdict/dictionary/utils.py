@@ -3,17 +3,20 @@ import re
 from hip2unicode.functions import convert
 from hip2unicode.functions import compile_conversion
 from hip2unicode.conversions import antconc_ucs8
+from hip2unicode.conversions import antconc_ucs8_corrupted_antconc
 from hip2unicode.conversions import antconc_ucs8_without_aspiration
 from hip2unicode.conversions import antconc_civilrus
 from hip2unicode.conversions import antconc_antconc_wo_titles
 
-compiled_conversion_wo_titles = compile_conversion(
-        antconc_antconc_wo_titles.conversion)
+compiled_conversion_antconc_anticorrupt = compile_conversion(
+        antconc_ucs8_corrupted_antconc.conversion)
+compiled_conversion_civil = compile_conversion(antconc_civilrus.conversion)
 compiled_conversion_with_aspiration = compile_conversion(
         antconc_ucs8.conversion)
 compiled_conversion_without_aspiration = compile_conversion(
         antconc_ucs8_without_aspiration.conversion)
-compiled_conversion_civil = compile_conversion(antconc_civilrus.conversion)
+compiled_conversion_wo_titles = compile_conversion(
+        antconc_antconc_wo_titles.conversion)
 
 def html_escape(text):
     text = text.replace('&', '&amp;')
@@ -34,6 +37,9 @@ def resolve_titles(text):
 
 def ucs_convert(text):
     return html_escape(convert(text, compiled_conversion_with_aspiration))
+
+def antconc_anticorrupt(text):
+    return convert(text, compiled_conversion_antconc_anticorrupt)
 
 
 def ucs_convert_affix(text):
@@ -423,3 +429,22 @@ def arabic2roman(n):
             _, dig10, _ = ROMANS[i - 1]
             roman += dig1 + dig10
     return roman
+
+CIVIL_IN_CSL = 1
+CSL_IN_CIVIL = 2
+
+APPLY_TO_CSL = 1
+APPLY_TO_CIVIL = 2
+
+def apply_to_mixed(func, text, mixed_content_type=CIVIL_IN_CSL, apply_to=APPLY_TO_CSL):
+    lst = text.split('##')
+    for i, elem in enumerate(lst):
+        if not elem:
+            continue
+        if (i % 2 == 0 and (CIVIL_IN_CSL and APPLY_TO_CSL
+                or CSL_IN_CIVIL and APPLY_TO_CIVIL)
+                or i % 2 == 1 and (CIVIL_IN_CSL and APPLY_TO_CIVIL
+                or CSL_IN_CIVIL and APPLY_TO_CSL)):
+            elem = func(elem)
+            lst[i] = elem
+    return '##'.join(lst)

@@ -241,7 +241,7 @@
         // Новый binding для отображения полуюникода в цсл виде
         // с различением слов и частей слова.
         var ac2ucs8 = antconc_ucs8,
-            ac2cvlr = antconc_civilrus_word;
+            ac2ac = antconc_anticorrupt;
         function getCslavSegm(word, isAffix, cssClasses)
         {
           var segm = '', subsegments;
@@ -255,7 +255,7 @@
               segm += '<span class="paracslav">' + subsegm + '</span>';
             else
               segm += '<span class="' + cssClasses + '">' +
-                          ac2ucs8(subsegm, isAffix) +
+                          ac2ucs8(ac2ac(subsegm), isAffix) +
                       '</span>';
           }
           return segm;

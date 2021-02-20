@@ -13,6 +13,5 @@ Markdown = ">=3.1.1"
 Django = "<3.0.0"
 Jinja2 = "*"
 "psycopg2-binary" = "*"
-pipfile = {version = "*",editable = true}
 django-admin-rangefilter = "*"
 django-crum = "*"

@@ -182,7 +182,7 @@
         v = x.val();
         var v2 = $('#id_orthographic_variants-0-idem').val();
         if (!v && v2) {
-            x.val(antconc_civilrus_word(v2));
+            x.val(antconc_civilrus_word(antconc_anticorrupt(v2)));
         }
         if (v && v.indexOf('*') > -1) {
             x.addClass('myerr');
@@ -207,7 +207,7 @@
                 var a = "collocation_set-" + ceq.attr('name').split("-")[1] + "-collocation";
                 var collov = $('#id_' + a).val();
                 if (!ceqv && collov) {
-                    ceq.val(antconc_civilrus_word(collov));
+                    ceq.val(antconc_civilrus_word(antconc_anticorrupt(collov)));
                 }
                 if (ceqv && ceqv.indexOf('*') > -1){
                     ceq.addClass('myerr');
@@ -232,7 +232,7 @@
                     var collov = collo.val();
                     var a = "collocation_set-" + collo.attr('name').split("-")[1] + "-civil_equivalent";
                     var ceq = $('#id_' + a);
-                    ceq.val(antconc_civilrus_word(collov));
+                    ceq.val(antconc_civilrus_word(antconc_anticorrupt(collov)));
                     var ceqv = ceq.val();
                     if (ceqv && ceqv.indexOf('*') > -1){
                         ceq.addClass('myerr');
@@ -322,7 +322,7 @@
             x.keyup(function(){
                 var x = $('#id_civil_equivalent');
                 var v = $(this).val();
-                x.val(antconc_civilrus_word(v));
+                x.val(antconc_civilrus_word(antconc_anticorrupt(v)));
                 if (v && v.indexOf('*') > -1){
                     x.addClass('myerr');
                 } else {

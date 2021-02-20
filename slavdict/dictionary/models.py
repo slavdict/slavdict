@@ -26,7 +26,11 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary.utils import antconc_anticorrupt
+from slavdict.dictionary.utils import APPLY_TO_CSL
+from slavdict.dictionary.utils import apply_to_mixed
 from slavdict.dictionary.utils import arabic2roman
+from slavdict.dictionary.utils import CIVIL_IN_CSL
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import collogroup_sort_key
 from slavdict.dictionary.utils import several_wordforms
@@ -1382,6 +1386,8 @@ class Entry(models.Model, JSONSerializable):
         return '{}?{}'.format(URL, QUERY)
 
     def save(self, without_mtime=False, *args, **kwargs):
+        for attr in ('genitive', 'nom_sg', 'short_form', 'sg1', 'sg2'):
+            setattr(self, attr, antconc_anticorrupt(getattr(self, attr)))
         orth_vars = self.orth_vars
         if orth_vars:
             self.civil_equivalent = civilrus_convert(orth_vars[0].idem.strip())
@@ -1831,16 +1837,11 @@ class Meaning(models.Model, JSONSerializable):
                                   blank=True, default='')
     substantivus_csl = CharField('цсл форма', max_length=100,
                                  blank=True, default='')
+
     @property
     def substantivus_csl_ucs(self):
-        lst = self.substantivus_csl.split('##')
-        for i, elem in enumerate(lst):
-            if not elem:
-                continue
-            if not (i % 2):
-                elem = ucs8(elem)
-                lst[i] = elem
-        return '##'.join(lst)
+        return apply_to_mixed(ucs8, self.substantivus_csl,
+                              CIVIL_IN_CSL, APPLY_TO_CSL)
 
     @property
     def substantivus_forms(self):
@@ -2009,6 +2010,8 @@ class Meaning(models.Model, JSONSerializable):
             return True
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.substantivus_csl = apply_to_mixed(antconc_anticorrupt,
+                self.substantivus_csl, CIVIL_IN_CSL, APPLY_TO_CSL)
         host_entry = self.host_entry
         if self.looks_like_valency(host_entry):
             if self.gloss.strip() and not self.meaning.strip():  #::AUHACK::
@@ -2735,14 +2738,8 @@ class Collocation(models.Model, JSONSerializable):
 
     @property
     def collocation_ucs(self):
-        lst = self.collocation.split('##')
-        for i, elem in enumerate(lst):
-            if not elem:
-                continue
-            if not (i % 2):
-                elem = ucs8(elem)
-                lst[i] = elem
-        return '##'.join(lst)
+        return apply_to_mixed(antconc_anticorrupt, self.collocation,
+                              CIVIL_IN_CSL, APPLY_TO_CSL)
 
     civil_equivalent = CharField('гражданское написание', max_length=350,
                                  blank=True)
@@ -2773,6 +2770,8 @@ class Collocation(models.Model, JSONSerializable):
         return self.collogroup
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.collocation = apply_to_mixed(antconc_anticorrupt, self.collocation,
+                                          CIVIL_IN_CSL, APPLY_TO_CSL)
         self.civil_equivalent = civilrus_convert(self.collocation)
         self.civil_inverse = self.civil_equivalent[::-1]
         super(Collocation, self).save(*args, **kwargs)
@@ -3007,6 +3006,7 @@ class OrthographicVariant(models.Model, JSONSerializable):
     host = host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.idem = antconc_anticorrupt(self.idem)
         if self.questionable and not self.reconstructed:
             self.reconstructed = True
         super(OrthographicVariant, self).save(*args, **kwargs)
@@ -3081,6 +3081,7 @@ class Participle(models.Model, JSONSerializable):
     host = host_entry
 
     def save(self, without_mtime=False, *args, **kwargs):
+        self.idem = antconc_anticorrupt(self.idem)
         super(Participle, self).save(*args, **kwargs)
         if without_mtime:
             return
