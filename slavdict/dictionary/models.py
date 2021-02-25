@@ -2738,8 +2738,9 @@ class Collocation(models.Model, JSONSerializable):
 
     @property
     def collocation_ucs(self):
-        return apply_to_mixed(antconc_anticorrupt, self.collocation,
+        text = apply_to_mixed(antconc_anticorrupt, self.collocation,
                               CIVIL_IN_CSL, APPLY_TO_CSL)
+        return apply_to_mixed(ucs8, text, CIVIL_IN_CSL, APPLY_TO_CSL)
 
     civil_equivalent = CharField('гражданское написание', max_length=350,
                                  blank=True)
