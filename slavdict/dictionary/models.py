@@ -457,8 +457,7 @@ VOLUME_LETTERS = {
     10: ('т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ю', 'я'),
 }
 ANY_LETTER = None
-LOCKED_LETTERS = VOLUME_LETTERS[1] + VOLUME_LETTERS[2] + \
-        tuple(VOLUME_LETTERS[3][:1])
+LOCKED_LETTERS = VOLUME_LETTERS[1] + VOLUME_LETTERS[2] + VOLUME_LETTERS[3]
 CURRENT_VOLUME = 3
 
 
