@@ -39,7 +39,9 @@
                            visible: isExpanded()
                              && ($parent.constructor.name !== 'Collogroup'
                                  || $parent.phraseological()
-                                 || $root.data.entry.template_version < 1)">
+                                 || $root.data.entry.template_version < 1)
+                             && ($parent.constructor.name !== 'Entry'
+                                 || !$parent.restricted_use())">
                 <li data-bind="event: { dblclick: function(){} },
                         dblclickBubble: false,
                         css: { wordform_example: wordform_example,
@@ -65,13 +67,17 @@
                 <a class="pasteItems" data-bind="
                     click: $root.ui.cutBuffer.pasteInto(examples),
                     visible: $root.ui.cutBuffer.containsExamples"></a>
-                <a class="addItem" data-bind="visible: isExpanded,
+                <a class="addItem" data-bind="visible: isExpanded()
+                      && ($parent.constructor.name !== 'Entry'
+                          || !$parent.restricted_use()),
                     click: examples.itemAdder($data, $root.data.entry).do"></a>
             </div>
 
             <ul class="meanings"
                 data-bind="sortable: { data: meanings },
-                  visible: isExpanded() && $parent.constructor.name === 'Entry'">
+                  visible: isExpanded()
+                    && $parent.constructor.name === 'Entry'
+                    && !$parent.restricted_use()">
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
                     <a class="dragItem" data-bind="visible:
@@ -135,8 +141,10 @@
                 </li>
 
             </ul>
-            <div data-bind="visible: isExpanded() &&
-                              $parent.constructor.name === 'Entry'">
+            <div data-bind="visible: isExpanded()
+                              && $parent.constructor.name === 'Entry'
+                              && !$parent.restricted_use()
+                              ">
                 <a class="pasteItems" data-bind="
                     click: $root.ui.cutBuffer.pasteInto(meanings),
                     visible: $root.ui.cutBuffer.containsMeanings"></a>
@@ -337,7 +345,8 @@
         data-bind="click: $root.ui.cutBuffer.pasteInto(meanings),
                    visible: $root.ui.cutBuffer.containsMeanings"></a>
     <a class="addItem"
-        data-bind="click: meanings.itemAdder($root.data.entry).do"></a>
+        data-bind="click: meanings.itemAdder($root.data.entry).do,
+          visible: !restricted_use() || meanings().length == 0"></a>
 
     <!-- ko if: constructor.name === 'Entry' && collogroups().length > 0 -->
     <ul class="collogroups" data-bind="foreach: collogroups">
