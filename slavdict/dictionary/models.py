@@ -1394,6 +1394,19 @@ class Entry(models.Model, JSONSerializable):
         if orth_vars:
             self.civil_equivalent = civilrus_convert(orth_vars[0].idem.strip())
             self.civil_inverse = self.civil_equivalent[::-1]
+        resave_meanings = False
+        first_meaning = self.meanings[0]
+        if (len(self.meanings) == 1
+                and len(first_meaning.child_meanings) == 0
+                and len(first_meaning.examples) == 0
+                and len(first_meaning.collogroups) > 0):
+            self.restricted_use = True
+            resave_meanings = True
+        if (len(self.meanings) > 1
+                or len(first_meaning.child_meanings) > 0
+                or len(first_meanings.examples) > 0):
+            self.restricted_use = False
+            resave_meanings = True
         if not without_mtime:
             self.mtime = datetime.datetime.now()
         should_log = not self.pk
@@ -1403,6 +1416,9 @@ class Entry(models.Model, JSONSerializable):
             logger.info('<User: %s> created <Entry id: %s, headword: %s>' % (
                         user and user.last_name or 'No current user',
                         self.id, self.civil_equivalent))
+        if resave_meanings:
+            for m in self.all_meanings:
+                m.save(without_mtime=without_mtime, no_propagate=True)
 
     def delete(self, *args, **kwargs):
         user = get_current_user()
@@ -2012,7 +2028,7 @@ class Meaning(models.Model, JSONSerializable):
         if len(words) > 0 and all(self._RE2.search(w) for w in words):
             return True
 
-    def save(self, without_mtime=False, *args, **kwargs):
+    def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         self.substantivus_csl = apply_to_mixed(antconc_anticorrupt,
                 self.substantivus_csl, CIVIL_IN_CSL, APPLY_TO_CSL)
         host_entry = self.host_entry
@@ -2040,7 +2056,7 @@ class Meaning(models.Model, JSONSerializable):
         super(Meaning, self).save(*args, **kwargs)
         if without_mtime:
             return
-        if host_entry is not None:
+        if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
