@@ -689,6 +689,7 @@ class AdminEntry(admin.ModelAdmin):
         'comparative',
         'transitivity',
         'participle_type',
+        'restricted_use',
         )
     list_editable = (
         'part_of_speech',

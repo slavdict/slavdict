@@ -522,6 +522,9 @@ class Entry(models.Model, JSONSerializable):
             if PART_OF_SPEECH_MAP[slug] == self.part_of_speech:
                 return True
 
+    restricted_use = BooleanField('слово с ограниченной сочетаемостью',
+            default=False)
+
     # Для сущ. и прил.
     uninflected = BooleanField('неизменяемое', default=False)
 
@@ -1462,6 +1465,7 @@ class Entry(models.Model, JSONSerializable):
             'part_of_speech',
             'participle_type',
             'possessive',
+            'restricted_use',
             'sg1',
             'sg2',
             'short_form',

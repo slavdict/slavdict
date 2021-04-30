@@ -3,7 +3,7 @@
     data-bind="if: constructor.name === 'Entry'">
 
 <section>
-<section data-bind="css: { 'n-adj-v': $root.ui.nAdjV }">
+  <section data-bind="css: { 'n-adj-v': $root.ui.nAdjV }">
 
     <!-- ko ifnot: $root.ui.nAdjV -->
 
@@ -32,9 +32,9 @@
 
     <!-- /ko -->
 
-</section>
+  </section>
 
-<section class="grid">
+  <section class="grid">
 
     <label id="infoTab--uninflected" data-bind="visible:
     part_of_speech() === $root.ui.slugs.part_of_speech['noun'] ||
@@ -174,7 +174,18 @@
 
     </div>
 
+  </section>
+
 </section>
+<section>
+
+  <label id="infoTab--restricted_use"
+  data-help="Entry.restricted_use">
+      <input type="checkbox" data-bind="checked: restricted_use"
+             data-help="Entry.restricted_use">
+      <span>Слово с ограниченной сочетаемостью</span>
+  </label>
+
 </section>
 <section>
     <div id="infoTab--participles" data-bind="visible:

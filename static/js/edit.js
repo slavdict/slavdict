@@ -639,6 +639,7 @@ function Entry(data) {
     upsert(this, 'tantum', data, '');
     upsert(this, 'template_version', data, LAST_TEMPLATE_VERSION);
     upsert(this, 'uninflected', data, false);
+    upsert(this, 'restricted_use', data, false);
     upsertArray(this, 'participles', Participle, data);
     upsertArray(this, 'orthvars', Orthvar, data);
     upsertArray(this, 'author_ids', undefined, data);
