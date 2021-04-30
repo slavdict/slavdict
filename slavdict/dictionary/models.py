@@ -1404,7 +1404,7 @@ class Entry(models.Model, JSONSerializable):
             resave_meanings = True
         if (len(self.meanings) > 1
                 or len(first_meaning.child_meanings) > 0
-                or len(first_meanings.examples) > 0):
+                or len(first_meaning.examples) > 0):
             self.restricted_use = False
             resave_meanings = True
         if not without_mtime:
