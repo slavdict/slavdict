@@ -1395,16 +1395,17 @@ class Entry(models.Model, JSONSerializable):
             self.civil_equivalent = civilrus_convert(orth_vars[0].idem.strip())
             self.civil_inverse = self.civil_equivalent[::-1]
         resave_meanings = False
-        first_meaning = self.meanings[0]
-        if (len(self.meanings) == 1
+        len_meanings = len(self.meanings)
+        first_meaning = self.meanings[0] if len_meanings > 0 else None
+        if (len_meanings == 1
                 and len(first_meaning.child_meanings) == 0
                 and len(first_meaning.examples) == 0
                 and len(first_meaning.collogroups) > 0):
             self.restricted_use = True
             resave_meanings = True
-        if (len(self.meanings) > 1
-                or len(first_meaning.child_meanings) > 0
-                or len(first_meaning.examples) > 0):
+        if (len_meanings > 1 or (
+                len_meanings == 1 and (len(first_meaning.child_meanings) > 0
+                                       or len(first_meaning.examples) > 0))):
             self.restricted_use = False
             resave_meanings = True
         if not without_mtime:
