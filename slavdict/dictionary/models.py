@@ -2025,13 +2025,18 @@ class Meaning(models.Model, JSONSerializable):
         if (self.numex > 0
                 and isinstance(host, CollocationGroup)
                 and not host.phraseological
-                and host_entry.template_version > 0):
-            self.numex = -self.numex
+                and host_entry.template_version > 0
+                and not host_entry.restricted_use):
+            self.numex = -self.numex  # NOTE::INVNUMEX:: Приводим
+            # к противоположному значению, чтобы иметь возможность вернуть
+            # прежнее значение разрешенных примеров, если условия перестанут
+            # соблюдаться.
         if (self.numex < 0 and (
                 not isinstance(host, CollocationGroup)
                 or host.phraseological
-                or host_entry.template_version == 0)):
-            self.numex = -self.numex
+                or host_entry.template_version == 0
+                or host_entry.restricted_use)):
+            self.numex = -self.numex  #::INVNUMEX::
         super(Meaning, self).save(*args, **kwargs)
         if without_mtime:
             return
