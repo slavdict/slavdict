@@ -650,6 +650,18 @@ function Entry(data) {
 
     this.part_of_speech.label = ko.pureComputed(
             Entry.prototype.part_of_speech_label, this);
+    this.isRestrictedUseWidgetVisible = ko.computed(function() {
+      var nMeanings = this.meanings().length;
+      var meaning;
+
+      if (nMeanings == 0)
+        return true;
+      if (nMeanings == 1) {
+        meaning = this.meanings()[0];
+        return !meaning.examples().length && !meaning.meanings().length;
+      }
+      return false;
+    }, this);
     Entry.all.append(this);
 }
 Entry.hideFromServer = ['unsorted_examples', 'meanings', 'collogroups',
