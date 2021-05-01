@@ -1095,6 +1095,8 @@ def useful_urls_redirect(uri, request):
     VOLUME = CURRENT_VOLUME
 
     def uri_qs(uri, **kwargs):
+        if 'id__in' in kwargs and not kwargs['id__in']:
+            kwargs['id__in'] = '000'
         qs = '&'.join('{0}={1}'.format(k, v) for k, v in list(kwargs.items()))
         return '{0}?{1}'.format(uri, qs)
 
@@ -1394,7 +1396,8 @@ def useful_urls_redirect(uri, request):
         r = re.compile(r'[~АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУФХѾЦЧШЩѢЫЮꙖѠѼѦѮѰѲѴ]')
             # NOTE: ЪЬ намеренно исключены. Нужны любые титла, но не паерки.
         for e in Entry.objects.all():
-            if r.search(e.orth_vars.first().idem):
+            ov = e.orth_vars.first()
+            if ov and r.search(ov.idem):
                 es.append(e)
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
                      volume=VOLUME)
@@ -1405,7 +1408,8 @@ def useful_urls_redirect(uri, request):
                        r'абвгдеєжзѕийіклмноѻпрстѹуꙋфхѿцчшщѣьыъюꙗѡѽѧѯѱѳѵ'
                        r'АБВГДЕЄЖЗЅИЙІКЛМНОѺПРСТѸУꙊФХѾЦЧШЩѢЬЫЪЮꙖѠѼѦѮѰѲѴ]')
         for e in Entry.objects.all():
-            if r.search(e.orth_vars.first().idem):
+            ov = e.orth_vars.first()
+            if ov and r.search(ov.idem):
                 es.append(e)
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
                      volume=VOLUME)
