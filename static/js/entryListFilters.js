@@ -226,11 +226,12 @@ function goSensitive() {
 $('#id_sortdir').on('focus', goSensitive);
 $('#id_sortbase').on('focus', goSensitive);
 
-ko.applyBindings(vM.filters, $('.filters').get(0));
-ko.applyBindings(vM.filters, $('.entry-list .control-row').get(0));
-if ($('#withExamples').length) {
-    ko.applyBindings(vM.filters, $('#withExamples').get(0));
-}
+[$('.filters'), $('.entry-list .control-row'), $('#withExamples')].forEach(
+  function(x) {
+    if (x.length)
+      ko.applyBindings(vM.filters, x.get(0));
+  }
+);
 
 $('tr').on('mouseover', function(){
     $(this).addClass('hover');
