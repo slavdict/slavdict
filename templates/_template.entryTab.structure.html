@@ -346,7 +346,8 @@
                    visible: $root.ui.cutBuffer.containsMeanings"></a>
     <a class="addItem"
         data-bind="click: meanings.itemAdder($root.data.entry).do,
-          visible: !restricted_use() || meanings().length == 0"></a>
+          visible: $data.constructor.name !== 'Entry' || !restricted_use()
+              || meanings().length == 0"></a>
 
     <!-- ko if: constructor.name === 'Entry' && collogroups().length > 0 -->
     <ul class="collogroups" data-bind="foreach: collogroups">
