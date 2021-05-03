@@ -669,7 +669,7 @@ def _insert_translation_data(words, data, show_additional_info=False,
             ai_text = (ai % html_escape(t.additional_info)) if c(t) else ''
             t_text = process_translation(t.translation, for_web)
             translations.append(tt(t) % (t_text, ai_text))
-        translations = ', '.join(translations)
+        translations = ',&#32;'.join(translations)
         translations = '(%s)' % translations
         seg = ExternalSegment(translations, tag1, SCRIPT_CIVIL)
         space = Segment(' ', tag0, SCRIPT_CIVIL)
@@ -682,9 +682,9 @@ def _insert_translation_data(words, data, show_additional_info=False,
         translations = []
         for t in lst:
             t_text = html_escape(t.translation)
-            ai_text = (' [%s]' % html_escape(t.additional_info)) if c(t) else ''
+            ai_text = ('&#32;[%s]' % html_escape(t.additional_info)) if c(t) else ''
             translations.append(tt(t) % (t_text, ai_text))
-        translations = ', '.join(translations)
+        translations = ',&#32;'.join(translations)
         seg = ExternalSegment(translations, tag2, SCRIPT_CIVIL)
         space = Segment(' ', tag0, SCRIPT_CIVIL)
         right_in_between = words[index - 1].right_in_between
