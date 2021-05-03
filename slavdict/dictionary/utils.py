@@ -219,9 +219,7 @@ def collogroup_sort_key(cg):
     text = re.sub(r'[\s/,\.;#\(\)]+', ' ', text)
     text = text.strip()
     text = resolve_titles(text)
-    return [sort_key1(word) for word in text.split()]
-
-
+    return (tuple(sort_key1(word) for word in text.split()), cg.order)
 
 
 def _aq(char_groups, optional=False):
