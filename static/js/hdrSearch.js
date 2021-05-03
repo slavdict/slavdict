@@ -95,4 +95,6 @@ vM.hdrSearch.searchPrefix.subscribe(function(newValue) {
     }
 }, vM.hdrSearch);
 
-ko.applyBindings(vM.hdrSearch, $('.header').get(0));
+var xElem = $('.header');
+if (xElem.length)
+  ko.applyBindings(vM.hdrSearch, $('.header').get(0));

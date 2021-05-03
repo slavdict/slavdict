@@ -152,6 +152,8 @@ vM.entryMerge.searchPrefix.subscribe(function(newValue) {
   }
 }, vM.entryMerge);
 
-ko.applyBindings(vM.entryMerge, document.getElementById('entryMerge'));
+var xElem = document.getElementById('entryMerge');
+if (xElem !== null)
+  ko.applyBindings(vM.entryMerge, xElem);
 
 </script>
