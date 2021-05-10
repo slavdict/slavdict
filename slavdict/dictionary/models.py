@@ -2744,7 +2744,11 @@ class CollocationGroup(models.Model, JSONSerializable):
 
     @property
     def civil_equivalent(self):
-        return '; '.join(c.civil_equivalent for c in self.collocations)
+        ces = [c.civil_equivalent for c in self.collocations
+                                if c.civil_equivalent.strip()]
+        if ces:
+            return '; '.join(ces)
+        return ''
 
     class Meta:
         verbose_name = 'группа словосочетаний'
