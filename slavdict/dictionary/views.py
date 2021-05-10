@@ -1512,7 +1512,7 @@ def useful_urls_redirect(uri, request):
         es = []
         for e in Entry.objects.all():
             FIG = 'перен.'
-            all_figurative = all(
+            all_figurative = len(e.meanings) > 0 and all(
                 m.figurative or FIG in m.meaning or FIG in m.gloss
                 for m in e.meanings)
             if all_figurative:
@@ -1523,6 +1523,8 @@ def useful_urls_redirect(uri, request):
     elif uri == 'entries_without_examples':
         es = []
         for e in Entry.objects.all():
+            if len(e.all_meanings) == 0:
+                continue
             meaning_collogroups = (m.collogroups for m in e.all_meanings)
             all_collogroups = itertools.chain(e.collogroups,
                                               *meaning_collogroups)
