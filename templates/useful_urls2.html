@@ -43,9 +43,32 @@
 
     <h2>{{ name }}</h2>
     <ul>
-    {% for name, uri in groups %}
+    {% for name, uri, host_entries in groups %}
         <li>
-            <a href="{{ uri }}">{{ name }}</a>
+            <a href="{{ uri }}" target="_blank">{{ name }}</a>
+
+            {% trim %}
+            [
+            {% for entry in host_entries %}
+              {% if not loop.first %}
+                ,{{ space }}
+              {% endif %}
+
+              <a href="{{ entry.get_absolute_url() }}" target="_blank">
+                <em style="text-decoration: underline">
+                  {{ entry.civil_equivalent }}
+                </em>
+                {% if entry.homonym_order %}
+                    <span class="HomonymNumber">
+                        {{ entry.homonym_order }}
+                    </span>
+                {% endif %}
+              </a>
+
+            {% endfor %}
+            ]
+            {% endtrim %}
+
         </li>
     {% endfor %}
     </ul>

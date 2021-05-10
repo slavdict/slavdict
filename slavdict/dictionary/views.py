@@ -1125,7 +1125,11 @@ def useful_urls_redirect(uri, request):
                                 m.collogroup_container if m.collogroup_container
                                     else m.parent_meaning.collogroup_container
                                 for m in values)),
-                          volume=VOLUME)
+                          volume=VOLUME),
+                   tuple(sorted(
+                       set(cg.host_entry for cg in value),
+                       key=lambda x:x.civil_equivalent
+                   ))
                   )
                   for key, values in list(same.items())
                   if len(values) > 1]
@@ -1198,7 +1202,10 @@ def useful_urls_redirect(uri, request):
         groups = [(key, uri_qs(cgURI,
                                id__in=','.join(str(cg.id) for cg in value),
                                volume=VOLUME
-                               ))
+                               ), tuple(sorted(
+                                       set(cg.host_entry for cg in value),
+                                       key=lambda x:x.civil_equivalent
+                                   )))
                   for key, value in same]
         groups.sort()
         context = {
@@ -1225,7 +1232,10 @@ def useful_urls_redirect(uri, request):
         groups = [(key, uri_qs(cgURI,
                                id__in=','.join(str(cg.id) for cg in value),
                                volume=VOLUME
-                               ))
+                               ), tuple(sorted(
+                                       set(cg.host_entry for cg in value),
+                                       key=lambda x:x.civil_equivalent
+                                   )))
                   for key, value in same]
         groups.sort()
         context = {
