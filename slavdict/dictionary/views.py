@@ -46,6 +46,7 @@ from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import PART_OF_SPEECH_ORDER
 from slavdict.dictionary.models import STATUS_MAP
 from slavdict.dictionary.models import TempEdit
+from slavdict.dictionary.models import VOLUME_LETTERS
 from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
@@ -1257,16 +1258,6 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
                      volume=VOLUME)
 
-    elif uri == 'collocs_2b':
-        cgs = (cg
-               for cg in CollocationGroup.objects.all()
-                 for c in cg.collocations
-               if [x.startswith('б')
-                   for x in re.split(r'[\s/\\,;\(\)\[\]]+', c.collocation.lower())
-                   ].count(True) > 1)
-        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
-                     volume=VOLUME)
-
     elif uri == 'collocs_uniq':
         cgs = set()
         for cg in CollocationGroup.objects.all():
@@ -1281,6 +1272,10 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'collocs_uniqab':
         cgs = set()
+        letters = ()
+        for i in range(1, CURRENT_VOLUME):
+            letters += VOLUME_LETTERS[i]
+        letters += tuple(letter.upper() for letter in letters)
         for cg in CollocationGroup.objects.all():
             m = cg.base_meaning
             e = cg.base_entry
@@ -1289,7 +1284,7 @@ def useful_urls_redirect(uri, request):
             several_ABwords = any(
                 len([True
                      for x in re.split(r'[\s/,;\(\)]+', c.civil_equivalent)
-                     if x.startswith(('а', 'А', 'б', 'Б'))]) > 1
+                     if x.startswith(letters)]) > 1
                 for c in cg.collocations)
             if (empty_meaning or no_meanings) and several_ABwords:
                 cgs.add(cg)
@@ -1596,6 +1591,11 @@ def useful_urls_redirect(uri, request):
 @never_cache
 def useful_urls(request, x=None, y=None):
     VOLUME = CURRENT_VOLUME
+    prev_volumes_letters = ()
+    for i in range(1, CURRENT_VOLUME):
+        prev_volumes_letters += VOLUME_LETTERS[i]
+    prev_volumes_letters = tuple(
+            letter.upper() for letter in prev_volumes_letters)
     urls = (
             ('Формы слова', (
                     ('Все заглавные слова с титлами', 'headwords_titles'),
@@ -1616,20 +1616,20 @@ def useful_urls(request, x=None, y=None):
                     ('Cтатьи с литургическими символами', 'entries_litsym'),
                 )),
             ('Словосочетания (cc)', (
-                    ('Все сс', 'all_collocations'),
+                    ('Все', 'all_collocations'),
                     ('Фразеологизмы', 'phraseological_collocs'),
-                    ('Cc из одного слова', 'collocs_oneword'),
-                    ('Cc без значений', 'collocs_without_meanings'),
-                    ('Многозначные сс (сс с несколькими значениями)', 'collocs_ambivalent'),
-                    ('Сс с одинаковыми значениями', 'collocs_same_meaning'),
-                    ('Сс – литургические символы', 'collocs_litsym'),
-                    ('Сс в роли сущ.', 'collocs_noun'),
-                    ('Одинаковые сс в одной статье', 'same_collocs_same_entry'),
-                    ('Одинаковые сс в разных статьях', 'same_collocs_diff_entry'),
-                    ('CC, где 2 слова на Б', 'collocs_2b'),
+                    ('Из одного слова', 'collocs_oneword'),
+                    ('Без значений', 'collocs_without_meanings'),
+                    ('С несколькими значениями', 'collocs_ambivalent'),
+                    ('С одинаковыми значениями', 'collocs_same_meaning'),
+                    ('Литургические символы', 'collocs_litsym'),
+                    ('В роли сущ.', 'collocs_noun'),
+                    ('Одинаковые в одной статье', 'same_collocs_same_entry'),
+                    ('Одинаковые в разных статьях', 'same_collocs_diff_entry'),
                     ('Такие сс, что кроме них в статье ничего нет', 'collocs_uniq'),
                     ('Такие сс, что кроме них в статье ничего нет '
-                     'и сс содержит несколько слов на А или Б', 'collocs_uniqab'),
+                     'и сс содержит несколько слов на %s' %
+                        ', '.join(prev_volumes_letters), 'collocs_uniqab'),
                     ('Такие сс, где есть варьирующие формы (отслеживается '
                      'наличие нескольких слов с совпадающими первыми двумя '
                      'буквами)', 'collocs_varforms'),
@@ -1647,7 +1647,7 @@ def useful_urls(request, x=None, y=None):
                     ('С текстом "с прям. речью"', 'meanings_direct_speech'),
                     ('С текстом "[?!]"', 'meanings_quest'),
                     ('С текстом "с именем собств."', 'meanings_sobstv'),
-                    ('без примеров', 'meanings_without_examples'),
+                    ('Без примеров', 'meanings_without_examples'),
                 )),
             ('Примеры', (
                     ('в греч. иначе и параллель', 'ex_aliud_parallel'),
