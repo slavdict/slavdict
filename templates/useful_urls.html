@@ -43,13 +43,13 @@
 
 <div id='materials'>
 
-    <p>Закладки-ускорители для подготовки {{ volume }}-го тома</p>
+    <p>Закладки для подготовки {{ volume }}-го тома</p>
     {% for section, data in urls %}
     <h2>{{ section }}</h2>
     <ul>
         {% for name, uri in data %}
         <li>
-            <a href="{{ url('usefulURLs') }}{{ uri }}/">{{ name }}</a>
+            <a href="{{ url('usefulURLs') }}{{ uri }}/" target="_blank">{{ name }}</a>
         </li>
         {% endfor %}
     </ul>

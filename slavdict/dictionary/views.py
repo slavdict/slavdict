@@ -49,6 +49,7 @@ from slavdict.dictionary.models import TempEdit
 from slavdict.dictionary.models import VOLUME_LETTERS
 from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
 from slavdict.dictionary.utils import civilrus_convert
+from slavdict.dictionary.utils import levenshtein_distance
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.middleware import InvalidCookieError
 from functools import reduce
@@ -1246,14 +1247,40 @@ def useful_urls_redirect(uri, request):
         }
         return render(request, 'useful_urls2.html', context)
 
-    elif uri == 'collocs_varforms':
+    elif uri == 'collocs_same_civil':
         cgs = []
         for cg in CollocationGroup.objects.all():
-            cs = [c.collocation.lower() for c in cg.collocations]
-            words = [civilrus_convert(resolve_titles(x)) for c in cs
-                       for x in re.split(r'[\s/\\,;\(\)\[\]]+', c)]
+            cs = [c.collocation for c in cg.collocations]
+            words = [civilrus_convert(resolve_titles(x)).lower()
+                     for c in cs
+                       for x in re.split(r'[\s/\\,;\(\)\[\]\.]+', c)]
+            words = [word for word in words
+                          if not word.startswith('-') and len(word) > 2]
             if any(value > 1
                    for key, value in list(collections.Counter(words).items())):
+                cgs.append(cg)
+        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
+                     volume=VOLUME)
+
+    elif uri == 'collocs_similar_civil':
+        cgs = []
+        DISTANCE = 3
+        def has_similar_words(words):
+            for i, word1 in enumerate(words):
+                for word2 in words[i + 1:]:
+                    ix = min(len(word1), len(word2)) - DISTANCE
+                    if (levenshtein_distance(word1, word2) < DISTANCE + 1
+                            and word1[:ix] == word2[:ix]):
+                        return True
+            return False
+        for cg in CollocationGroup.objects.all():
+            cs = [c.collocation for c in cg.collocations]
+            words = tuple(sorted(set(civilrus_convert(resolve_titles(x)).lower()
+                          for c in cs
+                              for x in re.split(r'[\s/\\,;\(\)\[\]\.]+', c))))
+            words = tuple(word for word in words
+                               if not word.startswith('-') and len(word) > 2)
+            if has_similar_words(words):
                 cgs.append(cg)
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
                      volume=VOLUME)
@@ -1630,9 +1657,14 @@ def useful_urls(request, x=None, y=None):
                     ('Такие сс, что кроме них в статье ничего нет '
                      'и сс содержит несколько слов на %s' %
                         ', '.join(prev_volumes_letters), 'collocs_uniqab'),
-                    ('Такие сс, где есть варьирующие формы (отслеживается '
-                     'наличие нескольких слов с совпадающими первыми двумя '
-                     'буквами)', 'collocs_varforms'),
+                    ('С полным совпадением гражданского написания вариантов '
+                     "(до'ждь нбСный/небе'сный) "
+                     "[учитываются слова из 3 и более символов]", 'collocs_same_civil'),
+                    ('С частичным совпадением гражданского написания вариантов '
+                     "(возложи'ти єпітрахи'ль[//єпітрахи'лій] или "
+                     "высота` добродѣ'тели/добродѣ'телей) "
+                     "[учитываются слова из 3 и более символов]",
+                     'collocs_similar_civil'),
                 )),
             ('Значения и употребления', (
                     ('Все значения и употребления', 'all_meanings'),
