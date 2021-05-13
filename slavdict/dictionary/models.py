@@ -2330,6 +2330,9 @@ class Example(models.Model, JSONSerializable, VolumeAttributive):
                     example += s.lower()
             self.example = example
 
+    def get_url_fragment(self):
+        return 'ex{0}'.format(self.id)
+
     def save(self, without_mtime=False, *args, **kwargs):
         self.lowercase_if_necessary()
         self.angle_brackets()
@@ -2647,6 +2650,7 @@ class CollocationGroup(models.Model, JSONSerializable, VolumeAttributive):
                 text2 += '<li>%s</li>' % m.meaning_for_admin()
             text += '<ul>%s</ul>' % text2
         return mark_safe(text)
+    meanings_for_admin.short_description = 'Значения словосочетаний'
 
     def examples_for_admin(self):
         text = ''
@@ -2664,6 +2668,7 @@ class CollocationGroup(models.Model, JSONSerializable, VolumeAttributive):
                 text2 += '<li>%s</li>' % m.examples_for_admin()
             text += '<ul>%s</ul>' % text2
         return mark_safe(text)
+    examples_for_admin.short_description = 'Примеры на группу словосочетаний'
 
     meanings = property(meanings)
     metaph_meanings = property(metaph_meanings)

@@ -175,7 +175,7 @@ def entry_for_example(obj):
     e = m and m.entry_container
     if e:
         html = '<a href="%s" target="_blank">%s</a>' % (
-                    '%s#%s' % (e.get_absolute_url(), m.get_url_fragment()),
+                    '%s#%s' % (e.get_absolute_url(), obj.get_url_fragment()),
                     e.civil_equivalent)
         return mark_safe(html)
     else:
@@ -183,7 +183,7 @@ def entry_for_example(obj):
         if cg:
             e = cg.host_entry
             html = '<a href="%s" target="_blank">%s</a>' % (
-                    '%s#%s' % (e.get_absolute_url(), m.get_url_fragment()),
+                    '%s#%s' % (e.get_absolute_url(), obj.get_url_fragment()),
                     '%s | %s' % (e.civil_equivalent,
                         ';'.join(c.collocation for c in cg.collocations))
                     )
@@ -191,19 +191,27 @@ def entry_for_example(obj):
         else:
             return 'не относится ни к какой статье'
 
-def host_entry(self):
-    try:
-        entry = self.host_entry
-    except:
-        return 'не относится ни к какой статье'
+def entry_for_meaning(obj):
+    e = obj.host_entry
+    if e:
+        html = '<a href="%s" target="_blank">%s</a>' % (
+                    '%s#%s' % (e.get_absolute_url(), obj.get_url_fragment()),
+                    e.civil_equivalent)
+        return mark_safe(html)
     else:
-        if entry:
-            html = '<a href="%s" target="_blank">%s</a>' % (
-                        entry.get_absolute_url(),
-                        entry.civil_equivalent)
-            return mark_safe(html)
-        else:
-            return 'не относится ни к какой статье'
+        return 'не относится ни к какой статье'
+entry_for_meaning.short_description = 'Статья значения'
+
+def entry_for_collogroup(obj):
+    e = obj.host_entry
+    if e:
+        html = '<a href="%s" target="_blank">%s</a>' % (
+                    '%s#%s' % (e.get_absolute_url(), obj.get_url_fragment()),
+                    e.civil_equivalent)
+        return mark_safe(html)
+    else:
+        return 'не относится ни к какой статье'
+entry_for_collogroup.short_description = 'Статья со словосочетанием'
 
 
 class VolumeFilter(admin.SimpleListFilter):
@@ -475,7 +483,7 @@ class MeaningContext_Inline(admin.StackedInline):
 
 
 
-Meaning._entry = host_entry
+Meaning._entry = entry_for_meaning
 Meaning._collogroup = host_collogroup
 Meaning._parent_meaning = parent_meaning
 class AdminMeaning(admin.ModelAdmin):
@@ -851,7 +859,7 @@ class Collocation_Inline(admin.StackedInline):
 
 
 CollocationGroup.__str__ =lambda self: _collocations(self)
-CollocationGroup._entry = host_entry
+CollocationGroup._entry = entry_for_collogroup
 class AdminCollocationGroup(admin.ModelAdmin):
     inlines = (Collocation_Inline,)
     raw_id_fields = (
@@ -874,14 +882,13 @@ class AdminCollocationGroup(admin.ModelAdmin):
     ordering = ('collocation_set__collocation',)
     filter_horizontal = ('cf_entries', 'cf_meanings')
     list_display = (
-        'id',
         '_entry',
         'phraseological',
         '__str__',
         'meanings_for_admin',
         'examples_for_admin',
     )
-    list_display_links = ('id', '__str__')
+    list_display_links = ('_entry', '__str__')
     list_editable = ('phraseological',)
     list_filter = (VolumeCollogroupFilter, LetterCollogroupFilter, 'phraseological')
     search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')

@@ -9,6 +9,8 @@
          or e.wordform_example
             and (meaning.parent_meaning or meaning.collogroup_container) %}
 
+<span class="anchor"><a id="{{ e.get_url_fragment() }}"></a></span>
+
 {% if show_additional_info %}
     {% set hidden_partial_translations = e.get_translations(fragmented=True, hidden=True) %}
     {% set hidden_full_translations = e.get_translations(fragmented=False, hidden=True) %}

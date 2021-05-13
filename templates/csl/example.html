@@ -9,6 +9,8 @@
          or e.wordform_example
             and (meaning.parent_meaning or meaning.collogroup_container) %}
 
+<span class="anchor"><a id="{{ e.get_url_fragment() }}"></a></span>
+
 {% if not extra_example %}
 
   {{ e.example_ucs | web_cslav_words("CSLSegment", "Text")

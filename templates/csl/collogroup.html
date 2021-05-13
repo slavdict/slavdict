@@ -6,6 +6,8 @@
     {% include 'csl/separator_use.html' %}
 {% endif %}
 
+<span class="anchor"><a id="{{ cg.get_url_fragment() }}"></a></span>
+
 {% for c in cg.collocations %}
     {% if not loop.first %}
         {{ backspace }}{{ space }}
