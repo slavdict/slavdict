@@ -668,7 +668,13 @@ def _insert_translation_data(words, data, show_additional_info=False,
         for t in lst:
             ai_text = (ai % html_escape(t.additional_info)) if c(t) else ''
             t_text = process_translation(t.translation, for_web)
-            translations.append(tt(t) % (t_text, ai_text))
+            translation = tt(t) % (t_text, ai_text)
+            if for_web:
+                translation = '%s%s' % (
+                    '<span class="anchor"><a id="%s"></a></span>' %
+                        t.get_url_fragment(),
+                    translation)
+            translations.append(translation)
         translations = ',&#32;'.join(translations)
         translations = '(%s)' % translations
         seg = ExternalSegment(translations, tag1, SCRIPT_CIVIL)

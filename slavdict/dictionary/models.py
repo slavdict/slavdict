@@ -2508,6 +2508,9 @@ class Translation(models.Model, JSONSerializable, VolumeAttributive):
         )
         return dict((key, self.__dict__[key]) for key in _fields)
 
+    def get_url_fragment(self):
+        return 't{0}'.format(self.id)
+
     def save(self, without_mtime=False, *args, **kwargs):
         # Корректировка интервала фрагментированного перевода, если после
         # правки примера позиционирование перевода протухло. FIXME: правки

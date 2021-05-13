@@ -170,49 +170,21 @@ def meaning_for_example(obj):
         return '<None>'
     return '%s [%s]%s' % (m.meaning, m.id, '*' if m.metaphorical else '')
 
-def entry_for_example(obj):
-    m = obj.meaning
-    e = m and m.entry_container
-    if e:
+def entry_for_x(obj):
+    host = obj.host
+    if isinstance(host, Entry):
         html = '<a href="%s" target="_blank">%s</a>' % (
-                    '%s#%s' % (e.get_absolute_url(), obj.get_url_fragment()),
-                    e.civil_equivalent)
+                    '%s#%s' % (host.get_absolute_url(), obj.get_url_fragment()),
+                    host.civil_equivalent)
         return mark_safe(html)
-    else:
-        cg = m and m.collogroup_container
-        if cg:
-            e = cg.host_entry
-            html = '<a href="%s" target="_blank">%s</a>' % (
-                    '%s#%s' % (e.get_absolute_url(), obj.get_url_fragment()),
-                    '%s | %s' % (e.civil_equivalent,
-                        ';'.join(c.collocation for c in cg.collocations))
-                    )
-            return mark_safe(html)
-        else:
-            return 'не относится ни к какой статье'
-
-def entry_for_meaning(obj):
-    e = obj.host_entry
-    if e:
+    elif isinstance(host, CollocationGroup):
+        e = host.host_entry
         html = '<a href="%s" target="_blank">%s</a>' % (
-                    '%s#%s' % (e.get_absolute_url(), obj.get_url_fragment()),
-                    e.civil_equivalent)
+                '%s#%s' % (e.get_absolute_url(), obj.get_url_fragment()),
+                '%s | %s' % (e.civil_equivalent, host.civil_equivalent))
         return mark_safe(html)
     else:
         return 'не относится ни к какой статье'
-entry_for_meaning.short_description = 'Статья значения'
-
-def entry_for_collogroup(obj):
-    e = obj.host_entry
-    if e:
-        html = '<a href="%s" target="_blank">%s</a>' % (
-                    '%s#%s' % (e.get_absolute_url(), obj.get_url_fragment()),
-                    e.civil_equivalent)
-        return mark_safe(html)
-    else:
-        return 'не относится ни к какой статье'
-entry_for_collogroup.short_description = 'Статья со словосочетанием'
-
 
 class VolumeFilter(admin.SimpleListFilter):
     title = 'Тома'
@@ -254,6 +226,10 @@ class VolumeExampleFilter(VolumeFilter):
     def xs(self, volume=YET_NOT_IN_VOLUMES):
         return (x.id for x in Example.objects.all() if x.volume(volume))
 
+class VolumeTranslationFilter(VolumeFilter):
+    def xs(self, volume=YET_NOT_IN_VOLUMES):
+        return (x.id for x in Translation.objects.all() if x.volume(volume))
+
 
 class LetterFilter(admin.SimpleListFilter):
     title = 'Буквы (или начальные сочетания букв)'
@@ -289,6 +265,11 @@ class LetterMeaningFilter(LetterFilter):
 class LetterExampleFilter(LetterFilter):
     def xs(self, starts_with=ANY_LETTER):
         return (x.id for x in Example.objects.all()
+                     if x.starts_with(starts_with))
+
+class LetterTranslationFilter(LetterFilter):
+    def xs(self, starts_with=ANY_LETTER):
+        return (x.id for x in Translation.objects.all()
                      if x.starts_with(starts_with))
 
 class SubstantivusMeaningFilter(admin.SimpleListFilter):
@@ -394,18 +375,81 @@ class GreekEquivalentForExample_Inline(admin.StackedInline):
 
 
 
+TRANSLATION_FIELDSETS = (
+    (None, {
+        'fields': ('translation', 'source', 'additional_info', ('hidden', 'order'))
+        }),
+    ('Прочие свойства', {
+        'fields': ('fragmented', 'fragment_start', 'fragment_end'),
+        'classes': ('collapse',)
+        }),
+)
+
 class Translation_Inline(admin.StackedInline):
     model = Translation
     extra = 0
-    fieldsets = (
-        (None, {
-            'fields': (
-                ('translation', 'additional_info'),
-                ('source', 'hidden', 'order'),
-                ('fragmented', 'fragment_start', 'fragment_end'),
-                ),
-            }),
+    fieldsets = TRANSLATION_FIELDSETS
+    formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
+
+def example_for_translation(t):
+    ex = t.for_example
+    e = ex.host_entry
+    if e:
+        html = '<a href="%s" target="_blank">%s | %s%s</a>' % (
+                    '%s#%s' % (e.get_absolute_url(), t.get_url_fragment()),
+                    e.civil_equivalent,
+                    ex.example,
+                    ' (%s)' % ex.address_text if ex.address_text else '')
+        return mark_safe(html)
+    else:
+        return 'не относится ни к какой статье'
+example_for_translation.short_description = 'Пример, связанный с переводом'
+
+Translation.example_for_translation = example_for_translation
+
+class AdminTranslation(admin.ModelAdmin):
+    raw_id_fields = ('for_example',)
+    fieldsets = ((None, {'fields': ('for_example',), 'classes': ('hidden',)}),) + TRANSLATION_FIELDSETS
+    formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
+    ordering = ('-order', '-id')
+    list_display = (
+        'example_for_translation',
+        'id',
+        'translation',
+        'source',
+        'fragmented',
+        'hidden',
+    )
+    list_display_links = ('example_for_translation', 'id')
+    list_editable = ('translation', 'source', 'hidden', 'fragmented')
+    list_filter = (
+        VolumeTranslationFilter,
+        LetterTranslationFilter,
+        'source',
+        'fragmented',
+        'hidden',
+    )
+    search_fields = (
+        'translation',
+        'additional_info',
         )
+    class Media:
+        css = {"all": ("fix_admin.css",)}
+        js = ("js/libs/ac2ucs8.js",
+              "fix_admin.js")
+    def response_add(self, request, obj, post_url_continue='/'):
+        post_url_continue = obj.host_entry.get_absolute_url()
+        return HttpResponseRedirect(post_url_continue + 'intermed/')
+    def response_change(self, request, obj):
+        post_url_continue = obj.host_entry.get_absolute_url()
+        return HttpResponseRedirect(post_url_continue + 'intermed/')
+
+AdminTranslation.has_add_permission = staff_has_permission
+AdminTranslation.has_change_permission = staff_has_permission
+AdminTranslation.has_delete_permission = staff_has_permission
+
+admin.site.register(Translation, AdminTranslation)
+ui.register(Translation, AdminTranslation)
 
 
 
@@ -435,7 +479,7 @@ class Example_Inline(admin.StackedInline):
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
 
 class AdminExample(admin.ModelAdmin):
-    inlines = (Translation_Inline, GreekEquivalentForExample_Inline)
+    inlines = (GreekEquivalentForExample_Inline, Translation_Inline)
     raw_id_fields = ('meaning',)
     fieldsets = ((None, {'fields': ('meaning',), 'classes': ('hidden',)}),) + EXAMPLE_FIELDSETS
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
@@ -475,6 +519,10 @@ ui.register(Example, AdminExample)
 
 
 
+
+
+
+
 class MeaningContext_Inline(admin.StackedInline):
     model = MeaningContext
     extra = 0
@@ -482,6 +530,8 @@ class MeaningContext_Inline(admin.StackedInline):
 
 
 
+entry_for_meaning = lambda self:entry_for_x(self)
+entry_for_meaning.short_description = 'Статья значения'
 
 Meaning._entry = entry_for_meaning
 Meaning._collogroup = host_collogroup
@@ -857,6 +907,8 @@ class Collocation_Inline(admin.StackedInline):
 
 
 
+entry_for_collogroup = lambda self:entry_for_x(self)
+entry_for_collogroup.short_description = 'Статья со словосочетанием'
 
 CollocationGroup.__str__ =lambda self: _collocations(self)
 CollocationGroup._entry = entry_for_collogroup

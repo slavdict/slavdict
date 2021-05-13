@@ -36,6 +36,9 @@
         {% if not loop.first %}
             {{ backspace }},{{ space }}
         {% endif %}
+
+        <span class="anchor"><a id="{{ t.get_url_fragment() }}"></a></span>
+
         {% if t.source %}
             <span class="Em">{{ t.source_label() }}</span>{{ space }}
             <span class="Text hyphenate">{{ t.translation }}</span>
@@ -59,6 +62,9 @@
         {% if not loop.first %}
             {{ backspace }}<span class="Text">,</span>{{ space }}
         {% endif %}
+
+        <span class="anchor"><a id="{{ t.get_url_fragment() }}"></a></span>
+
         {% if t.source %}
             <span class="Em">{{ t.source_label() }}</span>{{ space }}
             <span class="Text hyphenate">{{ t.translation }}</span>
