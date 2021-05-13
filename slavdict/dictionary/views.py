@@ -1318,6 +1318,17 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
                      volume=VOLUME)
 
+    elif uri == 'collocs_refs':
+        cgs = set()
+        regex = re.compile(r'\b(?:idem|qv|cf|(?:ср|см)\.|то\s*же,?\s+что)',
+                           flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
+        for cg in CollocationGroup.objects.all():
+            for m in cg.all_meanings:
+                if regex.search(m.meaning + m.gloss):
+                    cgs.add(cg)
+        uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
+                     volume=VOLUME)
+
     elif uri == 'all_meanings':
         uri = uri_qs(mURI, volume=VOLUME)
 
@@ -1665,6 +1676,7 @@ def useful_urls(request, x=None, y=None):
                      "высота` добродѣ'тели/добродѣ'телей) "
                      "[учитываются слова из 3 и более символов]",
                      'collocs_similar_civil'),
+                    ('С отсылками (см.; ср.; то же, что; qv; cf; idem)', 'collocs_refs'),
                 )),
             ('Значения и употребления', (
                     ('Все значения и употребления', 'all_meanings'),
