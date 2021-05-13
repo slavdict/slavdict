@@ -395,7 +395,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
 MSC11, MSC12, MSC13, MSC14, MSC15, MSC16, MSC17, MSC18, MSC19 = 'klmnopqrs'
-MSC20, MSC21, MSC22 = 'tuv'
+MSC20, MSC21, MSC22, MSC23 = 'tuvw'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     ('Имена', (
@@ -418,6 +418,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
         (MSC5,  'твор. ед. в роли нареч.'),
         (MSC12, 'в роли нареч.'),
         (MSC14, 'в роли прил.'),
+        (MSC23, 'в роли мест.'),
         (MSC20, 'в роли союза'),
         (MSC15, 'в роли част.'),
     )),
@@ -429,7 +430,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
         (MSC10, 'преимущ.'),
     )),
 )
-MSC_ROLE = (MSC5, MSC12, MSC14, MSC15, MSC20)
+MSC_ROLE = (MSC5, MSC12, MSC14, MSC15, MSC20, MSC23)
 POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7, MSC13, MSC19, MSC22)
 POS_SPECIAL_CASES_MAP = {
     MSC2: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['preposition']],
