@@ -27,6 +27,7 @@ django.setup()
 from slavdict.dictionary.models import CURRENT_VOLUME
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import VOLUME_LETTERS
+from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.dictionary.utils import sort_key1
 from slavdict.dictionary.utils import sort_key2
@@ -39,6 +40,7 @@ OUTPUT_VOLUMES_LETTERS = reduce(lambda x, y: x + y, (VOLUME_LETTERS[volume]
 sbl_arg = '--split-by-letters'
 snc_arg = '--split-nchars='
 opp_arg = '--output-pattern='
+opv_arg = '--output-volumes='
 SPLIT_BY_LETTERS = False
 SPLIT_NCHARS = 0
 OUTPUT_PATTERN = '/root/slavdict-indesign-#.xml'
@@ -63,7 +65,8 @@ note += 'Letters: ' + ', '.join(letter for letter in OUTPUT_VOLUMES_LETTERS)
 print(note + '\n', file=sys.stderr)
 
 def in_output_volumes(wordform):
-    return wordform.lstrip(' =')[:1].lower() in OUTPUT_VOLUMES_LETTERS
+    civil = civilrus_convert(resolve_titles(wordform.strip(' *')))
+    return civil[:1].lower() in OUTPUT_VOLUMES_LETTERS
 
 entries1 = []
 # Это список всех потенциально возможных статей для выбранных томов,
@@ -80,6 +83,11 @@ if len(sys.argv) > 1:
             SPLIT_NCHARS = int(re.sub(r'[^\d]', '', arg) or 0)
         elif arg.startswith(opp_arg):
             OUTPUT_PATTERN = arg[len(opp_arg):]
+        elif arg.startswith(opv_arg):
+            try:
+                OUTPUT_VOLUMES = arg[len(opv_arg):]
+            except:
+                sys.exit(1)
         else:
             args.append(arg)
     r = re.compile(r'\s*,\s*|\s+')
@@ -154,24 +162,24 @@ for i, lexeme in enumerate(lexemes):
         lexeme.civil_equivalent + ERASE_LINEEND)
     sys.stderr.write(note)
 
+if not test_entries:
+    #     6) Добавляем ссылочные статьи, которые будут присутствовать в выводимых
+    #        томах и ссылаться на какие-то статьи из других томов.
+    other_volumes = [e for e in Entry.objects.all()
+                       if not e.volume(OUTPUT_VOLUMES)]
+    other_volumes_n = len(other_volumes)
+    for i, lexeme in enumerate(other_volumes):
+        for participle in lexeme.participles:
+            if participle.tp not in ('1', '2', '3', '4'):
+                wordform = participle.idem
+                if in_output_volumes(wordform):
+                    reference = participle.idem_ucs
+                    entries1.append((wordform, reference, lexeme))
 
-
-#     6) Добавляем ссылочные статьи, которые будут присутствовать в выводимых
-#        томах и ссылаться на какие-то статьи из других томов.
-other_volumes = [e for e in Entry.objects.all() if not e.volume(OUTPUT_VOLUMES)]
-other_volumes_n = len(other_volumes)
-for i, lexeme in enumerate(other_volumes):
-    for participle in lexeme.participles:
-        if participle.tp not in ('1', '2', '3', '4'):
-            wordform = participle.idem
-            if in_output_volumes(wordform):
-                reference = participle.idem_ucs
-                entries1.append((wordform, reference, lexeme))
-
-    note = 'Поиск ссылок на другие тома [ %s%% ] %s\r' % (
-        int(round(i / other_volumes_n * 100)),
-        lexeme.civil_equivalent + ERASE_LINEEND)
-    sys.stderr.write(note)
+        note = 'Поиск ссылок на другие тома [ %s%% ] %s\r' % (
+            int(round(i / other_volumes_n * 100)),
+            lexeme.civil_equivalent + ERASE_LINEEND)
+        sys.stderr.write(note)
 
 def sort_key(x):
     wordform, reference, lexeme = x
@@ -259,6 +267,7 @@ class Reference(str):
         instance.homonym_order = homonym_order
         return instance
 
+
 # Объединение статей по начальным буквам
 letter_parts = []
 part_entries = []
@@ -341,7 +350,7 @@ for civil_letter, syn_letters, entries in letter_parts:
                 chunks = [xml]
                 file_count += 1
                 letters_and_chunks = []
-                letter = '' # Обнуляем текущую букву, чтобы она не выводилась
+                letter = ''  # Обнуляем текущую букву, чтобы она не выводилась
                              # для следующей порции статей на ту же букву.
             else:
                 n_chars += m
