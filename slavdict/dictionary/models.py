@@ -477,6 +477,14 @@ class JSONSerializable(object):
         return json.dumps(self.forJSON(),
                           ensure_ascii=False, separators=(',', ':'))
 
+class VolumeAttributive(object):
+
+    def volume(self, volume=YET_NOT_IN_VOLUMES):
+        host_entry = self.host_entry
+        if host_entry:
+            return host_entry.volume(volume)
+        return False
+
 
 class Entry(models.Model, JSONSerializable):
 
@@ -1517,7 +1525,7 @@ class Entry(models.Model, JSONSerializable):
         verbose_name_plural = 'СЛОВАРНЫЕ СТАТЬИ'
         ordering = ('-id',)
 
-class Etymology(models.Model, JSONSerializable):
+class Etymology(models.Model, JSONSerializable, VolumeAttributive):
 
     entry = ForeignKey(Entry, verbose_name='словарная статья',
                 help_text='''Словарная статья, к которой относится данная
@@ -1661,7 +1669,7 @@ class Etymology(models.Model, JSONSerializable):
         ordering = ('id',)
 
 
-class MeaningContext(models.Model, JSONSerializable):
+class MeaningContext(models.Model, JSONSerializable, VolumeAttributive):
 
     meaning = ForeignKey('Meaning', verbose_name='значение',
                          on_delete=models.CASCADE)
@@ -1774,7 +1782,7 @@ class MeaningContext(models.Model, JSONSerializable):
         verbose_name_plural = 'контексты значения'
 
 
-class Meaning(models.Model, JSONSerializable):
+class Meaning(models.Model, JSONSerializable, VolumeAttributive):
 
     entry_container = ForeignKey(Entry, blank=True, null=True,
             verbose_name='лексема', help_text='''Лексема, к которой
@@ -1984,12 +1992,6 @@ class Meaning(models.Model, JSONSerializable):
         else:
             return self.collogroup_container
 
-    def volume(self, volume=YET_NOT_IN_VOLUMES):
-        host_entry = self.host_entry
-        if host_entry:
-            return host_entry.volume(volume)
-        return False
-
     def starts_with(self, starts_with=ANY_LETTER):
         host_entry = self.host_entry
         if host_entry:
@@ -2121,7 +2123,7 @@ class Meaning(models.Model, JSONSerializable):
         ordering = ('id',)
 
 
-class Example(models.Model, JSONSerializable):
+class Example(models.Model, JSONSerializable, VolumeAttributive):
 
     meaning = ForeignKey(Meaning, verbose_name='значение',
         help_text='Значение, к которому относится данный пример.',
@@ -2270,12 +2272,6 @@ class Example(models.Model, JSONSerializable):
                 return self.meaning.host
             else:
                 return self.entry
-
-    def volume(self, volume=YET_NOT_IN_VOLUMES):
-        host_entry = self.host_entry
-        if host_entry:
-            return host_entry.volume(volume)
-        return False
 
     def starts_with(self, starts_with=ANY_LETTER):
         host_entry = self.host_entry
@@ -2455,7 +2451,7 @@ class Example(models.Model, JSONSerializable):
         ordering = ('id',)
 
 
-class Translation(models.Model, JSONSerializable):
+class Translation(models.Model, JSONSerializable, VolumeAttributive):
 
     for_example = ForeignKey(Example, related_name='translation_set',
                              on_delete=models.CASCADE)
@@ -2566,7 +2562,7 @@ class Translation(models.Model, JSONSerializable):
         ordering = ('id',)
 
 
-class CollocationGroup(models.Model, JSONSerializable):
+class CollocationGroup(models.Model, JSONSerializable, VolumeAttributive):
 
     base_entry = ForeignKey(Entry, verbose_name='лексема',
             help_text='''Лексема, при которой будет стоять словосочетание.
@@ -2627,12 +2623,6 @@ class CollocationGroup(models.Model, JSONSerializable):
                 return host_entry
 
     host = host_entry
-
-    def volume(self, volume=YET_NOT_IN_VOLUMES):
-        host_entry = self.host_entry
-        if host_entry:
-            return host_entry.volume(volume)
-        return False
 
     def starts_with(self, starts_with=ANY_LETTER):
         host_entry = self.host_entry
@@ -2757,7 +2747,7 @@ class CollocationGroup(models.Model, JSONSerializable):
         ordering = ('-id',)
 
 
-class Collocation(models.Model, JSONSerializable):
+class Collocation(models.Model, JSONSerializable, VolumeAttributive):
 
     collogroup = ForeignKey(CollocationGroup,
                             verbose_name='группа словосочетаний',
@@ -2853,7 +2843,7 @@ class Collocation(models.Model, JSONSerializable):
         ordering = ('id',)
 
 
-class GreekEquivalentForExample(models.Model, JSONSerializable):
+class GreekEquivalentForExample(models.Model, JSONSerializable, VolumeAttributive):
 
     for_example = ForeignKey(Example, related_name='greq_set',
                              on_delete=models.CASCADE)
@@ -2980,7 +2970,7 @@ class GreekEquivalentForExample(models.Model, JSONSerializable):
         ordering = ('order', 'id')
 
 
-class OrthographicVariant(models.Model, JSONSerializable):
+class OrthographicVariant(models.Model, JSONSerializable, VolumeAttributive):
 
     # словарная статья, к которой относится данный орф. вариант
     entry = ForeignKey(Entry, related_name='orthographic_variants', blank=True,
@@ -3088,7 +3078,7 @@ class OrthographicVariant(models.Model, JSONSerializable):
         ordering = ('order', 'id')
 
 
-class Participle(models.Model, JSONSerializable):
+class Participle(models.Model, JSONSerializable, VolumeAttributive):
 
     # словарная статья, к которой относится данная словоформа
     entry = ForeignKey(Entry, blank=True, null=True, on_delete=models.CASCADE)
