@@ -1344,6 +1344,15 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
+    elif uri == 'meanings_qvcfidem_marks':
+        regex = re.compile(r'\b(?:(?:ср|см)\.|то\s*же,?\s+что\b)',
+                           flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
+        ms = (m for m in Meaning.objects
+                            .filter(collogroup_container_id__isnull=True)
+                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
+                     volume=VOLUME)
+
     elif uri == 'meanings_pl':
         mark = 'мн.'
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
@@ -1692,6 +1701,9 @@ def useful_urls(request, x=None, y=None):
                     ('С текстом "[?!]"', 'meanings_quest'),
                     ('С текстом "с именем собств."', 'meanings_sobstv'),
                     ('Без примеров', 'meanings_without_examples'),
+                    ('С пометами "см.", "ср.", "то же, что" '
+                     '(но не тегами qv, cf, idem) не в сс',
+                                                    'meanings_qvcfidem_marks'),
                 )),
             ('Примеры', (
                     ('в греч. иначе и параллель', 'ex_aliud_parallel'),
