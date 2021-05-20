@@ -37,6 +37,7 @@ from slavdict.dictionary.models import ALWAYS_LAST_POS
 from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import CURRENT_VOLUME
 from slavdict.dictionary.models import Entry
+from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
 from slavdict.dictionary.models import Meaning
@@ -1176,6 +1177,11 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(eURI, id__in=','.join(str(eid) for eid in eids),
                      volume=VOLUME)
 
+    elif uri == 'entries_greq':
+        eids = set(et.entry_id for et in Etymology.objects.all())
+        uri = uri_qs(eURI, id__in=','.join(str(eid) for eid in eids),
+                     volume=VOLUME)
+
     elif uri == 'phraseological_collocs':
         uri = uri_qs(cgURI, phraseological__exact=1, volume=VOLUME)
 
@@ -1657,10 +1663,11 @@ def useful_urls(request, x=None, y=None):
                     ('Варианты с льн/лн, льм/лм и т.п.', 'orthvars_ln'),
                 )),
             ('Статьи', (
-                    ('Статьи без примеров', 'entries_without_examples'),
-                    ('Cтатьи дубликаты', 'duplicate_entries'),
-                    ('Cтатьи, где все значения "перен."', 'entries_all_figurative'),
-                    ('Cтатьи с литургическими символами', 'entries_litsym'),
+                    ('Без примеров', 'entries_without_examples'),
+                    ('Дубликаты', 'duplicate_entries'),
+                    ('Где все значения "перен."', 'entries_all_figurative'),
+                    ('С литургическими символами', 'entries_litsym'),
+                    ('С греч. параллелями к статье', 'entries_greq'),
                 )),
             ('Словосочетания (cc)', (
                     ('Все', 'all_collocations'),
