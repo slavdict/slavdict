@@ -229,7 +229,7 @@
         {{ space }}
     {% else %}
         {% if entry.part_of_speech and not entry.meaning_groups.serveral_pos %}
-            {% if not entry.is_part_of_speech("letter", "number", "verb") and
+            {% if not entry.is_part_of_speech("letter", "verb") and
                   (not entry.is_part_of_speech("noun") or not entry.gender) %}
 
                 {{ backspace }}{{ space }}
