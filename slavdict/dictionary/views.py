@@ -1651,7 +1651,7 @@ def useful_urls(request, x=None, y=None):
             letter.upper() for letter in prev_volumes_letters)
     urls = (
             ('Формы слова', (
-                    ('Все заглавные слова с титлами', 'headwords_titles'),
+                    ('Все заглавные слова с титлами (без учета вариантов в скобках)', 'headwords_titles'),
                     ('Все заглавные слова с чужеродными символами', 'headwords_symbols'),
                     ('Все заглавные слова, где реконструкция вызывает сомнения', 'orthvars_questionable'),
                     ('Орф. варианты без ударений', 'orthvars_without_accents'),
