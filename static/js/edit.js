@@ -33,6 +33,27 @@ function getId() {
     return (+new Date()).toString();
 }
 
+
+ko.extenders.integer = function(target) {
+    var result = ko.pureComputed({
+        read: target,
+        write: function(newValue) {
+            var current = target(),
+                newValueAsNum = isNaN(newValue) ? 0 : +newValue,
+                valueToWrite = Math.round(newValueAsNum);
+            if (valueToWrite !== current) {
+                target(valueToWrite);
+            } else {
+                if (newValue !== current) {
+                    target.notifySubscribers(valueToWrite);
+                }
+            }
+        }
+    }).extend({ notify: 'always' });
+    result(target());
+    return result;
+};
+
 // Функция создающая датчики, оповещающие о том, что словарная статья
 // изменилась.
 function snapshotObservable(observable) {
@@ -49,7 +70,7 @@ function snapshotObservable(observable) {
 snapshotObservable.counter = 0;
 
 // Вспомогательные для конструкторов-реставраторов функции.
-function upsert(object, attrname, data, defaultValue, observable) {
+function upsert(object, attrname, data, defaultValue, observable, isInt) {
     // Upsert property ``attrname`` in the ``object``
     var value = data && data[attrname];  // NOTE: Если следующую строку
         // добавить к этой в виде ``|| defaultValue``, то вариант будет
@@ -65,6 +86,9 @@ function upsert(object, attrname, data, defaultValue, observable) {
         }
     } else {
         object[attrname] = observable(value);
+        if (isInt) {
+            object[attrname] = object[attrname].extend({ integer: true });
+        }
     }
 }
 
@@ -581,7 +605,7 @@ function Meaning() {
     upsert(this, 'substantivus', data, false);
     upsert(this, 'substantivus_type', data, '');
     upsert(this, 'hidden', data, false);
-    upsert(this, 'numex', data, 3);
+    upsert(this, 'numex', data, 3, null, true);
     upsertArray(this, 'contexts', Context, data);
     upsert(this, 'entry_container_id', data, entry_id);
     upsert(this, 'collogroup_container_id', data, collogroup_id);
