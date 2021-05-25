@@ -5,6 +5,7 @@ from django.db.utils import ProgrammingError
 
 from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary import models
+from slavdict.dictionary.utils import arabic2roman
 
 def _json(x):
     return json.dumps(x, ensure_ascii=False, separators=(',',':'))
@@ -43,8 +44,21 @@ except (OperationalError, ProgrammingError):
     AUTHOR_CHOICES = tuple()
     authors = tuple()
 
-
 editAuthors = (NONE_ID_OBJECT,) + _choices(AUTHOR_CHOICES)
+
+def vol(volume_number, volume_letters):
+    return 'Том %s (%s)' % (
+        arabic2roman(volume_number),
+        ', '.join(letter.upper() for letter in volume_letters)
+    )
+
+volumes = (
+    {'id': 'all', 'name': 'все тома'},
+    {'id': 'none', 'name': 'статьи, не вошедшие в тома'},
+) + tuple(
+    {'id': key, 'name': vol(key, value)}
+    for key, value in models.VOLUME_LETTERS.items()
+)
 
 canonical_name = (
     {'id': 'all', 'name': 'все имена'},
@@ -124,6 +138,7 @@ jsonSortbase = _json(sortbase)
 jsonSortdir = _json(sortdir)
 jsonStatuses = _json(statuses)
 jsonTantum = _json(tantum)
+jsonVolumes = _json(volumes)
 
 tupleAuthors = _tuple(authors)
 tupleCanonicalName = _tuple(canonical_name)
@@ -137,3 +152,4 @@ tupleSortbase = _tuple(sortbase)
 tupleSortdir = _tuple(sortdir)
 tupleStatuses = _tuple(statuses)
 tupleTantum = _tuple(tantum)
+tupleVolumes = _tuple(volumes)

@@ -24,6 +24,11 @@
             .rememberDefault('')
             .htmlTextValue('hwPrfx'),
 
+        hwVolume: ko.observable()
+            .rememberInitial(valuesToInitialize.hwVolume)
+            .rememberDefault('all')
+            .htmlSelect('hwVolume', listsForWidgets.volumes, 'all'),
+
         hwExample: ko.observable()
             .rememberInitial(valuesToInitialize.hwExample)
             .rememberDefault('')
@@ -66,6 +71,7 @@
             y = x.hwAuthor() + '|' +
                 x.hwAddress() + '|' +
                 x.hwPrfx() + '|' +
+                x.hwVolume() + '|' +
                 x.hwExample() + '|' +
                 x.hwExamplesIds() + '|' +
                 x.hwSortbase() + '|' +

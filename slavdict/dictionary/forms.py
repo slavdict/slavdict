@@ -23,73 +23,58 @@ GREQSTATUS_CHOICES = viewmodels.tupleGreqStatuses
 ONYM_CHOICES = viewmodels.tupleOnyms
 POS_CHOICES = viewmodels.tuplePos
 POSSESSIVE_CHOICES = viewmodels.tuplePossessive
-SORTDIR_CHOICES = viewmodels.tupleSortdir
 SORTBASE_CHOICES = viewmodels.tupleSortbase
+SORTDIR_CHOICES = viewmodels.tupleSortdir
 STATUS_CHOICES = viewmodels.tupleStatuses
 TANTUM_CHOICES = viewmodels.tupleTantum
+VOLUME_CHOICES = viewmodels.tupleVolumes
 
 class FilterEntriesForm(forms.Form):
-    per_se = forms.BooleanField(label='Отображать помимо заголовочных '
-            'слов сами статьи', required=False)
-    sortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
-    sortbase = forms.ChoiceField(choices=SORTBASE_CHOICES, required=False)
+    additional_info = forms.BooleanField(label='Статьи с примечаниями', required=False)
+    author = forms.ChoiceField(choices=AUTHOR_CHOICES, label='Автор', required=False)
+    canonical_name = forms.ChoiceField(choices=CANONNAME_CHOICES, label='Канонические имена', required=False)
+    collocations = forms.BooleanField(label='Со словосочетаниями', required=False)
+    duplicate = forms.BooleanField(label='Статьи-дубликаты', required=False)
+    etymology = forms.BooleanField(label='Статьи с этимологией', required=False)
+    etymology_sans = forms.BooleanField(label='Статьи без этимологии', required=False)
     find = forms.CharField(required=False, label='Начинается с')
-    author = forms.ChoiceField(choices=AUTHOR_CHOICES, label='Автор',
-            required=False)
-    status = forms.ChoiceField(choices=STATUS_CHOICES,
-            label='Статус статьи', required=False)
-    pos = forms.ChoiceField(choices=POS_CHOICES, label='Часть речи',
-            required=False)
-    uninflected = forms.BooleanField(label='Неизменяемые сущ. / прил.',
-            required=False)
-    gender = forms.ChoiceField(choices=GENDER_CHOICES, label='Род',
-            required=False)
-    tantum = forms.ChoiceField(choices=TANTUM_CHOICES, label='Число',
-            required=False)
-    onym = forms.ChoiceField(choices=ONYM_CHOICES,
-            label='Тип имени собст.', required=False)
-    canonical_name = forms.ChoiceField(choices=CANONNAME_CHOICES,
-            label='Канонические имена', required=False)
-    possessive = forms.ChoiceField(choices=POSSESSIVE_CHOICES,
-            label='Притяжательность', required=False)
-    etymology = forms.BooleanField(label='Статьи с этимологией',
-            required=False)
-    etymology_sans = forms.BooleanField(label='Статьи без этимологии',
-            required=False)
-    additional_info = forms.BooleanField(label='Статьи с примечаниями',
-            required=False)
-    homonym = forms.BooleanField(label='Статьи-омонимы',
-            required=False)
-    duplicate = forms.BooleanField(label='Статьи-дубликаты',
-            required=False)
-    variants = forms.BooleanField(label='С вар-ми написания',  # C вариантами написания
-            required=False)
-    collocations = forms.BooleanField(label='Со словосочетаниями',
-            required=False)
-    meaningcontexts = forms.BooleanField(label='С контекстами значения',
-            required=False)
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, label='Род', required=False)
+    homonym = forms.BooleanField(label='Статьи-омонимы', required=False)
+    meaningcontexts = forms.BooleanField(label='С контекстами значения', required=False)
+    onym = forms.ChoiceField(choices=ONYM_CHOICES, label='Тип имени собст.', required=False)
+    per_se = forms.BooleanField(label='Отображать помимо заголовочных слов сами статьи', required=False)
+    pos = forms.ChoiceField(choices=POS_CHOICES, label='Часть речи', required=False)
+    possessive = forms.ChoiceField(choices=POSSESSIVE_CHOICES, label='Притяжательность', required=False)
+    sortbase = forms.ChoiceField(choices=SORTBASE_CHOICES, required=False)
+    sortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
+    status = forms.ChoiceField(choices=STATUS_CHOICES, label='Статус статьи', required=False)
+    tantum = forms.ChoiceField(choices=TANTUM_CHOICES, label='Число', required=False)
+    uninflected = forms.BooleanField(label='Неизменяемые сущ. / прил.', required=False)
+    variants = forms.BooleanField(label='С вар-ми написания', required=False)
+    volume = forms.ChoiceField(choices=VOLUME_CHOICES, label='Том', required=False)
     default_data = {
-        'per_se': False,
-        'sortdir':  '-',
-        'sortbase': 't',
-        'find': '',
+        'additional_info': False,
         'author': 'all',
-        'status': 'all',
-        'pos': 'all',
-        'uninflected': False,
-        'gender': 'all',
-        'tantum': 'all',
-        'onym': 'all',
         'canonical_name': 'all',
-        'possessive': 'all',
+        'collocations': False,
+        'duplicate': False,
         'etymology': False,
         'etymology_sans': False,
-        'additional_info': False,
+        'find': '',
+        'gender': 'all',
         'homonym': False,
-        'duplicate': False,
-        'collocations': False,
-        'variants': False,
         'meaningcontexts': False,
+        'onym': 'all',
+        'per_se': False,
+        'pos': 'all',
+        'possessive': 'all',
+        'sortbase': 't',
+        'sortdir':  '-',
+        'status': 'all',
+        'tantum': 'all',
+        'uninflected': False,
+        'variants': False,
+        'volume': 'all',
     }
     default_data_for_hellinists = default_data.copy()
     default_data_for_hellinists.update({
@@ -99,25 +84,24 @@ class FilterEntriesForm(forms.Form):
 
 class FilterExamplesForm(forms.Form):
     hwAddress = forms.CharField(required=False, label='Адрес начинается на')
+    hwAllExamples = forms.BooleanField(label='Отображать примеры из незаконченных статей', required=False)
     hwAuthor = forms.ChoiceField(choices=AUTHOR_CHOICES, label='Автор статьи')
-    hwPrfx = forms.CharField(required=False, label='Статья начинается на')
     hwExample = forms.CharField(required=False, label='Текст иллюстрации')
     hwExamplesIds = forms.CharField(required=False, label='Идентификаторы иллюстраций')
+    hwPrfx = forms.CharField(required=False, label='Статья начинается на')
     hwSortbase = forms.ChoiceField(choices=GREQSORTBASE_CHOICES)
     hwSortdir = forms.ChoiceField(choices=SORTDIR_CHOICES, required=False)
-    hwStatus = forms.ChoiceField(choices=GREQSTATUS_CHOICES,
-            label='Статус греч. парал.')
-    hwAllExamples = forms.BooleanField(
-            label='Отображать примеры из незаконченных статей',
-            required=False)
+    hwStatus = forms.ChoiceField(choices=GREQSTATUS_CHOICES, label='Статус греч. парал.')
+    hwVolume = forms.ChoiceField(choices=VOLUME_CHOICES, label='Том')
     default_data = {
         'hwAddress': '',
+        'hwAllExamples': False,
         'hwAuthor': 'all',
-        'hwPrfx': '',
         'hwExample': '',
         'hwExamplesIds': '',
+        'hwPrfx': '',
         'hwSortbase': 'addr',
         'hwSortdir': '+',
         'hwStatus': 'all',
-        'hwAllExamples': False,
+        'hwVolume': 'all',
     }

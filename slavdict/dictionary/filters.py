@@ -226,6 +226,17 @@ def get_examples(form):
     if address:
         FILTER_PARAMS['address_text__istartswith'] = address
 
+    # Том
+    value = form.get('hwVolume') or 'all'
+    if value == 'all':
+        pass
+    elif value == 'none':
+        entries = Entry.objects.filter(volume__eq=0)
+    elif value.isdigit():
+        entries = Entry.objects.filter(volume__gt=0)
+    else:
+        PARSING_ERRORS.append('hwVolume')
+
     # Текст иллюстраций
     example = form.get('hwExample')
     if example:
