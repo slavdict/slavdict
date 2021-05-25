@@ -1326,11 +1326,11 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'collocs_refs':
         cgs = set()
-        regex = re.compile(r'\b(?:idem|qv|cf|(?:ср|см)\.|то\s*же,?\s+что)',
+        regex = re.compile(r'\b(?:cf|qv|[сc][рpм]\.|idem|то\s*же,?\s+что\b)',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         for cg in CollocationGroup.objects.all():
             for m in cg.all_meanings:
-                if regex.search(m.meaning + m.gloss):
+                if regex.search('%s %s' % (m.meaning, m.gloss)):
                     cgs.add(cg)
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
                      volume=VOLUME)
@@ -1340,6 +1340,17 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'meanings_without_examples':
         ms = (m for m in Meaning.objects.all() if not m.example_set.count())
+        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
+                     volume=VOLUME)
+
+    elif uri == 'terminal_meanings_without_examples':
+        regex = re.compile(r'\b(?:qv|[сc]м\.|idem|то\s*же,?\s+что\b)',
+                           flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
+        ms = (m for m in Meaning.objects.all()
+                if 0 == m.example_set.count()
+                    and 0 == m.collocationgroup_set.count()
+                    and 0 == m.child_meaning_set.filter(parent_meaning=m).count()
+                    and not regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1355,7 +1366,7 @@ def useful_urls_redirect(uri, request):
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects
                             .filter(collogroup_container_id__isnull=True)
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1381,7 +1392,7 @@ def useful_urls_redirect(uri, request):
         regex = re.compile(r'в\s+роли\s',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1391,7 +1402,7 @@ def useful_urls_redirect(uri, request):
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
                 (m.substantivus
                  or m.special_case in MSC_ROLE
-                 or regex.search(m.meaning + m.gloss)
+                 or regex.search('%s %s' % (m.meaning, m.gloss))
                  )
               )
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
@@ -1402,7 +1413,7 @@ def useful_urls_redirect(uri, request):
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden()
-                and (m.substantivus or regex.search(m.meaning + m.gloss))
+                and (m.substantivus or regex.search('%s %s' % (m.meaning, m.gloss)))
                 and m.host_entry.is_part_of_speech('verb')
               )
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
@@ -1412,7 +1423,7 @@ def useful_urls_redirect(uri, request):
         regex = re.compile(r'в\s+знач',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1420,7 +1431,7 @@ def useful_urls_redirect(uri, request):
         regex = re.compile(r'вводн',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1428,7 +1439,7 @@ def useful_urls_redirect(uri, request):
         regex = re.compile(r'с\s+пр(?:ям)\.\s*речью',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1437,7 +1448,7 @@ def useful_urls_redirect(uri, request):
                 r'им[^\s\.]*\.?\s*собст|собст[^\s\.]*\.?\s*им',
                 flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1445,7 +1456,7 @@ def useful_urls_redirect(uri, request):
         regex = re.compile(r'[?!]',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1717,6 +1728,9 @@ def useful_urls(request, x=None, y=None):
                     ('С текстом "[?!]"', 'meanings_quest'),
                     ('С текстом "с именем собств."', 'meanings_sobstv'),
                     ('Без примеров', 'meanings_without_examples'),
+                    ('Без примеров (учитывать только терминальные значения '
+                     'без помет "см.", "то же, что" и тэгов "qv" и "idem")',
+                        'terminal_meanings_without_examples'),
                     ('С пометами "см.", "ср.", "то же, что" '
                      '(но не тегами qv, cf, idem) не в сс',
                         'meanings_qv_cf_idem_marks_non_cgs'),
