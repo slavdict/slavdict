@@ -1332,6 +1332,11 @@ class Entry(models.Model, JSONSerializable):
             'url': self.get_absolute_url(),
         }
 
+    @property
+    def has_collogroups(self):
+        meaning_collogroups = any(m.collogroups.count() for m in self.all_meanings)
+        return meaning_collogroups or self.collogroups.count()
+
     # Залочена статья для редактирования,
     # во время подготовки тома к печати или нет.
     @property
