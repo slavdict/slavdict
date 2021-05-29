@@ -1,0 +1,90 @@
+<style>
+  a.hash2:link * {
+      color: #a00 !important;
+  }
+</style>
+{% macro meaning(entry, m) %}
+
+  {% if m and m.has_mcsl %}
+
+    {% set href = entry.get_absolute_url() ~ "#" ~ m.get_url_fragment() %}
+
+  <div class="csl-list">
+
+    {% if m.figurative %}
+        <span class="Em">перен.</span>{{ space }}
+    {% endif %}
+
+    {% if m.meaning %}
+        <span class="Meaning Text hyphenate" lang="ru">{{ m.meaning |
+            web_href("##[^#]+##", href) |
+            web_cslav_injection("CSLSegment") |
+            web_regex("Em", '(?<![А-ЯЁа-яё])(?:перен|букв|зд|см|ср)\\.') |
+            web_regex("Em", 'в[\\s\u00a0]Син\\. пер\\.') |
+            web_regex("Em", '(?<=\()(?:арам)\\.(?=\))') |
+            web_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+            web_refs() }}</span>
+    {% endif %}
+
+    {% if m.gloss %}
+        {% if m.meaning %}
+            {{ backspace }};{{ space }}
+        {% endif %}
+        <span class="Gloss Em hyphenate" lang="ru">{{ m.gloss |
+            web_href("##[^#]+##", href) |
+            web_cslav_injection("CSLSegment") |
+            web_regex("Text", '‘[^’]+’') |
+            web_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+            web_regex("Text", '(?<=Син\.\sпер\.\s)Керенгаппух|бдолах|сирияне|сирийский|сириец|земля Уц') |
+            web_regex("Text", '(?<=Септ\.\s)Авситидийская') |
+            web_refs() }}</span>
+        {{ space }}
+    {% endif %}
+
+  </div>
+  {% endif %}
+
+{% endmacro %}
+{% trim %}
+<div class="Entry">
+    <div class="FirstParagraph Text">
+
+    {% set base_var = entry.base_vars[0] %}
+    <a href="{{ entry.get_absolute_url() }}" target="_blank">
+        {{ base_var.idem_ucs | web_cslav_words("Headword") }}
+    </a>
+
+    {% if entry.homonym_order %}
+        <span class="HeadwordHomonymNumber">
+            {{ entry.homonym_order }}
+        </span>
+        {{ space }}
+    {% endif %}
+    {{ backspace }}{{ space }}
+
+    {% if entry.part_of_speech %}
+        <span class="Em">
+            {{ entry.get_part_of_speech_display() }}
+        </span>
+        {{ space }}
+    {% endif %}
+
+    {% for mgroup in entry.meaning_groups %}
+        {% for m in mgroup.meanings %}
+            {{ meaning(entry, m) }}
+            {% for mm in m.child_meanings %}
+              {{ meaning(entry, mm) }}
+            {% endfor %}
+            {% for cg in m.collogroups %}
+              {% for mm in cg.all_meanings %}
+                {{ meaning(entry, mm) }}
+              {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+
+    {{ backspace }}</div>
+</div>{# Entry #}
+{% endtrim %}
+
+{# vim: set ft=django.html: #}

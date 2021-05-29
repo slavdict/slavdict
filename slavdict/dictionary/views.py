@@ -160,6 +160,7 @@ th, td {
 | `?hide-refentries` | Не отображать отсылочные статьи. |
 | `?inverse` | Упорядочить статьи по обратному гражданскому написанию заглавного слова. Например, слово "вняти" будет отсортировано, как если бы это было слово "итянв". |
 | `?list=1324,3345,22` | Отображать только статьи с указанными числовыми идентификаторами. |
+| `?mcsl-vs-entries` | Вместо статей отображать заглавное слово и список всех значений, употреблений и пояснений, где встречается цсл текст в двойных решетках (например, `название десятой буквы церковнославянской азбуки ##=и##`). |
 | `?mforms-vs-entries` | Вместо статей отображать заглавное слово и список всех его *преложно-падежных форм*, расставленных при значениях. |
 | `?not-editable` | При отображении статей не влючать возможность их изменения прямо на странице. |
 | `?per-page=100` | Отображать по столько-то статей на странице, по умолчанию, все. |
@@ -192,6 +193,7 @@ th, td {
     httpGET_HIDEREFENTRIES = 'hide-refentries' in request.GET
     httpGET_INVERSE = 'inverse' in request.GET
     httpGET_LIST = request.GET.get('list')
+    httpGET_MCSLVSENTRIES = 'mcsl-vs-entries' in request.GET
     httpGET_MFORMSVSENTRIES = 'mforms-vs-entries' in request.GET
     httpGET_NOT_EDITABLE = 'not-editable' in request.GET
     httpGET_PERPAGE = request.GET.get('per-page')
@@ -333,6 +335,7 @@ th, td {
         'inverse_sort': httpGET_INVERSE,
         'is_paged': is_paged,
         'mforms_vs_entries': httpGET_MFORMSVSENTRIES,
+        'mcsl_vs_entries': httpGET_MCSLVSENTRIES,
         'not_editable': httpGET_NOT_EDITABLE,
         'page': page,
         'params_without_page': params_without_page(request.GET),

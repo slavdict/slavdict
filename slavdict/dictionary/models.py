@@ -1351,6 +1351,21 @@ class Entry(models.Model, JSONSerializable):
             return True
         return False
 
+    @property
+    def has_mcsl(self):
+        if any(m.has_mcsl for m in self.meaning_set.all()):
+            return True
+        if any(m.has_mcsl
+               for mm in self.meanings
+                   for cg in mm.collogroups
+                       for m in cg.meanings):
+            return True
+        if any(m.has_mcsl
+               for cg in self.collogroups
+                   for m in cg.meanings):
+            return True
+        return False
+
     # Залочена статья для редактирования,
     # во время подготовки тома к печати или нет.
     @property
@@ -1913,6 +1928,10 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
 
     special_case = CharField('особые случаи', max_length=1,
             choices=MEANING_SPECIAL_CASES_CHOICES, blank=True, default='')
+
+    @property
+    def has_mcsl(self):
+        return '##' in self.meaning or '##' in self.gloss
 
     def meaning_for_admin(self):
         text = ''
