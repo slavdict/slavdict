@@ -27,10 +27,9 @@ from django.utils.safestring import mark_safe
 
 from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary.utils import antconc_anticorrupt
-from slavdict.dictionary.utils import APPLY_TO_CSL
 from slavdict.dictionary.utils import apply_to_mixed
 from slavdict.dictionary.utils import arabic2roman
-from slavdict.dictionary.utils import CIVIL_IN_CSL
+from slavdict.dictionary.utils import CIVIL_IN_CSL_APPLY_TO_CSL
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import collogroup_sort_key
 from slavdict.dictionary.utils import several_wordforms
@@ -1875,7 +1874,7 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
     @property
     def substantivus_csl_ucs(self):
         return apply_to_mixed(ucs8, self.substantivus_csl,
-                              CIVIL_IN_CSL, APPLY_TO_CSL)
+                              CIVIL_IN_CSL_APPLY_TO_CSL)
 
     @property
     def substantivus_forms(self):
@@ -2039,7 +2038,7 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
 
     def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         self.substantivus_csl = apply_to_mixed(antconc_anticorrupt,
-                self.substantivus_csl, CIVIL_IN_CSL, APPLY_TO_CSL)
+                self.substantivus_csl, CIVIL_IN_CSL_APPLY_TO_CSL)
         host_entry = self.host_entry
         if self.looks_like_valency(host_entry):
             if self.gloss.strip() and not self.meaning.strip():  #::AUHACK::
@@ -2772,8 +2771,8 @@ class Collocation(models.Model, JSONSerializable, VolumeAttributive):
     @property
     def collocation_ucs(self):
         text = apply_to_mixed(antconc_anticorrupt, self.collocation,
-                              CIVIL_IN_CSL, APPLY_TO_CSL)
-        return apply_to_mixed(ucs8, text, CIVIL_IN_CSL, APPLY_TO_CSL)
+                              CIVIL_IN_CSL_APPLY_TO_CSL)
+        return apply_to_mixed(ucs8, text, CIVIL_IN_CSL_APPLY_TO_CSL)
 
     civil_equivalent = CharField('гражданское написание', max_length=350,
                                  blank=True)
@@ -2805,7 +2804,7 @@ class Collocation(models.Model, JSONSerializable, VolumeAttributive):
 
     def save(self, without_mtime=False, *args, **kwargs):
         self.collocation = apply_to_mixed(antconc_anticorrupt, self.collocation,
-                                          CIVIL_IN_CSL, APPLY_TO_CSL)
+                                          CIVIL_IN_CSL_APPLY_TO_CSL)
         self.civil_equivalent = civilrus_convert(self.collocation)
         self.civil_inverse = self.civil_equivalent[::-1]
         super(Collocation, self).save(*args, **kwargs)
