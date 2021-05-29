@@ -1336,6 +1336,21 @@ class Entry(models.Model, JSONSerializable):
         meaning_collogroups = any(m.collogroups.count() for m in self.all_meanings)
         return meaning_collogroups or self.collogroups.count()
 
+    @property
+    def has_mforms(self):
+        if any(m.substantivus_csl.strip() for m in self.meaning_set.all()):
+            return True
+        if any(m.substantivus_csl.strip()
+               for mm in self.meanings
+                   for cg in mm.collogroups
+                       for m in cg.meanings):
+            return True
+        if any(m.substantivus_csl.strip()
+               for cg in self.collogroups
+                   for m in cg.meanings):
+            return True
+        return False
+
     # Залочена статья для редактирования,
     # во время подготовки тома к печати или нет.
     @property

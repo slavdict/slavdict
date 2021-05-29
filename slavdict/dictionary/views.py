@@ -61,10 +61,10 @@ from functools import reduce
 # Вспомогательная функция
 # для сортировки списка словарных статей.
 def entry_key(entry):
-    return entry.civil_equivalent.lower(), entry.homonym_order
+    return entry.civil_equivalent.lower(), entry.homonym_order or 0
 
 def entry_key_inversed(entry):
-    return entry.civil_equivalent.lower()[::-1], entry.homonym_order
+    return entry.civil_equivalent.lower()[::-1], entry.homonym_order or 0
 
 def params_without_page(GET):
     excluded_GET_params = ('page', 'AB')
@@ -160,6 +160,7 @@ th, td {
 | `?hide-refentries` | Не отображать отсылочные статьи. |
 | `?inverse` | Упорядочить статьи по обратному гражданскому написанию заглавного слова. Например, слово "вняти" будет отсортировано, как если бы это было слово "итянв". |
 | `?list=1324,3345,22` | Отображать только статьи с указанными числовыми идентификаторами. |
+| `?mforms-vs-entries` | Вместо статей отображать заглавное слово и список всех его *преложно-падежных форм*, расставленных при значениях. |
 | `?not-editable` | При отображении статей не влючать возможность их изменения прямо на странице. |
 | `?per-page=100` | Отображать по столько-то статей на странице, по умолчанию, все. |
 | `?pos-group` | Не только сортировать по алфавиту, но и группировать по частям речи. |
@@ -179,8 +180,9 @@ th, td {
     PRINTLAYOUT_COLUMNS = 'columns'
     DEFAULT_PRINTLAYOUT = PRINTLAYOUT_PROOFREADING
 
-    httpGET_AUTHORS = urllib.parse.unquote(request.GET.get('authors', ''))
     httpGET_ALIUD_GREEK = 'aliud-greek' in request.GET
+    httpGET_AUTHORS = urllib.parse.unquote(request.GET.get('authors', ''))
+    httpGET_CGSVSENTRIES = 'cgs-vs-entries' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDEAUTHORS = 'hide-authors' in request.GET
@@ -188,14 +190,14 @@ th, td {
     httpGET_HIDEMEANINGS = 'hide-meanings' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_HIDEREFENTRIES = 'hide-refentries' in request.GET
+    httpGET_INVERSE = 'inverse' in request.GET
     httpGET_LIST = request.GET.get('list')
+    httpGET_MFORMSVSENTRIES = 'mforms-vs-entries' in request.GET
     httpGET_NOT_EDITABLE = 'not-editable' in request.GET
     httpGET_PERPAGE = request.GET.get('per-page')
     httpGET_POS_GROUP = 'pos-group' in request.GET
     httpGET_PRINTLAYOUT = request.GET.get('print-layout', DEFAULT_PRINTLAYOUT)
-    httpGET_INVERSE = 'inverse' in request.GET
     httpGET_SHOWAI = 'show-ai' in request.GET
-    httpGET_CGSVSENTRIES = 'cgs-vs-entries' in request.GET
     httpGET_SHOWSORTKEYS = 'show-sort-keys' in request.GET
     httpGET_STARTSWITH = request.GET.get('startswith')
     httpGET_STATUS = urllib.parse.unquote(request.GET.get('status', ''))
@@ -330,6 +332,7 @@ th, td {
         'hide_meanings': httpGET_HIDEMEANINGS,
         'inverse_sort': httpGET_INVERSE,
         'is_paged': is_paged,
+        'mforms_vs_entries': httpGET_MFORMSVSENTRIES,
         'not_editable': httpGET_NOT_EDITABLE,
         'page': page,
         'params_without_page': params_without_page(request.GET),
