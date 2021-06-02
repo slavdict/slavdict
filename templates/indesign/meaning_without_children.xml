@@ -33,6 +33,9 @@
 {% set MSC20 = 't' %}{# в роли союза #}
 {% set MSC21 = 'u' %}{# плеоназм #}
 {% set MSC23 = 'w' %}{# в роли мест. #}
+{% set MSC24 = 'x' %}{# в роли действ. прич. #}
+{% set MSC_ROLE_POS = (MSC12, MSC14, MSC15, MSC20, MSC23, MSC24) %}
+    {# в роли мест./нареч./прил./действ. прич./союза/част. #}
 
 {% if m.special_case == MSC1 %}{# канонич. #}
 
@@ -54,18 +57,21 @@
     {{ m.substantivus_csl_ucs|ind_cslav_words("CSLSegmentEm") }}{{ space }}
     <x aid:cstyle="Em">в{{ nbsp }}роли нареч.</x>{{ space }}
 
-{% elif m.special_case in (MSC12, MSC14, MSC15, MSC20, MSC23) %}
-    {# в роли мест./нареч./прил./союза/част. #}
+{% elif m.special_case in MSC_ROLE_POS %}
 
     {% if m.special_case == MSC12 %}{% set pos_mark = 'нареч.' %}
     {% elif m.special_case == MSC14 %}{% set pos_mark = 'прил.' %}
     {% elif m.special_case == MSC15 %}{% set pos_mark = 'част.' %}
     {% elif m.special_case == MSC20 %}{% set pos_mark = 'союза' %}
     {% elif m.special_case == MSC23 %}{% set pos_mark = 'мест.' %}
+    {% elif m.special_case == MSC24 %}{% set pos_mark = 'действ. прич.' %}
     {% endif %}
     {% if m.substantivus_csl %}
         {{ m.substantivus_csl_ucs |
              ind_cslav_words("CSLSegmentEm") }}{{ space }}
+    {% endif %}
+    {% if m.substantivus_csl.strip().endswith('##') %}
+        {{ backspace }};{{ space }}
     {% endif %}
     <x aid:cstyle="Em">в{{ nbsp }}роли {{ pos_mark }}</x>{{ space }}
 
@@ -178,7 +184,7 @@
 {% set examples_cond = (m.examples and m.numex > 0) %}
 {% if (m.contexts or m.meaning or m.gloss
         or m.substantivus or m.figurative
-        or m.special_case in (MSC12, MSC14, MSC15, MSC18, MSC21, MSC23)
+        or m.special_case in (MSC12, MSC14, MSC15, MSC18, MSC21, MSC23, MSC24)
       ) and examples_cond %}
     {{ backspace }}:{{ space }}
 {% elif m.collogroups or m.child_meanings
