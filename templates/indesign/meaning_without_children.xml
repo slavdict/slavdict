@@ -68,7 +68,7 @@
     {% endif %}
     {% if m.substantivus_csl %}
         {{ m.substantivus_csl_ucs |
-             ind_cslav_words("CSLSegmentEm") }}{{ space }}
+             ind_civil_injection("Valency", "CSLSegmentEm", "Text") }}{{ space }}
     {% endif %}
     {% if m.substantivus_csl.strip().endswith('##') %}
         {{ backspace }};{{ space }}
