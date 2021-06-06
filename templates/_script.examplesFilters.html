@@ -11,16 +11,16 @@
     {% set filters = form.cleaned_data %}
     (function () {
         var exf = vM.valuesToInitialize.examplesFilters;
-        exf.hwAuthor = '{{ filters.hwAuthor }}';
         exf.hwAddress = '{{ filters.hwAddress }}';
-        exf.hwPrfx = '{{ filters.hwPrfx }}';
-        exf.hwVolume = '{{ filters.hwVolume }}';
+        exf.hwAllExamples = {{ 'true' if filters.hwAllExamples else 'false' }};
+        exf.hwAuthor = '{{ filters.hwAuthor }}';
         exf.hwExample = '{{ filters.hwExample }}';
         exf.hwExamplesIds = '{{ filters.hwExamplesIds }}';
+        exf.hwPrfx = '{{ filters.hwPrfx }}';
         exf.hwSortbase = '{{ filters.hwSortbase }}';
         exf.hwSortdir = '{{ filters.hwSortdir }}';
         exf.hwStatus = '{{ filters.hwStatus }}';
-        exf.hwAllExamples = {{ 'true' if filters.hwAllExamples else 'false' }};
+        exf.hwVolume = '{{ filters.hwVolume }}';
     })();
 
     (function () {
@@ -29,6 +29,7 @@
         w.sortbase = {{ viewmodel.sortbase }};
         w.sortdir = {{ viewmodel.sortdir }};
         w.statuses = {{ viewmodel.statuses }};
+        w.volumes = {{ viewmodel.volumes }};
     })();
 
     vM.jsonExamples = {{ jsonExamples|safe }};
