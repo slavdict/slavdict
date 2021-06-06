@@ -11,6 +11,7 @@ from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
+from slavdict.dictionary.models import HELLINIST_BAD_STATUSES
 from slavdict.dictionary.models import MeaningContext
 
 valid_greqsortbase_values = [c[0] for c in GREQSORTBASE_CHOICES]
@@ -244,24 +245,13 @@ def get_examples(form):
 
     assert not PARSING_ERRORS, 'Недопустимые значения параметров: %s' % PARSING_ERRORS
 
-    # slavdict.dictionary.models.Entry.status
-    #good_statuses = [
-    #        'g', # поиск греч.
-    #        'f', # завершена
-    #        'e', # редактируется
-    #        'a', # утверждена
-    #        ]
-    bad_statuses = [
-            'c', # создана
-            'w', # в работе
-            ]
     # Если не стоит специально галочки, примеры не должны попадать к грецисту,
     # когда статья имеет статус "создана" или "в работе", за исключением тех
     # случаев когда у примера выставлен статус греческих параллелей "необходимы
     # для определения значения" (M) или "срочное" (U).
     if not form.get('hwAllExamples') and greq_status not in ('M', 'U'):
         entries = Entry.objects if entries is None else entries
-        entries = entries.exclude(status__in=bad_statuses)
+        entries = entries.exclude(status__in=HELLINIST_BAD_STATUSES)
 
     if entries is not None:
         if entries.exists():

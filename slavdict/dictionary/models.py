@@ -245,6 +245,11 @@ STATUS_MAP = {
     'greek': 'g',
     'inWork': 'w',
 }
+HELLINIST_BAD_STATUSES = (
+    STATUS_MAP['beyondDict'],
+    STATUS_MAP['created'],
+    STATUS_MAP['inWork'],
+)
 
 LANGUAGE_CHOICES = (
     ('a', 'греч.'),
