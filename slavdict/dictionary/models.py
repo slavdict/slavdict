@@ -1292,7 +1292,9 @@ class Entry(models.Model, JSONSerializable):
                     cg_metaph_meanings = tuple(cg.metaph_meanings)
                     meanings = cg_meanings + cg_metaph_meanings
                     for meaning in meanings:
-                        meaning_examples = tuple(meaning.examples)
+                        meaning_examples = list(meaning.examples)
+                        for submeaning in meaning.child_meanings:
+                            meaning_examples.extend(submeaning.examples)
                         exgroup = ExamplesGroup(meaning_examples,
                                                 mgroup, meaning, cg)
                         self._examples.extend(meaning_examples)
