@@ -780,6 +780,13 @@ def ind_regex(value, cstyle, regex, for_web=False):
 def web_regex(value, cstyle, regex):
     return ind_regex(value, cstyle, regex, for_web=True)
 
+@register_filter
+def web_href(value, regex, href):
+    """ Делает из текста regex гиперссылку """
+    tag = '<a href="{href}" target="_blank" class="hash2">%s</a>'.format(href=href)
+    _href = subst_func(lambda x: tag % x)
+    return re.sub(r'(\s*)(%s)(\s*)' % regex, _href, value)
+
 
 RE_REF1 = (
     r'\s*'

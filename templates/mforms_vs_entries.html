@@ -1,0 +1,235 @@
+{% macro meaning(entry, m) %}
+
+  {% if m and m.substantivus_csl %}
+  <div class="csl-list">
+
+    {# см. slavdict.dictionary.models.MEANING_SPECIAL_CASES_CHOICES #}
+    {% set MSC1 = 'a' %}{# канонич. #}
+    {% set MSC4 = 'd' %}{# дат. #}
+    {% set MSC5 = 'e' %}{# твор. ед. в роли нареч. #}
+    {% set MSC8 = 'h' %}{# имя собств. #}
+    {% set MSC9 = 'i' %}{# топоним #}
+    {% set MSC10 = 'j' %}{# преимущ. #}
+    {% set MSC11 = 'k' %}{# мн. #}
+    {% set MSC12 = 'l' %}{# в роли нареч. #}
+    {% set MSC14 = 'n' %}{# в роли прил. #}
+    {% set MSC15 = 'o' %}{# в роли част. #}
+    {% set MSC16 = 'p' %}{# полувспом. #}
+    {% set MSC17 = 'q' %}{# безличное упортеление глагола #}
+    {% set MSC18 = 'r' %}{# вводн. #}
+    {% set MSC20 = 't' %}{# в роли союза #}
+    {% set MSC21 = 'u' %}{# плеоназм #}
+    {% set MSC23 = 'w' %}{# в роли мест. #}
+    {% set MSC24 = 'x' %}{# в роли действ. прич. #}
+    {% set MSC_ROLE_POS = (MSC12, MSC14, MSC15, MSC20, MSC23, MSC24) %}
+        {# в роли мест./нареч./прил./действ. прич./союза/част. #}
+
+    {% if m.special_case == MSC1 %}{# канонич. #}
+
+        <span class="Em">канонич.</span>{{ space }}
+
+    {% elif m.special_case == MSC4 %}{# дат. #}
+
+        <span class="Em">дат.</span>{{ space }}
+        {% if m.substantivus_forms %}
+        <a href="{{ entry.get_absolute_url() }}#{{ m.get_url_fragment() }}" target="_blank">
+          {% for form_ucs in m.substantivus_forms %}
+              {% if not loop.first %}
+                  {{ backspace }},{{ space }}
+              {% endif %}
+              {{ form_ucs | web_cslav_words("CSLSegmentEm") }}
+          {% endfor %}
+        </a>{{ space }}
+        {% endif %}
+
+    {% elif m.special_case == MSC5 %}{# твор. ед. в роли нареч. #}
+
+        <span class="Em">твор. ед.</span>{{ space }}
+        <a href="{{ entry.get_absolute_url() }}#{{ m.get_url_fragment() }}" target="_blank">
+          {{ m.substantivus_csl_ucs | web_cslav_words("CSLSegmentEm") }}
+        </a>{{ space }}
+        <span class="Em">в{{ nbsp }}роли нареч.</span>{{ space }}
+
+    {% elif m.special_case in MSC_ROLE_POS %}
+
+        {% if m.special_case == MSC12 %}{% set pos_mark = 'нареч.' %}
+        {% elif m.special_case == MSC14 %}{% set pos_mark = 'прил.' %}
+        {% elif m.special_case == MSC15 %}{% set pos_mark = 'част.' %}
+        {% elif m.special_case == MSC20 %}{% set pos_mark = 'союза' %}
+        {% elif m.special_case == MSC23 %}{% set pos_mark = 'мест.' %}
+        {% elif m.special_case == MSC24 %}{% set pos_mark = 'действ. прич.' %}
+        {% endif %}
+        {% if m.substantivus_csl %}
+            <a href="{{ entry.get_absolute_url() }}#{{ m.get_url_fragment() }}" target="_blank">
+            {{ m.substantivus_csl_ucs | web_cslav_words("CSLSegmentEm") }}
+            </a>{{ space }}
+        {% endif %}
+        {% if m.substantivus_csl|strip|endswith('##') %}
+            {{ backspace }};{{ space }}
+        {% endif %}
+        <span class="Em">в{{ nbsp }}роли {{ pos_mark }}</span>{{ space }}
+
+    {% elif m.special_case == MSC8 %}{# имя собств. #}
+
+        <span class="Em">имя собств.</span>{{ space }}
+
+    {% elif m.special_case == MSC9 %}{# топоним #}
+
+        <span class="Em">топоним</span>{{ space }}
+
+    {% elif m.special_case == MSC11 %}{# мн. #}
+
+        <span class="Em">мн.</span>{{ space }}
+        <a href="{{ entry.get_absolute_url() }}#{{ m.get_url_fragment() }}" target="_blank">
+          {{ m.substantivus_csl_ucs | web_cslav_words("CSLSegmentEm") }}
+        </a>{{ space }}
+
+    {% elif m.special_case == MSC16 %}{# полувспомогательный глагол #}
+
+        <span class="Em">полувспом.</span>{{ space }}
+
+    {% elif m.special_case == MSC17 %}{# безличное употребление глагола #}
+
+        <span class="Em">безл.</span>{{ space }}
+        {% if m.substantivus_csl %}
+          <a href="{{ entry.get_absolute_url() }}#{{ m.get_url_fragment() }}" target="_blank">
+            {{ m.substantivus_csl_ucs |
+               web_civil_injection("Valency", "CSLSegmentEm", "Text")
+               }}
+          </a>{% if m.figurative %}{{ emspace }}{% else %}{{ space }}{% endif %}
+        {% endif %}
+
+    {% elif m.special_case == MSC18 %}{# вводн. #}
+
+        {% if m.substantivus_csl %}
+            <a href="{{ entry.get_absolute_url() }}#{{ m.get_url_fragment() }}" target="_blank">
+              {{ m.substantivus_csl_ucs | web_cslav_words("CSLSegmentEm") }}
+            </a>{{ space }}
+        {% endif %}
+        <span class="Em">вводн.</span>{{ space }}
+
+    {% elif m.special_case == MSC21 %}{# плеоназм #}
+
+        <span class="Em">плеоназм</span>{{ space }}
+        <a href="{{ entry.get_absolute_url() }}#{{ m.get_url_fragment() }}" target="_blank">
+          {{ m.substantivus_csl_ucs | web_civil_injection("Valency", "CSLSegmentEm", "Text") }}
+        </a>
+
+    {% elif m.substantivus %}
+
+        <a href="{{ entry.get_absolute_url() }}#{{ m.get_url_fragment() }}" target="_blank">
+        {% for form_ucs in m.substantivus_forms %}
+            {% if not loop.first %}
+                {{ backspace }},{{ space }}
+            {% endif %}
+
+            {% if (loop.last or loop.index == 3) and
+                    m.is_substantivus_type('n.pl.') %}{# ср. род, мн. число #}
+                {% if not loop.first %}{{ backspace }}{{ space }}{% endif %}
+                <span class="Em">мн.</span>{{ space }}
+            {% elif loop.last and m.is_substantivus_type('f.sg.') %}{# ж. род, ед. число #}
+                {% if not loop.first %}{{ backspace }}{{ space }}{% endif %}
+                <span class="Em">ж.</span>{{ space }}
+            {% endif %}
+
+            {{ form_ucs | web_cslav_words("CSLSegmentEm") }}
+        {% endfor %}
+        </a>{{ space }}
+
+        {% if m.special_case == MSC10 %}{# преимущ. #}
+            {{ backspace }}{{ space }}
+            <span class="Em">преимущ.</span>{{ space }}
+        {% endif %}
+
+        {% if m.substantivus_forms %}
+            {{ backspace }}{{ space }}
+        {% endif %}
+        <span class="Em">в{{ nbsp }}роли сущ.</span>
+        {{ space }}
+
+    {% elif m.substantivus_csl %}
+
+        <a href="{{ entry.get_absolute_url() }}#{{ m.get_url_fragment() }}" target="_blank">
+          {{ m.substantivus_csl_ucs |
+                  web_civil_injection("Em", "CSLSegmentEm", "Text") |
+                  web_csl_special_cases() }}{{ space }}
+        </a>
+
+    {% endif %}
+
+
+    {% if m.figurative and not m.special_case == MSC21 %}
+        <span class="Em">перен.</span>{{ space }}
+    {% endif %}
+
+    {% if m.meaning and not m.special_case == MSC21 %}
+        <span class="Meaning Text hyphenate" lang="ru">{{ m.meaning |
+            web_cslav_injection("CSLSegment") |
+            web_regex("Em", '(?<![А-ЯЁа-яё])(?:перен|букв|зд|см|ср)\\.') |
+            web_regex("Em", 'в[\\s\u00a0]Син\\. пер\\.') |
+            web_regex("Em", '(?<=\()(?:арам)\\.(?=\))') |
+            web_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+            web_refs() }}</span>
+    {% endif %}
+
+    {% if m.gloss and not m.special_case == MSC21 %}
+        {% if m.meaning %}
+            {{ backspace }};{{ space }}
+        {% endif %}
+        <span class="Gloss Em hyphenate" lang="ru">{{ m.gloss |
+            web_cslav_injection("CSLSegment") |
+            web_regex("Text", '‘[^’]+’') |
+            web_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+            web_regex("Text", '(?<=Син\.\sпер\.\s)Керенгаппух|бдолах|сирияне|сирийский|сириец|земля Уц') |
+            web_regex("Text", '(?<=Септ\.\s)Авситидийская') |
+            web_refs() }}</span>
+        {{ space }}
+    {% endif %}
+
+  </div>
+  {% endif %}
+
+{% endmacro %}
+{% trim %}
+<div class="Entry">
+    <div class="FirstParagraph Text">
+
+    {% set base_var = entry.base_vars[0] %}
+    <a href="{{ entry.get_absolute_url() }}" target="_blank">
+        {{ base_var.idem_ucs | web_cslav_words("Headword") }}
+    </a>
+
+    {% if entry.homonym_order %}
+        <span class="HeadwordHomonymNumber">
+            {{ entry.homonym_order }}
+        </span>
+        {{ space }}
+    {% endif %}
+    {{ backspace }}{{ space }}
+
+    {% if entry.part_of_speech %}
+        <span class="Em">
+            {{ entry.get_part_of_speech_display() }}
+        </span>
+        {{ space }}
+    {% endif %}
+
+    {% for mgroup in entry.meaning_groups %}
+        {% for m in mgroup.meanings %}
+            {{ meaning(entry, m) }}
+            {% for mm in m.child_meanings %}
+              {{ meaning(entry, mm) }}
+            {% endfor %}
+            {% for cg in m.collogroups %}
+              {% for mm in cg.all_meanings %}
+                {{ meaning(entry, mm) }}
+              {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+
+    {{ backspace }}</div>
+</div>{# Entry #}
+{% endtrim %}
+
+{# vim: set ft=django.html: #}

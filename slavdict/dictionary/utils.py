@@ -428,21 +428,20 @@ def arabic2roman(n):
             roman += dig1 + dig10
     return roman
 
-CIVIL_IN_CSL = 1
-CSL_IN_CIVIL = 2
+CIVIL_IN_CSL_APPLY_TO_CSL = 0
+CIVIL_IN_CSL_APPLY_TO_CIVIL = 1
+CSL_IN_CIVIL_APPLY_TO_CIVIL = 2
+CSL_IN_CIVIL_APPLY_TO_CSL = 3
 
-APPLY_TO_CSL = 1
-APPLY_TO_CIVIL = 2
-
-def apply_to_mixed(func, text, mixed_content_type=CIVIL_IN_CSL, apply_to=APPLY_TO_CSL):
+def apply_to_mixed(func, text, kind):
     lst = text.split('##')
     for i, elem in enumerate(lst):
         if not elem:
             continue
-        if (i % 2 == 0 and (CIVIL_IN_CSL and APPLY_TO_CSL
-                or CSL_IN_CIVIL and APPLY_TO_CIVIL)
-                or i % 2 == 1 and (CIVIL_IN_CSL and APPLY_TO_CIVIL
-                or CSL_IN_CIVIL and APPLY_TO_CSL)):
+        if (i % 2 == 0 and kind in
+                    (CIVIL_IN_CSL_APPLY_TO_CSL, CSL_IN_CIVIL_APPLY_TO_CIVIL)
+                or i % 2 == 1 and kind in
+                    (CIVIL_IN_CSL_APPLY_TO_CIVIL, CSL_IN_CIVIL_APPLY_TO_CSL)):
             elem = func(elem)
             lst[i] = elem
     return '##'.join(lst)

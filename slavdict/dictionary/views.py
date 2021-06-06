@@ -12,6 +12,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+import markdown
+
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
@@ -59,10 +61,10 @@ from functools import reduce
 # Вспомогательная функция
 # для сортировки списка словарных статей.
 def entry_key(entry):
-    return entry.civil_equivalent.lower(), entry.homonym_order
+    return entry.civil_equivalent.lower(), entry.homonym_order or 0
 
 def entry_key_inversed(entry):
-    return entry.civil_equivalent.lower()[::-1], entry.homonym_order
+    return entry.civil_equivalent.lower()[::-1], entry.homonym_order or 0
 
 def params_without_page(GET):
     excluded_GET_params = ('page', 'AB')
@@ -122,6 +124,20 @@ def materials(request):
 def all_entries(request, is_paged=False):
     if not request.GET:
         text = '''
+<style>
+body {
+    font-family: 'PT Sans', Arial, sans;
+    max-width: 42em;
+    margin: 1em auto;
+}
+.nobr { white-space: nowrap; }
+code { color: green; }
+th, td {
+  padding: 0 1em 1em 0;
+  vertical-align: baseline;
+}
+</style>
+
 Отображение статей как бы для печати. Для фильтрации статей используйте
 параметры адреса данной страницы, например:
 
@@ -130,88 +146,44 @@ def all_entries(request, is_paged=False):
 Данный запрос найдет все статьи Калужниной, начинающиеся с буквы «В».
 
 
-Допустимые параметры
-====================
-
-?aliud-greek                    Статьи, где есть примеры с пометой
-                                "в греч. иначе".
-
-?authors=Петрова,Корнилаева     Статьи соответствующих авторов. Для статей без
-                                авторства используйте сочетание "без автора",
-                                для авторских статей — фамилию автора.
-
-?duplicates                     Отображать только статьи-дубликаты.
-
-?hide-ai                        При отображении статей не показывать рабочие
-                                примечания-комментарии.
-
-?hide-authors                   Скрывать авторство.
-
-?hide-examples                  Скрывать примеры в статьях.
-
-?hide-meanings                  Скрывать значения при статьях, отображая
-                                только заголовки.
-
-?hide-numbers                   Не нумеровать статьи.
-
-?hide-refentries                Не отображать отсылочные статьи.
-
-?inverse                        Упорядочить статьи по обратному гражданскому
-                                написанию заглавного слова. Например, слово
-                                "вняти" будет отсортировано, как если бы это
-                                было слово "итянв".
-
-?list=1324,3345,22              Отображать только статьи с указанными
-                                числовыми идентификаторами.
-
-?not-editable                   При отображении статей не влючать возможность
-                                их изменения прямо на странице.
-
-?per-page=100                   Отображать по столько-то статей на странице,
-                                по умолчанию, все.
-
-?pos-group                      Не только сортировать по алфавиту, но и
-                                группировать по частям речи.
-
-?print-layout=columns           Способ отображения статей при отправке страницы
-                                на печать. Возможные значения: proofreading и
-                                columns. Значение proofreading используется
-                                по умолчанию, распечатываемый текст на печати
-                                отображается в одну колонку с увеличенным
-                                интерлиньяжем. При значении columns текст будет
-                                отображаться с обычным интерлиньяжем и в две
-                                колонки.
-
-?show-ai                        При отображении статей обязательно показывать
-                                рабочие примечания-комментарии.
-
-?show-sort-keys                 При отображении статей обязательно показывать
-                                ключи сортировки. Может быть полезно для
-                                вывода обратного словника. Ключи будут
-                                отображаться в отдельном столбце с выключкой
-                                влево для обычных ключей и вправо для инверсных.
-
-?startswith=Ав                  Отображать только статьи, начинающиеся
-                                на «Ав» без учета регистра символов.
-
-?status=в работе,поиск греч.    Отображать только статьи с перечиленными
-?status=-создана                значениями поля "статус статьи". При постановке
-                                перед наименованием статуса знака минус статьи
-                                с данным статусом будут исключены из выборки.
-
-?volume=3                       Отображать только статьи из такого-то тома.
+| Допустимые параметры | Описание |
+| :--- | :--- |
+| `?aliud-greek` | Статьи, где есть примеры с пометой "в греч. иначе". |
+| `?authors=Петрова,Корнилаева` | Статьи соответствующих авторов. Для статей без авторства используйте сочетание "без автора", для авторских статей — фамилию автора. |
+| `?cgs-vs-entries` | Вместо статей отображать заглавное слово и список всех его *словосочетаний* с одним значением при каждом словосочетании. |
+| `?duplicates` | статьи-дубликаты. |
+| `?hide-ai` | При отображении статей не показывать рабочие примечания-комментарии. |
+| `?hide-authors` | Скрывать авторство. |
+| `?hide-examples` | Скрывать примеры в статьях. |
+| `?hide-meanings` | Скрывать значения при статьях, отображая только заголовки. |
+| `?hide-numbers` | Не нумеровать статьи. |
+| `?hide-refentries` | Не отображать отсылочные статьи. |
+| `?inverse` | Упорядочить статьи по обратному гражданскому написанию заглавного слова. Например, слово "вняти" будет отсортировано, как если бы это было слово "итянв". |
+| `?list=1324,3345,22` | Отображать только статьи с указанными числовыми идентификаторами. |
+| `?mcsl-vs-entries` | Вместо статей отображать заглавное слово и список всех значений, употреблений и пояснений, где встречается цсл текст в двойных решетках (например, `название десятой буквы церковнославянской азбуки ##=и##`). |
+| `?mforms-vs-entries` | Вместо статей отображать заглавное слово и список всех его *преложно-падежных форм*, расставленных при значениях. |
+| `?not-editable` | При отображении статей не влючать возможность их изменения прямо на странице. |
+| `?per-page=100` | Отображать по столько-то статей на странице, по умолчанию, все. |
+| `?pos-group` | Не только сортировать по алфавиту, но и группировать по частям речи. |
+| `?print-layout=columns` | Способ отображения статей при отправке страницы на печать. Возможные значения: proofreading и columns. Значение proofreading используется по умолчанию, распечатываемый текст на печати отображается в одну колонку с увеличенным интерлиньяжем. При значении columns текст будет отображаться с обычным интерлиньяжем и в две колонки. |
+| `?show-ai` | При отображении статей обязательно показывать рабочие примечания-комментарии. |
+| `?show-sort-keys` | При отображении статей обязательно показывать ключи сортировки. Может быть полезно для вывода обратного словника. Ключи будут отображаться в отдельном столбце с выключкой влево для обычных ключей и вправо для инверсных. |
+| `?startswith=Ав` | Отображать только статьи, начинающиеся на «Ав» без учета регистра символов. |
+| <span class="nobr">`?status=в работе,поиск греч.`</span><br>`?status=-создана` | Отображать только статьи с перечиленными значениями поля "статус статьи". При постановке перед наименованием статуса знака минус статьи с данным статусом будут исключены из выборки. |
+| `?volume=3` | Отображать только статьи из такого-то тома. |
 
         ''' % request.path
-        text = text.encode('utf-8')
-        response = HttpResponse(text, content_type="text/plain; charset=utf-8")
+        html = markdown.markdown(text, extensions=['tables']).encode('utf-8')
+        response = HttpResponse(html, content_type='text/html; charset=utf-8')
         return response
 
     PRINTLAYOUT_PROOFREADING = 'proofreading'
     PRINTLAYOUT_COLUMNS = 'columns'
     DEFAULT_PRINTLAYOUT = PRINTLAYOUT_PROOFREADING
 
-    httpGET_AUTHORS = urllib.parse.unquote(request.GET.get('authors', ''))
     httpGET_ALIUD_GREEK = 'aliud-greek' in request.GET
+    httpGET_AUTHORS = urllib.parse.unquote(request.GET.get('authors', ''))
+    httpGET_CGSVSENTRIES = 'cgs-vs-entries' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
     httpGET_HIDEAI = 'hide-ai' in request.GET
     httpGET_HIDEAUTHORS = 'hide-authors' in request.GET
@@ -219,12 +191,14 @@ def all_entries(request, is_paged=False):
     httpGET_HIDEMEANINGS = 'hide-meanings' in request.GET
     httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_HIDEREFENTRIES = 'hide-refentries' in request.GET
+    httpGET_INVERSE = 'inverse' in request.GET
     httpGET_LIST = request.GET.get('list')
+    httpGET_MCSLVSENTRIES = 'mcsl-vs-entries' in request.GET
+    httpGET_MFORMSVSENTRIES = 'mforms-vs-entries' in request.GET
     httpGET_NOT_EDITABLE = 'not-editable' in request.GET
     httpGET_PERPAGE = request.GET.get('per-page')
     httpGET_POS_GROUP = 'pos-group' in request.GET
     httpGET_PRINTLAYOUT = request.GET.get('print-layout', DEFAULT_PRINTLAYOUT)
-    httpGET_INVERSE = 'inverse' in request.GET
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_SHOWSORTKEYS = 'show-sort-keys' in request.GET
     httpGET_STARTSWITH = request.GET.get('startswith')
@@ -354,20 +328,23 @@ def all_entries(request, is_paged=False):
 
     context = {
         'entries': entries,
+        'cgs_vs_entries': httpGET_CGSVSENTRIES,
         'hide_authors': httpGET_HIDEAUTHORS,
         'hide_examples': httpGET_HIDEEXAMPLES,
         'hide_meanings': httpGET_HIDEMEANINGS,
         'inverse_sort': httpGET_INVERSE,
         'is_paged': is_paged,
+        'mforms_vs_entries': httpGET_MFORMSVSENTRIES,
+        'mcsl_vs_entries': httpGET_MCSLVSENTRIES,
         'not_editable': httpGET_NOT_EDITABLE,
-        'params_without_page': params_without_page(request.GET),
         'page': page,
+        'params_without_page': params_without_page(request.GET),
         'print_layout': httpGET_PRINTLAYOUT,
         'show_additional_info': show_additional_info,
         'show_duplicates_warning': False if httpGET_DUPLICATES else True,
         'show_numbers': not httpGET_HIDENUMBERS,
-        'show_sort_keys': httpGET_SHOWSORTKEYS,
         'show_refentries': not httpGET_HIDEREFENTRIES,
+        'show_sort_keys': httpGET_SHOWSORTKEYS,
         'title': title,
         'user': request.user,
         }
@@ -1328,11 +1305,11 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'collocs_refs':
         cgs = set()
-        regex = re.compile(r'\b(?:idem|qv|cf|(?:ср|см)\.|то\s*же,?\s+что)',
+        regex = re.compile(r'\b(?:cf|qv|[сc][рpм]\.|idem|то\s*же,?\s+что\b)',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         for cg in CollocationGroup.objects.all():
             for m in cg.all_meanings:
-                if regex.search(m.meaning + m.gloss):
+                if regex.search('%s %s' % (m.meaning, m.gloss)):
                     cgs.add(cg)
         uri = uri_qs(cgURI, id__in=','.join(str(cg.id) for cg in cgs),
                      volume=VOLUME)
@@ -1342,6 +1319,17 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'meanings_without_examples':
         ms = (m for m in Meaning.objects.all() if not m.example_set.count())
+        uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
+                     volume=VOLUME)
+
+    elif uri == 'terminal_meanings_without_examples':
+        regex = re.compile(r'\b(?:qv|[сc]м\.|idem|то\s*же,?\s+что\b)',
+                           flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
+        ms = (m for m in Meaning.objects.all()
+                if 0 == m.example_set.count()
+                    and 0 == m.collocationgroup_set.count()
+                    and 0 == m.child_meaning_set.filter(parent_meaning=m).count()
+                    and not regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1357,7 +1345,7 @@ def useful_urls_redirect(uri, request):
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects
                             .filter(collogroup_container_id__isnull=True)
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1383,7 +1371,7 @@ def useful_urls_redirect(uri, request):
         regex = re.compile(r'в\s+роли\s',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1393,7 +1381,7 @@ def useful_urls_redirect(uri, request):
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
                 (m.substantivus
                  or m.special_case in MSC_ROLE
-                 or regex.search(m.meaning + m.gloss)
+                 or regex.search('%s %s' % (m.meaning, m.gloss))
                  )
               )
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
@@ -1404,7 +1392,7 @@ def useful_urls_redirect(uri, request):
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden()
-                and (m.substantivus or regex.search(m.meaning + m.gloss))
+                and (m.substantivus or regex.search('%s %s' % (m.meaning, m.gloss)))
                 and m.host_entry.is_part_of_speech('verb')
               )
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
@@ -1414,7 +1402,7 @@ def useful_urls_redirect(uri, request):
         regex = re.compile(r'в\s+знач',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1422,7 +1410,7 @@ def useful_urls_redirect(uri, request):
         regex = re.compile(r'вводн',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1430,7 +1418,7 @@ def useful_urls_redirect(uri, request):
         regex = re.compile(r'с\s+пр(?:ям)\.\s*речью',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1439,7 +1427,7 @@ def useful_urls_redirect(uri, request):
                 r'им[^\s\.]*\.?\s*собст|собст[^\s\.]*\.?\s*им',
                 flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1447,7 +1435,7 @@ def useful_urls_redirect(uri, request):
         regex = re.compile(r'[?!]',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
-                if m.not_hidden() and regex.search(m.meaning + m.gloss))
+                if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
         uri = uri_qs(mURI, id__in=','.join(str(m.id) for m in ms),
                      volume=VOLUME)
 
@@ -1719,6 +1707,9 @@ def useful_urls(request, x=None, y=None):
                     ('С текстом "[?!]"', 'meanings_quest'),
                     ('С текстом "с именем собств."', 'meanings_sobstv'),
                     ('Без примеров', 'meanings_without_examples'),
+                    ('Без примеров (учитывать только терминальные значения '
+                     'без помет "см.", "то же, что" и тэгов "qv" и "idem")',
+                        'terminal_meanings_without_examples'),
                     ('С пометами "см.", "ср.", "то же, что" '
                      '(но не тегами qv, cf, idem) не в сс',
                         'meanings_qv_cf_idem_marks_non_cgs'),

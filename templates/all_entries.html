@@ -73,32 +73,62 @@
         }
 {% endif %}
 
+{% if cgs_vs_entries or mforms_vs_entries or mcsl_vs_entries %}
+        .csl-list {
+            margin: 0.5em 0 0 4em;
+            text-indent: -3em;
+        }
+        .Meaning {
+            padding-left: 0;
+            margin-left: 0;
+        }
+{% endif %}
+
     </style>
 
 
-<div{% if not is_paged and not not_editable %}
+<div{% if not is_paged
+          and not cgs_vs_entries
+          and not mforms_vs_entries
+          and not mcsl_vs_entries
+          and not not_editable %}
         contenteditable="true"
     {% endif %} class="all_entries">
     {% for entry in entries %}
-        <div class="single_entry">
+        {% if (not cgs_vs_entries or entry.has_collogroups) and
+              (not mforms_vs_entries or entry.has_mforms) and
+              (not mcsl_vs_entries or entry.has_mcsl) %}
 
-        {% if show_sort_keys %}
-            <div class="{% if inverse_sort %}sort_key_inverse
-                        {% else %}sort_key{% endif %}">
-                {{ entry.civil_equivalent }}
+            <div class="single_entry">
+
+            {% if show_sort_keys %}
+                <div class="{% if inverse_sort %}sort_key_inverse
+                            {% else %}sort_key{% endif %}">
+                    {{ entry.civil_equivalent }}
+                </div>
+            {% endif %}
+
+            {% if show_numbers and not cgs_vs_entries
+                    and not mforms_vs_entries and not mcsl_vs_entries %}
+                <a href="/entries/{{ entry.id }}/" target="_blank"
+                    style="position: absolute; top: -27px; color: #369;">
+                    <span>[{{ loop.index }}-</span><b>{{ entry.id }}</b>]
+                </a>
+            {% endif %}
+
+            {% if cgs_vs_entries %}
+                {% include 'cgs_vs_entries.html' %}
+            {% elif mforms_vs_entries %}
+                {% include 'mforms_vs_entries.html' %}
+            {% elif mcsl_vs_entries %}
+                {% include 'mcsl_vs_entries.html' %}
+            {% else %}
+                {% include 'web/entry.html' %}
+            {% endif %}
+
             </div>
+
         {% endif %}
-
-        {% if show_numbers %}
-            <a href="/entries/{{ entry.id }}/" target="_blank"
-                style="position: absolute; top: -27px; color: #369;">
-                <span>[{{ loop.index }}-</span><b>{{ entry.id }}</b>]
-            </a>
-        {% endif %}
-
-        {% include 'web/entry.html' %}
-
-        </div>
     {% endfor %}
 
     {% if is_paged %}

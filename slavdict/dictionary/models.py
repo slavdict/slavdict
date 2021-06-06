@@ -27,10 +27,9 @@ from django.utils.safestring import mark_safe
 
 from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary.utils import antconc_anticorrupt
-from slavdict.dictionary.utils import APPLY_TO_CSL
 from slavdict.dictionary.utils import apply_to_mixed
 from slavdict.dictionary.utils import arabic2roman
-from slavdict.dictionary.utils import CIVIL_IN_CSL
+from slavdict.dictionary.utils import CIVIL_IN_CSL_APPLY_TO_CSL
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import collogroup_sort_key
 from slavdict.dictionary.utils import several_wordforms
@@ -246,6 +245,11 @@ STATUS_MAP = {
     'greek': 'g',
     'inWork': 'w',
 }
+HELLINIST_BAD_STATUSES = (
+    STATUS_MAP['beyondDict'],
+    STATUS_MAP['created'],
+    STATUS_MAP['inWork'],
+)
 
 LANGUAGE_CHOICES = (
     ('a', 'греч.'),
@@ -395,7 +399,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
 )
 MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
 MSC11, MSC12, MSC13, MSC14, MSC15, MSC16, MSC17, MSC18, MSC19 = 'klmnopqrs'
-MSC20, MSC21, MSC22, MSC23 = 'tuvw'
+MSC20, MSC21, MSC22, MSC23, MSC24 = 'tuvwx'
 MEANING_SPECIAL_CASES_CHOICES = (
     ('', ''),
     ('Имена', (
@@ -418,6 +422,7 @@ MEANING_SPECIAL_CASES_CHOICES = (
         (MSC5,  'твор. ед. в роли нареч.'),
         (MSC12, 'в роли нареч.'),
         (MSC14, 'в роли прил.'),
+        (MSC24, 'в роли действ. прич.'),
         (MSC23, 'в роли мест.'),
         (MSC20, 'в роли союза'),
         (MSC15, 'в роли част.'),
@@ -430,7 +435,9 @@ MEANING_SPECIAL_CASES_CHOICES = (
         (MSC10, 'преимущ.'),
     )),
 )
-MSC_ROLE = (MSC5, MSC12, MSC14, MSC15, MSC20, MSC23)
+MSC_ROLE_FORM_POS = (MSC5,)
+MSC_ROLE_POS = (MSC12, MSC14, MSC15, MSC20, MSC23, MSC24)
+MSC_ROLE = MSC_ROLE_FORM_POS + MSC_ROLE_POS
 POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7, MSC13, MSC19, MSC22)
 POS_SPECIAL_CASES_MAP = {
     MSC2: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['preposition']],
@@ -1290,7 +1297,9 @@ class Entry(models.Model, JSONSerializable):
                     cg_metaph_meanings = tuple(cg.metaph_meanings)
                     meanings = cg_meanings + cg_metaph_meanings
                     for meaning in meanings:
-                        meaning_examples = tuple(meaning.examples)
+                        meaning_examples = list(meaning.examples)
+                        for submeaning in meaning.child_meanings:
+                            meaning_examples.extend(submeaning.examples)
                         exgroup = ExamplesGroup(meaning_examples,
                                                 mgroup, meaning, cg)
                         self._examples.extend(meaning_examples)
@@ -1331,6 +1340,41 @@ class Entry(models.Model, JSONSerializable):
             'hint': self.homonym_gloss,
             'url': self.get_absolute_url(),
         }
+
+    @property
+    def has_collogroups(self):
+        meaning_collogroups = any(m.collogroups.count() for m in self.all_meanings)
+        return meaning_collogroups or self.collogroups.count()
+
+    @property
+    def has_mforms(self):
+        if any(m.substantivus_csl.strip() for m in self.meaning_set.all()):
+            return True
+        if any(m.substantivus_csl.strip()
+               for mm in self.meanings
+                   for cg in mm.collogroups
+                       for m in cg.meanings):
+            return True
+        if any(m.substantivus_csl.strip()
+               for cg in self.collogroups
+                   for m in cg.meanings):
+            return True
+        return False
+
+    @property
+    def has_mcsl(self):
+        if any(m.has_mcsl for m in self.meaning_set.all()):
+            return True
+        if any(m.has_mcsl
+               for mm in self.meanings
+                   for cg in mm.collogroups
+                       for m in cg.meanings):
+            return True
+        if any(m.has_mcsl
+               for cg in self.collogroups
+                   for m in cg.meanings):
+            return True
+        return False
 
     # Залочена статья для редактирования,
     # во время подготовки тома к печати или нет.
@@ -1870,7 +1914,7 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
     @property
     def substantivus_csl_ucs(self):
         return apply_to_mixed(ucs8, self.substantivus_csl,
-                              CIVIL_IN_CSL, APPLY_TO_CSL)
+                              CIVIL_IN_CSL_APPLY_TO_CSL)
 
     @property
     def substantivus_forms(self):
@@ -1894,6 +1938,10 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
 
     special_case = CharField('особые случаи', max_length=1,
             choices=MEANING_SPECIAL_CASES_CHOICES, blank=True, default='')
+
+    @property
+    def has_mcsl(self):
+        return '##' in self.meaning or '##' in self.gloss
 
     def meaning_for_admin(self):
         text = ''
@@ -2034,7 +2082,7 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
 
     def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         self.substantivus_csl = apply_to_mixed(antconc_anticorrupt,
-                self.substantivus_csl, CIVIL_IN_CSL, APPLY_TO_CSL)
+                self.substantivus_csl, CIVIL_IN_CSL_APPLY_TO_CSL)
         host_entry = self.host_entry
         if self.looks_like_valency(host_entry):
             if self.gloss.strip() and not self.meaning.strip():  #::AUHACK::
@@ -2767,8 +2815,8 @@ class Collocation(models.Model, JSONSerializable, VolumeAttributive):
     @property
     def collocation_ucs(self):
         text = apply_to_mixed(antconc_anticorrupt, self.collocation,
-                              CIVIL_IN_CSL, APPLY_TO_CSL)
-        return apply_to_mixed(ucs8, text, CIVIL_IN_CSL, APPLY_TO_CSL)
+                              CIVIL_IN_CSL_APPLY_TO_CSL)
+        return apply_to_mixed(ucs8, text, CIVIL_IN_CSL_APPLY_TO_CSL)
 
     civil_equivalent = CharField('гражданское написание', max_length=350,
                                  blank=True)
@@ -2800,7 +2848,7 @@ class Collocation(models.Model, JSONSerializable, VolumeAttributive):
 
     def save(self, without_mtime=False, *args, **kwargs):
         self.collocation = apply_to_mixed(antconc_anticorrupt, self.collocation,
-                                          CIVIL_IN_CSL, APPLY_TO_CSL)
+                                          CIVIL_IN_CSL_APPLY_TO_CSL)
         self.civil_equivalent = civilrus_convert(self.collocation)
         self.civil_inverse = self.civil_equivalent[::-1]
         super(Collocation, self).save(*args, **kwargs)
