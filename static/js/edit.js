@@ -638,7 +638,7 @@ Meaning.dependantsToDestroy = [
 
 function Entry(data) {
     var LAST_TEMPLATE_VERSION = 1,
-        BEYOND_DICTIONARY = 'b'; // Статья -- вне словника и словаря
+        CREATED_STATUS = 'c';
     upsert(this, 'additional_info', data, '');
     upsert(this, 'antconc_query', data, '');
     upsert(this, 'canonical_name', data, false);
@@ -659,7 +659,7 @@ function Entry(data) {
     upsert(this, 'sg1', data, '');
     upsert(this, 'sg2', data, '');
     upsert(this, 'short_form', data, '');
-    upsert(this, 'status', data, BEYOND_DICTIONARY);
+    upsert(this, 'status', data, CREATED_STATUS);
     upsert(this, 'tantum', data, '');
     upsert(this, 'template_version', data, LAST_TEMPLATE_VERSION);
     upsert(this, 'uninflected', data, false);

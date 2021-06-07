@@ -228,7 +228,6 @@ PARTICIPLE_TYPE_MAP = {
 }
 
 STATUS_CHOICES = (
-    ('b', 'вне словника'),
     ('c', 'создана'),
     ('w', 'в работе'),
     ('g', 'поиск греч.'),
@@ -236,18 +235,16 @@ STATUS_CHOICES = (
     ('e', 'редактируется'),
     ('a', 'утверждена'),
 )
-DEFAULT_ENTRY_STATUS = 'b'
+DEFAULT_ENTRY_STATUS = 'c'
 STATUS_MAP = {
     'approved': 'a',
     'beingEdited': 'e',
-    'beyondDict': 'b',
     'created': 'c',
     'finished': 'f',
     'greek': 'g',
     'inWork': 'w',
 }
 HELLINIST_BAD_STATUSES = (
-    STATUS_MAP['beyondDict'],
     STATUS_MAP['created'],
     STATUS_MAP['inWork'],
 )

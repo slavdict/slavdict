@@ -207,7 +207,7 @@ th, td {
 
     COMMA = re.compile(r'\s*\,\s*')
     SPACE = re.compile(r'\s+')
-    entries = Entry.objects.exclude(status=STATUS_MAP['beyondDict'])
+    entries = Entry.objects.exclude(volume__lt=1)
 
     if httpGET_AUTHORS:
         httpGET_AUTHORS = [a.strip() for a in COMMA.split(httpGET_AUTHORS)]
