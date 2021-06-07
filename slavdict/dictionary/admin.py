@@ -438,7 +438,7 @@ funcTemp.admin_order_field = 'meaning'
 funcTemp.short_description = 'Значение'
 Example.meaning_for_example = funcTemp
 
-funcTemp = lambda self: self.host_entry
+funcTemp = lambda self: entry_for_x(self)
 funcTemp.admin_order_field = 'meaning'
 funcTemp.short_description = 'Лексема / Словосоч.'
 Example.entry_for_example = funcTemp
