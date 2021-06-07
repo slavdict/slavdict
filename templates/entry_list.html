@@ -27,8 +27,15 @@
     {% if not entries %}
         <div class="message">
         {% if filters.find %}
-            К сожалению, ни одной словарной статьи, начинающейся <span
-            class="nowrap">с <b class="red caps">{{ filters.find.lower() }}...</b>,
+            К сожалению, ни одной словарной статьи <span
+            class="nowrap">на <b class="red caps">{{ filters.find.lower() }}…</b>
+            {% if filters.volume.isdigit() %}
+                {% if filters.volume == '0' %}
+                    за <b class="red caps">пределами томов</b>
+                {% else %}
+                    в <b class="red caps">{{ filters.volume }}-м томе</b>
+                {% endif %}
+            {% endif %}
             не найдено.</span> Пожалуйста, проверьте Ваш запрос на наличие
             опечаток или измените его в целях поиска другого слова. Поиск
             производится без учёта регистра символов.
