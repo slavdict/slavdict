@@ -3,7 +3,7 @@ import binascii
 from django import http
 
 COOKIE_VERSION_NAME = 'cookieVersion'
-COOKIE_VERSION_VALUE = '3'
+COOKIE_VERSION_VALUE = '4'
 
 class InvalidCookieError(RuntimeError):
     pass

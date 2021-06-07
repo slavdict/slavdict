@@ -31,6 +31,11 @@
             .rememberDefault('')
             .htmlTextInput('find');
 
+    f.volume = ko.observable()
+            .rememberInitial(valuesToInitialize.volume)
+            .rememberDefault('all')
+            .htmlSelect('volume', listsForWidgets.volumes, 'all');
+
     f.author = ko.observable()
             .rememberInitial(valuesToInitialize.author)
             .rememberDefault('all')

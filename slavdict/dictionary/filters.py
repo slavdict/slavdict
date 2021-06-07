@@ -49,6 +49,13 @@ def get_entries(form, for_hellinists):
     else:
         PARSING_ERRORS.append('sort')
 
+    # Том
+    volume = form.get('volume')
+    if volume == 'all':
+        FILTER_PARAMS['volume__gt'] = 0
+    elif volume.isdigit():
+        FILTER_PARAMS['volume'] = int(volume)
+
     # Статьи начинаются с
     find = form.get('find')
     if find:

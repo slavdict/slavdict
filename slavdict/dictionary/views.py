@@ -170,7 +170,7 @@ th, td {
 | `?show-sort-keys` | При отображении статей обязательно показывать ключи сортировки. Может быть полезно для вывода обратного словника. Ключи будут отображаться в отдельном столбце с выключкой влево для обычных ключей и вправо для инверсных. |
 | `?startswith=Ав` | Отображать только статьи, начинающиеся на «Ав» без учета регистра символов. |
 | <span class="nobr">`?status=в работе,поиск греч.`</span><br>`?status=-создана` | Отображать только статьи с перечиленными значениями поля "статус статьи". При постановке перед наименованием статуса знака минус статьи с данным статусом будут исключены из выборки. |
-| `?volume=3` | Отображать только статьи из такого-то тома. |
+| `?volume=3` | Отображать только статьи из такого-то тома. `volume=0` отобразит статьи, не включенные ни в один том, `volume=all` — во всех томах, но не вне томов. |
 
         ''' % request.path
         html = markdown.markdown(text, extensions=['tables']).encode('utf-8')
@@ -255,16 +255,10 @@ th, td {
             entries = entries.filter(pk__in=httpGET_LIST)
 
     if httpGET_VOLUME is not None:
-        httpGET_VOLUME = httpGET_VOLUME.lstrip('0')
-        if httpGET_VOLUME == '' or httpGET_VOLUME.isdigit():
-            if httpGET_VOLUME == '':
-                httpGET_VOLUME = YET_NOT_IN_VOLUMES
-            else:
-                httpGET_VOLUME = int(httpGET_VOLUME)
-            volume_entries = (e.id
-                              for e in Entry.objects.all()
-                              if e.volume(httpGET_VOLUME))
-            entries = entries.filter(id__in=volume_entries)
+        if httpGET_VOLUME == 'all':
+            entries = entries.filter(volume__gt=0)
+        elif httpGET_VOLUME.isdigit():
+            entries = entries.filter(volume=int(httpGET_VOLUME))
         else:
             entries = entries.none()
 
@@ -809,7 +803,7 @@ def entry_list(request, for_hellinists=False, per_page=12,
             'sortdir': viewmodels.jsonSortdir,
             'sortbase': viewmodels.jsonSortbase,
             'tantum': viewmodels.jsonTantum,
-            'volume': viewmodels.jsonVolumes,
+            'volumes': viewmodels.jsonVolumes,
             },
         'entries': page.object_list,
         'number_of_entries': paginator.count,

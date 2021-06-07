@@ -11,41 +11,43 @@
     {% set filters = form.cleaned_data %}
     (function () {
         var ef = vM.valuesToInitialize.entryFilters;
-        ef.per_se = {{ 'true' if filters.per_se else 'false' }};
-        ef.find = '{{ filters.find }}';
+        ef.additional_info = {{ 'true' if filters.additional_info else 'false' }};
         ef.author = '{{ filters.author }}';
+        ef.canonical_name = '{{ filters.canonical_name }}';
+        ef.collocations = {{ 'true' if filters.collocations else 'false' }};
+        ef.duplicate = {{ 'true' if filters.duplicate else 'false' }};
+        ef.etymology_sans = {{ 'true' if filters.etymology_sans else 'false' }};
+        ef.etymology = {{ 'true' if filters.etymology else 'false' }};
+        ef.find = '{{ filters.find }}';
+        ef.gender = '{{ filters.gender }}';
+        ef.homonym = {{ 'true' if filters.homonym else 'false' }};
+        ef.meaningcontexts = {{ 'true' if filters.meaningcontexts else 'false' }};
+        ef.onym = '{{ filters.onym }}';
+        ef.per_se = {{ 'true' if filters.per_se else 'false' }};
+        ef.pos = '{{ filters.pos }}';
+        ef.possessive = '{{ filters.possessive }}';
         ef.sortbase = '{{ filters.sortbase }}';
         ef.sortdir = '{{ filters.sortdir }}';
         ef.status = '{{ filters.status }}';
-        ef.pos = '{{ filters.pos }}';
-        ef.uninflected = {{ 'true' if filters.uninflected else 'false' }};
-        ef.gender = '{{ filters.gender }}';
         ef.tantum = '{{ filters.tantum }}';
-        ef.possessive = '{{ filters.possessive }}';
-        ef.onym = '{{ filters.onym }}';
-        ef.canonical_name = '{{ filters.canonical_name }}';
-        ef.etymology = {{ 'true' if filters.etymology else 'false' }};
-        ef.etymology_sans = {{ 'true' if filters.etymology_sans else 'false' }};
+        ef.uninflected = {{ 'true' if filters.uninflected else 'false' }};
         ef.variants = {{ 'true' if filters.variants else 'false' }};
-        ef.collocations = {{ 'true' if filters.collocations else 'false' }};
-        ef.meaningcontexts = {{ 'true' if filters.meaningcontexts else 'false' }};
-        ef.additional_info = {{ 'true' if filters.additional_info else 'false' }};
-        ef.homonym = {{ 'true' if filters.homonym else 'false' }};
-        ef.duplicate = {{ 'true' if filters.duplicate else 'false' }};
+        ef.volume = '{{ filters.volume }}';
     })();
 
     (function () {
         var w = vM.listsForWidgets.entryFilters;
         w.authors = {{ viewmodel.authors }};
+        w.canonical_name = {{ viewmodel.canonical_name }};
+        w.gender = {{ viewmodel.gender }};
+        w.onym = {{ viewmodel.onym }};
+        w.possessive = {{ viewmodel.possessive }};
+        w.pos = {{ viewmodel.pos }};
         w.sortbase = {{ viewmodel.sortbase }};
         w.sortdir = {{ viewmodel.sortdir }};
         w.statuses = {{ viewmodel.statuses }};
-        w.pos = {{ viewmodel.pos }};
-        w.gender = {{ viewmodel.gender }};
         w.tantum = {{ viewmodel.tantum }};
-        w.possessive = {{ viewmodel.possessive }};
-        w.onym = {{ viewmodel.onym }};
-        w.canonical_name = {{ viewmodel.canonical_name }};
+        w.volumes = {{ viewmodel.volumes }};
     })();
 
 </script>

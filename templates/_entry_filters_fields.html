@@ -14,9 +14,11 @@
         <h3>Отобрать статьи по следующим критериям</h3>
 
         <div class="AA">
+        {{ form.volume.label_tag(label_suffix='') }}
+        {{ form.volume }}
+
         {{ form.find.label_tag(label_suffix='') }}
         {{ form.find }}
-
         </div>
 
         <div class="AB">

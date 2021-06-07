@@ -27,12 +27,21 @@
 </span>
 
 {{ space }}
+<span class="f5sS--item" data-bind="visible: !volume.hasDefaultValue()">
+    <span class="f5sSI--prefix">
+        <span data-bind="text: volume.obj().name"></span>
+    </span>
+    <span class="f5sSI--reset"
+          data-bind="click: function() { volume.getDefaultValue(); }"></span>
+</span>
+
+{{ space }}
 <span class="f5sS--item" data-bind="visible: find">
     {{ space }}
     статьи на
     {{ space }}
     <span class="f5sSI--prefix">
-        <span data-bind="text: find"></span>...
+        <span data-bind="text: find"></span>…
     </span>
     <span class="f5sSI--reset"
           data-bind="click: function() { find.getDefaultValue(); }"></span>
