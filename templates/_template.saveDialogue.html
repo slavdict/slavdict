@@ -39,7 +39,23 @@
                     <span>{{ name }}</span>
                 </label>
             {% endfor %}
+
+            {% if user.is_superuser %}
+            <div style="margin-top: 20em">
+                <label style="color: #888; font-weight: bold">Том</label>
+                <select style="width: 11em;"
+                    data-bind="options: $root.ui.choices.volumes,
+                    value: volume, optionsText: 'name',
+                    optionsValue: 'id'">
+                </select>
+                <div style="font-size: smaller; color: gray; font-style: italic;
+                    line-height: 1.3em; margin-top: 0.5em">
+                    Поле не отображается<br>у авторов.
+                </div>
+            </div>
+            {% endif %}
         </div>
+
 
         <div id="sD--additionalInfo" data-bind="visible: $root.canEdit">
             <label>Примечание</label>

@@ -638,6 +638,7 @@ Meaning.dependantsToDestroy = [
 
 function Entry(data) {
     var LAST_TEMPLATE_VERSION = 1,
+        BEYOND_VOLUMES = 0,
         CREATED_STATUS = 'c';
     upsert(this, 'additional_info', data, '');
     upsert(this, 'antconc_query', data, '');
@@ -663,6 +664,7 @@ function Entry(data) {
     upsert(this, 'tantum', data, '');
     upsert(this, 'template_version', data, LAST_TEMPLATE_VERSION);
     upsert(this, 'uninflected', data, false);
+    upsert(this, 'volume', data, BEYOND_VOLUMES);
     upsert(this, 'restricted_use', data, false);
     upsertArray(this, 'participles', Participle, data);
     upsertArray(this, 'orthvars', Orthvar, data);

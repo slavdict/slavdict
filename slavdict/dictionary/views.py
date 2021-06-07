@@ -978,21 +978,20 @@ def edit_entry(request, id):
         'entry_status': viewmodels.editStatuses,
         'gender': viewmodels.editGenders,
         'onym': viewmodels.editOnyms,
-        'part_of_speech': viewmodels._choices(
-                            models.PART_OF_SPEECH_CHOICES),
         'participle_type': viewmodels.editParticiples,
+        'part_of_speech': viewmodels._choices(models.PART_OF_SPEECH_CHOICES),
         'substantivus_type': viewmodels.editSubstantivusTypes,
         'tantum': viewmodels.editTantum,
-        'translation_source': viewmodels._choices(
-                            models.TRANSLATION_SOURCE_CHOICES),
+        'translation_source': viewmodels._choices(models.TRANSLATION_SOURCE_CHOICES),
+        'volumes': viewmodels.editVolumes,
     }
     labels = {
         'author': dict(viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
         'entry_status': dict(models.STATUS_CHOICES),
         'gender': dict(models.GENDER_CHOICES),
         'onym': dict(models.ONYM_CHOICES),
-        'part_of_speech': dict(models.PART_OF_SPEECH_CHOICES),
         'participle_type': dict(models.PARTICIPLE_CHOICES),
+        'part_of_speech': dict(models.PART_OF_SPEECH_CHOICES),
         'substantivus_type': dict(models.SUBSTANTIVUS_TYPE_CHOICES),
         'tantum': dict(models.TANTUM_CHOICES),
         'translation_source': models.TRANSLATION_SOURCE_TEXT,

@@ -1395,7 +1395,7 @@ class Entry(models.Model, JSONSerializable):
     def first_letter(self):
         return self.civil_equivalent.lstrip(' =*')[:1].lower()
 
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, default=DEFAULT_VOLUME_CHOICE)
     tmp_volume = SmallIntegerField('предыдущее значение поля «Том»', blank=True, null=True)
 
     def is_in_volume(self, volume=YET_NOT_IN_VOLUMES):
@@ -1566,6 +1566,7 @@ class Entry(models.Model, JSONSerializable):
             'tantum',
             'template_version',
             'uninflected',
+            'volume',
         )
         dct = dict((key, self.__dict__[key]) for key in _fields)
         dct['participles'] = [p.forJSON() for p in self.participles]

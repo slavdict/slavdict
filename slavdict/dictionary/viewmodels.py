@@ -54,6 +54,8 @@ volumes = (
     for key, value in models.VOLUME_LETTERS.items()
 )
 
+editVolumes = _choices(models.VOLUME_CHOICES)
+
 canonical_name = (
     {'id': 'all', 'name': 'все имена'},
     {'id': '1',   'name': 'только канонические'},
