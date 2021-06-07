@@ -23,7 +23,6 @@ from slavdict.dictionary.models import Participle
 from slavdict.dictionary.models import Tip
 from slavdict.dictionary.models import Translation
 from slavdict.dictionary.models import VOLUME_LETTERS
-from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
 from slavdict.dictionary.models import LETTERS
 from slavdict.dictionary.models import ANY_LETTER
 from slavdict.dictionary.utils import arabic2roman
@@ -194,41 +193,20 @@ class VolumeFilter(admin.SimpleListFilter):
             (str(volume),
             '%s:\u2003%s' % (arabic2roman(volume), ', '.join(letters).upper()))
             for volume, letters in sorted(VOLUME_LETTERS.items()))
-        choices = choices + (('0', 'не вошедшие в тома буквы'),)
+        choices += (('all', 'все тома'),)
+        choices += (('0', 'не вошедшее ни в один том'),)
         return choices
 
     def queryset(self, request, queryset):
         value = self.value()
         if value is None:
             return queryset
-        elif value == '0':
-            return queryset.filter(id__in=self.xs(volume=YET_NOT_IN_VOLUMES))
+        elif value == 'all':
+            return queryset.filter(volume__gt=0)
         elif value.isdigit():
-            return queryset.filter(id__in=self.xs(volume=int(self.value())))
+            return queryset.filter(volume=int(self.value()))
         else:
             return queryset.none()
-
-class VolumeEntryFilter(VolumeFilter):
-    def xs(self, volume=YET_NOT_IN_VOLUMES):
-        return (e.id for e in Entry.objects.all() if e.volume(volume))
-
-class VolumeCollogroupFilter(VolumeFilter):
-    def xs(self, volume=YET_NOT_IN_VOLUMES):
-        return (x.id for x in CollocationGroup.objects.all()
-                     if x.volume(volume))
-
-class VolumeMeaningFilter(VolumeFilter):
-    def xs(self, volume=YET_NOT_IN_VOLUMES):
-        return (m.id for m in Meaning.objects.all()
-                     if m.not_hidden() and m.volume(volume))
-
-class VolumeExampleFilter(VolumeFilter):
-    def xs(self, volume=YET_NOT_IN_VOLUMES):
-        return (x.id for x in Example.objects.all() if x.volume(volume))
-
-class VolumeTranslationFilter(VolumeFilter):
-    def xs(self, volume=YET_NOT_IN_VOLUMES):
-        return (x.id for x in Translation.objects.all() if x.volume(volume))
 
 
 class LetterFilter(admin.SimpleListFilter):
@@ -423,7 +401,7 @@ class AdminTranslation(admin.ModelAdmin):
     list_display_links = ('example_for_translation', 'id')
     list_editable = ('translation', 'source', 'hidden', 'fragmented')
     list_filter = (
-        VolumeTranslationFilter,
+        VolumeFilter,
         LetterTranslationFilter,
         'source',
         'fragmented',
@@ -487,7 +465,7 @@ class AdminExample(admin.ModelAdmin):
     list_display = ('entry_for_example', 'meaning_for_example', 'id', 'example', 'address_text', 'greek_eq_status')
     list_display_links = ('id', 'example')
     list_editable = ('greek_eq_status', 'address_text')
-    list_filter = (VolumeExampleFilter, LetterExampleFilter, 'greek_eq_status')
+    list_filter = (VolumeFilter, LetterExampleFilter, 'greek_eq_status')
     search_fields = (
         'example',
         'address_text',
@@ -610,7 +588,7 @@ class AdminMeaning(admin.ModelAdmin):
         'gloss',
     )
     list_filter = (
-        VolumeMeaningFilter,
+        VolumeFilter,
         LetterMeaningFilter,
         'metaphorical',
         FigurativeMeaningFilter,
@@ -733,7 +711,7 @@ class AdminEntry(admin.ModelAdmin):
         'headword',
         )
     list_filter = (
-        VolumeEntryFilter,
+        VolumeFilter,
         LetterEntryFilter,
         'authors',
         'status',
@@ -942,7 +920,7 @@ class AdminCollocationGroup(admin.ModelAdmin):
     )
     list_display_links = ('_entry', '__str__')
     list_editable = ('phraseological',)
-    list_filter = (VolumeCollogroupFilter, LetterCollogroupFilter, 'phraseological')
+    list_filter = (VolumeFilter, LetterCollogroupFilter, 'phraseological')
     search_fields = ('collocation_set__civil_equivalent', 'collocation_set__collocation')
     class Media:
         css = {"all": ("fix_admin.css",)}

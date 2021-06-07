@@ -445,3 +445,9 @@ def apply_to_mixed(func, text, kind):
             elem = func(elem)
             lst[i] = elem
     return '##'.join(lst)
+
+def volume_label(volume_number, volume_letters):
+    return 'Том %s (%s)' % (
+        arabic2roman(volume_number),
+        ', '.join(letter.upper() for letter in volume_letters)
+    )

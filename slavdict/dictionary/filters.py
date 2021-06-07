@@ -230,11 +230,9 @@ def get_examples(form):
     # Том
     value = form.get('hwVolume') or 'all'
     if value == 'all':
-        pass
-    elif value == 'none':
-        entries = Entry.objects.filter(volume__eq=0)
-    elif value.isdigit():
         entries = Entry.objects.filter(volume__gt=0)
+    elif value.isdigit():
+        entries = Entry.objects.filter(volume=int(value))
     else:
         PARSING_ERRORS.append('hwVolume')
 

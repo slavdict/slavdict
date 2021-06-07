@@ -36,6 +36,7 @@ from slavdict.dictionary.utils import several_wordforms
 from slavdict.dictionary.utils import ucs_affix_or_word
 from slavdict.dictionary.utils import ucs_convert as ucs8
 from slavdict.dictionary.utils import ucs_convert_affix
+from slavdict.dictionary.utils import volume_label
 from slavdict.jinja_extensions.hyphenation import hyphenate_ucs8 as h
 from slavdict.jinja_extensions import trim_spaces as ts
 
@@ -467,6 +468,14 @@ VOLUME_LETTERS = {
 ANY_LETTER = None
 LOCKED_LETTERS = VOLUME_LETTERS[1] + VOLUME_LETTERS[2] + VOLUME_LETTERS[3]
 CURRENT_VOLUME = 3
+NO_VOLUME_CHOICE = 0
+DEFAULT_VOLUME_CHOICE = NO_VOLUME_CHOICE
+VOLUME_CHOICES = (
+    (NO_VOLUME_CHOICE, 'Вне томов'),
+) + tuple(
+    (key, volume_label(key, value))
+    for key, value in sorted(VOLUME_LETTERS.items())
+)
 
 
 class WithoutHiddenManager(models.Manager):
@@ -475,7 +484,7 @@ class WithoutHiddenManager(models.Manager):
                      self).get_queryset().filter(hidden=False)
 
 
-class JSONSerializable(object):
+class JSONSerializable:
 
     def forJSON(self):
         raise NotImplementedError
@@ -484,12 +493,12 @@ class JSONSerializable(object):
         return json.dumps(self.forJSON(),
                           ensure_ascii=False, separators=(',', ':'))
 
-class VolumeAttributive(object):
+class VolumeAttributive:
 
-    def volume(self, volume=YET_NOT_IN_VOLUMES):
+    def is_in_volume(self, volume=YET_NOT_IN_VOLUMES):
         host_entry = self.host_entry
         if host_entry:
-            return host_entry.volume(volume)
+            return host_entry.is_in_volume(volume)
         return False
 
 
@@ -1380,7 +1389,7 @@ class Entry(models.Model, JSONSerializable):
     # во время подготовки тома к печати или нет.
     @property
     def preplock(self):
-        yet_not_in_volumes = self.volume(volume=YET_NOT_IN_VOLUMES)
+        yet_not_in_volumes = self.volume == YET_NOT_IN_VOLUMES
         not_in_locked_letters = self.first_letter() not in LOCKED_LETTERS
         if yet_not_in_volumes or not_in_locked_letters:
             return False
@@ -1389,26 +1398,23 @@ class Entry(models.Model, JSONSerializable):
     def first_letter(self):
         return self.civil_equivalent.lstrip(' =*')[:1].lower()
 
-    def volume(self, volume=YET_NOT_IN_VOLUMES):
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
+    tmp_volume = SmallIntegerField('предыдущее значение поля «Том»', blank=True, null=True)
+
+    def is_in_volume(self, volume=YET_NOT_IN_VOLUMES):
         if volume is WHOLE_DICTIONARY:
-            return True
+            return self.volume > 0
         first_letter = self.first_letter()
 
         # Если аргумент volume не передан, то выбираем только те статьи,
         # для которых том ещё не определен.
         if volume is YET_NOT_IN_VOLUMES:
-            used_letters = itertools.chain(*list(VOLUME_LETTERS.values()))
-            match = first_letter not in used_letters
+            return self.volume == 0
         else:
             if isinstance(volume, (list, tuple)):
-                volumes = volume
-                used_letters = []
-                for volume in volumes:
-                    used_letters.extend(VOLUME_LETTERS.get(volume, []))
+                return self.volume in volume
             else:
-                used_letters = VOLUME_LETTERS.get(volume, [])
-            match = first_letter in used_letters
-        return match
+                return self.volume == volume
 
     def starts_with(self, starts_with=ANY_LETTER):
         # Если аргумент starts_with не передан, то выбираем все статьи
@@ -1440,6 +1446,18 @@ class Entry(models.Model, JSONSerializable):
                          for key, value in QUERY_PARAMS.items())
         return '{}?{}'.format(URL, QUERY)
 
+    def resave_all(self, without_mtime=False):
+        for o in self.orth_vars:
+            o.resave_all(without_mtime=without_mtime)
+        for et in self.etymologies:
+            et.resave_all(without_mtime=without_mtime)
+        for m in self.all_meanings:
+            m.resave_all(without_mtime=without_mtime)
+        for cg in self.collogroups:
+            cg.resave_all(without_mtime=without_mtime)
+        for p in self.participles:
+            p.resave_all(without_mtime=without_mtime)
+
     def save(self, without_mtime=False, *args, **kwargs):
         for attr in ('genitive', 'nom_sg', 'short_form', 'sg1', 'sg2'):
             setattr(self, attr, antconc_anticorrupt(getattr(self, attr)))
@@ -1447,6 +1465,7 @@ class Entry(models.Model, JSONSerializable):
         if orth_vars:
             self.civil_equivalent = civilrus_convert(orth_vars[0].idem.strip())
             self.civil_inverse = self.civil_equivalent[::-1]
+        resave_all = False
         resave_meanings = False
         len_meanings = len(self.meanings)
         first_meaning = self.meanings[0] if len_meanings > 0 else None
@@ -1461,6 +1480,11 @@ class Entry(models.Model, JSONSerializable):
                                        or len(first_meaning.examples) > 0))):
             self.restricted_use = False
             resave_meanings = True
+        if (self.tmp_volume is None or self.tmp_volume != self.volume):
+            if self.volume is None:
+                self.volume = 0
+            self.tmp_volume = self.volume
+            resave_all = True
         if not without_mtime:
             self.mtime = datetime.datetime.now()
         should_log = not self.pk
@@ -1470,7 +1494,9 @@ class Entry(models.Model, JSONSerializable):
             logger.info('<User: %s> created <Entry id: %s, headword: %s>' % (
                         user and user.last_name or 'No current user',
                         self.id, self.civil_equivalent))
-        if resave_meanings:
+        if resave_all:
+            self.resave_all(without_mtime=without_mtime)
+        elif resave_meanings:
             for m in self.all_meanings:
                 m.save(without_mtime=without_mtime, no_propagate=True)
 
@@ -1630,6 +1656,7 @@ class Etymology(models.Model, JSONSerializable, VolumeAttributive):
     mark = CharField('грамматическая помета', max_length=20, blank=True)
     additional_info = TextField('примечание', blank=True)
     mtime = DateTimeField(editable=False, auto_now=True)
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
 
     @property
     def host_entry(self):
@@ -1650,12 +1677,15 @@ class Etymology(models.Model, JSONSerializable, VolumeAttributive):
         else:
             return self.collocation
 
-    def save(self, without_mtime=False, *args, **kwargs):
-        super(Etymology, self).save(*args, **kwargs)
-        if without_mtime:
-            return
+    def resave_all(self, without_mtime=False):
+        self.save(without_mtime=without_mtime, no_propagate=True)
+
+    def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         host_entry = self.host_entry
         if host_entry is not None:
+            self.volume = host_entry.volume
+        super(Etymology, self).save(*args, **kwargs)
+        if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
@@ -1748,6 +1778,7 @@ class MeaningContext(models.Model, JSONSerializable, VolumeAttributive):
             blank=True)
 
     mtime = DateTimeField(editable=False, auto_now=True)
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
 
     @property
     def show_in_dictionary(self):
@@ -1777,12 +1808,15 @@ class MeaningContext(models.Model, JSONSerializable, VolumeAttributive):
         else:
             return host
 
-    def save(self, without_mtime=False, *args, **kwargs):
-        super(MeaningContext, self).save(*args, **kwargs)
-        if without_mtime:
-            return
+    def resave_all(self, without_mtime=False):
+        self.save(without_mtime=without_mtime, no_propagate=True)
+
+    def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         host_entry = self.host_entry
         if host_entry is not None:
+            self.volume = host_entry.volume
+        super(MeaningContext, self).save(*args, **kwargs)
+        if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
@@ -2018,6 +2052,7 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
 
     ctime = DateTimeField(editable=False, auto_now_add=True)
     mtime = DateTimeField(editable=False, auto_now=True)
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
 
     @property
     def host_entry(self):
@@ -2080,10 +2115,23 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
         if len(words) > 0 and all(self._RE2.search(w) for w in words):
             return True
 
+    def resave_all(self, without_mtime=False):
+        self.save(without_mtime=without_mtime, no_propagate=True)
+        for mc in self.meaningcontext_set.all():
+            mc.resave_all(without_mtime=without_mtime)
+        for ex in self.examples:
+            ex.resave_all(without_mtime=without_mtime)
+        for m in self.child_meanings:
+            m.resave_all(without_mtime=without_mtime)
+        for cg in self.collogroups:
+            cg.resave_all(without_mtime=without_mtime)
+
     def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         self.substantivus_csl = apply_to_mixed(antconc_anticorrupt,
                 self.substantivus_csl, CIVIL_IN_CSL_APPLY_TO_CSL)
         host_entry = self.host_entry
+        if host_entry is not None:
+            self.volume = host_entry.volume
         if self.looks_like_valency(host_entry):
             if self.gloss.strip() and not self.meaning.strip():  #::AUHACK::
                 self.meaning = self.gloss
@@ -2298,6 +2346,7 @@ class Example(models.Model, JSONSerializable, VolumeAttributive):
             choices=GREEK_EQ_STATUS, default=GREEK_EQ_LOOK_FOR)
 
     mtime = DateTimeField(editable=False, auto_now=True)
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
 
     @property
     def host_entry(self):
@@ -2381,12 +2430,20 @@ class Example(models.Model, JSONSerializable, VolumeAttributive):
     def get_url_fragment(self):
         return 'ex{0}'.format(self.id)
 
-    def save(self, without_mtime=False, *args, **kwargs):
+    def resave_all(self, without_mtime=False):
+        self.save(without_mtime=without_mtime, no_propagate=True)
+        for t in self.translation_set.all():
+            t.resave_all(without_mtime=without_mtime)
+        for ge in self.greek_equivs:
+            ge.resave_all(without_mtime=without_mtime)
+
+    def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         self.lowercase_if_necessary()
         self.angle_brackets()
         self.ts_convert()
         host_entry = self.host_entry
         if host_entry is not None:
+            self.volume = host_entry.volume
             self.entry = host_entry
         host = self.host
         if host and 'base_meaning_id' in host.__dict__:
@@ -2395,7 +2452,7 @@ class Example(models.Model, JSONSerializable, VolumeAttributive):
         if without_mtime:
             return
         host_entry = self.host_entry
-        if host_entry is not None:
+        if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
 
         if not self.address_text.strip() and len(self.example) < 10:
@@ -2519,6 +2576,7 @@ class Translation(models.Model, JSONSerializable, VolumeAttributive):
             help_text='отображать перевод только в комментариях для авторов')
     translation = TextField('перевод')
     additional_info = TextField('примечание', blank=True)
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
 
     def source_label(self):
         return TRANSLATION_SOURCE_TEXT.get(self.source, '')
@@ -2559,7 +2617,10 @@ class Translation(models.Model, JSONSerializable, VolumeAttributive):
     def get_url_fragment(self):
         return 't{0}'.format(self.id)
 
-    def save(self, without_mtime=False, *args, **kwargs):
+    def resave_all(self, without_mtime=False):
+        self.save(without_mtime=without_mtime, no_propagate=True)
+
+    def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         # Корректировка интервала фрагментированного перевода, если после
         # правки примера позиционирование перевода протухло. FIXME: правки
         # примеров не отслеживаются так, чтобы можно было перерасчитывать
@@ -2575,12 +2636,11 @@ class Translation(models.Model, JSONSerializable, VolumeAttributive):
             if exceeding_length or fs_out or fe_out:
                 self.fragment_start = n_words - 1 or 1
                 self.fragment_end = self.fragment_start
-
-        super(Translation, self).save(*args, **kwargs)
-        if without_mtime:
-            return
         host_entry = self.host_entry
         if host_entry is not None:
+            self.volume = host_entry.volume
+        super(Translation, self).save(*args, **kwargs)
+        if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
@@ -2653,6 +2713,7 @@ class CollocationGroup(models.Model, JSONSerializable, VolumeAttributive):
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     ctime = DateTimeField(editable=False, auto_now_add=True)
     mtime = DateTimeField(editable=False, auto_now=True)
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
     additional_info = TextField('примечание', blank=True)
     hidden = BooleanField('Скрыть словосочетание', help_text='''Не отображать
             словосочетание в статье.''', default=False, editable=False)
@@ -2729,12 +2790,19 @@ class CollocationGroup(models.Model, JSONSerializable, VolumeAttributive):
     def get_url_fragment(self):
         return 'cg{0}'.format(self.id)
 
-    def save(self, without_mtime=False, *args, **kwargs):
-        super(CollocationGroup, self).save(*args, **kwargs)
-        if without_mtime:
-            return
+    def resave_all(self, without_mtime=False):
+        self.save(without_mtime=without_mtime, no_propagate=True)
+        for c in self.collocations:
+            c.resave_all(without_mtime=without_mtime)
+        for m in self.all_meanings:
+            m.resave_all(without_mtime=without_mtime)
+
+    def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         host_entry = self.host_entry
         if host_entry is not None:
+            self.volume = host_entry.volume
+        super(CollocationGroup, self).save(*args, **kwargs)
+        if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
@@ -2832,6 +2900,7 @@ class Collocation(models.Model, JSONSerializable, VolumeAttributive):
         return etyms
 
     mtime = DateTimeField(editable=False, auto_now=True)
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
 
     @property
     def host_entry(self):
@@ -2846,16 +2915,21 @@ class Collocation(models.Model, JSONSerializable, VolumeAttributive):
     def host(self):
         return self.collogroup
 
-    def save(self, without_mtime=False, *args, **kwargs):
+    def resave_all(self, without_mtime=False):
+        self.save(without_mtime=without_mtime, no_propagate=True)
+        for et in self.etymologies:
+            et.resave_all(without_mtime=without_mtime)
+
+    def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         self.collocation = apply_to_mixed(antconc_anticorrupt, self.collocation,
                                           CIVIL_IN_CSL_APPLY_TO_CSL)
         self.civil_equivalent = civilrus_convert(self.collocation)
         self.civil_inverse = self.civil_equivalent[::-1]
-        super(Collocation, self).save(*args, **kwargs)
-        if without_mtime:
-            return
         host_entry = self.host_entry
         if host_entry is not None:
+            self.volume = host_entry.volume
+        super(Collocation, self).save(*args, **kwargs)
+        if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
@@ -2936,6 +3010,7 @@ class GreekEquivalentForExample(models.Model, JSONSerializable, VolumeAttributiv
 
     aliud = BooleanField('в греч. иначе', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
     order = SmallIntegerField('порядок следования', blank=True, default=345)
 
     @property
@@ -2961,8 +3036,14 @@ class GreekEquivalentForExample(models.Model, JSONSerializable, VolumeAttributiv
         else:
             return host
 
-    def save(self, without_mtime=False, *args, **kwargs):
+    def resave_all(self, without_mtime=False):
+        self.save(without_mtime=without_mtime, no_propagate=True)
+
+    def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         self.unitext = self.unitext.strip()
+        host_entry = self.host_entry
+        if host_entry is not None:
+            self.volume = host_entry.volume
         super(GreekEquivalentForExample, self).save(*args, **kwargs)
         example = self.for_example
         if self.unitext.strip() and example.greek_eq_status in (
@@ -2973,10 +3054,7 @@ class GreekEquivalentForExample(models.Model, JSONSerializable, VolumeAttributiv
                 Example.GREEK_EQ_URGENT):
             example.greek_eq_status = Example.GREEK_EQ_FOUND
             example.save(without_mtime=without_mtime)
-        if without_mtime:
-            return
-        host_entry = self.host_entry
-        if host_entry is not None:
+        if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
@@ -3075,6 +3153,7 @@ class OrthographicVariant(models.Model, JSONSerializable, VolumeAttributive):
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     no_ref_entry = BooleanField('Не делать отсылочной статьи', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
 
     @property
     def host_entry(self):
@@ -3082,15 +3161,18 @@ class OrthographicVariant(models.Model, JSONSerializable, VolumeAttributive):
 
     host = host_entry
 
-    def save(self, without_mtime=False, *args, **kwargs):
+    def resave_all(self, without_mtime=False):
+        self.save(without_mtime=without_mtime, no_propagate=True)
+
+    def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         self.idem = antconc_anticorrupt(self.idem)
         if self.questionable and not self.reconstructed:
             self.reconstructed = True
-        super(OrthographicVariant, self).save(*args, **kwargs)
-        if without_mtime:
-            return
         host_entry = self.host_entry
         if host_entry is not None:
+            self.volume = host_entry.volume
+        super(OrthographicVariant, self).save(*args, **kwargs)
+        if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
@@ -3150,6 +3232,7 @@ class Participle(models.Model, JSONSerializable, VolumeAttributive):
 
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     mtime = DateTimeField(editable=False, auto_now=True)
+    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
 
     @property
     def host_entry(self):
@@ -3157,13 +3240,16 @@ class Participle(models.Model, JSONSerializable, VolumeAttributive):
 
     host = host_entry
 
-    def save(self, without_mtime=False, *args, **kwargs):
+    def resave_all(self, without_mtime=False):
+        self.save(without_mtime=without_mtime, no_propagate=True)
+
+    def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
         self.idem = antconc_anticorrupt(self.idem)
-        super(Participle, self).save(*args, **kwargs)
-        if without_mtime:
-            return
         host_entry = self.host_entry
         if host_entry is not None:
+            self.volume = host_entry.volume
+        super(Participle, self).save(*args, **kwargs)
+        if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
 
     def delete(self, without_mtime=False, *args, **kwargs):
