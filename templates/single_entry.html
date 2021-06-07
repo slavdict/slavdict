@@ -91,6 +91,14 @@
         {% include 'web/entry.html' %}
     {% endif %}
 
+    <div style="font-size: 0.65em; margin-top: 2em; text-align: center; color: gray">
+    {% if entry.volume > 0 %}
+        {{ entry.volume_in_roman }} том
+    {% else %}
+        Вне томов словаря
+    {% endif %}
+    </div>
+
 {% endblock %}
 
 {% block javascript_links %}

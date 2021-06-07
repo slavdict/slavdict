@@ -1398,6 +1398,12 @@ class Entry(models.Model, JSONSerializable):
     volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, default=DEFAULT_VOLUME_CHOICE)
     tmp_volume = SmallIntegerField('предыдущее значение поля «Том»', blank=True, null=True)
 
+    @property
+    def volume_in_roman(self):
+        if self.volume > 0:
+            return arabic2roman(self.volume)
+        return '*'
+
     def is_in_volume(self, volume=YET_NOT_IN_VOLUMES):
         if volume is WHOLE_DICTIONARY:
             return self.volume > 0
