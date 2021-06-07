@@ -37,7 +37,7 @@ class FilterEntriesForm(forms.Form):
     duplicate = forms.BooleanField(label='Статьи-дубликаты', required=False)
     etymology = forms.BooleanField(label='Статьи с этимологией', required=False)
     etymology_sans = forms.BooleanField(label='Статьи без этимологии', required=False)
-    find = forms.CharField(required=False, label='Начинается с')
+    find = forms.CharField(required=False, label='Начинается на')
     gender = forms.ChoiceField(choices=GENDER_CHOICES, label='Род', required=False)
     homonym = forms.BooleanField(label='Статьи-омонимы', required=False)
     meaningcontexts = forms.BooleanField(label='С контекстами значения', required=False)
