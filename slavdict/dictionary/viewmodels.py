@@ -5,6 +5,7 @@ from django.db.utils import ProgrammingError
 
 from slavdict.custom_user.models import CustomUser
 from slavdict.dictionary import models
+from slavdict.dictionary.utils import volume_label
 
 def _json(x):
     return json.dumps(x, ensure_ascii=False, separators=(',',':'))
@@ -43,8 +44,15 @@ except (OperationalError, ProgrammingError):
     AUTHOR_CHOICES = tuple()
     authors = tuple()
 
-
 editAuthors = (NONE_ID_OBJECT,) + _choices(AUTHOR_CHOICES)
+
+volumes = (
+    {'id': 'all', 'name': 'все тома'},
+    {'id': '0', 'name': 'статьи, не вошедшие в тома'},
+) + tuple(
+    {'id': str(key), 'name': volume_label(key, value)}
+    for key, value in models.VOLUME_LETTERS.items()
+)
 
 canonical_name = (
     {'id': 'all', 'name': 'все имена'},
@@ -124,6 +132,7 @@ jsonSortbase = _json(sortbase)
 jsonSortdir = _json(sortdir)
 jsonStatuses = _json(statuses)
 jsonTantum = _json(tantum)
+jsonVolumes = _json(volumes)
 
 tupleAuthors = _tuple(authors)
 tupleCanonicalName = _tuple(canonical_name)
@@ -137,3 +146,4 @@ tupleSortbase = _tuple(sortbase)
 tupleSortdir = _tuple(sortdir)
 tupleStatuses = _tuple(statuses)
 tupleTantum = _tuple(tantum)
+tupleVolumes = _tuple(volumes)

@@ -42,6 +42,11 @@
 </span>
 
 {{ space }}
+<span class="f5sS--item" data-bind="visible: !hwVolume.hasDefaultValue()">
+    <span data-bind="text: hwVolume.obj().name"></span>
+</span>
+
+{{ space }}
 <span class="f5sS--item" data-bind="visible: hwAddress">
     {{ space }}
     адреса иллюстраций на
