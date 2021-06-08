@@ -35,6 +35,8 @@ restart: stop update start
 
 update: copydiff destroy_loc_changes checkout collectstatic fixown migrate
 
+update-lite: copydiff destroy_loc_changes checkout fixown
+
 killbg:
 	test ! -e .bgpids || ( xargs -a .bgpids kill ; rm .bgpids ; true )
 
@@ -162,16 +164,21 @@ endif
 rsync:
 	rsync -av --delete slavdict:/var/www/slavdict/.dumps .
 
-remote-restart:
+before-remote-update:
 	test $$(git status -s | wc -l) = 0
 	git push origin master
+
+remote-restart: before-remote-update
 	ssh slavdict make -C /var/www/slavdict restart
 
-remote-csl-dump:
+remote-update: before-remote-update
+	ssh slavdict make -C /var/www/slavdict update-lite
+
+remote-csl-dump: remote-update
 	ssh slavdict nohup /var/www/slavdict/bin/csl_dumper.sh
 	$(MAKE) rsync
 
-remote-slavdict-dump:
+remote-slavdict-dump: remote-update
 	ssh slavdict nohup /var/www/slavdict/bin/dump.sh
 	$(MAKE) rsync
 
@@ -180,6 +187,7 @@ install:
 	command -v pipenv && pipenv install || echo 'pipenv is not installed'; false
 
 .PHONY: \
+	before-remote-update \
     checkout \
     clean \
     collectstatic \
@@ -196,9 +204,10 @@ install:
     listen-indesign \
     migrate \
     migrestart \
-    remove-restart \
-    remove-csl-dump \
-    remove-slavdict-dump \
+    remote-csl-dump \
+    remote-restart \
+    remote-slavdict-dump \
+	remote-update \
     restart \
     _revert \
     revert \
@@ -207,4 +216,5 @@ install:
     start \
     stop \
     update \
+    update-lite \
 
