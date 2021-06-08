@@ -10,6 +10,10 @@ from slavdict.dictionary.utils import volume_label
 def _json(x):
     return json.dumps(x, ensure_ascii=False, separators=(',',':'))
 
+def _json_deterministic(x):
+    return json.dumps(x, ensure_ascii=False, separators=(',',':'),
+                      sort_keys=True)
+
 def _tuple(x):
     return tuple((i['id'], i['name']) for i in x)
 

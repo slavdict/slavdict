@@ -23,7 +23,7 @@ django.setup()
 from slavdict.csl_annotations.models import Annotation
 from slavdict.csl_annotations.models import Tag
 from slavdict.csl_annotations.models import TAG_CATEGORIES
-from slavdict.dictionary.viewmodels import _json
+from slavdict.dictionary.viewmodels import _json_deterministic
 
 OUTPUT_DIR = '../csl/.temp/refs'
 
@@ -178,7 +178,7 @@ for i, annotation in enumerate(Annotation.objects.all()):
     filename = str(annotation.id) + '.json'
     path = os.path.join(ANNOTATIONS_DIR, filename)
     with open(path, 'w') as f:
-        f.write(_json(data))
+        f.write(_json_deterministic(data))
 
 note = 'Экспорт аннотаций завершен.' + ERASE_LINEEND + '\n'
 sys.stderr.write(note)

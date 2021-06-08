@@ -40,7 +40,7 @@ from slavdict.dictionary.utils import resolve_titles
 from slavdict.dictionary.utils import sort_key1
 from slavdict.dictionary.utils import sort_key2
 from slavdict.dictionary.utils import ucs_convert
-from slavdict.dictionary.viewmodels import _json
+from slavdict.dictionary.viewmodels import _json_deterministic
 
 OUTPUT_DIR = '../csl/.temp/slavdict_generated'
 
@@ -514,7 +514,7 @@ for j, (wordform, reference, lexeme) in enumerate(entries2):
 
 def write_ix(filename, data):
     with open(filename, 'w') as f:
-        f.write(_json(data))
+        f.write(_json_deterministic(data))
 
 
 def get_postfix(ix_layer):
