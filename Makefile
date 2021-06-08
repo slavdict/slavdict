@@ -163,7 +163,7 @@ rsync:
 	rsync -av --delete slavdict:/var/www/slavdict/.dumps .
 
 remote-restart:
-	test $(git status -s | wc -l) == 0
+	test $$(git status -s | wc -l) = 0
 	git push origin master
 	ssh slavdict make -C /var/www/slavdict restart
 
