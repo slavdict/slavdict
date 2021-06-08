@@ -63,7 +63,7 @@
         </div>
 
         {% if user.is_superuser %}
-        <div style="margin: 24em 0 0 18.5em">
+        <div style="margin: 24em 0 0 18.5em" data-bind="visible: $root.canEdit">
           <input data-bind="value: template_version"
                  style="width: 4em; text-align: center">
           <label style="margin-left: 1em">Версия структуры статьи</label>
