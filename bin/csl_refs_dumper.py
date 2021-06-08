@@ -33,7 +33,7 @@ if len(sys.argv) == 2 and sys.argv[1].startswith('--output-dir='):
 if os.path.exists(OUTPUT_DIR) and os.path.isdir(OUTPUT_DIR):
     shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
 if not os.path.exists(OUTPUT_DIR):
-    os.mkdirs(OUTPUT_DIR)
+    os.makedirs(OUTPUT_DIR)
 elif not os.path.isdir(OUTPUT_DIR):
     print('Output dir path is an existing file, not a directory', file=sys.stderr)
     sys.exit(1)
