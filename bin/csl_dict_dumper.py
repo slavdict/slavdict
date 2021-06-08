@@ -58,6 +58,14 @@ if len(sys.argv) > 1:
         s = ' '.join(args).strip(' ,')
         test_entries = [int(i) for i in r.split(s)]
 
+if os.path.exists(OUTPUT_DIR) and os.path.isdir(OUTPUT_DIR):
+    shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
+if not os.path.exists(OUTPUT_DIR):
+    os.mkdirs(OUTPUT_DIR)
+elif not os.path.isdir(OUTPUT_DIR):
+    print('Output dir path is an existing file, not a directory', file=sys.stderr)
+    sys.exit(1)
+
 ENTRIES_DIR = os.path.join(OUTPUT_DIR, 'entries')
 FULL_IX = os.path.join(OUTPUT_DIR, 'full_index')
 PART_IX = os.path.join(OUTPUT_DIR, 'partial_index')

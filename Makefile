@@ -162,6 +162,19 @@ endif
 rsync:
 	rsync -av --delete slavdict:/var/www/slavdict/.dumps .
 
+remote-restart:
+	test $(git status -s | wc -l) == 0
+	git push origin master
+	ssh slavdict make -C /var/www/slavdict restart
+
+remote-csl-dump:
+	ssh slavdict nohup /var/www/slavdict/bin/csl_dumper.sh
+	$(MAKE) rsync
+
+remote-slavdict-dump:
+	ssh slavdict nohup /var/www/slavdict/bin/dump.sh
+	$(MAKE) rsync
+
 install:
 	command -v gem && sudo gem install || echo 'gem is not installed'; false
 	command -v pipenv && pipenv install || echo 'pipenv is not installed'; false
@@ -183,6 +196,9 @@ install:
     listen-indesign \
     migrate \
     migrestart \
+    remove-restart \
+    remove-csl-dump \
+    remove-slavdict-dump \
     restart \
     _revert \
     revert \
