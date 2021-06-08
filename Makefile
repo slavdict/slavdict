@@ -129,35 +129,38 @@ hash: jslibs
 	sha256sum .temp_hash | cut -c1-8 >.hash
 	echo '$$shash:' "'$$(cat .hash)'" >${RESOURCE_VERSION}
 
-scp:
+indesign-prepare:
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
-	rsync bin/indesign_xml_dumper.py dilijnt0:/var/www/slavdict/bin/
-	ssh dilijnt0 chown www-data:www-data /var/www/slavdict/bin/indesign_xml_dumper.py
-	rsync -av templates/indesign dilijnt0:/var/www/slavdict/templates/
-	ssh dilijnt0 chown -R www-data:www-data /var/www/slavdict/templates/indesign/
+	rsync bin/indesign_xml_dumper.py slavdict:/var/www/slavdict/bin/
+	ssh slavdict chown www-data:www-data /var/www/slavdict/bin/indesign_xml_dumper.py
+	rsync -av templates/indesign slavdict:/var/www/slavdict/templates/
+	ssh slavdict chown -R www-data:www-data /var/www/slavdict/templates/indesign/
 endif
 
-indesign:
+indesign-listen:
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
-	rsync -av bin dilijnt0:/var/www/slavdict/
-	rsync -av slavdict/jinja_extensions dilijnt0:/var/www/slavdict/slavdict/
-	rsync -av  templates/indesign dilijnt0:/var/www/slavdict/templates/
+	ls .list bin/indesign_xml_dumper.py templates/indesign/* | entr bash -c 'time cat .list | xargs ${PYTHON} bin/indesign_xml_dumper.py >/home/nurono/VirtualBox\ SharedFolder/slavdict-indesign.xml'
+endif
+
+indesign: indesign-prepare
+ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
+	rsync -av bin slavdict:/var/www/slavdict/
+	rsync -av slavdict/jinja_extensions slavdict:/var/www/slavdict/slavdict/
+	rsync -av  templates/indesign slavdict:/var/www/slavdict/templates/
 	[ ! -e .args ] && ( \
 		echo '--split-by-letters' >.args ; \
 		echo '--split-nchars=50000' >>.args ; \
 		echo '--output-pattern=/root/slavdict-indesign-#.xml' >>.args ) \
 		|| echo "file '.args' exists"
-	rsync .args dilijnt0:/root/
-	ssh dilijnt0 chown -R www-data:www-data /var/www/slavdict/
-	ssh dilijnt0 rm -f /root/slavdict-indesign-*.xml
-	ssh dilijnt0 nohup /var/www/slavdict/bin/remote_indesign_xml_dumper.sh
-	scp dilijnt0:/root/slavdict-indesign-*.xml .temp/
+	rsync .args slavdict:/root/
+	ssh slavdict chown -R www-data:www-data /var/www/slavdict/
+	ssh slavdict rm -f /root/slavdict-indesign-*.xml
+	ssh slavdict nohup /var/www/slavdict/bin/remote_indesign_xml_dumper.sh
+	scp slavdict:/root/slavdict-indesign-*.xml .temp/
 endif
 
-listen-indesign:
-ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
-	ls .list bin/indesign_xml_dumper.py templates/indesign/* | entr bash -c 'time cat .list | xargs ${PYTHON} bin/indesign_xml_dumper.py >/home/nurono/VirtualBox\ SharedFolder/slavdict-indesign.xml'
-endif
+rsync:
+	rsync -av --delete slavdict:/var/www/slavdict/.dumps .
 
 install:
 	command -v gem && sudo gem install || echo 'gem is not installed'; false
@@ -171,19 +174,21 @@ install:
     default \
     destroy_loc_changes \
     fixown \
+    hash \
+    indesign \
+    indesign-listen \
+    indesign-prepare \
     install \
     jslibs \
-    hash \
     listen-indesign \
     migrate \
     migrestart \
     restart \
-    revert \
     _revert \
+    revert \
+    rsync \
     run \
     start \
     stop \
-    scp \
     update \
-
 

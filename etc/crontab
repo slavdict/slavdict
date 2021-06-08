@@ -31,6 +31,9 @@
 #
 # Бэкап базы словаря
 50 4 * * * /var/www/slavdict/bin/stop_dump_start.sh
-# При использовании в главном файле /etc/crontab эта строка должна также
+0 22 * * * /var/www/slavdict/bin/rotate_dumps.sh
+#
+# При использовании в главном файле /etc/crontab эти строки должны также
 # содержать имя пользователя:
 #50 4 * * * root /var/www/slavdict/bin/stop_dump_start.sh
+#0 22 * * * root /var/www/slavdict/bin/rotate_dumps.sh
