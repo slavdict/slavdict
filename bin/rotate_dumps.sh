@@ -4,5 +4,5 @@ FILENAME_PATTERN=/var/www/slavdict/.dumps/dictionary--*.xml.gz
 
 for filename in $(ls -1t $FILENAME_PATTERN | sed -n '90,$p')
 do
-    rm $i
+    rm $filename
 done
