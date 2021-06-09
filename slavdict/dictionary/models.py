@@ -933,8 +933,11 @@ class Entry(models.Model, JSONSerializable):
                 return value
         elif case == 'be' and self.civil_equivalent == 'быти':
             return [ucs8(x) for x in ("нѣ'смь", "нѣ'си")]
-        elif case == 'bigger' and self.civil_equivalent == 'больший':
-            return ucs8("вели'кій")
+        elif case == 'bigger':
+            if self.civil_equivalent == 'больший':
+                return ucs8("вели'кій")
+            elif self.civil_equivalent == 'горший':
+                return ucs8("ѕлы'й")
 
         elif case == 'other_volumes':
             STAR = '\u27e1'
