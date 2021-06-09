@@ -162,7 +162,10 @@ ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
 endif
 
 rsync:
-	rsync -av --delete slavdict:/var/www/slavdict/.dumps .
+	rsync -av --delete \
+		--exclude=csl--*.xml \
+		--exclude=dictionary--*.xml \
+		slavdict:/var/www/slavdict/.dumps .
 
 before-remote-update:
 	test $$(git status -s | wc -l) = 0
