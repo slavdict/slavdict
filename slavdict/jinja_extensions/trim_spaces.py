@@ -788,29 +788,46 @@ def web_href(value, regex, href):
     return re.sub(r'(\s*)(%s)(\s*)' % regex, _href, value)
 
 
-RE_REF1 = (
-    r'\s*'
-    r'(?:idem|cf|qv)'  # Тип ссылки
-    r'\['
-        r'\s*[а-яА-Я]+'  # Гражданское написание заглавного слова
-        r'\s*[1-9]?'  # Номер омонима
-        r'(?:\s*-\s*'  # Список значений
-            r'\d+(?:\s*,\s*\d+)*'
-        r')?\s*'
-    r'\]'
+RE_FIND_REF = (
+    r'(?:idem|cf|qv)'           # <Тип ссылки>
+    r'(?:'
+        r'\['
+            r'\s*[а-яА-Я]+'     # <Гражданское написание заглавного слова>
+            r'\s*[1-9]?'        # <Номер омонима>
+            r'(?:\s*-\s*'       # <Список значений>
+                r'\d+(?:\s*,\s*\d+)*'
+            r')?\s*'
+        r'\]'
+    r')+'
+    r'(?:'
+        r'\{'
+            r'[^\{\}]*'         # <Текст-разделитель>
+        r'\}'
+    r')+'
     r'\s*'
 )
-RE_REF2 = (
-    r'(\s*)'
-    r'(idem|cf|qv)'  # Тип ссылки
-    r'\['
-        r'\s*([а-яА-Я]+)'  # Гражданское написание заглавного слова
-        r'\s*([1-9])?'  # Номер омонима
-        r'(?:\s*-\s*'   # Список значений
-            r'(\d+(?:\s*,\s*\d+)*)'
-        r')?\s*'
-    r'\]'
-    r'(\s*)'
+RE_PARSE_REF = (
+    r'(\s*)'                # <Начальные пробелы>
+    r'(idem|cf|qv)'         # <Тип ссылки>
+    r'((?:'
+        r'\['
+            r'[^\[\]]+'     # <Все статьи и значения>
+        r'\]'
+    r')+)'
+    r'((?:'
+        r'\{'
+            r'[^\{\}]*'     # <Все разделители>
+        r'\}'
+    r')+)'
+    r'(\s*)'                # <Конечные пробелы>
+)
+
+RE_PARSE_REF_ENTRY = (
+    r'\s*([а-яА-Я]+)'   # <Гражданское написание заглавного слова>
+    r'\s*([1-9])?'      # <Номер омонима>
+    r'(?:\s*-\s*'       # <Список значений>
+        r'(\d+(?:\s*,\s*\d+)*)'
+    r')?\s*'
 )
 
 def insert_ref(x, for_web, ref_func=None):
@@ -821,7 +838,7 @@ def insert_ref(x, for_web, ref_func=None):
     csl_tag = Tag(cslav_style='CSLSegment', civil_style=None, for_web=for_web)
 
     text = ''
-    s1, ref, word, num, meanings, s2 = re.findall(RE_REF2, x, re.IGNORECASE)[0]
+    s1, ref, ents, seps, s2 = re.findall(RE_PARSE_REF, x, re.IGNORECASE)[0]
 
     ref = ref.lower()
     if ref == 'idem':
@@ -834,44 +851,82 @@ def insert_ref(x, for_web, ref_func=None):
         s = Segment('см.', em_tag, base_script=SCRIPT_CIVIL)
         text += '%s%s' % (s, NBSP)
 
-    params = {
-        'civil_equivalent': word,
-    }
-    if num:
-        params['homonym_order'] = int(num)
-
-    from slavdict.dictionary.models import Entry
-    entry = Entry.objects.get(**params)
-
-    headword = hyphenate_ucs8(entry.base_vars[0].idem_ucs)
-    s = Segment(headword, csl_tag, base_script=SCRIPT_CSLAV)
-    if for_web:
-        if ref_func:
-            url = ref_func(entry)
-        else:
-            url = entry.get_absolute_url()
-        text += '<a href="%s">%s</a>' % (url, s)
+    DEFAULT_SEP = ','
+    if seps:
+        seps = seps[1:-1].split('}{')
+        if not seps[0]:
+            seps[0] = DEFAULT_SEP
+        _s = Segment(seps[0], text_tag, base_script=SCRIPT_CIVIL)
+        tmp = str(_s)
+        if re.match(r'\w', seps[0][0:]):
+            tmp = SPACE + tmp
+        if re.match(r'\w', seps[0][-1:]) or seps[0][-1:] in ',;':
+            tmp += SPACE
+        last_sep = sep = tmp
+        if len(seps) > 1:
+            _s = Segment(seps[1], text_tag, base_script=SCRIPT_CIVIL)
+            tmp = str(_s)
+            if re.match(r'\w', seps[1][0:]):
+                tmp = SPACE + tmp
+            if re.match(r'\w', seps[1][-1:]) or seps[1][-1:] in ',;':
+                tmp += SPACE
+            last_sep = tmp
     else:
-        text += str(s)
+        _s = Segment(DEFAULT_SEP, text_tag, base_script=SCRIPT_CIVIL)
+        tmp = str(_s)
+        if re.match(r'\w', DEFAULT_SEP[0:]):
+            tmp = SPACE + tmp
+        if re.match(r'\w', DEFAULT_SEP[-1:]) or DEFAULT_SEP[-1:] in ',;':
+            tmp += SPACE
+        last_sep = sep = tmp
 
-    if num:
-        s = Segment(num, number_tag, base_script=SCRIPT_CIVIL)
-        text += str(s)
+    ents = [re.findall(RE_PARSE_REF_ENTRY, ent)[0]
+            for ent in ents[1:-1].split('][')]
 
-    if meanings:
-        s = Segment('в знач.', text_tag, base_script=SCRIPT_CIVIL)
-        text += SPACE + str(s) + NBSP
-        meanings = [Segment(i, text_tag, base_script=SCRIPT_CIVIL)
-                    for i in re.split(r'[\s,]+', meanings)]
-        for i, s in enumerate(meanings):
-            if i == 0:
-                text += str(s)
-            elif i == len(meanings) - 1:
-                conj = Segment('и', text_tag, base_script=SCRIPT_CIVIL)
-                text += SPACE + str(conj) + NBSP + str(s)
+    for j, (word, num, meanings) in enumerate(ents):
+        if j > 0:
+            if len(ents) == j + 1:
+                text += last_sep
             else:
-                comma = Segment(',', text_tag, base_script=SCRIPT_CIVIL)
-                text += str(comma) + SPACE + str(s)
+                text += sep
+        params = {
+            'civil_equivalent': word,
+        }
+        if num:
+            params['homonym_order'] = int(num)
+
+        from slavdict.dictionary.models import Entry
+        entry = Entry.objects.get(**params)
+
+        headword = hyphenate_ucs8(entry.base_vars[0].idem_ucs)
+        s = Segment(headword, csl_tag, base_script=SCRIPT_CSLAV)
+        if for_web:
+            if ref_func:
+                url = ref_func(entry)
+            else:
+                url = entry.get_absolute_url()
+            text += '<a href="%s">%s</a>' % (url, s)
+        else:
+            text += str(s)
+
+        if num:
+            s = Segment(num, number_tag, base_script=SCRIPT_CIVIL)
+            text += str(s)
+
+        if meanings:
+            s = Segment('в знач.', text_tag, base_script=SCRIPT_CIVIL)
+            text += SPACE + str(s) + NBSP
+            meanings = [Segment(i, text_tag, base_script=SCRIPT_CIVIL)
+                        for i in re.split(r'[\s,]+', meanings)]
+            for i, s in enumerate(meanings):
+                if i == 0:
+                    text += str(s)
+                elif i == len(meanings) - 1:
+                    conj = Segment('и', text_tag, base_script=SCRIPT_CIVIL)
+                    text += SPACE + str(conj) + NBSP + str(s)
+                else:
+                    comma = Segment(',', text_tag, base_script=SCRIPT_CIVIL)
+                    text += str(comma) + SPACE + str(s)
 
     if ref == 'idem':
         segs = (
@@ -904,13 +959,24 @@ def ind_refs(value, for_web=False, ref_func=None):
       idem[брак1-2]   --> то же, что брак¹, в знач. 2 (см.)
       cf[бежати-2,3]  --> ср. бежати, в знач. 2, 3
 
-      <шаблон ссылки> ::= < idem|cf|qv > "[" <гражданское написание лексемы>
+      qv[водотрудие][воднотрудование] --> см. водотрудие, воднотрудование
+      cf[а1][б][в]{и}                 --> ср. а¹ и б и в
+      cf[а1][б][в]{,}{и}              --> ср. а¹, б и в
+
+      <лексема> ::= "[" <гражданское написание лексемы>
             [<номер омонима>] ["-" <список номеров значений>] "]"
+      <разделитель> ::= "{" <текст разделителя без конечного пробела> "}"
+      <шаблон ссылки> ::= < idem|cf|qv > <лексема>{1,} <разделитель>{0,2}
+
+      Если разделитель один, он используется во всех случаях. Если их два, то
+      второй -- это разделитель для объединения двух последних элементов
+      списка.
 
     """
     text = ''
-    for i, x in enumerate(re.split('(%s)' % RE_REF1, value)):
+    for i, x in enumerate(re.split('(%s)' % RE_FIND_REF, value)):
         if i % 2 == 1:
+            print('-----', x)
             try:
                 text += insert_ref(x, for_web=for_web, ref_func=ref_func)
             except MultipleObjectsReturned:
