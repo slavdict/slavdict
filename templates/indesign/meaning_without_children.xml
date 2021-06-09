@@ -183,8 +183,7 @@
 
 {% set examples_cond = (m.examples and m.numex > 0) %}
 {% if (m.contexts or m.meaning or m.gloss
-        or m.substantivus or m.figurative
-        or m.special_case in (MSC12, MSC14, MSC15, MSC18, MSC21, MSC23, MSC24)
+        or m.substantivus or m.figurative or m.special_case
       ) and examples_cond %}
     {{ backspace }}:{{ space }}
 {% elif m.collogroups or m.child_meanings
