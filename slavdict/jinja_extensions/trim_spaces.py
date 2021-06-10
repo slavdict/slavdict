@@ -789,6 +789,7 @@ def web_href(value, regex, href):
 
 
 RE_FIND_REF = (
+    r'\s*'                      # <Начальные пробелы>
     r'(?:idem|cf|qv)'           # <Тип ссылки>
     r'(?:'
         r'\['
@@ -803,8 +804,8 @@ RE_FIND_REF = (
         r'\{'
             r'[^\{\}]*'         # <Текст-разделитель>
         r'\}'
-    r')+'
-    r'\s*'
+    r')*'
+    r'\s*'                      # <Конечные пробелы>
 )
 RE_PARSE_REF = (
     r'(\s*)'                # <Начальные пробелы>
@@ -818,7 +819,7 @@ RE_PARSE_REF = (
         r'\{'
             r'[^\{\}]*'     # <Все разделители>
         r'\}'
-    r')+)'
+    r')*)'
     r'(\s*)'                # <Конечные пробелы>
 )
 
@@ -976,7 +977,6 @@ def ind_refs(value, for_web=False, ref_func=None):
     text = ''
     for i, x in enumerate(re.split('(%s)' % RE_FIND_REF, value)):
         if i % 2 == 1:
-            print('-----', x)
             try:
                 text += insert_ref(x, for_web=for_web, ref_func=ref_func)
             except MultipleObjectsReturned:
