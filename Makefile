@@ -165,7 +165,11 @@ rsync:
 	rsync -av --delete \
 		--exclude=csl--*.xml \
 		--exclude=dictionary--*.xml \
+		--exclude=slavdict-local-changes-untracked \
 		slavdict:/var/www/slavdict/.dumps .
+	rsync -av \
+		slavdict:/root/slavdict-local-changes-untracked/* \
+		.dumps/slavdict-local-changes-untracked/
 
 before-remote-update:
 	test $$(git status -s | wc -l) = 0
