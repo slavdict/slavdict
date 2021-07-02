@@ -1,8 +1,12 @@
-<script type="text/html" id="structure">
+{#
+    СТРУКТУРА ЗНАЧЕНИЙ ЛЕКСЕМЫ (см. далее отдельно то же для словосочетаний)
+#}
+<script type="text/html" id="entryStructure">
+<section class="tabcontent" data-bind="if: constructor.name === 'Entry'">
 
-<section class="tabcontent" data-bind="if:
-    constructor.name === 'Entry' || constructor.name === 'Collogroup'">
-
+    {#
+        LEXEME ) MEANINGS
+    #}
     <ul class="meanings" data-bind="sortable: { data: meanings }">
         <li data-bind="event: { dblclick: toggle }, dblclickBubble: false">
             <a class="dragItem" data-bind="visible:
@@ -33,15 +37,15 @@
                     meaning() && gloss()">;{{ space }}</span>
             <i data-bind="text: gloss"></i>
 
+            {#
+                LEXEME ) MEANINGS ) EXAMPLES
+            #}
             <ul class="examples"
                 data-bind="sortable: { data: examples,
                                        afterMove: examples.sortMe },
                            visible: isExpanded()
-                             && ($parent.constructor.name !== 'Collogroup'
-                                 || $parent.phraseological()
-                                 || $root.data.entry.template_version < 1)
-                             && ($parent.constructor.name !== 'Entry'
-                                 || !$parent.restricted_use())">
+                                && ($parent.template_version < 1
+                                    || !$parent.restricted_use())">
                 <li data-bind="event: { dblclick: function(){} },
                         dblclickBubble: false,
                         css: { wordform_example: wordform_example,
@@ -60,24 +64,28 @@
                     (<span data-bind="text: address_text"></span>)
                 </li>
             </ul>
+            {#
+                LEXEME ) MEANINGS ) EXAMPLES . LISTCONTROLS
+            #}
             <div data-bind="visible: isExpanded()
-              && ($parent.constructor.name !== 'Collogroup'
-                  || $parent.phraseological()
-                  || $root.data.entry.template_version < 1)">
+                    && ($parent.template_version < 1
+                        || !$parent.restricted_use())">
                 <a class="pasteItems" data-bind="
                     click: $root.ui.cutBuffer.pasteInto(examples),
                     visible: $root.ui.cutBuffer.containsExamples"></a>
-                <a class="addItem" data-bind="visible: isExpanded()
-                      && ($parent.constructor.name !== 'Entry'
-                          || !$parent.restricted_use()),
+                <a class="addItem" data-bind="
+                    visible: isExpanded(),
                     click: examples.itemAdder($data, $root.data.entry).do"></a>
             </div>
 
+            {#
+                LEXEME ) MEANINGS ) USES
+            #}
             <ul class="meanings"
                 data-bind="sortable: { data: meanings },
-                  visible: isExpanded()
-                    && $parent.constructor.name === 'Entry'
-                    && !$parent.restricted_use()">
+                           visible: isExpanded()
+                                && ($parent.template_version < 1
+                                    || !$parent.restricted_use())">
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
                     <a class="dragItem" data-bind="visible:
@@ -108,6 +116,9 @@
                             meaning() && gloss()">;{{ space }}</span>
                     <i data-bind="text: gloss"></i>
 
+                    {#
+                        LEXEME ) MEANINGS ) USES ) EXAMPLES
+                    #}
                     <ul class="examples"
                         data-bind="sortable: { data: examples,
                                                afterMove: examples.sortMe },
@@ -130,6 +141,10 @@
                             (<span data-bind="text: address_text"></span>)
                         </li>
                     </ul>
+
+                    {#
+                        LEXEME ) MEANINGS ) USES ) EXAMPLES . LISTCONTROLS
+                    #}
                     <div data-bind="visible: isExpanded">
                         <a class="pasteItems" data-bind="
                             click: $root.ui.cutBuffer.pasteInto(examples),
@@ -141,10 +156,13 @@
                 </li>
 
             </ul>
+
+            {#
+                LEXEME ) MEANINGS ) USES . LISTCONTROLS
+            #}
             <div data-bind="visible: isExpanded()
-                              && $parent.constructor.name === 'Entry'
-                              && !$parent.restricted_use()
-                              ">
+                                && ($parent.template_version < 1
+                                    || !$parent.restricted_use())">
                 <a class="pasteItems" data-bind="
                     click: $root.ui.cutBuffer.pasteInto(meanings),
                     visible: $root.ui.cutBuffer.containsMeanings"></a>
@@ -152,7 +170,9 @@
                     click: meanings.itemAdder($root.data.entry, $data).do"></a>
             </div>
 
-            <!-- ko if: $root.ui.navigationStack.top().constructor.name === 'Entry' -->
+            {#
+                LEXEME ) MEANINGS ) COLLOGROUPS
+            #}
             <ul class="collogroups"
                 data-bind="foreach: collogroups, visible: isExpanded">
                 <li data-bind="event: { dblclick: toggle },
@@ -173,6 +193,9 @@
                       <span data-bind="wax: collocation"></span>
                     </span>
 
+                    {#
+                        LEXEME ) MEANINGS ) COLLOGROUPS ) MEANINGS
+                    #}
                     <ul class="meanings" data-bind="
                         sortable: meanings,
                         visible: isExpanded">
@@ -206,11 +229,15 @@
                                     meaning() && gloss()">;{{ space }}</span>
                             <i data-bind="text: gloss"></i>
 
+                            {#
+                                LEXEME ) MEANINGS ) COLLOGROUPS ) MEANINGS ) EXAMPLES
+                            #}
                             <ul class="examples"
                                 data-bind="sortable: { data: examples,
                                                        afterMove: examples.sortMe },
                                            visible: isExpanded() &&
                                              ($parent.phraseological() ||
+                                     $root.data.entry.restricted_use() ||
                                      $root.data.entry.template_version() < 1)">
                                 <li data-bind="event: { dblclick: function(){} },
                                   dblclickBubble: false,
@@ -230,8 +257,13 @@
                                     (<span data-bind="text: address_text"></span>)
                                 </li>
                             </ul>
+
+                            {#
+                                LEXEME ) MEANINGS ) COLLOGROUPS ) MEANINGS ) EXAMPLES . LISTCONTROLS
+                            #}
                             <div data-bind="visible: isExpanded() &&
-                                              ($parent.phraseological() ||
+                                             ($parent.phraseological() ||
+                                     $root.data.entry.restricted_use() ||
                                      $root.data.entry.template_version() < 1)">
                                 <a class="pasteItems" data-bind="
                                     click: $root.ui.cutBuffer.pasteInto(examples),
@@ -241,6 +273,9 @@
                                         $root.data.entry, $parent).do"></a>
                             </div>
 
+                            {#
+                                LEXEME ) MEANINGS ) COLLOGROUPS ) MEANINGS ) USES
+                            #}
                             <ul class="meanings" data-bind="
                                 sortable: meanings,
                                 visible: isExpanded">
@@ -276,10 +311,16 @@
                                             meaning() && gloss()">;{{ space }}</span>
                                     <i data-bind="text: gloss"></i>
 
+                                    {#
+                                        LEXEME ) MEANINGS ) COLLOGROUPS ) MEANINGS ) USES ) EXAMPLES
+                                    #}
                                     <ul class="examples"
                                         data-bind="sortable: { data: examples,
                                             afterMove: examples.sortMe },
-                                          visible: isExpanded">
+                                            visible: isExpanded() &&
+                                     ($parents[1].phraseological() ||
+                                     $root.data.entry.restricted_use() ||
+                                     $root.data.entry.template_version() < 1)">
                                         <li data-bind="event: { dblclick: function(){} },
                                                 dblclickBubble: false,
                                   css: { wordform_example: wordform_example,
@@ -298,7 +339,13 @@
                                             (<span data-bind="text: address_text"></span>)
                                         </li>
                                     </ul>
-                                    <div data-bind="visible: isExpanded">
+                                    {#
+                                        LEXEME ) MEANINGS ) COLLOGROUPS ) MEANINGS ) USES ) EXAMPLES . LISTCONTROLS
+                                    #}
+                                    <div data-bind="visible: isExpanded() &&
+                                     ($parents[1].phraseological() ||
+                                     $root.data.entry.restricted_use() ||
+                                     $root.data.entry.template_version() < 1)">
                                         <a class="pasteItems" data-bind="
                                             click: $root.ui.cutBuffer.pasteInto(examples),
                                             visible: $root.ui.cutBuffer.containsExamples"></a>
@@ -309,6 +356,9 @@
                                 </li>
 
                             </ul>
+                            {#
+                                LEXEME ) MEANINGS ) COLLOGROUPS ) MEANINGS ) USES . LISTCONTROLS
+                            #}
                             <div data-bind="visible: isExpanded">
                                 <a class="pasteItems" data-bind="
                                     click: $root.ui.cutBuffer.pasteInto(meanings),
@@ -319,7 +369,13 @@
 
                         </li>
                     </ul>
-                    <div data-bind="visible: isExpanded() && phraseological()">
+                    {#
+                        LEXEME ) MEANINGS ) COLLOGROUPS ) MEANINGS . LISTCONTROLS
+                    #}
+                    <div data-bind="visible: isExpanded()
+                            && (phraseological() ||
+                                $root.data.entry.restricted_use() ||
+                                $root.data.entry.template_version() < 1)">
                         <a class="pasteItems" data-bind="
                             click: $root.ui.cutBuffer.pasteInto(meanings),
                             visible: $root.ui.cutBuffer.containsMeanings"></a>
@@ -329,6 +385,9 @@
 
                 </li>
             </ul>
+            {#
+                LEXEME ) MEANINGS ) COLLOGROUPS . LISTCONTROLS
+            #}
             <div data-bind="visible: isExpanded">
                 <a class="pasteItems" data-bind="
                     click: $root.ui.cutBuffer.pasteInto(collogroups),
@@ -338,55 +397,124 @@
                     click: collogroups.itemAdder($data).do"></a>
             </div>
 
-            <!-- /ko -->
         </li>
     </ul>
+    {#
+        LEXEME ) MEANINGS . LISTCONTROLS
+    #}
     <a class="pasteItems"
         data-bind="click: $root.ui.cutBuffer.pasteInto(meanings),
                    visible: $root.ui.cutBuffer.containsMeanings"></a>
     <a class="addItem"
         data-bind="click: meanings.itemAdder($root.data.entry).do,
-          visible: $data.constructor.name !== 'Entry' || !restricted_use()
-              || meanings().length == 0"></a>
+          visible: !restricted_use() || meanings().length == 0"></a>
 
-    <!-- ko if: constructor.name === 'Entry' && collogroups().length > 0 -->
-    <ul class="collogroups" data-bind="foreach: collogroups">
+</section>
+</script>
 
+
+{#
+    СТРУКТУРА ЗНАЧЕНИЙ СЛОВОСОЧЕТАНИЯ
+#}
+<script type="text/html" id="collogroupStructure">
+<section class="tabcontent" data-bind="if: constructor.name === 'Collogroup'">
+
+    {#
+        COLLOGROUP ) MEANINGS
+    #}
+    <ul class="meanings" data-bind="sortable: { data: meanings }">
         <li data-bind="event: { dblclick: toggle }, dblclickBubble: false">
-
-            <a class="deleteItem" data-bind="click:
-                    $parent.collogroups.itemDestroyer($data).do"></a>
+            <a class="dragItem" data-bind="visible:
+                !isExpanded() && $parent.meanings().length > 1"></a>
+            <a class="deleteItem"
+                data-bind="click: $parent.meanings.itemDestroyer($data).do"></a>
             <a class="editItem" data-bind="click: edit"></a>
             <a class="expandItem" data-bind="click: toggle,
                 css: { expanded: isExpanded }"></a>
             <a class="cutItem" data-bind="
-                click: $root.ui.cutBuffer.cutFrom($parent.collogroups),
-                css: { cutItemNonFirst: $root.ui.cutBuffer.containsCollogroups },
-                visible: $root.ui.cutBuffer.emptyOrContainsCollogroups"></a>
+                click: $root.ui.cutBuffer.cutFrom($parent.meanings),
+                css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
+                visible: $root.ui.cutBuffer.emptyOrContainsMeanings"></a>
 
-            <span class="lozenge" data-bind="visible: phraseological">♦</span>
-            <span data-bind="foreach: collocations">
-                <span data-bind="if: $index">;{{ space }}</span>
-                <span data-bind="wax: collocation"></span>
-            </span>
+            <span data-bind="text: order"></span>.{{ space }}
+            <span data-bind="visible: metaphorical">►</span>{{ space }}
+            <span data-bind="visible: substantivus">
+                <span class="substantivus">в роли сущ.</span>
+                <span data-bind="visible: substantivus_type">
+                    {{ space }}
+                    <span class="substantivus"
+                        data-bind="text: substantivus_type.label"></span>
+                </span>
+            </span>{{ space }}
+            <i data-bind="visible: figurative">перен.</i>{{ space }}
+            <span data-bind="text: meaning"></span>
+                <span data-bind="visible:
+                    meaning() && gloss()">;{{ space }}</span>
+            <i data-bind="text: gloss"></i>
 
-            <ul class="meanings" data-bind="sortable: meanings,
-                                            visible: isExpanded() && phraseological()">
+            {#
+                COLLOGROUP ) MEANINGS ) EXAMPLES
+            #}
+            <ul class="examples"
+                data-bind="sortable: { data: examples,
+                                       afterMove: examples.sortMe },
+                           visible: isExpanded()
+                             && ($parent.phraseological()
+                                 || $root.data.entry.restricted_use()
+                                 || $root.data.entry.template_version < 1)">
+                <li data-bind="event: { dblclick: function(){} },
+                        dblclickBubble: false,
+                        css: { wordform_example: wordform_example,
+                          extra_example:
+                            !wordform_example() && $index() >= $parent.numex() }">
+                    <a class="dragItem" data-bind="visible:
+                       $parent.examples().length > 1"></a>
+                    <a class="deleteItem" data-bind="click:
+                       $parent.examples.itemPoolReturner($data).do"></a>
+                    <a class="editItem" data-bind="click: edit"></a>
+                    <a class="cutItem" data-bind="
+                        click: $root.ui.cutBuffer.cutFrom($parent.examples),
+                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsExamples },
+                        visible: $root.ui.cutBuffer.emptyOrContainsExamples"></a>
+                    <span data-bind="wax: example"></span>{{ space }}
+                    (<span data-bind="text: address_text"></span>)
+                </li>
+            </ul>
+            {#
+                COLLOGROUP ) MEANINGS ) EXAMPLES . LISTCONTROLS
+            #}
+            <div data-bind="visible: isExpanded()
+              && ($parent.phraseological()
+                  || $root.data.entry.restricted_use()
+                  || $root.data.entry.template_version < 1)">
+                <a class="pasteItems" data-bind="
+                    click: $root.ui.cutBuffer.pasteInto(examples),
+                    visible: $root.ui.cutBuffer.containsExamples"></a>
+                <a class="addItem" data-bind="visible: isExpanded,
+                    click: examples.itemAdder($data, $root.data.entry).do"></a>
+            </div>
+
+            {#
+                COLLOGROUP ) MEANINGS ) USES
+            #}
+            <ul class="meanings"
+                data-bind="sortable: { data: meanings },
+                  visible: isExpanded">
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
                     <a class="dragItem" data-bind="visible:
-                        !isExpanded() && $parent.meanings().length > 1"></a>
+                            !isExpanded() && $parent.meanings().length > 1"></a>
                     <a class="deleteItem" data-bind="click:
-                        $parent.meanings.itemDestroyer($data).do"></a>
+                            $parent.meanings.itemDestroyer($data).do"></a>
                     <a class="editItem" data-bind="click: edit"></a>
                     <a class="expandItem" data-bind="click: toggle,
                         css: { expanded: isExpanded }"></a>
                     <a class="cutItem" data-bind="
                         click: $root.ui.cutBuffer.cutFrom($parent.meanings),
                         css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
-                        visible: $root.ui.cutBuffer.emptyOrContainsMeanings"></a>
+                        visible: $root.ui.cutBuffer.emptyOrContainsMeanings"
+                        ></a>
 
-                    <span data-bind="text: order"></span>.{{ space }}
                     <span data-bind="visible: metaphorical">►</span>{{ space }}
                     <span data-bind="visible: substantivus">
                         <span class="substantivus">в роли сущ.</span>
@@ -402,9 +530,15 @@
                             meaning() && gloss()">;{{ space }}</span>
                     <i data-bind="text: gloss"></i>
 
-                    <ul class="examples" data-bind="sortable:
-                        { data: examples, afterMove: examples.sortMe },
-                        visible: isExpanded">
+                    {#
+                        COLLOGROUP ) MEANINGS ) USES ) EXAMPLES
+                    #}
+                    <ul class="examples"
+                        data-bind="sortable: { data: examples,
+                                               afterMove: examples.sortMe },
+                                   visible: isExpanded() &&
+                                     ($parents[1].phraseological()
+                                      || $root.data.entry.restricted_use())">
                         <li data-bind="event: { dblclick: function(){} },
                                 dblclickBubble: false,
                                 css: { wordform_example: wordform_example,
@@ -423,108 +557,45 @@
                             (<span data-bind="text: address_text"></span>)
                         </li>
                     </ul>
-                    <div data-bind="visible: isExpanded">
+
+                    {#
+                        COLLOGROUP ) MEANINGS ) USES ) EXAMPLES . LISTCONTROLS
+                    #}
+                    <div data-bind="visible: isExpanded()
+                            && ($parents[1].phraseological()
+                                || $root.data.entry.restricted_use())">
                         <a class="pasteItems" data-bind="
                             click: $root.ui.cutBuffer.pasteInto(examples),
                             visible: $root.ui.cutBuffer.containsExamples"></a>
                         <a class="addItem" data-bind="click:
-                            examples.itemAdder($data, $root.data.entry,
-                            $parent).do"></a>
+                            examples.itemAdder($data, $root.data.entry).do"></a>
                     </div>
-
-                    <ul class="meanings" data-bind="sortable: meanings,
-                                                    visible: isExpanded">
-
-                        <li data-bind="event: { dblclick: toggle },
-                            dblclickBubble: false">
-                            <a class="dragItem" data-bind="visible:
-                             !isExpanded() && $parent.meanings().length > 1"></a>
-                            <a class="deleteItem" data-bind="click:
-                             $parent.meanings.itemDestroyer($data).do"></a>
-                            <a class="editItem" data-bind="click: edit"></a>
-                            <a class="expandItem" data-bind="click: toggle,
-                                css: { expanded: isExpanded }"></a>
-                            <a class="cutItem" data-bind="
-                                click: $root.ui.cutBuffer.cutFrom($parent.meanings),
-                                css: { cutItemNonFirst: $root.ui.cutBuffer.containsMeanings },
-                                visible: $root.ui.cutBuffer.emptyOrContainsMeanings"></a>
-
-                            <span data-bind="visible: metaphorical">►</span>{{ space }}
-                            <span data-bind="visible: substantivus">
-                                <span class="substantivus">в роли сущ.</span>
-                                <span data-bind="visible: substantivus_type">
-                                    {{ space }}
-                                    <span class="substantivus"
-                                        data-bind="text: substantivus_type.label"></span>
-                                </span>
-                            </span>{{ space }}
-                            <i data-bind="visible: figurative">перен.</i>{{ space }}
-                            <span data-bind="text: meaning"></span>
-                                <span data-bind="visible:
-                                    meaning() && gloss()">;{{ space }}</span>
-                            <i data-bind="text: gloss"></i>
-
-                            <ul class="examples" data-bind="sortable:
-                                    { data: examples, afterMove: examples.sortMe },
-                                visible: isExpanded">
-                                <li data-bind="event: { dblclick: function(){} },
-                                  dblclickBubble: false,
-                                  css: { wordform_example: wordform_example,
-                                    extra_example: !wordform_example() &&
-                                      $index() >= $parent.numex() }">
-                                    <a class="dragItem" data-bind="visible:
-                                     $parent.examples().length > 1"></a>
-                                    <a class="deleteItem" data-bind="click:
-                                     $parent.examples.itemPoolReturner($data).do"></a>
-                                    <a class="editItem" data-bind="click: edit"></a>
-                                    <a class="cutItem" data-bind="
-                                        click: $root.ui.cutBuffer.cutFrom($parent.examples),
-                                        css: { cutItemNonFirst: $root.ui.cutBuffer.containsExamples },
-                                        visible: $root.ui.cutBuffer.emptyOrContainsExamples"></a>
-                                    <span data-bind="wax: example"></span>{{ space }}
-                                    (<span data-bind="text: address_text"></span>)
-                                </li>
-                            </ul>
-                            <div data-bind="visible: isExpanded">
-                                <a class="pasteItems" data-bind="
-                                    click: $root.ui.cutBuffer.pasteInto(examples),
-                                    visible: $root.ui.cutBuffer.containsExamples"></a>
-                                <a class="addItem" data-bind="click:
-                                    examples.itemAdder($data, $root.data.entry,
-                                    $parent).do"></a>
-                            </div>
-
-                        </li>
-
-                    </ul>
-                    <div data-bind="visible: isExpanded">
-                        <a class="pasteItems" data-bind="
-                            click: $root.ui.cutBuffer.pasteInto(meanings),
-                            visible: $root.ui.cutBuffer.containsMeanings"></a>
-                        <a class="addItem" data-bind="
-                            click: meanings.itemAdder($parent, $data).do"></a>
-                    </div>
-
-
 
                 </li>
+
             </ul>
+
+            {#
+                COLLOGROUP ) MEANINGS ) USES . LISTCONTROLS
+            #}
             <div data-bind="visible: isExpanded">
                 <a class="pasteItems" data-bind="
                     click: $root.ui.cutBuffer.pasteInto(meanings),
                     visible: $root.ui.cutBuffer.containsMeanings"></a>
                 <a class="addItem" data-bind="
-                    click: meanings.itemAdder($parent).do"></a>
+                    click: meanings.itemAdder($root.data.entry, $data).do"></a>
             </div>
 
         </li>
     </ul>
-    <a class="pasteItems" data-bind="
-        click: $root.ui.cutBuffer.pasteInto(collogroups),
-        visible: $root.ui.cutBuffer.containsCollogroups"></a>
+    {#
+        COLLOGROUP ) MEANINGS . LISTCONTROLS
+    #}
+    <a class="pasteItems"
+        data-bind="click: $root.ui.cutBuffer.pasteInto(meanings),
+                   visible: $root.ui.cutBuffer.containsMeanings"></a>
     <a class="addItem"
-        data-bind="click: collogroups.itemAdder($data).do"></a>
+        data-bind="click: meanings.itemAdder($root.data.entry).do"></a>
 
-    <!-- /ko -->
 </section>
 </script>
