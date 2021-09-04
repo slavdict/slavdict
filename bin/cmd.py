@@ -120,7 +120,8 @@ class DataChangeShell(cmd.Cmd):
         except (KeyboardInterrupt, Exception):
             sys.stdout.write(SHOW_CURSOR)
             print()
-            print('\n'.join(str(x) for x in sys.exc_info()[:]))
+            import traceback
+            traceback.print_exc()
             print('Поиск прерван...')
             # self.reset_found_items()
 
