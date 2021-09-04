@@ -15,7 +15,7 @@ from slavdict.dictionary.models import TRANSITIVITY_MAP, TRANSITIVITY_CHOICES
 
 def write_csv(filename, entries):
     uw = csv.writer(open(filename, 'w'))
-    for e in (e for e in entries if e.volume(1)):
+    for e in (e for e in entries if e.is_in_volume(1)):
         ecolumn = e.civil_equivalent + {1: '¹', 2: '²'}.get(e.homonym_order, '')
         for m in list(e.meanings) + list(e.metaph_meanings):
             meaning = m.meaning.strip()

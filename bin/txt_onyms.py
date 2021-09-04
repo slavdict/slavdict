@@ -7,7 +7,7 @@ onyms = []
 onyms_others = []
 others = []
 for e in Entry.objects.all():
-    if e.volume(VOLUME):
+    if e.is_in_volume(VOLUME):
         if e.onym:
             # Отбираем имена собственные и топонимы
             if e.onym in ('a', 'b'):

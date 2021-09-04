@@ -14,7 +14,7 @@ from slavdict.dictionary.models import CollocationGroup
 
 uw = csv.writer(open('cg_meanings.csv', 'w'))
 for cg in (cg for cg in CollocationGroup.objects.all()
-              if cg.host_entry.volume(1)):
+              if cg.host_entry.is_in_volume(1)):
     cgcolumn = '; '.join(c.collocation for c in cg.collocations)
     for m in list(cg.meanings) + list(cg.metaph_meanings):
         meaning = m.meaning.strip()

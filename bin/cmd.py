@@ -153,7 +153,7 @@ class DataChangeShell(cmd.Cmd):
                     if self.pattern.search(getattr(item, attrname) or ''):
                         if from_dict:
                             host_entry = item.host_entry
-                            if not host_entry.volume(self.volumes):
+                            if not host_entry.is_in_volume(self.volumes):
                                 continue
                         count += 1
                         txt = getattr(item, attrname) or ''

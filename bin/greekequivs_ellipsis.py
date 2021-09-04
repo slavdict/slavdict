@@ -12,7 +12,7 @@ def edit(ge):
     input()
 
 for ge in GreekEquivalentForExample.objects.all():
-    if ('...' in ge.unitext or '…' in ge.unitext) and ge.host_entry.volume(1):
+    if ('...' in ge.unitext or '…' in ge.unitext) and ge.host_entry.is_in_volume(1):
         host_entry = ge.host_entry.civil_equivalent
         host = ge.host.civil_equivalent
         print(host_entry, ':', host if host != host_entry else '')

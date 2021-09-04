@@ -17,7 +17,7 @@ def write_csv(filename, examples):
     uw = csv.writer(open(filename, 'w'))
     NON_MARK_CHARS = r'[\s\ ' '\u00A0' r',0-9\.;:\-' '\u2011' r'\!\(\)\[\]\?—–«»…]+'
     register = {}
-    for e in (e for e in examples if e.host_entry.volume(1)):
+    for e in (e for e in examples if e.host_entry.is_in_volume(1)):
         for mark in re.split(NON_MARK_CHARS, e.address_text):
             if mark in register:
                 register[mark] = (register[mark][0] + 1, e)

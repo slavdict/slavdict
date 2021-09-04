@@ -104,7 +104,7 @@ if test_entries:
     lexemes = lexemes.filter(pk__in=test_entries)
 else:
     print('Entries to dump: ALL for the selected volumes', file=sys.stderr)
-lexemes = [e for e in lexemes if e.volume(OUTPUT_VOLUMES)]
+lexemes = [e for e in lexemes if e.is_in_volume(OUTPUT_VOLUMES)]
 lexemes_n = len(lexemes)
 print('Number of selected lexemes:', lexemes_n, file=sys.stderr)
 print(file=sys.stderr)
@@ -166,7 +166,7 @@ if not test_entries:
     #     6) Добавляем ссылочные статьи, которые будут присутствовать в выводимых
     #        томах и ссылаться на какие-то статьи из других томов.
     other_volumes = [e for e in Entry.objects.all()
-                       if not e.volume(OUTPUT_VOLUMES)]
+                       if not e.is_in_volume(OUTPUT_VOLUMES)]
     other_volumes_n = len(other_volumes)
     for i, lexeme in enumerate(other_volumes):
         for participle in lexeme.participles:

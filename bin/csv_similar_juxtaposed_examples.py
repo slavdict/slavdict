@@ -33,7 +33,7 @@ def write_csv(filename, entries):
     N = len(entries)
     sys.stderr.write(HIDE_CURSOR)
     for j, e in enumerate(e for e in entries
-            if e.volume([1, 2]) or e.civil_equivalent.startswith('!')):
+            if e.is_in_volume([1, 2]) or e.civil_equivalent.startswith('!')):
         note = 'Поиск похожих примеров [ %s%% ] %s\r' % (
                 int(j / N * 100), e.civil_equivalent + ERASE_LINEEND)
         sys.stderr.write(note)
