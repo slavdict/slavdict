@@ -394,3 +394,24 @@ def special_cases_func(self, case):
                 {'text': ts.SPACE},
             )
             return tags
+
+        elif self.civil_equivalent in ('ехидна', 'ехидн'):
+            tags = (
+                {'text': ucs8("єхі'дна"), 'class': 'Headword'},
+                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': ucs8("єхі'дны"), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'ж.', 'class': 'Em'},
+                {'text': ts.SPACE},
+                {'text': 'и', 'class': 'Conj'},
+                {'text': ts.SPACE},
+                {'text': ucs8("єхі'днъ"), 'class': 'SubHeadword'},
+                {'text': '(?),', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("єхі'дна")), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'м.', 'class': 'Em'},
+                {'text': ts.SPACE},
+            )
+            return tags
