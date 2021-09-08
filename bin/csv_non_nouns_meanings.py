@@ -10,8 +10,9 @@ sys.path.append(
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
-from slavdict.dictionary.models import Entry, PART_OF_SPEECH_MAP
-from slavdict.dictionary.models import TRANSITIVITY_MAP, TRANSITIVITY_CHOICES
+from slavdict.dictionary.constants import PART_OF_SPEECH_MAP
+from slavdict.dictionary.constants import TRANSITIVITY_MAP, TRANSITIVITY_CHOICES
+from slavdict.dictionary.models import Entry
 
 def write_csv(filename, entries):
     uw = csv.writer(open(filename, 'w'))

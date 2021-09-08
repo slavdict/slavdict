@@ -26,6 +26,8 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary import constants
+from slavdict.dictionary.special_cases import special_cases_func
 from slavdict.dictionary.utils import antconc_anticorrupt
 from slavdict.dictionary.utils import apply_to_mixed
 from slavdict.dictionary.utils import arabic2roman
@@ -36,9 +38,6 @@ from slavdict.dictionary.utils import several_wordforms
 from slavdict.dictionary.utils import ucs_affix_or_word
 from slavdict.dictionary.utils import ucs_convert as ucs8
 from slavdict.dictionary.utils import ucs_convert_affix
-from slavdict.dictionary.utils import volume_label
-from slavdict.jinja_extensions.hyphenation import hyphenate_ucs8 as h
-from slavdict.jinja_extensions import trim_spaces as ts
 
 from crum import get_current_user
 
@@ -96,385 +95,6 @@ def _double_check(item1, item2, m2m=(), kwargs=None, model=None):
     return item1, item2
 
 
-NBSP = '\u00A0'  # неразрывный пробел
-
-BLANK_CHOICE = (('', ''),)
-
-PART_OF_SPEECH_CHOICES = (
-    ('a', 'сущ.'),
-    ('b', 'прил.'),
-    ('c', 'мест.'),
-    ('d', 'гл.'),
-    ('f', 'нареч.'),
-    ('g', 'союз'),
-    ('h', 'предл.'),
-    ('i', 'част.'),
-    ('j', 'межд.'),
-    ('k', 'числ.'),
-    ('l', '[буква]'),
-    ('m', 'прич.-прил.'),
-    ('n', 'предик. нареч.'),
-)
-PART_OF_SPEECH_MAP = {
-    'adjective': 'b',
-    'adposition': 'h',
-    'adverb': 'f',
-    'conjunction': 'g',
-    'interjection': 'j',
-    'letter': 'l',
-    'noun': 'a',
-    'number': 'k',
-    'participle-adjective': 'm',
-    'participle': 'e',
-    'particle': 'i',
-    'postposition': 'h',
-    'predicative-adverb': 'n',  # NOTE: В мнемониках нельзя использовать
-    # пробелы, поскольку названия используются в частности для CSS-классов.
-    # Поэтому "predicative-adverb", а не "predicative adverb".
-    'preposition': 'h',
-    'pronoun': 'c',
-    'verb': 'd',
-}
-# Порядок отображения частей речи при выводе статей с группировкой
-# по части речи
-PART_OF_SPEECH_ORDER = (
-    PART_OF_SPEECH_MAP['letter'],
-    PART_OF_SPEECH_MAP['number'],
-    PART_OF_SPEECH_MAP['noun'],
-    PART_OF_SPEECH_MAP['pronoun'],
-    PART_OF_SPEECH_MAP['adjective'],
-    PART_OF_SPEECH_MAP['participle-adjective'],
-    PART_OF_SPEECH_MAP['participle'],
-    PART_OF_SPEECH_MAP['predicative-adverb'],
-    PART_OF_SPEECH_MAP['adverb'],
-    PART_OF_SPEECH_MAP['adposition'],
-    PART_OF_SPEECH_MAP['preposition'],
-    PART_OF_SPEECH_MAP['postposition'],
-    PART_OF_SPEECH_MAP['conjunction'],
-    PART_OF_SPEECH_MAP['interjection'],
-    PART_OF_SPEECH_MAP['particle'],
-    PART_OF_SPEECH_MAP['verb'],
-)
-ALWAYS_LAST_POS = 100
-
-
-TANTUM_CHOICES = (
-    ('d', 'только дв.'),
-    ('p', 'только мн.'),
-)
-TANTUM_MAP = {
-    'dualeTantum': 'd',
-    'pluraleTantum': 'p',
-}
-
-GENDER_CHOICES = (
-    ('m', 'м.'),
-    ('f', 'ж.'),
-    ('n', 'с.'),
-    ('d', 'м. и' + NBSP + 'ж.'),
-)
-GENDER_MAP = {
-    'masculine': 'm',
-    'feminine': 'f',
-    'neutral': 'n',
-    'dual': 'd',
-}
-
-ONYM_CHOICES = (
-    ('', 'не имя собст.'),
-    ('a', 'имя'),
-    ('b', 'топоним'),
-    ('c', 'народ/общность людей'),
-    ('d', '[другое]'),
-)
-ONYM_MAP = {
-    'anthroponym': 'a',
-    'toponym': 'b',
-    'ethnonym': 'c',
-    'other': 'd',
-}
-
-TRANSITIVITY_CHOICES = (
-    ('', ''),
-    ('t', 'перех.'),
-    ('i', 'неперех.'),
-    ('b', 'перех. и неперех.'),
-)
-TRANSITIVITY_MAP = {
-    'transitive': 't',
-    'intransitive': 'i',
-    'labile': 'b',
-}
-
-# TODO: Должен остаться только один
-# из этих двух списков для причастий.
-PARTICIPLE_TYPE_CHOICES = (
-    ('a', 'действ. прич. наст. вр.'),
-    ('b', 'действ. прич. прош. вр.'),
-    ('c', 'страд. прич. наст. вр.'),
-    ('d', 'страд. прич. прош. вр.'),
-)
-PARTICIPLE_CHOICES = (
-    ('1', 'действ. наст.'),
-    ('2', 'действ. прош.'),
-    ('3', 'страд. наст.'),
-    ('4', 'страд. прош.'),
-)
-PARTICIPLE_TYPE_MAP = {
-    'pres_act': 'a',
-    'perf_act': 'b',
-    'pres_pass': 'c',
-    'perf_pass': 'd',
-}
-
-STATUS_CHOICES = (
-    ('c', 'создана'),
-    ('w', 'в работе'),
-    ('g', 'поиск греч.'),
-    ('f', 'завершена'),
-    ('e', 'редактируется'),
-    ('a', 'утверждена'),
-)
-DEFAULT_ENTRY_STATUS = 'c'
-STATUS_MAP = {
-    'approved': 'a',
-    'beingEdited': 'e',
-    'created': 'c',
-    'finished': 'f',
-    'greek': 'g',
-    'inWork': 'w',
-}
-HELLINIST_BAD_STATUSES = (
-    STATUS_MAP['created'],
-    STATUS_MAP['inWork'],
-)
-
-LANGUAGE_CHOICES = (
-    ('a', 'греч.'),
-    ('b', 'ивр.'),
-    ('c', 'аккад.'),
-    ('d', 'арам.'),
-    ('e', 'арм.'),
-    ('f', 'груз.'),
-    ('g', 'копт.'),
-    ('h', 'лат.'),
-    ('i', 'сир.'),
-)
-LANGUAGE_MAP = {
-    'akkadian': 'c',
-    'aramaic': 'd',
-    'armenian': 'e',
-    'coptic': 'g',
-    'georgian': 'f',
-    'greek': 'a',
-    'hebrew': 'b',
-    'latin': 'h',
-    'syriac': 'i',
-}
-ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE = {
-    LANGUAGE_MAP['greek']: 'Greek',
-    LANGUAGE_MAP['latin']: 'Latin',
-}
-ETYMOLOGY_LANGUAGES = list(ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.keys())
-LANGUAGE_CSS = {
-    LANGUAGE_MAP['akkadian']: 'akkadian',
-    LANGUAGE_MAP['aramaic']: 'aramaic',
-    LANGUAGE_MAP['armenian']: 'armenian',
-    LANGUAGE_MAP['coptic']: 'coptic',
-    LANGUAGE_MAP['georgian']: 'georgian',
-    LANGUAGE_MAP['greek']: 'grec',
-    LANGUAGE_MAP['hebrew']: 'hebrew',
-    LANGUAGE_MAP['latin']: '',
-    LANGUAGE_MAP['syriac']: 'syriac',
-}
-LANGUAGE_TRANSLIT_CSS = {
-    LANGUAGE_MAP['akkadian']: '',
-    LANGUAGE_MAP['aramaic']: 'aramaic-translit',
-    LANGUAGE_MAP['armenian']: '',
-    LANGUAGE_MAP['coptic']: '',
-    LANGUAGE_MAP['georgian']: '',
-    LANGUAGE_MAP['greek']: '',
-    LANGUAGE_MAP['hebrew']: 'hebrew-translit',
-    LANGUAGE_MAP['latin']: '',
-    LANGUAGE_MAP['syriac']: 'syriac-translit',
-}
-
-SUBSTANTIVUS_TYPE_CHOICES = (
-    ('', ''),
-    ('a', 'с.' + NBSP + 'ед.'),
-    ('b', 'с.' + NBSP + 'мн.'),
-    ('c', 'м.' + NBSP + 'ед.'),
-    ('d', 'м.' + NBSP + 'мн.'),
-    ('e', 'ж.' + NBSP + 'ед.'),
-    ('f', 'ж.' + NBSP + 'мн.'),
-)
-SUBSTANTIVUS_TYPE_MAP = {
-    'n.sg.': 'a',
-    'n.pl.': 'b',
-    'm.sg.': 'c',
-    'm.pl.': 'd',
-    'f.sg.': 'e',
-    'f.pl.': 'f',
-}
-
-TRANSLATION_SOURCE_NULL = ''
-TRANSLATION_SOURCE_ADAMENKO = 'A'
-TRANSLATION_SOURCE_BEZOBRAZ = 'Z'
-TRANSLATION_SOURCE_BIRUKOVY = 'B'
-TRANSLATION_SOURCE_GOVOROV = 'G'
-TRANSLATION_SOURCE_JUNGEROV = 'J'
-TRANSLATION_SOURCE_KEDROV = 'K'
-TRANSLATION_SOURCE_LOVJAG1 = 'L'
-TRANSLATION_SOURCE_LOVJAG2 = '2'
-TRANSLATION_SOURCE_NAXIMOV = 'N'
-TRANSLATION_SOURCE_POLANSK = 'P'
-TRANSLATION_SOURCE_PSTGU = 'U'
-TRANSLATION_SOURCE_RBS = 'R'
-TRANSLATION_SOURCE_SEDAKOVA = '3'
-TRANSLATION_SOURCE_SYNODAL = 'S'
-TRANSLATION_SOURCE_TIMROT = 'T'
-TRANSLATION_SOURCE_DEFAULT = TRANSLATION_SOURCE_NULL
-TRANSLATION_SOURCE_CHOICES = (
-
-    (TRANSLATION_SOURCE_NULL, ''),
-
-    (TRANSLATION_SOURCE_SYNODAL, 'Синодальный перевод'),
-    (TRANSLATION_SOURCE_RBS, 'Перевод РБО'),
-    (TRANSLATION_SOURCE_PSTGU, 'Перевод ПСТГУ'),
-
-    (TRANSLATION_SOURCE_ADAMENKO, 'Адаменко В., свящ.'),
-    (TRANSLATION_SOURCE_BEZOBRAZ, '(Безобразов) Кассиан, еп.'),
-    (TRANSLATION_SOURCE_BIRUKOVY, 'Бируковы'),
-    (TRANSLATION_SOURCE_GOVOROV, '(Говоров) Феофан, еп. — перевод Добротолюбия'),
-    (TRANSLATION_SOURCE_KEDROV, 'Кедров Н. — перевод великого канона'),
-    (TRANSLATION_SOURCE_LOVJAG1, 'Ловягин Е.И. — перевод канонов'),
-    (TRANSLATION_SOURCE_LOVJAG2, 'Ловягин И.Ф. — перевод октоиха'),
-    (TRANSLATION_SOURCE_NAXIMOV, 'Нахимов Н. (Зайончковский Н.Ч.)'),
-    (TRANSLATION_SOURCE_POLANSK, '(Полянский) Иустин, еп. — перевод Алфавита духовного'),
-    (TRANSLATION_SOURCE_SEDAKOVA, 'Седакова О.А.'),
-    (TRANSLATION_SOURCE_TIMROT, '(Тимрот) Амвросий, иером.'),
-    (TRANSLATION_SOURCE_JUNGEROV, 'Юнгеров П.А.'),
-)
-
-assert len(TRANSLATION_SOURCE_CHOICES) == \
-       len(set(value.upper() for value, label in TRANSLATION_SOURCE_CHOICES))
-
-TRANSLATION_SOURCE_TEXT = {
-    TRANSLATION_SOURCE_SYNODAL: 'в\u00a0Син. пер.',
-    TRANSLATION_SOURCE_RBS: 'в\u00a0пер. РБО',
-    TRANSLATION_SOURCE_PSTGU: 'в\u00a0пер. ПСТГУ',
-
-    TRANSLATION_SOURCE_ADAMENKO: 'в\u00a0пер. Адам.',
-    TRANSLATION_SOURCE_BEZOBRAZ: 'в\u00a0пер. Бeзобр.',
-    TRANSLATION_SOURCE_BIRUKOVY: 'в\u00a0пер. Бир.',
-    TRANSLATION_SOURCE_GOVOROV: 'в\u00a0пер. Говор.',
-    TRANSLATION_SOURCE_JUNGEROV: 'в\u00a0пер. Юнг.',
-    TRANSLATION_SOURCE_KEDROV: 'в\u00a0пер. Кедр.',
-    TRANSLATION_SOURCE_LOVJAG1: 'в\u00a0пер. Е.\u202fЛов.',
-    TRANSLATION_SOURCE_LOVJAG2: 'в\u00a0пер. И.\u202fЛов.',
-    TRANSLATION_SOURCE_NAXIMOV: 'в\u00a0пер. Нахим.',
-    TRANSLATION_SOURCE_POLANSK: 'в\u00a0пер. Пол.',
-    TRANSLATION_SOURCE_SEDAKOVA: 'в\u00a0пер. Сед.',
-    TRANSLATION_SOURCE_TIMROT: 'в\u00a0пер. Тимр.',
-}
-
-
-SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10 = 'abcdefghij'
-ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10
-ENTRY_SPECIAL_CASES_CHOICES = (
-    ('', ''),
-    (SC1, 'Несколько лексем одного рода'),
-    (SC2, '2 лексемы, муж. и жен. рода'),
-    (SC10, '2 лексемы, муж. и ср. рода'),
-    (SC3, '2 лексемы, ср. и жен. рода'),
-    (SC7, '2 лексемы, жен. и ср. рода'),
-    (SC4, '2 лексемы, жен. и только мн.'),
-    (SC5, '2 лексемы, только мн. и жен.'),
-    (SC6, '3 лексемы, 3 муж. и последний неизм.'),
-    (SC8, '4 лексемы [вихрь]'),
-    (SC9, 'Вынудить отображение пометы «неперех. и перех.» '
-          'при равном кол-ве перех. и неперех. значений'),
-)
-MSC1, MSC2, MSC3, MSC4, MSC5, MSC6, MSC7, MSC8, MSC9, MSC10 = 'abcdefghij'
-MSC11, MSC12, MSC13, MSC14, MSC15, MSC16, MSC17, MSC18, MSC19 = 'klmnopqrs'
-MSC20, MSC21, MSC22, MSC23, MSC24 = 'tuvwx'
-MEANING_SPECIAL_CASES_CHOICES = (
-    ('', ''),
-    ('Имена', (
-        (MSC1,  'канонич.'),
-        (MSC8,  'имя собств.'),
-        (MSC9,  'топоним'),
-    )),
-    ('Части речи', (
-        (MSC22, 'мест.'),
-        (MSC6,  'нареч.'),
-        (MSC19, 'предик. нареч.'),
-        (MSC13, 'союз'),
-        (MSC2,  'предл.'),
-        (MSC3,  'част.'),
-        (MSC7,  'межд.'),
-    )),
-    ('Формы слова', (
-        (MSC4,  'дат.'),
-        (MSC11, 'мн.'),
-        (MSC5,  'твор. ед. в роли нареч.'),
-        (MSC12, 'в роли нареч.'),
-        (MSC14, 'в роли прил.'),
-        (MSC24, 'в роли действ. прич.'),
-        (MSC23, 'в роли мест.'),
-        (MSC20, 'в роли союза'),
-        (MSC15, 'в роли част.'),
-    )),
-    ('Другое', (
-        (MSC17, 'безл.'),  # Безличное употребление глагола
-        (MSC18, 'вводн.'),
-        (MSC21, 'плеоназм'),
-        (MSC16, 'полувспом.'),  # Полувспомогательный глагол
-        (MSC10, 'преимущ.'),
-    )),
-)
-MSC_ROLE_FORM_POS = (MSC5,)
-MSC_ROLE_POS = (MSC12, MSC14, MSC15, MSC20, MSC23, MSC24)
-MSC_ROLE = MSC_ROLE_FORM_POS + MSC_ROLE_POS
-POS_SPECIAL_CASES = (MSC2, MSC3, MSC6, MSC7, MSC13, MSC19, MSC22)
-POS_SPECIAL_CASES_MAP = {
-    MSC2: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['preposition']],
-    MSC3: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['particle']],
-    MSC6: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['adverb']],
-    MSC7: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['interjection']],
-    MSC13: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['conjunction']],
-    MSC19: dict(PART_OF_SPEECH_CHOICES)[
-        PART_OF_SPEECH_MAP['predicative-adverb']],
-    MSC22: dict(PART_OF_SPEECH_CHOICES)[PART_OF_SPEECH_MAP['pronoun']],
-}
-
-YET_NOT_IN_VOLUMES = None
-WHOLE_DICTIONARY = False
-VOLUME_LETTERS = {
-    1: ('а', 'б'),
-    2: ('в',),
-    3: ('г', 'д', 'е'),
-    4: ('ж', 'з', 'и'),
-    5: ('к', 'л', 'м'),
-    6: ('н',),
-    7: ('о',),
-    8: ('п',),
-    9: ('р', 'с'),
-    10: ('т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ю', 'я'),
-}
-ANY_LETTER = None
-LOCKED_LETTERS = VOLUME_LETTERS[1] + VOLUME_LETTERS[2] + VOLUME_LETTERS[3]
-CURRENT_VOLUME = 3
-NO_VOLUME_CHOICE = 0
-DEFAULT_VOLUME_CHOICE = NO_VOLUME_CHOICE
-VOLUME_CHOICES = (
-    (NO_VOLUME_CHOICE, 'Вне томов'),
-) + tuple(
-    (key, volume_label(key, value))
-    for key, value in sorted(VOLUME_LETTERS.items())
-)
-
-
 class WithoutHiddenManager(models.Manager):
     def get_queryset(self):
         return super(WithoutHiddenManager,
@@ -492,7 +112,7 @@ class JSONSerializable:
 
 class VolumeAttributive:
 
-    def is_in_volume(self, volume=YET_NOT_IN_VOLUMES):
+    def is_in_volume(self, volume=constants.YET_NOT_IN_VOLUMES):
         host_entry = self.host_entry
         if host_entry:
             return host_entry.is_in_volume(volume)
@@ -536,12 +156,12 @@ class Entry(models.Model, JSONSerializable):
             импорте заготовок статей.''', default=False)
 
     part_of_speech = CharField('часть речи', max_length=1,
-                               choices=BLANK_CHOICE + PART_OF_SPEECH_CHOICES,
-                               default='', blank=True)
+            choices=constants.BLANK_CHOICE + constants.PART_OF_SPEECH_CHOICES,
+            default='', blank=True)
 
     def is_part_of_speech(self, *slugs):
         for slug in slugs:
-            if PART_OF_SPEECH_MAP[slug] == self.part_of_speech:
+            if constants.PART_OF_SPEECH_MAP[slug] == self.part_of_speech:
                 return True
 
     restricted_use = BooleanField('слово с ограниченной сочетаемостью',
@@ -554,17 +174,17 @@ class Entry(models.Model, JSONSerializable):
             словоформ через запятую''', blank=True)
 
     # только для существительных
-    tantum = CharField('число', choices=TANTUM_CHOICES,
+    tantum = CharField('число', choices=constants.TANTUM_CHOICES,
                        max_length=1, blank=True, default='')
 
     def is_tantum(self, slug):
-        return TANTUM_MAP[slug] == self.tantum
+        return constants.TANTUM_MAP[slug] == self.tantum
 
-    gender = CharField('род', choices=GENDER_CHOICES,
+    gender = CharField('род', choices=constants.GENDER_CHOICES,
                        max_length=1, blank=True, default='')
 
     def is_gender(self, slug):
-        return GENDER_MAP[slug] == self.gender
+        return constants.GENDER_MAP[slug] == self.gender
 
     genitive = CharField('форма Р. падежа', max_length=50, blank=True)
 
@@ -577,10 +197,10 @@ class Entry(models.Model, JSONSerializable):
         return several_wordforms(self.genitive)
 
     onym = CharField('тип имени собственного', max_length=1, blank=True,
-                     choices=ONYM_CHOICES, default='')
+                     choices=constants.ONYM_CHOICES, default='')
 
     def is_onym(self, slug):
-        return ONYM_MAP[slug] == self.onym
+        return constants.ONYM_MAP[slug] == self.onym
 
     canonical_name = BooleanField('каноническое', default=False)
 
@@ -617,23 +237,23 @@ class Entry(models.Model, JSONSerializable):
 
     # только для глаголов
     transitivity = CharField('переходность', max_length=1, blank=True,
-                             choices=TRANSITIVITY_CHOICES, default='')
+                             choices=constants.TRANSITIVITY_CHOICES, default='')
 
     def is_transitivity(self, slug):
-        return TRANSITIVITY_MAP[slug] == self.transitivity
+        return constants.TRANSITIVITY_MAP[slug] == self.transitivity
 
     @property
     def transitivity_from_meanings(self):
-        labile = TRANSITIVITY_MAP['labile']
-        trans = TRANSITIVITY_MAP['transitive']
-        intrans = TRANSITIVITY_MAP['intransitive']
-        tmap = dict(TRANSITIVITY_CHOICES)
+        labile = constants.TRANSITIVITY_MAP['labile']
+        trans = constants.TRANSITIVITY_MAP['transitive']
+        intrans = constants.TRANSITIVITY_MAP['intransitive']
+        tmap = dict(constants.TRANSITIVITY_CHOICES)
         lst = [_f for _f in (m.transitivity for m in self.meanings) if _f]
         template = '%s и\u00a0%s'
         if len(lst) == 0:
             return ''
         elif len(set(lst)) == 1 and \
-                not (lst[0] == labile and self.special_case == SC9):
+                not (lst[0] == labile and self.special_case == constants.SC9):
             return tmap.get(lst[0], '')
         else:
             c = Counter(lst)
@@ -641,7 +261,8 @@ class Entry(models.Model, JSONSerializable):
                 c[trans] += c[labile]
                 c[intrans] += c[labile]
             if c[trans] < c[intrans] or \
-                    c[trans] >= c[intrans] and self.special_case == SC9:
+                    c[trans] >= c[intrans] and \
+                    self.special_case == constants.SC9:
                 return template % (tmap[intrans], tmap[trans])
             else:
                 return template % (tmap[trans], tmap[intrans])
@@ -671,10 +292,10 @@ class Entry(models.Model, JSONSerializable):
         return several_wordforms(self.sg2)
 
     participle_type = CharField('тип причастия', max_length=1, blank=True,
-                                choices=PARTICIPLE_TYPE_CHOICES, default='')
+                    choices=constants.PARTICIPLE_TYPE_CHOICES, default='')
 
     def is_participle_type(self, slug):
-        return PARTICIPLE_TYPE_MAP[slug] == self.participle_type
+        return constants.PARTICIPLE_TYPE_MAP[slug] == self.participle_type
 
     derivation_entry = ForeignKey('self', verbose_name='образовано от',
             related_name='derived_entry_set', blank=True, null=True,
@@ -749,7 +370,8 @@ class Entry(models.Model, JSONSerializable):
 
     @property
     def etymologies(self):
-        etyms = self.etymology_set.filter(language__in=ETYMOLOGY_LANGUAGES)
+        etyms = self.etymology_set.filter(
+                    language__in=constants.ETYMOLOGY_LANGUAGES)
         etyms = list(etyms)
         etyms.sort(key=lambda x: (bool(x.etymon_to), x.order, x.id))
         return etyms
@@ -763,11 +385,12 @@ class Entry(models.Model, JSONSerializable):
         return self.participle_set.all().order_by('order', 'id')
 
     # административная информация
-    status = CharField('статус статьи', max_length=1, choices=STATUS_CHOICES,
-                       default=DEFAULT_ENTRY_STATUS)
+    status = CharField('статус статьи', max_length=1,
+                       choices=constants.STATUS_CHOICES,
+                       default=constants.DEFAULT_ENTRY_STATUS)
 
     def is_status(self, slug):
-        return STATUS_MAP[slug] == self.status
+        return constants.STATUS_MAP[slug] == self.status
 
     authors = ManyToManyField(CustomUser, verbose_name='автор статьи',
                               blank=True)
@@ -860,7 +483,7 @@ class Entry(models.Model, JSONSerializable):
                 meaning_groups.sort(key=lambda mg: (mg.meanings[0].order,
                                                     mg.meanings[0].id))
 
-        elif any(m.special_case and m.special_case in POS_SPECIAL_CASES
+        elif any(m.special_case and m.special_case in constants.POS_SPECIAL_CASES
                  for m in meanings):
             several_pos = True
             ENTRY_POS = self.get_part_of_speech_display()
@@ -868,409 +491,23 @@ class Entry(models.Model, JSONSerializable):
             mm = []
             for m in meanings:
                 if m.special_case != pos:
-                    pos_mark = POS_SPECIAL_CASES_MAP.get(pos, ENTRY_POS)
+                    pos_mark = constants.POS_SPECIAL_CASES_MAP.get(pos, ENTRY_POS)
                     group = MeaningGroup(mm, pos_mark=pos_mark)
                     meaning_groups.append(group)
                     pos = m.special_case
                     mm = []
                 mm.append(m)
-            pos_mark = POS_SPECIAL_CASES_MAP.get(pos, ENTRY_POS)
+            pos_mark = constants.POS_SPECIAL_CASES_MAP.get(pos, ENTRY_POS)
             group = MeaningGroup(mm, pos_mark=pos_mark)
             meaning_groups.append(group)
         else:
             meaning_groups = [MeaningGroup(meanings)]
         return MeaningGroups(meaning_groups, several_pos)
 
+    special_cases = special_cases_func
     special_case = CharField('Статья нуждается в специальной обработке',
-                             max_length=1, choices=ENTRY_SPECIAL_CASES_CHOICES,
-                             default='', blank=True)
-
-    def special_cases(self, case):
-        RE_COMMA = r'[,\s]+'
-        if case == 'several nouns':
-            if (self.genitive and ',' in self.genitive and
-                    len(self.base_vars) > 1 and
-                    self.special_case and
-                    self.special_case in ENTRY_SPECIAL_CASES):
-                M_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['masculine']]
-                F_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['feminine']]
-                N_GENDER = dict(GENDER_CHOICES)[GENDER_MAP['neutral']]
-                PL_TANTUM = dict(TANTUM_CHOICES)[TANTUM_MAP['pluraleTantum']]
-                UNINFL = 'неизм.'
-                HIDDEN_GRAM = ''
-                HIDDEN_FORM = ''
-
-                wordforms = re.split(RE_COMMA, self.genitive)
-                sc = self.special_case
-                if SC1 == sc:
-                    grammatical_marks = [HIDDEN_GRAM] * (len(wordforms) - 1)
-                    grammatical_marks += [self.get_gender_display()]
-                elif SC2 == sc:
-                    grammatical_marks = [M_GENDER, F_GENDER]
-                elif SC3 == sc:
-                    grammatical_marks = [N_GENDER, F_GENDER]
-                elif SC4 == sc:
-                    grammatical_marks = [F_GENDER, PL_TANTUM]
-                elif SC5 == sc:
-                    grammatical_marks = [PL_TANTUM, F_GENDER]
-                elif SC6 == sc:
-                    grammatical_marks = [
-                        HIDDEN_GRAM,
-                        M_GENDER,
-                        '%s %s' % (M_GENDER, UNINFL)]
-                    wordforms += [HIDDEN_FORM]
-                elif SC7 == sc:
-                    grammatical_marks = [F_GENDER, N_GENDER]
-                elif SC8 == sc:
-                    grammatical_marks = [HIDDEN_GRAM] * 3
-                    grammatical_marks += [self.get_gender_display()]
-                    wordforms = [HIDDEN_FORM, wordforms[0], HIDDEN_FORM, wordforms[1]]
-                elif SC10 == sc:
-                    grammatical_marks = [M_GENDER, N_GENDER]
-
-                value = [(wordform, ucs8(wordform), grammatical_marks[i])
-                         for i, wordform in enumerate(wordforms)]
-                return value
-        elif case == 'be' and self.civil_equivalent == 'быти':
-            return [ucs8(x) for x in ("нѣ'смь", "нѣ'си")]
-        elif case == 'bigger':
-            if self.civil_equivalent == 'больший':
-                return ucs8("вели'кій")
-            elif self.civil_equivalent == 'горший':
-                return ucs8("ѕлы'й")
-
-        elif case == 'other_volumes':
-            STAR = '\u27e1'
-            STAR_CLS = 'MeaningfulNoAccent'
-            if 'вриена' == self.civil_equivalent:
-                base_vars = tuple(self.base_vars)
-                tags = (
-                    {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                    {'text': ',', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                    {'text': self.genitive_ucs_wax[1], 'class': 'CSLSegment'},
-                    {'text': ts.SPACE},
-                    {'text': 'ж.', 'class': 'Em'},
-                    {'text': ts.SPACE},
-                    {'text': 'и', 'class': 'Conj'},
-                    {'text': ts.SPACE},
-                    {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
-                    {'text': ts.SPACE},
-                    {'text': 'ж.', 'class': 'Em'},
-                    {'text': ts.EMSPACE},
-                    {'text': 'неизм.', 'class': 'Em'},
-                    {'text': ts.SPACE},
-                )
-                return tags
-
-            elif self.civil_equivalent in ('ветреный', 'ветренный'):
-                base_vars = tuple(self.base_vars)
-                tags = (
-                    {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                    {'text': ts.SPACE},
-                    {'text': '(', 'class': 'Text'},
-                    {'text': base_vars[0].childvars[0].idem_ucs,
-                        'class': 'CSLSegment'},
-                    {'text': '),', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                    {'text': self.short_form_ucs_wax[1],
-                        'class': 'CSLSegment'},
-                    {'text': ts.SPACE},
-                    {'text': 'и', 'class': 'Conj'},
-                    {'text': ts.SPACE},
-                    {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
-                    {'text': ts.SPACE},
-                    {'text': 'прил.', 'class': 'Em'},
-                    {'text': ts.SPACE},
-                )
-                return tags
-
-            elif self.civil_equivalent in (
-                    'воскласти', 'вскласти',  # перех.
-                    'воскормити', 'вскормити',  # перех.
-                    'восприимати', 'воспринимати',  # перех. и неперех.
-                    'воспящати', 'вспящати',  # перех. и неперех.
-                    'востаяти', 'встаяти'  # неперех.
-                    ):
-                base_vars = tuple(self.base_vars)
-                tags = (
-                    {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                    {'text': ',', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                    {'text': h(ucs8(
-                        self.several_sg1[0][0])), 'class': 'CSLSegment'},
-                )
-                if ts.has_no_accent(self.several_sg1[0][0]):
-                    tags += (
-                        {'text': STAR, 'class': STAR_CLS},
-                    )
-                tags += (
-                    {'text': ',', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                    {'text': h(ucs8(
-                        self.several_sg2[0][0])), 'class': 'CSLSegment'},
-                )
-                if ts.has_no_accent(self.several_sg2[0][0]):
-                    tags += (
-                        {'text': STAR, 'class': STAR_CLS},
-                    )
-                tags += (
-                    {'text': ts.SPACE},
-                    {'text': 'и', 'class': 'Conj'},
-                    {'text': ts.SPACE},
-                    {'text': h(base_vars[1].idem_ucs),
-                        'class': 'SubHeadword'},
-                    {'text': ',', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                    {'text': h(ucs8(
-                        self.several_sg1[1][0])), 'class': 'CSLSegment'},
-                )
-                if ts.has_no_accent(self.several_sg1[1][0]):
-                    tags += (
-                        {'text': STAR, 'class': STAR_CLS},
-                    )
-                tags += (
-                    {'text': ',', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                    {'text': h(ucs8(
-                        self.several_sg2[1][0])), 'class': 'CSLSegment'},
-                )
-                if ts.has_no_accent(self.several_sg2[1][0]):
-                    tags += (
-                        {'text': STAR, 'class': STAR_CLS},
-                    )
-                if self.civil_equivalent in ('востаяти', 'встаяти'):
-                    tags += (
-                        {'text': ts.SPACE},
-                        {'text': 'неперех.', 'class': 'Em'},
-                        {'text': ts.SPACE},
-                    )
-                else:
-                    tags += (
-                        {'text': ts.SPACE},
-                        {'text': 'перех.', 'class': 'Em'},
-                        {'text': ts.SPACE},
-                    )
-                    if self.civil_equivalent in (
-                            'восприимати', 'воспринимати',
-                            'воспящати', 'вспящати'):
-                        tags += (
-                            {'text': 'и', 'class': 'Em'},
-                            {'text': ts.SPACE},
-                            {'text': 'неперех.', 'class': 'Em'},
-                            {'text': ts.SPACE},
-                        )
-                return tags
-
-            elif self.civil_equivalent in ('взяти', 'взятися'):
-                base_vars = tuple(self.base_vars)
-                tags = (
-                    {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                    {'text': ',', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                    {'text': h(ucs8(
-                        self.several_sg1[0][0])), 'class': 'CSLSegment'},
-                )
-                if ts.has_no_accent(self.several_sg1[0][0]):
-                    tags += (
-                        {'text': STAR, 'class': STAR_CLS},
-                    )
-                tags += (
-                    {'text': ts.SPACE},
-                    {'text': '(', 'class': 'Text'},
-                    {'text': h(ucs8(
-                        self.several_sg1[1][0])), 'class': 'CSLSegment'},
-                )
-                if ts.has_no_accent(self.several_sg1[1][0]):
-                    tags += (
-                        {'text': STAR, 'class': STAR_CLS},
-                    )
-
-                tags += (
-                    {'text': '),', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                    {'text': h(ucs8(
-                        self.several_sg2[0][0])), 'class': 'CSLSegment'},
-                )
-                if ts.has_no_accent(self.several_sg2[0][0]):
-                    tags += (
-                        {'text': STAR, 'class': STAR_CLS},
-                    )
-                tags += (
-                    {'text': ts.SPACE},
-                    {'text': '(', 'class': 'Text'},
-                    {'text': h(ucs8(
-                        self.several_sg2[1][0])), 'class': 'CSLSegment'},
-                )
-                if ts.has_no_accent(self.several_sg2[1][0]):
-                    tags += (
-                        {'text': STAR, 'class': STAR_CLS},
-                    )
-                tags += (
-                    {'text': ')', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                )
-                if self.civil_equivalent == 'взяти':
-                    tags += (
-                        {'text': 'перех.', 'class': 'Em'},
-                        {'text': ts.SPACE},
-                        {'text': 'и', 'class': 'Em'},
-                        {'text': ts.SPACE},
-                        {'text': 'неперех.', 'class': 'Em'},
-                        {'text': ts.SPACE},
-                    )
-                elif self.civil_equivalent == 'взятися':
-                    tags += (
-                        {'text': 'неперех.', 'class': 'Em'},
-                        {'text': ts.SPACE},
-                    )
-                return tags
-
-            elif self.civil_equivalent == 'воздвигнути':
-                forms = tuple(self.base_vars)
-                sg1_segs = [
-                    (h(ucs_word), STAR) if ts.has_no_accent(word)
-                    else (h(ucs_word),)
-                    for word, ucs_word in self.several_sg1]
-                sg1_clss = [
-                    ('CSLSegment', STAR_CLS) if ts.has_no_accent(word)
-                    else ('CSLSegment',)
-                    for word, ucs_word in self.several_sg1]
-                sg2_segs = [
-                    (h(ucs_word), STAR) if ts.has_no_accent(word)
-                    else (h(ucs_word),)
-                    for word, ucs_word in self.several_sg2]
-                sg2_clss = [
-                    ('CSLSegment', STAR_CLS) if ts.has_no_accent(word)
-                    else ('CSLSegment',)
-                    for word, ucs_word in self.several_sg2]
-                segs = (forms[0].idem_ucs, ',', ts.SPACE)
-                clss = ('Headword', 'Text', None)
-                segs += sg1_segs[0]
-                clss += sg1_clss[0]
-                segs += (ts.SPACE, 'и', ts.SPACE)
-                clss += (None, 'Conj', None)
-                segs += sg1_segs[1]
-                clss += sg1_clss[1]
-                segs += (',', ts.SPACE)
-                clss += ('Text', None)
-                segs += sg2_segs[0]
-                clss += sg2_clss[0]
-                segs += (ts.SPACE, 'и', ts.SPACE)
-                clss += (None, 'Conj', None)
-                segs += sg2_segs[1]
-                clss += sg2_clss[1]
-
-                segs += (ts.SPACE, 'и', ts.SPACE)
-                clss += (None, 'Conj', None)
-                segs += (h(forms[1].idem_ucs), ',', ts.SPACE)
-                clss += ('SubHeadword', 'Text', None)
-                segs += sg1_segs[2]
-                clss += sg1_clss[2]
-                segs += (',', ts.SPACE)
-                clss += ('Text', None)
-                segs += sg2_segs[2]
-                clss += sg2_clss[2]
-                segs += (ts.SPACE, 'перех.', ts.SPACE)
-                clss += (None, 'Em', None)
-
-                tags = []
-                for seg, cls in zip(segs, clss):
-                    tag = {'text': seg}
-                    if cls:
-                        tag['class'] = cls
-                    tags.append(tag)
-                return tags
-
-            elif self.civil_equivalent in ('владычний', 'владычный'):
-                forms = tuple(self.base_vars)
-                short_form_segs = [
-                    (h(ucs_word), STAR) if ts.has_no_accent(word)
-                    else (h(ucs_word),)
-                    for word, ucs_word in self.short_forms]
-                short_form_clss = [
-                    ('CSLSegment', STAR_CLS) if ts.has_no_accent(word)
-                    else ('CSLSegment',)
-                    for word, ucs_word in self.short_forms]
-                segs = (forms[0].idem_ucs, ts.SPACE, '(')
-                clss = ('Headword', None, 'Text')
-                segs += (h(forms[0].childvars[0].idem_ucs), ',', ts.SPACE)
-                clss += ('CSLSegment', 'Text', None)
-                segs += (h(forms[0].idem_ucs), '),', ts.SPACE)
-                clss += ('CSLSegment', 'Text', None)
-                segs += short_form_segs[0]
-                clss += short_form_clss[0]
-
-                segs += (ts.SPACE, 'и', ts.SPACE)
-                clss += (None, 'Conj', None)
-                segs += (forms[1].idem_ucs, ts.SPACE, '(')
-                clss += ('SubHeadword', None, 'Text')
-                segs += (h(forms[1].childvars[0].idem_ucs), ',', ts.SPACE)
-                clss += ('CSLSegment', 'Text', None)
-                segs += (h(forms[1].idem_ucs), '),', ts.SPACE)
-                clss += ('CSLSegment', 'Text', None)
-                segs += short_form_segs[1]
-                clss += short_form_clss[1]
-
-                segs += (ts.SPACE, 'прил. притяж.', ts.SPACE)
-                clss += (None, 'Em', None)
-
-                tags = []
-                for seg, cls in zip(segs, clss):
-                    tag = {'text': seg}
-                    if cls:
-                        tag['class'] = cls
-                    tags.append(tag)
-                return tags
-
-            elif self.civil_equivalent in ('гефсимани', 'гефсиманиа'):
-                base_vars = tuple(self.base_vars)
-                tags = (
-                    {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                    {'text': ',', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                    {'text': self.genitive_ucs_wax[1], 'class': 'CSLSegment'},
-                    {'text': ts.SPACE},
-                    {'text': 'ж.', 'class': 'Em'},
-                    {'text': ts.SPACE},
-                    {'text': 'и', 'class': 'Conj'},
-                    {'text': ts.SPACE},
-                    {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
-                    {'text': ts.SPACE},
-                    {'text': 'неизм.', 'class': 'Em'},
-                    {'text': ts.SPACE},
-                )
-                return tags
-
-            elif self.civil_equivalent in ('епитрахиль', 'епитрахилий'):
-                base_vars = tuple(self.base_vars)
-                genitives = self.genitives
-                tags = (
-                    {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                    {'text': ',', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                    {'text': genitives[0][1], 'class': 'CSLSegment'},
-                    {'text': ts.SPACE},
-                    {'text': 'м.', 'class': 'Em'},
-                    {'text': ts.SPACE},
-                    {'text': 'и', 'class': 'Conj'},
-                    {'text': ts.SPACE},
-                    {'text': genitives[1][1], 'class': 'CSLSegment'},
-                    {'text': ts.SPACE},
-                    {'text': 'ж.', 'class': 'Em'},
-                    {'text': ts.SPACE},
-                    {'text': 'и', 'class': 'Conj'},
-                    {'text': ts.SPACE},
-                    {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
-                    {'text': ',', 'class': 'Text'},
-                    {'text': ts.SPACE},
-                    {'text': genitives[2][1], 'class': 'CSLSegment'},
-                    {'text': ts.SPACE},
-                    {'text': 'м.', 'class': 'Em'},
-                    {'text': ts.SPACE},
-                )
-                return tags
-
+            max_length=1, choices=constants.ENTRY_SPECIAL_CASES_CHOICES,
+            default='', blank=True)
 
     def examples_groups_for_hellinists(self):
         if hasattr(self, '_exgroups'):
@@ -1323,8 +560,10 @@ class Entry(models.Model, JSONSerializable):
 
     def get_all_greeks(self):
         greeks = set()
-        greeks.update(unicodedata.normalize('NFC', et.unitext.strip().lower())
-            for et in self.etymology_set.filter(language=LANGUAGE_MAP['greek'])
+        greeks.update(
+            unicodedata.normalize('NFC', et.unitext.strip().lower())
+            for et in self.etymology_set.filter(
+                            language=constants.LANGUAGE_MAP['greek'])
             if et.unitext.strip() and ' ' not in et.unitext.strip())
         for ex in self.all_examples():
             for ge in ex.greek_equivs:
@@ -1335,7 +574,8 @@ class Entry(models.Model, JSONSerializable):
         return tuple(sorted(greeks))
 
     def get_search_item(self):
-        NON_POS = (PART_OF_SPEECH_MAP['letter'], PART_OF_SPEECH_MAP['number'])
+        NON_POS = (constants.PART_OF_SPEECH_MAP['letter'],
+                   constants.PART_OF_SPEECH_MAP['number'])
         HAS_POS = self.part_of_speech and self.part_of_speech not in NON_POS
         pos = ''
         if self.homonym_order and HAS_POS:
@@ -1389,8 +629,8 @@ class Entry(models.Model, JSONSerializable):
     # во время подготовки тома к печати или нет.
     @property
     def preplock(self):
-        yet_not_in_volumes = self.volume == YET_NOT_IN_VOLUMES
-        not_in_locked_letters = self.first_letter() not in LOCKED_LETTERS
+        yet_not_in_volumes = self.volume == constants.YET_NOT_IN_VOLUMES
+        not_in_locked_letters = self.first_letter() not in constants.LOCKED_LETTERS
         if yet_not_in_volumes or not_in_locked_letters:
             return False
         return True
@@ -1398,8 +638,10 @@ class Entry(models.Model, JSONSerializable):
     def first_letter(self):
         return self.civil_equivalent.lstrip(' =*')[:1].lower()
 
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, default=DEFAULT_VOLUME_CHOICE)
-    tmp_volume = SmallIntegerField('предыдущее значение поля «Том»', blank=True, null=True)
+    volume = SmallIntegerField('том', choices=constants.VOLUME_CHOICES,
+                    blank=True, default=constants.DEFAULT_VOLUME_CHOICE)
+    tmp_volume = SmallIntegerField('предыдущее значение поля «Том»',
+                    blank=True, null=True)
 
     @property
     def volume_in_roman(self):
@@ -1407,14 +649,14 @@ class Entry(models.Model, JSONSerializable):
             return arabic2roman(self.volume)
         return '*'
 
-    def is_in_volume(self, volume=YET_NOT_IN_VOLUMES):
-        if volume is WHOLE_DICTIONARY:
+    def is_in_volume(self, volume=constants.YET_NOT_IN_VOLUMES):
+        if volume is constants.WHOLE_DICTIONARY:
             return self.volume > 0
         first_letter = self.first_letter()
 
         # Если аргумент volume не передан, то выбираем только те статьи,
         # для которых том ещё не определен.
-        if volume is YET_NOT_IN_VOLUMES:
+        if volume is constants.YET_NOT_IN_VOLUMES:
             return self.volume == 0
         else:
             if isinstance(volume, (list, tuple)):
@@ -1422,9 +664,9 @@ class Entry(models.Model, JSONSerializable):
             else:
                 return self.volume == volume
 
-    def starts_with(self, starts_with=ANY_LETTER):
+    def starts_with(self, starts_with=constants.ANY_LETTER):
         # Если аргумент starts_with не передан, то выбираем все статьи
-        if starts_with is ANY_LETTER:
+        if starts_with is constants.ANY_LETTER:
             return True
         if isinstance(starts_with, str):
             starts_with = [starts_with]
@@ -1625,26 +867,28 @@ class Etymology(models.Model, JSONSerializable, VolumeAttributive):
     def etymons(self):
         return self.etymon_set.filter(etymon_to=self.id).order_by('order', 'id')
 
-    language = CharField('язык', max_length=1, choices=LANGUAGE_CHOICES,
-                         default='')
+    language = CharField('язык', max_length=1,
+                choices=constants.LANGUAGE_CHOICES, default='')
 
     def is_language(self, x):
         if type(x) in (list, tuple):
-            return self.language in [ix for ix in LANGUAGE_MAP if ix in x]
+            return self.language in [ix
+                                     for ix in constants.LANGUAGE_MAP
+                                     if ix in x]
         else:
-            return self.language == LANGUAGE_MAP[x]
+            return self.language == constants.LANGUAGE_MAP[x]
 
     def has_etymology_language(self):
-        return self.language in ETYMOLOGY_LANGUAGES
+        return self.language in constants.ETYMOLOGY_LANGUAGES
 
     def get_etymology_language_cstyle(self):
-        return ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.get(self.language, '')
+        return constants.ETYMOLOGY_LANGUAGE_INDESIGN_CSTYLE.get(self.language, '')
 
     def get_language_css(self):
-        return LANGUAGE_CSS[self.language]
+        return constants.LANGUAGE_CSS[self.language]
 
     def get_language_translit_css(self):
-        return LANGUAGE_TRANSLIT_CSS[self.language]
+        return constants.LANGUAGE_TRANSLIT_CSS[self.language]
 
     text = CharField('языковой эквивалент', max_length=40, blank=True)
 
@@ -1663,7 +907,8 @@ class Etymology(models.Model, JSONSerializable, VolumeAttributive):
     mark = CharField('грамматическая помета', max_length=20, blank=True)
     additional_info = TextField('примечание', blank=True)
     mtime = DateTimeField(editable=False, auto_now=True)
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
+    volume = SmallIntegerField('том', choices=constants.VOLUME_CHOICES,
+                               blank=True, null=True)
 
     @property
     def host_entry(self):
@@ -1785,8 +1030,8 @@ class MeaningContext(models.Model, JSONSerializable, VolumeAttributive):
             blank=True)
 
     mtime = DateTimeField(editable=False, auto_now=True)
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
-
+    volume = SmallIntegerField('том', choices=constants.VOLUME_CHOICES,
+                               blank=True, null=True)
     @property
     def show_in_dictionary(self):
         PL = 'мн.'
@@ -1947,7 +1192,7 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
 
     substantivus = BooleanField('в роли сущ.', default=False)
     substantivus_type = CharField('форма субстантива', max_length=1,
-                                  choices=SUBSTANTIVUS_TYPE_CHOICES,
+                                  choices=constants.SUBSTANTIVUS_TYPE_CHOICES,
                                   blank=True, default='')
     substantivus_csl = CharField('цсл форма', max_length=100,
                                  blank=True, default='')
@@ -1965,11 +1210,12 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
 
     # только для глаголов
     transitivity = CharField('переходность', max_length=1, blank=True,
-                             choices=TRANSITIVITY_CHOICES, default='')
+                             choices=constants.TRANSITIVITY_CHOICES, default='')
 
     def is_substantivus_type(self, *slugs):
-        return any(SUBSTANTIVUS_TYPE_MAP[slug] == self.substantivus_type
-                   for slug in slugs)
+        return any(
+            constants.SUBSTANTIVUS_TYPE_MAP[slug] == self.substantivus_type
+            for slug in slugs)
 
     additional_info = TextField('примечание', help_text='''Любая
             дополнительная информация по данному ЗНАЧЕНИЮ. Дополнительная
@@ -1978,7 +1224,8 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
             blank=True)
 
     special_case = CharField('особые случаи', max_length=1,
-            choices=MEANING_SPECIAL_CASES_CHOICES, blank=True, default='')
+            choices=constants.MEANING_SPECIAL_CASES_CHOICES,
+            blank=True, default='')
 
     @property
     def has_mcsl(self):
@@ -2059,8 +1306,8 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
 
     ctime = DateTimeField(editable=False, auto_now_add=True)
     mtime = DateTimeField(editable=False, auto_now=True)
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
-
+    volume = SmallIntegerField('том', choices=constants.VOLUME_CHOICES,
+                               blank=True, null=True)
     @property
     def host_entry(self):
         if self.entry_container:
@@ -2082,7 +1329,7 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
         else:
             return self.collogroup_container
 
-    def starts_with(self, starts_with=ANY_LETTER):
+    def starts_with(self, starts_with=constants.ANY_LETTER):
         host_entry = self.host_entry
         if host_entry:
             return host_entry.starts_with(starts_with)
@@ -2325,36 +1572,13 @@ class Example(models.Model, JSONSerializable, VolumeAttributive):
             а в аналогичных полях при значении и лексеме, соответственно.''',
             blank=True)
 
-    GREEK_EQ_LOOK_FOR = 'L'  # Следует найти греческие параллели для примера
-    GREEK_EQ_STOP = 'S'  # Греческие параллели не нужны
-    GREEK_EQ_CHECK_ADDRESS = 'C'
-        # Необходимо уточнить адрес примера, чтобы грецист смог найти пример
-    GREEK_EQ_NOT_FOUND = 'N'  # Греч.параллель для примера найти не удалось
-    GREEK_EQ_FOUND = 'F'  # Греч.параллель для примера найдена
-    GREEK_EQ_POSTPONED = 'P'  # Нахождение греч. параллели отложено, например,
-        # потому что у грециста в данный момент нет греч. текста, но впоследствии
-        # может появиться.
-    GREEK_EQ_MEANING = 'M'
-        # Греч.параллели для примера нужны, чтобы определить значение слова
-    GREEK_EQ_URGENT = 'U'  # Греч.параллели для примера нужны в срочном порядке
-
-    GREEK_EQ_STATUS = (
-        (GREEK_EQ_LOOK_FOR, 'следует найти'),
-        (GREEK_EQ_STOP, 'не нужны'),
-        (GREEK_EQ_CHECK_ADDRESS, 'уточнить адрес'),
-        (GREEK_EQ_NOT_FOUND, 'найти не удалось'),
-        (GREEK_EQ_POSTPONED, 'когда-нибудь позже, отложенные на потом'),
-        (GREEK_EQ_FOUND, 'найдены'),
-        (GREEK_EQ_MEANING, 'необходимы для опр-я значения'),
-        (GREEK_EQ_URGENT, 'срочное'),
-    )
-
     greek_eq_status = CharField('параллели', max_length=1,
-            choices=GREEK_EQ_STATUS, default=GREEK_EQ_LOOK_FOR)
+            choices=constants.GREEK_EQ_STATUS,
+            default=constants.GREEK_EQ_LOOK_FOR)
 
     mtime = DateTimeField(editable=False, auto_now=True)
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
-
+    volume = SmallIntegerField('том', choices=constants.VOLUME_CHOICES,
+                               blank=True, null=True)
     @property
     def host_entry(self):
         if self.entry:
@@ -2377,7 +1601,7 @@ class Example(models.Model, JSONSerializable, VolumeAttributive):
             else:
                 return self.entry
 
-    def starts_with(self, starts_with=ANY_LETTER):
+    def starts_with(self, starts_with=constants.ANY_LETTER):
         host_entry = self.host_entry
         if host_entry:
             return host_entry.starts_with(starts_with)
@@ -2576,17 +1800,17 @@ class Translation(models.Model, JSONSerializable, VolumeAttributive):
     fragment_end = SmallIntegerField('номер слова конца фрагмента',
             blank=True, default=1000)
     source = CharField('Источник', max_length=1,
-            choices=TRANSLATION_SOURCE_CHOICES,
-            default=TRANSLATION_SOURCE_DEFAULT)
+            choices=constants.TRANSLATION_SOURCE_CHOICES,
+            default=constants.TRANSLATION_SOURCE_DEFAULT)
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     hidden = BooleanField('скрывать перевод', default=True,
             help_text='отображать перевод только в комментариях для авторов')
     translation = TextField('перевод')
     additional_info = TextField('примечание', blank=True)
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
-
+    volume = SmallIntegerField('том', choices=constants.VOLUME_CHOICES,
+                               blank=True, null=True)
     def source_label(self):
-        return TRANSLATION_SOURCE_TEXT.get(self.source, '')
+        return constants.TRANSLATION_SOURCE_TEXT.get(self.source, '')
 
     @property
     def host_entry(self):
@@ -2720,7 +1944,8 @@ class CollocationGroup(models.Model, JSONSerializable, VolumeAttributive):
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     ctime = DateTimeField(editable=False, auto_now_add=True)
     mtime = DateTimeField(editable=False, auto_now=True)
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
+    volume = SmallIntegerField('том', choices=constants.VOLUME_CHOICES,
+            blank=True, null=True)
     additional_info = TextField('примечание', blank=True)
     hidden = BooleanField('Скрыть словосочетание', help_text='''Не отображать
             словосочетание в статье.''', default=False, editable=False)
@@ -2746,7 +1971,7 @@ class CollocationGroup(models.Model, JSONSerializable, VolumeAttributive):
 
     host = host_entry
 
-    def starts_with(self, starts_with=ANY_LETTER):
+    def starts_with(self, starts_with=constants.ANY_LETTER):
         host_entry = self.host_entry
         if host_entry:
             return host_entry.starts_with(starts_with)
@@ -2901,13 +2126,15 @@ class Collocation(models.Model, JSONSerializable, VolumeAttributive):
 
     @property
     def etymologies(self):
-        etyms = self.etymology_set.filter(language__in=ETYMOLOGY_LANGUAGES)
+        etyms = self.etymology_set.filter(
+                        language__in=constants.ETYMOLOGY_LANGUAGES)
         etyms = list(etyms)
         etyms.sort(key=lambda x: (bool(x.etymon_to), x.order, x.id))
         return etyms
 
     mtime = DateTimeField(editable=False, auto_now=True)
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
+    volume = SmallIntegerField('том', choices=constants.VOLUME_CHOICES,
+            blank=True, null=True)
 
     @property
     def host_entry(self):
@@ -3017,7 +2244,8 @@ class GreekEquivalentForExample(models.Model, JSONSerializable, VolumeAttributiv
 
     aliud = BooleanField('в греч. иначе', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
+    volume = SmallIntegerField('том', choices=constants.VOLUME_CHOICES,
+            blank=True, null=True)
     order = SmallIntegerField('порядок следования', blank=True, default=345)
 
     @property
@@ -3054,12 +2282,12 @@ class GreekEquivalentForExample(models.Model, JSONSerializable, VolumeAttributiv
         super(GreekEquivalentForExample, self).save(*args, **kwargs)
         example = self.for_example
         if self.unitext.strip() and example.greek_eq_status in (
-                Example.GREEK_EQ_LOOK_FOR,
-                Example.GREEK_EQ_NOT_FOUND,
-                Example.GREEK_EQ_CHECK_ADDRESS,
-                Example.GREEK_EQ_MEANING,
-                Example.GREEK_EQ_URGENT):
-            example.greek_eq_status = Example.GREEK_EQ_FOUND
+                constants.GREEK_EQ_LOOK_FOR,
+                constants.GREEK_EQ_NOT_FOUND,
+                constants.GREEK_EQ_CHECK_ADDRESS,
+                constants.GREEK_EQ_MEANING,
+                constants.GREEK_EQ_URGENT):
+            example.greek_eq_status = constants.GREEK_EQ_FOUND
             example.save(without_mtime=without_mtime)
         if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
@@ -3068,7 +2296,7 @@ class GreekEquivalentForExample(models.Model, JSONSerializable, VolumeAttributiv
         super(GreekEquivalentForExample, self).delete(*args, **kwargs)
         if not self.for_example.greek_equivs.exists():
             example = self.for_example
-            example.greek_eq_status = Example.GREEK_EQ_LOOK_FOR
+            example.greek_eq_status = constants.GREEK_EQ_LOOK_FOR
             example.save(without_mtime=without_mtime)
         if without_mtime:
             return
@@ -3160,7 +2388,8 @@ class OrthographicVariant(models.Model, JSONSerializable, VolumeAttributive):
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     no_ref_entry = BooleanField('Не делать отсылочной статьи', default=False)
     mtime = DateTimeField(editable=False, auto_now=True)
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
+    volume = SmallIntegerField('том', choices=constants.VOLUME_CHOICES,
+            blank=True, null=True)
 
     @property
     def host_entry(self):
@@ -3228,9 +2457,10 @@ class Participle(models.Model, JSONSerializable, VolumeAttributive):
     # словарная статья, к которой относится данная словоформа
     entry = ForeignKey(Entry, blank=True, null=True, on_delete=models.CASCADE)
 
-    PARTICIPLE_CHOICES = PARTICIPLE_CHOICES
+    PARTICIPLE_CHOICES = constants.PARTICIPLE_CHOICES
 
-    tp = CharField('тип причастия', max_length=2, choices=PARTICIPLE_CHOICES)
+    tp = CharField('тип причастия', max_length=2,
+            choices=constants.PARTICIPLE_CHOICES)
     idem = CharField('словоформа', max_length=50)
 
     @property
@@ -3239,7 +2469,8 @@ class Participle(models.Model, JSONSerializable, VolumeAttributive):
 
     order = SmallIntegerField('порядок следования', blank=True, default=345)
     mtime = DateTimeField(editable=False, auto_now=True)
-    volume = SmallIntegerField('том', choices=VOLUME_CHOICES, blank=True, null=True)
+    volume = SmallIntegerField('том', choices=constants.VOLUME_CHOICES,
+            blank=True, null=True)
 
     @property
     def host_entry(self):

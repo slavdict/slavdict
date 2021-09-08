@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.db.models.fields import Field
 from django.http import HttpResponse
 
+from slavdict.dictionary import constants
 from slavdict.dictionary import viewmodels
 from slavdict.dictionary.models import Collocation
 from slavdict.dictionary.models import CollocationGroup
@@ -19,13 +20,10 @@ from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
-from slavdict.dictionary.models import LANGUAGE_MAP
 from slavdict.dictionary.models import Meaning
 from slavdict.dictionary.models import MeaningContext
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import Participle
-from slavdict.dictionary.models import PART_OF_SPEECH_MAP
-from slavdict.dictionary.models import STATUS_MAP
 from slavdict.dictionary.models import Translation
 from slavdict.dictionary.utils import get_query_orterms
 from slavdict.dictionary.utils import make_query_from_orterms
@@ -170,9 +168,9 @@ def json_etym_save(request):
     if jsonEtym:
         etym = json.loads(jsonEtym)
         if GREEK_RANGE.search(etym['unitext']):
-            etym['language'] = LANGUAGE_MAP['greek']
+            etym['language'] = constants.LANGUAGE_MAP['greek']
         else:
-            etym['language'] = LANGUAGE_MAP['latin']
+            etym['language'] = constants.LANGUAGE_MAP['latin']
         if not etym['id']:
             del etym['id']
             et = Etymology(**etym)
@@ -312,7 +310,7 @@ def json_entry_merge(request):
         dst.antconc_query = make_query_from_orterms(orterms)
 
         dst.special_case = ''
-        dst.status = STATUS_MAP['inWork']
+        dst.status = constants.STATUS_MAP['inWork']
         dst.duplicate = False
         dst.save()
         src.delete()

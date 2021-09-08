@@ -24,9 +24,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
-from slavdict.dictionary.models import CURRENT_VOLUME
+from slavdict.dictionary.constants import CURRENT_VOLUME
+from slavdict.dictionary.constants import VOLUME_LETTERS
 from slavdict.dictionary.models import Entry
-from slavdict.dictionary.models import VOLUME_LETTERS
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.dictionary.utils import sort_key1

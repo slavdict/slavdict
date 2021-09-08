@@ -533,7 +533,7 @@ def shell(model_attrs=None, volumes=WHOLE_DICTIONARY):
     DataChangeShell(model_attrs=model_attrs, volumes=volumes).cmdloop()
 
 
-# Собрать все текстовые поля не самая хорошая идея, т.к.  выпадающие списки
+# Собрать все текстовые поля не самая хорошая идея, т.к. выпадающие списки
 # тоже сохраняются в текстовых полях. Тем не менее, вот как это можно сделать:
 crazy_all = []
 for identifier in models.__dict__:

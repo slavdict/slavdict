@@ -4,7 +4,8 @@ from django.db.utils import OperationalError
 from django.db.utils import ProgrammingError
 
 from slavdict.custom_user.models import CustomUser
-from slavdict.dictionary import models
+from slavdict.dictionary import constants
+from slavdict.dictionary.models import Entry
 from slavdict.dictionary.utils import volume_label
 
 def _json(x):
@@ -25,7 +26,7 @@ def _choices(choices):
 
 
 def entry_json(id):
-    entry = models.Entry.objects.get(pk=id)
+    entry = Entry.objects.get(pk=id)
     return _json(entry.forJSON())
 
 EMPTY_STRING_ID_OBJECT = {'id': '', 'name': ''}
@@ -55,10 +56,10 @@ volumes = (
     {'id': '0', 'name': 'статьи, не вошедшие в тома'},
 ) + tuple(
     {'id': str(key), 'name': volume_label(key, value)}
-    for key, value in models.VOLUME_LETTERS.items()
+    for key, value in constants.VOLUME_LETTERS.items()
 )
 
-editVolumes = _choices(models.VOLUME_CHOICES)
+editVolumes = _choices(constants.VOLUME_CHOICES)
 
 canonical_name = (
     {'id': 'all', 'name': 'все имена'},
@@ -69,30 +70,30 @@ canonical_name = (
 genders = (
     {'id': 'all',  'name': 'любой'},
     {'id': 'none', 'name': 'где род не указан'},
-) + _choices(models.GENDER_CHOICES)
+) + _choices(constants.GENDER_CHOICES)
 
-editGenders = (EMPTY_STRING_ID_OBJECT,) + _choices(models.GENDER_CHOICES)
+editGenders = (EMPTY_STRING_ID_OBJECT,) + _choices(constants.GENDER_CHOICES)
 
 greqSortbase = (
     {'id': 'addr', 'name': 'по адресу иллюстраций'},
 )
 
 greqStatuses = ({'id': 'all', 'name': '— любой —'},) \
-        + _choices(models.Example.GREEK_EQ_STATUS)
+        + _choices(constants.GREEK_EQ_STATUS)
 
 onyms = (
     {'id': 'all',  'name': 'любой'},
     {'id': 'none', 'name': 'не имя собст.'},
-) + _choices([x for x in models.ONYM_CHOICES if x[0]])
+) + _choices([x for x in constants.ONYM_CHOICES if x[0]])
 
-editOnyms = (EMPTY_STRING_ID_OBJECT,) + _choices(models.ONYM_CHOICES)
+editOnyms = (EMPTY_STRING_ID_OBJECT,) + _choices(constants.ONYM_CHOICES)
 
-editParticiples = (EMPTY_STRING_ID_OBJECT,) + _choices(models.PARTICIPLE_CHOICES)
+editParticiples = (EMPTY_STRING_ID_OBJECT,) + _choices(constants.PARTICIPLE_CHOICES)
 
 pos = (
     {'id': 'all',  'name': 'любая'},
     {'id': 'none', 'name': 'где часть речи не указана'},
-) + _choices(models.PART_OF_SPEECH_CHOICES)
+) + _choices(constants.PART_OF_SPEECH_CHOICES)
 
 possessive = (
     {'id': 'all', 'name': ''},
@@ -111,19 +112,19 @@ sortbase = (
 )
 
 editSubstantivusTypes = ((EMPTY_STRING_ID_OBJECT,) +
-        _choices(models.SUBSTANTIVUS_TYPE_CHOICES))
+        _choices(constants.SUBSTANTIVUS_TYPE_CHOICES))
 
 tantum = (
     {'id': 'all',  'name': 'любое'},
     {'id': 'none', 'name': 'где число не указано'},
-) + _choices(models.TANTUM_CHOICES)
+) + _choices(constants.TANTUM_CHOICES)
 
-editTantum = (EMPTY_STRING_ID_OBJECT,) + _choices(models.TANTUM_CHOICES)
+editTantum = (EMPTY_STRING_ID_OBJECT,) + _choices(constants.TANTUM_CHOICES)
 
 statuses = ({'id': 'all', 'name': 'любой'},) \
-        + _choices(models.STATUS_CHOICES)
+        + _choices(constants.STATUS_CHOICES)
 
-editStatuses = (EMPTY_STRING_ID_OBJECT,) + _choices(models.STATUS_CHOICES)
+editStatuses = (EMPTY_STRING_ID_OBJECT,) + _choices(constants.STATUS_CHOICES)
 
 
 jsonAuthors = _json(authors)

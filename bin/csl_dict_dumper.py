@@ -32,8 +32,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
+from slavdict.dictionary.constants import STATUS_MAP
 from slavdict.dictionary.models import Entry
-from slavdict.dictionary.models import STATUS_MAP
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import convert_for_index
 from slavdict.dictionary.utils import resolve_titles

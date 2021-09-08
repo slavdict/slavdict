@@ -2,6 +2,7 @@ import csv
 import base64
 import collections
 import datetime
+import functools
 import hashlib
 import io
 import itertools
@@ -29,33 +30,25 @@ from django.views.decorators.cache import never_cache
 
 import slavdict.csv
 from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary import constants
 from slavdict.dictionary import filters
 from slavdict.dictionary import models
 from slavdict.dictionary import viewmodels
 from slavdict.dictionary.forms import BilletImportForm
 from slavdict.dictionary.forms import FilterEntriesForm
 from slavdict.dictionary.forms import FilterExamplesForm
-from slavdict.dictionary.models import ALWAYS_LAST_POS
 from slavdict.dictionary.models import CollocationGroup
-from slavdict.dictionary.models import CURRENT_VOLUME
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
 from slavdict.dictionary.models import Meaning
-from slavdict.dictionary.models import MSC_ROLE
-from slavdict.dictionary.models import MSC11
 from slavdict.dictionary.models import OrthographicVariant
-from slavdict.dictionary.models import PART_OF_SPEECH_ORDER
-from slavdict.dictionary.models import STATUS_MAP
 from slavdict.dictionary.models import TempEdit
-from slavdict.dictionary.models import VOLUME_LETTERS
-from slavdict.dictionary.models import YET_NOT_IN_VOLUMES
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import levenshtein_distance
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.middleware import InvalidCookieError
-from functools import reduce
 
 
 # Вспомогательная функция
@@ -93,18 +86,18 @@ def set_cookie_from_data(response, request, cookie_salt, form):
 
 def pos_group_entry_key(entry):
     civil, homonym = entry_key(entry)
-    if entry.part_of_speech in PART_OF_SPEECH_ORDER:
-        pos = PART_OF_SPEECH_ORDER.index(entry.part_of_speech)
+    if entry.part_of_speech in constants.PART_OF_SPEECH_ORDER:
+        pos = constants.PART_OF_SPEECH_ORDER.index(entry.part_of_speech)
     else:
-        pos = ALWAYS_LAST_POS
+        pos = constants.ALWAYS_LAST_POS
     return pos, civil, homonym
 
 def pos_group_entry_key_inversed(entry):
     civil, homonym = entry_key_inversed(entry)
-    if entry.part_of_speech in PART_OF_SPEECH_ORDER:
-        pos = PART_OF_SPEECH_ORDER.index(entry.part_of_speech)
+    if entry.part_of_speech in constants.PART_OF_SPEECH_ORDER:
+        pos = constants.PART_OF_SPEECH_ORDER.index(entry.part_of_speech)
     else:
-        pos = ALWAYS_LAST_POS
+        pos = constants.ALWAYS_LAST_POS
     return pos, civil, homonym
 
 paginator_re = re.compile(r'(\d+)[,;:](\d+)')
@@ -230,7 +223,7 @@ th, td {
         statuus = []
         exclude_statuus = []
         for status in httpGET_STATUS:
-            for value, label in models.STATUS_CHOICES:
+            for value, label in constants.STATUS_CHOICES:
                 if status[0] == '-':
                     status = status[1:]
                     lst = exclude_statuus
@@ -382,7 +375,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
         examples = examples.exclude(address_text__iregex=httpGET_ADDRESS_GREP_V)
 
     if (httpGET_STATUS and httpGET_STATUS in
-                       (status for status, name in Example.GREEK_EQ_STATUS)):
+                       (status for status, name in constants.GREEK_EQ_STATUS)):
         examples = examples.filter(greek_eq_status=httpGET_STATUS)
 
     if httpGET_EXCLUDE:
@@ -812,7 +805,7 @@ def entry_list(request, for_hellinists=False, per_page=12,
         'user': request.user,
         'title': 'Словарь церковнославянского языка Нового времени',
         'MAX_LENGTHS': models.MAX_LENGTHS,
-        'statusList': models.Example.GREEK_EQ_STATUS,
+        'statusList': constants.GREEK_EQ_STATUS,
         'MEANING_INDICATOR': MEANING_INDICATOR,
         'URGENT_INDICATOR': URGENT_INDICATOR,
     })
@@ -823,9 +816,9 @@ def entry_list(request, for_hellinists=False, per_page=12,
             | Q(hidden=True))
         context['indicators'] = {
             URGENT_INDICATOR: Example.objects.exclude(exclude_Q).filter(
-                greek_eq_status=Example.GREEK_EQ_URGENT).count(),
+                greek_eq_status=constants.GREEK_EQ_URGENT).count(),
             MEANING_INDICATOR: Example.objects.exclude(exclude_Q).filter(
-                greek_eq_status=Example.GREEK_EQ_MEANING).count(),
+                greek_eq_status=constants.GREEK_EQ_MEANING).count(),
         }
 
     response = render(request, template, context)
@@ -843,9 +836,9 @@ def hellinist_workbench(request, per_page=4):
     else:
         data = FilterExamplesForm.default_data.copy()
         if MEANING_INDICATOR in request.GET:
-            data['hwStatus'] = Example.GREEK_EQ_MEANING
+            data['hwStatus'] = constants.GREEK_EQ_MEANING
         elif URGENT_INDICATOR in request.GET:
-            data['hwStatus'] = Example.GREEK_EQ_URGENT
+            data['hwStatus'] = constants.GREEK_EQ_URGENT
         else:
             update_data_from_cookies(request.COOKIES, cookie_salt, data)
 
@@ -890,12 +883,12 @@ def hellinist_workbench(request, per_page=4):
         'number_of_examples': paginator.count,
         'indicators': {
             URGENT_INDICATOR: Example.objects.exclude(exclude_Q).filter(
-                greek_eq_status=Example.GREEK_EQ_URGENT).count(),
+                greek_eq_status=constants.GREEK_EQ_URGENT).count(),
             MEANING_INDICATOR: Example.objects.exclude(exclude_Q).filter(
-                greek_eq_status=Example.GREEK_EQ_MEANING).count(),
+                greek_eq_status=constants.GREEK_EQ_MEANING).count(),
             },
         'page': page,
-        'statusList': models.Example.GREEK_EQ_STATUS,
+        'statusList': constants.GREEK_EQ_STATUS,
         'title': 'Греческий кабинет',
         'viewmodel': {
             'authors': viewmodels.jsonAuthors,
@@ -979,26 +972,26 @@ def edit_entry(request, id):
         'gender': viewmodels.editGenders,
         'onym': viewmodels.editOnyms,
         'participle_type': viewmodels.editParticiples,
-        'part_of_speech': viewmodels._choices(models.PART_OF_SPEECH_CHOICES),
+        'part_of_speech': viewmodels._choices(constants.PART_OF_SPEECH_CHOICES),
         'substantivus_type': viewmodels.editSubstantivusTypes,
         'tantum': viewmodels.editTantum,
-        'translation_source': viewmodels._choices(models.TRANSLATION_SOURCE_CHOICES),
+        'translation_source': viewmodels._choices(constants.TRANSLATION_SOURCE_CHOICES),
         'volumes': viewmodels.editVolumes,
     }
     labels = {
         'author': dict(viewmodels.AUTHOR_CHOICES),  # sic! viewmodels
-        'entry_status': dict(models.STATUS_CHOICES),
-        'gender': dict(models.GENDER_CHOICES),
-        'onym': dict(models.ONYM_CHOICES),
-        'participle_type': dict(models.PARTICIPLE_CHOICES),
-        'part_of_speech': dict(models.PART_OF_SPEECH_CHOICES),
-        'substantivus_type': dict(models.SUBSTANTIVUS_TYPE_CHOICES),
-        'tantum': dict(models.TANTUM_CHOICES),
-        'translation_source': models.TRANSLATION_SOURCE_TEXT,
+        'entry_status': dict(constants.STATUS_CHOICES),
+        'gender': dict(constants.GENDER_CHOICES),
+        'onym': dict(constants.ONYM_CHOICES),
+        'participle_type': dict(constants.PARTICIPLE_CHOICES),
+        'part_of_speech': dict(constants.PART_OF_SPEECH_CHOICES),
+        'substantivus_type': dict(constants.SUBSTANTIVUS_TYPE_CHOICES),
+        'tantum': dict(constants.TANTUM_CHOICES),
+        'translation_source': constants.TRANSLATION_SOURCE_TEXT,
     }
     slugs = {
-        'onym': models.ONYM_MAP,
-        'part_of_speech': models.PART_OF_SPEECH_MAP,
+        'onym': constants.ONYM_MAP,
+        'part_of_speech': constants.PART_OF_SPEECH_MAP,
     }
     entry_json = viewmodels._json(entry.get_search_item())
     entry_json_in_attr = entry_json.replace('"', '&#34;')
@@ -1014,11 +1007,11 @@ def edit_entry(request, id):
         'slugs': viewmodels._json(slugs),
         'tips': viewmodels._json(tips),
         'entryURL': entry.get_absolute_url(),
-        'PARTS_OF_SPEECH': models.PART_OF_SPEECH_CHOICES,
-        'GENDERS': models.GENDER_CHOICES,
-        'STATUSES': models.STATUS_CHOICES,
-        'GREEK_EQ_STATUSES': models.Example.GREEK_EQ_STATUS,
-        'SUBSTANTIVUS_TYPES': models.SUBSTANTIVUS_TYPE_CHOICES,
+        'PARTS_OF_SPEECH': constants.PART_OF_SPEECH_CHOICES,
+        'GENDERS': constants.GENDER_CHOICES,
+        'STATUSES': constants.STATUS_CHOICES,
+        'GREEK_EQ_STATUSES': constants.GREEK_EQ_STATUS,
+        'SUBSTANTIVUS_TYPES': constants.SUBSTANTIVUS_TYPE_CHOICES,
         'MAX_LENGTHS': models.MAX_LENGTHS,
     }
     return render(request, 'single_entry_edit.html', context)
@@ -1067,7 +1060,7 @@ def useful_urls_redirect(uri, request):
     eURI = base_url + 'entry/'
     mURI = base_url + 'meaning/'
     exURI = base_url + 'example/'
-    VOLUME = CURRENT_VOLUME
+    VOLUME = constants.CURRENT_VOLUME
 
     def uri_qs(uri, **kwargs):
         if 'id__in' in kwargs and not kwargs['id__in']:
@@ -1079,9 +1072,9 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(cgURI, volume=VOLUME)
 
     elif uri == 'collocs_same_meaning':
-        meanings = reduce(operator.add,
+        meanings = functools.reduce(operator.add,
                 [list(cg.meanings) for cg in CollocationGroup.objects.all()])
-        child_meanings = reduce(operator.add,
+        child_meanings = functools.reduce(operator.add,
                 [list(m.child_meanings) for m in meanings])
         meanings = meanings + child_meanings
         same = collections.defaultdict(list)
@@ -1278,8 +1271,8 @@ def useful_urls_redirect(uri, request):
     elif uri == 'collocs_uniqab':
         cgs = set()
         letters = ()
-        for i in range(1, CURRENT_VOLUME):
-            letters += VOLUME_LETTERS[i]
+        for i in range(1, constants.CURRENT_VOLUME):
+            letters += constants.VOLUME_LETTERS[i]
         letters += tuple(letter.upper() for letter in letters)
         for cg in CollocationGroup.objects.all():
             m = cg.base_meaning
@@ -1345,7 +1338,7 @@ def useful_urls_redirect(uri, request):
     elif uri == 'meanings_pl':
         mark = 'мн.'
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
-                (m.special_case == MSC11
+                (m.special_case == constants.MSC11
                  or m.substantivus
                     and m.is_substantivus_type('m.pl.', 'f.pl.', 'n.pl.')
                  or mark in m.meaning
@@ -1373,7 +1366,7 @@ def useful_urls_redirect(uri, request):
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all() if m.not_hidden() and
                 (m.substantivus
-                 or m.special_case in MSC_ROLE
+                 or m.special_case in constants.MSC_ROLE
                  or regex.search('%s %s' % (m.meaning, m.gloss))
                  )
               )
@@ -1634,10 +1627,10 @@ def useful_urls_redirect(uri, request):
 @login_required
 @never_cache
 def useful_urls(request, x=None, y=None):
-    VOLUME = CURRENT_VOLUME
+    VOLUME = constants.CURRENT_VOLUME
     prev_volumes_letters = ()
-    for i in range(1, CURRENT_VOLUME):
-        prev_volumes_letters += VOLUME_LETTERS[i]
+    for i in range(1, constants.CURRENT_VOLUME):
+        prev_volumes_letters += constants.VOLUME_LETTERS[i]
     prev_volumes_letters = tuple(
             letter.upper() for letter in prev_volumes_letters)
     urls = (

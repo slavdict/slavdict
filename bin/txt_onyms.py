@@ -1,5 +1,5 @@
 from slavdict.dictionary.models import Entry
-from slavdict.dictionary.models import CURRENT_VOLUME
+from slavdict.dictionary.constants import CURRENT_VOLUME
 
 VOLUME = CURRENT_VOLUME
 

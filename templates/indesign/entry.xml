@@ -1,7 +1,7 @@
 {% from 'indesign/etymology.xml'   import etymology    with context %}
 {% from 'indesign/meaning_without_children.xml' import meaning with context %}
 
-{# см. slavdict.dictionary.models.MEANING_SPECIAL_CASES_CHOICES #}
+{# см. slavdict.dictionary.constants.MEANING_SPECIAL_CASES_CHOICES #}
 {% set MSC1 = 'a' %}{# канонич. #}
 {% set MSC4 = 'd' %}{# дат. #}
 {% set MSC5 = 'e' %}{# твор. ед. в роли нареч. #}

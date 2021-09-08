@@ -1,5 +1,6 @@
 from itertools import chain
 
+from slavdict.dictionary.constants import *
 from slavdict.dictionary.models import *
 
 def distance(a, b):
