@@ -716,6 +716,21 @@ def cslav_subst(x):
     return EXCLAM + cslav_nobr_words(ucs_convert(x.group(1))) + EXCLAM
 
 @register_filter
+def ind_headword_injection(value, headword, cstyle=CSLCSTYLE, for_web=False):
+    """ Вставляет основной вариант написания лексемы перед текстом,
+    либо при наличии ``{}`` на место фигурных скобок. В фигурных скобках
+    также может быть указана форма, которая должна быть подставлена вместо
+    основного варианта, если это не обходимо для модели управления вроде:
+
+      кто-л. {имену'ется} кто-л.
+      
+    """
+    ind_cslav = subst_func(lambda x: cslav_words(
+        ucs_convert(x), cstyle, for_web=for_web))
+    if '{}' in value:
+        return re.sub(r'(\s*)\{(.*?)\}(\s*)', ind_cslav, value)
+
+@register_filter
 def cslav_injection(value):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
