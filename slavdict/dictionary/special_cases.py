@@ -395,6 +395,24 @@ def special_cases_func(self, case):
             )
             return tags
 
+        elif self.civil_equivalent in ('епомис', 'епомида'):
+            tags = (
+                {'text': ucs8("єпѡмі'съ"), 'class': 'Headword'},
+                {'text': ts.SPACE},
+                {'text': 'неизм.', 'class': 'Em'},
+                {'text': ts.SPACE},
+                {'text': 'и', 'class': 'Conj'},
+                {'text': ts.SPACE},
+                {'text': ucs8("єпѡмі'да"), 'class': 'SubHeadword'},
+                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("єпѡмі'ды")), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'ж.', 'class': 'Em'},
+                {'text': ts.SPACE},
+            )
+            return tags
+
         elif self.civil_equivalent in ('ехидна', 'ехидн'):
             tags = (
                 {'text': ucs8("єхі'дна"), 'class': 'Headword'},
