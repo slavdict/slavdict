@@ -347,6 +347,31 @@ def special_cases_func(self, case):
                 tags.append(tag)
             return tags
 
+        elif self.civil_equivalent in ('гангрянин', 'гаггрянин',
+                                       'гангряне', 'гаггряне'):
+            tags = (
+                {'text': ucs8("га'нгрѧнинъ"), 'class': 'Headword'},
+                {'text': ts.SPACE},
+                {'text': '(', 'class': 'Text'},
+                {'text': h(ucs8("га'ггрѧнинъ")), 'class': 'CSLSegment'},
+                {'text': '),', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': ucs8("га'нгрѧнина"), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'м.', 'class': 'Em'},
+                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': ucs8("га'нгрѧне"), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': '(', 'class': 'Text'},
+                {'text': ucs8("га'ггрѧне"), 'class': 'CSLSegment'},
+                {'text': ')', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': 'мн.', 'class': 'Em'},
+                {'text': ts.SPACE},
+            )
+            return tags
+
         elif self.civil_equivalent in ('гефсимани', 'гефсиманиа'):
             base_vars = tuple(self.base_vars)
             tags = (
