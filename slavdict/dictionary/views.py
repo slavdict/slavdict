@@ -1623,7 +1623,7 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'ex_brackets_at':
         exs = []
-        needles = re.compile(r'[\(\)\[\]\{\}⟨⟩<>@/\\—')
+        needles = re.compile(r'[\(\)\[\]\{\}⟨⟩<>@/\\—]')
         for ex in Example.objects.all():
             if needles.search(ex.example):
                 exs.append(ex)
