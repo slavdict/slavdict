@@ -1621,6 +1621,15 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(exURI, id__in=','.join(str(ex.id) for ex in exs),
                      volume=VOLUME)
 
+    elif uri == 'ex_brackets_at':
+        exs = []
+        needles = re.compile(r'[\(\)\[\]\{\}⟨⟩<>@/\\—')
+        for ex in Example.objects.all():
+            if needles.search(ex.example):
+                exs.append(ex)
+        uri = uri_qs(exURI, id__in=','.join(str(ex.id) for ex in exs),
+                     volume=VOLUME)
+
     return HttpResponseRedirect(uri)
 
 
@@ -1702,6 +1711,7 @@ def useful_urls(request, x=None, y=None):
                 )),
             ('Примеры', (
                     ('в греч. иначе и параллель', 'ex_aliud_parallel'),
+                    ('с символами скобок, слешами и @', 'ex_brackets_at'),
                 )),
     )
     if x:
