@@ -376,7 +376,10 @@ def special_cases_func(self, case):
             base_vars = tuple(self.base_vars)
             tags = (
                 {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
-                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': '(', 'class': 'Text'},
+                {'text': h(ucs8("геѳсима'ніа")), 'class': 'CSLSegment'},
+                {'text': '),', 'class': 'Text'},
                 {'text': ts.SPACE},
                 {'text': self.genitive_ucs_wax[1], 'class': 'CSLSegment'},
                 {'text': ts.SPACE},
