@@ -347,6 +347,39 @@ def special_cases_func(self, case):
                 tags.append(tag)
             return tags
 
+        elif self.civil_equivalent in ('галгалы', 'галгал', 'галгала'):
+            tags = (
+                {'text': ucs8("галга'лы"), 'class': 'Headword'},
+                {'text': ts.SPACE},
+                {'text': '(', 'class': 'Text'},
+                {'text': h(ucs8("галга^лы")), 'class': 'CSLSegment'},
+                {'text': '),', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("галга'лъ")), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'только мн.', 'class': 'Em'},
+                {'text': ts.SPACE},
+                {'text': 'и', 'class': 'Conj'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("галга'лъ")), 'class': 'SubHeadword'},
+                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("галга'ла")), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'м.', 'class': 'Em'},
+                {'text': ts.SPACE},
+                {'text': 'и', 'class': 'Conj'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("галга'ла")), 'class': 'SubHeadword'},
+                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("галга'лы")), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'ж.', 'class': 'Em'},
+                {'text': ts.SPACE},
+            )
+            return tags
+
         elif self.civil_equivalent in ('гангрянин', 'гаггрянин',
                                        'гангряне', 'гаггряне'):
             tags = (
