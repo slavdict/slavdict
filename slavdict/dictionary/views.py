@@ -1401,7 +1401,7 @@ def useful_urls_redirect(uri, request):
                      volume=VOLUME)
 
     elif uri == 'meanings_direct_speech':
-        regex = re.compile(r'с\s+пр(?:ям)\.\s*речью',
+        regex = re.compile(r'с\s+(?:пр\.|прям\.|прямой)\s*речью',
                            flags=re.MULTILINE | re.IGNORECASE | re.UNICODE)
         ms = (m for m in Meaning.objects.all()
                 if m.not_hidden() and regex.search('%s %s' % (m.meaning, m.gloss)))
@@ -1698,7 +1698,7 @@ def useful_urls(request, x=None, y=None):
                     ('С текстом "в роли .."', 'meanings_ps_text'),
                     ('С текстом "в знач...."', 'meanings_ps2'),
                     ('С текстом "вводн"', 'meanings_vvodn'),
-                    ('С текстом "с прям. речью"', 'meanings_direct_speech'),
+                    ('С текстом "с прямой речью"', 'meanings_direct_speech'),
                     ('С текстом "[?!]"', 'meanings_quest'),
                     ('С текстом "с именем собств."', 'meanings_sobstv'),
                     ('Без примеров', 'meanings_without_examples'),
