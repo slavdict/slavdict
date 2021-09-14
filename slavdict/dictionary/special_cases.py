@@ -469,8 +469,6 @@ def special_cases_func(self, case):
                 {'text': ts.SPACE},
                 {'text': ucs8("єпѡмі'съ"), 'class': 'SubHeadword'},
                 {'text': ts.SPACE},
-                {'text': 'неизм.', 'class': 'Em'},
-                {'text': ts.SPACE},
             )
             return tags
 
