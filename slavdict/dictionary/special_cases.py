@@ -427,6 +427,27 @@ def special_cases_func(self, case):
             )
             return tags
 
+        elif self.civil_equivalent in ('епeндит', 'епендитис'):
+            base_vars = tuple(self.base_vars)
+            tags = (
+                {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
+                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': self.genitives[0][1], 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'м.', 'class': 'Em'},
+                {'text': ts.SPACE},
+                {'text': 'и', 'class': 'Conj'},
+                {'text': ts.SPACE},
+                {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
+                {'text': ts.SPACE},
+                # ::UNKNOWNGRAM:: Никакой грамматической пометы при этом
+                # заглавном слове не дается, поскольку корпус не позволяет
+                # судить о том, изменяется ли оно по падежам или является
+                # неизменяемым.
+            )
+            return tags
+
         elif self.civil_equivalent in ('епитрахиль', 'епитрахилий'):
             base_vars = tuple(self.base_vars)
             genitives = self.genitives
@@ -469,6 +490,7 @@ def special_cases_func(self, case):
                 {'text': ts.SPACE},
                 {'text': ucs8("єпѡмі'съ"), 'class': 'SubHeadword'},
                 {'text': ts.SPACE},
+                # ::UNKNOWNGRAM::
             )
             return tags
 
@@ -485,6 +507,7 @@ def special_cases_func(self, case):
                 {'text': 'и', 'class': 'Conj'},
                 {'text': ts.SPACE},
                 {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
+                # ефиопс ::UNKNOWNGRAM::
                 {'text': ',', 'class': 'Text'},
                 {'text': ts.SPACE},
                 {'text': self.nom_pl_ucs_wax[1], 'class': 'CSLSegment'},
