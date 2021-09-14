@@ -1544,7 +1544,7 @@ def useful_urls_redirect(uri, request):
         es = []
         r = re.compile(r"[,;]")
         for e in Entry.objects.all():
-            forms = (e.genitive, e.sg1, e.sg2, e.short_form, e.nom_sg)
+            forms = (e.genitive, e.sg1, e.sg2, e.short_form, e.nom_pl)
             if any(form.strip() and r.search(form) for form in forms):
                 es.append(e)
         uri = uri_qs(eURI, id__in=','.join(str(e.id) for e in es),
@@ -1588,7 +1588,7 @@ def useful_urls_redirect(uri, request):
         for e in Entry.objects.all():
             forms = list(itertools.chain(*[r.split(ov.idem)
                                            for ov in e.orth_vars.all()]))
-            for form in (e.genitive, e.sg1, e.sg2, e.nom_sg, e.short_form):
+            for form in (e.genitive, e.sg1, e.sg2, e.nom_pl, e.short_form):
                 form = form.strip()
                 if form:
                     forms.extend(r.split(form))

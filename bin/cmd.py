@@ -428,7 +428,7 @@ TEXT = '''
 (Entry, [
     #'civil_equivalent',
     #'homonym_gloss',
-    'nom_sg',
+    'nom_pl',
     'short_form',
     'genitive',
     'sg1',

@@ -487,7 +487,7 @@ def special_cases_func(self, case):
                 {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
                 {'text': ',', 'class': 'Text'},
                 {'text': ts.SPACE},
-                {'text': self.nom_sg_ucs_wax[1], 'class': 'CSLSegment'},
+                {'text': self.nom_pl_ucs_wax[1], 'class': 'CSLSegment'},
                 {'text': ts.SPACE},
                 {'text': 'мн.', 'class': 'Em'},
                 {'text': ts.SPACE},

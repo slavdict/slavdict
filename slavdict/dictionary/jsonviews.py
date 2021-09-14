@@ -299,7 +299,7 @@ def json_entry_merge(request):
             dst.part_of_speech = src.part_of_speech
         merge_charfields(src, dst, 'word_forms_list', joiner=', ')
         merge_charfields(src, dst, 'genitive', joiner=',')
-        merge_charfields(src, dst, 'nom_sg', joiner=',')
+        merge_charfields(src, dst, 'nom_pl', joiner=',')
         merge_charfields(src, dst, 'short_form', joiner=',')
         merge_charfields(src, dst, 'sg1', joiner=',')
         merge_charfields(src, dst, 'sg2', joiner=',')

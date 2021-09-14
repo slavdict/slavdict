@@ -331,7 +331,7 @@
         {{ space }}
     {% endif %}
 
-    {% if entry.is_onym('ethnonym') and entry.nom_sg %}
+    {% if entry.is_onym('ethnonym') and entry.nom_pl %}
         {{ backspace }}<span class="Text">,</span>{{ space }}
         {% for ethnonym, ethnonym_ucs in entry.ethnonyms %}
             {% if loop.last and not loop.first %}

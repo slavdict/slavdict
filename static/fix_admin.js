@@ -159,7 +159,7 @@
         onyms = {
             "a": 'canonical_name', // имя
             "b": '',               // топоним
-            "c": 'nom_sg',         // народ
+            "c": 'nom_pl',         // народ
             "d": ''                // другое
         }
 
@@ -170,7 +170,7 @@
 
         $('select#id_onym').change(function(){
             var v = $(this).val();
-            $('.field-canonical_name, .field-nom_sg').hide();
+            $('.field-canonical_name, .field-nom_pl').hide();
             if (v && v !== '.') {
                 $('.field-' + onyms[v]).show();
             }

@@ -204,17 +204,17 @@ class Entry(models.Model, JSONSerializable):
 
     canonical_name = BooleanField('каноническое', default=False)
 
-    nom_sg = CharField('И.мн.', help_text='''Только для этнонимов
+    nom_pl = CharField('И.мн.', help_text='''Только для этнонимов
                        (например, в словарной статье АГАРЯНИН, здесь --
                        АГАРЯНЕ).''', max_length=50, blank=True, default='')
 
     @property
-    def nom_sg_ucs_wax(self):
-        return ucs_affix_or_word(self.nom_sg)
+    def nom_pl_ucs_wax(self):
+        return ucs_affix_or_word(self.nom_pl)
 
     @property
     def ethnonyms(self):
-        return several_wordforms(self.nom_sg)
+        return several_wordforms(self.nom_pl)
 
     # только для прилагательных
     short_form = CharField('краткая форма', help_text='''Если Вы указываете
@@ -707,7 +707,7 @@ class Entry(models.Model, JSONSerializable):
             p.resave_all(without_mtime=without_mtime)
 
     def save(self, without_mtime=False, *args, **kwargs):
-        for attr in ('genitive', 'nom_sg', 'short_form', 'sg1', 'sg2'):
+        for attr in ('genitive', 'nom_pl', 'short_form', 'sg1', 'sg2'):
             setattr(self, attr, antconc_anticorrupt(getattr(self, attr)))
         orth_vars = self.orth_vars
         if orth_vars:
@@ -804,7 +804,7 @@ class Entry(models.Model, JSONSerializable):
             'homonym_gloss',
             'homonym_order',
             'id',
-            'nom_sg',
+            'nom_pl',
             'onym',
             'part_of_speech',
             'participle_type',

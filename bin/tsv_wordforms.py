@@ -16,8 +16,8 @@ for e in Entry.objects.all():
             forms.append(('Р.', RE.split(e.genitive.strip())))
         if e.short_form.strip():
             forms.append(('', RE.split(e.short_form.strip())))
-        if e.nom_sg.strip():
-            forms.append(('И. мн.', RE.split(e.nom_sg.strip())))
+        if e.nom_pl.strip():
+            forms.append(('И. мн.', RE.split(e.nom_pl.strip())))
         if e.sg1.strip():
             forms.append(('', RE.split(e.sg1.strip())))
         if e.sg2.strip():

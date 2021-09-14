@@ -781,7 +781,7 @@ class AdminEntryADMIN(AdminEntry):
             'fields': ('genitive', 'gender', 'tantum'),
             'classes': ('hidden noun',) } ),
         (None, { # Для имен собств.
-            'fields': ('onym', 'canonical_name', 'nom_sg'),
+            'fields': ('onym', 'canonical_name', 'nom_pl'),
             'classes': ('hidden noun',) } ),
         (None, { # Для прил. и прич.-прил.
             'fields': ('short_form',),
@@ -837,7 +837,7 @@ class AdminEntryUI(AdminEntry):
             'fields': ('genitive', 'gender', 'tantum'),
             'classes': ('hidden noun',) } ),
         (None, { # Для имен собств.
-            'fields': ('onym', 'canonical_name', 'nom_sg'),
+            'fields': ('onym', 'canonical_name', 'nom_pl'),
             'classes': ('hidden noun',) } ),
         (None, { # Для прил. и прич.-прил.
             'fields': ('short_form',),

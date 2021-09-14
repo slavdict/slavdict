@@ -652,7 +652,7 @@ function Entry(data) {
     upsert(this, 'homonym_gloss', data, '');
     upsert(this, 'homonym_order', data, null);
     upsert(this, 'id', data, null);
-    upsert(this, 'nom_sg', data, '');
+    upsert(this, 'nom_pl', data, '');
     upsert(this, 'onym', data, '');
     upsert(this, 'part_of_speech', data, '');
     upsert(this, 'participle_type', data, '');

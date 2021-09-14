@@ -106,16 +106,16 @@
 
         <div id="infoTab--nomSg"
           data-bind="visible: onym() == $root.ui.slugs.onym['ethnonym']"
-          data-help="Entry.nom_sg">
+          data-help="Entry.nom_pl">
 
             <label>
                 <span>И. мн.</span>
-                <input type="text" data-bind="textInput: nom_sg"
-                       data-help="Entry.nom_sg"
-                       maxlength="{{ MAX_LENGTHS.Entry.nom_sg }}"/>
+                <input type="text" data-bind="textInput: nom_pl"
+                       data-help="Entry.nom_pl"
+                       maxlength="{{ MAX_LENGTHS.Entry.nom_pl }}"/>
             </label>
 
-            <span data-bind="wax: nom_sg"></span>
+            <span data-bind="wax: nom_pl"></span>
 
         </div>
 

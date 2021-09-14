@@ -88,7 +88,7 @@ def get_wordform_list(entry):
     if entry.word_forms_list.strip():
         wordforms = RE.split(entry.word_forms_list.strip())
     wordforms.extend([entry.genitive, entry.short_form,
-                      entry.sg1, entry.sg2, entry.nom_sg])
+                      entry.sg1, entry.sg2, entry.nom_pl])
     return wordforms
 
 def write_tsv(filename, slovnik, total_n, removed_n):
