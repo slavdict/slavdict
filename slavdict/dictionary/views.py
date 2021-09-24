@@ -1147,6 +1147,12 @@ def useful_urls_redirect(uri, request):
         uri = uri_qs(eURI, id__in=','.join(str(eid) for eid in eids),
                      volume=VOLUME)
 
+    elif uri == 'entries_greq2':
+        eids = set(et.entry_id for et in Etymology.objects.all()
+                   if re.search(r'\W', unicodedata.normalize('NFC', et.unitext))
+        uri = uri_qs(eURI, id__in=','.join(str(eid) for eid in eids),
+                     volume=VOLUME)
+
     elif uri == 'phraseological_collocs':
         uri = uri_qs(cgURI, phraseological__exact=1, volume=VOLUME)
 
@@ -1662,6 +1668,8 @@ def useful_urls(request, x=None, y=None):
                     ('Где все значения "перен."', 'entries_all_figurative'),
                     ('С литургическими символами', 'entries_litsym'),
                     ('С греч. параллелями к статье', 'entries_greq'),
+                    ('С греч. параллелями к статье, где две и более формы в поле',
+                        'entries_greq2'),
                 )),
             ('Словосочетания (cc)', (
                     ('Все', 'all_collocations'),
