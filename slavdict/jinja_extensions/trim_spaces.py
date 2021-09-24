@@ -368,14 +368,6 @@ class Segment(Tag):
 
     def _get_word_markup_string(self, seg):
         segment = html_escape(hyphenate_ucs8(seg))
-        if self.tag.for_web:
-            HYPHEN_TAG = '<span class="Text">\u00AD</span>'
-            segment = HYPHEN_TAG.join(
-                    '<span class="nobr">%s</span>' % part
-                    for part in segment.split('\u00AD'))
-        else:
-            HYPHEN_TAG = '<h aid:cstyle="Text">\u00AD</h>'
-            segment = segment.replace('\u00AD', HYPHEN_TAG)
 
         RE_NON_UCS8_LETTER_TITLES = '(?<!^)([МТ])'
         if self.base_script == SCRIPT_CSLAV and \
@@ -388,6 +380,20 @@ class Segment(Tag):
             parts = [tag_template % p.lower() if i % 2 else p
                      for i, p in enumerate(parts)]
             segment = ''.join(parts)
+
+        # NOTE: Между вставкой мягких переносов (``hyphenate_ucs8``) и их
+        # стилизацией необходима фаза расстановки буквенных титл для М и Т.
+        # Если последовательность этапов нарушить, то буквенные титла будут
+        # расставляться неправильно.
+        if self.tag.for_web:
+            HYPHEN_TAG = '<span class="Text">\u00AD</span>'
+            segment = HYPHEN_TAG.join(
+                    '<span class="nobr">%s</span>' % part
+                    for part in segment.split('\u00AD'))
+        else:
+            HYPHEN_TAG = '<h aid:cstyle="Text">\u00AD</h>'
+            segment = segment.replace('\u00AD', HYPHEN_TAG)
+
         return segment
 
     def __str__(self):
