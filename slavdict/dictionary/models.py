@@ -1816,6 +1816,10 @@ class Translation(models.Model, JSONSerializable, VolumeAttributive):
         return constants.TRANSLATION_SOURCE_TEXT.get(self.source, '')
 
     @property
+    def translation_fu(self):
+        return '%s%s' % (self.translation[0:1].upper(), self.translation[1:])
+
+    @property
     def host_entry(self):
         try:
             host_entry = self.for_example.host_entry
