@@ -9,6 +9,7 @@ import itertools
 import operator
 import random
 import re
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
