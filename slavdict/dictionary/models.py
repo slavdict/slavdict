@@ -936,6 +936,9 @@ class Etymology(models.Model, JSONSerializable, VolumeAttributive):
         host_entry = self.host_entry
         if host_entry is not None:
             self.volume = host_entry.volume
+        nfc = unicodedata.normalize('NFC', self.unitext).strip()
+        if self.unitext != nfc:
+            self.unitext = nfc
         super(Etymology, self).save(*args, **kwargs)
         if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
@@ -2275,10 +2278,18 @@ class GreekEquivalentForExample(models.Model, JSONSerializable, VolumeAttributiv
         self.save(without_mtime=without_mtime, no_propagate=True)
 
     def save(self, without_mtime=False, no_propagate=False, *args, **kwargs):
-        self.unitext = self.unitext.strip()
         host_entry = self.host_entry
         if host_entry is not None:
             self.volume = host_entry.volume
+        nfc = unicodedata.normalize('NFC', self.unitext).strip()
+        if self.unitext != nfc:
+            self.unitext = nfc
+        nfc = unicodedata.normalize('NFC', self.initial_form).strip()
+        if self.initial_form != nfc:
+            self.initial_form = nfc
+        nfc = unicodedata.normalize('NFC', self.initial_form_phraseology).strip()
+        if self.initial_form_phraseology != nfc:
+            self.initial_form_phraseology = nfc
         super(GreekEquivalentForExample, self).save(*args, **kwargs)
         example = self.for_example
         if self.unitext.strip() and example.greek_eq_status in (
