@@ -712,7 +712,7 @@ class AdminEntry(admin.ModelAdmin):
     list_filter = (
         VolumeFilter,
         LetterEntryFilter,
-        'authors',
+        ('authors', admin.RelatedOnlyFieldListFilter),
         'status',
         'part_of_speech',
         'uninflected',
