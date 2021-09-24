@@ -495,6 +495,30 @@ def special_cases_func(self, case):
             )
             return tags
 
+        elif self.civil_equivalent in ('епистимиа', 'епистима'):
+            base_vars = tuple(self.base_vars)
+            tags = (
+                {'text': base_vars[0].idem_ucs, 'class': 'Headword'},
+                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': self.genitives[0][1], 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'и', 'class': 'Conj'},
+                {'text': ts.SPACE},
+                {'text': base_vars[1].idem_ucs, 'class': 'SubHeadword'},
+                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': self.genitives[1][1], 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'и', 'class': 'Conj'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("єпісти'ми")), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'ж.', 'class': 'Em'},
+                {'text': ts.SPACE},
+            )
+            return tags
+
         elif self.civil_equivalent in ('епитрахиль', 'епитрахилий'):
             base_vars = tuple(self.base_vars)
             genitives = self.genitives
