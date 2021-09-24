@@ -381,6 +381,23 @@ class Segment(Tag):
                      for i, p in enumerate(parts)]
             segment = ''.join(parts)
 
+        RE_JAT_ASPIRATION = '(э)([345])'
+        if self.base_script == SCRIPT_CSLAV and \
+                re.findall(RE_JAT_ASPIRATION, segment):
+            if self.tag.for_web:
+                tag1_template = '<span class="UCS8Jat">%s</span>'
+                tag2_template = '<span class="UCS8JatAsp">%s</span>'
+            else:
+                tag1_template = '<x aid:cstyle="UCS8Jat">%s</x>'
+                tag2_template = '<x aid:cstyle="UCS8JatAsp">%s</x>'
+            parts = re.split(RE_JAT_ASPIRATION, segment)
+            parts = [{
+                        1: tag1_template % p,
+                        2: tag2_template % p,
+                        0: p }[i % 3]
+                     for i, p in enumerate(parts)]
+            segment = ''.join(parts)
+
         # NOTE: Между вставкой мягких переносов (``hyphenate_ucs8``) и их
         # стилизацией необходима фаза расстановки буквенных титл для М и Т.
         # Если последовательность этапов нарушить, то буквенные титла будут
