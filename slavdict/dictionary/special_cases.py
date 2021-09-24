@@ -474,6 +474,39 @@ def special_cases_func(self, case):
                 tags.append(tag)
             return tags
 
+        elif self.civil_equivalent in ('елисаветь', 'елисавет',
+                                       'елисавета', 'елисавефа'):
+            tags = (
+                {'text': ucs8("єлісаве'ть"), 'class': 'Headword'},
+                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': ucs8("єлісаве'ти"), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'и', 'class': 'Conj'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("єлісаве'та")), 'class': 'SubHeadword'},
+                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("єлісаве'ты")), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'и', 'class': 'Conj'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("єлісаве'ѳа")), 'class': 'SubHeadword'},
+                {'text': ',', 'class': 'Text'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("єлісаве'ѳы")), 'class': 'CSLSegment'},
+                {'text': ts.SPACE},
+                {'text': 'ж.', 'class': 'Em'},
+                {'text': ts.SPACE},
+                {'text': 'и', 'class': 'Conj'},
+                {'text': ts.SPACE},
+                {'text': h(ucs8("єлісаве'тъ")), 'class': 'SubHeadword'},
+                {'text': ts.SPACE},
+                {'text': 'неизм.', 'class': 'Em'},
+                {'text': ts.SPACE},
+            )
+            return tags
+
         elif self.civil_equivalent in ('епендит', 'епендитис'):
             base_vars = tuple(self.base_vars)
             tags = (
