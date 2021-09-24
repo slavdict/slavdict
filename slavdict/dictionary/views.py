@@ -1150,7 +1150,7 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'entries_greq2':
         eids = set(et.entry_id for et in Etymology.objects.all()
-                   if re.search(r'\W', unicodedata.normalize('NFC', et.unitext))
+                if re.search(r'\W', unicodedata.normalize('NFC', et.unitext)))
         uri = uri_qs(eURI, id__in=','.join(str(eid) for eid in eids),
                      volume=VOLUME)
 
