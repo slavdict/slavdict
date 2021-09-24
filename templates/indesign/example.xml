@@ -22,9 +22,9 @@
         {% endif %}
         {% if t.source %}
             <x aid:cstyle="Em">{{ t.source_label() }}</x>{{ space }}
-            <x aid:cstyle="Text">{{ t.translation }}</x>
+            <x aid:cstyle="Text">{{ t.translation | capitalize }}</x>
         {% else %}
-            <x aid:cstyle="Text">‘{{ t.translation |
+            <x aid:cstyle="Text">‘{{ t.translation | capitalize |
                 ind_regex("Em", labels_in_translation) }}’</x>
         {% endif %}
     {% endfor %}
