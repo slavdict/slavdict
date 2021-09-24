@@ -1,5 +1,4 @@
 import datetime
-import itertools
 import json
 import logging
 import re
@@ -17,7 +16,6 @@ from django.db.models import CharField
 from django.db.models import DateTimeField
 from django.db.models import ForeignKey
 from django.db.models import ManyToManyField
-from django.db.models import PositiveSmallIntegerField
 from django.db.models import SmallIntegerField
 from django.db.models import TextField
 from django.db.utils import OperationalError

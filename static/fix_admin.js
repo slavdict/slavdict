@@ -108,7 +108,6 @@
             "b": 'adjective',
             "c": 'pronoun',
             "d": 'verb',
-            "e": 'participle',
             "f": 'adverb',
             "g": 'conjunction',
             "h": 'preposition',
@@ -117,7 +116,8 @@
             "k": 'number',
             "l": 'letter',
             "m": 'participle-adjective',
-            "n": 'predicative-adverb'
+            "n": 'predicative-adverb',
+            "o": 'translit'
         };
 
         var v = $('select#id_part_of_speech').val();

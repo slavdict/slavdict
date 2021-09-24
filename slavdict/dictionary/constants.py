@@ -9,6 +9,7 @@ PART_OF_SPEECH_CHOICES = (
     ('b', 'прил.'),
     ('c', 'мест.'),
     ('d', 'гл.'),
+    # 'e' used to be used for deprecated Participle part of speech
     ('f', 'нареч.'),
     ('g', 'союз'),
     ('h', 'предл.'),
@@ -18,6 +19,7 @@ PART_OF_SPEECH_CHOICES = (
     ('l', '[буква]'),
     ('m', 'прич.-прил.'),
     ('n', 'предик. нареч.'),
+    ('o', 'транслит.'),
 )
 PART_OF_SPEECH_MAP = {
     'adjective': 'b',
@@ -29,7 +31,6 @@ PART_OF_SPEECH_MAP = {
     'noun': 'a',
     'number': 'k',
     'participle-adjective': 'm',
-    'participle': 'e',
     'particle': 'i',
     'postposition': 'h',
     'predicative-adverb': 'n',  # NOTE: В мнемониках нельзя использовать
@@ -37,6 +38,7 @@ PART_OF_SPEECH_MAP = {
     # Поэтому "predicative-adverb", а не "predicative adverb".
     'preposition': 'h',
     'pronoun': 'c',
+    'translit': 'o',
     'verb': 'd',
 }
 # Порядок отображения частей речи при выводе статей с группировкой
@@ -44,11 +46,11 @@ PART_OF_SPEECH_MAP = {
 PART_OF_SPEECH_ORDER = (
     PART_OF_SPEECH_MAP['letter'],
     PART_OF_SPEECH_MAP['number'],
+    PART_OF_SPEECH_MAP['translit'],
     PART_OF_SPEECH_MAP['noun'],
     PART_OF_SPEECH_MAP['pronoun'],
     PART_OF_SPEECH_MAP['adjective'],
     PART_OF_SPEECH_MAP['participle-adjective'],
-    PART_OF_SPEECH_MAP['participle'],
     PART_OF_SPEECH_MAP['predicative-adverb'],
     PART_OF_SPEECH_MAP['adverb'],
     PART_OF_SPEECH_MAP['adposition'],
