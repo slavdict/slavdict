@@ -19,6 +19,7 @@ PART_OF_SPEECH_CHOICES = (
     ('l', '[буква]'),
     ('m', 'прич.-прил.'),
     ('n', 'предик. нареч.'),
+    ('e', 'предик. прил.'),
     ('o', 'транслит.'),
 )
 PART_OF_SPEECH_MAP = {
@@ -33,6 +34,7 @@ PART_OF_SPEECH_MAP = {
     'participle-adjective': 'm',
     'particle': 'i',
     'postposition': 'h',
+    'predicative-adjective': 'e',
     'predicative-adverb': 'n',  # NOTE: В мнемониках нельзя использовать
     # пробелы, поскольку названия используются в частности для CSS-классов.
     # Поэтому "predicative-adverb", а не "predicative adverb".
@@ -51,6 +53,7 @@ PART_OF_SPEECH_ORDER = (
     PART_OF_SPEECH_MAP['pronoun'],
     PART_OF_SPEECH_MAP['adjective'],
     PART_OF_SPEECH_MAP['participle-adjective'],
+    PART_OF_SPEECH_MAP['predicative-adjective'],
     PART_OF_SPEECH_MAP['predicative-adverb'],
     PART_OF_SPEECH_MAP['adverb'],
     PART_OF_SPEECH_MAP['adposition'],
