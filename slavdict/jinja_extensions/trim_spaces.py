@@ -330,7 +330,7 @@ class Segment(Tag):
             # Угловая скобка со знаком равно в примерах
             self.type = self.TYPE_LEFT_BRACKET
             self.output_script = SCRIPT_CIVIL
-            self.segment = '\u27e8=\u00a0'
+            self.segment = '\u27e8=' + NBSP
 
         elif self.segment in list(')]\u27e9'):
             self.type = self.TYPE_RIGHT_BRACKET
