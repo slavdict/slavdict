@@ -16,6 +16,8 @@
 //span.CSLSegment
 //span.CSLSegmentEm
 //span.CSLSuper
+//span.UCS8Jat
+//span.UCS8JatAsp
 //span.MeaningfulNoAccent
 //span.Em
 //span.MeaningNumber
@@ -70,6 +72,13 @@ span.CSLSegment
 span.CSLSuper
   font-size: 0.66em
   vertical-align: super
+
+$charShift: 0.2em
+span.UCS8Jat
+  margin-right: $charShift * 2
+span.UCS8JatAsp
+  margin-left: -$charShift
+  margin-right: -$charShift
 
 span.Text,
 span.Em,

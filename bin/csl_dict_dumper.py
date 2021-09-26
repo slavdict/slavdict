@@ -32,8 +32,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
+from slavdict.dictionary.constants import STATUS_MAP
 from slavdict.dictionary.models import Entry
-from slavdict.dictionary.models import STATUS_MAP
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import convert_for_index
 from slavdict.dictionary.utils import resolve_titles
@@ -168,9 +168,9 @@ for i, lexeme in enumerate(lexemes):
 
     # 2) Названия народов
     COMMA = r',\s+'
-    if lexeme.nom_sg:
-        wordform = lexeme.nom_sg
-        reference = lexeme.nom_sg_ucs_wax[1]
+    if lexeme.nom_pl:
+        wordform = lexeme.nom_pl
+        reference = lexeme.nom_pl_ucs_wax[1]
         for wordform, reference in zip(
                 re.split(COMMA, wordform), re.split(COMMA, reference)):
             entries1.append((wordform, reference, lexeme))

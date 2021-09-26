@@ -11,20 +11,19 @@ from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
 
 from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary import constants
 from slavdict.dictionary.models import Collocation
 from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Example
 from slavdict.dictionary.models import GreekEquivalentForExample
+from slavdict.dictionary.models import LETTERS
 from slavdict.dictionary.models import Meaning
 from slavdict.dictionary.models import MeaningContext
 from slavdict.dictionary.models import OrthographicVariant
 from slavdict.dictionary.models import Participle
 from slavdict.dictionary.models import Tip
 from slavdict.dictionary.models import Translation
-from slavdict.dictionary.models import VOLUME_LETTERS
-from slavdict.dictionary.models import LETTERS
-from slavdict.dictionary.models import ANY_LETTER
 from slavdict.dictionary.utils import arabic2roman
 
 ui = admin.sites.AdminSite(name='UI')
@@ -192,7 +191,7 @@ class VolumeFilter(admin.SimpleListFilter):
         choices = tuple(
             (str(volume),
             '%s:\u2003%s' % (arabic2roman(volume), ', '.join(letters).upper()))
-            for volume, letters in sorted(VOLUME_LETTERS.items()))
+            for volume, letters in sorted(constants.VOLUME_LETTERS.items()))
         choices += (('all', 'все тома'),)
         choices += (('0', 'не вошедшее ни в один том'),)
         return choices
@@ -226,27 +225,27 @@ class LetterFilter(admin.SimpleListFilter):
             return queryset.filter(id__in=self.xs(starts_with=value))
 
 class LetterEntryFilter(LetterFilter):
-    def xs(self, starts_with=ANY_LETTER):
+    def xs(self, starts_with=constants.ANY_LETTER):
         return (e.id for e in Entry.objects.all()
                      if e.starts_with(starts_with))
 
 class LetterCollogroupFilter(LetterFilter):
-    def xs(self, starts_with=ANY_LETTER):
+    def xs(self, starts_with=constants.ANY_LETTER):
         return (x.id for x in CollocationGroup.objects.all()
                      if x.starts_with(starts_with))
 
 class LetterMeaningFilter(LetterFilter):
-    def xs(self, starts_with=ANY_LETTER):
+    def xs(self, starts_with=constants.ANY_LETTER):
         return (m.id for m in Meaning.objects.all()
                      if m.not_hidden() and m.starts_with(starts_with))
 
 class LetterExampleFilter(LetterFilter):
-    def xs(self, starts_with=ANY_LETTER):
+    def xs(self, starts_with=constants.ANY_LETTER):
         return (x.id for x in Example.objects.all()
                      if x.starts_with(starts_with))
 
 class LetterTranslationFilter(LetterFilter):
-    def xs(self, starts_with=ANY_LETTER):
+    def xs(self, starts_with=constants.ANY_LETTER):
         return (x.id for x in Translation.objects.all()
                      if x.starts_with(starts_with))
 
@@ -713,7 +712,7 @@ class AdminEntry(admin.ModelAdmin):
     list_filter = (
         VolumeFilter,
         LetterEntryFilter,
-        'authors',
+        ('authors', admin.RelatedOnlyFieldListFilter),
         'status',
         'part_of_speech',
         'uninflected',
@@ -782,7 +781,7 @@ class AdminEntryADMIN(AdminEntry):
             'fields': ('genitive', 'gender', 'tantum'),
             'classes': ('hidden noun',) } ),
         (None, { # Для имен собств.
-            'fields': ('onym', 'canonical_name', 'nom_sg'),
+            'fields': ('onym', 'canonical_name', 'nom_pl'),
             'classes': ('hidden noun',) } ),
         (None, { # Для прил. и прич.-прил.
             'fields': ('short_form',),
@@ -838,7 +837,7 @@ class AdminEntryUI(AdminEntry):
             'fields': ('genitive', 'gender', 'tantum'),
             'classes': ('hidden noun',) } ),
         (None, { # Для имен собств.
-            'fields': ('onym', 'canonical_name', 'nom_sg'),
+            'fields': ('onym', 'canonical_name', 'nom_pl'),
             'classes': ('hidden noun',) } ),
         (None, { # Для прил. и прич.-прил.
             'fields': ('short_form',),

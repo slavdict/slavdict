@@ -40,7 +40,7 @@ update-lite: copydiff destroy_loc_changes checkout fixown
 killbg:
 	test ! -e .bgpids || ( xargs -a .bgpids kill ; rm .bgpids ; true )
 
-run: killbg collectstatic
+run: killbg migrate collectstatic
 	@echo "Запуск сервера в тестовом окружении..."
 ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
 	livereload static & echo $$! >>.bgpids

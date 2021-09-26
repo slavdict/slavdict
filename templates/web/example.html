@@ -41,9 +41,9 @@
 
         {% if t.source %}
             <span class="Em">{{ t.source_label() }}</span>{{ space }}
-            <span class="Text hyphenate">{{ t.translation }}</span>
+            <span class="Text hyphenate">{{ t.translation_fu }}</span>
         {% else %}
-            <span class="Text hyphenate">‘{{ t.translation |
+            <span class="Text hyphenate">‘{{ t.translation_fu |
                 web_regex("Em", labels_in_translation) }}’</span>
         {% endif %}
         {% if show_additional_info and t.additional_info|trim %}
@@ -67,9 +67,9 @@
 
         {% if t.source %}
             <span class="Em">{{ t.source_label() }}</span>{{ space }}
-            <span class="Text hyphenate">{{ t.translation }}</span>
+            <span class="Text hyphenate">{{ t.translation_fu }}</span>
         {% else %}
-            <span class="Text hyphenate">‘{{ t.translation |
+            <span class="Text hyphenate">‘{{ t.translation_fu |
                 web_regex("Em", labels_in_translation) }}’</span>
         {% endif %}
         {% if show_additional_info and t.additional_info|trim %}

@@ -4,6 +4,7 @@ from django.db.models import Count
 from django.db.models import Q
 
 from slavdict.custom_user.models import CustomUser
+from slavdict.dictionary import constants
 from slavdict.dictionary.forms import GREQSORTBASE_CHOICES
 from slavdict.dictionary.forms import SORTBASE_CHOICES
 from slavdict.dictionary.forms import SORTDIR_CHOICES
@@ -11,7 +12,6 @@ from slavdict.dictionary.models import CollocationGroup
 from slavdict.dictionary.models import Entry
 from slavdict.dictionary.models import Etymology
 from slavdict.dictionary.models import Example
-from slavdict.dictionary.models import HELLINIST_BAD_STATUSES
 from slavdict.dictionary.models import MeaningContext
 
 valid_greqsortbase_values = [c[0] for c in GREQSORTBASE_CHOICES]
@@ -267,7 +267,7 @@ def get_examples(form):
     # для определения значения" (M) или "срочное" (U).
     if not form.get('hwAllExamples') and greq_status not in ('M', 'U'):
         entries = Entry.objects if entries is None else entries
-        entries = entries.exclude(status__in=HELLINIST_BAD_STATUSES)
+        entries = entries.exclude(status__in=constants.HELLINIST_BAD_STATUSES)
 
     if entries is not None:
         if entries.exists():

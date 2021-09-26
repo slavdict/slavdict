@@ -117,12 +117,12 @@
     </div>
 
 
-    {% if entry.is_onym('ethnonym') and entry.nom_sg %}
+    {% if entry.is_onym('ethnonym') and entry.nom_pl %}
             <div>
                 <i>мн.</i>
                 {{ space }}
-                {% if entry.nom_sg_ucs_wax.0 %}-{%endif %}
-                {{ entry.nom_sg_ucs_wax.1|old_cslav_words }}
+                {% if entry.nom_pl_ucs_wax.0 %}-{%endif %}
+                {{ entry.nom_pl_ucs_wax.1|old_cslav_words }}
             </div>
     {% endif %}
 

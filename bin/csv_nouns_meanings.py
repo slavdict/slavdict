@@ -10,7 +10,8 @@ sys.path.append(
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'slavdict.settings')
 django.setup()
 
-from slavdict.dictionary.models import Entry, ONYM_MAP
+from slavdict.dictionary.constants import ONYM_MAP
+from slavdict.dictionary.models import Entry
 
 def write_csv(filename, entries):
     uw = csv.writer(open(filename, 'w'))

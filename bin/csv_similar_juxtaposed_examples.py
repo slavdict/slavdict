@@ -20,7 +20,8 @@ if len(sys.argv) > 1:
 print('Maximum Levenstein distance used:', MAX_DISTANCE)
 print()
 
-from slavdict.dictionary.models import Entry, levenshtein_distance
+from slavdict.dictionary.models import Entry
+from slavdict.dictionary.utils import levenshtein_distance
 
 CSI = '\033['
 HIDE_CURSOR = CSI + '?25l'

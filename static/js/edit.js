@@ -495,7 +495,7 @@ Example.UCS8_EXT = RegExp(
   Example.UCS8_OPEN_EXT +
   '([^' + Example.UCS8_OPEN_EXT + Example.UCS8_CLOSE_EXT + ']*)' +
   Example.UCS8_CLOSE_EXT, 'gum');
-Example.UCS8WordSplit = '[\\s\\.,:;!\\/"\'«»“”‘’\\[\\]\\(\\)]';
+Example.UCS8WordSplit = '[\\s\\.,:;!\\/"\'«»“”‘’\\[\\]\\(\\)—]';
 /* NOTE: 1. В регулярном выражении разбивки примера на слова нельзя
    использовать обратный слэш (\\\\), потому что в UCS8 ему соответствует
    титло. 2. Регулярное выражение без обрамляющих скобок при разбивке даст
@@ -652,7 +652,7 @@ function Entry(data) {
     upsert(this, 'homonym_gloss', data, '');
     upsert(this, 'homonym_order', data, null);
     upsert(this, 'id', data, null);
-    upsert(this, 'nom_sg', data, '');
+    upsert(this, 'nom_pl', data, '');
     upsert(this, 'onym', data, '');
     upsert(this, 'part_of_speech', data, '');
     upsert(this, 'participle_type', data, '');
