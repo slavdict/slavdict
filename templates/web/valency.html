@@ -2,6 +2,8 @@
                     collogroups_loop, child_meanings) %}
 {% from 'web/example.html' import example with context %}
 
+<span class="anchor"><a id="{{ m.get_url_fragment() }}"></a></span>
+
 {% set MSC17 = 'q' %}{# безличное упортеление глагола #}
 {% if m.special_case == MSC17 %}
     <span class="Em">безл.</span>{{ space }}
@@ -14,23 +16,14 @@
 {% endif %}
 
 {% if m.meaning %}
-    {{ m.host_entry.base_vars[0].idem_ucs |
+    {% if not '{' in m.meaning and not '}' in m.meaning %}
+        {{ m.host_entry.base_vars[0].idem_ucs |
             web_cslav_words("CSLSegmentEm", "Text") }}{{ space }}
-    {% for frame in m.meaning.split(";") %}
-        {% if loop.first %}
-            {# pass #}
-        {% else %}
-            {{ backspace }}<span class="Text">;</span>{{ space }}
-        {% endif %}
-        <span class="Text">{{ frame|trim|
-            web_cslav_injection("CSLSegmentEm")|
-            web_regex("Valency", '[а-яё]+[\\-\u2011]л\\.')|
-            web_regex("Em", 'с\\sпридат\\.|с\\sинф\\.|с\\sпрям\\.\\sречью'
-                            '|с\\sдвойн\\.\\sвин\\.')
-            }}</span>
-
-        {{ space }}
-    {% endfor %}
+    {% endif %}
+    <span class="Text">{{ m.meaning |
+        web_valency(m.host_entry.base_vars[0].idem,
+                    "CSLSegmentEm", "Text", "Em", "Valency") }}</span>
+    {{ space }}
 {% endif %}
 
 {% if m.gloss %}

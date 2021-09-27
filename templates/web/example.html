@@ -3,7 +3,7 @@
 
 {% set partial_translations = e.get_translations(fragmented=True, hidden=False) %}
 {% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
-{% set labels_in_translation= "(?<![А-ЯЁа-яё])букв\\." %}
+{% set labels_in_translation= "(?<![А-ЯЁа-яё])(?:букв|греч|лат)\\." %}
 {% set extra_example = not e.wordform_example
          and examples_loop.index > meaning.numex
          or e.wordform_example
