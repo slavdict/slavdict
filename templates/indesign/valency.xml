@@ -14,22 +14,14 @@
 {% endif %}
 
 {% if m.meaning %}
-    {{ m.host_entry.base_vars[0].idem_ucs|ind_cslav_words("CSLSegmentEm", "Text") }}{{ space }}
-    {% for frame in m.meaning.split(";") %}
-        {% if loop.first %}
-            {# pass #}
-        {% else %}
-            {{ backspace }}<x aid:cstyle="Text">;</x>{{ space }}
-        {% endif %}
-        <x aid:cstyle="Text">{{ frame|trim|
-            ind_cslav_injection("CSLSegmentEm")|
-            ind_regex("Valency", '[а-яё]+[\\-\u2011]л\\.')|
-            ind_regex("Em", 'с\\sпридат\\.|с\\sинф\\.|с\\sпрям\\.\\sречью'
-                            '|с\\sдвойн\\.\\sвин\\.')
-            }}</x>
-
-        {{ space }}
-    {% endfor %}
+    {% if not '{' in m.meaning and not '}' in m.meaning %}
+        {{ m.host_entry.base_vars[0].idem_ucs |
+            ind_cslav_words("CSLSegmentEm", "Text") }}{{ space }}
+    {% endif %}
+    <x aid:cstyle="Text">{{ m.meaning |
+        ind_valency(m.host_entry.base_vars[0].idem,
+                    "CSLSegmentEm", "Text", "Em", "Valency") }}</x>
+    {{ space }}
 {% endif %}
 
 {% if m.gloss %}

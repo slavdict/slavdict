@@ -541,7 +541,10 @@ class Words(object):
         return ''.join(str(s) for s in self)
 
 
-CSLCSTYLE = 'CSLSegment'
+CSL_CSTYLE = 'CSLSegment'
+TEXT_CSTYLE = 'Text'
+EM_CSTYLE = 'Em'
+VALENCY_CSTYLE = 'Valency'
 
 # NOTE: скобки, окаймляющие регулярное выражение, нельзя опустить, т.к. нужно,
 # чтобы при разбивке с помощью split в списке сохранялись не только слова, но
@@ -579,7 +582,7 @@ def get_word_even_with_hyphen(index, segments, n_segments):
     index += 1
     return (word, index)
 
-def cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None, for_web=False):
+def cslav_words(value, cstyle=CSL_CSTYLE, civil_cstyle=None, for_web=False):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
     if value is None:
         value = ''
@@ -739,21 +742,6 @@ def cslav_subst(x):
     return EXCLAM + cslav_nobr_words(ucs_convert(x.group(1))) + EXCLAM
 
 @register_filter
-def ind_headword_injection(value, headword, cstyle=CSLCSTYLE, for_web=False):
-    """ Вставляет основной вариант написания лексемы перед текстом,
-    либо при наличии ``{}`` на место фигурных скобок. В фигурных скобках
-    также может быть указана форма, которая должна быть подставлена вместо
-    основного варианта, если это не обходимо для модели управления вроде:
-
-      кто-л. {имену'ется} кто-л.
-      
-    """
-    ind_cslav = subst_func(lambda x: cslav_words(
-        ucs_convert(x), cstyle, for_web=for_web))
-    if '{}' in value:
-        return re.sub(r'(\s*)\{(.*?)\}(\s*)', ind_cslav, value)
-
-@register_filter
 def cslav_injection(value):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
@@ -775,7 +763,7 @@ def subst_func(func):
     return f
 
 @register_filter
-def ind_cslav_injection(value, cstyle=CSLCSTYLE, for_web=False):
+def ind_cslav_injection(value, cstyle=CSL_CSTYLE, for_web=False):
     """ Заменяет текст вида ``## <text::antconc> ##`` на ``<text::ucs8>``.
     """
     ind_cslav = subst_func(lambda x: cslav_words(
@@ -783,11 +771,11 @@ def ind_cslav_injection(value, cstyle=CSLCSTYLE, for_web=False):
     return re.sub(r'(\s*)##(.*?)##(\s*)', ind_cslav, value)
 
 @register_filter
-def web_cslav_injection(value, cstyle=CSLCSTYLE):
+def web_cslav_injection(value, cstyle=CSL_CSTYLE):
     return ind_cslav_injection(value, cstyle, for_web=True)
 
 @register_filter
-def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE,
+def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSL_CSTYLE,
         civil2_cstyle=None, for_web=False):
     words = Words()
     for i, elem in enumerate(value.split('##')):
@@ -801,7 +789,7 @@ def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE,
     return words
 
 @register_filter
-def web_civil_injection(value, civil_cstyle, cslav_cstyle=CSLCSTYLE,
+def web_civil_injection(value, civil_cstyle, cslav_cstyle=CSL_CSTYLE,
         civil2_cstyle=None):
     return ind_civil_injection(value, civil_cstyle, cslav_cstyle,
                                civil2_cstyle, for_web=True)
@@ -817,6 +805,82 @@ def ind_regex(value, cstyle, regex, for_web=False):
 @register_filter
 def web_regex(value, cstyle, regex):
     return ind_regex(value, cstyle, regex, for_web=True)
+
+def subst_headword_func(func1, func2, headword):
+    def f(match):
+        if match.group(7) == match.group(9) == '##':
+            print('::0', match.group())
+            x, y, z = match.group(6), match.group(8), match.group(10)
+            f = func2(y)
+            print('::1', f)
+        elif match.group(2) == '{' and match.group(4) == '}':
+            x, y, z = match.group(1), match.group(3), match.group(5)
+            f = func1(y, headword)
+        else:
+            raise RuntimeError
+        if '\u00a0' in x:
+            x = NBSP
+        elif ' ' in x:
+            x = SPACE
+        if '\u00a0' in z:
+            z = NBSP
+        elif ' ' in z:
+            z = SPACE
+        return '%s%s%s' % (x, f, z)
+    return f
+
+def headword_injection(value, headword, cslav_cstyle=CSL_CSTYLE, for_web=False):
+    if not value.strip():
+        return cslav_words(ucs_convert(headword), cslav_cstyle, for_web=for_web)
+    else:
+        return cslav_words(ucs_convert(value), cslav_cstyle, for_web=for_web)
+
+@register_filter
+def ind_valency(value, headword,
+        cslav_cstyle=CSL_CSTYLE, text_cstyle=TEXT_CSTYLE,
+        em_cstyle=EM_CSTYLE, valency_cstyle=VALENCY_CSTYLE, for_web=False):
+    """ Создает текст модели управления лексемы.
+
+    На место фигурных скобок подставляется основной вариант написания лексемы,
+    если в фигурных скобках текст отсутствует. Например, для лексемы ``ради``
+    последовательность:
+
+      кого-л./чего-л. {}
+
+    будет изменена на ``кого-л./чего-л. ради``.
+
+    Если текст в фигурных скобках присутствует, то он используется вместо
+    основного варианта написания лексемы, которую необходимо использовать в
+    модели управления:
+
+      кто-л. {имену'ется} кто-л.
+
+    """
+    hwfunc = lambda x, hw: headword_injection(x, hw, cslav_cstyle, for_web=for_web)
+    cswfunc = lambda x: cslav_words(ucs_convert(x), cslav_cstyle, for_web=for_web)
+    ind_headword = subst_headword_func(hwfunc, cswfunc, headword)
+    tag = Tag(cslav_style=None, civil_style=text_cstyle, for_web=for_web)
+    joiner = '%s%s' % (Segment(';', tag), SPACE)
+    frames = []
+    for frame in value.split(';'):
+        frame = re.sub(r'(?:(\s*)(\{)(.*?)(\})(\s*)|(\s*)(##)(.*?)(##)(\s*))',
+                       ind_headword, frame.strip())
+        frame = ind_regex(frame,
+                valency_cstyle, '[а-яё]+[\\-\u2011]л\\.', for_web=for_web)
+        frame = ind_regex(frame,
+                em_cstyle, 'с\\sдвойн\\.\\s(?:им|вин)\\.|'
+                           'с\\sинф\\.|с\\sпридат\\.|с\\sпрямой\\sречью',
+                for_web=for_web)
+        frames.append(frame)
+    return joiner.join(frames)
+
+@register_filter
+def web_valency(value, headword,
+        cslav_cstyle=CSL_CSTYLE, text_cstyle=TEXT_CSTYLE,
+        em_cstyle=EM_CSTYLE, valency_cstyle=VALENCY_CSTYLE):
+    return ind_valency(value, headword,
+        cslav_cstyle=cslav_cstyle, text_cstyle=text_cstyle,
+        em_cstyle=em_cstyle, valency_cstyle=valency_cstyle, for_web=True)
 
 @register_filter
 def web_href(value, regex, href):
@@ -1100,5 +1164,5 @@ register_filter('old_cslav_words')(cslav_nobr_words)
 register_filter('ind_cslav_words')(cslav_words)
 
 @register_filter
-def web_cslav_words(value, cstyle=CSLCSTYLE, civil_cstyle=None):
+def web_cslav_words(value, cstyle=CSL_CSTYLE, civil_cstyle=None):
     return cslav_words(value, cstyle, civil_cstyle, for_web=True)
