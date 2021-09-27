@@ -381,16 +381,23 @@ class Segment(Tag):
                      for i, p in enumerate(parts)]
             segment = ''.join(parts)
 
-        RE_JAT_ASPIRATION = '(э)([345])'
+        RE_ASCENDER_WITH_DIA = '([эt])([12345])'  # UCS8-символы для ять, от и
+                                                  # диакритики.
+        # Известные случаи:
+        #
+        #   - ять + придыхание (см. статью "еждение").
+        #   - ять + придыхание + акут (см. статьи "ехати", "ездити").
+        #   - от + акут (см. пример "отграда" в статье "византия")
+        #
         if self.base_script == SCRIPT_CSLAV and \
-                re.findall(RE_JAT_ASPIRATION, segment):
+                re.findall(RE_ASCENDER_WITH_DIA, segment):
             if self.tag.for_web:
-                tag1_template = '<span class="UCS8Jat">%s</span>'
-                tag2_template = '<span class="UCS8JatAsp">%s</span>'
+                tag1_template = '<span class="UCS8Ascender">%s</span>'
+                tag2_template = '<span class="UCS8DiaByAscender">%s</span>'
             else:
-                tag1_template = '<x aid:cstyle="UCS8Jat">%s</x>'
-                tag2_template = '<x aid:cstyle="UCS8JatAsp">%s</x>'
-            parts = re.split(RE_JAT_ASPIRATION, segment)
+                tag1_template = '<x aid:cstyle="UCS8Ascender">%s</x>'
+                tag2_template = '<x aid:cstyle="UCS8DiaByAscender">%s</x>'
+            parts = re.split(RE_ASCENDER_WITH_DIA, segment)
             parts = [{
                         1: tag1_template % p,
                         2: tag2_template % p,
