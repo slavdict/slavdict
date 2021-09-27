@@ -2,6 +2,8 @@
                     collogroups_loop, child_meanings) %}
 {% from 'csl/example.html' import example with context %}
 
+<span class="anchor"><a id="{{ m.get_url_fragment() }}"></a></span>
+
 {% set MSC17 = 'q' %}{# безличное упортеление глагола #}
 {% if m.special_case == MSC17 %}
     <span class="Em">безл.</span>{{ space }}
