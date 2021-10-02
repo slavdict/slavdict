@@ -26,7 +26,10 @@
         <span class="anchor"><a id="{{ t.get_url_fragment() }}"></a></span>
 
         {% if t.source %}
+            {% set SYNODAL = 'S' %}
+            {% if t.source == SYNODAL or entry.template_version > 0 %}
             <span class="Em">{{ t.source_label() }}</span>{{ space }}
+            {% endif %}
             <span class="Text hyphenate">{{ t.translation_fu }}</span>
         {% else %}
             <span class="Text hyphenate">‘{{ t.translation_fu |

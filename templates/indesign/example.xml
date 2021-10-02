@@ -21,7 +21,10 @@
             {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
         {% if t.source %}
+            {% set SYNODAL = 'S' %}
+            {% if t.source == SYNODAL or entry.template_version > 0 %}
             <x aid:cstyle="Em">{{ t.source_label() }}</x>{{ space }}
+            {% endif %}
             <x aid:cstyle="Text">{{ t.translation_fu }}</x>
         {% else %}
             <x aid:cstyle="Text">‘{{ t.translation_fu |
