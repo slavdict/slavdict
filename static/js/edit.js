@@ -637,7 +637,7 @@ Meaning.dependantsToDestroy = [
     'collogroups', 'meanings', 'examples', 'contexts'];
 
 function Entry(data) {
-    var LAST_TEMPLATE_VERSION = 1,
+    var LAST_TEMPLATE_VERSION = 2,
         BEYOND_VOLUMES = 0,
         CREATED_STATUS = 'c';
     upsert(this, 'additional_info', data, '');

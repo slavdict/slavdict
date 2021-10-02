@@ -58,7 +58,7 @@
                     <ul class="examples" data-bind="sortable: { data: examples,
                       afterMove: examples.sortMe }, visible: isExpanded()
                         && ($parent.phraseological()
-                            || $root.data.entry.template_version() < 1)">
+                            || $root.data.entry.template_version() < 2)">
                         <li data-bind="event: { dblclick: function(){} },
                                 dblclickBubble: false,
                                 css: { wordform_example: wordform_example,
@@ -80,7 +80,7 @@
 
                     <div data-bind="visible: isExpanded()
                           && ($parent.phraseological()
-                              || $root.data.entry.template_version() < 1)">
+                              || $root.data.entry.template_version() < 2)">
                         <a class="pasteItems" data-bind="
                             click: $root.ui.cutBuffer.pasteInto(examples),
                             visible: $root.ui.cutBuffer.containsExamples"></a>

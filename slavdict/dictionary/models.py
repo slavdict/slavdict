@@ -406,13 +406,18 @@ class Entry(models.Model, JSONSerializable):
     mtime = DateTimeField(editable=False)
     ctime = DateTimeField(editable=False, auto_now_add=True)
 
-    LAST_TEMPLATE_VERSION = 1
+    LAST_TEMPLATE_VERSION = 2
     template_version = SmallIntegerField('версия структуры статей',
             blank=True, default=LAST_TEMPLATE_VERSION)
-    # 0 -- в этих статьях иллюстрации возможны при любых словосочетаниях
+    # 0 -- В этих статьях иллюстрации возможны при любых словосочетаниях,
+    #      а помета при переводах разрешена только "в Син. пер."
     #      (тома I—III, буквы А—Е);
-    # 1 -- иллюстрации можно добавлять только к фразеологическим
-    #      словосочетаниям (тома, начиная с IV, буквы после Е).
+    # 1 -- Иллюстрации возможны при любых словосочетаниях, но при переводах
+    #      разрешен весь спектр помет (предполагается для переиздания
+    #      первых трех томов);
+    # 2 -- Иллюстрации можно добавлять только к фразеологическим
+    #      словосочетаниям и весь спектр помет источников при
+    #      переводах (тома, начиная с IV, буквы после Е).
 
     meanings = property(meanings)
     metaph_meanings = property(metaph_meanings)
@@ -1396,7 +1401,7 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
         if (self.numex > 0
                 and isinstance(host, CollocationGroup)
                 and not host.phraseological
-                and host_entry.template_version > 0
+                and host_entry.template_version > 1
                 and not host_entry.restricted_use):
             self.numex = -self.numex  # NOTE::INVNUMEX:: Приводим
             # к противоположному значению, чтобы иметь возможность вернуть
@@ -1405,7 +1410,7 @@ class Meaning(models.Model, JSONSerializable, VolumeAttributive):
         if (self.numex < 0 and (
                 not isinstance(host, CollocationGroup)
                 or host.phraseological
-                or host_entry.template_version == 0
+                or host_entry.template_version < 2
                 or host_entry.restricted_use)):
             self.numex = -self.numex  #::INVNUMEX::
         super(Meaning, self).save(*args, **kwargs)

@@ -44,7 +44,7 @@
                 data-bind="sortable: { data: examples,
                                        afterMove: examples.sortMe },
                            visible: isExpanded()
-                                && ($parent.template_version < 1
+                                && ($parent.template_version < 2
                                     || !$parent.restricted_use())">
                 <li data-bind="event: { dblclick: function(){} },
                         dblclickBubble: false,
@@ -68,7 +68,7 @@
                 LEXEME ) MEANINGS ) EXAMPLES . LISTCONTROLS
             #}
             <div data-bind="visible: isExpanded()
-                    && ($parent.template_version < 1
+                    && ($parent.template_version < 2
                         || !$parent.restricted_use())">
                 <a class="pasteItems" data-bind="
                     click: $root.ui.cutBuffer.pasteInto(examples),
@@ -84,7 +84,7 @@
             <ul class="meanings"
                 data-bind="sortable: { data: meanings },
                            visible: isExpanded()
-                                && ($parent.template_version < 1
+                                && ($parent.template_version < 2
                                     || !$parent.restricted_use())">
                 <li data-bind="event: { dblclick: toggle },
                     dblclickBubble: false">
@@ -161,7 +161,7 @@
                 LEXEME ) MEANINGS ) USES . LISTCONTROLS
             #}
             <div data-bind="visible: isExpanded()
-                                && ($parent.template_version < 1
+                                && ($parent.template_version < 2
                                     || !$parent.restricted_use())">
                 <a class="pasteItems" data-bind="
                     click: $root.ui.cutBuffer.pasteInto(meanings),
@@ -238,7 +238,7 @@
                                            visible: isExpanded() &&
                                              ($parent.phraseological() ||
                                      $root.data.entry.restricted_use() ||
-                                     $root.data.entry.template_version() < 1)">
+                                     $root.data.entry.template_version() < 2)">
                                 <li data-bind="event: { dblclick: function(){} },
                                   dblclickBubble: false,
                                   css: { wordform_example: wordform_example,
@@ -264,7 +264,7 @@
                             <div data-bind="visible: isExpanded() &&
                                              ($parent.phraseological() ||
                                      $root.data.entry.restricted_use() ||
-                                     $root.data.entry.template_version() < 1)">
+                                     $root.data.entry.template_version() < 2)">
                                 <a class="pasteItems" data-bind="
                                     click: $root.ui.cutBuffer.pasteInto(examples),
                                     visible: $root.ui.cutBuffer.containsExamples"></a>
@@ -320,7 +320,7 @@
                                             visible: isExpanded() &&
                                      ($parents[1].phraseological() ||
                                      $root.data.entry.restricted_use() ||
-                                     $root.data.entry.template_version() < 1)">
+                                     $root.data.entry.template_version() < 2)">
                                         <li data-bind="event: { dblclick: function(){} },
                                                 dblclickBubble: false,
                                   css: { wordform_example: wordform_example,
@@ -345,7 +345,7 @@
                                     <div data-bind="visible: isExpanded() &&
                                      ($parents[1].phraseological() ||
                                      $root.data.entry.restricted_use() ||
-                                     $root.data.entry.template_version() < 1)">
+                                     $root.data.entry.template_version() < 2)">
                                         <a class="pasteItems" data-bind="
                                             click: $root.ui.cutBuffer.pasteInto(examples),
                                             visible: $root.ui.cutBuffer.containsExamples"></a>
@@ -375,7 +375,7 @@
                     <div data-bind="visible: isExpanded()
                             && (phraseological() ||
                                 $root.data.entry.restricted_use() ||
-                                $root.data.entry.template_version() < 1)">
+                                $root.data.entry.template_version() < 2)">
                         <a class="pasteItems" data-bind="
                             click: $root.ui.cutBuffer.pasteInto(meanings),
                             visible: $root.ui.cutBuffer.containsMeanings"></a>
@@ -461,7 +461,7 @@
                            visible: isExpanded()
                              && ($parent.phraseological()
                                  || $root.data.entry.restricted_use()
-                                 || $root.data.entry.template_version < 1)">
+                                 || $root.data.entry.template_version < 2)">
                 <li data-bind="event: { dblclick: function(){} },
                         dblclickBubble: false,
                         css: { wordform_example: wordform_example,
@@ -486,7 +486,7 @@
             <div data-bind="visible: isExpanded()
               && ($parent.phraseological()
                   || $root.data.entry.restricted_use()
-                  || $root.data.entry.template_version < 1)">
+                  || $root.data.entry.template_version < 2)">
                 <a class="pasteItems" data-bind="
                     click: $root.ui.cutBuffer.pasteInto(examples),
                     visible: $root.ui.cutBuffer.containsExamples"></a>
