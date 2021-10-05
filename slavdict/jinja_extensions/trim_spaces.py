@@ -816,10 +816,8 @@ def web_regex(value, cstyle, regex):
 def subst_headword_func(func1, func2, headword):
     def f(match):
         if match.group(7) == match.group(9) == '##':
-            print('::0', match.group())
             x, y, z = match.group(6), match.group(8), match.group(10)
             f = func2(y)
-            print('::1', f)
         elif match.group(2) == '{' and match.group(4) == '}':
             x, y, z = match.group(1), match.group(3), match.group(5)
             f = func1(y, headword)
