@@ -146,11 +146,8 @@ th, td {
 | `?authors=Петрова,Корнилаева` | Статьи соответствующих авторов. Для статей без авторства используйте сочетание "без автора", для авторских статей — фамилию автора. |
 | `?cgs-vs-entries` | Вместо статей отображать заглавное слово и список всех его *словосочетаний* с одним значением при каждом словосочетании. |
 | `?duplicates` | статьи-дубликаты. |
-| `?hide-ai` | При отображении статей не показывать рабочие примечания-комментарии. |
-| `?hide-authors` | Скрывать авторство. |
 | `?hide-examples` | Скрывать примеры в статьях. |
 | `?hide-meanings` | Скрывать значения при статьях, отображая только заголовки. |
-| `?hide-numbers` | Не нумеровать статьи. |
 | `?hide-refentries` | Не отображать отсылочные статьи. |
 | `?inverse` | Упорядочить статьи по обратному гражданскому написанию заглавного слова. Например, слово "вняти" будет отсортировано, как если бы это было слово "итянв". |
 | `?list=1324,3345,22` | Отображать только статьи с указанными числовыми идентификаторами. |
@@ -160,7 +157,9 @@ th, td {
 | `?per-page=100` | Отображать по столько-то статей на странице, по умолчанию, все. |
 | `?pos-group` | Не только сортировать по алфавиту, но и группировать по частям речи. |
 | `?print-layout=columns` | Способ отображения статей при отправке страницы на печать. Возможные значения: proofreading и columns. Значение proofreading используется по умолчанию, распечатываемый текст на печати отображается в одну колонку с увеличенным интерлиньяжем. При значении columns текст будет отображаться с обычным интерлиньяжем и в две колонки. |
-| `?show-ai` | При отображении статей обязательно показывать рабочие примечания-комментарии. |
+| `?show-ai` | При отображении статей показывать рабочие примечания-комментарии. |
+| `?show-authors` | Отображать авторство статей. |
+| `?show-numbers` | Нумеровать статьи. |
 | `?show-sort-keys` | При отображении статей обязательно показывать ключи сортировки. Может быть полезно для вывода обратного словника. Ключи будут отображаться в отдельном столбце с выключкой влево для обычных ключей и вправо для инверсных. |
 | `?startswith=Ав` | Отображать только статьи, начинающиеся на «Ав» без учета регистра символов. |
 | <span class="nobr">`?status=в работе,поиск греч.`</span><br>`?status=-создана` | Отображать только статьи с перечиленными значениями поля "статус статьи". При постановке перед наименованием статуса знака минус статьи с данным статусом будут исключены из выборки. |
@@ -179,11 +178,8 @@ th, td {
     httpGET_AUTHORS = urllib.parse.unquote(request.GET.get('authors', ''))
     httpGET_CGSVSENTRIES = 'cgs-vs-entries' in request.GET
     httpGET_DUPLICATES = 'duplicates' in request.GET
-    httpGET_HIDEAI = 'hide-ai' in request.GET
-    httpGET_HIDEAUTHORS = 'hide-authors' in request.GET
     httpGET_HIDEEXAMPLES = 'hide-examples' in request.GET
     httpGET_HIDEMEANINGS = 'hide-meanings' in request.GET
-    httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
     httpGET_HIDEREFENTRIES = 'hide-refentries' in request.GET
     httpGET_INVERSE = 'inverse' in request.GET
     httpGET_LIST = request.GET.get('list')
@@ -194,6 +190,8 @@ th, td {
     httpGET_POS_GROUP = 'pos-group' in request.GET
     httpGET_PRINTLAYOUT = request.GET.get('print-layout', DEFAULT_PRINTLAYOUT)
     httpGET_SHOWAI = 'show-ai' in request.GET
+    httpGET_SHOWAUTHORS = 'show-authors' in request.GET
+    httpGET_SHOWNUMBERS = 'show-numbers' in request.GET
     httpGET_SHOWSORTKEYS = 'show-sort-keys' in request.GET
     httpGET_STARTSWITH = request.GET.get('startswith')
     httpGET_STATUS = urllib.parse.unquote(request.GET.get('status', ''))
@@ -310,14 +308,12 @@ th, td {
         page = None
 
     show_additional_info = (httpGET_SHOWAI or
-            'ai' in request.COOKIES and not httpGET_HIDENUMBERS)
-    if httpGET_HIDEAI:
-        show_additional_info = False
+            'ai' in request.COOKIES and httpGET_SHOWNUMBERS)
 
     context = {
         'entries': entries,
         'cgs_vs_entries': httpGET_CGSVSENTRIES,
-        'hide_authors': httpGET_HIDEAUTHORS,
+        'hide_authors': not httpGET_SHOWAUTHORS,
         'hide_examples': httpGET_HIDEEXAMPLES,
         'hide_meanings': httpGET_HIDEMEANINGS,
         'inverse_sort': httpGET_INVERSE,
@@ -330,7 +326,7 @@ th, td {
         'print_layout': httpGET_PRINTLAYOUT,
         'show_additional_info': show_additional_info,
         'show_duplicates_warning': False if httpGET_DUPLICATES else True,
-        'show_numbers': not httpGET_HIDENUMBERS,
+        'show_numbers': httpGET_SHOWNUMBERS,
         'show_refentries': not httpGET_HIDEREFENTRIES,
         'show_sort_keys': httpGET_SHOWSORTKEYS,
         'title': title,
@@ -347,8 +343,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
     httpGET_ADDRESS_GREP_V = request.GET.get('address-grep-v')
     httpGET_AUDITED = request.GET.get('audited') or ('audited' in request.GET)
     httpGET_EXCLUDE = request.GET.get('exclude')
-    httpGET_HIDEAI = 'hide-ai' in request.GET
-    httpGET_HIDENUMBERS = 'hide-numbers' in request.GET
+    httpGET_SHOWNUMBERS = 'show-numbers' in request.GET
     httpGET_INCLUDE_ONLY = request.GET.get('include-only')
     httpGET_SHOWAI = 'show-ai' in request.GET
     httpGET_STATUS = request.GET.get('status')
@@ -466,13 +461,11 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
         page = None
 
     show_additional_info = (httpGET_SHOWAI or
-            'ai' in request.COOKIES and not httpGET_HIDENUMBERS)
-    if httpGET_HIDEAI:
-        show_additional_info = False
+            'ai' in request.COOKIES and httpGET_SHOWNUMBERS)
 
     context = {
         'examples': examples,
-        'show_numbers': not httpGET_HIDENUMBERS,
+        'show_numbers': httpGET_SHOWNUMBERS,
         'title': title,
         'show_additional_info': show_additional_info,
         'is_paged': is_paged,
