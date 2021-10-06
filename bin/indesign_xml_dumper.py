@@ -55,9 +55,10 @@ DATETIME = datetime.datetime.now()
 
 def interrupt_handler(signum, frame):
     print(SHOW_CURSOR, file=sys.stderr)
-    sys.exit(0)
+    sys.exit(1)
 
-signal.signal(signal.SIGINT, interrupt_handler)
+for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGILL, signal.SIGHUP):
+    signal.signal(sig, interrupt_handler)
 
 print(HIDE_CURSOR, file=sys.stderr)
 note =  'Volumes: ' + ', '.join(str(volume) for volume in OUTPUT_VOLUMES) + '\n'
@@ -326,6 +327,9 @@ special_cases = [
 
     # воутр... см. утрие.  [воутрие, воутрии, воутрия]
     { 'startswith': 'воyтр', 'qv': '', 'dots': False },
+
+    # гаггр... см. гангр...  [гаггрена, гаггрский, гаггры, гаггрянин]
+    { 'startswith': 'гaггр', 'qv': 'гaнгр', 'dots': True },
 ]
 chunks = []
 n_chars = 0
