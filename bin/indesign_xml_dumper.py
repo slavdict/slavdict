@@ -373,7 +373,7 @@ for civil_letter, syn_letters, entries in letter_parts:
         if isinstance(entry, Entry):
             ceq = entry.civil_equivalent
         elif isinstance(entry, dict):
-            ceq = entry['referenced_lexemes'][0].civil_equivalent)
+            ceq = entry['referenced_lexemes'][0].civil_equivalent
         note = '%s [ %s%% ] %s\r' % (
                 _letter,
                 int(round(i / n_entries * 100)),
