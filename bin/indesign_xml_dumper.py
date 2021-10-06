@@ -370,11 +370,16 @@ for civil_letter, syn_letters, entries in letter_parts:
                 n_chars += m
                 chunks.append(xml)
 
+        if isinstance(entry, Entry):
+            ceq = entry.civil_equivalent
+        elif isinstance(entry, dict):
+            ceq = entry['referenced_lexemes'][0].civil_equivalent)
         note = '%s [ %s%% ] %s\r' % (
                 _letter,
                 int(round(i / n_entries * 100)),
-                entry.civil_equivalent + ERASE_LINEEND)
+                ceq + ERASE_LINEEND)
         sys.stderr.write(note)
+        sys.stderr.flush()
 
     if chunks:
         letters_and_chunks.append((letter, chunks))
