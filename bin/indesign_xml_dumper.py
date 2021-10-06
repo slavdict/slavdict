@@ -226,15 +226,19 @@ for i, (key, group) in enumerate(itertools.groupby(entries1, lambda x: x[:2])):
             }
             if all(x.homonym_order for x in lst):
                 lexeme['references'] = [
-                            {'reference_ucs': lst[0].base_vars[0].idem_ucs,
-                             'homonym_order': ',\u00a0'.join(
-                                        str(i.homonym_order) for i in lst if i)
-                            }]
+                    { 'reference_ucs': lst[0].base_vars[0].idem_ucs,
+                      'homonym_order': ',\u00a0'.join(
+                         str(i.homonym_order)
+                         for i in lst if i
+                      )
+                    }
+                ]
             else:
                 lexeme['references'] = [
-                                    {'reference_ucs': x.base_vars[0].idem_ucs,
-                                     'homonym_order': x.homonym_order or None}
-                                    for x in lst],
+                    { 'reference_ucs': x.base_vars[0].idem_ucs,
+                      'homonym_order': x.homonym_order or None }
+                    for x in lst
+                ]
             entries2.append((wordform, reference, lexeme))
 entries2_n = len(entries2)
 
@@ -332,9 +336,15 @@ for civil_letter, syn_letters, entries in letter_parts:
     n_entries = len(entries)
     for i, (reference, entry) in enumerate(entries):
         if reference:
-            xml = render_to_string('indesign/slavdict_reference.xml', {
-                'reference': reference, 'entry': entry,
-                'specials': special_cases })
+            try:
+                xml = render_to_string('indesign/slavdict_reference.xml', {
+                    'reference': reference, 'entry': entry,
+                    'specials': special_cases })
+            except:
+                sys.stderr.write('    reference: %s\n' % reference)
+                sys.stderr.write('        entry: %s\n' % entry)
+                sys.stderr.write('special cases: %s\n' % special_cases)
+                raise
         else:
             xml = render_to_string('indesign/entry.xml', { 'entry': entry })
 
