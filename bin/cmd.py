@@ -131,10 +131,10 @@ class DataChangeShell(cmd.Cmd):
             sort_key = sort_by_entry
         else:
             sort_key = sort_by_value
+        total_count = 0
         for model, attrs in self.model_attrs:
             self.tcount[model.__name__] = {}
             from_dict = model.__module__ == 'slavdict.dictionary.models'
-            total_count = 0
             for attrname in attrs:
                 storage_key = (model, attrname)
                 items = model.objects.all()
