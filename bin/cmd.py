@@ -41,6 +41,7 @@ BOLD_RED = CSI + '1;31m'
 BOLD_YELLOW = CSI + '1;33m'
 RED = CSI + '0;31m'
 GREEN = CSI + '0;32m'
+YELLOW = CSI + '0;33m'
 
 
 def sort_by_entry(x):
@@ -144,13 +145,13 @@ class DataChangeShell(cmd.Cmd):
                 mnote = '%s.%s' % (model.__name__, attrname)
                 for i, item in enumerate(items):
                     note = 'total: %s, %s: %s, found: %s%s\r' % (
-                        BOLD_GREEN + str(total_count) + RESET_FORMAT,
-                        mnote,
+                        '{}{}{}'.format(BOLD_RED, total_count, RESET_FORMAT),
+                        '{}{}{}'.format(YELLOW, mnote, RESET_FORMAT),
                         '{}{}%{}'.format(
-                            BOLD_YELLOW,
+                            YELLOW,
                             int(math.ceil((i + 1) / items_n * 100)),
                             RESET_FORMAT),
-                        BOLD_GREEN + str(count) + RESET_FORMAT,
+                        '{}{}{}'.format(GREEN, count, RESET_FORMAT),
                         ERASE_LINEEND,
                     )
                     sys.stdout.write(note)
