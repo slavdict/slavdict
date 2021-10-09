@@ -143,13 +143,14 @@ class DataChangeShell(cmd.Cmd):
                 sys.stdout.write('\n')
                 mnote = '%s.%s' % (model.__name__, attrname)
                 for i, item in enumerate(items):
-                    note = '%s: %s, found: %s, total: %s%s\r' % (
-                        mnote,
-                        BOLD_YELLOW + str(
-                            int(math.ceil((i + 1) / items_n * 100))
-                        ) + '%' + RESET_FORMAT,
-                        BOLD_GREEN + str(count) + RESET_FORMAT,
+                    note = 'total: %s, %s: %s, found: %s%s\r' % (
                         BOLD_GREEN + str(total_count) + RESET_FORMAT,
+                        mnote,
+                        '{}{}%{}'.format(
+                            BOLD_YELLOW,
+                            int(math.ceil((i + 1) / items_n * 100)),
+                            RESET_FORMAT),
+                        BOLD_GREEN + str(count) + RESET_FORMAT,
                         ERASE_LINEEND,
                     )
                     sys.stdout.write(note)
