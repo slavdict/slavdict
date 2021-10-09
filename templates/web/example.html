@@ -8,6 +8,7 @@
          and examples_loop.index > meaning.numex
          or e.wordform_example
             and (meaning.parent_meaning or meaning.collogroup_container) %}
+{% set SYNODAL = 'S' %}
 
 <span class="anchor"><a id="{{ e.get_url_fragment() }}"></a></span>
 
@@ -39,11 +40,8 @@
 
         <span class="anchor"><a id="{{ t.get_url_fragment() }}"></a></span>
 
-        {% if t.source %}
-            {% set SYNODAL = 'S' %}
-            {% if t.source == SYNODAL or entry.template_version > 0 %}
+        {% if (t.source and entry.template_version > 0) or t.source == SYNODAL %}
             <span class="Em">{{ t.source_label() }}</span>{{ space }}
-            {% endif %}
             <span class="Text hyphenate">{{ t.translation_fu }}</span>
         {% else %}
             <span class="Text hyphenate">‘{{ t.translation_fu |

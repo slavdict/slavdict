@@ -8,6 +8,7 @@
          and examples_loop.index > meaning.numex
          or e.wordform_example
             and (meaning.parent_meaning or meaning.collogroup_container) %}
+{% set SYNODAL = 'S' %}
 
 {% if not extra_example %}
 
@@ -20,11 +21,8 @@
         {% if not loop.first %}
             {{ backspace }}<x aid:cstyle="Text">,</x>{{ space }}
         {% endif %}
-        {% if t.source %}
-            {% set SYNODAL = 'S' %}
-            {% if t.source == SYNODAL or entry.template_version > 0 %}
+        {% if (t.source and entry.template_version > 0) or t.source == SYNODAL %}
             <x aid:cstyle="Em">{{ t.source_label() }}</x>{{ space }}
-            {% endif %}
             <x aid:cstyle="Text">{{ t.translation_fu }}</x>
         {% else %}
             <x aid:cstyle="Text">‘{{ t.translation_fu |
