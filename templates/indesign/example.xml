@@ -12,7 +12,7 @@
 {% if not extra_example %}
 
   {{ e.example_ucs | ind_cslav_words("CSLSegment", "Text") |
-          insert_translations(partial_translations) }}
+          insert_translations(partial_translations, entry.template_version) }}
   {{ space }}
 
   {% if full_translations %}

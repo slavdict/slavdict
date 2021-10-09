@@ -107,6 +107,7 @@ from django.utils.functional import keep_lazy_text
 from jinja2 import nodes
 from jinja2.ext import Extension
 
+from slavdict.dictionary.constants import TRANSLATION_SOURCE_SYNODAL
 from slavdict.dictionary.utils import ucs_convert, html_escape, html_unescape
 from .hyphenation import hyphenate_ucs8
 
@@ -665,8 +666,8 @@ def _prepare_translation_data(data, n):
 
     return data
 
-def _insert_translation_data(words, data, show_additional_info=False,
-                             hidden_data=None):
+def _insert_translation_data(words, data, template_version,
+        show_additional_info=False, hidden_data=None):
     for_web = words[0].word.tag.for_web
     if hidden_data is None or not show_additional_info or not for_web:
         hidden_data = {}  # В InDesign комментарии авторов не нужны
@@ -687,7 +688,9 @@ def _insert_translation_data(words, data, show_additional_info=False,
     c = lambda t: (show_additional_info and t.additional_info.strip()
             and for_web)
     def tt(translation):
-        if not translation.source:
+        if (not translation.source
+                or (template_version == 0
+                        and translation.source != TRANSLATION_SOURCE_SYNODAL)):
             return '‘%s’%s'
         source_mark = ExternalSegment(translation.source_label() + SPACE,
                 Tag(cslav_style=None, civil_style='Em', for_web=for_web))
@@ -736,13 +739,15 @@ def _insert_translation_data(words, data, show_additional_info=False,
     return words
 
 @register_filter
-def insert_translations(words, data, show_additional_info=False, hidden_data=None):
+def insert_translations(words, data, template_version,
+                        show_additional_info=False, hidden_data=None):
     data = _prepare_translation_data(data, len(words))
     if show_additional_info:
         hidden_data = _prepare_translation_data(hidden_data, len(words))
     else:
         hidden_data = None
-    words = _insert_translation_data(words, data, show_additional_info, hidden_data)
+    words = _insert_translation_data(words, data, template_version,
+                                     show_additional_info, hidden_data)
     return words
 
 def cslav_subst(x):
