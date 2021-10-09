@@ -462,6 +462,7 @@ TEXT = '''
     'example',
     'address_text',
     'note',
+    #'context',
     #'additional_info',
 ]),
 (Translation, [
@@ -490,6 +491,9 @@ TEXT = '''
 ]),
 (Participle, [
     'idem',
+]),
+(Tip, [
+    #'text'
 ]),
 
 
