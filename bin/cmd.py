@@ -139,15 +139,16 @@ class DataChangeShell(cmd.Cmd):
                 items = model.objects.all()
                 items_n = model.objects.count()
                 count = 0
-                note = '\n%s.%s: ' % (model.__name__, attrname)
-                sys.stdout.write(note + SAVE_CURSOR_POSITION + ERASE_LINEEND)
+                sys.stdout.write('\n')
+                mnote = '%s.%s' % (model.__name__, attrname)
                 for i, item in enumerate(items):
-                    note = '%s, found: %s%s' % (
+                    note = '%s: %s, found: %s%s\r' % (
+                        mnote,
                         BOLD_YELLOW + str(
                             int(math.ceil((i + 1) / items_n * 100))
                         ) + '%' + RESET_FORMAT,
                         BOLD_GREEN + str(count) + RESET_FORMAT,
-                        ERASE_LINEEND + RESTORE_CURSOR_POSITION,
+                        ERASE_LINEEND,
                     )
                     sys.stdout.write(note)
                     if self.pattern.search(getattr(item, attrname) or ''):
