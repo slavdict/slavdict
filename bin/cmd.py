@@ -471,7 +471,7 @@ TEXT = '''
 ]),
 (Translation, [
     'translation',
-    'additional_info',
+    #'additional_info',
 ]),
 (CollocationGroup, [
     #'additional_info',
