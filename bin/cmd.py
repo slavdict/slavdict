@@ -134,6 +134,7 @@ class DataChangeShell(cmd.Cmd):
         for model, attrs in self.model_attrs:
             self.tcount[model.__name__] = {}
             from_dict = model.__module__ == 'slavdict.dictionary.models'
+            total_count = 0
             for attrname in attrs:
                 storage_key = (model, attrname)
                 items = model.objects.all()
@@ -142,12 +143,13 @@ class DataChangeShell(cmd.Cmd):
                 sys.stdout.write('\n')
                 mnote = '%s.%s' % (model.__name__, attrname)
                 for i, item in enumerate(items):
-                    note = '%s: %s, found: %s%s\r' % (
+                    note = '%s: %s, found: %s, total: %s%s\r' % (
                         mnote,
                         BOLD_YELLOW + str(
                             int(math.ceil((i + 1) / items_n * 100))
                         ) + '%' + RESET_FORMAT,
                         BOLD_GREEN + str(count) + RESET_FORMAT,
+                        BOLD_GREEN + str(total_count) + RESET_FORMAT,
                         ERASE_LINEEND,
                     )
                     sys.stdout.write(note)
@@ -157,6 +159,7 @@ class DataChangeShell(cmd.Cmd):
                             if not host_entry.is_in_volume(self.volumes):
                                 continue
                         count += 1
+                        total_count += 1
                         txt = getattr(item, attrname) or ''
                         host_info = ''
                         if from_dict:
