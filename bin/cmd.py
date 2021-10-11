@@ -344,7 +344,8 @@ class DataChangeShell(cmd.Cmd):
         i = 1
         for (model, attrname), items in list(self.found_items.items()):
             from_dict = model.__module__ == 'slavdict.dictionary.models'
-            text += '\n# %s.%s\n\n' % (model.__name__, attrname)
+            if items:
+                text += '\n# %s.%s\n\n' % (model.__name__, attrname)
             for item, host_info, _ in items:
                 register[i] = (item, attrname)
                 if self.verbose:
