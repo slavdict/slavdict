@@ -494,7 +494,7 @@ TEXT = '''
 ]),
 (OrthographicVariant, [
     'idem',
-    'use',
+    #'use',
 ]),
 (Participle, [
     'idem',
