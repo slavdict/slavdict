@@ -765,6 +765,9 @@ class AdminEntryADMIN(AdminEntry):
             'fields': ('special_case',),
             }),
         (None, {
+            'fields': ('volume',),
+            }),
+        (None, {
             'fields': ('civil_equivalent',),
             }),
         ('Омонимия', {
