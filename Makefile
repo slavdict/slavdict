@@ -194,7 +194,7 @@ install:
 	command -v pipenv && pipenv install || echo 'pipenv is not installed'; false
 
 .PHONY: \
-	before-remote-update \
+    before-remote-update \
     checkout \
     clean \
     collectstatic \
@@ -214,7 +214,7 @@ install:
     remote-csl-dump \
     remote-restart \
     remote-slavdict-dump \
-	remote-update \
+    remote-update \
     restart \
     _revert \
     revert \

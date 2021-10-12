@@ -16,6 +16,7 @@ import signal
 import sys
 
 import django
+from django.db.models import Q
 from django.template.loader import render_to_string
 from functools import reduce
 
@@ -74,7 +75,8 @@ entries1 = []
 # ограниченных списком test_entries, если он задан.
 
 lexemes = Entry.objects.all()
-test_entries = None
+test_entry_ids = []
+test_entry_cequivs = []
 if len(sys.argv) > 1:
     args = []
     for i, arg in enumerate(sys.argv[1:]):
@@ -93,16 +95,28 @@ if len(sys.argv) > 1:
             args.append(arg)
     r = re.compile(r'\s*,\s*|\s+')
     s = ' '.join(args).strip(' ,')
-    test_entries = [int(i) for i in r.split(s) if i]
+    for x in r.split(s):
+        if x.isnumeric():
+            test_entry_ids.append(int(x))
+        else:
+            test_entry_cequivs.append(x)
 
-print('Make multiple files according ' \
-                     'to the first letter:', SPLIT_BY_LETTERS, file=sys.stderr)
-print('Make multiple files when number of non tag' \
-                     'characters is greater than:', SPLIT_NCHARS, file=sys.stderr)
+print('Make multiple files according '
+      'to the first letter:', SPLIT_BY_LETTERS, file=sys.stderr)
+print('Make multiple files when number of non tag '
+      'characters is greater than:', SPLIT_NCHARS, file=sys.stderr)
 print('Output pattern:', OUTPUT_PATTERN, file=sys.stderr)
-if test_entries:
-    print('Entries to dump:', ', '.join(str(i) for i in test_entries), file=sys.stderr)
-    lexemes = lexemes.filter(pk__in=test_entries)
+if test_entry_ids or test_entry_cequivs:
+    q = Q()
+    if test_entry_ids:
+        print('Entry ids to dump:',
+              ', '.join(str(i) for i in test_entry_ids), file=sys.stderr)
+        q |= Q(pk__in=test_entry_ids)
+    if test_entry_cequivs:
+        print('Entries to dump:',
+              ', '.join(str(i) for i in test_entry_ids), file=sys.stderr)
+        q |= Q(civil_equivalent__in=test_entry_cequivs)
+    lexemes = lexemes.filter(q)
 else:
     print('Entries to dump: ALL for the selected volumes', file=sys.stderr)
 lexemes = [e for e in lexemes if e.is_in_volume(OUTPUT_VOLUMES)]
