@@ -1,30 +1,19 @@
-{% set special_match = false %}
-
-{% for special in specials %}
-    {% if reference.startswith(special.startswith) %}
-        {% set special_match = true %}
-        {% if not special.used %}
-            {% do special.update({ 'used': True }) %}
-            <e>
-                <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
-                    <x aid:cstyle="Headword">{{ special.startswith }}</x>
-                    <x aid:cstyle="Text">…</x>{{ space }}
-                    <x aid:cstyle="Em">см.</x>{{ nbsp }}
-                    <x aid:cstyle="CSLSegment">{{ special.qv }}</x>
-                    {% if special.dots %}
-                        <x aid:cstyle="Text">…</x>
-                    {% else %}
-                        <x aid:cstyle="Text">.</x>
-                    {% endif %}
-                </p>
-            </e>
-        {% else %}
-            {# pass #}
-        {% endif %}
-    {% endif %}
-{% endfor %}
-
-{% if not special_match %}
+{% if special_case %}
+    <e>
+        <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
+            <x aid:cstyle="Headword">{{ special_case.startswith }}</x>
+            <x aid:cstyle="Text">…</x>{{ space }}
+            <x aid:cstyle="Em">см.</x>{{ nbsp }}
+            <x aid:cstyle="CSLSegment">{{ special_case.qv }}</x>
+            {% if special_case.dots %}
+                <x aid:cstyle="Text">…</x>
+            {% else %}
+                <x aid:cstyle="Text">.</x>
+            {% endif %}
+        </p>
+    </e>
+{% else %}
     {% include 'indesign/reference.xml' with context %}
 {% endif %}
+
 {# vim: set ft=django.xml: #}

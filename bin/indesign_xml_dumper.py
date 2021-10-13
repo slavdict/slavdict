@@ -354,15 +354,24 @@ for civil_letter, syn_letters, entries in letter_parts:
     n_entries = len(entries)
     for i, (reference, entry) in enumerate(entries):
         if reference:
-            try:
-                xml = render_to_string('indesign/slavdict_reference.xml', {
-                    'reference': reference, 'entry': entry,
-                    'specials': special_cases })
-            except:
-                sys.stderr.write('    reference: %s\n' % reference)
-                sys.stderr.write('        entry: %s\n' % entry)
-                sys.stderr.write('special cases: %s\n' % special_cases)
-                raise
+            special_case = None
+            for sc in special_cases:
+                if reference.startswith(sc['startswith']):
+                    special_case = sc
+            if not special_case or 'used' not in special_case:
+                try:
+                    xml = render_to_string('indesign/slavdict_reference.xml', {
+                        'reference': reference, 'entry': entry,
+                        'special_case': special_case })
+                except:
+                    sys.stderr.write('    reference: %s\n' % reference)
+                    sys.stderr.write('        entry: %s\n' % entry)
+                    sys.stderr.write('special cases: %s\n' % special_cases)
+                    raise
+                if special_case:
+                    special_case['used'] = True
+            else:
+                xml = ''
         else:
             xml = render_to_string('indesign/entry.xml', { 'entry': entry })
 
