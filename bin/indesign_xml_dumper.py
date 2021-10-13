@@ -99,7 +99,9 @@ if len(sys.argv) > 1:
         if x.isnumeric():
             test_entry_ids.append(int(x))
         else:
-            test_entry_cequivs.append(x)
+            x = x.strip()
+            if x:
+                test_entry_cequivs.append(x)
 
 print('Make multiple files according '
       'to the first letter:', SPLIT_BY_LETTERS, file=sys.stderr)
@@ -109,12 +111,12 @@ print('Output pattern:', OUTPUT_PATTERN, file=sys.stderr)
 if test_entry_ids or test_entry_cequivs:
     q = Q()
     if test_entry_ids:
-        print('Entry ids to dump:',
+        print('Entries to dump (by ids):',
               ', '.join(str(i) for i in test_entry_ids), file=sys.stderr)
         q |= Q(pk__in=test_entry_ids)
     if test_entry_cequivs:
-        print('Entries to dump:',
-              ', '.join(str(i) for i in test_entry_ids), file=sys.stderr)
+        print("Entries to dump (by civil equivalents):",
+              ', '.join(x for x in test_entry_cequivs), file=sys.stderr)
         q |= Q(civil_equivalent__in=test_entry_cequivs)
     lexemes = lexemes.filter(q)
 else:
@@ -361,7 +363,9 @@ def render_chunks(c):
     return render_to_string('indesign/slavdict.xml', c)
 
 def write_file(i, xml):
-    subst = '{:%Y%m%d-%H%M%S}-{:03d}'.format(DATETIME, i)
+    subst = '{:%Y.%m.%d-%H.%M.%S}'.format(DATETIME)
+    if SPLIT_BY_LETTERS or SPLIT_NCHARS > 0:
+        subst += '-{:03d}'.format(i)
     filepath = OUTPUT_PATTERN.replace('#', subst)
     open(filepath, 'w').write(xml)
 
