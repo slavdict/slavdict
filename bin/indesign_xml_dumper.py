@@ -135,11 +135,13 @@ for i, lexeme in enumerate(lexemes):
 
     # 1) Варианты заглавного слова
     for var in lexeme.orth_vars_refs[1:]:
-        wordform = resolve_titles(var.idem)
-        key2 = sort_key1(wordform)
+        wordform2 = resolve_titles(var.idem)
+        if wordform2 != var.idem:
+            continue
+        key2 = sort_key1(wordform2)
         if key2 != key:
-            reference = ucs_convert(wordform)
-            entries1.append((wordform, reference, lexeme))
+            reference = ucs_convert(wordform2)
+            entries1.append((wordform2, reference, lexeme))
 
     # 2) Названия народов
     COMMA = r',\s+'
