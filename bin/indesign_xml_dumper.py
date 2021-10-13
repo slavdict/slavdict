@@ -103,8 +103,8 @@ if len(sys.argv) > 1:
             if x:
                 test_entry_cequivs.append(x)
 
-print('Make multiple files according '
-      'to the first letter:', SPLIT_BY_LETTERS, file=sys.stderr)
+print('Make multiple files in accordance '
+      'with the first letter:', SPLIT_BY_LETTERS, file=sys.stderr)
 print('Make multiple files when number of non tag '
       'characters is greater than:', SPLIT_NCHARS, file=sys.stderr)
 print('Output pattern:', OUTPUT_PATTERN, file=sys.stderr)
@@ -369,8 +369,8 @@ letter_parts.append((civil_letter, syn_letters, part_entries))
 note = 'Вывод статей для InDesign...'
 sys.stderr.write(note)
 
-def render_chunks(c):
-    return render_to_string('indesign/slavdict.xml', c)
+def render_chunks(context):
+    return render_to_string('indesign/slavdict.xml', context)
 
 def write_file(i, xml):
     subst = '{:%Y.%m.%d-%H.%M.%S}'.format(DATETIME)
@@ -469,12 +469,20 @@ for sc in special_cases:
         if 'qv' not in s or 'dots' not in s:
             raise RuntimeError(SC_DICT_ERROR)
 
+CSL_UPPER_VOWELS = 'АЄѢИІѴОѺѠѼѾѸꙊꙖѦ'
+
+def ucs_convert_bukvica(antconc_letter):
+    if antconc_letter in CSL_UPPER_VOWELS:
+        antconc_letter = '={}'.format(antconc_letter)
+    return ucs_convert(antconc_letter)
+
 chunks = []
 n_chars = 0
 file_count = 1
 letters_and_chunks = []
 for civil_letter, syn_letters, entries in letter_parts:
-    letter = _letter = ', '.join(syn_letters)
+    _letters = ', '.join(syn_letters)
+    letters = tuple(ucs_convert_bukvica(ltr) for ltr in syn_letters)
     n_entries = len(entries)
     for i, (reference, entry) in enumerate(entries):
         if reference:
@@ -503,7 +511,7 @@ for civil_letter, syn_letters, entries in letter_parts:
         if xml:
             m = len(re.sub(r'<[^>]+>|\s', '', xml))
             if 0 < SPLIT_NCHARS < n_chars + m and 0 < n_chars:
-                letters_and_chunks.append((letter, chunks))
+                letters_and_chunks.append((letters, chunks))
                 context = { 'letters_and_chunks': letters_and_chunks }
                 output_xml = render_chunks(context)
                 write_file(file_count, output_xml)
@@ -511,8 +519,8 @@ for civil_letter, syn_letters, entries in letter_parts:
                 chunks = [xml]
                 file_count += 1
                 letters_and_chunks = []
-                letter = ''  # Обнуляем текущую букву, чтобы она не выводилась
-                             # для следующей порции статей на ту же букву.
+                letters = []  # Обнуляем текущую букву, чтобы она не выводилась
+                              # для следующей порции статей на ту же букву.
             else:
                 n_chars += m
                 chunks.append(xml)
@@ -522,14 +530,14 @@ for civil_letter, syn_letters, entries in letter_parts:
         elif isinstance(entry, dict):
             ceq = entry['referenced_lexemes'][0].civil_equivalent
         note = '%s [ %s%% ] %s\r' % (
-                _letter,
+                _letters,
                 int(round(i / n_entries * 100)),
                 ceq + ERASE_LINEEND)
         sys.stderr.write(note)
         sys.stderr.flush()
 
     if chunks:
-        letters_and_chunks.append((letter, chunks))
+        letters_and_chunks.append((letters, chunks))
     chunks = []
     if SPLIT_BY_LETTERS and letters_and_chunks:
         context = { 'letters_and_chunks': letters_and_chunks }
