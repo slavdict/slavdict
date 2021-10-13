@@ -32,6 +32,7 @@ from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import resolve_titles
 from slavdict.dictionary.utils import sort_key1
 from slavdict.dictionary.utils import sort_key2
+from slavdict.dictionary.utils import sort_key3
 from slavdict.dictionary.utils import ucs_convert
 
 OUTPUT_VOLUMES = (CURRENT_VOLUME,)
@@ -346,7 +347,7 @@ for j, (wordform, group) in enumerate(itertools.groupby(entries3, lambda x: x[0]
     first_letter = wordform.lstrip(' =*')[0].lower()
     csl_letter = first_letter.upper()
     if civilrus_convert(first_letter) != civil_letter:
-        syn_letters.sort(key=sort_key2)
+        syn_letters.sort(key=sort_key3)
         letter_parts.append((civil_letter, syn_letters, part_entries))
         part_entries = []
         civil_letter = civilrus_convert(first_letter)
@@ -363,7 +364,7 @@ for j, (wordform, group) in enumerate(itertools.groupby(entries3, lambda x: x[0]
             else:
                 lexeme.homonym_order = i + 1
             part_entries.append((reference, lexeme))
-syn_letters.sort(key=sort_key2)
+syn_letters.sort(key=sort_key3)
 letter_parts.append((civil_letter, syn_letters, part_entries))
 
 note = 'Вывод статей для InDesign...'

@@ -164,9 +164,16 @@ def sort_key1(word):
     return word
 
 def sort_key2(word):
+    vowels = 'аеєѣѥиіїѵѷоѻѡѽѿуѹꙋыэюѫѭяꙗѧѩ'
+    vowels += vowels.upper()
     level2 = (
-        (r'=',     ''),
-        (r"([аеє])(['`\^]?)ѵ", r'\g<1>\g<2>01'),
+        (r'^([%s])' % vowels,   r'\g<1>01')
+        (r'^([^=%s])' % vowels, r'\g<1>00')
+        (r'^=([%s])' % vowels,  r'\g<1>00')
+        (r'^=([^%s])' % vowels, r'\g<1>00')
+        (r'=',                  ''),
+        (r"([аеє])(['`\^]?)ѵ",  r'\g<1>\g<2>01'),
+        (r"([аеє])(['`\^]?)ѵ",  r'\g<1>\g<2>01'),
 
         (r"'",     '31'),
         (r"`",     '32'),
@@ -212,6 +219,10 @@ def sort_key2(word):
     for pattern, substitution in level2:
         word = re.sub(pattern, substitution, word)
     return word
+
+def sort_key3(word):
+    word = word.lower()
+    return (sort_key1(word), sort_key2(word))
 
 def collogroup_sort_key(cg):
     text = ' '.join(c.collocation for c in cg.collocations)
