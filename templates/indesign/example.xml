@@ -3,7 +3,8 @@
 
 {% set partial_translations = e.get_translations(fragmented=True, hidden=False) %}
 {% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
-{% set labels_in_translation= "(?<![А-ЯЁа-яё])(?:букв|греч|лат)\\." %}
+{% set labels_in_translation = "(?<![А-ЯЁа-яё])(?:букв|греч|лат)\\." %}
+{% set brackets = "[\\(\\)\\[\\]\\{\\}〈〉⟨⟩]+" %}
 {% set extra_example = not e.wordform_example
          and examples_loop.index > meaning.numex
          or e.wordform_example
@@ -23,10 +24,12 @@
         {% endif %}
         {% if (t.source and entry.template_version > 0) or t.source == SYNODAL %}
             <x aid:cstyle="Em">{{ t.source_label() }}</x>{{ space }}
-            <x aid:cstyle="Text">{{ t.translation_fu }}</x>
+            <x aid:cstyle="Text">{{ t.translation_fu |
+                                      ind_regex("Address", brackets) }}</x>
         {% else %}
             <x aid:cstyle="Text">‘{{ t.translation_fu |
-                ind_regex("Em", labels_in_translation) }}’</x>
+                ind_regex("Em", labels_in_translation) |
+                ind_regex("Address", brackets) }}’</x>
         {% endif %}
     {% endfor %}
     {{ space }}

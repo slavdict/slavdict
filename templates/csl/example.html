@@ -4,6 +4,7 @@
 {% set partial_translations = e.get_translations(fragmented=True, hidden=False) %}
 {% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
 {% set labels_in_translation= "(?<![А-ЯЁа-яё])(?:букв|греч|лат)\\." %}
+{% set brackets = "[\\(\\)\\[\\]\\{\\}〈〉⟨⟩]+" %}
 {% set extra_example = not e.wordform_example
          and examples_loop.index > meaning.numex
          or e.wordform_example
@@ -28,10 +29,12 @@
 
         {% if (t.source and entry.template_version > 0) or t.source == SYNODAL %}
             <span class="Em">{{ t.source_label() }}</span>{{ space }}
-            <span class="Text hyphenate">{{ t.translation_fu }}</span>
+            <span class="Text hyphenate">{{ t.translation_fu |
+                web_regex("Address", brackets) }}</span>
         {% else %}
             <span class="Text hyphenate">‘{{ t.translation_fu |
-                web_regex("Em", labels_in_translation) }}’</span>
+                web_regex("Em", labels_in_translation) |
+                web_regex("Address", brackets) }}’</span>
         {% endif %}
     {% endfor %}
     {{ space }}

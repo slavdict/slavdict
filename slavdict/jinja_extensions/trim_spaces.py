@@ -682,9 +682,17 @@ def _insert_translation_data(words, data, template_version,
         tag2 = Tag(cslav_style=None, civil_style=cstyle2, for_web=for_web)
 
     ai = ' <span class="ai ai-grfex Text hyphenate">%s</span>'
-    process_translation = lambda translation, for_web: ind_regex(
-            html_escape(translation),
-            'Em', r'(?<![А-Яа-я])букв\.', for_web=for_web)
+    process_translation = lambda translation, for_web: (
+        ind_regex(
+            ind_regex(
+                html_escape(translation),
+                'Em', r'(?<![А-Яа-я])букв\.', for_web=for_web
+            ),
+            'Address', r'[\(\)\[\]\{\}〈〉⟨⟩]+', for_web=for_web
+            # Поскольку переводы будут сами в скобках, то внутри переводов
+            # скобки необходимо давать меньшим кеглем.
+        )
+    )
     c = lambda t: (show_additional_info and t.additional_info.strip()
             and for_web)
     def tt(translation):
