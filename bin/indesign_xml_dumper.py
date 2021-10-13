@@ -224,7 +224,8 @@ for i, (key, group) in enumerate(itertools.groupby(entries1, lambda x: x[:2])):
     sys.stderr.write(note)
     if not in_output_volumes(wordform):
         continue
-    # Удаляем из выгрузки отсылочную статью Ассирии, т.к. она неправильно выгружается
+    # FIXME: Удаляем из выгрузки отсылочную статью Ассирии,
+    # т.к. она неправильно выгружается
     if wordform == "ассѵрі'и":
         continue
     lst = list(group)
@@ -260,6 +261,45 @@ for i, (key, group) in enumerate(itertools.groupby(entries1, lambda x: x[:2])):
 entries2_n = len(entries2)
 
 
+def upper_cond(i, entry_list):
+    _, _, lexeme1 = entry_list[i]
+    if isinstance(lexeme1, dict) and len(lexeme1['referenced_lexemes']) > 1:
+        return True
+    n_entry_list = len(entry_list)
+    j = i + 1
+    while (j < n_entry_list):
+        _, reference2, lexeme2 = entry_list[j]
+        if not reference2:
+            return lexeme2.id != lexeme1.id
+        else:
+            if isinstance(lexeme2, Entry) and lexeme1.id != lexeme2.id:
+                return True
+            elif isinstance(lexeme2, dict):
+                lxs = lexeme2['referenced_lexemes']
+                if len(lxs) > 1 or lexeme1.id != lxs[0].id:
+                    return True
+        j += 1
+    return True
+
+def lower_cond(i, entry_list):
+    _, _, lexeme1 = entry_list[i]
+    if isinstance(lexeme1, dict) and len(lexeme1['referenced_lexemes']) > 1:
+        return True
+    j = i - 1
+    while (j > 0):
+        _, reference2, lexeme2 = entry_list[j]
+        if not reference2:
+            return lexeme2.id != lexeme1.id
+        else:
+            if isinstance(lexeme2, Entry) and lexeme1.id != lexeme2.id:
+                return True
+            elif isinstance(lexeme2, dict):
+                lxs = lexeme2['referenced_lexemes']
+                if len(lxs) > 1 or lexeme1.id != lxs[0].id:
+                    return True
+        j -= 1
+    return True
+
 entries3 = []
 # Список статей, в том числе ссылочных, но с устранением ссылок,
 # расположенных вплотную к целевым статьям
@@ -268,18 +308,7 @@ for i, (wordform, reference, lexeme) in enumerate(entries2):
     note = 'Устранение ссылок, примыкающих к целевым статьям [ %s%% ]%s\r' % (
             int(round(i / entries2_n * 100)), ERASE_LINEEND)
     sys.stderr.write(note)
-    checklist = set()
-    for j in (i - 1, i + 1):
-        if 0 <= j < len(entries2) and \
-                not entries2[j][1] and not isinstance(entries2[j][2], dict):
-            checklist.add(entries2[j][2].id)
-    if isinstance(lexeme, Entry):
-        in_checklist = lexeme.id in checklist
-    elif isinstance(lexeme, dict):
-        ids = [referenced_lexeme.id
-               for referenced_lexeme in lexeme['referenced_lexemes']]
-        in_checklist = len(ids) == 1 and ids[0] not in checklist
-    if not reference or not in_checklist:
+    if not reference or upper_cond(i, entries2) and lower_cond(i, entries2):
         entries3.append((wordform, reference, lexeme))
 
 class Reference(str):
