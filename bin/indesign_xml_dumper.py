@@ -72,7 +72,7 @@ def in_output_volumes(wordform):
 
 entries1 = []
 # Это список всех потенциально возможных статей для выбранных томов,
-# ограниченных списком test_entries, если он задан.
+# ограниченных списками test_entry_ids и test_entry_cequivs, если они заданы.
 
 lexemes = Entry.objects.all()
 test_entry_ids = []
@@ -177,7 +177,7 @@ for i, lexeme in enumerate(lexemes):
         lexeme.civil_equivalent + ERASE_LINEEND)
     sys.stderr.write(note)
 
-if not test_entries:
+if not test_entry_ids and not test_entry_cequivs:
     #     6) Добавляем ссылочные статьи, которые будут присутствовать в выводимых
     #        томах и ссылаться на какие-то статьи из других томов.
     other_volumes = [e for e in Entry.objects.all()
