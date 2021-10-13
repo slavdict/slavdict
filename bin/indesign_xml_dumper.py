@@ -204,10 +204,20 @@ def sort_key(x):
     wordform, reference, lexeme = x
     if reference:
         ref_wordform = lexeme.base_vars[0].idem
-        key = (sort_key1(wordform), -1, sort_key2(wordform),
-               sort_key1(ref_wordform), lexeme.homonym_order or 0, sort_key2(ref_wordform))
+        key = (
+            sort_key1(wordform),
+            1,
+            sort_key2(wordform),
+            sort_key1(ref_wordform),
+            lexeme.homonym_order or 1,
+            sort_key2(ref_wordform),
+        )
     else:
-        key = sort_key1(wordform), lexeme.homonym_order or 0, sort_key2(wordform)
+        key = (
+            sort_key1(wordform),
+            lexeme.homonym_order or 1,
+            sort_key2(wordform),
+        )
     return key
 
 note = 'Сортировка результатов...' + ERASE_LINEEND + '\r'
