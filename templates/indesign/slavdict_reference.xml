@@ -1,15 +1,44 @@
 {% if special_case %}
     <e>
         <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
-            <x aid:cstyle="Headword">{{ special_case.startswith }}</x>
-            <x aid:cstyle="Text">…</x>{{ space }}
-            <x aid:cstyle="Em">см.</x>{{ nbsp }}
-            <x aid:cstyle="CSLSegment">{{ special_case.qv }}</x>
-            {% if special_case.dots %}
+
+            {% for ref in special_case.refs %}
+
+              {% if loop.first %}
+                <x aid:cstyle="Headword">{{ ref.ref }}</x>
+              {% else %}
+                <x aid:cstyle="Em">и</x>{{ space }}
+                <x aid:cstyle="SubHeadword">{{ ref.ref }}</x>
+              {% endif %}
+
+              {% if ref.dots %}
                 <x aid:cstyle="Text">…</x>
-            {% else %}
-                <x aid:cstyle="Text">.</x>
-            {% endif %}
+              {% endif %}
+
+              {{ space }}
+
+            {% endfor %}
+
+            <x aid:cstyle="Em">см.</x>{{ nbsp }}
+
+            {% for qv in special_case.qv %}
+
+              {% if not loop.first %}
+                <x aid:cstyle="Text">,</x>
+                {{ space }}
+              {% endif %}
+
+              <x aid:cstyle="CSLSegment">{{ qv.qv }}</x>
+
+              {% if qv.dots %}
+                  <x aid:cstyle="Text">…</x>
+              {% endif %}
+
+              {% if loop.last and not qv.dots %}
+                  <x aid:cstyle="Text">.</x>
+              {% endif %}
+
+            {% endfor %}
         </p>
     </e>
 {% else %}
