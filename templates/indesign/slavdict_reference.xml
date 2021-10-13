@@ -2,16 +2,16 @@
     <e>
         <p aid:pstyle="FirstParagraph" aid:cstyle="Text">
 
-            {% for ref in special_case.refs %}
+            {% for src in special_case.src %}
 
               {% if loop.first %}
-                <x aid:cstyle="Headword">{{ ref.ref }}</x>
+                <x aid:cstyle="Headword">{{ src.ref }}</x>
               {% else %}
                 <x aid:cstyle="Em">и</x>{{ space }}
-                <x aid:cstyle="SubHeadword">{{ ref.ref }}</x>
+                <x aid:cstyle="SubHeadword">{{ src.ref }}</x>
               {% endif %}
 
-              {% if ref.dots %}
+              {% if src.dots %}
                 <x aid:cstyle="Text">…</x>
               {% endif %}
 
@@ -21,20 +21,20 @@
 
             <x aid:cstyle="Em">см.</x>{{ nbsp }}
 
-            {% for qv in special_case.qv %}
+            {% for dst in special_case.dst %}
 
               {% if not loop.first %}
                 <x aid:cstyle="Text">,</x>
                 {{ space }}
               {% endif %}
 
-              <x aid:cstyle="CSLSegment">{{ qv.qv }}</x>
+              <x aid:cstyle="CSLSegment">{{ dst.qv }}</x>
 
-              {% if qv.dots %}
+              {% if dst.dots %}
                   <x aid:cstyle="Text">…</x>
               {% endif %}
 
-              {% if loop.last and not qv.dots %}
+              {% if loop.last and not dst.dots %}
                   <x aid:cstyle="Text">.</x>
               {% endif %}
 

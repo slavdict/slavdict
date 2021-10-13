@@ -369,78 +369,92 @@ C = ucs_convert
 special_cases = [
     # агкир... см. анкир...  [анкира, анкирский]
     { 'startswith': [C("агкѵ'р")],
-      'refs': [{ 'ref': C("агкѵ'р"), 'dots': True }],
-      'qv': [{ 'qv': C("анкѵ'р"), 'dots': True }] },
+      'src': [{ 'ref': C("агкѵ'р"), 'dots': True }],
+      'dst': [{ 'qv': C("анкѵ'р"), 'dots': True }] },
 
     # воутр... см. утрие.  [воутрие, воутрии, воутрия]
     { 'startswith': [C("воꙋ'тр")],
-      'refs': [{ 'ref': C("воꙋ'тр"), 'dots': True }],
-      'qv': [{ 'qv': C("ѹ'тріе"), 'dots': False }] },
+      'src': [{ 'ref': C("воꙋ'тр"), 'dots': True }],
+      'dst': [{ 'qv': C("ѹ'тріе"), 'dots': False }] },
 
     # га'ггр... см. га'нгр...  [га'ггрена, гаггрский, гаггры, га'ггрянин]
     { 'startswith': [C("га'ггр")],
-      'refs': [{ 'ref': C("га'ггр"), 'dots': True }],
-      'qv': [{ 'qv': C("га'нгр"), 'dots': True }] },
+      'src': [{ 'ref': C("га'ггр"), 'dots': True }],
+      'dst': [{ 'qv': C("га'нгр"), 'dots': True }] },
 
     # господьс... см. господс...  [господьский, господьственне, господьственно,
     #                              господьственный, господьствие, господьство,
     #                              господьствовати]
     { 'startswith': [C("госпо'дьс")],
-      'ref': [{ 'ref': C("госпо'дьс"), 'dots': True }],
-      'qv': [{ 'qv': C("госпо'дс"), 'dots': True }] },
+      'src': [{ 'ref': C("госпо'дьс"), 'dots': True }],
+      'dst': [{ 'qv': C("госпо'дс"), 'dots': True }] },
 
     # губител... см. губитель...  [губителный, губителство]
     { 'startswith': [C("гꙋби'тел")],
-      'refs': [{ 'ref': C("гꙋби'тел"), 'dots': True }],
-      'qv': [{ 'qv': C("гꙋби'тель"), 'dots': True }] },
+      'src': [{ 'ref': C("гꙋби'тел"), 'dots': True }],
+      'dst': [{ 'qv': C("гꙋби'тель"), 'dots': True }] },
 
     # девор... и девwра см. деввwра.  [девора, деворра, девwра]
     { 'startswith': [C("дево'р"), C("девѡ'р")],
-      'ref': [
+      'src': [
           { 'ref': C("дево'р"), 'dots': True },
           { 'ref': C("девѡ'ра"), 'dots': False },
       ],
-      'qv': [{ 'qv': C("деввѡ'ра"), 'dots': False }] },
+      'dst': [{ 'qv': C("деввѡ'ра"), 'dots': False }] },
 
     # детищъ и детище см. детищь.  [детищъ, детище]
     { 'startswith': [C("дѣ'тищ")],
-      'ref': [
+      'src': [
           { 'ref': C("дѣ'тищъ"), 'dots': False },
           { 'ref': C("дѣ'тище"), 'dots': False },
       ],
-      'qv': [{ 'qv': C("дѣ'тищь"), 'dots': False }] },
+      'dst': [{ 'qv': C("дѣ'тищь"), 'dots': False }] },
 
     # доволн... см. довольн...  [доволне, доволно, доволнw, доволный]
     { 'startswith': [C("дово'лн")],
-      'ref': [{ 'ref': C("дово'лн"), 'dots': True }],
-      'qv': [{ 'qv': C("дово'льн"), 'dots': True }] },
+      'src': [{ 'ref': C("дово'лн"), 'dots': True }],
+      'dst': [{ 'qv': C("дово'льн"), 'dots': True }] },
 
     # долн... см. дольний.  [долный, долний]
     { 'startswith': [C("до'лн")],
-      'ref': [{ 'ref': C("до'лн"), 'dots': True }],
-      'qv': [{ 'qv': C("до'льній"), 'dots': False }] },
+      'src': [{ 'ref': C("до'лн"), 'dots': True }],
+      'dst': [{ 'qv': C("до'льній"), 'dots': False }] },
 
     # еврее и евреи см. евреанин, евреин.  [еврее, евреи]
     { 'startswith': [C("євре'є"), C("євре'и")],
-      'ref': [
+      'src': [
           { 'ref': C("євре'є"), 'dots': False },
           { 'ref': C("євре'и"), 'dots': False },
       ],
-      'qv': [
+      'dst': [
           { 'qv': C("євре'анинъ"), 'dots': False },
           { 'qv': C("євре'инъ"), 'dots': False }
       ] },
 
     # ермъ и ерма и ермей и ермий см. ермин.  [ермъ, ерма, ермей, ермий]
     { 'startswith': [C("є'рм")],
-      'ref': [
+      'src': [
           { 'ref': C("є'рмъ"), 'dots': False },
           { 'ref': C("є'рма"), 'dots': False },
           { 'ref': C("єрме'й"), 'dots': False },
           { 'ref': C("єрмі'й"), 'dots': False },
       ],
-      'qv': [{ 'qv': C("єрмі'нъ"), 'dots': False }] },
+      'dst': [{ 'qv': C("єрмі'нъ"), 'dots': False }] },
 ]
+
+SC_DICT_ERROR = 'Неправильные ключи в словаре `special_case`'
+for sc in special_cases:
+    if ('startswith' not in sc
+            or 'src' not in sc
+            or 'dst' not in sc):
+        raise RuntimeError(SC_DICT_ERROR)
+    for s in sc['src']:
+        if 'ref' not in s or 'dots' not in s:
+            raise RuntimeError(SC_DICT_ERROR)
+    for s in sc['dst']:
+        if 'qv' not in s or 'dots' not in s:
+            raise RuntimeError(SC_DICT_ERROR)
+
 chunks = []
 n_chars = 0
 file_count = 1
