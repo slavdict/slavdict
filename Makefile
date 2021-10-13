@@ -161,6 +161,10 @@ ifeq (${SLAVDICT_ENVIRONMENT}, ${IS_DEVELOPMENT})
 	scp slavdict:/root/slavdict-indesign-*.xml .temp/
 endif
 
+indesign-after-clean:
+	rm -fr .temp/*.xml
+	$(MAKE) indesign
+
 rsync:
 	rsync -av --delete \
 		--exclude=csl--*.xml \
