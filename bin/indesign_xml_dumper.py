@@ -421,7 +421,7 @@ for civil_letter, syn_letters, entries in letter_parts:
         if reference:
             special_case = None
             for sc in special_cases:
-                if reference.startswith(sc['startswith']):
+                if reference.startswith(tuple(sc['startswith'])):
                     special_case = sc
             if not special_case or 'used' not in special_case:
                 try:
