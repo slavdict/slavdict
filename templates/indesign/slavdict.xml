@@ -8,13 +8,13 @@
                 <p aid:pstyle="Letter">
                 {% for letter in letters %}
 
-                  {% if not loop.first %}
-                  <x aid:cstyle="Text">
-                    ,{{ space }}
-                  </x>
-                  {% endif %}
+                    {% if not loop.first %}
+                    <x aid:cstyle="Text">
+                        ,{{ space }}
+                    </x>
+                    {% endif %}
 
-                  {{ letter }}
+                    {{ letter }}
 
                 {% endfor %}
                 </p>{{ newline }}
@@ -25,7 +25,7 @@
                     {{ backspace }}{{ newline }}
                 {% endfor %}
 
-        {% if letter %}
+        {% if letters %}
             </l>
         {% endif %}
 
