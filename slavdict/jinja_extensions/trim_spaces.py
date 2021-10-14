@@ -390,14 +390,14 @@ class Segment(Tag):
         #   - ять + придыхание + акут (см. статьи "ехати", "ездити").
         #   - от + акут (см. пример "отграда" в статье "византия")
         #
-        if self.base_script == SCRIPT_CSLAV and \
+        if self.base_script == SCRIPT_CSLAV and self.tag.for_web and \
                 re.findall(RE_ASCENDER_WITH_DIA, segment):
-            if self.tag.for_web:
-                tag1_template = '<span class="UCS8Ascender">%s</span>'
-                tag2_template = '<span class="UCS8DiaByAscender">%s</span>'
-            else:
-                tag1_template = '<x aid:cstyle="UCS8Ascender">%s</x>'
-                tag2_template = '<x aid:cstyle="UCS8DiaByAscender">%s</x>'
+            # NOTE: Добавлять стили UCS8Ascender и UCS8DiaByAscender только
+            # для веба. В индизайне будут применяться аналогичные GREP-стили
+            # к соответствующему шаблону, иначе у текста будет слетать выбор
+            # гарнитуры и настройки пропорций.
+            tag1_template = '<span class="UCS8Ascender">%s</span>'
+            tag2_template = '<span class="UCS8DiaByAscender">%s</span>'
             parts = re.split(RE_ASCENDER_WITH_DIA, segment)
             parts = [{
                         1: tag1_template % p,
