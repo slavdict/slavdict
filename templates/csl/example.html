@@ -15,7 +15,7 @@
 
 {% if not extra_example %}
 
-  {{ e.example_ucs | web_cslav_words("CSLSegment", "Text")
+  {{ e.example_ucs | web_cslav_words("CSLSegment", "Text", "Greek")
           | insert_translations(partial_translations, entry.template_version) }}
   {{ space }}
 
