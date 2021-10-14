@@ -223,15 +223,27 @@ def cslav_nobr_words(value):
 
 SCRIPT_CSLAV = 'cslav'
 SCRIPT_CIVIL = 'civil'
+SCRIPT_GREEK = 'greek'
+
+GREEK_CHARS = set(
+    chr(c) for c in chain(
+        range(0x300, 0x345),  # Combining Diacritical Marks (taken selectively)
+        range(0x370, 0x400),  # Greek and Coptic
+        range(0x1f00, 0x2000),  # Greek Extended
+        range(0x10140, 0x10190)  # Ancient Greek Numbers
+    )
+)
 
 class Tag(object):
     TAG_IND = '<x aid:cstyle="{}">%s</x>'
     TAG_WEB = '<span class="{}">%s</span>'
     NO_TAG = '%s'
 
-    def __init__(self, cslav_style=None, civil_style=None, for_web=False):
+    def __init__(self, cslav_style=None, civil_style=None, greek_style=None,
+                    for_web=False):
         self.cslav_style = cslav_style
         self.civil_style = civil_style
+        self.greek_style = greek_style
         self.for_web = for_web
 
     def get_tag(self, output_script):
@@ -239,6 +251,8 @@ class Tag(object):
             style = self.cslav_style
         elif output_script == SCRIPT_CIVIL:
             style = self.civil_style
+        elif output_script == SCRIPT_GREEK:
+            style = self.greek_style
         else:
             style = None
         if style is None:
@@ -363,11 +377,13 @@ class Segment(Tag):
             self.output_script = SCRIPT_CIVIL
 
         else:
+            if self.segment and set(self.segment).issubset(GREEK_CHARS):
+                self.output_script = SCRIPT_GREEK
             if any(hyphen in self.segment for hyphen in NON_SOFT_HYPHENS):
                 self.type = self.TYPE_WORD_WITH_HYPHEN
             self.type = self.TYPE_WORD
 
-    def _get_word_markup_string(self, seg):
+    def _get_word_markup_string(self, seg, output_script=None):
         segment = html_escape(hyphenate_ucs8(seg))
 
         RE_NON_UCS8_LETTER_TITLES = '(?<!^)([МТ])'
@@ -411,12 +427,16 @@ class Segment(Tag):
         # Если последовательность этапов нарушить, то буквенные титла будут
         # расставляться неправильно.
         if self.tag.for_web:
-            HYPHEN_TAG = '<span class="Text">\u00AD</span>'
-            segment = HYPHEN_TAG.join(
-                    '<span class="nobr">%s</span>' % part
-                    for part in segment.split('\u00AD'))
+            HYPHEN_TAG = '<span class="%s">\u00AD</span>' % TEXT_CSTYLE
+            if output_script == SCRIPT_GREEK:
+                segment = HYPHEN_TAG.join(
+                        part for part in segment.split('\u00AD'))
+            else:
+                segment = HYPHEN_TAG.join(
+                        '<span class="nobr">%s</span>' % part
+                        for part in segment.split('\u00AD'))
         else:
-            HYPHEN_TAG = '<h aid:cstyle="Text">\u00AD</h>'
+            HYPHEN_TAG = '<h aid:cstyle="%s">\u00AD</h>' % TEXT_CSTYLE
             segment = segment.replace('\u00AD', HYPHEN_TAG)
 
         return segment
@@ -432,7 +452,8 @@ class Segment(Tag):
                 txt = ''
                 for i, seg in enumerate(segs):
                     if i % 2 == 0:
-                        segment = self._get_word_markup_string(seg)
+                        segment = self._get_word_markup_string(seg,
+                                                            self.output_script)
                         tag = self.tag.get_tag(self.output_script)
                     else:
                         segment = html_escape(seg)
@@ -440,7 +461,8 @@ class Segment(Tag):
                     txt += tag % segment
                 return txt
             else:
-                segment = self._get_word_markup_string(self.segment)
+                segment = self._get_word_markup_string(self.segment,
+                                                    self.output_script)
         else:
             segment = html_escape(self.segment)
             angle_brackets = re.split('([\u27e8\u27e9])', segment)
@@ -552,6 +574,7 @@ class Words(object):
 CSL_CSTYLE = 'CSLSegment'
 TEXT_CSTYLE = 'Text'
 EM_CSTYLE = 'Em'
+GREEK_CSTYLE = 'Greek'
 VALENCY_CSTYLE = 'Valency'
 
 # NOTE: скобки, окаймляющие регулярное выражение, нельзя опустить, т.к. нужно,
@@ -590,12 +613,14 @@ def get_word_even_with_hyphen(index, segments, n_segments):
     index += 1
     return (word, index)
 
-def cslav_words(value, cstyle=CSL_CSTYLE, civil_cstyle=None, for_web=False):
+def cslav_words(value, cstyle=CSL_CSTYLE, civil_cstyle=None, greek_cstyle=None,
+                    for_web=False):
     """ Аналог cslav_nobr_words для импорта в InDesign. """
     if value is None:
         value = ''
     value = html_unescape(value)
-    tag = Tag(cslav_style=cstyle, civil_style=civil_cstyle, for_web=for_web)
+    tag = Tag(cslav_style=cstyle, civil_style=civil_cstyle,
+                greek_style=greek_cstyle, for_web=for_web)
     segments = re.split(RE_CSLAV_SPLIT, value)
 
     words = Words()
@@ -672,21 +697,24 @@ def _insert_translation_data(words, data, template_version,
     if hidden_data is None or not show_additional_info or not for_web:
         hidden_data = {}  # В InDesign комментарии авторов не нужны
     if for_web:
-        cstyle = 'Text hyphenate'
+        cstyle = '%s hyphenate' % TEXT_CSTYLE
     else:
-        cstyle = 'Text'
-    tag0 = Tag(cslav_style=None, civil_style='Text', for_web=for_web)
-    tag1 = Tag(cslav_style=None, civil_style=cstyle, for_web=for_web)
+        cstyle = TEXT_CSTYLE
+    tag0 = Tag(cslav_style=None, civil_style=TEXT_CSTYLE,
+                greek_style=GREEK_CSTYLE, for_web=for_web)
+    tag1 = Tag(cslav_style=None, civil_style=cstyle, greek_style=GREEK_CSTYLE,
+                    for_web=for_web)
     if show_additional_info:
         cstyle2 = 'ai ai-grfex ' + cstyle
-        tag2 = Tag(cslav_style=None, civil_style=cstyle2, for_web=for_web)
+        tag2 = Tag(cslav_style=None, civil_style=cstyle2,
+                    greek_style=GREEK_CSTYLE, for_web=for_web)
 
-    ai = ' <span class="ai ai-grfex Text hyphenate">%s</span>'
+    ai = ' <span class="ai ai-grfex {} hyphenate">%s</span>'.format(TEXT_CSTYLE)
     process_translation = lambda translation, for_web: (
         ind_regex(
             ind_regex(
                 html_escape(translation),
-                'Em', r'(?<![А-Яа-я])букв\.', for_web=for_web
+                EM_CSTYLE, r'(?<![А-Яа-я])букв\.', for_web=for_web
             ),
             'Address', r'[\(\)\[\]\{\}〈〉⟨⟩]+', for_web=for_web
             # Поскольку переводы будут сами в скобках, то внутри переводов
@@ -701,7 +729,7 @@ def _insert_translation_data(words, data, template_version,
                         and translation.source != TRANSLATION_SOURCE_SYNODAL)):
             return '‘%s’%s'
         source_mark = ExternalSegment(translation.source_label() + SPACE,
-                Tag(cslav_style=None, civil_style='Em', for_web=for_web))
+                Tag(cslav_style=None, civil_style=EM_CSTYLE, for_web=for_web))
         return '{0}%s%s'.format(source_mark)
 
     # Расстановка частичных переводов, отображаемых в статье
@@ -802,9 +830,10 @@ def ind_civil_injection(value, civil_cstyle, cslav_cstyle=CSL_CSTYLE,
         if not elem:
             continue
         if i % 2:
-            words2 = civil_words(elem, civil_cstyle, for_web)
+            words2 = civil_words(elem, civil_cstyle, for_web=for_web)
         else:
-            words2 = cslav_words(elem, cslav_cstyle, civil2_cstyle, for_web)
+            words2 = cslav_words(elem, cslav_cstyle, civil2_cstyle,
+                                    for_web=for_web)
         words.add(words2)
     return words
 
@@ -952,11 +981,11 @@ RE_PARSE_REF_ENTRY = (
 )
 
 def insert_ref(x, for_web, ref_func=None):
-    em_tag = Tag(cslav_style=None, civil_style='Em', for_web=for_web)
-    text_tag = Tag(cslav_style=None, civil_style='Text', for_web=for_web)
+    em_tag = Tag(cslav_style=None, civil_style=EM_CSTYLE, for_web=for_web)
+    text_tag = Tag(cslav_style=None, civil_style=TEXT_CSTYLE, for_web=for_web)
     number_tag = Tag(cslav_style=None, civil_style='HomonymNumber',
                      for_web=for_web)
-    csl_tag = Tag(cslav_style='CSLSegment', civil_style=None, for_web=for_web)
+    csl_tag = Tag(cslav_style=CSL_CSTYLE, civil_style=None, for_web=for_web)
 
     text = ''
     s1, ref, ents, seps, s2 = re.findall(RE_PARSE_REF, x, re.IGNORECASE)[0]
@@ -1182,5 +1211,6 @@ register_filter('old_cslav_words')(cslav_nobr_words)
 register_filter('ind_cslav_words')(cslav_words)
 
 @register_filter
-def web_cslav_words(value, cstyle=CSL_CSTYLE, civil_cstyle=None):
-    return cslav_words(value, cstyle, civil_cstyle, for_web=True)
+def web_cslav_words(value,
+        cstyle=CSL_CSTYLE, civil_cstyle=None, greek_cstyle=None):
+    return cslav_words(value, cstyle, civil_cstyle, greek_cstyle, for_web=True)

@@ -28,7 +28,7 @@
     <span class="ai ai-extraex">
   {% endif %}
 
-  {{ e.example_ucs | web_cslav_words("CSLSegment", "Text") |
+  {{ e.example_ucs | web_cslav_words("CSLSegment", "Text", "Greek") |
          insert_translations(partial_translations, entry.template_version,
              show_additional_info, hidden_partial_translations) }}
   {{ space }}
