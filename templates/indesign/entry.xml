@@ -45,7 +45,7 @@
         {% endif %}
 
         {% if loop.first %}
-            <x aid:cstyle="Headword">{{ base_var.idem_ucs }}</x>
+            {{ base_var.idem_ucs|ind_cslav_words("Headword") }}
         {% else %}
             {{ base_var.idem_ucs|ind_cslav_words("SubHeadword") }}
         {% endif %}
