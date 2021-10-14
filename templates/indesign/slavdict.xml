@@ -14,7 +14,7 @@
                     </x>
                     {% endif %}
 
-                    {{ letter }}
+                    <x aid:cstyle="CSLSegment">{{ letter }}</x>
 
                 {% endfor %}
                 </p>{{ newline }}
