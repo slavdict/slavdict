@@ -5,6 +5,7 @@
 {% set full_translations = e.get_translations(fragmented=False, hidden=False) %}
 {% set labels_in_translation= "(?<![А-ЯЁа-яё])(?:букв|греч|лат)\\." %}
 {% set brackets = "[\\(\\)\\[\\]\\{\\}〈〉⟨⟩]+" %}
+{% set greek_chars = "[\u0370-\u03FF\u1F00-\u1FFF\U00010140-\U0001018F]+" %}
 {% set extra_example = not e.wordform_example
          and examples_loop.index > meaning.numex
          or e.wordform_example
@@ -44,11 +45,13 @@
         {% if (t.source and entry.template_version > 0) or t.source == SYNODAL %}
             <span class="Em">{{ t.source_label() }}</span>{{ space }}
             <span class="Text hyphenate">{{ t.translation_fu |
-                web_regex("Address", brackets) }}</span>
+                web_regex("Address", brackets) |
+                web_regex("Greek", greek_chars) }}</span>
         {% else %}
             <span class="Text hyphenate">‘{{ t.translation_fu |
                 web_regex("Em", labels_in_translation) |
-                web_regex("Address", brackets) }}’</span>
+                web_regex("Address", brackets) |
+                web_regex("Greek", greek_chars) }}’</span>
         {% endif %}
         {% if show_additional_info and t.additional_info|trim %}
             {{ space }}

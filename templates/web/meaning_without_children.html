@@ -2,6 +2,8 @@
                     collogroups_loop, child_meanings) %}
 {% from 'web/example.html' import example with context %}
 
+{% set greek_chars = "[\u0370-\u03FF\u1F00-\u1FFF\U00010140-\U0001018F]+" %}
+
 {% for orthvar_ucs in m.orthvars %}
     {% if not loop.first %}
         {% if loop.last %}
@@ -11,8 +13,7 @@
             {{ backspace }},{{ space }}
         {% endif %}
     {% endif %}
-    {{ orthvar_ucs |
-            web_cslav_words("CSLSegmentEm") }}{{ space }}
+    {{ orthvar_ucs|web_cslav_words("CSLSegmentEm") }}{{ space }}
 {% endfor %}
 
 <span class="anchor"><a id="{{ m.get_url_fragment() }}"></a></span>
@@ -165,10 +166,10 @@
 {% if m.meaning and not m.special_case == MSC21 %}
     <span class="Meaning Text hyphenate" lang="ru">{{ m.meaning |
         web_cslav_injection("CSLSegment") |
+        web_regex("Greek", greek_chars) |
         web_regex("Em", '(?<![А-ЯЁа-яё])(?:перен|букв|зд|см|ср)\\.') |
         web_regex("Em", 'в[\\s\u00a0]Син\\. пер\\.') |
         web_regex("Em", '(?<=\()(?:арам|греч|евр|лат)\\.(?=\))') |
-        web_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
         web_refs() }}</span>
 {% endif %}
 
@@ -179,7 +180,7 @@
     <span class="Gloss Em hyphenate" lang="ru">{{ m.gloss |
         web_cslav_injection("CSLSegment") |
         web_regex("Text", '‘[^’]+’') |
-        web_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+        web_regex("GreekEm", greek_chars) |
         web_regex("Text", '(?<=Син\.\sпер\.\s)Керенгаппух|бдолах|сирияне|сирийский|сириец|земля Уц') |
         web_regex("Text", '(?<=Септ\.\s)Авситидийская') |
         web_refs() }}</span>

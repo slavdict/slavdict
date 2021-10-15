@@ -233,6 +233,7 @@ GREEK_CHARS = set(
         range(0x10140, 0x10190)  # Ancient Greek Numbers
     )
 )
+GREEK_CHARS_RE = "[\u0370-\u03FF\u1F00-\u1FFF\U00010140-\U0001018F]+"
 
 class Tag(object):
     TAG_IND = '<x aid:cstyle="{}">%s</x>'
@@ -713,12 +714,15 @@ def _insert_translation_data(words, data, template_version,
     process_translation = lambda translation, for_web: (
         ind_regex(
             ind_regex(
-                html_escape(translation),
-                EM_CSTYLE, r'(?<![А-Яа-я])букв\.', for_web=for_web
+                ind_regex(
+                    html_escape(translation),
+                    EM_CSTYLE, r'(?<![А-Яа-я])букв\.', for_web=for_web
+                ),
+                'Address', r'[\(\)\[\]\{\}〈〉⟨⟩]+', for_web=for_web
+                # Поскольку переводы будут сами в скобках, то внутри переводов
+                # скобки необходимо давать меньшим кеглем.
             ),
-            'Address', r'[\(\)\[\]\{\}〈〉⟨⟩]+', for_web=for_web
-            # Поскольку переводы будут сами в скобках, то внутри переводов
-            # скобки необходимо давать меньшим кеглем.
+            GREEK_CSTYLE, GREEK_CHARS_RE, for_web=for_web
         )
     )
     c = lambda t: (show_additional_info and t.additional_info.strip()
@@ -847,7 +851,8 @@ def web_civil_injection(value, civil_cstyle, cslav_cstyle=CSL_CSTYLE,
 def ind_regex(value, cstyle, regex, for_web=False):
     """ Помечает указанным стилем cstyle найденный текст
     """
-    tag = Tag(cslav_style=None, civil_style=cstyle, for_web=for_web)
+    tag = Tag(cslav_style=None, civil_style=cstyle, greek_style=cstyle,
+              for_web=for_web)
     _ind_regex = subst_func(lambda x: Segment(x, tag, base_script=SCRIPT_CIVIL))
     return re.sub(r'(\s*)(%s)(\s*)' % regex, _ind_regex, value)
 

@@ -1,4 +1,6 @@
 {% trim %}
+{% set greek_chars = "[\u0370-\u03FF\u1F00-\u1FFF\U00010140-\U0001018F]+" %}
+
 <div class="Entry">
     <div class="FirstParagraph Text">
 
@@ -65,7 +67,7 @@
                             web_regex("Em", '(?<![А-ЯЁа-яё])(?:перен|букв|зд|см|ср)\\.') |
                             web_regex("Em", 'в[\\s\u00a0]Син\\. пер\\.') |
                             web_regex("Em", '(?<=\()(?:арам)\\.(?=\))') |
-                            web_regex("Greek", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+                            web_regex("Greek", greek_chars) |
                             web_refs() }}</span>
                     {% endif %}
 
@@ -76,7 +78,7 @@
                         <span class="Gloss Em hyphenate" lang="ru">{{ m.gloss |
                             web_cslav_injection("CSLSegment") |
                             web_regex("Text", '‘[^’]+’') |
-                            web_regex("GreekEm", '[\u0370-\u03FF\u1F00-\u1FFE]+') |
+                            web_regex("GreekEm", greek_chars) |
                             web_regex("Text", '(?<=Син\.\sпер\.\s)Керенгаппух|бдолах|сирияне|сирийский|сириец|земля Уц') |
                             web_regex("Text", '(?<=Септ\.\s)Авситидийская') |
                             web_refs() }}</span>
