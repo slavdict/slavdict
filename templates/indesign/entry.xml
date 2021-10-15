@@ -45,7 +45,14 @@
         {% endif %}
 
         {% if loop.first %}
-            {{ base_var.idem_ucs|ind_cslav_words("Headword") }}
+            <x aid:cstyle="Headword">
+                {{ base_var.idem_ucs }}
+                {# Нельзя использовать фильтр `ind_cslav_words("Headword")
+                   вместо прямого использования тэга, иначе в InDesign
+                   в колонтитулы будут выноситься только разделенные дефисами
+                   части заглавных слов, а не сами заглавные слова.
+                   Например, "дол" или "ти" вместо "дол-жен-ство-ва-ти". #}
+            </x>
         {% else %}
             {{ base_var.idem_ucs|ind_cslav_words("SubHeadword") }}
         {% endif %}
