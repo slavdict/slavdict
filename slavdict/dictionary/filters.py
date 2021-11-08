@@ -18,6 +18,13 @@ valid_greqsortbase_values = [c[0] for c in GREQSORTBASE_CHOICES]
 valid_sortbase_values = [c[0] for c in SORTBASE_CHOICES]
 valid_sortdir_values = [c[0] for c in SORTDIR_CHOICES]
 
+
+def get_entries_base(entries):
+    if entries is None:
+        return Entry.objects
+    return entries
+
+
 def get_entries(form, for_hellinists):
     if for_hellinists:
         default_data = form.default_data_for_hellinists
@@ -63,19 +70,17 @@ def get_entries(form, for_hellinists):
 
     # Автор статьи
     value = form.get('author') or 'all'
-    if value=='all':
+    if value == 'all':
         pass
-    elif value=='none':
+    elif value == 'none':
         FILTER_PARAMS['authors__isnull'] = True
-    elif value=='few':
+    elif value == 'few':
         entries = entries.annotate(Count('authors'))
         FILTER_PARAMS['authors__count__gt'] = 1
     elif value.isdigit():
-        author = CustomUser.objects.get(pk=int(value))
-        entries = author.entry_set.all()
+        entries = entries.filter(authors__pk=int(value))
     else:
         PARSING_ERRORS.append('author')
-
 
     def _set_enumerable_param(param, none_value, model_property=None):
         """ none_value := "NULL" | "EMPTY_STRING" | "DOESNT_HAVE"
@@ -87,10 +92,10 @@ def get_entries(form, for_hellinists):
 
         model_property = model_property or param
         value = form.get(param) or 'all'
-        if value=='all':
+        if value == 'all':
             pass
-        elif value=='none':
-            if none_value=='NULL':
+        elif value == 'none':
+            if none_value == 'NULL':
                 FILTER_PARAMS[model_property + '__isnull'] = True
             else:
                 FILTER_PARAMS[model_property] = ''
@@ -106,7 +111,7 @@ def get_entries(form, for_hellinists):
 
     # Часть речи
     _set_enumerable_param('pos', none_value='EMPTY_STRING',
-                           model_property='part_of_speech')
+                          model_property='part_of_speech')
 
     # Род
     _set_enumerable_param('gender', none_value='EMPTY_STRING')
@@ -148,7 +153,9 @@ def get_entries(form, for_hellinists):
 
     # Статьи с словосочетаниями
     if form.get('collocations'):
-        good_entries = set(cg.host_entry.id for cg in CollocationGroup.objects.all() if cg and cg.host_entry)
+        good_entries = set(cg.host_entry.id
+                           for cg in CollocationGroup.objects.all()
+                           if cg and cg.host_entry)
         if 'id__in' in FILTER_PARAMS:
             FILTER_PARAMS['id__in'] = \
                     FILTER_PARAMS['id__in'].intersection(good_entries)
@@ -174,7 +181,8 @@ def get_entries(form, for_hellinists):
     if form.get('uninflected'):
         FILTER_PARAMS['uninflected'] = True
 
-    assert not PARSING_ERRORS, 'Недопустимые значения параметров: %s' % PARSING_ERRORS
+    assert not PARSING_ERRORS, \
+           'Недопустимые значения параметров: %s' % PARSING_ERRORS
 
     entries = entries.filter(**FILTER_PARAMS)
     entries = entries.exclude(**FILTER_EXCLUDE_PARAMS)
@@ -216,18 +224,17 @@ def get_examples(form):
     if value == 'all':
         pass
     elif value == 'none':
-        entries = Entry.objects.filter(authors__isnull=True)
+        entries = get_entries_base(entries).filter(authors__isnull=True)
     elif value.isdigit():
-        author = CustomUser.objects.get(pk=int(value))
-        entries = author.entry_set.all()
+        entries = get_entries_base(entries).filter(authors__pk=int(value))
     else:
         PARSING_ERRORS.append('hwAuthor')
 
     # Статьи начинаются с
-    prfx = form.get('hwPrfx')
+    prfx = form.get('hwPrfx').lower()
     if prfx:
-        entries = Entry.objects if entries is None else entries
-        entries = entries.filter(civil_equivalent__istartswith=prfx)
+        entries = get_entries_base(entries) \
+                .filter(civil_equivalent__istartswith=prfx)
 
     # Адреса начинаются на
     address = form.get('hwAddress')
@@ -237,9 +244,9 @@ def get_examples(form):
     # Том
     value = form.get('hwVolume') or 'all'
     if value == 'all':
-        entries = Entry.objects.filter(volume__gt=0)
+        entries = get_entries_base(entries).filter(volume__gt=0)
     elif value.isdigit():
-        entries = Entry.objects.filter(volume=int(value))
+        entries = get_entries_base(entries).filter(volume=int(value))
     else:
         PARSING_ERRORS.append('hwVolume')
 
@@ -259,15 +266,16 @@ def get_examples(form):
     else:
         PARSING_ERRORS.append('hwStatus')
 
-    assert not PARSING_ERRORS, 'Недопустимые значения параметров: %s' % PARSING_ERRORS
+    assert not PARSING_ERRORS, \
+           'Недопустимые значения параметров: %s' % PARSING_ERRORS
 
     # Если не стоит специально галочки, примеры не должны попадать к грецисту,
     # когда статья имеет статус "создана" или "в работе", за исключением тех
     # случаев когда у примера выставлен статус греческих параллелей "необходимы
     # для определения значения" (M) или "срочное" (U).
     if not form.get('hwAllExamples') and greq_status not in ('M', 'U'):
-        entries = Entry.objects if entries is None else entries
-        entries = entries.exclude(status__in=constants.HELLINIST_BAD_STATUSES)
+        entries = get_entries_base(entries) \
+                .exclude(status__in=constants.HELLINIST_BAD_STATUSES)
 
     if entries is not None:
         if entries.exists():
