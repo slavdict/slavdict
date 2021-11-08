@@ -57,8 +57,10 @@ from slavdict.middleware import InvalidCookieError
 def entry_key(entry):
     return entry.civil_equivalent.lower(), entry.homonym_order or 0
 
+
 def entry_key_inversed(entry):
     return entry.civil_equivalent.lower()[::-1], entry.homonym_order or 0
+
 
 def params_without_page(GET):
     excluded_GET_params = ('page', 'AB')
@@ -67,23 +69,34 @@ def params_without_page(GET):
                   if param not in excluded_GET_params)
     return urllib.parse.urlencode(params)
 
+
+def decode_cookie_value(value):
+    value = value.encode('utf-8')
+    value = base64.standard_b64decode(value)
+    value = str(value, encoding='utf-8')
+    return value
+
+
+def encode_cookie_value(value):
+    value = str(value).encode('utf-8')
+    value = base64.standard_b64encode(value)
+    value = str(value, encoding='utf-8')
+    return value
+
 def update_data_from_cookies(COOKIES, cookie_salt, data):
     for key, value in COOKIES.items():
         if key.endswith(cookie_salt) and value:
             key = key[:-len(cookie_salt)]
-            value = value.encode('utf-8')
-            value = base64.standard_b64decode(value)
-            value = str(value, encoding='utf-8')
-            data[key] = value
+            data[key] = decode_cookie_value(value)
+
 
 def set_cookie_from_data(response, request, cookie_salt, form):
     for param, value in list(form.cleaned_data.items()):
         cookie_name = param + cookie_salt
-        value = str(value).encode('utf-8')
-        value = base64.standard_b64encode(value)
-        value = str(value, encoding='utf-8')
+        value = encode_cookie_value(value)
         response.set_cookie(cookie_name, value, path=request.path)
     return response
+
 
 def pos_group_entry_key(entry):
     civil, homonym = entry_key(entry)
@@ -93,6 +106,7 @@ def pos_group_entry_key(entry):
         pos = constants.ALWAYS_LAST_POS
     return pos, civil, homonym
 
+
 def pos_group_entry_key_inversed(entry):
     civil, homonym = entry_key_inversed(entry)
     if entry.part_of_speech in constants.PART_OF_SPEECH_ORDER:
@@ -100,6 +114,7 @@ def pos_group_entry_key_inversed(entry):
     else:
         pos = constants.ALWAYS_LAST_POS
     return pos, civil, homonym
+
 
 paginator_re = re.compile(r'(\d+)[,;:](\d+)')
 
@@ -820,30 +835,36 @@ def entry_list(request, for_hellinists=False, per_page=12,
         response = set_cookie_from_data(response, request, cookie_salt, form)
     return response
 
+
+def params_vs_cookies(request, form, cookie_salt):
+    for field in form.base_fields.keys():
+        param_value = request.GET.get(field, form.default_data.get(field))
+        cookie_value = request.COOKIES.get(field + cookie_salt)
+        if str(param_value) != decode_cookie_value(cookie_value):
+            return False
+    return True
+
+
 @login_required
 def hellinist_workbench(request, per_page=4):
     salt = request.path + request.user.username
     cookie_salt = hashlib.md5(salt.encode('utf-8')).hexdigest()
+    different = params_vs_cookies(request, FilterExamplesForm, cookie_salt)
 
-    if request.method == 'POST':
-        data = request.POST
+    data = FilterExamplesForm.default_data.copy()
+    if MEANING_INDICATOR in request.GET:
+        data['hwStatus'] = constants.GREEK_EQ_MEANING
+    elif URGENT_INDICATOR in request.GET:
+        data['hwStatus'] = constants.GREEK_EQ_URGENT
     else:
-        data = FilterExamplesForm.default_data.copy()
-        if MEANING_INDICATOR in request.GET:
-            data['hwStatus'] = constants.GREEK_EQ_MEANING
-        elif URGENT_INDICATOR in request.GET:
-            data['hwStatus'] = constants.GREEK_EQ_URGENT
-        else:
-            update_data_from_cookies(request.COOKIES, cookie_salt, data)
+        update_data_from_cookies(request.COOKIES, cookie_salt, data)
 
     form = FilterExamplesForm(data)
     if not form.is_valid():
         message = 'Форма FilterExamplesForm заполнена неправильно.'
-        if request.method == 'POST':
-            raise RuntimeError(message)
-        else:
-            # Кидаем исключение для обработки в мидлваре и стирания всех кук.
-            raise InvalidCookieError(message)
+        # Кидаем исключение для обработки в мидлваре и стирания всех кук.
+        raise InvalidCookieError(message)
+
     examples = filters.get_examples(form)
     #if not request.user.has_key_for_preplock:
     #    examples = [ex for ex in examples if not ex.host_entry.preplock]
@@ -896,7 +917,7 @@ def hellinist_workbench(request, per_page=4):
         'URGENT_INDICATOR': URGENT_INDICATOR,
         }
     response = render(request, 'hellinist_workbench.html', context)
-    if request.method == 'POST':
+    if different:
         response = set_cookie_from_data(response, request, cookie_salt, form)
     return response
 
