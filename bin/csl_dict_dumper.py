@@ -146,7 +146,7 @@ if test_entries:
     lexemes = lexemes.filter(pk__in=test_entries)
 lexemes = list(lexemes)
 lexemes_n = len(lexemes)
-print('Number of selected lexemes:', lexemes_n, file=sys.stderr)
+print('Number of lexemes in the dictionary:', lexemes_n, file=sys.stderr)
 print(file=sys.stderr)
 
 for i, lexeme in enumerate(lexemes):
