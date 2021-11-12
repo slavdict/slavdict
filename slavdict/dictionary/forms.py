@@ -101,7 +101,7 @@ class FilterExamplesForm(forms.Form):
         'hwExamplesIds': '',
         'hwPrfx': '',
         'hwSortbase': 'addr',
-        'hwSortdir': '+',
+        'hwSortdir': '-',
         'hwStatus': 'all',
         'hwVolume': 'all',
     }

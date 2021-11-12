@@ -78,10 +78,13 @@ def decode_cookie_value(value):
 
 
 def encode_cookie_value(value):
+    if isinstance(value, bool):
+        value = int(value)
     value = str(value).encode('utf-8')
     value = base64.standard_b64encode(value)
     value = str(value, encoding='utf-8')
     return value
+
 
 def update_data_from_cookies(COOKIES, cookie_salt, data):
     for key, value in COOKIES.items():
@@ -346,7 +349,7 @@ th, td {
         'show_sort_keys': httpGET_SHOWSORTKEYS,
         'title': title,
         'user': request.user,
-        }
+    }
     return render(request, 'all_entries.html', context)
 
 
@@ -840,9 +843,11 @@ def params_vs_cookies(request, form, cookie_salt):
     for field in form.base_fields.keys():
         param_value = request.GET.get(field, form.default_data.get(field))
         cookie_value = request.COOKIES.get(field + cookie_salt)
+        if cookie_value is None:
+            return True
         if str(param_value) != decode_cookie_value(cookie_value):
-            return False
-    return True
+            return True
+    return False
 
 
 @login_required

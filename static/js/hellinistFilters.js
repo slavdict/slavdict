@@ -1,13 +1,34 @@
 (function () {
 
     var valuesToInitialize = vM.valuesToInitialize.examplesFilters,
-        listsForWidgets = vM.listsForWidgets.examplesFilters;
+        listsForWidgets = vM.listsForWidgets.examplesFilters,
+        filterFieldsList = [
+            'hwAddress',
+            'hwAllExamples',
+            'hwAuthor',
+            'hwExample',
+            'hwExamplesIds',
+            'hwPrfx',
+            'hwSortbase',
+            'hwSortdir',
+            'hwStatus',
+            'hwVolume'
+        ];
 
     vM.filters = {
         examples: ko.utils.arrayMap(vM.jsonExamples, function(ex) {
             return new Example(ex); }),
 
-        formSubmit: function(){ $('.headerForm').submit(); },
+        formSubmit: function(){
+            var qs = new URLSearchParams(window.location.search);
+            filterFieldsList.forEach(field => {
+                if (vM.filters[field].hasDefaultValue())
+                    qs.delete(field);
+                else
+                    qs.set(field, vM.filters[field]());
+            });
+            window.location.search = qs.toString();
+        },
 
         hwAuthor: ko.observable()
             .rememberInitial(valuesToInitialize.hwAuthor)
@@ -41,17 +62,13 @@
 
         hwSortbase: ko.observable()
             .rememberInitial(valuesToInitialize.hwSortbase)
-            // .rememberDefault... Значения по умолчанию
-            // на клиенте намеренно не определяем,
-            // хотя оно есть на сервере
+            .rememberDefault('addr')
             .htmlSelect('hwSortbase', listsForWidgets.sortbase,
                         valuesToInitialize.hwSortbase),
 
         hwSortdir: ko.observable()
             .rememberInitial(valuesToInitialize.hwSortdir)
-            // .rememberDefault... Значения по умолчанию
-            // на клиенте намеренно не определяем,
-            // хотя оно есть на сервере
+            .rememberDefault('-')
             .htmlSelect('hwSortdir', listsForWidgets.sortdir,
                         valuesToInitialize.hwSortdir),
 
