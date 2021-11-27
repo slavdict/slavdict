@@ -189,6 +189,10 @@ remote-csl-dump: remote-update
 	ssh slavdict nohup /var/www/slavdict/bin/csl_dumper.sh
 	$(MAKE) rsync
 
+remote-refs-dump: remote-update
+	ssh slavdict nohup /var/www/slavdict/bin/csl_dumper.sh refs
+	$(MAKE) rsync
+
 remote-slavdict-dump: remote-update
 	ssh slavdict nohup /var/www/slavdict/bin/dump.sh
 	$(MAKE) rsync
