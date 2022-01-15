@@ -1701,7 +1701,7 @@ var viewModel = vM.entryEdit,
           var dataToSend = { find: newValue, auth: 1 };
           if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
           this.lastItemsRequest = $.getJSON(
-            "/json/singleselect/entries/urls/", dataToSend,
+            "/json/ss/entries/urls/", dataToSend,
             function (data) {
               var mappedData = ko.utils.arrayMap(
                 data.filter(function (item) {

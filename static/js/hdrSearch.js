@@ -77,7 +77,7 @@ vM.hdrSearch.searchPrefix.subscribe(function(newValue) {
         var dataToSend = { find: newValue, auth: 0 };
         if (this.lastItemsRequest) { this.lastItemsRequest.abort(); }
         this.lastItemsRequest = $.getJSON(
-            "/json/singleselect/entries/urls/",
+            "/json/ss/entries/urls/",
             dataToSend,
             function(data){
                 var mappedData = ko.utils.arrayMap(

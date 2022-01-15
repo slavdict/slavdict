@@ -9,17 +9,17 @@ from slavdict.dictionary.admin import ui
 admin.autodiscover()
 
 urlpatterns = [
-    url( r'^',           include('slavdict.dictionary.urls') ),
-    url( r'^(?:admin|ui)/password_change/',
-            PasswordChangeView.as_view(success_url='/',
-                extra_context={'site_header': admin.site.site_header}),
-            name='password_change' ),
-    url( r'^admin/',     admin.site.urls ),
-    url( r'^admin/doc/', include('django.contrib.admindocs.urls') ),
-    url( r'^ui/',        ui.urls ),
-    url( r'^login/$',    LoginView.as_view() ),
-    url( r'^logout/$',   LogoutView.as_view(next_page='/'), name='logout' ),
-    url( r'^test/$',     TemplateView.as_view(template_name='test.html') ),
+    url(r'^',           include('slavdict.dictionary.urls')),
+    url(r'^(?:admin|ui)/password_change/',
+        PasswordChangeView.as_view(success_url='/', extra_context={
+            'site_header': admin.site.site_header}),
+        name='password_change'),
+    url(r'^admin/',     admin.site.urls),
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^ui/',        ui.urls),
+    url(r'^login/$',    LoginView.as_view()),
+    url(r'^logout/$',   LogoutView.as_view(next_page='/'), name='logout'),
+    url(r'^test/$',     TemplateView.as_view(template_name='test.html')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
