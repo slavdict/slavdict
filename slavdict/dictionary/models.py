@@ -1685,6 +1685,9 @@ class Example(models.Model, JSONSerializable, VolumeAttributive):
         host = self.host
         if host and 'base_meaning_id' in host.__dict__:
             self.collogroup = host
+        if self.greek_eq_status == constants.GREEK_EQ_FOUND and \
+                self.greq_set.filter(initial_form='').exists():
+            self.greek_eq_status = constants.GREEK_EQ_INITFORM_NEEDED
         super(Example, self).save(*args, **kwargs)
         if without_mtime:
             return
@@ -2313,6 +2316,10 @@ class GreekEquivalentForExample(models.Model, JSONSerializable, VolumeAttributiv
         if self.unitext.strip() and not self.initial_form.strip() \
                 and example.greek_eq_status == constants.GREEK_EQ_FOUND:
             example.greek_eq_status = constants.GREEK_EQ_INITFORM_NEEDED
+            example.save(without_mtime=without_mtime)
+        if self.unitext.strip() and self.initial_form.strip() and \
+                example.greek_eq_status == constants.GREEK_EQ_INITFORM_NEEDED:
+            example.greek_eq_status = constants.GREEK_EQ_FOUND
             example.save(without_mtime=without_mtime)
         if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
