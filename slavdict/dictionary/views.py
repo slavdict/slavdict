@@ -736,8 +736,7 @@ MEANING_INDICATOR = 'meaning'
 URGENT_INDICATOR = 'urgent'
 
 @login_required
-def entry_list(request, for_hellinists=False, per_page=12,
-        context=None):
+def entry_list(request, for_hellinists=False, per_page=12, context=None):
     template = 'entry_list.html'
     if for_hellinists:
         template = 'hellinist_workbench.html'
