@@ -2305,7 +2305,14 @@ class GreekEquivalentForExample(models.Model, JSONSerializable, VolumeAttributiv
                 constants.GREEK_EQ_CHECK_ADDRESS,
                 constants.GREEK_EQ_MEANING,
                 constants.GREEK_EQ_URGENT):
-            example.greek_eq_status = constants.GREEK_EQ_FOUND
+            if self.initial_form.strip():
+                example.greek_eq_status = constants.GREEK_EQ_FOUND
+            else:
+                example.greek_eq_status = constants.GREEK_EQ_INITFORM_NEEDED
+            example.save(without_mtime=without_mtime)
+        if self.unitext.strip() and not self.initial_form.strip() \
+                and example.greek_eq_status == constants.GREEK_EQ_FOUND:
+            example.greek_eq_status = constants.GREEK_EQ_INITFORM_NEEDED
             example.save(without_mtime=without_mtime)
         if host_entry is not None and not no_propagate:
             host_entry.save(without_mtime=without_mtime)
