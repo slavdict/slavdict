@@ -939,7 +939,8 @@ class Etymology(models.Model, JSONSerializable, VolumeAttributive):
         host_entry = self.host_entry
         if host_entry is not None:
             self.volume = host_entry.volume
-        nfc = unicodedata.normalize('NFC', self.unitext).strip()
+        nfc = unicodedata.normalize('NFC', self.unitext
+                                    ).strip().replace('\xad', '')
         if self.unitext != nfc:
             self.unitext = nfc
         super(Etymology, self).save(*args, **kwargs)
@@ -2291,13 +2292,16 @@ class GreekEquivalentForExample(models.Model, JSONSerializable, VolumeAttributiv
         host_entry = self.host_entry
         if host_entry is not None:
             self.volume = host_entry.volume
-        nfc = unicodedata.normalize('NFC', self.unitext).strip()
+        nfc = unicodedata.normalize('NFC', self.unitext
+                                    ).strip().replace('\xad', '')
         if self.unitext != nfc:
             self.unitext = nfc
-        nfc = unicodedata.normalize('NFC', self.initial_form).strip()
+        nfc = unicodedata.normalize('NFC', self.initial_form
+                                    ).strip().replace('\xad', '')
         if self.initial_form != nfc:
             self.initial_form = nfc
-        nfc = unicodedata.normalize('NFC', self.initial_form_phraseology).strip()
+        nfc = unicodedata.normalize('NFC', self.initial_form_phraseology
+                                    ).strip().replace('\xad', '')
         if self.initial_form_phraseology != nfc:
             self.initial_form_phraseology = nfc
         super(GreekEquivalentForExample, self).save(*args, **kwargs)
