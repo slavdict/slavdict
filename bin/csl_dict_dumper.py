@@ -726,14 +726,6 @@ for j, (wordform, reference, lexeme) in enumerate(gr_entries):
             ix_layer_pointer = ix_layer_pointer[char][KEY_INDEX]
 
 
-#GRIX_FWD_TSV = open(os.path.join(OUTPUT_DIR, 'slavdict_grix_fwd.tsv'), 'w')
-#GRIX_FWD_TSV.write('Прямой греческий указатель Большого словаря '
-#                   'церковнославянского языка Нового времени')
-#GRIX_FWD_TSV.write('\t')
-#GRIX_FWD_TSV.write('https://creativecommons.org/licenses/by/4.0/')
-#GRIX_FWD_TSV.write('\n')
-
-
 # Вывод прямого греческого указателя
 def grix_tree_traversal(slug, ix_layer, results):
     grix_node = {}
@@ -762,11 +754,20 @@ def grix_tree_traversal(slug, ix_layer, results):
                 filename, ERASE_LINEEND)
         sys.stderr.write(note)
     write_ix(filename, grix_node)
-    #write_tsv_ix(GRIX_FWD_TSV, grix_node)
 
+
+#GRIX_FWD_TSV = open(os.path.join(OUTPUT_DIR, 'slavdict_grix_fwd.tsv'), 'w')
+#GRIX_FWD_TSV.write('Прямой греческий указатель Большого словаря '
+#                   'церковнославянского языка Нового времени')
+#GRIX_FWD_TSV.write('\t')
+#GRIX_FWD_TSV.write('https://creativecommons.org/licenses/by/4.0/')
+#GRIX_FWD_TSV.write('\n')
+#for key, value in greek_index:
+#    pass
+#GRIX_FWD_TSV.close()
 
 grix_tree_traversal('', greek_index, [])
-#GRIX_FWD_TSV.close()
+
 
 # Создание обратного греч. указателя
 greeks1 = []
