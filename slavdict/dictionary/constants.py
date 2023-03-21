@@ -266,6 +266,7 @@ TRANSLATION_SOURCE_BIRUKOVY = 'B'
 TRANSLATION_SOURCE_GOVOROV = 'G'
 TRANSLATION_SOURCE_JUNGEROV = 'J'
 TRANSLATION_SOURCE_KEDROV = 'K'
+TRANSLATION_SOURCE_KULAKOV = 'V'
 TRANSLATION_SOURCE_LOVJAG1 = 'L'
 TRANSLATION_SOURCE_LOVJAG2 = '2'
 TRANSLATION_SOURCE_NAXIMOV = 'N'
@@ -289,6 +290,7 @@ TRANSLATION_SOURCE_CHOICES = (
     (TRANSLATION_SOURCE_BIRUKOVY, 'Бируковы'),
     (TRANSLATION_SOURCE_GOVOROV, '(Говоров) Феофан, еп. — перевод Добротолюбия'),
     (TRANSLATION_SOURCE_KEDROV, 'Кедров Н. — перевод великого канона'),
+    (TRANSLATION_SOURCE_KULAKOV, 'Кулаков М.П. — перевод Нового Завета (Институт перевода Библии в Заокском)'),
     (TRANSLATION_SOURCE_LOVJAG1, 'Ловягин Е.И. — перевод канонов'),
     (TRANSLATION_SOURCE_LOVJAG2, 'Ловягин И.Ф. — перевод октоиха'),
     (TRANSLATION_SOURCE_NAXIMOV, 'Нахимов Н. (Зайончковский Н.Ч.)'),
