@@ -117,28 +117,23 @@ class VolumeAttributive:
         return False
 
 
-class MockOrthographicVariant:
-    def __getattribute__(self, attrname):
-        return lambda *args, **kwargs: None
-
-
 class Entry(models.Model, JSONSerializable):
 
     civil_equivalent = CharField('гражд. написание', max_length=50)
     civil_inverse = CharField('гражд. инв.', max_length=50)
-    mock = [MockOrthographicVariant()]
+    MOCK_ORTHVAR = constants.MOCK_ORTHVAR
 
     @property
     def orth_vars(self):
-        return self.orthographic_variants.all() or mock
+        return self.orthographic_variants.all()
 
     @property
     def orth_vars_refs(self):
-        return self.orthographic_variants.filter(no_ref_entry=False) or mock
+        return self.orthographic_variants.filter(no_ref_entry=False)
 
     @property
     def base_vars(self):
-        return self.orthographic_variants.filter(parent__isnull=True) or mock
+        return self.orthographic_variants.filter(parent__isnull=True)
 
     hidden = BooleanField('Скрыть лексему', help_text='''Не отображать лексему
             в списке словарных статей.''', default=False, editable=False)
@@ -589,10 +584,12 @@ class Entry(models.Model, JSONSerializable):
         pos = ''
         if self.homonym_order and HAS_POS:
             pos = self.get_part_of_speech_display()
+        orth_vars = self.orth_vars
         return {
             'id': self.id,
             'civil': self.civil_equivalent,
-            'headword': self.orth_vars[0].idem_ucs,
+            'headword': (orth_vars[0].idem_ucs if len(orth_vars) > 0
+                         else constants.MOCK_ORTHVAR),
             'hom': self.homonym_order,
             'pos': pos,
             'hint': self.homonym_gloss,
@@ -719,7 +716,7 @@ class Entry(models.Model, JSONSerializable):
         for attr in ('genitive', 'nom_pl', 'short_form', 'sg1', 'sg2'):
             setattr(self, attr, antconc_anticorrupt(getattr(self, attr)))
         orth_vars = self.orth_vars
-        if orth_vars:
+        if len(orth_vars) > 0:
             self.civil_equivalent = civilrus_convert(orth_vars[0].idem.strip())
             self.civil_inverse = self.civil_equivalent[::-1]
         resave_all = False
@@ -797,7 +794,9 @@ class Entry(models.Model, JSONSerializable):
         return None, None
 
     def __str__(self):
-        return self.orth_vars[0].idem
+        orth_vars = self.orth_vars
+        return (orth_vars[0].idem if len(orth_vars) > 0
+                else constants.MOCK_ORTHVAR)
 
     def forJSON(self):
         _fields = (

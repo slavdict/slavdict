@@ -1,5 +1,7 @@
 from slavdict.dictionary.utils import volume_label
 
+MOCK_ORTHVAR = '-]*[-'
+
 NBSP = '\u00A0'  # неразрывный пробел
 
 BLANK_CHOICE = (('', ''),)

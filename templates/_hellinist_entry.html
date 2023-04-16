@@ -2,7 +2,11 @@
 
 <div class="exampleHeader" id="e{{ entry.id }}">
     <a href="{{ entry.get_absolute_url() }}" target="_blank">
-        <span class="Headword">{{ entry.orth_vars.0.idem_ucs }}</span>
+        <span class="Headword">{{
+            entry.orth_vars
+            and entry.orth_vars.0.idem_ucs
+            or entry.MOCK_ORTHVAR
+        }}</span>
         {% if entry.homonym_order %}
             <span class="HeadwordHomonymNumber">
                 {{ entry.homonym_order }}
@@ -45,16 +49,7 @@
                     maxlength="{{ MAX_LENGTHS.Etymology.meaning }}" />
             </span>
 
-            <span class="greqFieldContainer" data-bind="visible: unitext">
-                <label style="left: 0">примечание для авторов</label>
-                <input type="text" data-bind="
-                    textInput: additional_info,
-                    event: { change: saveMe }" />
-            </span>
-
-            <span class="button greqFieldButton"
-                data-bind="click: removeMe">&#x2716;</span>
-
+            <span class="greqFieldContainer" data-bind="visible: unitext"> <label style="left: 0">примечание для авторов</label> <input type="text" data-bind=" textInput: additional_info, event: { change: saveMe }" /> </span> <span class="button greqFieldButton" data-bind="click: removeMe">&#x2716;</span>
             <span class="greqFieldAjaxLoader"
                 data-bind="visible: beingSaved()"></span>
         </li>

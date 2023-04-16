@@ -15,7 +15,11 @@
 
     <div style="line-height: 100%;">
 
-        <span class="cslav headword">{{ entry.orth_vars.0.idem_ucs }}</span>
+        <span class="cslav headword">{{
+            entry.orth_vars
+            and entry.orth_vars.0.idem_ucs
+            or entry.MOCK_ORTHVAR
+        }}</span>
         {{ space }}
 
         {% if entry.homonym_order %}
@@ -165,7 +169,11 @@
                 {% if eltm.entry_container %}
                     <a href="{{ eltm.entry_container.get_absolute_url() }}">
                         <span class="cslav">
-                            {{ eltm.entry_container.orth_vars.0.idem_ucs }}
+                            {{
+                                eltm.entry_container.orth_vars
+                                and eltm.entry_container.orth_vars.0.idem_ucs
+                                or entry.MOCK_ORTHVAR
+                            }}
                         </span>
                         {% if eltm.entry_container.homonym_order %}
                             <sup class="homonym-number">{{ eltm.entry_container.homonym_order }}</sup>
@@ -183,7 +191,11 @@
         {% if entry.link_to_entry %}
             <a href="{{ entry.link_to_entry.get_absolute_url() }}">
                 <span class="cslav">
-                    {{ entry.link_to_entry.orth_vars.0.idem_ucs }}
+                    {{
+                        entry.link_to_entry.orth_vars
+                        and entry.link_to_entry.orth_vars.0.idem_ucs
+                        or entry.MOCK_ORTHVAR
+                    }}
                 </span>
                 {% if entry.link_to_entry.homonym_order %}
                     <sup class="homonym-number">{{ entry.link_to_entry.homonym_order }}</sup>
@@ -211,7 +223,11 @@
             {% if cfm.entry_container %}
                 <a href="{{ cfm.entry_container.get_absolute_url() }}">
                     <span class="cslav">
-                        {{ cfm.entry_container.orth_vars.0.idem_ucs }}
+                        {{
+                            cfm.entry_container.orth_vars
+                            and cfm.entry_container.orth_vars.0.idem_ucs
+                            or entry.MOCK_ORTHVAR
+                        }}
                     </span>
                     {% if cfm.entry_container.homonym_order %}
                         <sup class="homonym-number">{{ cfm.entry_container.homonym_order }}</sup>
@@ -232,7 +248,11 @@
             {% endif %}
             <a href="{{ cfe.get_absolute_url() }}">
                 <span class="cslav">
-                    {{ cfe.orth_vars.0.idem_ucs }}
+                    {{
+                        cfe.orth_vars
+                        and cfe.orth_vars.0.idem_ucs
+                        or entry.MOCK_ORTHVAR
+                    }}
                 </span>
                 {% if cfe.homonym_order %}
                     <sup class="homonym-number">{{ cfe.homonym_order }}</sup>

@@ -92,7 +92,11 @@
                 <li>
                 <a href="#e{{ e.id }}">
                     <span class="CSLSegmentEm">
-                        {{ e.orth_vars.0.idem_ucs }}
+                        {{
+                            e.orth_vars
+                            and e.orth_vars.0.idem_ucs
+                            or e.MOCK_ORTHVAR
+                        }}
                     </span>
                     {% if e.homonym_order %}
                         <span class="HeadwordHomonymNumber">
@@ -184,7 +188,11 @@
                         {% if exgroup.collogroup %}
                             <span style="color: #888;">
                                 [<span class="CSLSegment">
-                                {{ e.orth_vars.0.idem_ucs }}
+                                {{
+                                    e.orth_vars
+                                    and e.orth_vars.0.idem_ucs
+                                    or e.MOCK_ORTHVAR
+                                }}
                                 </span>]
                             </span>{{ space }}
                             <a href="{{ e.get_absolute_url() }}#{{ exgroup.meaning.get_url_fragment() }}">

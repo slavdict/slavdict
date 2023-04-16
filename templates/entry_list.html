@@ -199,7 +199,11 @@
                     <div class="fade">
                         <div>
                             <a href="{{ entry.get_absolute_url() }}" class="manual-entry">
-                                 <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
+                                 <span class="cslav">{{
+                                    entry.orth_vars
+                                    and entry.orth_vars.0.idem_ucs
+                                    or entry.MOCK_ORTHVAR
+                                 }}</span>
                                  {% if entry.homonym_order %}
                                      <sup class="homonym-number">{{ entry.homonym_order }}</sup>
                                  {% endif %}
@@ -225,7 +229,11 @@
 
                     <a href="{{ entry.get_absolute_url() }}"
                        class="manual-entry invisible">
-                        <span class="cslav">{{ entry.orth_vars.0.idem_ucs }}</span>
+                        <span class="cslav">{{
+                            entry.orth_vars
+                            and entry.orth_vars.0.idem_ucs
+                            or entry.MOCK_ORTHVAR
+                        }}</span>
 
                         {% if entry.duplicate %}
                             {{ space }}

@@ -7,12 +7,20 @@
       {% if host.orth_vars %}
           <a href="{{ host.get_absolute_url() }}#{{ e.meaning.get_url_fragment() }}"
                 target="_blank">
-              <span class="Headword">{{ host.orth_vars.0.idem_ucs }}</span>
+              <span class="Headword">{{
+                host.orth_vars
+                and host.orth_vars.0.idem_ucs
+                or host_entry.MOCK_ORTHVAR
+              }}</span>
           </a>{{ space }}
           <i>{{ host.get_part_of_speech_display() }}</i>{{ space }}
       {% else %}
           <span class="Headword" style="color: #aaa;">
-              {{ host_entry.orth_vars.0.idem_ucs }}
+              {{
+                host_entry.orth_vars
+                and host_entry.orth_vars.0.idem_ucs
+                or host_entry.MOCK_ORTHVAR
+              }}
           </span>{{ space }}
           <i>{{ host_entry.get_part_of_speech_display() }}</i>
           {{ space }}|{{ space }}

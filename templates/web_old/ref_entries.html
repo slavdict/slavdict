@@ -15,7 +15,11 @@
             <i>см.&nbsp;</i>
             <a href="{{ entry.get_absolute_url() }}">
                 <span class="cslav">
-                    {{ entry.orth_vars.0.idem_ucs }}
+                    {{
+                        entry.orth_vars
+                        and entry.orth_vars.0.idem_ucs
+                        or entry.MOCK_ORTHVAR
+                    }}
                 </span>
             </a>
         </div>
@@ -33,7 +37,11 @@
             <i>см.&nbsp;</i>
             <a href="{{ entry.get_absolute_url() }}">
                 <span class="cslav">
-                    {{ entry.orth_vars.0.idem_ucs }}
+                    {{
+                        entry.orth_vars
+                        and entry.orth_vars.0.idem_ucs
+                        or entry.MOCK_ORTHVAR
+                    }}
                 </span>
             </a>
         </div>
@@ -54,7 +62,11 @@
 
                 <a href="{{ entry.get_absolute_url() }}">
                     <span class="cslav">
-                        {{ entry.orth_vars.0.idem_ucs }}
+                        {{
+                            entry.orth_vars
+                            and entry.orth_vars.0.idem_ucs
+                            or entry.MOCK_ORTHVAR
+                        }}
                     </span>
                 </a>
 
