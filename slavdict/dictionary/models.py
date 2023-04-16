@@ -122,17 +122,23 @@ class Entry(models.Model, JSONSerializable):
     civil_equivalent = CharField('гражд. написание', max_length=50)
     civil_inverse = CharField('гражд. инв.', max_length=50)
 
+    def mock_orthvars(self):
+        MOCK_ORTHVAR = '[x]'
+        return [MOCK_ORTHVAR]
+
     @property
     def orth_vars(self):
-        return self.orthographic_variants.all()
+        return self.orthographic_variants.all() or self.mock_orthvars()
 
     @property
     def orth_vars_refs(self):
-        return self.orthographic_variants.filter(no_ref_entry=False)
+        return self.orthographic_variants.filter(no_ref_entry=False) \
+            or self.mock_orthvars()
 
     @property
     def base_vars(self):
-        return self.orthographic_variants.filter(parent__isnull=True)
+        return self.orthographic_variants.filter(parent__isnull=True) \
+            or self.mock_orthvars()
 
     hidden = BooleanField('Скрыть лексему', help_text='''Не отображать лексему
             в списке словарных статей.''', default=False, editable=False)
