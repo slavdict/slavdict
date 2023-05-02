@@ -103,6 +103,9 @@
         </li>
     </ul>
 
+    <a class="pasteItems" data-bind="
+        click: $root.ui.cutBuffer.pasteInto(collogroups),
+        visible: $root.ui.cutBuffer.containsCollogroups"></a>
     <a class="addItem"
         data-bind="click: collogroups.itemAdder($data).do"></a>
 
