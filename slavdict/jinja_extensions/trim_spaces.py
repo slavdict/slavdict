@@ -542,7 +542,7 @@ class Words(object):
                 self.in_betweens.append([])
             else:
                 self.in_betweens[-1].append(item)
-        elif isinstance(item, collections.Sequence) and \
+        elif isinstance(item, collections.abc.Sequence) and \
                 not isinstance(item, str):
             assert all(isinstance(x, Segment) for x in item)
             for s in item:

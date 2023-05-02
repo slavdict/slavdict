@@ -337,7 +337,7 @@ def process_json_model(json_model, post):
     post = json.loads(post.get('json'))
     for part in json_model:
         data = post[part['name']]
-        if isinstance(data, collections.Sequence):
+        if isinstance(data, collections.abc.Sequence):
             part['data'] = data
         else:
             part['data'] = (data,)
