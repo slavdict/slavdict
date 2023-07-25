@@ -1814,7 +1814,7 @@ class Translation(models.Model, JSONSerializable, VolumeAttributive):
             blank=True, default=1)
     fragment_end = SmallIntegerField('номер слова конца фрагмента',
             blank=True, default=1000)
-    source = CharField('Источник', max_length=1,
+    source = CharField('Источник', max_length=1, blank=True,
             choices=constants.TRANSLATION_SOURCE_CHOICES,
             default=constants.TRANSLATION_SOURCE_DEFAULT)
     order = SmallIntegerField('порядок следования', blank=True, default=345)
