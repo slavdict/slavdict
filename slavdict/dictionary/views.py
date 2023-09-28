@@ -57,7 +57,7 @@ from slavdict.middleware import InvalidCookieError
 # для сортировки списка словарных статей.
 def entry_key(entry):
     orth_vars = entry.orth_vars
-    if orth_vars > 0:
+    if len(orth_vars) > 0:
         part1 = sort_key3(orth_vars[0].idem)
     else:
         part1 = entry.civil_equivalent.lower()
