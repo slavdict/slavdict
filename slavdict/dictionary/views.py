@@ -49,16 +49,24 @@ from slavdict.dictionary.models import TempEdit
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import levenshtein_distance
 from slavdict.dictionary.utils import resolve_titles
+from slavdict.dictionary.utils import sort_key3
 from slavdict.middleware import InvalidCookieError
 
 
 # Вспомогательная функция
 # для сортировки списка словарных статей.
 def entry_key(entry):
-    return entry.civil_equivalent.lower(), entry.homonym_order or 0
+    orth_vars = entry.orth_vars
+    if orth_vars > 0:
+        part1 = sort_key3(orth_vars[0].idem)
+    else:
+        part1 = entry.civil_equivalent.lower()
+    part2 = entry.homonym_order or 0
+    return part1, part2
 
 def entry_key_inversed(entry):
-    return entry.civil_equivalent.lower()[::-1], entry.homonym_order or 0
+    part1, part2 = entry_key(entry)
+    return part1[::-1], part2
 
 def params_without_page(GET):
     excluded_GET_params = ('page', 'AB')
