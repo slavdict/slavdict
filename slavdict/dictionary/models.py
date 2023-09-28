@@ -1814,7 +1814,7 @@ class Example(models.Model, JSONSerializable, VolumeAttributive):
     class Meta:
         verbose_name = 'пример'
         verbose_name_plural = 'ПРИМЕРЫ'
-        ordering = ('id',)
+        ordering = ('sort_key1', 'sort_key2', 'homonym_order')
 
 
 class Translation(models.Model, JSONSerializable, VolumeAttributive):
