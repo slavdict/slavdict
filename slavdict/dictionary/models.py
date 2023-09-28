@@ -862,7 +862,8 @@ class Entry(models.Model, JSONSerializable):
     class Meta:
         verbose_name = 'словарная статья'
         verbose_name_plural = 'СЛОВАРНЫЕ СТАТЬИ'
-        ordering = ('-id',)
+        ordering = ('sort_key1', 'sort_key2', 'homonym_order')
+
 
 class Etymology(models.Model, JSONSerializable, VolumeAttributive):
 
@@ -1814,7 +1815,7 @@ class Example(models.Model, JSONSerializable, VolumeAttributive):
     class Meta:
         verbose_name = 'пример'
         verbose_name_plural = 'ПРИМЕРЫ'
-        ordering = ('sort_key1', 'sort_key2', 'homonym_order')
+        ordering = ('id',)
 
 
 class Translation(models.Model, JSONSerializable, VolumeAttributive):
