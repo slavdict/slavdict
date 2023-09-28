@@ -54,7 +54,7 @@ from slavdict.middleware import InvalidCookieError
 
 
 # Вспомогательная функция
-# для сортировки списка словарных статей.
+# для сортировки списка словарных статей и словосочетаний
 def entry_key(entry):
     orth_vars = entry.orth_vars
     if len(orth_vars) > 0:
@@ -68,6 +68,24 @@ def entry_key_inversed(entry):
     part1, part2 = entry_key(entry)
     return part1[::-1], part2
 
+def pos_group_entry_key(entry):
+    civil, homonym = entry_key(entry)
+    if entry.part_of_speech in constants.PART_OF_SPEECH_ORDER:
+        pos = constants.PART_OF_SPEECH_ORDER.index(entry.part_of_speech)
+    else:
+        pos = constants.ALWAYS_LAST_POS
+    return pos, civil, homonym
+
+def pos_group_entry_key_inversed(entry):
+    civil, homonym = entry_key_inversed(entry)
+    if entry.part_of_speech in constants.PART_OF_SPEECH_ORDER:
+        pos = constants.PART_OF_SPEECH_ORDER.index(entry.part_of_speech)
+    else:
+        pos = constants.ALWAYS_LAST_POS
+    return pos, civil, homonym
+
+
+# Куки и GET-параметры
 def params_without_page(GET):
     excluded_GET_params = ('page', 'AB')
     params = dict((param, str(value).encode('utf-8'))
@@ -92,22 +110,6 @@ def set_cookie_from_data(response, request, cookie_salt, form):
         value = str(value, encoding='utf-8')
         response.set_cookie(cookie_name, value, path=request.path)
     return response
-
-def pos_group_entry_key(entry):
-    civil, homonym = entry_key(entry)
-    if entry.part_of_speech in constants.PART_OF_SPEECH_ORDER:
-        pos = constants.PART_OF_SPEECH_ORDER.index(entry.part_of_speech)
-    else:
-        pos = constants.ALWAYS_LAST_POS
-    return pos, civil, homonym
-
-def pos_group_entry_key_inversed(entry):
-    civil, homonym = entry_key_inversed(entry)
-    if entry.part_of_speech in constants.PART_OF_SPEECH_ORDER:
-        pos = constants.PART_OF_SPEECH_ORDER.index(entry.part_of_speech)
-    else:
-        pos = constants.ALWAYS_LAST_POS
-    return pos, civil, homonym
 
 paginator_re = re.compile(r'(\d+)[,;:](\d+)')
 
@@ -265,7 +267,7 @@ th, td {
     if httpGET_ALIUD_GREEK:
         greqex = GreekEquivalentForExample.objects.filter(aliud=True)
         entries = list(set(i.host_entry for i in greqex))
-        entries.sort(key=lambda entry: entry.civil_equivalent)
+        entries.sort(key=entry_key)
 
     # Формирование заголовка страницы в зависимости от переданных
     # GET-параметров
@@ -450,7 +452,7 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
 
     examples = sorted(examples, key=key_emitter)
     if is_paged:
-        paginator = Paginator(entries, per_page=12, orphans=2)
+        paginator = Paginator(examples, per_page=12, orphans=2)
         try:
             pagenum = int(request.GET.get('page', 1))
         except ValueError:
@@ -1098,7 +1100,7 @@ def useful_urls_redirect(uri, request):
                           volume=VOLUME),
                    tuple(sorted(
                        set(cg.host_entry for cg in value),
-                       key=lambda x:x.civil_equivalent
+                       key=entry_key
                    ))
                   )
                   for key, values in list(same.items())
@@ -1185,7 +1187,7 @@ def useful_urls_redirect(uri, request):
                                volume=VOLUME
                                ), tuple(sorted(
                                        set(cg.host_entry for cg in value),
-                                       key=lambda x:x.civil_equivalent
+                                       key=entry_key
                                    )))
                   for key, value in same]
         groups.sort()
@@ -1215,7 +1217,7 @@ def useful_urls_redirect(uri, request):
                                volume=VOLUME
                                ), tuple(sorted(
                                        set(cg.host_entry for cg in value),
-                                       key=lambda x:x.civil_equivalent
+                                       key=entry_key
                                    )))
                   for key, value in same]
         groups.sort()

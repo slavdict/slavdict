@@ -46,8 +46,10 @@ def get_entries(form, for_hellinists):
         sortbase = default_data['sortbase']
     sort = sortdir + sortbase
     VALID_SORT_PARAMS = {
-        '+alph': ('civil_equivalent', 'homonym_order'),
-        '-alph': ('-civil_equivalent', '-homonym_order'),
+        '+alph': ('sort_key1', 'sort_key2', 'homonym_order'),
+        '-alph': ('-sort_key1', '-sort_key2', '-homonym_order'),
+        '+phla': ('inverted_sort_key1', 'inverted_sort_key2', 'homonym_order'),
+        '-phla': ('-inverted_sort_key1', '-inverted_sort_key2', '-homonym_order'),
         '+t': ('mtime', 'id'),
         '-t': ('-mtime', '-id'),
         }

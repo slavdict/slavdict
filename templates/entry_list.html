@@ -113,15 +113,16 @@
                 <td class="eli-control"></td>
                 <td class="eli-entry">
                     <span class="ssn sortHandle"
-                          data-bind="css: { on: sort() === '+alph' },
-                                   click: doSort.bind($data, '+alph')"
+                          data-bind="css: { on: sort() === '+alph' || sort() === '+phla' },
+                                   click: doSort.bind($data, sort() === '+alph' ? '+phla' : '+alph' )"
                           title="Упорядочить по возрастанию">↓</span>
                       <span class="ssn sortHandle"
-                          data-bind="css: { on: sort() === '-alph' },
-                                   click: doSort.bind($data, '-alph')"
+                          data-bind="css: { on: sort() === '-alph' || sort() === '-phla'},
+                                   click: doSort.bind($data, sort() === '-alph' ? '-phla' : '-alph')"
                           title="Упорядочить по убыванию">↑</span>
-                    <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по
-                        алфавиту</span>
+                    <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по алфавиту
+                        <span data-bind="visible: sortbase() == 'phla'">&nbsp;с инверсией слова</span>
+                    </span>
                 </td>
                 <td class="eli-author"></td>
                 <td class="eli-mtime">
@@ -194,7 +195,11 @@
                     {% endif %}
                 </td>
 
-                <td class="eli-entry">
+                <td class="eli-entry"
+                    data-bind="style: {
+                        'text-align': sortbase() === 'phla' ? 'right' : 'left',
+                        'padding-right': sortbase() === 'phla' ? '1em' : 0
+                    }">
 
                     <div class="fade">
                         <div>
@@ -213,6 +218,7 @@
                                 &nbsp;&nbsp;<span class="noaddress">дубликат</span>
                             {% endif %}
 
+                            {% if entry.homonym_order %}
                             <span class="ss transparent">
                                 {% if not entry.is_part_of_speech("letter",
                                                                   "number") %}
@@ -224,6 +230,7 @@
                                         title="{{ entry.homonym_gloss }}">{{ entry.homonym_gloss }}</span>
                                 {% endif %}
                             </span>
+                            {% endif %}
                         </div>
                     </div>
 

@@ -33,6 +33,8 @@ from slavdict.dictionary.utils import CIVIL_IN_CSL_APPLY_TO_CSL
 from slavdict.dictionary.utils import civilrus_convert
 from slavdict.dictionary.utils import collogroup_sort_key
 from slavdict.dictionary.utils import several_wordforms
+from slavdict.dictionary.utils import sort_key1
+from slavdict.dictionary.utils import sort_key2
 from slavdict.dictionary.utils import ucs_affix_or_word
 from slavdict.dictionary.utils import ucs_convert as ucs8
 from slavdict.dictionary.utils import ucs_convert_affix
@@ -122,6 +124,11 @@ class Entry(models.Model, JSONSerializable):
     civil_equivalent = CharField('гражд. написание', max_length=50)
     civil_inverse = CharField('гражд. инв.', max_length=50)
     MOCK_ORTHVAR = constants.MOCK_ORTHVAR
+
+    sort_key1 = CharField(max_length=100)
+    sort_key2 = CharField(max_length=100)
+    inverted_sort_key1 = CharField(max_length=100)
+    inverted_sort_key2 = CharField(max_length=100)
 
     @property
     def orth_vars(self):
@@ -717,8 +724,13 @@ class Entry(models.Model, JSONSerializable):
             setattr(self, attr, antconc_anticorrupt(getattr(self, attr)))
         orth_vars = self.orth_vars
         if len(orth_vars) > 0:
-            self.civil_equivalent = civilrus_convert(orth_vars[0].idem.strip())
+            ovar = orth_vars[0].idem.strip()
+            self.civil_equivalent = civilrus_convert(ovar)
+            self.sort_key1 = sort_key1(ovar)
+            self.sort_key2 = sort_key2(ovar)
             self.civil_inverse = self.civil_equivalent[::-1]
+            self.inverted_sort_key1 = self.sort_key1[::-1]
+            self.inverted_sort_key2 = self.sort_key2[::-1]
         resave_all = False
         resave_meanings = False
         len_meanings = len(self.meanings)

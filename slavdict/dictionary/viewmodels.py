@@ -107,8 +107,9 @@ sortdir = (
 )
 
 sortbase = (
-    {'id': 'alph', 'name': 'гражданского написания'},
-    {'id': 't',    'name': 'времени изменения'},
+    {'id': 'alph', 'name': 'по алфавиту'},
+    {'id': 'phla', 'name': 'по алфавиту с инверсией слова'},
+    {'id': 't',    'name': 'по времени изменения'},
 )
 
 editSubstantivusTypes = ((EMPTY_STRING_ID_OBJECT,) +

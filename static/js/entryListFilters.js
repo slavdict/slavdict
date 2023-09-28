@@ -231,7 +231,11 @@ function goSensitive() {
 $('#id_sortdir').on('focus', goSensitive);
 $('#id_sortbase').on('focus', goSensitive);
 
-[$('.filters'), $('.entry-list .control-row'), $('#withExamples')].forEach(
+[
+  $('.filters'),
+  $('.entry-list'),
+  $('#withExamples')
+].forEach(
   function(x) {
     if (x.length)
       ko.applyBindings(vM.filters, x.get(0));
