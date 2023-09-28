@@ -65,7 +65,7 @@ def json_singleselect_entries_urls(request):
                 Q(civil_equivalent__startswith=FIND_LOWER)
                 |
                 Q(civil_equivalent__startswith=FIND_CAPZD)
-            ).order_by('civil_equivalent', 'homonym_order')[:7]
+            ).order_by('sort_key1', 'sort_key2', 'homonym_order')[:7]
         authorize = authorize_entry if httpGET_AUTH else always_authorize_entry
         entries = [e.get_search_item() for e in entries if authorize(e, user)]
         data = _json(entries).encode('utf-8')

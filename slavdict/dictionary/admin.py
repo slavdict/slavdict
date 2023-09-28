@@ -740,7 +740,7 @@ class AdminEntry(admin.ModelAdmin):
     # См. http://code.djangoproject.com/ticket/15839
 
     filter_horizontal = ('cf_entries', 'cf_collogroups', 'cf_meanings')
-    ordering = ('civil_equivalent',)#'civil_inverse',)
+    ordering = ('sort_key1', 'sort_key2', 'homonym_order')
     save_on_top = True
     formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'rows':'2'})}, }
     class Media:

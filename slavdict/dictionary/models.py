@@ -362,7 +362,7 @@ class Entry(models.Model, JSONSerializable):
             if homonym_order:
                 kwargs['homonym_order'] = homonym_order
             cf_entries = cf_entries.exclude(**kwargs)
-        return cf_entries.order_by('civil_equivalent')
+        return cf_entries.order_by('sort_key1', 'sort_key2', 'homonym_order')
 
     @property
     def cfcollogroups(self):
@@ -729,8 +729,8 @@ class Entry(models.Model, JSONSerializable):
             self.sort_key1 = sort_key1(ovar)
             self.sort_key2 = sort_key2(ovar)
             self.civil_inverse = self.civil_equivalent[::-1]
-            self.inverted_sort_key1 = self.sort_key1[::-1]
-            self.inverted_sort_key2 = self.sort_key2[::-1]
+            self.inverted_sort_key1 = sort_key1(ovar[::-1])
+            self.inverted_sort_key2 = sort_key2(ovar[::-1])
         resave_all = False
         resave_meanings = False
         len_meanings = len(self.meanings)

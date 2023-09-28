@@ -65,8 +65,13 @@ def entry_key(entry):
     return part1, part2
 
 def entry_key_inversed(entry):
-    part1, part2 = entry_key(entry)
-    return part1[::-1], part2
+    orth_vars = entry.orth_vars
+    if len(orth_vars) > 0:
+        part1 = sort_key3(orth_vars[0].idem[::-1])
+    else:
+        part1 = entry.civil_inverse.lower()
+    part2 = entry.homonym_order or 0
+    return part1, part2
 
 def pos_group_entry_key(entry):
     civil, homonym = entry_key(entry)
