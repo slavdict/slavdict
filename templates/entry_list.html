@@ -113,12 +113,22 @@
                 <td class="eli-control"></td>
                 <td class="eli-entry">
                     <span class="ssn sortHandle"
-                          data-bind="css: { on: sort() === '+alph' || sort() === '+phla' },
-                                   click: doSort.bind($data, sort() === '+alph' ? '+phla' : '+alph' )"
+                          data-bind="css: { on: sort() === '+alph'},
+                                   click: doSort.bind($data, '+alph')"
                           title="Упорядочить по возрастанию">↓</span>
-                      <span class="ssn sortHandle"
-                          data-bind="css: { on: sort() === '-alph' || sort() === '-phla'},
-                                   click: doSort.bind($data, sort() === '-alph' ? '-phla' : '-alph')"
+                    <span class="ssn sortHandle"
+                          data-bind="css: { on: sort() === '-alph'},
+                                   click: doSort.bind($data, '-alph')"
+                          title="Упорядочить по убыванию">↑</span>
+                    <span class="ssn sortHandle"
+                          style="position: relative; right: 2.8em; top: 0.6em; float: right"
+                          data-bind="css: { on: sort() === '+phla' },
+                                   click: doSort.bind($data, '+phla')"
+                          title="Упорядочить по возрастанию">↓</span>
+                    <span class="ssn sortHandle"
+                          style="position: relative; right: 0; top: 0.6em; float: right"
+                          data-bind="css: { on: sort() === '-phla'},
+                                   click: doSort.bind($data, '-phla')"
                           title="Упорядочить по убыванию">↑</span>
                     <span class="ssn white">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;по алфавиту
                         <span data-bind="visible: sortbase() == 'phla'">&nbsp;с инверсией слова</span>
