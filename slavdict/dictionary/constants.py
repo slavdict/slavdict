@@ -271,7 +271,9 @@ TRANSLATION_SOURCE_KEDROV = 'K'
 TRANSLATION_SOURCE_KULAKOV = 'V'
 TRANSLATION_SOURCE_LOVJAG1 = 'L'
 TRANSLATION_SOURCE_LOVJAG2 = '2'
+TRANSLATION_SOURCE_MONREAL = 'M'
 TRANSLATION_SOURCE_NAXIMOV = 'N'
+TRANSLATION_SOURCE_PALEX = 'E'
 TRANSLATION_SOURCE_POLANSK = 'P'
 TRANSLATION_SOURCE_PSTGU = 'U'
 TRANSLATION_SOURCE_RBS = 'R'
@@ -286,6 +288,9 @@ TRANSLATION_SOURCE_CHOICES = (
     (TRANSLATION_SOURCE_SYNODAL, 'Синодальный перевод'),
     (TRANSLATION_SOURCE_RBS, 'Перевод РБО'),
     (TRANSLATION_SOURCE_PSTGU, 'Перевод ПСТГУ'),
+    (TRANSLATION_SOURCE_MONREAL, 'Перевод братства преп. Иова Почаевского'),
+    # Житие преподобныя матери нашея Марии Египетския. — Монреаль:
+    # Издание Братства преп. Иова Почаевскаго Русской Православной Церкви Заграницей, 1980.
 
     (TRANSLATION_SOURCE_ADAMENKO, 'Адаменко В., свящ.'),
     (TRANSLATION_SOURCE_BEZOBRAZ, '(Безобразов) Кассиан, еп.'),
@@ -296,6 +301,7 @@ TRANSLATION_SOURCE_CHOICES = (
     (TRANSLATION_SOURCE_LOVJAG1, 'Ловягин Е.И. — перевод канонов'),
     (TRANSLATION_SOURCE_LOVJAG2, 'Ловягин И.Ф. — перевод октоиха'),
     (TRANSLATION_SOURCE_NAXIMOV, 'Нахимов Н. (Зайончковский Н.Ч.)'),
+    (TRANSLATION_SOURCE_PALEX, 'Палехов Г. — перевод Известия учительного'),
     (TRANSLATION_SOURCE_POLANSK, '(Полянский) Иустин, еп. — перевод Алфавита духовного'),
     (TRANSLATION_SOURCE_SEDAKOVA, 'Седакова О.А.'),
     (TRANSLATION_SOURCE_TIMROT, '(Тимрот) Амвросий, иером.'),
@@ -309,9 +315,10 @@ TRANSLATION_SOURCE_TEXT = {
     TRANSLATION_SOURCE_SYNODAL: 'в\u00a0Син. пер.',
     TRANSLATION_SOURCE_RBS: 'в\u00a0пер. РБО',
     TRANSLATION_SOURCE_PSTGU: 'в\u00a0пер. ПСТГУ',
+    TRANSLATION_SOURCE_MONREAL: 'в\u00a0пер. БПИП',
 
     TRANSLATION_SOURCE_ADAMENKO: 'в\u00a0пер. Адам.',
-    TRANSLATION_SOURCE_BEZOBRAZ: 'в\u00a0пер. Бeзобр.',
+    TRANSLATION_SOURCE_BEZOBRAZ: 'в\u00a0пер. Безобр.',
     TRANSLATION_SOURCE_BIRUKOVY: 'в\u00a0пер. Бир.',
     TRANSLATION_SOURCE_GOVOROV: 'в\u00a0пер. Говор.',
     TRANSLATION_SOURCE_JUNGEROV: 'в\u00a0пер. Юнг.',
@@ -320,6 +327,7 @@ TRANSLATION_SOURCE_TEXT = {
     TRANSLATION_SOURCE_LOVJAG1: 'в\u00a0пер. Е.\u202fЛов.',
     TRANSLATION_SOURCE_LOVJAG2: 'в\u00a0пер. И.\u202fЛов.',
     TRANSLATION_SOURCE_NAXIMOV: 'в\u00a0пер. Нахим.',
+    TRANSLATION_SOURCE_PALEX:   'в\u00a0пер. Пал.',
     TRANSLATION_SOURCE_POLANSK: 'в\u00a0пер. Пол.',
     TRANSLATION_SOURCE_SEDAKOVA: 'в\u00a0пер. Сед.',
     TRANSLATION_SOURCE_TIMROT: 'в\u00a0пер. Тимр.',
