@@ -226,9 +226,12 @@ th, td {
         entries = entries.filter(query)
 
     if httpGET_STARTSWITH:
-        httpGET_STARTSWITH = httpGET_STARTSWITH.strip().lower()
-        entries = entries.filter(
-                civil_equivalent__istartswith=httpGET_STARTSWITH)
+        query = [
+            Q(civil_equivalent__istartswith=s.strip())
+            for s in httpGET_STARTSWITH.lower().split(',')
+        ]
+        q_startswith = functools.reduce(operator.or_, query)
+        entries = entries.filter(q_startswith)
 
     if httpGET_STATUS:
         httpGET_STATUS = COMMA.split(httpGET_STATUS)
@@ -285,7 +288,11 @@ th, td {
             title = 'Все статьи'
 
     if httpGET_STARTSWITH:
-        title += ', начинающиеся на „{0}-“'.format(httpGET_STARTSWITH)
+        s = ', '.join(
+            '„{0}-“'.format(s.strip())
+            for s in httpGET_STARTSWITH.lower().split(',')
+        )
+        title += ' на {0}'.format(s)
 
     if httpGET_POS_GROUP:
         if httpGET_INVERSE:
@@ -426,14 +433,14 @@ def all_examples(request, is_paged=False, mark_as_audited=False,
                     cursor += 1
                     kind = 'both'
                     parts.append((kind, [i]))
-            if i in superset and not i in subset:
+            if i in superset and i not in subset:
                 if kind == 'superset':
                     parts[cursor][1].append(i)
                 else:
                     cursor += 1
                     kind = 'superset'
                     parts.append((kind, [i]))
-            if not i in superset and i in subset:
+            if i not in superset and i in subset:
                 if kind == 'subset':
                     parts[cursor][1].append(i)
                 else:
@@ -1103,10 +1110,12 @@ def useful_urls_redirect(uri, request):
                                     else m.parent_meaning.collogroup_container
                                 for m in values)),
                           volume=VOLUME),
-                   tuple(sorted(
-                       set(cg.host_entry for cg in value),
-                       key=entry_key
-                   ))
+                   tuple(
+                       sorted(
+                           set(cg.host_entry for cg in values),
+                           key=entry_key
+                       )
+                   )
                   )
                   for key, values in list(same.items())
                   if len(values) > 1]
