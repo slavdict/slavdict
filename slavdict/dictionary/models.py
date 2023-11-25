@@ -1818,6 +1818,41 @@ class Example(models.Model, JSONSerializable, VolumeAttributive):
         ordering = ('id',)
 
 
+class TranslationSource(models.Model, JSONSerializable, VolumeAttributive):
+    name = CharField('Источник перевода', max_length=200)
+    label = CharField('Обозначение в словаре', max_length=100)
+
+    @property
+    def host_entry(self):
+        if self.entry:
+            return self.entry
+        else:
+            try:
+                host_entry = self.meaning.host_entry
+            except:
+                return None
+            else:
+                return host_entry
+
+    @property
+    def host(self):
+        if self.collogroup:
+            return self.collogroup
+        else:
+            if self.meaning:
+                return self.meaning.host
+            else:
+                return self.entry
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'источник перевода'
+        verbose_name_plural = 'ИСТОЧНИКИ ПЕРЕВОДА'
+        ordering = ('id',)
+
+
 class Translation(models.Model, JSONSerializable, VolumeAttributive):
 
     for_example = ForeignKey(Example, related_name='translation_set',
@@ -2608,6 +2643,7 @@ Models = (
     OrthographicVariant,
     Participle,
     Translation,
+    TranslationSource,
 )
 for Model in Models:
     x = get_max_lengths(Model)
