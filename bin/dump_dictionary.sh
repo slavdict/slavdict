@@ -5,36 +5,35 @@ DBS_VERSION=4.$MIGRATION_VERSION
 GREP_SIGNATURE=::::
 NOW=$(date +"%Y.%m.%d--%H.%M")
 DUMPDIR="${1:-$PRJDIR/.dumps}"
-LASTFILE=$(ls -tA "$DUMPDIR"/dictionary*.xml | head -1)
-FILE="$DUMPDIR/dictionary--$NOW---$DBS_VERSION.xml"
 VERBOSITY=${2:-0}
+MODELS=(
+    collocation
+    collocationgroup
+    entry
+    etymology
+    example
+    greekequivalentforexample
+    meaning
+    meaningcontext
+    orthographicvariant
+    participle
+    tempedit
+    tip
+    translation
+    translationsource
+)
 
 EXEC=python
 python -m django >/dev/null 2>&1 || EXEC='pipenv run python'
 
-$EXEC $PRJDIR/manage.py dumpdata --verbosity=$VERBOSITY \
-    dictionary --all --natural-foreign --format=xml --indent=4 > $FILE
+for model in ${MODELS[*]}
+do
+    FILE="$DUMPDIR/dictionary--$NOW---$DBS_VERSION--$model.xml"
+    echo $FILE
+    $EXEC $PRJDIR/manage.py dumpdata --verbosity=$VERBOSITY \
+        dictionary.$model --natural-foreign --format=xml --indent=2 > $FILE
+done
 
-if [ "$LASTFILE" ]
-then
-    if [ "$FILE" != "$LASTFILE" ]
-    then
-        x=$(diff $FILE $LASTFILE)
-
-        if [ -z "$x" ]
-        then
-            rm $FILE
-        else
-            gzip -c $FILE > $FILE.gz
-            echo "$GREP_SIGNATURE $FILE.gz"
-
-            if [ -a $LASTFILE.gz ]
-            then
-                rm $LASTFILE
-            fi
-        fi
-    fi
-else
-    gzip -c $FILE > $FILE.gz
-    echo "$GREP_SIGNATURE $FILE.gz"
-fi
+FILE="$DUMPDIR/dictionary--$NOW---$DBS_VERSION.tar.gz"
+tar -czvf $FILE $DUMPDIR/dictionary--$NOW---$DBS_VERSION--*.xml
+echo "$GREP_SIGNATURE $FILE"
