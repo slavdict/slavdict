@@ -35,5 +35,5 @@ do
 done
 
 FILE="$DUMPDIR/dictionary--$NOW---$DBS_VERSION.tar.gz"
-tar -czvf $FILE $DUMPDIR/dictionary--$NOW---$DBS_VERSION--*.xml
+tar -czvf $FILE --remove-files $DUMPDIR/dictionary--$NOW---$DBS_VERSION--*.xml
 echo "$GREP_SIGNATURE $FILE"
