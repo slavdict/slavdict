@@ -261,78 +261,54 @@ GREEK_EQ_STATUS = (
     (GREEK_EQ_URGENT, 'срочное'),
 )
 
-TRANSLATION_SOURCE_NULL = ''
-TRANSLATION_SOURCE_ADAMENKO = 'A'
-TRANSLATION_SOURCE_BEZOBRAZ = 'Z'
-TRANSLATION_SOURCE_BIRUKOVY = 'B'
-TRANSLATION_SOURCE_GOVOROV = 'G'
-TRANSLATION_SOURCE_JUNGEROV = 'J'
-TRANSLATION_SOURCE_KEDROV = 'K'
-TRANSLATION_SOURCE_KULAKOV = 'V'
-TRANSLATION_SOURCE_LOVJAG1 = 'L'
-TRANSLATION_SOURCE_LOVJAG2 = '2'
-TRANSLATION_SOURCE_MONREAL = 'M'
-TRANSLATION_SOURCE_NAXIMOV = 'N'
-TRANSLATION_SOURCE_PALEX = 'E'
-TRANSLATION_SOURCE_POLANSK = 'P'
-TRANSLATION_SOURCE_PSTGU = 'U'
-TRANSLATION_SOURCE_RBS = 'R'
-TRANSLATION_SOURCE_SEDAKOVA = '3'
-TRANSLATION_SOURCE_SYNODAL = 'S'
-TRANSLATION_SOURCE_TIMROT = 'T'
-TRANSLATION_SOURCE_DEFAULT = TRANSLATION_SOURCE_NULL
-TRANSLATION_SOURCE_CHOICES = (
 
-    (TRANSLATION_SOURCE_NULL, ''),
+TRANSLATION_SOURCES = (
+    (TRANSLATION_SOURCE_NULL     := '',  None,                       ''),
 
-    (TRANSLATION_SOURCE_SYNODAL, 'Синодальный перевод'),
-    (TRANSLATION_SOURCE_RBS, 'Перевод РБО'),
-    (TRANSLATION_SOURCE_PSTGU, 'Перевод ПСТГУ'),
-    (TRANSLATION_SOURCE_MONREAL, 'Перевод братства преп. Иова Почаевского'),
-    # Житие преподобныя матери нашея Марии Египетския. — Монреаль:
-    # Издание Братства преп. Иова Почаевскаго Русской Православной Церкви Заграницей, 1980.
+    (TRANSLATION_SOURCE_SYNODAL  := 'S', 'в\u00a0Син. пер.',         'Синодальный перeвод'),
+    (TRANSLATION_SOURCE_RBS      := 'R', 'в\u00a0пер. РБО',          'Перевод РБО'),
+    (TRANSLATION_SOURCE_RBS1824  := '4', 'в\u00a0пер. РБО 1824',     'Перевод РБО 1824 г.'),
+    (TRANSLATION_SOURCE_PSTGU    := 'U', 'в\u00a0пер. ПСТГУ',        'Перевод ПСТГУ'),
+    (TRANSLATION_SOURCE_MONREAL  := 'M', 'в\u00a0пер. БПИП',         'Перевод братства преп. Иова Почаевского'),
+    # Житие преподобныя матери нашея Марии Египетския. — Монреаль: Издание Братства преп. Иова Почаевскаго РПЦЗ, 1980.
 
-    (TRANSLATION_SOURCE_ADAMENKO, 'Адаменко В., свящ.'),
-    (TRANSLATION_SOURCE_BEZOBRAZ, '(Безобразов) Кассиан, еп.'),
-    (TRANSLATION_SOURCE_BIRUKOVY, 'Бируковы'),
-    (TRANSLATION_SOURCE_GOVOROV, '(Говоров) Феофан, еп. — перевод Добротолюбия'),
-    (TRANSLATION_SOURCE_KEDROV, 'Кедров Н. — перевод великого канона'),
-    (TRANSLATION_SOURCE_KULAKOV, 'Кулаков М.П. — перевод Нового Завета (Институт перевода Библии в Заокском)'),
-    (TRANSLATION_SOURCE_LOVJAG1, 'Ловягин Е.И. — перевод канонов'),
-    (TRANSLATION_SOURCE_LOVJAG2, 'Ловягин И.Ф. — перевод октоиха'),
-    (TRANSLATION_SOURCE_NAXIMOV, 'Нахимов Н. (Зайончковский Н.Ч.)'),
-    (TRANSLATION_SOURCE_PALEX, 'Палехов Г. — перевод Известия учительного'),
-    (TRANSLATION_SOURCE_POLANSK, '(Полянский) Иустин, еп. — перевод Алфавита духовного'),
-    (TRANSLATION_SOURCE_SEDAKOVA, 'Седакова О.А.'),
-    (TRANSLATION_SOURCE_TIMROT, '(Тимрот) Амвросий, иером.'),
-    (TRANSLATION_SOURCE_JUNGEROV, 'Юнгеров П.А.'),
+    (TRANSLATION_SOURCE_AVERINC  := 'C', 'в\u00a0пер. Авер.',        ' Аверинцев С.С. — библ. переводы'),
+    (TRANSLATION_SOURCE_ADAMENKO := 'A', 'в\u00a0пер. Адам.',        ' Адаменко В., свящ.'),
+    (TRANSLATION_SOURCE_ADAMENKO := 'F', 'в\u00a0пер. Алф.',         '(Алфеев) Иларион — пер. Литургии'),
+    (TRANSLATION_SOURCE_BEZOBRAZ := 'Z', 'в\u00a0пер. Безобр.',      '(Безобразов) Кассиан, еп.'),
+    (TRANSLATION_SOURCE_BIRUKOVY := 'B', 'в\u00a0пер. Бир.',         ' Бируковы'),
+    (TRANSLATION_SOURCE_VINZHELT := 'I', 'в\u00a0пер. Вин. и Желт.', ' Виноградов А.Ю., Желтов М., свящ. — пер. Литургии'),
+    (TRANSLATION_SOURCE_VOLOXON  := 'X', 'в\u00a0пер. Вол.',         ' Волохонский А. — пер. богослуж. текстов и псалмов'),
+    (TRANSLATION_SOURCE_GLUXAREV := '1', 'в\u00a0пер. Глух.',        '(Глухарев) Макарий, архим. — пер. Ветхого Завета'),
+    (TRANSLATION_SOURCE_GOVOROV  := 'G', 'в\u00a0пер. Говор.',       '(Говоров) Феофан, еп. — пер. Добротолюбия'),
+    (TRANSLATION_SOURCE_DESNIC   := '5', 'в\u00a0пер. Десн.',        ' Десницкий А. — библ. переводы'),
+    (TRANSLATION_SOURCE_DURASOV  := 'D', 'в\u00a0пер. Дурас.',       ' Дурасов С. — пер. канонов'),
+    (TRANSLATION_SOURCE_ELECKIX  := '6', 'в\u00a0пер. Елец.',        '(Елецких) Ионафан, архиеп. — пер. Великого канона'),
+    (TRANSLATION_SOURCE_KEDROV   := 'K', 'в\u00a0пер. Кедр.',        ' Кедров Н. — пер. великого канона'),
+    (TRANSLATION_SOURCE_KULAKOV  := 'V', 'в\u00a0пер. Кул.',         ' Кулаков М.П. — пер. Нового Завета (Институт перевода Библии в Заокском)'),
+    (TRANSLATION_SOURCE_LOVJAG1  := 'L', 'в\u00a0пер. Е.\u202fЛов.', ' Ловягин Е.И. — пер. канонов'),
+    (TRANSLATION_SOURCE_LOVJAG2  := '2', 'в\u00a0пер. И.\u202fЛов.', ' Ловягин И.Ф. — пер. октоиха'),
+    (TRANSLATION_SOURCE_NAXIMOV  := 'N', 'в\u00a0пер. Нахим.',       ' Нахимов Н. (Зайончковский Н.Ч.)'),
+    (TRANSLATION_SOURCE_PALEX    := 'E', 'в\u00a0пер. Пал.',         ' Палехов Г. — пер. Известия учительного'),
+    (TRANSLATION_SOURCE_POBED    := '#', 'в\u00a0пер. Поб.',         ' Победоносцев К.П. — пер. Нового Завета'),
+    (TRANSLATION_SOURCE_POLAKOV  := '7', 'в\u00a0пер. Поляк.',       ' Полякова С. — пер. Жития Марии Египетской'),
+    (TRANSLATION_SOURCE_POLANSK  := 'P', 'в\u00a0пер. Пол.',         '(Полянский) Иустин, еп. — пер. Алфавита духовного'),
+    (TRANSLATION_SOURCE_SVIRELIN := '8', 'в\u00a0пер. Свир.',        ' Свирелин А., прот. — пер. Последования к причащению'),
+    (TRANSLATION_SOURCE_SEDAKOVA := '3', 'в\u00a0пер. Сед.',         ' Седакова О.А.'),                                                             
+    (TRANSLATION_SOURCE_SKABAL   := '*', 'в\u00a0пер. Скбл.',        ' Скабалланович М.Н. — пер. праздников'),
+    (TRANSLATION_SOURCE_TIMROT   := 'T', 'в\u00a0пер. Тимр.',        '(Тимрот) Амвросий, иером.'),                                                  
+    (TRANSLATION_SOURCE_TUMANOV  := '9', 'в\u00a0пер. Тум.',         '(Туманов) Силуан, игум.'), 
+    (TRANSLATION_SOURCE_JUNGEROV := 'J', 'в\u00a0пер. Юнг.',         ' Юнгеров П.А.'),
+
+    (TRANSLATION_SOURCE_ZERO     := '0', 'в пер. Zero',              '[перевода нет в списке]'),
 )
+
+TRANSLATION_SOURCE_DEFAULT = TRANSLATION_SOURCE_NULL
+TRANSLATION_SOURCE_TEXT = {slug: mark for slug, mark, _ in TRANSLATION_SOURCES if mark is not None}
+TRANSLATION_SOURCE_CHOICES = [(slug, label) for slug, _, label in TRANSLATION_SOURCES if label is not None]
 
 assert len(TRANSLATION_SOURCE_CHOICES) == \
        len(set(value.upper() for value, label in TRANSLATION_SOURCE_CHOICES))
-
-TRANSLATION_SOURCE_TEXT = {
-    TRANSLATION_SOURCE_SYNODAL: 'в\u00a0Син. пер.',
-    TRANSLATION_SOURCE_RBS: 'в\u00a0пер. РБО',
-    TRANSLATION_SOURCE_PSTGU: 'в\u00a0пер. ПСТГУ',
-    TRANSLATION_SOURCE_MONREAL: 'в\u00a0пер. БПИП',
-
-    TRANSLATION_SOURCE_ADAMENKO: 'в\u00a0пер. Адам.',
-    TRANSLATION_SOURCE_BEZOBRAZ: 'в\u00a0пер. Безобр.',
-    TRANSLATION_SOURCE_BIRUKOVY: 'в\u00a0пер. Бир.',
-    TRANSLATION_SOURCE_GOVOROV: 'в\u00a0пер. Говор.',
-    TRANSLATION_SOURCE_JUNGEROV: 'в\u00a0пер. Юнг.',
-    TRANSLATION_SOURCE_KEDROV: 'в\u00a0пер. Кедр.',
-    TRANSLATION_SOURCE_KULAKOV: 'в\u00a0пер. Кул.',
-    TRANSLATION_SOURCE_LOVJAG1: 'в\u00a0пер. Е.\u202fЛов.',
-    TRANSLATION_SOURCE_LOVJAG2: 'в\u00a0пер. И.\u202fЛов.',
-    TRANSLATION_SOURCE_NAXIMOV: 'в\u00a0пер. Нахим.',
-    TRANSLATION_SOURCE_PALEX:   'в\u00a0пер. Пал.',
-    TRANSLATION_SOURCE_POLANSK: 'в\u00a0пер. Пол.',
-    TRANSLATION_SOURCE_SEDAKOVA: 'в\u00a0пер. Сед.',
-    TRANSLATION_SOURCE_TIMROT: 'в\u00a0пер. Тимр.',
-}
-
 
 SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10 = 'abcdefghij'
 ENTRY_SPECIAL_CASES = SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9, SC10
