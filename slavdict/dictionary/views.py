@@ -1184,7 +1184,7 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'same_collocs_same_entry':
         cgs = (cg for cg in CollocationGroup.objects.all()
-                  if cg.host_entry.volume == VOLUME)
+                  if (he := cg.host_entry) and he.volume == VOLUME)
         cs = (list(cg.collocations) for cg in cgs)
         same = collections.defaultdict(set)
         for collocations in cs:
@@ -1214,7 +1214,7 @@ def useful_urls_redirect(uri, request):
 
     elif uri == 'same_collocs_diff_entry':
         cgs = (cg for cg in CollocationGroup.objects.all()
-                  if cg.host_entry.volume == VOLUME)
+                  if (he := cg.host_entry) and he.volume == VOLUME)
         cs = (list(cg.collocations) for cg in cgs)
         same = collections.defaultdict(set)
         for collocations in cs:
