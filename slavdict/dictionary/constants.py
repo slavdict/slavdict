@@ -316,7 +316,7 @@ ENTRY_SPECIAL_CASES_CHOICES = (
     ('', ''),
     (SC1, 'Несколько лексем одного рода'),
     (SC2, '2 лексемы, муж. и жен. рода'),
-    (SC10, '2 лексемы, муж. и ср. рода'),
+    (SC10,'2 лексемы, муж. и ср. рода'),
     (SC3, '2 лексемы, ср. и жен. рода'),
     (SC7, '2 лексемы, жен. и ср. рода'),
     (SC4, '2 лексемы, жен. и только мн.'),
@@ -397,7 +397,7 @@ VOLUME_LETTERS = {
 }
 ANY_LETTER = None
 LOCKED_LETTERS = VOLUME_LETTERS[1] + VOLUME_LETTERS[2] + VOLUME_LETTERS[3]
-CURRENT_VOLUME = 5
+CURRENT_VOLUME = 6
 NO_VOLUME_CHOICE = 0
 DEFAULT_VOLUME_CHOICE = NO_VOLUME_CHOICE
 VOLUME_CHOICES = (
