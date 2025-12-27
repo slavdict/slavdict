@@ -16,7 +16,7 @@
         margin-left: 1.05em;
     }
     #materials li:before {
-        content: '—';
+        content: '';
     }
     #materials li {
         padding: 0;
@@ -49,7 +49,8 @@
     <ul>
         {% for name, uri in data %}
         <li>
-            <a href="{{ url('usefulURLs') }}{{ uri }}/" target="_blank">{{ name }}</a>
+		<input type="checkbox">
+		<a href="{{ url('usefulURLs') }}{{ uri }}/" target="_blank">{{ name }}</a>
         </li>
         {% endfor %}
     </ul>
